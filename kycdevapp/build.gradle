@@ -33,12 +33,21 @@ android {
 }
 
 dependencies {
-    implementation Libraries.firebaseCore
-
-    implementation project(':balance')
-    implementation project(':core')
-    implementation project(':coreui')
-    implementation project(':kyc')
+    implementation(project(':balance')) {
+        exclude module: 'crashlytics'
+    }
+    implementation(project(':core')) {
+        exclude module: 'crashlytics'
+    }
+    implementation(project(':coreui')) {
+        exclude module: 'crashlytics'
+    }
+    implementation(project(':kyc')) {
+        exclude module: 'crashlytics'
+    }
+    implementation(project(':veriff')) {
+        exclude module: 'crashlytics'
+    }
 
     implementation Libraries.rxKotlin
     implementation Libraries.rxAndroid
