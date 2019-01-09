@@ -7,23 +7,20 @@
     <!-- Implement you own BroadcastReceiver to track VeriffSDK status, should be protected by "signature" permission -->
 
     <application
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/full_backup_content"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:allowBackup="true"
-        android:fullBackupContent="@xml/full_backup_content">
+        android:theme="@style/AppTheme">
 
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <activity
             android:name="mobi.lab.veriff.sample.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <receiver
