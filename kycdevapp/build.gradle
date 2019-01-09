@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.blockchain.kyc.dev"
         targetSdkVersion Versions.targetSdk
-        minSdkVersion Versions.minSdk
+        minSdkVersion 19
         versionCode Versions.versionCode
         versionName Versions.versionName
         multiDexEnabled true
@@ -33,6 +33,8 @@ android {
 }
 
 dependencies {
+    implementation Libraries.firebaseCore
+
     implementation project(':balance')
     implementation project(':core')
     implementation project(':coreui')

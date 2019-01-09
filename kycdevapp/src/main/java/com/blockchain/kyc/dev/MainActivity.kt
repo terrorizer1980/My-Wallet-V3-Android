@@ -20,4 +20,8 @@ class MainActivity : AppCompatActivity() {
     fun launchKycForSwap(view: View) {
         KycNavHostActivity.start(this, CampaignType.Swap)
     }
+
+    fun launchVeriff(view: View) {
+
+    }
 }
