@@ -24,4 +24,5 @@ include ':app',
         ':testutils',
         ':testutils-android',
         ':veriff',
+        ':veriffLibrary',
         ':zxing'
