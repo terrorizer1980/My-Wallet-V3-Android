@@ -45,7 +45,7 @@ class FakeNabuDataManager : NabuDataManager {
         email = "jdoe@email.com",
         emailVerified = true,
         mobile = "+447123456789",
-        mobileVerified = false,
+        mobileVerified = true,
         dob = "2000-01-02",
         address = address,
         state = UserState.Created,
