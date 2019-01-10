@@ -22,6 +22,7 @@ android {
         versionName Versions.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        buildConfigField "boolean", "VERIFF", 'true'
     }
 
     compileOptions {
