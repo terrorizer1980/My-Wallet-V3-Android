@@ -178,9 +178,6 @@ androidExtensions {
 }
 
 dependencies {
-    implementation(project(':veriff')) {
-        exclude group: 'com.crashlytics.android'
-    }
     implementation project(':coreui')
     implementation project(':notifications')
     implementation project(':buysellui')

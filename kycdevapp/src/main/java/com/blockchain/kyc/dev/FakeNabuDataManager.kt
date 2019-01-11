@@ -11,6 +11,7 @@ import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.models.nabu.Tiers
 import com.blockchain.kyc.models.nabu.UserState
+import com.blockchain.kyc.services.nabu.VeriffApplicantAndToken
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.nabu.models.NabuSessionTokenResponse
 import io.reactivex.Completable
@@ -112,8 +113,8 @@ class FakeNabuDataManager : NabuDataManager {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getVeriffToken(offlineTokenResponse: NabuOfflineTokenResponse): Single<String> {
-        return Single.just("")
+    override fun getVeriffToken(offlineTokenResponse: NabuOfflineTokenResponse): Single<VeriffApplicantAndToken> {
+        return Single.just(VeriffApplicantAndToken(applicantId = "applicant", token = "token"))
     }
 
     override fun submitOnfidoVerification(
