@@ -43,6 +43,8 @@ import piuk.blockchain.kyc.R
 import timber.log.Timber
 import kotlinx.android.synthetic.main.fragment_kyc_veriff_splash.button_kyc_veriff_splash_next as buttonNext
 
+private const val SHOW_DOC_CHOICE = false
+
 class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresenter>(),
     VeriffSplashView {
 
@@ -89,25 +91,29 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
         applicant: VeriffApplicantAndToken,
         supportedDocuments: List<SupportedDocuments>
     ) {
-        val bottomSheetDialog = BottomSheetDialog(requireContext())
-        val sheetView = requireActivity().layoutInflater.inflate(R.layout.bottom_sheet_onfido, null)
+        if (SHOW_DOC_CHOICE) {
+            val bottomSheetDialog = BottomSheetDialog(requireContext())
+            val sheetView = requireActivity().layoutInflater.inflate(R.layout.bottom_sheet_onfido, null)
 
-        supportedDocuments
-            .map { it.toUiData() }
-            .forEach {
-                sheetView.findViewById<TextView>(it.textView)
-                    .apply {
-                        visible()
-                        setLeftDrawable(it.icon)
-                        launchVeriffOnClick(
-                            applicant,
-                            bottomSheetDialog
-                        )
-                    }
-            }
+            supportedDocuments
+                .map { it.toUiData() }
+                .forEach {
+                    sheetView.findViewById<TextView>(it.textView)
+                        .apply {
+                            visible()
+                            setLeftDrawable(it.icon)
+                            launchVeriffOnClick(
+                                applicant,
+                                bottomSheetDialog
+                            )
+                        }
+                }
 
-        bottomSheetDialog.setContentView(sheetView)
-        bottomSheetDialog.show()
+            bottomSheetDialog.setContentView(sheetView)
+            bottomSheetDialog.show()
+        } else {
+            launchVeriff(applicant)
+        }
     }
 
     private fun launchVeriff(applicant: VeriffApplicantAndToken) {
