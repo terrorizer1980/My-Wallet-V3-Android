@@ -1,12 +1,14 @@
 package com.blockchain.kycui.veriffsplash
 
 import android.annotation.SuppressLint
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.annotation.IdRes
 import android.support.design.widget.BottomSheetDialog
 import android.support.graphics.drawable.VectorDrawableCompat
+import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -16,25 +18,17 @@ import android.widget.TextView
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.kyc.models.nabu.SupportedDocuments
-import com.blockchain.notifications.analytics.logEvent
+import com.blockchain.kyc.services.nabu.VeriffApplicantAndToken
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
-import com.blockchain.kycui.onfidosplash.OnfidoSplashFragmentArgs
 import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
+import com.google.firebase.FirebaseApp
 import com.onfido.android.sdk.capture.DocumentType
-import com.onfido.android.sdk.capture.ExitCode
-import com.onfido.android.sdk.capture.Onfido
-import com.onfido.android.sdk.capture.OnfidoFactory
-import com.onfido.android.sdk.capture.errors.OnfidoException
-import com.onfido.android.sdk.capture.ui.camera.face.FaceCaptureStep
-import com.onfido.android.sdk.capture.ui.camera.face.FaceCaptureVariant
-import com.onfido.android.sdk.capture.ui.options.CaptureScreenStep
-import com.onfido.android.sdk.capture.upload.Captures
-import com.onfido.android.sdk.capture.utils.CountryCode
-import com.onfido.api.client.data.Applicant
 import io.reactivex.Observable
-import mobi.lab.veriff.sample.MainActivity
+import mobi.lab.veriff.data.ColorSchema
+import mobi.lab.veriff.data.Veriff
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
@@ -47,15 +41,14 @@ import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.kyc.R
 import timber.log.Timber
-import kotlinx.android.synthetic.main.fragment_kyc_onfido_splash.button_kyc_onfido_splash_next as buttonNext
+import kotlinx.android.synthetic.main.fragment_kyc_veriff_splash.button_kyc_veriff_splash_next as buttonNext
 
 class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresenter>(),
     VeriffSplashView {
 
     private val presenter: VeriffSplashPresenter by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
-    private val countryCode by unsafeLazy { OnfidoSplashFragmentArgs.fromBundle(arguments).countryCode }
-    private val onfido by unsafeLazy { OnfidoFactory.create(requireActivity()).client }
+    private val countryCode by unsafeLazy { VeriffSplashFragmentArgs.fromBundle(arguments).countryCode }
     private var progressDialog: MaterialProgressDialog? = null
     override val uiState: Observable<String>
         get() = buttonNext.throttledClicks()
@@ -72,7 +65,7 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
         logEvent(LoggableEvent.KycVerifyIdentity)
 
         progressListener.setHostTitle(R.string.kyc_onfido_splash_title)
-        progressListener.incrementProgress(KycStep.OnfidoSplashPage)
+        progressListener.incrementProgress(KycStep.VeriffSplashPage)
 
         onViewReady()
     }
@@ -93,8 +86,7 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
 
     @SuppressLint("InflateParams")
     override fun continueToVeriff(
-        apiKey: String,
-        applicantId: String,
+        applicant: VeriffApplicantAndToken,
         supportedDocuments: List<SupportedDocuments>
     ) {
         val bottomSheetDialog = BottomSheetDialog(requireContext())
@@ -107,10 +99,8 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
                     .apply {
                         visible()
                         setLeftDrawable(it.icon)
-                        launchOnfidoOnClick(
-                            apiKey,
-                            applicantId,
-                            it.documentType,
+                        launchVeriffOnClick(
+                            applicant,
                             bottomSheetDialog
                         )
                     }
@@ -120,33 +110,30 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
         bottomSheetDialog.show()
     }
 
-    private fun launchOnfido(apiKey: String, applicantId: String, screenStep: CaptureScreenStep) {
-        // We only require document capture and video face capture
-        val kycFlowSteps = arrayOf(
-            screenStep,
-            FaceCaptureStep(FaceCaptureVariant.VIDEO)
-        )
+    private fun launchVeriff(applicant: VeriffApplicantAndToken) {
+        val sessionToken = applicant.token
+        Timber.d("Veriff session token: $sessionToken")
+        // enable logging for the library
+        // Veriff.setLoggingImplementation(Log.getInstance(MainActivity::class.java))
+        val veriffSDK = Veriff.Builder("https://magic.veriff.me/v1/", sessionToken)
+        // If this not specified, then reverts to the default colors
+        val schema = ColorSchema.Builder()
+            .setControlsColor(ContextCompat.getColor(requireContext(), R.color.primary_blue_accent))
+            .build()
+        veriffSDK.setCustomColorSchema(schema)
+        // If not specified, then default gradient is used
+        veriffSDK.setBackgroundImage(R.drawable.city_tartu)
 
-        startActivity(Intent(requireActivity(), MainActivity::class.java))
+        FirebaseApp.initializeApp(requireContext().applicationContext)
+        veriffSDK.launch(requireActivity(), REQUEST_CODE_VERIFF)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_ONFIDO) {
-            onfido.handleActivityResult(resultCode, data, object : Onfido.OnfidoResultListener {
-                // Send result to backend, continue to exchange
-                override fun userCompleted(applicant: Applicant, captures: Captures) {
-                    presenter.submitVerification(applicant.id)
-                }
-
-                // User left the sdk flow without completing it
-                override fun userExited(exitCode: ExitCode, applicant: Applicant) = Unit
-
-                // An exception occurred during the flow
-                override fun onError(exception: OnfidoException, applicant: Applicant?) {
-                    showErrorToast(R.string.kyc_onfido_splash_verification_error)
-                    Timber.e(exception)
-                }
-            })
+        if (requestCode == REQUEST_CODE_VERIFF) {
+            Timber.d("Veriff result code $resultCode")
+            if (resultCode == RESULT_OK) {
+                presenter.submitVerification()
+            }
         }
     }
 
@@ -165,21 +152,12 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
 
     override fun getMvpView(): VeriffSplashView = this
 
-    private fun TextView.launchOnfidoOnClick(
-        apiKey: String,
-        applicantId: String,
-        documentType: DocumentType,
+    private fun TextView.launchVeriffOnClick(
+        applicant: VeriffApplicantAndToken,
         bottomSheetDialog: BottomSheetDialog
     ) {
         this.setOnClickListener {
-            launchOnfido(
-                apiKey,
-                applicantId,
-                CaptureScreenStep(
-                    documentType,
-                    CountryCode.getByCode(countryCode) ?: CountryCode.GB
-                )
-            )
+            launchVeriff(applicant)
             bottomSheetDialog.cancel()
         }
     }
@@ -222,6 +200,6 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
 
     companion object {
 
-        private const val REQUEST_CODE_ONFIDO = 1337
+        private const val REQUEST_CODE_VERIFF = 1440
     }
 }

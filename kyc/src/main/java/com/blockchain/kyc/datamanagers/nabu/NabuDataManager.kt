@@ -10,6 +10,7 @@ import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.services.nabu.NabuService
+import com.blockchain.kyc.services.nabu.VeriffApplicantAndToken
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.nabu.models.NabuSessionTokenResponse
@@ -67,11 +68,16 @@ interface NabuDataManager {
         offlineTokenResponse: NabuOfflineTokenResponse
     ): Single<String>
 
-    fun getVeriffApiKey(
+    fun getVeriffToken(
         offlineTokenResponse: NabuOfflineTokenResponse
-    ): Single<String>
+    ): Single<VeriffApplicantAndToken>
 
     fun submitOnfidoVerification(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        applicantId: String
+    ): Completable
+
+    fun submitVeriffVerification(
         offlineTokenResponse: NabuOfflineTokenResponse,
         applicantId: String
     ): Completable
@@ -226,10 +232,10 @@ internal class NabuDataManagerImpl(
         nabuService.getOnfidoApiKey(it)
     }
 
-    override fun getVeriffApiKey(
+    override fun getVeriffToken(
         offlineTokenResponse: NabuOfflineTokenResponse
-    ): Single<String> = authenticate(offlineTokenResponse) {
-        nabuService.getVeriffApiKey(it)
+    ): Single<VeriffApplicantAndToken> = authenticate(offlineTokenResponse) {
+        nabuService.getVeriffToken(it)
     }
 
     override fun submitOnfidoVerification(
@@ -237,6 +243,14 @@ internal class NabuDataManagerImpl(
         applicantId: String
     ): Completable = authenticate(offlineTokenResponse) {
         nabuService.submitOnfidoVerification(it, applicantId)
+            .toSingleDefault(Any())
+    }.ignoreElement()
+
+    override fun submitVeriffVerification(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        applicantId: String
+    ): Completable = authenticate(offlineTokenResponse) {
+        nabuService.submitVeriffVerification(it, applicantId)
             .toSingleDefault(Any())
     }.ignoreElement()
 

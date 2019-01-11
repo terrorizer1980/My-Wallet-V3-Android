@@ -11,7 +11,6 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataUserProviderNabuDataManagerA
 import com.blockchain.nabu.NabuUserSync
 import com.blockchain.kyc.datamanagers.nabu.NabuUserSyncUpdateUserWalletInfoWithJWT
 import com.blockchain.kyc.datamanagers.onfido.OnfidoDataManager
-import com.blockchain.kyc.datamanagers.veriff.VeriffDataManager
 import com.blockchain.kyc.models.nabu.KycStateAdapter
 import com.blockchain.kyc.models.nabu.KycTierStateAdapter
 import com.blockchain.kyc.models.nabu.UserStateAdapter
@@ -90,9 +89,7 @@ val kycModule = applicationContext {
 
         factory { OnfidoSplashPresenter(get(), get(), get()) }
 
-        factory { VeriffDataManager() }
-
-        factory { VeriffSplashPresenter(get(), get(), get()) }
+        factory { VeriffSplashPresenter(get(), get()) }
 
         factory { KycStatusPresenter(get(), get(), get()) }
 

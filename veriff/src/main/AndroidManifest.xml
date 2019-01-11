@@ -3,26 +3,18 @@
     package="com.blockchain.veriff">
 
     <!-- "signature" permission granted automatically by system, without notifying user. -->
+    <!--
     <uses-permission android:name="${applicationId}.VERIFF_STATUS_BROADCAST_PERMISSION" />
+    -->
     <!-- Implement you own BroadcastReceiver to track VeriffSDK status, should be protected by "signature" permission -->
 
-    <application
-        android:allowBackup="true"
-        android:fullBackupContent="@xml/full_backup_content"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+    <application>
 
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity
-            android:name="mobi.lab.veriff.sample.MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
+        <!--
         <receiver
             android:name="mobi.lab.veriff.sample.receiver.VeriffStatusReceiver"
             android:permission="${applicationId}.VERIFF_STATUS_BROADCAST_PERMISSION">
@@ -31,25 +23,8 @@
                 <action android:name="veriff.info.status" />
             </intent-filter>
         </receiver>
+        -->
 
-        <!-- Implement Firebase notification service that handles Veriff notifications-->
-        <service android:name="mobi.lab.veriff.sample.service.SampleFirebaseMessagingService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <!-- Implement FirebaseInstanceIdService -->
-        <service android:name="mobi.lab.veriff.sample.service.SampleFirebaseInstanceIdService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
-
-        <service android:name="mobi.lab.veriff.sample.service.VeriffLibraryStatusUpdatesService">
-            <intent-filter>
-                <action android:name="me.veriff.STATUS_UPDATE" />
-            </intent-filter>
-        </service>
     </application>
 
 </manifest>

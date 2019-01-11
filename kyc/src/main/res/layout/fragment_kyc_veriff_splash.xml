@@ -66,7 +66,7 @@
             app:layout_constraintTop_toBottomOf="@+id/image_view_onfido_splash" />
 
         <Button
-            android:id="@+id/button_kyc_onfido_splash_next"
+            android:id="@+id/button_kyc_veriff_splash_next"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

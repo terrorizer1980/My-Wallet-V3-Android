@@ -13,7 +13,7 @@ import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.SupportedDocumentsResponse
 import com.blockchain.kyc.models.nabu.TierUpdateJson
 import com.blockchain.kyc.models.nabu.TiersJson
-import com.blockchain.kyc.models.nabu.VeriffApiKey
+import com.blockchain.kyc.models.nabu.VeriffToken
 import com.blockchain.nabu.models.NabuOfflineTokenRequest
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.nabu.models.NabuSessionTokenResponse
@@ -96,13 +96,13 @@ internal interface Nabu {
         @Header("authorization") authorization: String
     ): Single<OnfidoApiKey>
 
-    @GET(NABU_VERIFF_API_KEY)
-    fun getVeriffApiKey(
+    @GET(NABU_VERIFF_TOKEN)
+    fun getVeriffToken(
         @Header("authorization") authorization: String
-    ): Single<VeriffApiKey>
+    ): Single<VeriffToken>
 
     @POST(NABU_SUBMIT_VERIFICATION)
-    fun submitOnfidoVerification(
+    fun submitVerification(
         @Body applicantIdRequest: ApplicantIdRequest,
         @Header("authorization") authorization: String
     ): Completable

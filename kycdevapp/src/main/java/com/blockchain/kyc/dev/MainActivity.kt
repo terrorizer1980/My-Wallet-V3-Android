@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.blockchain.kycui.navhost.KycNavHostActivity
 import com.blockchain.kycui.navhost.models.CampaignType
-import mobi.lab.veriff.sample.MainActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +23,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun launchVeriff(view: View) {
-        startActivity(Intent(this, MainActivity::class.java))
+        // startActivity(Intent(this, MainActivity::class.java))
     }
 }

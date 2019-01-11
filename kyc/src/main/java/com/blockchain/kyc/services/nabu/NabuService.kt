@@ -20,6 +20,11 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.Retrofit
 
+class VeriffApplicantAndToken(
+    val applicantId: String,
+    val token: String
+)
+
 class NabuService(retrofit: Retrofit) {
 
     private val service: Nabu = retrofit.create(Nabu::class.java)
@@ -137,17 +142,25 @@ class NabuService(retrofit: Retrofit) {
     ).map { it.key }
         .wrapErrorMessage()
 
-    internal fun getVeriffApiKey(
+    internal fun getVeriffToken(
         sessionToken: NabuSessionTokenResponse
-    ): Single<String> = service.getVeriffApiKey(
+    ): Single<VeriffApplicantAndToken> = service.getVeriffToken(
         sessionToken.authHeader
-    ).map { it.key }
+    ).map { VeriffApplicantAndToken(it.applicantId, it.token) }
         .wrapErrorMessage()
 
     internal fun submitOnfidoVerification(
         sessionToken: NabuSessionTokenResponse,
         applicantId: String
-    ): Completable = service.submitOnfidoVerification(
+    ): Completable = service.submitVerification(
+        ApplicantIdRequest(applicantId),
+        sessionToken.authHeader
+    ).wrapErrorMessage()
+
+    internal fun submitVeriffVerification(
+        sessionToken: NabuSessionTokenResponse,
+        applicantId: String
+    ): Completable = service.submitVerification(
         ApplicantIdRequest(applicantId),
         sessionToken.authHeader
     ).wrapErrorMessage()

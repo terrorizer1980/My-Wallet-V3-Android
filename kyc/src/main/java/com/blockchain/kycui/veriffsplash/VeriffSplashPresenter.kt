@@ -2,7 +2,6 @@ package com.blockchain.kycui.veriffsplash
 
 import com.blockchain.BaseKycPresenter
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.datamanagers.veriff.VeriffDataManager
 import com.blockchain.nabu.NabuToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -13,8 +12,7 @@ import timber.log.Timber
 
 class VeriffSplashPresenter(
     nabuToken: NabuToken,
-    private val nabuDataManager: NabuDataManager,
-    private val veriffDataManager: VeriffDataManager
+    private val nabuDataManager: NabuDataManager
 ) : BaseKycPresenter<VeriffSplashView>(nabuToken) {
 
     override fun onViewReady() {
@@ -23,35 +21,21 @@ class VeriffSplashPresenter(
                 .flatMapSingle { countryCode ->
                     fetchOfflineToken
                         .flatMap { token ->
-                            nabuDataManager.getVeriffApiKey(token)
-                                .subscribeOn(Schedulers.io())
+                            nabuDataManager.getVeriffToken(token)
                                 .flatMap { apiKey ->
-                                    nabuDataManager.getUser(token)
-                                        .subscribeOn(Schedulers.io())
-                                        .flatMap { user ->
-                                            veriffDataManager.createApplicant(
-                                                user.firstName
-                                                    ?: throw IllegalStateException("firstName is null"),
-                                                user.lastName
-                                                    ?: throw IllegalStateException("lastName is null"),
-                                                apiKey
-                                            ).subscribeOn(Schedulers.io())
-                                        }
-                                        .map { it to apiKey }
-                                }
-                                .flatMap { (applicant, apiKey) ->
                                     nabuDataManager.getSupportedDocuments(token, countryCode)
                                         .subscribeOn(Schedulers.io())
-                                        .map { Triple(it, applicant, apiKey) }
+                                        .map { Pair(it, apiKey) }
                                 }
                         }
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnSubscribe { view.showProgressDialog(true) }
                         .doOnEvent { _, _ -> view.dismissProgressDialog() }
-                        .doOnSuccess { (supportedDocuments, applicant, apiKey) ->
-                            view.continueToVeriff(apiKey, applicant.id, supportedDocuments)
+                        .doOnSuccess { (supportedDocuments, applicant) ->
+                            view.continueToVeriff(applicant, supportedDocuments)
                         }
                         .doOnError {
+                            Timber.e(it)
                             view.showErrorToast(R.string.kyc_onfido_splash_verification_error)
                         }
                 }
@@ -60,11 +44,18 @@ class VeriffSplashPresenter(
                 .subscribe()
     }
 
-    internal fun submitVerification(applicantId: String) {
+    internal fun submitVerification() {
         compositeDisposable +=
             fetchOfflineToken
-                .flatMapCompletable { tokenResponse ->
-                    nabuDataManager.submitOnfidoVerification(tokenResponse, applicantId)
+                .flatMap { token ->
+                    nabuDataManager.getVeriffToken(token)
+                        .map {
+                            token to it
+                        }
+                        .subscribeOn(Schedulers.io())
+                }
+                .flatMapCompletable { (tokenResponse, applicant) ->
+                    nabuDataManager.submitVeriffVerification(tokenResponse, applicant.applicantId)
                         .subscribeOn(Schedulers.io())
                 }
                 .observeOn(AndroidSchedulers.mainThread())

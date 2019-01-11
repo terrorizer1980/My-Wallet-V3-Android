@@ -70,7 +70,7 @@ class OnfidoSplashFragment : BaseFragment<OnfidoSplashView, OnfidoSplashPresente
         logEvent(LoggableEvent.KycVerifyIdentity)
 
         progressListener.setHostTitle(R.string.kyc_onfido_splash_title)
-        progressListener.incrementProgress(KycStep.OnfidoSplashPage)
+        progressListener.incrementProgress(KycStep.VeriffSplashPage)
 
         onViewReady()
     }

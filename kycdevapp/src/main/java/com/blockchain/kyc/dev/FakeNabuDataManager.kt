@@ -112,11 +112,18 @@ class FakeNabuDataManager : NabuDataManager {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getVeriffApiKey(offlineTokenResponse: NabuOfflineTokenResponse): Single<String> {
+    override fun getVeriffToken(offlineTokenResponse: NabuOfflineTokenResponse): Single<String> {
         return Single.just("")
     }
 
     override fun submitOnfidoVerification(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        applicantId: String
+    ): Completable {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun submitVeriffVerification(
         offlineTokenResponse: NabuOfflineTokenResponse,
         applicantId: String
     ): Completable {
