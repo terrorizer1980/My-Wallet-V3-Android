@@ -67,6 +67,10 @@ interface NabuDataManager {
         offlineTokenResponse: NabuOfflineTokenResponse
     ): Single<String>
 
+    fun getVeriffApiKey(
+        offlineTokenResponse: NabuOfflineTokenResponse
+    ): Single<String>
+
     fun submitOnfidoVerification(
         offlineTokenResponse: NabuOfflineTokenResponse,
         applicantId: String
@@ -220,6 +224,12 @@ internal class NabuDataManagerImpl(
         offlineTokenResponse: NabuOfflineTokenResponse
     ): Single<String> = authenticate(offlineTokenResponse) {
         nabuService.getOnfidoApiKey(it)
+    }
+
+    override fun getVeriffApiKey(
+        offlineTokenResponse: NabuOfflineTokenResponse
+    ): Single<String> = authenticate(offlineTokenResponse) {
+        nabuService.getVeriffApiKey(it)
     }
 
     override fun submitOnfidoVerification(

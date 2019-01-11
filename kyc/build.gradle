@@ -76,6 +76,7 @@ dependencies {
     api project(':notifications')
     api project(':nabu')
     implementation Libraries.onfido
+    implementation project(':veriff')
     implementation(Libraries.googlePlayServicesBase) {
         exclude group: 'com.android.support'
     }

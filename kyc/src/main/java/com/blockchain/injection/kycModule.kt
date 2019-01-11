@@ -11,6 +11,7 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataUserProviderNabuDataManagerA
 import com.blockchain.nabu.NabuUserSync
 import com.blockchain.kyc.datamanagers.nabu.NabuUserSyncUpdateUserWalletInfoWithJWT
 import com.blockchain.kyc.datamanagers.onfido.OnfidoDataManager
+import com.blockchain.kyc.datamanagers.veriff.VeriffDataManager
 import com.blockchain.kyc.models.nabu.KycStateAdapter
 import com.blockchain.kyc.models.nabu.KycTierStateAdapter
 import com.blockchain.kyc.models.nabu.UserStateAdapter
@@ -43,6 +44,7 @@ import com.blockchain.kycui.status.KycStatusPresenter
 import com.blockchain.kycui.sunriver.SunriverAirdropRemoteConfig
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.tiersplash.KycTierSplashPresenter
+import com.blockchain.kycui.veriffsplash.VeriffSplashPresenter
 import com.blockchain.nabu.Authenticator
 import com.blockchain.nabu.CreateNabuToken
 import com.blockchain.nabu.CurrentTier
@@ -87,6 +89,10 @@ val kycModule = applicationContext {
         factory { KycEmailValidationPresenter(get(), get()) }
 
         factory { OnfidoSplashPresenter(get(), get(), get()) }
+
+        factory { VeriffDataManager() }
+
+        factory { VeriffSplashPresenter(get(), get(), get()) }
 
         factory { KycStatusPresenter(get(), get(), get()) }
 

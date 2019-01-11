@@ -9,7 +9,7 @@ interface VeriffSplashView : View {
 
     val uiState: Observable<String>
 
-    fun continueToOnfido(
+    fun continueToVeriff(
         apiKey: String,
         applicantId: String,
         supportedDocuments: List<SupportedDocuments>

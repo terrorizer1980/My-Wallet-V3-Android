@@ -112,6 +112,10 @@ class FakeNabuDataManager : NabuDataManager {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun getVeriffApiKey(offlineTokenResponse: NabuOfflineTokenResponse): Single<String> {
+        return Single.just("")
+    }
+
     override fun submitOnfidoVerification(
         offlineTokenResponse: NabuOfflineTokenResponse,
         applicantId: String
@@ -127,7 +131,13 @@ class FakeNabuDataManager : NabuDataManager {
         offlineTokenResponse: NabuOfflineTokenResponse,
         countryCode: String
     ): Single<List<SupportedDocuments>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return Single.just(
+            listOf(
+                SupportedDocuments.DRIVING_LICENCE,
+                SupportedDocuments.NATIONAL_IDENTITY_CARD,
+                SupportedDocuments.PASSPORT
+            )
+        )
     }
 
     override fun registerCampaign(

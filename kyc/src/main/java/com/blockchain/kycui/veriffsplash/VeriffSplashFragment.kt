@@ -25,7 +25,6 @@ import com.blockchain.ui.extensions.throttledClicks
 import com.onfido.android.sdk.capture.DocumentType
 import com.onfido.android.sdk.capture.ExitCode
 import com.onfido.android.sdk.capture.Onfido
-import com.onfido.android.sdk.capture.OnfidoConfig
 import com.onfido.android.sdk.capture.OnfidoFactory
 import com.onfido.android.sdk.capture.errors.OnfidoException
 import com.onfido.android.sdk.capture.ui.camera.face.FaceCaptureStep
@@ -35,6 +34,7 @@ import com.onfido.android.sdk.capture.upload.Captures
 import com.onfido.android.sdk.capture.utils.CountryCode
 import com.onfido.api.client.data.Applicant
 import io.reactivex.Observable
+import mobi.lab.veriff.sample.MainActivity
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
@@ -92,7 +92,7 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
     }
 
     @SuppressLint("InflateParams")
-    override fun continueToOnfido(
+    override fun continueToVeriff(
         apiKey: String,
         applicantId: String,
         supportedDocuments: List<SupportedDocuments>
@@ -127,12 +127,7 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
             FaceCaptureStep(FaceCaptureVariant.VIDEO)
         )
 
-        OnfidoConfig.builder()
-            .withToken(apiKey)
-            .withApplicant(applicantId)
-            .withCustomFlow(kycFlowSteps)
-            .build()
-            .also { onfido.startActivityForResult(requireActivity(), REQUEST_CODE_ONFIDO, it) }
+        startActivity(Intent(requireActivity(), MainActivity::class.java))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -137,6 +137,13 @@ class NabuService(retrofit: Retrofit) {
     ).map { it.key }
         .wrapErrorMessage()
 
+    internal fun getVeriffApiKey(
+        sessionToken: NabuSessionTokenResponse
+    ): Single<String> = service.getVeriffApiKey(
+        sessionToken.authHeader
+    ).map { it.key }
+        .wrapErrorMessage()
+
     internal fun submitOnfidoVerification(
         sessionToken: NabuSessionTokenResponse,
         applicantId: String

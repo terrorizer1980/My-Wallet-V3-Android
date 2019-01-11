@@ -2,8 +2,7 @@ package com.blockchain.kycui.veriffsplash
 
 import com.blockchain.BaseKycPresenter
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.datamanagers.onfido.OnfidoDataManager
-import com.blockchain.kycui.onfidosplash.OnfidoSplashView
+import com.blockchain.kyc.datamanagers.veriff.VeriffDataManager
 import com.blockchain.nabu.NabuToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -15,7 +14,7 @@ import timber.log.Timber
 class VeriffSplashPresenter(
     nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
-    private val onfidoDataManager: OnfidoDataManager
+    private val veriffDataManager: VeriffDataManager
 ) : BaseKycPresenter<VeriffSplashView>(nabuToken) {
 
     override fun onViewReady() {
@@ -24,13 +23,13 @@ class VeriffSplashPresenter(
                 .flatMapSingle { countryCode ->
                     fetchOfflineToken
                         .flatMap { token ->
-                            nabuDataManager.getOnfidoApiKey(token)
+                            nabuDataManager.getVeriffApiKey(token)
                                 .subscribeOn(Schedulers.io())
                                 .flatMap { apiKey ->
                                     nabuDataManager.getUser(token)
                                         .subscribeOn(Schedulers.io())
                                         .flatMap { user ->
-                                            onfidoDataManager.createApplicant(
+                                            veriffDataManager.createApplicant(
                                                 user.firstName
                                                     ?: throw IllegalStateException("firstName is null"),
                                                 user.lastName
@@ -50,7 +49,7 @@ class VeriffSplashPresenter(
                         .doOnSubscribe { view.showProgressDialog(true) }
                         .doOnEvent { _, _ -> view.dismissProgressDialog() }
                         .doOnSuccess { (supportedDocuments, applicant, apiKey) ->
-                            view.continueToOnfido(apiKey, applicant.id, supportedDocuments)
+                            view.continueToVeriff(apiKey, applicant.id, supportedDocuments)
                         }
                         .doOnError {
                             view.showErrorToast(R.string.kyc_onfido_splash_verification_error)
