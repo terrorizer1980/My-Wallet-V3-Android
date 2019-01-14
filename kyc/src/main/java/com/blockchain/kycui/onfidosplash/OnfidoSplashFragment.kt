@@ -214,6 +214,11 @@ class OnfidoSplashFragment : BaseFragment<OnfidoSplashView, OnfidoSplashPresente
             R.id.text_view_document_id_card,
             DocumentType.NATIONAL_IDENTITY_CARD
         )
+        SupportedDocuments.RESIDENCE_PERMIT -> SupportedDocumentUiData(
+            R.drawable.vector_government,
+            R.id.text_view_document_residence_permit,
+            DocumentType.RESIDENCE_PERMIT
+        )
     }
 
     private data class SupportedDocumentUiData(

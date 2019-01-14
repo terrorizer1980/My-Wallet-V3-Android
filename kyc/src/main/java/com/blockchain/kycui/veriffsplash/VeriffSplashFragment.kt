@@ -21,6 +21,7 @@ import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.services.nabu.VeriffApplicantAndToken
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
+import com.blockchain.kycui.onfidosplash.OnfidoSplashFragment
 import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
@@ -195,6 +196,11 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
             R.drawable.vector_government,
             R.id.text_view_document_id_card,
             DocumentType.NATIONAL_IDENTITY_CARD
+        )
+        SupportedDocuments.RESIDENCE_PERMIT -> SupportedDocumentUiData(
+            R.drawable.vector_government,
+            R.id.text_view_document_residence_permit,
+            DocumentType.RESIDENCE_PERMIT
         )
     }
 
