@@ -4,12 +4,14 @@ apply from: 'gradle/githooks.gradle'
 buildscript {
     repositories {
         google()
+        maven { url 'https://maven.fabric.io/public' }
         jcenter()
     }
     dependencies {
         classpath Libraries.androidGradlePlugin
         classpath Libraries.coveralls
         classpath Libraries.googleServicesPlugin
+        classpath Libraries.fabricTools
         classpath Libraries.kotlinGradlePlugin
         classpath Libraries.jacoco
         classpath Libraries.navigationControllerSafeArgsPlugin

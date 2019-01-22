@@ -7,6 +7,7 @@ import android.provider.Settings;
 import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatDelegate;
 import com.blockchain.koin.KoinStarter;
+import com.blockchain.ui.CurrentContextAccess;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.google.android.gms.common.ConnectionResult;
@@ -22,7 +23,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import org.bitcoinj.core.NetworkParameters;
 import piuk.blockchain.android.data.connectivity.ConnectivityManager;
 import piuk.blockchain.android.injection.Injector;
-import com.blockchain.ui.CurrentContextAccess;
+import piuk.blockchain.android.timber.CrashlyticsTree;
 import piuk.blockchain.android.ui.auth.LogoutActivity;
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity;
 import piuk.blockchain.android.util.PrngHelper;
@@ -85,6 +86,7 @@ public class BlockchainApplication extends Application implements FrameworkInter
         if (BuildConfig.USE_CRASHLYTICS) {
             // Init crash reporting
             Fabric.with(this, new Crashlytics(), new Answers());
+            Timber.plant(new CrashlyticsTree());
         } else {
             Fabric.with(this, new Answers());
         }

@@ -63,11 +63,9 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             multiDexEnabled true
-            buildConfigBoolean "USE_CRASHLYTICS", true
         }
         debug {
             multiDexEnabled true
-            buildConfigBoolean "USE_CRASHLYTICS", false
         }
     }
     bundle {
@@ -222,6 +220,9 @@ dependencies {
     implementation Libraries.circleIndicator
     implementation Libraries.charts
 
+    implementation Libraries.firebaseCore
+    implementation Libraries.crashlytics
+
     // UI/Instrumentation Tests
     androidTestImplementation(Libraries.espresso) {
         exclude group: 'javax.inject', module: 'support-annotations'
@@ -249,22 +250,13 @@ dependencies {
 
 buildscript {
     repositories {
-        jcenter()
-        maven { url 'https://maven.fabric.io/public' }
         maven { url "https://jitpack.io" }
+        jcenter()
     }
 
     dependencies {
-        classpath Libraries.fabricTools
         classpath Libraries.buildProperties
     }
-}
-
-repositories {
-    jcenter()
-    // Required for CountryPicker
-    maven { url "https://jitpack.io" }
-    maven { url 'https://maven.fabric.io/public' }
 }
 
 // This must remain at the bottom of this file until Google work out a better way to do this
