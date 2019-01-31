@@ -30,6 +30,7 @@ import piuk.blockchain.android.data.rxjava.RxUtil;
 import piuk.blockchain.android.deeplink.DeepLinkProcessor;
 import piuk.blockchain.android.deeplink.LinkState;
 import piuk.blockchain.android.sunriver.CampaignLinkState;
+import piuk.blockchain.android.sunriver.SunriverAutoCampaignRegister;
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter;
 import piuk.blockchain.android.ui.home.models.MetadataEvent;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
@@ -91,6 +92,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private LockboxDataManager lockboxDataManager;
     private DeepLinkProcessor deepLinkProcessor;
     private SunriverCampaignHelper sunriverCampaignHelper;
+    private SunriverAutoCampaignRegister sunriverAutoCampaignRegister;
     private XlmDataManager xlmDataManager;
 
     @Inject
@@ -122,6 +124,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                   LockboxDataManager lockboxDataManager,
                   DeepLinkProcessor deepLinkProcessor,
                   SunriverCampaignHelper sunriverCampaignHelper,
+                  SunriverAutoCampaignRegister sunriverAutoCampaignRegister,
                   XlmDataManager xlmDataManager) {
 
         this.prefs = prefs;
@@ -152,6 +155,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.lockboxDataManager = lockboxDataManager;
         this.deepLinkProcessor = deepLinkProcessor;
         this.sunriverCampaignHelper = sunriverCampaignHelper;
+        this.sunriverAutoCampaignRegister = sunriverAutoCampaignRegister;
         this.xlmDataManager = xlmDataManager;
     }
 
@@ -321,6 +325,14 @@ public class MainPresenter extends BasePresenter<MainView> {
                                         getView().launchKyc(CampaignType.Resubmission);
                                     }
                                 }, Timber::e
+                        )
+        );
+        getCompositeDisposable().add(
+                sunriverAutoCampaignRegister
+                        .autoRegisterForCampaign()
+                        .subscribe(
+                                () -> {},
+                                Timber::e
                         )
         );
     }

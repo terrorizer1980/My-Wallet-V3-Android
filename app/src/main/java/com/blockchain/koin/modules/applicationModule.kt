@@ -14,6 +14,7 @@ import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
+import piuk.blockchain.android.sunriver.SunriverAutoCampaignRegister
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
@@ -124,6 +125,8 @@ val applicationModule = applicationContext {
         factory { KycDeepLinkHelper(get()) }
 
         factory { DeepLinkProcessor(get(), get(), get()) }
+
+        factory { SunriverAutoCampaignRegister(get(), get(), get()) }
     }
 
     factory { DateUtil(get()) }
