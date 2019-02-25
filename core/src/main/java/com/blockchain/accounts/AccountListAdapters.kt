@@ -32,14 +32,18 @@ internal class BtcAsyncAccountListAdapter(private val payloadDataManager: Payloa
     AsyncAccountList {
 
     override fun accounts(): Single<List<AccountReference>> =
-        Single.just(payloadDataManager.accounts.map { it.toAccountReference() })
+        Single.just(payloadDataManager.accounts
+            .filter { !it.isArchived }
+            .map { it.toAccountReference() })
 }
 
 internal class BchAsyncAccountListAdapter(private val bchPayloadDataManager: BchDataManager) :
     AsyncAccountList {
 
     override fun accounts(): Single<List<AccountReference>> =
-        Single.just(bchPayloadDataManager.getAccountMetadataList().map { it.toAccountReference() })
+        Single.just(bchPayloadDataManager.getAccountMetadataList()
+            .filter { !it.isArchived }
+            .map { it.toAccountReference() })
 }
 
 internal class EthAsyncAccountListAdapter(private val ethAccountListAdapter: EthAccountListAdapter) :
