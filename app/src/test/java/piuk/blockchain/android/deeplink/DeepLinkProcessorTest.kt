@@ -46,6 +46,15 @@ class DeepLinkProcessorTest {
             )
         )
     }
+
+    @Test
+    fun `kyc email verified uri`() {
+        givenUriExpect(
+            "https://login.blockchain.com/login?deep_link_path=email_verified", LinkState.KycDeepLink(
+                KycLinkState.EmailVerified
+            )
+        )
+    }
 }
 
 private fun givenUriExpect(uri: String, expected: LinkState) {

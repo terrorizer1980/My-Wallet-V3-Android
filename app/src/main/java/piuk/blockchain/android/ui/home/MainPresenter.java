@@ -3,6 +3,7 @@ package piuk.blockchain.android.ui.home;
 import android.content.Context;
 import android.support.annotation.StringRes;
 import android.util.Pair;
+
 import com.blockchain.kyc.models.nabu.CampaignData;
 import com.blockchain.kyc.models.nabu.KycState;
 import com.blockchain.kyc.models.nabu.NabuApiException;
@@ -15,11 +16,13 @@ import com.blockchain.kycui.sunriver.SunriverCardType;
 import com.blockchain.lockbox.data.LockboxDataManager;
 import com.blockchain.preferences.FiatCurrencyPreference;
 import com.blockchain.sunriver.XlmDataManager;
+
 import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.api.Environment;
 import info.blockchain.wallet.exceptions.HDWalletException;
 import info.blockchain.wallet.exceptions.InvalidCredentialsException;
 import info.blockchain.wallet.payload.PayloadManagerWiper;
+
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -31,6 +34,7 @@ import piuk.blockchain.android.data.datamanagers.PromptManager;
 import piuk.blockchain.android.data.rxjava.RxUtil;
 import piuk.blockchain.android.deeplink.DeepLinkProcessor;
 import piuk.blockchain.android.deeplink.LinkState;
+import piuk.blockchain.android.kyc.KycLinkState;
 import piuk.blockchain.android.sunriver.CampaignLinkState;
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter;
 import piuk.blockchain.android.ui.home.models.MetadataEvent;
@@ -61,6 +65,7 @@ import piuk.blockchain.androidcoreui.utils.logging.SecondPasswordEvent;
 import timber.log.Timber;
 
 import javax.inject.Inject;
+
 import java.util.NoSuchElementException;
 
 public class MainPresenter extends BasePresenter<MainView> {
@@ -198,9 +203,9 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     /**
-     * Initial setup of push notifications.
-     * We don't subscribe to addresses for notifications when creating a new wallet.
-     * To accommodate existing wallets we need subscribe to the next available addresses.
+     * Initial setup of push notifications. We don't subscribe to addresses for notifications when
+     * creating a new wallet. To accommodate existing wallets we need subscribe to the next
+     * available addresses.
      */
     private void doPushNotifications() {
         if (!prefs.has(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED)) {
@@ -320,7 +325,10 @@ public class MainPresenter extends BasePresenter<MainView> {
                                             registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
                                         }
                                     } else if (linkState instanceof LinkState.KycDeepLink) {
-                                        getView().launchKyc(CampaignType.Resubmission);
+                                        final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
+                                        final CampaignType campaignType = (deepLink.getLink() == KycLinkState.Resubmit) ?
+                                                CampaignType.Resubmission : CampaignType.Swap;
+                                        getView().launchKyc(campaignType);
                                     }
                                 }, Timber::e
                         )
@@ -406,7 +414,8 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     /**
-     * All of these calls are allowed to fail here, we're just caching them in advance because we can.
+     * All of these calls are allowed to fail here, we're just caching them in advance because we
+     * can.
      */
     private Completable feesCompletable() {
         return feeDataManager.getBtcFeeOptions()

@@ -20,15 +20,18 @@ class KycDeepLinkHelper(
     fun mapUri(uri: Uri): KycLinkState {
         val name = uri.getQueryParameter("deep_link_path")
 
-        return if (name != "verification") {
-            KycLinkState.NoUri
-        } else {
+        return if (name == "verification") {
             KycLinkState.Resubmit
+        } else if (name == "email_verified") {
+            KycLinkState.EmailVerified
+        } else {
+            KycLinkState.NoUri
         }
     }
 }
 
 enum class KycLinkState {
+    EmailVerified,
     NoUri,
     Resubmit
 }
