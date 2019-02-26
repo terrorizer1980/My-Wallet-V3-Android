@@ -74,5 +74,9 @@
     <color name="tiers_splash_gray_text">#FF5F5F5F</color>
     <color name="tiers_get_crypto_blue">#324069</color>
 
+    <!-- Xlm Airdrop Bottom Dialog colors -->
+    <color name="xlm_dialog_text_title">#014A7C</color>
+    <color name="xlm_dialog_text_body">#5B5B5B</color>
+    <color name="xlm_dialog_background">#FFFFFF</color>
 
 </resources>

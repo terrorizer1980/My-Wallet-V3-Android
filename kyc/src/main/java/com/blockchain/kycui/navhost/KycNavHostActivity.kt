@@ -15,6 +15,7 @@ import com.blockchain.kycui.complete.ApplicationCompleteFragment
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.nabu.StartKyc
+import com.blockchain.nabu.StartKycAirdrop
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -34,6 +35,13 @@ internal class KycStarter : StartKyc {
 
     override fun startKycActivity(context: Any) {
         KycNavHostActivity.start(context as Context, CampaignType.Swap)
+    }
+}
+
+internal class KycStarterAirdrop : StartKycAirdrop {
+
+    override fun startKycActivity(context: Any) {
+        KycNavHostActivity.start(context as Context, CampaignType.Sunriver)
     }
 }
 

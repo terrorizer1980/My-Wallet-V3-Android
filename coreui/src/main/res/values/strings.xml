@@ -73,6 +73,9 @@
         <item>@string/xlm_memo_return</item>
     </string-array>
 
+    <string name="get_free_xlm">Get Free XLM</string>
+    <string name="get_free_xlm_body">Complete your profile today and we will airdrop free Stellar (XLM) in your Wallet.</string>
+
     <!-- Help -->
     <string name="help">Help</string>
     <string name="need_some_help">Need some help?</string>

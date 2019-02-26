@@ -8,7 +8,6 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManagerImpl
 import com.blockchain.kyc.datamanagers.nabu.NabuDataUserProvider
 import com.blockchain.kyc.datamanagers.nabu.NabuDataUserProviderNabuDataManagerAdapter
-import com.blockchain.nabu.NabuUserSync
 import com.blockchain.kyc.datamanagers.nabu.NabuUserSyncUpdateUserWalletInfoWithJWT
 import com.blockchain.kyc.datamanagers.onfido.OnfidoDataManager
 import com.blockchain.kyc.models.nabu.KycStateAdapter
@@ -20,7 +19,9 @@ import com.blockchain.kyc.services.nabu.TierService
 import com.blockchain.kyc.services.nabu.TierUpdater
 import com.blockchain.kyc.services.onfido.OnfidoService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
+import com.blockchain.kyc.smsVerificationRemoteConfig
 import com.blockchain.kyc.status.KycTiersQueries
+import com.blockchain.kyc.sunriverAirdropRemoteConfig
 import com.blockchain.kycui.address.CurrentTierAdapter
 import com.blockchain.kycui.address.KycHomeAddressPresenter
 import com.blockchain.kycui.address.Tier2Decision
@@ -33,6 +34,7 @@ import com.blockchain.kycui.mobile.entry.KycMobileEntryPresenter
 import com.blockchain.kycui.mobile.validation.KycMobileValidationPresenter
 import com.blockchain.kycui.navhost.KycNavHostPresenter
 import com.blockchain.kycui.navhost.KycStarter
+import com.blockchain.kycui.navhost.KycStarterAirdrop
 import com.blockchain.kycui.onfidosplash.OnfidoSplashPresenter
 import com.blockchain.kycui.profile.KycProfilePresenter
 import com.blockchain.kycui.reentry.KycNavigator
@@ -41,19 +43,23 @@ import com.blockchain.kycui.reentry.ReentryDecisionKycNavigator
 import com.blockchain.kycui.reentry.TiersReentryDecision
 import com.blockchain.kycui.status.KycStatusPresenter
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
-import com.blockchain.kyc.smsVerificationRemoteConfig
-import com.blockchain.kyc.sunriverAirdropRemoteConfig
 import com.blockchain.kycui.tiersplash.KycTierSplashPresenter
 import com.blockchain.kycui.veriffsplash.VeriffSplashPresenter
 import com.blockchain.nabu.Authenticator
 import com.blockchain.nabu.CreateNabuToken
 import com.blockchain.nabu.CurrentTier
+import com.blockchain.nabu.NabuUserSync
 import com.blockchain.nabu.StartKyc
+import com.blockchain.nabu.StartKycAirdrop
 import com.blockchain.nabu.stores.NabuSessionTokenStore
 import org.koin.dsl.module.applicationContext
 import retrofit2.Retrofit
 
 val kycModule = applicationContext {
+
+    factory { KycStarter() as StartKyc }
+
+    factory { KycStarterAirdrop() as StartKycAirdrop }
 
     bean { NabuSessionTokenStore() }
 
@@ -121,8 +127,6 @@ val kycModule = applicationContext {
 val kycNabuModule = applicationContext {
 
     context("Payload") {
-
-        factory { KycStarter() as StartKyc }
 
         factory {
             NabuDataManagerImpl(

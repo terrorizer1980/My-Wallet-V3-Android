@@ -5,6 +5,7 @@ import android.content.Context
 import android.widget.Toast
 import com.blockchain.activities.StartSwap
 import com.blockchain.injection.kycModule
+import com.blockchain.koin.coreUiFeatureFlagsModule
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.KycTierState
 import com.blockchain.kyc.models.nabu.LimitsJson
@@ -16,7 +17,9 @@ import com.blockchain.kycui.address.Tier2Decision
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.nabu.NabuToken
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.Loggable
+import com.blockchain.remoteconfig.RemoteConfig
 import info.blockchain.wallet.ApiCode
 import info.blockchain.wallet.BlockchainFramework
 import info.blockchain.wallet.FrameworkInterface
@@ -47,6 +50,7 @@ class App : Application() {
         startKoin(
             this, listOf(
                 kycModule,
+                coreUiFeatureFlagsModule,
                 fakesModule
             ),
             extraProperties = mapOf(
@@ -95,6 +99,14 @@ class App : Application() {
 }
 
 val fakesModule = applicationContext {
+
+    bean {
+        object : RemoteConfig {
+            override fun getIfFeatureEnabled(key: String): Single<Boolean> {
+                return Single.just(true).delay(2, TimeUnit.SECONDS)
+            }
+        } as RemoteConfig
+    }
 
     bean {
         object : StartSwap {
@@ -232,11 +244,11 @@ val fakesModule = applicationContext {
     }
 
     bean {
-        object : com.blockchain.notifications.analytics.EventLogger {
+        object : EventLogger {
             override fun logEvent(loggable: Loggable) {
                 Timber.d("Event log: ${loggable.eventName}")
             }
-        } as com.blockchain.notifications.analytics.EventLogger
+        } as EventLogger
     }
 
     bean {

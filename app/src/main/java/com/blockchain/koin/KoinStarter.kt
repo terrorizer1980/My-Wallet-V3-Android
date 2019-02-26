@@ -40,6 +40,7 @@ object KoinStarter {
                 walletModule,
                 coreModule,
                 coreUiModule,
+                coreUiFeatureFlagsModule,
                 dashboardModule,
                 apiModule,
                 apiInterceptorsModule,

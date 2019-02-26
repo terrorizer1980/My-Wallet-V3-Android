@@ -22,7 +22,7 @@ class RemoteConfiguration(private val remoteConfig: FirebaseRemoteConfig) : Remo
         configuration.map { it.getBoolean(key) }
 }
 
-fun RemoteConfiguration.featureFlag(key: String): FeatureFlag = object :
+fun RemoteConfig.featureFlag(key: String): FeatureFlag = object :
     FeatureFlag {
     override val enabled: Single<Boolean> get() = getIfFeatureEnabled(key)
 }

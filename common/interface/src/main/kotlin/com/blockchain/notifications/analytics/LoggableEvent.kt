@@ -33,6 +33,9 @@ enum class LoggableEvent(override val eventName: String) : Loggable {
     Settings("settings"),
     Support("support"),
     WebLogin("web_login"),
+    SunRiverBottomDialog("sunriver_bottom_dialog"),
+    SunRiverBottomDialogClicked("sunriver_bottom_dialog_clicked"),
+    SunRiverBottomDialogClickedRocket("sunriver_bottom_dialog_clicked_rocket"),
 }
 
 fun kycTierStart(tier: Int): Loggable = object : Loggable {

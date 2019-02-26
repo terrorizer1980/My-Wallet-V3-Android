@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.blockchain.kycui.navhost.KycNavHostActivity
 import com.blockchain.kycui.navhost.models.CampaignType
+import com.blockchain.sunriver.ui.AirdropBottomDialog
 import com.blockchain.veriff.VeriffApplicantAndToken
 import com.blockchain.veriff.VeriffLauncher
 
@@ -34,5 +35,10 @@ class MainActivity : AppCompatActivity() {
                 applicant = VeriffApplicantAndToken("", "Token1234"),
                 requestCode = 1234
             )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AirdropBottomDialog().show(supportFragmentManager, "BOTTOM_DIALOG")
     }
 }
