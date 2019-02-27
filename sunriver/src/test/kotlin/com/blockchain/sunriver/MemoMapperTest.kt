@@ -68,7 +68,7 @@ class MemoMapperTest {
                     value = "Hello, test memo",
                     type = "unknown"
                 )
-            )!!
+            )
         } `should throw the Exception` IllegalArgumentException::class `with message`
             "Only null, text, id, hash and return are supported, not unknown"
     }

@@ -39,10 +39,10 @@ class HorizonProxyTest : AutoCloseKoinTest() {
     private val server = DefaultMockServer()
 
     @get:Rule
-    private val initMockServer = server.initRule()
+    val initMockServer = server.initRule()
 
     @get:Rule
-    private val ensureNoLocalization = before {
+    val ensureNoLocalization = before {
         Locale.setDefault(Locale.FRANCE)
     } after {
         Locale.setDefault(Locale.US)
@@ -165,9 +165,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         server.expect().get().withPath(
             "/accounts/GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4/operations?order=desc&limit=50"
         ).andReturn(
-                200,
-                getStringFromResource("transactions/transaction_list.json")
-            )
+            200,
+            getStringFromResource("transactions/transaction_list.json")
+        )
             .once()
 
         val proxy = get<HorizonProxy>()
@@ -186,9 +186,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         server.expect().get().withPath(
             "/accounts/GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4/operations?order=desc&limit=50"
         ).andReturn(
-                404,
-                getStringFromResource("accounts/not_found.json")
-            )
+            404,
+            getStringFromResource("accounts/not_found.json")
+        )
             .once()
 
         val proxy = get<HorizonProxy>()
@@ -204,9 +204,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         server.expect().get().withPath(
             "/accounts/GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4/operations?order=desc&limit=50"
         ).andReturn(
-                301,
-                getStringFromResource("accounts/not_found.json")
-            )
+            301,
+            getStringFromResource("accounts/not_found.json")
+        )
             .once()
 
         val proxy = get<HorizonProxy>();
@@ -329,7 +329,8 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         proxy.dryRunTransaction(
             source,
             "GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI",
-            123.4567891.lumens()
+            123.4567891.lumens(),
+            Memo.none()
         ).apply {
             success `should be` true
             success `should be` true
@@ -610,7 +611,8 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         proxy.dryRunTransaction(
             sourceAccount,
             destinationAccount.accountId,
-            value
+            value,
+            Memo.none()
         ).apply {
             success `should be` false
             transaction `should be` null
@@ -676,7 +678,8 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         proxy.dryRunTransaction(
             sourceAccount,
             destinationAccount.accountId,
-            value
+            value,
+            Memo.none()
         ).apply {
             success `should be` true
             transaction?.signatures?.size `should be` 0
@@ -761,6 +764,7 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             success `should be` true
             transaction `should not be` null
             transaction!!.memo `should be` memo
+            transaction.fee `should equal` 100
         }
     }
 
@@ -768,7 +772,6 @@ class HorizonProxyTest : AutoCloseKoinTest() {
     fun `memo during dry run - create operation`() {
         server.givenAccountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
         server.givenAccountDoesNotExist("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
-        server.givenPostWillBeSuccessful()
 
         val proxy = get<HorizonProxy>()
 
@@ -785,7 +788,79 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             success `should be` true
             transaction `should not be` null
             transaction!!.memo `should be` memo
+            transaction.fee `should equal` 100
         }
+    }
+
+    @Test
+    fun `fee during send - payment operation`() {
+        server.givenAccountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
+        server.givenAccountExists("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
+        server.givenPostWillBeSuccessful()
+
+        val proxy = get<HorizonProxy>()
+
+        val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
+        source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
+
+        val memo = Memo.text("Memo!")
+        proxy.sendTransaction(
+            source,
+            "GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI",
+            CryptoCurrency.XLM.withMajorValue("1.23E+4".toBigDecimal()),
+            memo = memo,
+            perOperationFee = 2100.stroops()
+        ).apply {
+            success `should be` true
+            transaction `should not be` null
+            transaction!!.memo `should be` memo
+            transaction.fee `should equal` 2100
+        }
+    }
+
+    @Test
+    fun `fee during dry run - create operation`() {
+        server.givenAccountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
+        server.givenAccountDoesNotExist("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
+
+        val proxy = get<HorizonProxy>()
+
+        val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
+        source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
+
+        val memo = Memo.text("Memo!")
+        proxy.dryRunTransaction(
+            source,
+            "GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI",
+            CryptoCurrency.XLM.withMajorValue("1.23E+4".toBigDecimal()),
+            memo = memo,
+            perOperationFee = 1700.stroops()
+        ).apply {
+            success `should be` true
+            transaction `should not be` null
+            transaction!!.memo `should be` memo
+            transaction.fee `should equal` 1700
+        }
+    }
+
+    @Test
+    fun `bad fee`() {
+        server.givenAccountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
+        server.givenAccountExists("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
+
+        val proxy = get<HorizonProxy>()
+
+        val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
+        source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
+        {
+            proxy.dryRunTransaction(
+                source,
+                "GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI",
+                CryptoCurrency.XLM.withMajorValue("1.23E+4".toBigDecimal()),
+                memo = Memo.none(),
+                perOperationFee = 1.bitcoin()
+            )
+        } `should throw` RuntimeException::class
     }
 
     @Test

@@ -17,6 +17,7 @@ import info.blockchain.wallet.api.data.FeeOptions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Observables
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -65,15 +66,18 @@ class XlmSendPresenterStrategy(
         }
 
     private val confirmationDetails: Observable<SendConfirmationDetails> =
-        allSendRequests.sampleThrottledClicks(continueClick).map { sendDetails ->
-            val fees = fees()
-            SendConfirmationDetails(
-                sendDetails = sendDetails,
-                fees = fees,
-                fiatAmount = sendDetails.value.toFiat(fiatExchangeRates),
-                fiatFees = fees.toFiat(fiatExchangeRates)
-            )
-        }
+        allSendRequests.sampleThrottledClicks(continueClick)
+            .flatMapSingle { sendDetails ->
+                fees().map { sendDetails to it }
+            }
+            .map { (sendDetails, fees) ->
+                SendConfirmationDetails(
+                    sendDetails = sendDetails,
+                    fees = fees,
+                    fiatAmount = sendDetails.value.toFiat(fiatExchangeRates),
+                    fiatFees = fees.toFiat(fiatExchangeRates)
+                )
+            }
 
     private val submitConfirmationDetails: Observable<SendConfirmationDetails> =
         confirmationDetails.sampleThrottledClicks(submitPaymentClick)
@@ -145,12 +149,15 @@ class XlmSendPresenterStrategy(
     override fun selectReceivingAccount(data: Intent?, currency: CryptoCurrency) {}
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
-        xlmDataManager.defaultAccount()
-            .addToCompositeDisposable(this)
+        compositeDisposable += xlmDataManager.defaultAccount()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(onError = { Timber.e(it) }) {
                 view.updateSendingAddress(it.label)
-                view.updateFeeAmount(fees(), fiatExchangeRates)
+            }
+        compositeDisposable += fees()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(onError = { Timber.e(it) }) {
+                view.updateFeeAmount(it, fiatExchangeRates)
             }
     }
 
