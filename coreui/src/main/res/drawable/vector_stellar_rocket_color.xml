@@ -2,5 +2,5 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/vector_stellar_rocket_flames" />
     <item android:drawable="@drawable/vector_stellar_rocket_no_flames" />
-    <item android:drawable="@drawable/vector_stellar_rocket_lines" />
+    <!--<item android:drawable="@drawable/vector_stellar_rocket_lines" />-->
 </layer-list>

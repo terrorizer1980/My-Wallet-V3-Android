@@ -220,7 +220,7 @@ class DashboardPresenter(
         BiFunction { available: Boolean, hasLockbox: Boolean -> available && hasLockbox }
     )
 
-    private fun showAnnouncement(index: Int, announcementData: AnnouncementData) {
+    internal fun showAnnouncement(index: Int, announcementData: AnnouncementData) {
         displayList.add(index, announcementData)
         with(view) {
             notifyItemAdded(displayList, index)
@@ -228,7 +228,7 @@ class DashboardPresenter(
         }
     }
 
-    private fun dismissAnnouncement(prefKey: String) {
+    internal fun dismissAnnouncement(prefKey: String) {
         displayList.filterIsInstance<AnnouncementData>()
             .forEachIndexed { index, any ->
                 if (any.prefsKey == prefKey) {

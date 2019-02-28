@@ -12,7 +12,7 @@ internal class StellarModalPopupAnnouncement(
     dismissRecorder: DismissRecorder
 ) : Announcement<DashboardPresenter> {
 
-    private val dismissEntry = dismissRecorder["AirdropBottomDialog"]
+    private val dismissEntry = dismissRecorder["AirdropBottomDialog_DISMISSED"]
 
     override fun shouldShow(context: DashboardPresenter): Single<Boolean> {
         if (dismissEntry.isDismissed) {

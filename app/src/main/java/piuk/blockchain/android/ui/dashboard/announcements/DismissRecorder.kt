@@ -7,10 +7,10 @@ import piuk.blockchain.androidcore.utils.PrefsUtil
  */
 class DismissRecorder(private val prefsUtil: PrefsUtil) {
 
-    operator fun get(key: String) = DismissEntry("${key}_DISMISSED")
+    operator fun get(key: String) = DismissEntry(key)
 
     inner class DismissEntry(
-        private val prefsKey: String
+        val prefsKey: String
     ) {
         var isDismissed: Boolean
             get() = prefsUtil.getValue(prefsKey, false)
