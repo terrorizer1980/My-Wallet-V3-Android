@@ -29,6 +29,7 @@ import piuk.blockchain.android.ui.balance.ImageRightAnnouncementCard
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.SunriverCard
+import piuk.blockchain.android.ui.dashboard.announcements.DashboardAnnouncements
 import piuk.blockchain.android.ui.dashboard.models.OnboardingModel
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.models.MetadataEvent
@@ -64,7 +65,8 @@ class DashboardPresenter(
     private val currencyFormatManager: CurrencyFormatManager,
     private val kycTiersQueries: KycTiersQueries,
     private val lockboxDataManager: LockboxDataManager,
-    private val sunriverCampaignHelper: SunriverCampaignHelper
+    private val sunriverCampaignHelper: SunriverCampaignHelper,
+    private val dashboardAnnouncements: DashboardAnnouncements
 ) : BasePresenter<DashboardView>() {
 
     private val currencies = DashboardConfig.currencies
@@ -259,6 +261,12 @@ class DashboardPresenter(
 //            checkNativeBuySellAnnouncement()
             compositeDisposable +=
                 checkKycResubmissionPrompt()
+                    .switchIfEmpty(
+                        dashboardAnnouncements
+                            .announcementList
+                            .showNextAnnouncement(this, AndroidSchedulers.mainThread())
+                            .map { Unit }
+                    )
                     .switchIfEmpty(checkKycPrompt())
                     .switchIfEmpty(addSunriverPrompts())
                     .subscribeBy(

@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.dashboard
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.announcement.AnnouncementList
 import com.blockchain.balance.TotalBalance
 import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
@@ -92,7 +93,10 @@ class DashboardPresenterTest {
             currencyFormatManager,
             kycTiersQueries,
             lockboxDataManager,
-            sunriverCampaignHelper
+            sunriverCampaignHelper,
+            mock {
+                on { this.announcementList } `it returns` AnnouncementList()
+            }
         )
 
         subject.initView(view)

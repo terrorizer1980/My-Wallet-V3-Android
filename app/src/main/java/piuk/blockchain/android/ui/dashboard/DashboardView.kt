@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.dashboard
 
 import android.support.annotation.StringRes
+import android.support.design.widget.BottomSheetDialogFragment
 import com.blockchain.kycui.navhost.models.CampaignType
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -33,4 +34,6 @@ interface DashboardView : View {
     fun startKycFlow(campaignType: CampaignType)
 
     fun launchWaitlist()
+
+    fun showBottomSheetDialog(bottomSheetDialogFragment: BottomSheetDialogFragment)
 }

@@ -25,6 +25,7 @@ import com.blockchain.notifications.koin.notificationModule
 import org.koin.android.ext.android.startKoin
 import org.koin.log.Logger
 import org.koin.standalone.StandAloneContext
+import piuk.blockchain.android.ui.dashboard.announcements.dashboardAnnouncementsModule
 import timber.log.Timber
 
 object KoinStarter {
@@ -43,6 +44,7 @@ object KoinStarter {
                 coreUiModule,
                 coreUiFeatureFlagsModule,
                 dashboardModule,
+                dashboardAnnouncementsModule,
                 apiModule,
                 apiInterceptorsModule,
                 serviceModule,

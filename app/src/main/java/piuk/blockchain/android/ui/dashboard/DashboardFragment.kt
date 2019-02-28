@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.BottomSheetDialogFragment
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -237,6 +238,10 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
         fun newInstance(): DashboardFragment {
             return DashboardFragment()
         }
+    }
+
+    override fun showBottomSheetDialog(bottomSheetDialogFragment: BottomSheetDialogFragment) {
+        bottomSheetDialogFragment.show(fragmentManager, "BOTTOM_DIALOG")
     }
 
     /**
