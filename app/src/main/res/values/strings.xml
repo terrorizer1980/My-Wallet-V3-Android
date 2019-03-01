@@ -847,7 +847,12 @@
 
     <!-- Complete Your Profile Card -->
     <string name="complete_your_profile_card_title">Complete Your Profile</string>
-    <string name="complete_your_profile_card_body">Complete your Blockchain profile today and we’ll Airdrop XLM directly into your wallet!</string>
+    <string name="complete_your_profile_card_body">Complete your Blockchain profile today and we\'ll Airdrop $25 of XLM directly into your wallet!</string>
     <string name="complete_your_profile_card_button">Continue to Claim Your XLM</string>
+
+    <!-- Claim Your Free Crypto Card -->
+    <string name="claim_your_free_crypto_card_title">Claim Your Free Crypto</string>
+    <string name="claim_your_free_crypto_card_body">You\'re all set! Tap this card to claim your $25 of free XLM.</string>
+    <string name="claim_your_free_crypto_card_button">Claim Your XLM</string>
 
 </resources>

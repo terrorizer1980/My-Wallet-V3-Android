@@ -261,12 +261,7 @@ class DashboardPresenter(
 //            checkNativeBuySellAnnouncement()
             compositeDisposable +=
                 checkKycResubmissionPrompt()
-                    .switchIfEmpty(
-                        dashboardAnnouncements
-                            .announcementList
-                            .showNextAnnouncement(this, AndroidSchedulers.mainThread())
-                            .map { Unit }
-                    )
+                    .switchIfEmpty(checkDashboardAnnouncements())
                     .switchIfEmpty(checkKycPrompt())
                     .switchIfEmpty(addSunriverPrompts())
                     .subscribeBy(
@@ -274,6 +269,12 @@ class DashboardPresenter(
                     )
         }
     }
+
+    private fun checkDashboardAnnouncements(): Maybe<Unit> =
+        dashboardAnnouncements
+            .announcementList
+            .showNextAnnouncement(this, AndroidSchedulers.mainThread())
+            .map { Unit }
 
     internal fun addSunriverPrompts(): Maybe<Unit> {
         return sunriverCampaignHelper.getCampaignCardType()
@@ -534,6 +535,13 @@ class DashboardPresenter(
 
     private fun getLastPrice(cryptoCurrency: CryptoCurrency, fiat: String) =
         exchangeRateFactory.getLastPrice(cryptoCurrency, fiat)
+
+    fun signupToSunRiverCampaign() {
+        compositeDisposable += sunriverCampaignHelper
+            .registerSunRiverCampaign()
+            .doOnError(Timber::e)
+            .subscribe()
+    }
 
     companion object {
 

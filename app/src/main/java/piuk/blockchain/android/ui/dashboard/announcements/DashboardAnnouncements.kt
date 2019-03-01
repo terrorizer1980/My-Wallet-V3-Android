@@ -5,9 +5,11 @@ import piuk.blockchain.android.ui.dashboard.DashboardPresenter
 
 class DashboardAnnouncements internal constructor(
     stellarModalPopupAnnouncement: StellarModalPopupAnnouncement,
-    completeYourProfileCardAnnouncement: CompleteYourProfileCardAnnouncement
+    completeYourProfileCardAnnouncement: CompleteYourProfileCardAnnouncement,
+    claimYourFreeCryptoCardAnnouncement: ClaimYourFreeCryptoCardAnnouncement
 ) {
     val announcementList = AnnouncementList<DashboardPresenter>()
         .add(stellarModalPopupAnnouncement)
         .add(completeYourProfileCardAnnouncement)
+        .add(claimYourFreeCryptoCardAnnouncement)
 }

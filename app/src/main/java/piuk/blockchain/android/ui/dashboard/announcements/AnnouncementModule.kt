@@ -6,11 +6,13 @@ val dashboardAnnouncementsModule = applicationContext {
 
     context("Payload") {
 
-        factory { DashboardAnnouncements(get(), get()) }
+        factory { DashboardAnnouncements(get(), get(), get()) }
 
         factory { StellarModalPopupAnnouncement(get(), get()) }
 
         factory { CompleteYourProfileCardAnnouncement(get(), get()) }
+
+        factory { ClaimYourFreeCryptoCardAnnouncement(get(), get(), get()) }
     }
 
     factory { DismissRecorder(get()) }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.blockchain.balance.TotalBalance
 import com.blockchain.balance.plus
 import com.blockchain.kycui.settings.KycStatusHelper
+import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
 import com.blockchain.ui.password.SecondPasswordHandler
@@ -14,6 +15,7 @@ import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
+import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
@@ -127,6 +129,8 @@ val applicationModule = applicationContext {
         factory { DeepLinkProcessor(get(), get(), get()) }
 
         factory { DeepLinkPersistence(get()) }
+
+        factory { SunRiverCampaignAccountProviderAdapter(get()) as SunriverCampaignHelper.XlmAccountProvider }
     }
 
     factory { DateUtil(get()) }

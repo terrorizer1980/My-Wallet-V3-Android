@@ -107,7 +107,7 @@ val kycModule = applicationContext {
 
         factory("ff_sms_verification") { smsVerificationRemoteConfig(get()) }
 
-        factory { SunriverCampaignHelper(get("sunriver"), get(), get(), get()) }
+        factory { SunriverCampaignHelper(get("sunriver"), get(), get(), get(), get()) }
 
         factory { NabuDataUserProviderNabuDataManagerAdapter(get(), get()) as NabuDataUserProvider }
 
