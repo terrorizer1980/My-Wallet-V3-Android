@@ -20,6 +20,7 @@ import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.Loggable
 import com.blockchain.remoteconfig.RemoteConfig
+import com.blockchain.sunriver.SunriverCampaignSignUp
 import info.blockchain.wallet.ApiCode
 import info.blockchain.wallet.BlockchainFramework
 import info.blockchain.wallet.FrameworkInterface
@@ -99,6 +100,22 @@ class App : Application() {
 }
 
 val fakesModule = applicationContext {
+
+    bean {
+        object : SunriverCampaignSignUp {
+
+            override fun userIsInSunRiverCampaign(): Single<Boolean> {
+                return Single.just(false).delay(1, TimeUnit.SECONDS)
+            }
+
+            override fun registerSunRiverCampaign(): Completable {
+                return Completable.timer(2, TimeUnit.SECONDS)
+                    .doOnSubscribe {
+                        Timber.d("Registering for campaign")
+                    }
+            }
+        } as SunriverCampaignSignUp
+    }
 
     bean {
         object : RemoteConfig {

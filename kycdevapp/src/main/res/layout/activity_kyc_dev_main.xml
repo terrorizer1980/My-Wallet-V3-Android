@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:onClick="launchKycForAirdrop"
         android:text="Launch KYC for airdrop"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
+        app:layout_constraintBottom_toTopOf="@+id/button4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,11 +25,11 @@
         android:layout_height="wrap_content"
         android:onClick="launchKycForSwap"
         android:text="Launch KYC for swap"
-        app:layout_constraintBottom_toTopOf="@+id/button3"
+        app:layout_constraintBottom_toTopOf="@+id/button_sunriver_dialog"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/button4"
         tools:ignore="HardcodedText" />
 
     <Button
@@ -52,6 +52,32 @@
         android:onClick="launchVeriff"
         android:text="Launch Veriff"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_airdrop_dialog"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/button_airdrop_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="airdropDialog"
+        android:text="Airdrop Dialog"
+        app:layout_constraintBottom_toTopOf="@+id/button3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_sunriver_dialog"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/button_sunriver_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="sunriverDialog"
+        android:text="Sunriver Dialog"
+        app:layout_constraintBottom_toTopOf="@+id/button_airdrop_dialog"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

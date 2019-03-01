@@ -851,8 +851,8 @@
     <string name="complete_your_profile_card_button">Continue to Claim Your XLM</string>
 
     <!-- Claim Your Free Crypto Card -->
-    <string name="claim_your_free_crypto_card_title">Claim Your Free Crypto</string>
+    <string name="claim_your_free_crypto_card_title">@string/claim_your_free_crypto</string>
     <string name="claim_your_free_crypto_card_body">You\'re all set! Tap this card to claim your $25 of free XLM.</string>
-    <string name="claim_your_free_crypto_card_button">Claim Your XLM</string>
+    <string name="claim_your_free_crypto_card_button">@string/claim_your_xlm</string>
 
 </resources>

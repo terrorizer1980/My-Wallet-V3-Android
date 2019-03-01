@@ -9,6 +9,7 @@ import com.blockchain.kycui.settings.KycStatusHelper
 import com.blockchain.nabu.NabuToken
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.remoteconfig.FeatureFlag
+import com.blockchain.sunriver.SunriverCampaignSignUp
 import info.blockchain.balance.AccountReference
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -23,7 +24,7 @@ class SunriverCampaignHelper(
     private val nabuToken: NabuToken,
     private val kycStatusHelper: KycStatusHelper,
     private val xlmAccountProvider: XlmAccountProvider
-) {
+) : SunriverCampaignSignUp {
 
     interface XlmAccountProvider {
         fun defaultAccount(): Single<AccountReference.Xlm>
@@ -51,7 +52,7 @@ class SunriverCampaignHelper(
             }
         }
 
-    fun registerSunRiverCampaign(): Completable =
+    override fun registerSunRiverCampaign(): Completable =
         xlmAccountProvider.defaultAccount().flatMapCompletable { xlmAccount ->
             nabuToken.fetchNabuToken()
                 .flatMapCompletable {
@@ -80,7 +81,7 @@ class SunriverCampaignHelper(
             campaignData.campaignName
         ).subscribeOn(Schedulers.io())
 
-    fun userIsInSunRiverCampaign(): Single<Boolean> =
+    override fun userIsInSunRiverCampaign(): Single<Boolean> =
         getCampaignList().map { it.contains(SunRiverCampaign) }
 
     private fun getCampaignList(): Single<List<String>> =

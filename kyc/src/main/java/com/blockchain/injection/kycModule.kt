@@ -52,6 +52,7 @@ import com.blockchain.nabu.NabuUserSync
 import com.blockchain.nabu.StartKyc
 import com.blockchain.nabu.StartKycAirdrop
 import com.blockchain.nabu.stores.NabuSessionTokenStore
+import com.blockchain.sunriver.SunriverCampaignSignUp
 import org.koin.dsl.module.applicationContext
 import retrofit2.Retrofit
 
@@ -107,8 +108,6 @@ val kycModule = applicationContext {
 
         factory("ff_sms_verification") { smsVerificationRemoteConfig(get()) }
 
-        factory { SunriverCampaignHelper(get("sunriver"), get(), get(), get(), get()) }
-
         factory { NabuDataUserProviderNabuDataManagerAdapter(get(), get()) as NabuDataUserProvider }
 
         factory { NabuUserSyncUpdateUserWalletInfoWithJWT(get(), get()) as NabuUserSync }
@@ -163,5 +162,8 @@ val kycNabuModule = applicationContext {
         factory {
             CreateNabuTokenAdapter(get()) as CreateNabuToken
         }
+
+        factory { SunriverCampaignHelper(get("sunriver"), get(), get(), get(), get()) }
+            .bind(SunriverCampaignSignUp::class)
     }
 }
