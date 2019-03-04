@@ -1,5 +1,6 @@
 package info.blockchain.wallet.ethereum;
 
+import info.blockchain.wallet.ApiCode;
 import info.blockchain.wallet.MockedResponseTest;
 import info.blockchain.wallet.ethereum.data.EthAddressResponse;
 import info.blockchain.wallet.ethereum.data.EthAddressResponseMap;
@@ -8,6 +9,7 @@ import info.blockchain.wallet.ethereum.data.EthTransaction;
 import info.blockchain.wallet.ethereum.data.EthTxDetails;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -22,7 +24,13 @@ import static org.junit.Assert.assertTrue;
 
 public class EthAccountApiTest extends MockedResponseTest {
 
-    private EthAccountApi subject = new EthAccountApi();
+    private EthAccountApi subject = new EthAccountApi(new ApiCode() {
+        @NotNull
+        @Override
+        public String getApiCode() {
+            return "testing";
+        }
+    });
 
     @Test
     public void getEthAccount() {

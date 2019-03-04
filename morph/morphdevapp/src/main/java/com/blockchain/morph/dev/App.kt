@@ -316,7 +316,7 @@ val serviceModule = applicationContext {
 
     factory { FeeApi(get()) }
 
-    factory { EthAccountApi() }
+    factory { EthAccountApi(get()) }
 }
 
 val environmentModule = applicationContext {

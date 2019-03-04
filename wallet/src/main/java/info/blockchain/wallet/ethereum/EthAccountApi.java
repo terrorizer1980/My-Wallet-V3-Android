@@ -1,5 +1,6 @@
 package info.blockchain.wallet.ethereum;
 
+import info.blockchain.wallet.ApiCode;
 import info.blockchain.wallet.BlockchainFramework;
 import info.blockchain.wallet.ethereum.data.EthAddressResponse;
 import info.blockchain.wallet.ethereum.data.EthAddressResponseMap;
@@ -19,6 +20,12 @@ import io.reactivex.functions.Function;
 public class EthAccountApi {
 
     private EthEndpoints endpoints;
+
+    private final ApiCode apiCode;
+
+    public EthAccountApi(ApiCode apiCode) {
+        this.apiCode = apiCode;
+    }
 
     /**
      * Returns an {@link EthAddressResponse} object for a list of given ETH addresses as an {@link
@@ -57,7 +64,8 @@ public class EthAccountApi {
      * @return An {@link Observable} returning the transaction hash of a completed transaction.
      */
     public Observable<String> pushTx(String rawTx) {
-        return getApiInstance().pushTx(new EthPushTxRequest(rawTx))
+        final EthPushTxRequest request = new EthPushTxRequest(rawTx, apiCode.getApiCode());
+        return getApiInstance().pushTx(request)
                 .map(new Function<HashMap<String, String>, String>() {
                     @Override
                     public String apply(HashMap<String, String> map) {

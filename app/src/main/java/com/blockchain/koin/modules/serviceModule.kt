@@ -37,5 +37,5 @@ val serviceModule = applicationContext {
 
     factory { FingerprintAuthImpl() as FingerprintAuth }
 
-    factory { EthAccountApi() }
+    factory { EthAccountApi(get()) }
 }
