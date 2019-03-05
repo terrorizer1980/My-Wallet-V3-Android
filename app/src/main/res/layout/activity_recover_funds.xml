@@ -44,6 +44,7 @@
                         android:id="@+id/field_passphrase"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/recovery_passphrase"
                         android:imeOptions="actionGo"
                         android:inputType="textNoSuggestions|textVisiblePassword"
                         android:maxLines="1"
@@ -58,6 +59,7 @@
             android:id="@+id/button_continue"
             style="@style/MegaButtonAccentBlue"
             android:layout_gravity="center_horizontal|center_vertical"
+            android:contentDescription="@string/recover_funds"
             android:text="@string/recover_funds" />
 
     </LinearLayout>

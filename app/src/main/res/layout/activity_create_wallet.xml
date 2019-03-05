@@ -36,6 +36,7 @@
                     android:id="@+id/email_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/email"
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
                     android:maxLines="1" />
@@ -57,6 +58,7 @@
                     android:id="@+id/wallet_pass"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/password"
                     android:imeOptions="actionNext"
                     android:inputType="textPassword"
                     android:maxLines="1" />
@@ -90,6 +92,7 @@
                     android:id="@+id/wallet_pass_confirm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/confirm_password"
                     android:imeOptions="actionGo"
                     android:inputType="textPassword"
                     android:maxLines="1" />
@@ -116,6 +119,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
+                android:contentDescription="@string/create_wallet"
                 android:text="@string/create_wallet"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
