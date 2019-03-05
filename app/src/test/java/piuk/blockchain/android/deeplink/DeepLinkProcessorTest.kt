@@ -55,6 +55,15 @@ class DeepLinkProcessorTest {
             )
         )
     }
+
+    @Test
+    fun `general kyc uri`() {
+        givenUriExpect(
+            "https://login.blockchain.com/#/open/kyc?tier=2&deep_link_path=kyc", LinkState.KycDeepLink(
+            KycLinkState.General
+        )
+        )
+    }
 }
 
 private fun givenUriExpect(uri: String, expected: LinkState) {

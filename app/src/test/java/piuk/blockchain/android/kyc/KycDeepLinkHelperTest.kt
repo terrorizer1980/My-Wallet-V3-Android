@@ -55,6 +55,15 @@ class KycDeepLinkHelperTest {
             .assertNoErrors()
             .assertValue(KycLinkState.EmailVerified)
     }
+
+    @Test
+    fun `extract that it is a general kyc deeplink`() {
+        KycDeepLinkHelper(givenPendingUri("https://login.blockchain.com/#/open/kyc?tier=2&deep_link_path=kyc"))
+            .getLink(mock())
+            .test()
+            .assertNoErrors()
+            .assertValue(KycLinkState.General)
+    }
 }
 
 private fun givenPendingUri(uri: String): PendingLink =

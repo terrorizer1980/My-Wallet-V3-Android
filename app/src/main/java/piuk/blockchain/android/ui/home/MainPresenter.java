@@ -326,9 +326,22 @@ public class MainPresenter extends BasePresenter<MainView> {
                                         }
                                     } else if (linkState instanceof LinkState.KycDeepLink) {
                                         final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
-                                        final CampaignType campaignType = (deepLink.getLink() == KycLinkState.Resubmit) ?
-                                                CampaignType.Resubmission : CampaignType.Swap;
-                                        getView().launchKyc(campaignType);
+                                        final KycLinkState kycLinkState = deepLink.getLink();
+                                        CampaignType campaignType = null;
+                                        switch (kycLinkState) {
+                                            case Resubmit:
+                                                campaignType = CampaignType.Resubmission;
+                                                break;
+                                            case EmailVerified:
+                                            case General:
+                                                campaignType = CampaignType.Swap;
+                                                break;
+                                            case NoUri:
+                                                break;
+                                        }
+                                        if (campaignType != null) {
+                                            getView().launchKyc(campaignType);
+                                        }
                                     }
                                 }, Timber::e
                         )
