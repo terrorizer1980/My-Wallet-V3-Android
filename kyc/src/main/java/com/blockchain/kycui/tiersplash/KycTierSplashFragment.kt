@@ -17,6 +17,7 @@ import com.blockchain.balance.setImageDrawable
 import com.blockchain.kyc.models.nabu.KycTierState
 import com.blockchain.kyc.models.nabu.TierJson
 import com.blockchain.kyc.models.nabu.TiersJson
+import com.blockchain.kycui.hyperlinks.renderSingleLink
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.navhost.models.KycStep
@@ -66,6 +67,13 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
 
         progressListener.setHostTitle(title)
         progressListener.incrementProgress(KycStep.SplashPage)
+
+        view.findViewById<TextView>(R.id.textViewEligible)?.renderSingleLink(
+            R.string.by_completing_gold_level_you_will_be_eligible_to_participate_in_our_airdrop_program,
+            R.string.learn_more,
+            R.string.airdrop_learn_more_url
+        )
+
         onViewReady()
     }
 

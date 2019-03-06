@@ -218,7 +218,8 @@
     <string name="takes_3_min">Takes 3 min</string>
     <string name="takes_10_min">Takes 10 min</string>
     <string name="get_free_crypto">GET FREE CRYPTO</string>
-    <string name="by_completing_gold_level_you_will_be_eligible_to_participate_in_our_airdrop_program">By completing Gold Level you will be eligible to participate in our airdrop program.</string>
+    <string name="by_completing_gold_level_you_will_be_eligible_to_participate_in_our_airdrop_program">By completing the Gold Level requirements you are automatically eligible for our airdrop program.</string>
+    <string name="airdrop_learn_more_url">https://support.blockchain.com/hc/en-us/categories/360001126692-Airdrop-Program</string>
     <string name="start_arrow">start arrow</string>
     <string name="approved">Approved!</string>
     <string name="in_review">In Review</string>

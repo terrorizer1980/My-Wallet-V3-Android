@@ -21,10 +21,6 @@ fun TextView.renderTermsLinks(@StringRes startText: Int) {
     val terms = context.getString(R.string.kyc_splash_terms_and_conditions_terms)
     val ampersand = "&"
     val privacy = context.getString(R.string.kyc_splash_terms_and_conditions_privacy)
-    val defaultClickSpan = object : ClickableSpan() {
-        override fun onClick(view: View) = Unit
-        override fun updateDrawState(ds: TextPaint?) = Unit
-    }
     val termsClickSpan = context.goToUrlClickableSpan(URL_TOS_POLICY)
     val privacyClickSpan = context.goToUrlClickableSpan(URL_PRIVACY_POLICY)
 
@@ -35,6 +31,23 @@ fun TextView.renderTermsLinks(@StringRes startText: Int) {
         privacy to privacyClickSpan
     )
 }
+
+fun TextView.renderSingleLink(@StringRes startText: Int, @StringRes link: Int, @StringRes url: Int) {
+    val prefixText = context.getString(startText)
+    val linkText = context.getString(link)
+    val linkUrl = context.goToUrlClickableSpan(context.getString(url))
+
+    formatLinks(
+        prefixText to defaultClickSpan,
+        linkText to linkUrl
+    )
+}
+
+private val defaultClickSpan =
+    object : ClickableSpan() {
+        override fun onClick(view: View) = Unit
+        override fun updateDrawState(ds: TextPaint?) = Unit
+    }
 
 private fun TextView.formatLinks(vararg linkPairs: Pair<String, ClickableSpan>) {
     val finalString = linkPairs.joinToString(separator = " ") { it.first }
