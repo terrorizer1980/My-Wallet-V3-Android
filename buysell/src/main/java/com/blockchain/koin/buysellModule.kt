@@ -1,6 +1,7 @@
 package com.blockchain.koin
 
 import org.koin.dsl.module.applicationContext
+import piuk.blockchain.androidbuysell.api.CoinifyWalletService
 import piuk.blockchain.androidbuysell.models.coinify.BuyFrequencyAdapter
 import piuk.blockchain.androidbuysell.models.coinify.CannotTradeReasonAdapter
 import piuk.blockchain.androidbuysell.models.coinify.DetailsAdapter
@@ -19,6 +20,7 @@ val buySellModule = applicationContext {
         bean { BuyConditions() }
 
         bean { ExchangeService(get(), get()) }
+            .bind(CoinifyWalletService::class)
     }
 
     moshiInterceptor("buySell") { builder ->

@@ -75,4 +75,8 @@ val coreUiModule = applicationContext {
 
 val coreUiFeatureFlagsModule = applicationContext {
     factory("ff_animate_stellar_ship") { get<RemoteConfig>().featureFlag("animate_stellar_ship") }
+
+    factory("ff_notify_coinify_users_to_kyc") {
+        get<RemoteConfig>().featureFlag("android_notify_coinify_users_to_kyc")
+    }
 }

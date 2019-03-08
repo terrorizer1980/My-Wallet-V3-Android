@@ -2,11 +2,14 @@ package piuk.blockchain.androidbuysell.services
 
 import info.blockchain.wallet.metadata.Metadata
 import info.blockchain.wallet.payload.PayloadManager
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.ReplaySubject
 import org.bitcoinj.crypto.DeterministicKey
 import org.spongycastle.util.encoders.Hex
+import piuk.blockchain.androidbuysell.api.CoinifyWalletService
+import piuk.blockchain.androidbuysell.models.CoinifyData
 import piuk.blockchain.androidbuysell.models.ExchangeData
 import piuk.blockchain.androidbuysell.models.TradeData
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
@@ -24,7 +27,12 @@ import java.util.ArrayList
 class ExchangeService(
     private val payloadManager: PayloadManager,
     private val rxBus: RxBus
-) {
+) : CoinifyWalletService {
+
+    override fun getCoinifyData(): Maybe<CoinifyData> =
+        getExchangeMetaData()
+            .firstElement()
+            .flatMap { it.coinify?.let { coinifyData -> Maybe.just(coinifyData) } ?: Maybe.empty() }
 
     private var metadataSubject: ReplaySubject<Metadata> = ReplaySubject.create(1)
     private var didStartLoad: Boolean = false

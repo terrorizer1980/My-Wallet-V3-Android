@@ -6,7 +6,9 @@ val dashboardAnnouncementsModule = applicationContext {
 
     context("Payload") {
 
-        factory { DashboardAnnouncements(get(), get(), get()) }
+        factory { DashboardAnnouncements(get(), get(), get(), get()) }
+
+        factory { CoinifyKycModalPopupAnnouncement(get(), get(), get("ff_notify_coinify_users_to_kyc")) }
 
         factory { StellarModalPopupAnnouncement(get(), get()) }
 

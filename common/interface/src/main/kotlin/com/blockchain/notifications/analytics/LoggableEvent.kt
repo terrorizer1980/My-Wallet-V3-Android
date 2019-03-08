@@ -40,6 +40,10 @@ enum class LoggableEvent(override val eventName: String) : Loggable {
     SunRiverBottomCampaignDialogClicked("sunriver_bottom_campaign_dialog_clicked"),
     SunRiverBottomCampaignDialogClickedRocket("sunriver_bottom_campaign_dialog_clicked_rocket"),
     SunRiverBottomCampaignDialogDismissClicked("sunriver_bottom_campaign_dialog_dismiss_click"),
+    CoinifyKycBottomDialog("coinify_kyc_bottom_dialog"),
+    CoinifyKycBottomDialogClicked("coinify_kyc_bottom_dialog_clicked"),
+    CoinifyKycBottomDialogClickedRocket("coinify_kyc_bottom_dialog_clicked_rocket"),
+    CoinifyKycBottomDialogLearnMoreClicked("coinify_kyc_bottom_dialog_learn_more_clicked")
 }
 
 fun kycTierStart(tier: Int): Loggable = object : Loggable {
