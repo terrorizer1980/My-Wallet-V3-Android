@@ -54,9 +54,7 @@ class KycHomeAddressPresenter(
     override fun onViewReady() {
         compositeDisposable += view.address
             .subscribeBy(
-                onNext = {
-                    enableButtonIfComplete(it.firstLine, it.city, it.postCode)
-                },
+                onNext = { enableButtonIfComplete(it) },
                 onError = {
                     Timber.e(it)
                     // This is fatal - back out and allow the user to try again
@@ -188,8 +186,21 @@ class KycHomeAddressPresenter(
         .map { it.entries.first { (_, value) -> value == countryCode }.key }
         .toMaybe()
 
-    private fun enableButtonIfComplete(firstLine: String, city: String, zipCode: String) {
-        view.setButtonEnabled(!firstLine.isEmpty() && !city.isEmpty() && !zipCode.isEmpty())
+    private fun enableButtonIfComplete(addressModel: AddressModel) {
+        if (addressModel.country.equals("US", ignoreCase = true)) {
+            view.setButtonEnabled(
+                !addressModel.firstLine.isEmpty() &&
+                    !addressModel.city.isEmpty() &&
+                    !addressModel.state.isEmpty() &&
+                    !addressModel.postCode.isEmpty()
+            )
+        } else {
+            view.setButtonEnabled(
+                !addressModel.firstLine.isEmpty() &&
+                    !addressModel.city.isEmpty() &&
+                    !addressModel.state.isEmpty()
+            )
+        }
     }
 
     internal fun onProgressCancelled() {
@@ -200,6 +211,6 @@ class KycHomeAddressPresenter(
         !firstLine.isEmpty() ||
             !secondLine.isNullOrEmpty() ||
             !city.isEmpty() ||
-            !state.isNullOrEmpty() ||
+            !state.isEmpty() ||
             !postCode.isEmpty()
 }

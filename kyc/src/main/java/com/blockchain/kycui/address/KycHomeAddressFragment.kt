@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.location.Geocoder
 import android.os.Bundle
+import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.SearchView
 import android.view.LayoutInflater
@@ -63,6 +64,9 @@ import kotlinx.android.synthetic.main.fragment_kyc_home_address.edit_text_kyc_ad
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.edit_text_kyc_address_first_line as editTextFirstLine
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.edit_text_kyc_address_state as editTextState
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.edit_text_kyc_address_zip_code as editTextZipCode
+import kotlinx.android.synthetic.main.fragment_kyc_home_address.input_layout_kyc_address_first_line as textInputAddress1
+import kotlinx.android.synthetic.main.fragment_kyc_home_address.input_layout_kyc_address_apt_name as textInputAddress2
+import kotlinx.android.synthetic.main.fragment_kyc_home_address.input_layout_kyc_address_city as textInputCity
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.input_layout_kyc_address_state as textInputLayoutState
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.input_layout_kyc_address_zip_code as textInputLayoutZipCode
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.search_view_kyc_address as searchViewAddress
@@ -83,7 +87,7 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
             "",
             null,
             "",
-            null,
+            "",
             "",
             profileModel.countryCode
         )
@@ -313,15 +317,21 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
                 R.string.kyc_address_search_hint,
                 getString(R.string.kyc_address_search_hint_zipcode)
             )
-            textInputLayoutState.hint = getString(R.string.kyc_address_address_state_hint)
-            textInputLayoutZipCode.hint = getString(R.string.kyc_address_address_zip_code_hint)
+            setHint(textInputAddress1, getString(R.string.kyc_address_street_line_1), true)
+            setHint(textInputAddress2, getString(R.string.kyc_address_street_line_2), false)
+            setHint(textInputCity, getString(R.string.kyc_address_address_city_hint), true)
+            setHint(textInputLayoutState, getString(R.string.kyc_address_address_state_hint), true)
+            setHint(textInputLayoutZipCode, getString(R.string.kyc_address_address_zip_code_hint), true)
         } else {
             searchViewAddress.queryHint = getString(
                 R.string.kyc_address_search_hint,
                 getString(R.string.kyc_address_search_hint_postcode)
             )
-            textInputLayoutState.hint = getString(R.string.kyc_address_address_county_hint)
-            textInputLayoutZipCode.hint = getString(R.string.kyc_address_address_postcode_hint)
+            setHint(textInputAddress1, getString(R.string.kyc_address_address_line_1), true)
+            setHint(textInputAddress2, getString(R.string.kyc_address_address_line_2), false)
+            setHint(textInputCity, getString(R.string.kyc_address_city_town_village), true)
+            setHint(textInputLayoutState, getString(R.string.kyc_address_state_region_province_county), true)
+            setHint(textInputLayoutZipCode, getString(R.string.kyc_address_postal_code), false)
         }
 
         editTextCountry.setText(
@@ -330,6 +340,10 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
                 profileModel.countryCode
             ).displayCountry
         )
+    }
+
+    private fun setHint(textInput: TextInputLayout, hint: String, isRequired: Boolean) {
+        textInput.hint = if (isRequired) "$hint*" else hint
     }
 
     private fun TextView.onDelayedChange(kycStep: KycStep): Observable<String> =

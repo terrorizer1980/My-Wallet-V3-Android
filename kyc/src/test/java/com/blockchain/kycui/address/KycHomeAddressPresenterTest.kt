@@ -90,12 +90,27 @@ class KycHomeAddressPresenterTest {
     }
 
     @Test
-    fun `onViewReady country emitted complete should enable button`() {
+    fun `onViewReady country not US emitted complete should enable button`() {
         // Arrange
         whenever(view.address)
             .thenReturn(
                 Observable.just(
-                    addressModel(firstLine = "FIRST_LINE", city = "CITY", postCode = "POST_CODE")
+                    addressModel(firstLine = "FIRST_LINE", city = "CITY", state = "STATE", postCode = "POSTCODE")
+                )
+            )
+        // Act
+        subject.onViewReady()
+        // Assert
+        verify(view).setButtonEnabled(true)
+    }
+
+    @Test
+    fun `onViewReady country is US emitted complete should enable button`() {
+        // Arrange
+        whenever(view.address)
+            .thenReturn(
+                Observable.just(
+                    addressModel(firstLine = "FIRST_LINE", city = "CITY", state = "STATE", postCode = "POSTCODE")
                 )
             )
         // Act
@@ -234,10 +249,11 @@ class KycHomeAddressPresenterTest {
         // Arrange
         val firstLine = "1"
         val city = "2"
-        val zipCode = "3"
+        val state = "3"
+        val zipCode = "4"
         val countryCode = "UK"
         whenever(view.address)
-            .thenReturn(Observable.just(addressModel(firstLine, city, zipCode, countryCode)))
+            .thenReturn(Observable.just(addressModel(firstLine, city, state, zipCode, countryCode)))
         whenever(
             nabuToken.fetchNabuToken()
         ).thenReturn(Single.just(validOfflineToken))
@@ -247,7 +263,7 @@ class KycHomeAddressPresenterTest {
                 firstLine,
                 null,
                 city,
-                null,
+                state,
                 zipCode,
                 countryCode
             )
@@ -266,10 +282,11 @@ class KycHomeAddressPresenterTest {
         // Arrange
         val firstLine = "1"
         val city = "2"
-        val zipCode = "3"
+        val state = "3"
+        val zipCode = "4"
         val countryCode = "UK"
         whenever(view.address)
-            .thenReturn(Observable.just(addressModel(firstLine, city, zipCode, countryCode)))
+            .thenReturn(Observable.just(addressModel(firstLine, city, state, zipCode, countryCode)))
         whenever(
             nabuToken.fetchNabuToken()
         ).thenReturn(Single.just(validOfflineToken))
@@ -279,7 +296,7 @@ class KycHomeAddressPresenterTest {
                 firstLine,
                 null,
                 city,
-                null,
+                state,
                 zipCode,
                 countryCode
             )
@@ -303,10 +320,11 @@ class KycHomeAddressPresenterTest {
         // Arrange
         val firstLine = "1"
         val city = "2"
-        val zipCode = "3"
+        val state = "3"
+        val zipCode = "4"
         val countryCode = "UK"
         whenever(view.address)
-            .thenReturn(Observable.just(addressModel(firstLine, city, zipCode, countryCode)))
+            .thenReturn(Observable.just(addressModel(firstLine, city, state, zipCode, countryCode)))
         whenever(
             nabuToken.fetchNabuToken()
         ).thenReturn(Single.just(validOfflineToken))
@@ -316,7 +334,7 @@ class KycHomeAddressPresenterTest {
                 firstLine,
                 null,
                 city,
-                null,
+                state,
                 zipCode,
                 countryCode
             )
@@ -338,10 +356,11 @@ class KycHomeAddressPresenterTest {
         // Arrange
         val firstLine = "1"
         val city = "2"
-        val zipCode = "3"
+        val state = "3"
+        val zipCode = "4"
         val countryCode = "UK"
         whenever(view.address)
-            .thenReturn(Observable.just(addressModel(firstLine, city, zipCode, countryCode)))
+            .thenReturn(Observable.just(addressModel(firstLine, city, state, zipCode, countryCode)))
         whenever(
             nabuToken.fetchNabuToken()
         ).thenReturn(Single.just(validOfflineToken))
@@ -351,7 +370,7 @@ class KycHomeAddressPresenterTest {
                 firstLine,
                 null,
                 city,
-                null,
+                state,
                 zipCode,
                 countryCode
             )
@@ -404,13 +423,14 @@ class KycHomeAddressPresenterTest {
     private fun addressModel(
         firstLine: String = "",
         city: String = "",
+        state: String = "",
         postCode: String = "",
         country: String = ""
     ): AddressModel = AddressModel(
         firstLine,
         null,
         city,
-        null,
+        state,
         postCode,
         country
     )

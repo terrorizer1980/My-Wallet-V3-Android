@@ -93,5 +93,5 @@ class AddressDialogTest {
     }
 
     private val basicAddressModel: AddressModel
-        get() = AddressModel("", null, "", null, "", "")
+        get() = AddressModel("", null, "", "", "", "")
 }

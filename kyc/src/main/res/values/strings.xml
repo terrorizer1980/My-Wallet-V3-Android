@@ -47,6 +47,13 @@
     <string name="kyc_address_search_hint">Search for your %1$s</string>
     <string name="kyc_address_search_hint_postcode">postcode</string>
     <string name="kyc_address_search_hint_zipcode">zip code</string>
+    <string name="kyc_address_street_line_1">Street line 1</string>
+    <string name="kyc_address_street_line_2">Street line 2</string>
+    <string name="kyc_address_address_line_1">Address line 1</string>
+    <string name="kyc_address_address_line_2">Address line 2</string>
+    <string name="kyc_address_city_town_village">City / Town / Village</string>
+    <string name="kyc_address_state_region_province_county">State / Region / Province / County</string>
+    <string name="kyc_address_postal_code">Postal Code</string>
     <string name="kyc_address_address_first_line_hint">Address</string>
     <string name="kyc_address_address_apt_name_hint">Apt, Floor, #</string>
     <string name="kyc_address_address_postcode_hint">Postcode</string>
