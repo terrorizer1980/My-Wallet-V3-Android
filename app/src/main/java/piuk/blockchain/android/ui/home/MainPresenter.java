@@ -1,14 +1,12 @@
 package piuk.blockchain.android.ui.home;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
 import android.util.Pair;
 
 import com.blockchain.kyc.models.nabu.CampaignData;
 import com.blockchain.kyc.models.nabu.KycState;
 import com.blockchain.kyc.models.nabu.NabuApiException;
 import com.blockchain.kyc.models.nabu.NabuErrorCodes;
-import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes;
 import com.blockchain.kycui.navhost.models.CampaignType;
 import com.blockchain.kycui.settings.KycStatusHelper;
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper;
@@ -22,6 +20,10 @@ import info.blockchain.wallet.api.Environment;
 import info.blockchain.wallet.exceptions.HDWalletException;
 import info.blockchain.wallet.exceptions.InvalidCredentialsException;
 import info.blockchain.wallet.payload.PayloadManagerWiper;
+
+import java.util.NoSuchElementException;
+
+import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -63,10 +65,6 @@ import piuk.blockchain.androidcoreui.utils.AppUtil;
 import piuk.blockchain.androidcoreui.utils.logging.Logging;
 import piuk.blockchain.androidcoreui.utils.logging.SecondPasswordEvent;
 import timber.log.Timber;
-
-import javax.inject.Inject;
-
-import java.util.NoSuchElementException;
 
 public class MainPresenter extends BasePresenter<MainView> {
 
@@ -327,20 +325,17 @@ public class MainPresenter extends BasePresenter<MainView> {
                                     } else if (linkState instanceof LinkState.KycDeepLink) {
                                         final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
                                         final KycLinkState kycLinkState = deepLink.getLink();
-                                        CampaignType campaignType = null;
-                                        switch (kycLinkState) {
-                                            case Resubmit:
-                                                campaignType = CampaignType.Resubmission;
-                                                break;
-                                            case EmailVerified:
-                                            case General:
-                                                campaignType = CampaignType.Swap;
-                                                break;
-                                            case NoUri:
-                                                break;
-                                        }
-                                        if (campaignType != null) {
-                                            getView().launchKyc(campaignType);
+                                        if (kycLinkState instanceof KycLinkState.Resubmit) {
+                                            getView().launchKyc(CampaignType.Resubmission);
+                                        } else if (kycLinkState instanceof KycLinkState.EmailVerified) {
+                                            getView().launchKyc(CampaignType.Swap);
+                                        } else if (kycLinkState instanceof KycLinkState.General) {
+                                            final CampaignData data = ((KycLinkState.General) kycLinkState).getCampaignData();
+                                            if (data != null) {
+                                                registerForCampaign(data);
+                                            } else {
+                                                getView().launchKyc(CampaignType.Swap);
+                                            }
                                         }
                                     }
                                 }, Timber::e

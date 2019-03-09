@@ -23,7 +23,7 @@ internal class DeepLinkProcessor(
                     return@map LinkState.SunriverDeepLink(sr)
                 }
                 val kyc = kycDeepLinkHelper.mapUri(uri)
-                if (kyc == KycLinkState.Resubmit || kyc == KycLinkState.EmailVerified || kyc == KycLinkState.General) {
+                if (kyc != KycLinkState.NoUri) {
                     return@map LinkState.KycDeepLink(kyc)
                 }
                 LinkState.NoUri

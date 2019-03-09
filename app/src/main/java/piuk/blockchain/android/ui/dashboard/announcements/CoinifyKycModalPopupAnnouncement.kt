@@ -8,7 +8,6 @@ import com.blockchain.sunriver.ui.CoinifyKycBottomDialog
 import io.reactivex.Single
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter
 import piuk.blockchain.androidbuysell.api.CoinifyWalletService
-import timber.log.Timber
 
 internal class CoinifyKycModalPopupAnnouncement(
     private val tierService: TierService,
@@ -25,10 +24,8 @@ internal class CoinifyKycModalPopupAnnouncement(
 
         // TODO: AND-1980 use firebase remote config
         return Single.merge(
-            didNotStartGoldLevelKyc()
-                .doOnSuccess { Timber.d("Chris: Did the user start gold level? $it") },
+            didNotStartGoldLevelKyc(),
             isCoinifyTrader()
-                .doOnSuccess { Timber.d("Chris: Is the user a coinify user? $it") }
         ).all { it }
             .doOnSuccess { didShowPopup = it }
     }

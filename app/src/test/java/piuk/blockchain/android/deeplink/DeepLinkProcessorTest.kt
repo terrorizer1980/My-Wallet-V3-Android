@@ -57,11 +57,20 @@ class DeepLinkProcessorTest {
     }
 
     @Test
-    fun `general kyc uri`() {
+    fun `general kyc uri with campaign`() {
+        val url = "https://login.blockchain.com/#/open/kyc?tier=2&deep_link_path=kyc&campaign=sunriver"
+        givenUriExpect(url, LinkState.KycDeepLink(
+                KycLinkState.General(CampaignData("sunriver", false))
+            )
+        )
+    }
+
+    @Test
+    fun `general kyc uri without campaign`() {
         givenUriExpect(
             "https://login.blockchain.com/#/open/kyc?tier=2&deep_link_path=kyc", LinkState.KycDeepLink(
-            KycLinkState.General
-        )
+                KycLinkState.General(null)
+            )
         )
     }
 }

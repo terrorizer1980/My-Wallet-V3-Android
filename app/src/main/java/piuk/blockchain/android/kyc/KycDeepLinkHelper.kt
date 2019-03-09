@@ -2,6 +2,7 @@ package piuk.blockchain.android.kyc
 
 import android.content.Intent
 import android.net.Uri
+import com.blockchain.kyc.models.nabu.CampaignData
 import com.blockchain.notifications.links.PendingLink
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -23,34 +24,39 @@ class KycDeepLinkHelper(
             .onErrorResumeNext { Single.just(KycLinkState.NoUri) }
 
     fun mapUri(uri: Uri): KycLinkState {
-        val name = uri.ignoreFragment().getQueryParameter("deep_link_path")
+        val uriWithoutFragment = uri.ignoreFragment()
+        val name = uriWithoutFragment.getQueryParameter("deep_link_path")
         return when (name) {
             "verification" -> KycLinkState.Resubmit
             "email_verified" -> KycLinkState.EmailVerified
-            "kyc" -> KycLinkState.General
+            "kyc" -> {
+                val campaign = uriWithoutFragment.getQueryParameter("campaign")
+                val campaignData = if (!campaign.isNullOrEmpty()) CampaignData(campaign, false) else null
+                return KycLinkState.General(campaignData)
+            }
             else -> KycLinkState.NoUri
         }
     }
 }
 
-enum class KycLinkState {
+sealed class KycLinkState {
     /**
      * Deep link into the email confirmation part of KYC
      */
-    EmailVerified,
+    object EmailVerified : KycLinkState()
 
     /**
      * General deep link into KYC
      */
-    General,
+    data class General(val campaignData: CampaignData?) : KycLinkState()
 
     /**
      * Not a valid KYC deep link URI
      */
-    NoUri,
+    object NoUri : KycLinkState()
 
     /**
      * Deep link into identity verification part of KYC
      */
-    Resubmit
+    object Resubmit : KycLinkState()
 }

@@ -1,6 +1,7 @@
 package piuk.blockchain.android.kyc
 
 import android.net.Uri
+import com.blockchain.kyc.models.nabu.CampaignData
 import com.blockchain.notifications.links.PendingLink
 import com.nhaarman.mockito_kotlin.mock
 import io.reactivex.Maybe
@@ -57,12 +58,22 @@ class KycDeepLinkHelperTest {
     }
 
     @Test
-    fun `extract that it is a general kyc deeplink`() {
+    fun `extract that it is a general kyc deeplink with campaign info`() {
+        val url = "https://login.blockchain.com/#/open/kyc?tier=2&deep_link_path=kyc&campaign=sunriver"
+        KycDeepLinkHelper(givenPendingUri(url))
+            .getLink(mock())
+            .test()
+            .assertNoErrors()
+            .assertValue(KycLinkState.General(CampaignData("sunriver", false)))
+    }
+
+    @Test
+    fun `extract that it is a general kyc deeplink without campaign info`() {
         KycDeepLinkHelper(givenPendingUri("https://login.blockchain.com/#/open/kyc?tier=2&deep_link_path=kyc"))
             .getLink(mock())
             .test()
             .assertNoErrors()
-            .assertValue(KycLinkState.General)
+            .assertValue(KycLinkState.General(null))
     }
 }
 
