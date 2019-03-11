@@ -221,7 +221,7 @@ internal class HorizonProxy(url: String) {
         Transaction.Builder(source)
             .setTimeout(Transaction.Builder.TIMEOUT_INFINITE)
             .addOperation(buildTransactionOperation(destination, destinationAccountExists, amount.toPlainString()))
-            .setOperationFee((perOperationFee ?: basePerOperationFee).amount.intValueExact())
+            .setOperationFee((perOperationFee ?: basePerOperationFee).amount.toInt())
             .addMemo(memo)
             .build()
 
