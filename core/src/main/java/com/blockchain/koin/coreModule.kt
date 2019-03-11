@@ -27,6 +27,7 @@ import com.blockchain.datamanagers.SelfFeeCalculatingTransactionExecutor
 import com.blockchain.datamanagers.TransactionExecutor
 import com.blockchain.datamanagers.TransactionExecutorViaDataManagers
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees
+import com.blockchain.datamanagers.fees.FeeType
 import com.blockchain.logging.LastTxUpdateDateOnSettingsService
 import com.blockchain.logging.LastTxUpdater
 import com.blockchain.logging.NullLogger
@@ -132,12 +133,29 @@ val coreModule = applicationContext {
             ) as TransactionExecutor
         }
 
-        factory {
+        factory("Regular") {
             SelfFeeCalculatingTransactionExecutor(
                 get(),
-                get()
+                get(),
+                FeeType.Regular
             ) as TransactionExecutorWithoutFees
-        }.bind(MaximumSpendableCalculator::class)
+        }
+
+        factory("Priority") {
+            SelfFeeCalculatingTransactionExecutor(
+                get(),
+                get(),
+                FeeType.Priority
+            ) as TransactionExecutorWithoutFees
+        }
+
+        factory("Regular") {
+            get<TransactionExecutorWithoutFees>("Regular") as MaximumSpendableCalculator
+        }
+
+        factory("Priority") {
+            get<TransactionExecutorWithoutFees>("Priority") as MaximumSpendableCalculator
+        }
 
         factory("BTC") { BtcAccountListAdapter(get()) as AccountList }
         factory("BCH") { BchAccountListAdapter(get()) as AccountList }

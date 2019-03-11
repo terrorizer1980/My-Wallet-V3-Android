@@ -33,7 +33,7 @@ class SelfFeeCalculatingTransactionExecutorTest {
                 executeTransaction(amount, destination, sourceAccount, bitcoinLikeFees, FeeType.Regular, memo)
             } `it returns` Single.just("tran_id")
         }
-        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager)
+        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager, FeeType.Regular)
             .executeTransaction(
                 amount,
                 destination,
@@ -64,7 +64,7 @@ class SelfFeeCalculatingTransactionExecutorTest {
                 getMaximumSpendable(sourceAccount, bitcoinLikeFees, FeeType.Regular)
             } `it returns` Single.just(99.bitcoin())
         }
-        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager)
+        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager, FeeType.Regular)
             .getMaximumSpendable(
                 sourceAccount
             )
@@ -90,7 +90,7 @@ class SelfFeeCalculatingTransactionExecutorTest {
                 getFeeForTransaction(amount, sourceAccount, bitcoinLikeFees, FeeType.Regular)
             } `it returns` Single.just(0.1.bitcoin())
         }
-        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager)
+        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager, FeeType.Regular)
             .getFeeForTransaction(
                 amount,
                 sourceAccount
@@ -114,7 +114,7 @@ class SelfFeeCalculatingTransactionExecutorTest {
         val transactionExecutor: TransactionExecutor = mock {
             on { getChangeAddress(sourceAccount) } `it returns` Single.just("address")
         }
-        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager)
+        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager, FeeType.Regular)
             .getChangeAddress(sourceAccount)
             .test()
             .assertComplete()
@@ -131,7 +131,7 @@ class SelfFeeCalculatingTransactionExecutorTest {
         val transactionExecutor: TransactionExecutor = mock {
             on { getReceiveAddress(sourceAccount) } `it returns` Single.just("address")
         }
-        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager)
+        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager, FeeType.Regular)
             .getReceiveAddress(sourceAccount)
             .test()
             .assertComplete()
@@ -148,12 +148,74 @@ class SelfFeeCalculatingTransactionExecutorTest {
         }
         val sourceAccount = anAccountReference()
         val transactionExecutor: TransactionExecutor = mock()
-        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager)
+        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager, FeeType.Regular)
             .getMaximumSpendable(sourceAccount)
             .test()
             .assertComplete()
             .values().single() `should equal` 0.bitcoin()
         verifyZeroInteractions(transactionExecutor)
+        verifyNoMoreInteractions(transactionExecutor)
+    }
+
+    @Test
+    fun `can fetch fees and execute priority transaction`() {
+        val bitcoinLikeFees = givenSomeFees()
+        val feeDataManager = givenFeeDataManager(bitcoinLikeFees)
+        val amount = 10.bitcoin()
+        val sourceAccount = anAccountReference()
+        val destination = "Dest"
+        val memo = Memo("text")
+        val transactionExecutor: TransactionExecutor = mock {
+            on {
+                executeTransaction(amount, destination, sourceAccount, bitcoinLikeFees, FeeType.Priority, memo)
+            } `it returns` Single.just("tran_id")
+        }
+        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager, FeeType.Priority)
+            .executeTransaction(
+                amount,
+                destination,
+                sourceAccount,
+                memo
+            )
+            .test()
+            .assertComplete()
+            .values().single() `should equal` "tran_id"
+        verify(transactionExecutor).executeTransaction(
+            amount,
+            destination,
+            sourceAccount,
+            bitcoinLikeFees,
+            FeeType.Priority,
+            memo
+        )
+        verifyNoMoreInteractions(transactionExecutor)
+    }
+
+    @Test
+    fun `can fetch fees and get fee for priority transaction`() {
+        val bitcoinLikeFees = givenSomeFees()
+        val feeDataManager = givenFeeDataManager(bitcoinLikeFees)
+        val amount = 10.bitcoin()
+        val sourceAccount = anAccountReference()
+        val transactionExecutor: TransactionExecutor = mock {
+            on {
+                getFeeForTransaction(amount, sourceAccount, bitcoinLikeFees, FeeType.Priority)
+            } `it returns` Single.just(0.1.bitcoin())
+        }
+        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager, FeeType.Priority)
+            .getFeeForTransaction(
+                amount,
+                sourceAccount
+            )
+            .test()
+            .assertComplete()
+            .values().single() `should equal` 0.1.bitcoin()
+        verify(transactionExecutor).getFeeForTransaction(
+            amount,
+            sourceAccount,
+            bitcoinLikeFees,
+            FeeType.Priority
+        )
         verifyNoMoreInteractions(transactionExecutor)
     }
 }

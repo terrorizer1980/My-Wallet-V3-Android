@@ -14,7 +14,7 @@ val morphUiModule = applicationContext {
 
     context("Payload") {
 
-        factory { ExchangeConfirmationPresenter(get(), get(), get()) }
+        factory { ExchangeConfirmationPresenter(get("Priority"), get(), get()) }
 
         factory("merge") {
             MergingMorphTradeDataManager(
@@ -27,7 +27,7 @@ val morphUiModule = applicationContext {
 
         context("Quotes") {
 
-            factory { ExchangeModel(get(), get(), get(), get(), get(), get()) }
+            factory { ExchangeModel(get(), get(), get(), get(), get("Priority"), get()) }
         }
     }
 

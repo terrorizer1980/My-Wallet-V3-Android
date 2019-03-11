@@ -1,5 +1,6 @@
 package com.blockchain.datamanagers
 
+import com.blockchain.datamanagers.fees.FeeType
 import com.blockchain.datamanagers.fees.getFeeOptions
 import com.blockchain.transactions.Memo
 import info.blockchain.balance.AccountReference
@@ -10,7 +11,8 @@ import timber.log.Timber
 
 internal class SelfFeeCalculatingTransactionExecutor(
     private val transactionExecutor: TransactionExecutor,
-    private val feeDataManager: FeeDataManager
+    private val feeDataManager: FeeDataManager,
+    private val feeType: FeeType
 ) : TransactionExecutorWithoutFees, TransactionExecutorAddresses by transactionExecutor {
 
     override fun getFeeForTransaction(amount: CryptoValue, account: AccountReference): Single<CryptoValue> {
@@ -19,7 +21,8 @@ internal class SelfFeeCalculatingTransactionExecutor(
                 transactionExecutor.getFeeForTransaction(
                     amount,
                     account,
-                    fees
+                    fees,
+                    feeType
                 )
             }
     }
@@ -37,7 +40,8 @@ internal class SelfFeeCalculatingTransactionExecutor(
                     destination,
                     sourceAccount,
                     fees,
-                    memo = memo
+                    feeType,
+                    memo
                 )
             }
     }

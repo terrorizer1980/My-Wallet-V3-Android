@@ -184,7 +184,7 @@ val fakesModule = applicationContext {
         } as TradeExecutionService
     }
 
-    bean {
+    bean("Priority") {
         object : TransactionExecutorWithoutFees {
 
             override fun getFeeForTransaction(
@@ -238,7 +238,7 @@ val fakesModule = applicationContext {
         } as QuoteServiceFactory
     }
 
-    bean {
+    bean("Priority") {
         object : MaximumSpendableCalculator {
             override fun getMaximumSpendable(accountReference: AccountReference): Single<CryptoValue> {
                 return Single.just(accountReference.cryptoCurrency.withMajorValue(1000.toBigDecimal()))
