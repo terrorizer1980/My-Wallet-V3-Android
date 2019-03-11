@@ -22,10 +22,10 @@ internal class CoinifyKycModalPopupAnnouncement(
             return Single.just(false)
         }
 
-        // TODO: AND-1980 use firebase remote config
         return Single.merge(
             didNotStartGoldLevelKyc(),
-            isCoinifyTrader()
+            isCoinifyTrader(),
+            showPopupFeatureFlag.enabled
         ).all { it }
             .doOnSuccess { didShowPopup = it }
     }
