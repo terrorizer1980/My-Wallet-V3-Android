@@ -6,7 +6,7 @@ import info.blockchain.wallet.api.data.FeeLimits;
 import info.blockchain.wallet.api.data.FeeOptions;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+
 import org.web3j.tx.Transfer;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
@@ -39,7 +39,7 @@ public class FeeDataManager {
         if (environmentSettings.getEnvironment().equals(Environment.TESTNET)) {
             return Observable.just(createTestnetFeeOptions());
         } else {
-            return rxPinning.call(() -> feeApi.getFeeOptions())
+            return rxPinning.call(() -> feeApi.getBtcFeeOptions())
                     .onErrorReturnItem(FeeOptions.defaultForBtc())
                     .observeOn(AndroidSchedulers.mainThread());
         }

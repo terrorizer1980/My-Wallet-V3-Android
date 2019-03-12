@@ -83,7 +83,7 @@ class FeeDataManagerTest {
 
     @Test
     fun `Use default BTC fee on API Error`() {
-        whenever(feeApi.feeOptions)
+        whenever(feeApi.btcFeeOptions)
             .thenReturn(Observable.error(Throwable()))
         whenever(environmentSettings.environment)
             .thenReturn(Environment.STAGING)

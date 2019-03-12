@@ -30,7 +30,7 @@ public class FeeApiTest extends MockedResponseTest {
 
         mockInterceptor.setResponseString(feeOptions);
         mockInterceptor.setResponseCode(200);
-        final TestObserver<FeeOptions> testObserver = feeApi.getFeeOptions().test();
+        final TestObserver<FeeOptions> testObserver = feeApi.getBtcFeeOptions().test();
 
         testObserver.assertComplete();
         testObserver.assertNoErrors();
