@@ -21,11 +21,6 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
-interface XlmFees {
-
-    val perOperationFee: Single<CryptoValue>
-}
-
 class XlmDataManager internal constructor(
     private val horizonProxy: HorizonProxy,
     metaDataInitializer: XlmMetaDataInitializer,

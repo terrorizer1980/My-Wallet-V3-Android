@@ -59,6 +59,21 @@ class HorizonProxyTest : AutoCloseKoinTest() {
     }
 
     @Test
+    fun `get xlm fees`() {
+        server.expect().get().withPath("/operation_fee_stats")
+            .andReturn(
+                200,
+                getStringFromResource("fees/fee_stats.json")
+            )
+            .once()
+
+        val proxy = get<HorizonProxy>()
+
+        val fees = proxy.fees()
+        fees `should equal` 100.stroops()
+    }
+
+    @Test
     fun `get xlm balance`() {
         server.expect().get().withPath("/accounts/GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
             .andReturn(

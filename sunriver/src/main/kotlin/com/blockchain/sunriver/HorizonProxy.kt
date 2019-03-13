@@ -38,6 +38,15 @@ internal class HorizonProxy(url: String) {
         }
     }
 
+    fun fees(): CryptoValue? = try {
+        val lastLedgerBaseFee = server.operationFeeStats()
+            .execute()
+            .lastLedgerBaseFee
+        CryptoValue.lumensFromStroop(lastLedgerBaseFee.toBigInteger())
+    } catch (e: ErrorResponse) {
+        null
+    }
+
     fun accountExists(accountId: String) = accountExists(KeyPair.fromAccountId(accountId))
 
     private fun accountExists(keyPair: KeyPair) = findAccount(keyPair) != null

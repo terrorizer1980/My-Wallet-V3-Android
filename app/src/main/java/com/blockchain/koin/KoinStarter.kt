@@ -18,7 +18,6 @@ import com.blockchain.koin.modules.nabuUrlModule
 import com.blockchain.koin.modules.serviceModule
 import com.blockchain.koin.modules.shapeShiftModule
 import com.blockchain.koin.modules.urls
-import com.blockchain.koin.modules.xlmModule
 import com.blockchain.lockbox.koin.lockboxModule
 import com.blockchain.network.modules.apiModule
 import com.blockchain.notifications.koin.notificationModule
@@ -62,8 +61,7 @@ object KoinStarter {
                 homeBrewModule,
                 notificationModule,
                 sunriverModule,
-                lockboxModule,
-                xlmModule
+                lockboxModule
             ),
             extraProperties = features + appProperties + keys + urls,
             logger = TimberLogger()
