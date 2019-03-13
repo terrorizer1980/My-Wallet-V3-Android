@@ -11,9 +11,11 @@ class EthereumFeesTest {
         // One Gwei = 1000,000,000 wei
         EthereumFees(
             1,
+            2,
             1
         ).apply {
-            gasPriceInWei `should equal` (1000_000_000).toBigInteger()
+            gasPriceRegularInWei `should equal` (1000_000_000).toBigInteger()
+            gasPricePriorityGweiInWei `should equal` (2000_000_000).toBigInteger()
             gasLimitInGwei `should equal` 1.toBigInteger()
         }
     }
@@ -22,9 +24,11 @@ class EthereumFeesTest {
     fun `given gas price and limit, should return absolute fee in wei`() {
         EthereumFees(
             5,
+            10,
             5
         ).apply {
-            absoluteFeeInWei `should equal` CryptoValue.etherFromWei(25_000_000_000.toBigInteger())
+            absoluteRegularFeeInWei `should equal` CryptoValue.etherFromWei(25_000_000_000.toBigInteger())
+            absolutePriorityFeeInWei `should equal` CryptoValue.etherFromWei(50_000_000_000.toBigInteger())
         }
     }
 }

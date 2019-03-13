@@ -59,7 +59,8 @@ internal class TransactionExecutorViaDataManagers(
                 amount,
                 destination,
                 sourceAccount.toJsonAccount(),
-                fees as EthereumFees
+                fees as EthereumFees,
+                feeType
             )
             CryptoCurrency.BCH -> sendBchTransaction(
                 amount,
@@ -98,7 +99,12 @@ internal class TransactionExecutorViaDataManagers(
                 amount,
                 (fees as BitcoinLikeFees).feeForType(feeType)
             )
-            is AccountReference.Ethereum -> (fees as EthereumFees).absoluteFeeInWei.just()
+            is AccountReference.Ethereum -> {
+                when (feeType) {
+                    FeeType.Regular -> (fees as EthereumFees).absoluteRegularFeeInWei.just()
+                    FeeType.Priority -> (fees as EthereumFees).absolutePriorityFeeInWei.just()
+                }
+            }
             is AccountReference.Xlm -> (fees as XlmFees).perOperationFee.just()
         }
 
@@ -149,7 +155,7 @@ internal class TransactionExecutorViaDataManagers(
     private fun getMaxEther(fees: EthereumFees): Single<CryptoValue> =
         ethDataManager.fetchEthAddress()
             .map {
-                (it.getAddressResponse()!!.balance - fees.absoluteFeeInWei.amount).max(BigInteger.ZERO)
+                (it.getAddressResponse()!!.balance - fees.absoluteRegularFeeInWei.amount).max(BigInteger.ZERO)
             }
             .map { CryptoValue.etherFromWei(it) }
             .doOnError { Timber.e(it) }
@@ -210,7 +216,8 @@ internal class TransactionExecutorViaDataManagers(
         amount: CryptoValue,
         destination: String,
         account: EthereumAccount,
-        fees: EthereumFees
+        fees: EthereumFees,
+        feeType: FeeType
     ): Single<String> =
         ethDataManager.isLastTxPending()
             .singleOrError()
@@ -218,13 +225,17 @@ internal class TransactionExecutorViaDataManagers(
                 if (it == true)
                     throw TransactionInProgressException("Transaction pending, user cannot send funds at this time")
             }
-            .flatMap { _ ->
+            .flatMap {
                 ethDataManager.fetchEthAddress()
                     .map {
+                        val gasPrice = when (feeType) {
+                            FeeType.Regular -> fees.gasPriceRegularInWei
+                            FeeType.Priority -> fees.gasPricePriorityGweiInWei
+                        }
                         ethDataManager.createEthTransaction(
                             nonce = ethDataManager.getEthResponseModel()!!.getNonce(),
                             to = destination,
-                            gasPriceWei = fees.gasPriceInWei,
+                            gasPriceWei = gasPrice,
                             gasLimitGwei = fees.gasLimitInGwei,
                             weiValue = amount.amount
                         )

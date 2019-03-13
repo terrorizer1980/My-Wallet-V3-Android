@@ -82,6 +82,116 @@ class TransactionExecutorViaDataManagersTest {
     }
 
     @Test
+    fun `execute ethereum transaction should set regular fee by default`() {
+        val amount = CryptoValue.etherFromWei(10.toBigInteger())
+        val destination = "DESTINATION"
+        val account: EthereumAccount = mock()
+        val combinedEthModel: CombinedEthModel = mock()
+        val accountReference = AccountReference.Ethereum("", "")
+        whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)).thenReturn(account)
+        whenever(ethDataManager.isLastTxPending()).thenReturn(Observable.just(false))
+        whenever(ethDataManager.fetchEthAddress())
+            .thenReturn(Observable.just(combinedEthModel))
+        whenever(ethDataManager.getEthResponseModel())
+            .thenReturn(combinedEthModel)
+        whenever(combinedEthModel.getNonce())
+            .thenReturn(BigInteger.ONE)
+        val rawTransaction: RawTransaction = mock()
+        whenever(
+            ethDataManager.createEthTransaction(
+                BigInteger.ONE,
+                destination,
+                ethereumNetworkFee.gasPriceRegularInWei,
+                ethereumNetworkFee.gasLimitInGwei,
+                amount.amount
+            )
+        ).thenReturn(rawTransaction)
+        val deterministicKey: DeterministicKey = mock()
+        whenever(payloadDataManager.masterKey)
+            .thenReturn(deterministicKey)
+        val ecKey = ECKey()
+        whenever(ethereumAccountWrapper.deriveECKey(deterministicKey, 0))
+            .thenReturn(ecKey)
+        val signedTx = ByteArray(0)
+        whenever(account.signTransaction(rawTransaction, ecKey))
+            .thenReturn(signedTx)
+        val txHash = "TX_HASH"
+        whenever(ethDataManager.pushEthTx(signedTx))
+            .thenReturn(Observable.just(txHash))
+        whenever(ethDataManager.setLastTxHashObservable(eq(txHash), any()))
+            .thenReturn(Observable.just(txHash))
+
+        // Act
+        subject.executeTransaction(amount, destination, accountReference, ethereumNetworkFee)
+            .test()
+            .assertComplete()
+
+        // Assert
+        verify(ethDataManager).createEthTransaction(
+            nonce = BigInteger.ONE,
+            to = destination,
+            gasPriceWei = ethereumNetworkFee.gasPriceRegularInWei,
+            gasLimitGwei = ethereumNetworkFee.gasLimitInGwei,
+            weiValue = amount.amount
+        )
+    }
+
+    @Test
+    fun `execute ethereum transaction with high priority fee`() {
+        val amount = CryptoValue.etherFromWei(10.toBigInteger())
+        val destination = "DESTINATION"
+        val account: EthereumAccount = mock()
+        val combinedEthModel: CombinedEthModel = mock()
+        val accountReference = AccountReference.Ethereum("", "")
+        whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)).thenReturn(account)
+        whenever(ethDataManager.isLastTxPending()).thenReturn(Observable.just(false))
+        whenever(ethDataManager.fetchEthAddress())
+            .thenReturn(Observable.just(combinedEthModel))
+        whenever(ethDataManager.getEthResponseModel())
+            .thenReturn(combinedEthModel)
+        whenever(combinedEthModel.getNonce())
+            .thenReturn(BigInteger.ONE)
+        val rawTransaction: RawTransaction = mock()
+        whenever(
+            ethDataManager.createEthTransaction(
+                BigInteger.ONE,
+                destination,
+                ethereumNetworkFee.gasPricePriorityGweiInWei,
+                ethereumNetworkFee.gasLimitInGwei,
+                amount.amount
+            )
+        ).thenReturn(rawTransaction)
+        val deterministicKey: DeterministicKey = mock()
+        whenever(payloadDataManager.masterKey)
+            .thenReturn(deterministicKey)
+        val ecKey = ECKey()
+        whenever(ethereumAccountWrapper.deriveECKey(deterministicKey, 0))
+            .thenReturn(ecKey)
+        val signedTx = ByteArray(0)
+        whenever(account.signTransaction(rawTransaction, ecKey))
+            .thenReturn(signedTx)
+        val txHash = "TX_HASH"
+        whenever(ethDataManager.pushEthTx(signedTx))
+            .thenReturn(Observable.just(txHash))
+        whenever(ethDataManager.setLastTxHashObservable(eq(txHash), any()))
+            .thenReturn(Observable.just(txHash))
+
+        // Act
+        subject.executeTransaction(amount, destination, accountReference, ethereumNetworkFee, FeeType.Priority)
+            .test()
+            .assertComplete()
+
+        // Assert
+        verify(ethDataManager).createEthTransaction(
+            nonce = BigInteger.ONE,
+            to = destination,
+            gasPriceWei = ethereumNetworkFee.gasPricePriorityGweiInWei,
+            gasLimitGwei = ethereumNetworkFee.gasLimitInGwei,
+            weiValue = amount.amount
+        )
+    }
+
+    @Test
     fun `execute bitcoin transaction should set regular fee by default`() {
         // Arrange
         val amount = CryptoValue.bitcoinFromSatoshis(10)
@@ -264,7 +374,7 @@ class TransactionExecutorViaDataManagersTest {
             ethDataManager.createEthTransaction(
                 BigInteger.ONE,
                 destination,
-                ethereumNetworkFee.gasPriceInWei,
+                ethereumNetworkFee.gasPriceRegularInWei,
                 ethereumNetworkFee.gasLimitInGwei,
                 amount.amount
             )
@@ -293,7 +403,7 @@ class TransactionExecutorViaDataManagersTest {
         verify(ethDataManager).createEthTransaction(
             BigInteger.ONE,
             destination,
-            ethereumNetworkFee.gasPriceInWei,
+            ethereumNetworkFee.gasPriceRegularInWei,
             ethereumNetworkFee.gasLimitInGwei,
             amount.amount
         )
@@ -500,7 +610,7 @@ class TransactionExecutorViaDataManagersTest {
         testObserver.assertValue(
             CryptoValue.etherFromWei(
                 1_000_000_000_000_000_000L.toBigInteger() -
-                    ethereumNetworkFee.absoluteFeeInWei.amount
+                    ethereumNetworkFee.absoluteRegularFeeInWei.amount
             )
         )
     }
@@ -644,7 +754,7 @@ class TransactionExecutorViaDataManagersTest {
             .test()
         // Assert
         testObserver.assertComplete()
-        testObserver.assertValue(ethereumNetworkFee.absoluteFeeInWei)
+        testObserver.assertValue(ethereumNetworkFee.absoluteRegularFeeInWei)
     }
 
     @Test
@@ -770,7 +880,8 @@ class TransactionExecutorViaDataManagersTest {
     )
 
     private val ethereumNetworkFee = EthereumFees(
-        gasPriceGwei = 10L,
+        gasPriceRegularGwei = 10L,
+        gasPricePriorityGwei = 20L,
         gasLimitGwei = 21000L
     )
 
