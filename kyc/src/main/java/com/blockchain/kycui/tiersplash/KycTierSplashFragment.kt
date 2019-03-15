@@ -113,7 +113,6 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             }
             KycTierState.Pending -> {
                 layoutElements.icon.setImageDrawable(R.drawable.vector_tier_review)
-                layoutElements.textTierTakes.gone()
                 layoutElements.textTierState.visible()
                 layoutElements.textTierState.text = getString(R.string.in_review)
                 layoutElements.textTierState.setTextColor(
@@ -128,7 +127,6 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             }
             KycTierState.Verified -> {
                 layoutElements.icon.setImageDrawable(R.drawable.vector_tier_verified)
-                layoutElements.textTierTakes.gone()
                 layoutElements.textTierState.visible()
                 layoutElements.textTierState.text = getString(R.string.approved)
                 tier_available_fiat.text = getLimitForTier(tier)
@@ -138,7 +136,6 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
                 button_swap_now.visible()
             }
             else -> {
-                layoutElements.textTierTakes.visible()
                 layoutElements.textTierRequires.visible()
                 layoutElements.icon.setImageDrawable(R.drawable.vector_tier_start)
                 button_learn_more.gone()
@@ -157,7 +154,6 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             textLimit = text_tier1_limit,
             textPeriodicLimit = text_tier1_periodic_limit,
             textTierState = text_tier1_state,
-            textTierTakes = text_tier1_takes,
             textTierRequires = text_tier1_requires
         )
 
@@ -172,7 +168,6 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             textLimit = text_tier2_limit,
             textPeriodicLimit = text_tier2_periodic_limit,
             textTierState = text_tier2_state,
-            textTierTakes = text_tier2_takes,
             textTierRequires = text_tier2_requires
         )
 
@@ -286,7 +281,6 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         val textLimit: TextView,
         val textPeriodicLimit: TextView,
         val textTierState: TextView,
-        val textTierTakes: TextView,
         val textTierRequires: TextView
     )
 }
