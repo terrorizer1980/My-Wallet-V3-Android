@@ -8,6 +8,7 @@ import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
+import com.blockchain.sunriver.ui.ClaimFreeCryptoSuccessDialog
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -540,7 +541,13 @@ class DashboardPresenter(
         compositeDisposable += sunriverCampaignHelper
             .registerSunRiverCampaign()
             .doOnError(Timber::e)
-            .subscribe()
+            .subscribeBy(onComplete = {
+                showSignUpToSunRiverCampaignSuccessDialog()
+            })
+    }
+
+    private fun showSignUpToSunRiverCampaignSuccessDialog() {
+        view.showBottomSheetDialog(ClaimFreeCryptoSuccessDialog())
     }
 
     companion object {

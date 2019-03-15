@@ -91,6 +91,11 @@ a thank you when you do!</string>
     <string name="coinify_kyc_dismiss">Learn More</string>
     <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
 
+    <string name="claim_crypto_success_title">Your XLM is on its way!</string>
+    <string name="claim_crypto_success_body">Once your profile is approved for Gold, we will airdrop your free crypto into your Wallet.</string>
+    <string name="claim_crypto_success_cta">Share</string>
+    <string name="claim_crypto_success_dismiss">Dismiss</string>
+
     <!-- Help -->
     <string name="help">Help</string>
     <string name="need_some_help">Need some help?</string>
