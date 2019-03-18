@@ -27,10 +27,10 @@ internal class CoinifyKycModalPopupAnnouncement(
             isCoinifyTrader(),
             showPopupFeatureFlag.enabled
         ).all { it }
-            .doOnSuccess { didShowPopup = it }
     }
 
     override fun show(context: DashboardPresenter) {
+        didShowPopup = true
         context.view.showBottomSheetDialog(CoinifyKycBottomDialog())
     }
 
