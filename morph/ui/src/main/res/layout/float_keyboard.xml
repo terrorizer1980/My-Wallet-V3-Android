@@ -155,11 +155,12 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@string/backspace"
-        app:srcCompat="@drawable/ic_backspace_exchange_blue_26dp"
+        app:srcCompat="@drawable/ic_backspace_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/number0"
-        app:layout_constraintTop_toBottomOf="@+id/number9" />
+        app:layout_constraintTop_toBottomOf="@+id/number9"
+        tools:ignore="VectorDrawableCompat" />
 
 </android.support.constraint.ConstraintLayout>

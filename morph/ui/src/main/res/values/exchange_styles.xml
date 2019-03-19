@@ -8,6 +8,7 @@
 
     <color name="exchange_blue">#FF004A7C</color>
     <color name="feedback_red">#FFF64343</color>
+    <color name="exchange_grey_700">#FF50596B</color>
 
     <style name="ExchangeText">
         <item name="android:fontFamily">@font/montserrat</item>
@@ -33,9 +34,10 @@
     <style name="ExchangeText.ExchangeReceiveHeaders">
         <item name="android:textColor">@color/exchange_blue</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/montserrat_semi_bold</item>
     </style>
 
-    <dimen name="large_exchange_text_size">72sp</dimen>
+    <dimen name="large_exchange_text_size">64sp</dimen>
     <dimen name="small_exchange_text_size">16sp</dimen>
 
     <style name="ExchangeText.LargeValue">
@@ -76,8 +78,9 @@
     <!-- keyboard -->
 
     <style name="KeyboardButton" parent="Widget.AppCompat.Button.Borderless">
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">25sp</item>
         <item name="android:textColor">@color/exchange_blue</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
 </resources>

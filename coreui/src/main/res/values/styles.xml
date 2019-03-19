@@ -74,7 +74,7 @@
         <!-- Enabled colour -->
         <item name="colorControlHighlight">@color/primary_navy_medium</item>
         <!-- Fonts -->
-        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/montserrat_semi_bold</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
         <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
