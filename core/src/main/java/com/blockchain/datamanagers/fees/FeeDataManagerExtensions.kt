@@ -58,7 +58,7 @@ data class EthereumFees(
 
     val gasPriceRegularInWei: BigInteger = gasPriceRegularGwei.gweiToWei()
 
-    val gasPricePriorityGweiInWei: BigInteger = gasPricePriorityGwei.gweiToWei()
+    val gasPricePriorityInWei: BigInteger = gasPricePriorityGwei.gweiToWei()
 
     val gasLimitInGwei: BigInteger = gasLimitGwei.toBigInteger()
 }
