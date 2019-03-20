@@ -48,7 +48,7 @@ internal class SelfFeeCalculatingTransactionExecutor(
 
     override fun getMaximumSpendable(accountReference: AccountReference): Single<CryptoValue> {
         return feeDataManager.getFeeOptions(accountReference.cryptoCurrency)
-            .flatMap { fees -> transactionExecutor.getMaximumSpendable(accountReference, fees) }
+            .flatMap { fees -> transactionExecutor.getMaximumSpendable(accountReference, fees, feeType) }
             .doOnError(Timber::e)
             .onErrorReturn { CryptoValue.zero(accountReference.cryptoCurrency) }
     }

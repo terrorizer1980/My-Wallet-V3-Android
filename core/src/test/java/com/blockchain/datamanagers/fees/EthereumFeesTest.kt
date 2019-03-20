@@ -15,7 +15,7 @@ class EthereumFeesTest {
             1
         ).apply {
             gasPriceRegularInWei `should equal` (1000_000_000).toBigInteger()
-            gasPricePriorityGweiInWei `should equal` (2000_000_000).toBigInteger()
+            gasPricePriorityInWei `should equal` (2000_000_000).toBigInteger()
             gasLimitInGwei `should equal` 1.toBigInteger()
         }
     }

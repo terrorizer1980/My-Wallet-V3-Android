@@ -156,7 +156,7 @@ class TransactionExecutorViaDataManagersTest {
             ethDataManager.createEthTransaction(
                 BigInteger.ONE,
                 destination,
-                ethereumNetworkFee.gasPricePriorityGweiInWei,
+                ethereumNetworkFee.gasPricePriorityInWei,
                 ethereumNetworkFee.gasLimitInGwei,
                 amount.amount
             )
@@ -185,7 +185,7 @@ class TransactionExecutorViaDataManagersTest {
         verify(ethDataManager).createEthTransaction(
             nonce = BigInteger.ONE,
             to = destination,
-            gasPriceWei = ethereumNetworkFee.gasPricePriorityGweiInWei,
+            gasPriceWei = ethereumNetworkFee.gasPricePriorityInWei,
             gasLimitGwei = ethereumNetworkFee.gasLimitInGwei,
             weiValue = amount.amount
         )

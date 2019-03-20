@@ -83,7 +83,7 @@ internal class TransactionExecutorViaDataManagers(
                     fees as BitcoinLikeFees,
                     feeType
                 )
-            is AccountReference.Ethereum -> getMaxEther(fees as EthereumFees)
+            is AccountReference.Ethereum -> getMaxEther(fees as EthereumFees, feeType)
             is AccountReference.Xlm -> defaultAccountDataManager.getMaxSpendableAfterFees()
         }
 
@@ -152,10 +152,14 @@ internal class TransactionExecutorViaDataManagers(
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.zero(cryptoCurrency) }
 
-    private fun getMaxEther(fees: EthereumFees): Single<CryptoValue> =
+    private fun getMaxEther(fees: EthereumFees, feeType: FeeType): Single<CryptoValue> =
         ethDataManager.fetchEthAddress()
             .map {
-                (it.getAddressResponse()!!.balance - fees.absoluteRegularFeeInWei.amount).max(BigInteger.ZERO)
+                val fee = when (feeType) {
+                    is FeeType.Regular -> fees.absoluteRegularFeeInWei
+                    is FeeType.Priority -> fees.absolutePriorityFeeInWei
+                }
+                (it.getAddressResponse()!!.balance - fee.amount).max(BigInteger.ZERO)
             }
             .map { CryptoValue.etherFromWei(it) }
             .doOnError { Timber.e(it) }
@@ -230,7 +234,7 @@ internal class TransactionExecutorViaDataManagers(
                     .map {
                         val gasPrice = when (feeType) {
                             FeeType.Regular -> fees.gasPriceRegularInWei
-                            FeeType.Priority -> fees.gasPricePriorityGweiInWei
+                            FeeType.Priority -> fees.gasPricePriorityInWei
                         }
                         ethDataManager.createEthTransaction(
                             nonce = ethDataManager.getEthResponseModel()!!.getNonce(),

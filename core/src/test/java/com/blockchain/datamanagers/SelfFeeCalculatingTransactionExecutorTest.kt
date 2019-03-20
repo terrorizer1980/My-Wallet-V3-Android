@@ -1,8 +1,10 @@
 package com.blockchain.datamanagers
 
 import com.blockchain.datamanagers.fees.BitcoinLikeFees
+import com.blockchain.datamanagers.fees.EthereumFees
 import com.blockchain.datamanagers.fees.FeeType
 import com.blockchain.testutils.bitcoin
+import com.blockchain.testutils.ether
 import com.blockchain.transactions.Memo
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -218,9 +220,44 @@ class SelfFeeCalculatingTransactionExecutorTest {
         )
         verifyNoMoreInteractions(transactionExecutor)
     }
+
+    @Test
+    fun `eth get maximum spendable with priority fee`() {
+        val ethereumFees = givenSomeEthFees()
+        val feeDataManager = givenEthFeeDataManager(ethereumFees)
+        val sourceAccount = anEthAccountReference()
+        val transactionExecutor: TransactionExecutor = mock {
+            on {
+                getMaximumSpendable(sourceAccount, ethereumFees, FeeType.Priority)
+            } `it returns` Single.just(9.ether())
+        }
+        SelfFeeCalculatingTransactionExecutor(transactionExecutor, feeDataManager, FeeType.Priority)
+            .getMaximumSpendable(sourceAccount)
+            .test()
+            .assertComplete()
+            .values()
+            .single() `should equal` 9.ether()
+        verify(transactionExecutor).getMaximumSpendable(
+            sourceAccount,
+            ethereumFees,
+            FeeType.Priority
+        )
+        verifyNoMoreInteractions(transactionExecutor)
+    }
 }
 
+private fun givenSomeEthFees() = EthereumFees(10, 20, 10)
+
 private fun givenSomeFees() = BitcoinLikeFees(10, 20)
+
+private fun givenEthFeeDataManager(ethFees: EthereumFees): FeeDataManager =
+    mock {
+        on { ethFeeOptions } `it returns` Observable.just(FeeOptions().apply {
+            regularFee = ethFees.gasPriceRegularInWei.toLong() / 1_000_000_000L
+            priorityFee = ethFees.gasPricePriorityInWei.toLong() / 1_000_000_000L
+            gasLimit = ethFees.gasLimitInGwei.toLong()
+        })
+    }
 
 private fun givenFeeDataManager(bitcoinLikeFees: BitcoinLikeFees): FeeDataManager =
     mock {
@@ -231,3 +268,5 @@ private fun givenFeeDataManager(bitcoinLikeFees: BitcoinLikeFees): FeeDataManage
     }
 
 private fun anAccountReference(): AccountReference = AccountReference.BitcoinLike(CryptoCurrency.BTC, "", "")
+
+private fun anEthAccountReference(): AccountReference = AccountReference.Ethereum("", "")
