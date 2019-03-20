@@ -3,6 +3,7 @@ package com.blockchain.testutils
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import java.math.BigDecimal
+import java.math.BigInteger
 
 fun Number.gbp() = FiatValue.fromMajor("GBP", numberToBigDecimal())
 
@@ -19,7 +20,16 @@ private fun Number.numberToBigDecimal(): BigDecimal =
         else -> throw NotImplementedError(this.javaClass.name)
     }
 
+private fun Number.numberToBigInteger(): BigInteger =
+    when (this) {
+        is BigInteger -> this
+        is Int -> toBigInteger()
+        is Long -> toBigInteger()
+        else -> throw NotImplementedError(this.javaClass.name)
+    }
+
 fun Number.bitcoin() = CryptoValue.bitcoinFromMajor(numberToBigDecimal())
+fun Number.satoshi() = CryptoValue.bitcoinFromSatoshis(numberToBigInteger())
 fun Number.ether() = CryptoValue.etherFromMajor(numberToBigDecimal())
 fun Number.bitcoinCash() = CryptoValue.bitcoinCashFromMajor(numberToBigDecimal())
 fun Number.lumens() = CryptoValue.lumensFromMajor(numberToBigDecimal())

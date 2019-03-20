@@ -56,7 +56,7 @@ public final class PaymentReplayProtectionTest extends MockedResponseTest {
                 .getMaximumAvailable(unspentOutputs, feePerKb, addReplayProtection);
 
         // Added extra input and output for dust-service
-        long feeManual = calculateFee(2, 2, feePerKb, true);
+        long feeManual = calculateFee(1, 2, feePerKb, true);
 
         assertEquals(feeManual, sweepBundle.getRight().longValue());
         // Available would be our amount + fake dust

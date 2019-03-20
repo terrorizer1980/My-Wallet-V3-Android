@@ -4,11 +4,13 @@ import info.blockchain.api.blockexplorer.BlockExplorer;
 import info.blockchain.api.data.UnspentOutput;
 import info.blockchain.api.data.UnspentOutputs;
 import info.blockchain.wallet.BlockchainFramework;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.bitcoinj.script.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
+
 import retrofit2.Call;
 
 import java.math.BigInteger;
@@ -35,6 +37,15 @@ class Coins {
         return blockExplorer.getUnspentOutputs("bch", addresses, null, null);
     }
 
+    /**
+     * Computes the available amount to send and the associated fee in satoshis provided a list of
+     * coins and the fee per Kilobyte.
+     *
+     * @param coins               the UTXOs
+     * @param feePerKb            the fee per KB
+     * @param addReplayProtection boolean whether replay protection should be considered
+     * @return a Pair of maximum available amount to send and the associated fee in satoshis.
+     */
     public static Pair<BigInteger, BigInteger> getMaximumAvailable(UnspentOutputs coins,
                                                                    BigInteger feePerKb,
                                                                    boolean addReplayProtection) {
@@ -64,18 +75,14 @@ class Coins {
         for (int i = 0; i < unspentOutputs.size(); i++) {
             UnspentOutput output = unspentOutputs.get(i);
             // Filter usable coins
-            if (output.isForceInclude() || output.getValue().doubleValue() >= inputCost) {
+            if (output.isForceInclude() || output.getValue().doubleValue() > inputCost) {
                 usableCoins.add(output);
                 sweepBalance = sweepBalance.add(output.getValue());
             }
         }
 
         // All inputs, 1 output = no change. (Correct way)
-        // sweepFee = Fees.estimatedFee(usableCoins.size(), 1, feePerKb);
-
-        // Assume 2 outputs to line up with web. Not 100% correct but acceptable to
-        // keep values across platforms constant.
-        int outputCount = 2;
+        int outputCount = 1;
 
         BigInteger sweepFee = calculateFee(usableCoins.size(),
                 outputCount,
@@ -91,7 +98,8 @@ class Coins {
     }
 
     /**
-     * Sort in order - 1 smallest non-replayable coin, descending replayable, descending non-relayable
+     * Sort in order - 1 smallest non-replayable coin, descending replayable, descending
+     * non-replayable
      */
     private static ArrayList<UnspentOutput> getSortedCoins(ArrayList<UnspentOutput> unspentOutputs) {
         ArrayList<UnspentOutput> sortedCoins = new ArrayList<>();
@@ -124,6 +132,15 @@ class Coins {
         return sortedCoins;
     }
 
+    /**
+     * Returns the spendable coins provided the desired amount to send.
+     *
+     * @param coins               a list of coins
+     * @param paymentAmount       the desired amount to send
+     * @param feePerKb            the fee per KB
+     * @param addReplayProtection whether or no replay protection should be considered
+     * @return a list of spendable coins
+     */
     public static SpendableUnspentOutputs getMinimumCoinsForPayment(UnspentOutputs coins,
                                                                     BigInteger paymentAmount,
                                                                     BigInteger feePerKb,
@@ -147,7 +164,6 @@ class Coins {
 
         double inputCost = inputCost(feePerKb);
 
-        int outputCount = 2;//initially assume change
 
         final boolean requiresReplayProtection = requiresReplayProtection(unspentOutputs);
         final boolean includesReplayDust = addReplayProtection && requiresReplayProtection;
@@ -156,6 +172,8 @@ class Coins {
             unspentOutputs.add(0, getPlaceholderDustInput());
         }
 
+        // initially assume change
+        int outputCount = 2;
         for (int i = 0; i < unspentOutputs.size(); i++) {
             UnspentOutput output = unspentOutputs.get(i);
 
@@ -172,6 +190,7 @@ class Coins {
 
             // Collect coin
             spendWorthyList.add(output);
+
             collectedAmount = collectedAmount.add(output.getValue());
 
             // Fee
@@ -228,8 +247,8 @@ class Coins {
         }
     }
 
-    private static BigInteger estimateAmount(int CoinCount, BigInteger paymentAmount, BigInteger feePerKb, int outputCount) {
-        BigInteger fee = Fees.estimatedFee(CoinCount, outputCount, feePerKb);
+    private static BigInteger estimateAmount(int coinCount, BigInteger paymentAmount, BigInteger feePerKb, int outputCount) {
+        BigInteger fee = Fees.estimatedFee(coinCount, outputCount, feePerKb);
         return paymentAmount.add(fee);
     }
 
