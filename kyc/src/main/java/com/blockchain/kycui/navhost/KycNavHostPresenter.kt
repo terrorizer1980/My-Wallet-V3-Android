@@ -6,6 +6,7 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.UserState
+import com.blockchain.kyc.services.nabu.TierUpdater
 import com.blockchain.kycui.logging.KycResumedEvent
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.profile.models.ProfileModel
@@ -24,7 +25,8 @@ class KycNavHostPresenter(
     nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
     private val reentryDecision: ReentryDecision,
-    private val kycNavigator: KycNavigator
+    private val kycNavigator: KycNavigator,
+    private val tierUpdater: TierUpdater
 ) : BaseKycPresenter<KycNavHostView>(nabuToken) {
 
     override fun onViewReady() {
@@ -60,6 +62,10 @@ class KycNavHostPresenter(
                 Logging.logCustom(KycResumedEvent(reentryPoint))
             }
         } else if (view.campaignType == CampaignType.Sunriver) {
+            compositeDisposable += tierUpdater
+                .setUserTier(2)
+                .doOnError(Timber::e)
+                .subscribe()
             view.navigateToAirdropSplash()
         }
 

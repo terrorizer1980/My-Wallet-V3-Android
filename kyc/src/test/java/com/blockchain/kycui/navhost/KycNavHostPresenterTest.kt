@@ -9,6 +9,7 @@ import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.Tiers
 import com.blockchain.kyc.models.nabu.UserState
+import com.blockchain.kyc.services.nabu.TierUpdater
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.reentry.ReentryDecision
 import com.blockchain.kycui.reentry.ReentryDecisionKycNavigator
@@ -19,6 +20,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import io.reactivex.Completable
 import io.reactivex.Single
 import org.amshove.kluent.mock
 import org.junit.Before
@@ -33,6 +35,7 @@ class KycNavHostPresenterTest {
     private val nabuDataManager: NabuDataManager = mock()
     private val nabuToken: NabuToken = mock()
     private val reentryDecision: ReentryDecision = mock()
+    private val tierUpdater: TierUpdater = mock()
 
     @Suppress("unused")
     @get:Rule
@@ -47,7 +50,8 @@ class KycNavHostPresenterTest {
             nabuToken,
             nabuDataManager,
             reentryDecision,
-            ReentryDecisionKycNavigator(mock(), mock(), mock())
+            ReentryDecisionKycNavigator(mock(), mock(), mock()),
+            tierUpdater
         )
         subject.initView(view)
     }
@@ -136,6 +140,9 @@ class KycNavHostPresenterTest {
         whenever(
             nabuToken.fetchNabuToken()
         ).thenReturn(Single.just(validOfflineToken))
+        whenever(
+            tierUpdater.setUserTier(2)
+        ).thenReturn(Completable.complete())
         whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(
                 Single.just(
