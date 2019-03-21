@@ -113,13 +113,12 @@ class DashboardPresenter(
         compositeDisposable += balanceUpdateDisposable
 
         // Triggers various updates to the page once all metadata is loaded
-        observable.flatMap { getOnboardingStatusObservable() }
+        compositeDisposable += observable.flatMap { getOnboardingStatusObservable() }
             // Clears subscription after single event
             .firstOrError()
             .doOnSuccess { updateAllBalances() }
             .doOnSuccess { checkLatestAnnouncements() }
             .flatMapCompletable { swipeToReceiveHelper.storeEthAddress() }
-            .addToCompositeDisposable(this)
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
@@ -255,20 +254,17 @@ class DashboardPresenter(
     }
 
     private fun checkLatestAnnouncements() {
-        // If user hasn't completed onboarding, ignore announcements
-        if (isOnboardingComplete()) {
-            displayList.removeAll { it is AnnouncementData }
-            // TODO: AND-1691 This is disabled temporarily for now until onboarding/announcements have been rethought.
+        displayList.removeAll { it is AnnouncementData }
+        // TODO: AND-1691 This is disabled temporarily for now until onboarding/announcements have been rethought.
 //            checkNativeBuySellAnnouncement()
-            compositeDisposable +=
-                checkKycResubmissionPrompt()
-                    .switchIfEmpty(checkDashboardAnnouncements())
-                    .switchIfEmpty(checkKycPrompt())
-                    .switchIfEmpty(addSunriverPrompts())
-                    .subscribeBy(
-                        onError = Timber::e
-                    )
-        }
+        compositeDisposable +=
+            checkKycResubmissionPrompt()
+                .switchIfEmpty(checkDashboardAnnouncements())
+                .switchIfEmpty(checkKycPrompt())
+                .switchIfEmpty(addSunriverPrompts())
+                .subscribeBy(
+                    onError = Timber::e
+                )
     }
 
     private fun checkDashboardAnnouncements(): Maybe<Unit> =
