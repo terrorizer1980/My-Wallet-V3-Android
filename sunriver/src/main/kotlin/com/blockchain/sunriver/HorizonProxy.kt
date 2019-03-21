@@ -24,6 +24,8 @@ import java.io.IOException
 import java.math.BigDecimal
 import java.math.BigInteger
 
+private val basePerOperationFee = CryptoValue.lumensFromStroop(100.toBigInteger())
+
 internal class HorizonProxy(url: String) {
 
     private val server = Server(url)
@@ -34,6 +36,15 @@ internal class HorizonProxy(url: String) {
         } else {
             Network.usePublicNetwork()
         }
+    }
+
+    fun fees(): CryptoValue? = try {
+        val lastLedgerBaseFee = server.operationFeeStats()
+            .execute()
+            .lastLedgerBaseFee
+        CryptoValue.lumensFromStroop(lastLedgerBaseFee.toBigInteger())
+    } catch (e: ErrorResponse) {
+        null
     }
 
     fun accountExists(accountId: String) = accountExists(KeyPair.fromAccountId(accountId))
@@ -95,9 +106,10 @@ internal class HorizonProxy(url: String) {
         source: KeyPair,
         destinationAccountId: String,
         amount: CryptoValue,
-        memo: Memo
+        memo: Memo,
+        perOperationFee: CryptoValue? = null
     ): SendResult {
-        val result = dryRunTransaction(source, destinationAccountId, amount, memo)
+        val result = dryRunTransaction(source, destinationAccountId, amount, memo, perOperationFee)
         if (!result.success || result.transaction == null) {
             return result
         }
@@ -111,17 +123,12 @@ internal class HorizonProxy(url: String) {
     fun dryRunTransaction(
         source: KeyPair,
         destinationAccountId: String,
-        amount: CryptoValue
-    ): SendResult =
-        dryRunTransaction(source, destinationAccountId, amount, Memo.none())
-
-    fun dryRunTransaction(
-        source: KeyPair,
-        destinationAccountId: String,
         amount: CryptoValue,
-        memo: Memo
+        memo: Memo,
+        perOperationFee: CryptoValue? = null
     ): SendResult {
         if (amount.currency != CryptoCurrency.XLM) throw IllegalArgumentException()
+        if (perOperationFee != null && perOperationFee.currency != CryptoCurrency.XLM) throw IllegalArgumentException()
         val destination: KeyPair = try {
             KeyPair.fromAccountId(destinationAccountId)
         } catch (e: Exception) {
@@ -148,7 +155,14 @@ internal class HorizonProxy(url: String) {
         }
         val account = server.accounts().account(source)
         val transaction =
-            createUnsignedTransaction(account, destination, destinationAccountExists, amount.toBigDecimal(), memo)
+            createUnsignedTransaction(
+                account,
+                destination,
+                destinationAccountExists,
+                amount.toBigDecimal(),
+                memo,
+                perOperationFee
+            )
         val fee = CryptoValue.lumensFromStroop(transaction.fee.toBigInteger())
         val total = amount + fee
         val minBalance = minBalance(minReserve, account.subentryCount)
@@ -210,10 +224,13 @@ internal class HorizonProxy(url: String) {
         destination: KeyPair,
         destinationAccountExists: Boolean,
         amount: BigDecimal,
-        memo: Memo
+        memo: Memo,
+        perOperationFee: CryptoValue? = null
     ): Transaction =
         Transaction.Builder(source)
+            .setTimeout(Transaction.Builder.TIMEOUT_INFINITE)
             .addOperation(buildTransactionOperation(destination, destinationAccountExists, amount.toPlainString()))
+            .setOperationFee((perOperationFee ?: basePerOperationFee).amount.toInt())
             .addMemo(memo)
             .build()
 

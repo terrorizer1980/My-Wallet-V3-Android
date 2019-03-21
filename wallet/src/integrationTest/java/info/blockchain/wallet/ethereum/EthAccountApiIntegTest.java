@@ -1,9 +1,11 @@
 package info.blockchain.wallet.ethereum;
 
+import info.blockchain.wallet.ApiCode;
 import info.blockchain.wallet.BaseIntegTest;
 import info.blockchain.wallet.ethereum.data.EthAddressResponseMap;
 import info.blockchain.wallet.ethereum.data.EthTxDetails;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -15,7 +17,13 @@ import static org.junit.Assert.assertNotNull;
 
 public class EthAccountApiIntegTest extends BaseIntegTest {
 
-    private EthAccountApi accountApi = new EthAccountApi();
+    private EthAccountApi accountApi = new EthAccountApi(new ApiCode() {
+        @NotNull
+        @Override
+        public String getApiCode() {
+            return "testing";
+        }
+    });
 
     @Test
     public void getEthAddress() {

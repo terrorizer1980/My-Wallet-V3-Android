@@ -13,7 +13,7 @@ data class AddressModel(
     val firstLine: String,
     val secondLine: String?,
     val city: String,
-    val state: String?,
+    val state: String,
     val postCode: String,
     val country: String
 )

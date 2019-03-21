@@ -2,15 +2,6 @@ apply plugin: 'kotlin'
 apply from: '../quality/jacocoKtLibrary.gradle'
 apply from: '../quality/ktlint.gradle'
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath Libraries.kotlinGradlePlugin
-    }
-}
-
 sourceCompatibility = Versions.javaCompatibilityVersion
 targetCompatibility = Versions.javaCompatibilityVersion
 
@@ -26,7 +17,6 @@ dependencies {
     implementation Libraries.moshiKotlin
 
     // Derivation
-    implementation project(':sunriver:ed25519')
     testImplementation 'io.github.novacrypto:BIP39:2018.10.06'
 
     // Testing

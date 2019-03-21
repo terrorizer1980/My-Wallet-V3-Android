@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.location.Geocoder
 import android.os.Bundle
+import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.SearchView
 import android.view.LayoutInflater
@@ -19,11 +20,12 @@ import com.blockchain.kycui.address.models.AddressDialog
 import com.blockchain.kycui.address.models.AddressIntent
 import com.blockchain.kycui.address.models.AddressModel
 import com.blockchain.kycui.extensions.skipFirstUnless
-import com.blockchain.kycui.mobile.entry.KycMobileEntryFragment
+import com.blockchain.kycui.hyperlinks.renderTermsLinks
+import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
+import com.blockchain.kycui.navigate
 import com.blockchain.kycui.profile.models.ProfileModel
-import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.ui.extensions.throttledClicks
 import com.google.android.gms.common.GoogleApiAvailability
@@ -39,7 +41,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -50,6 +51,8 @@ import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
+import piuk.blockchain.kyc.BuildConfig
+import piuk.blockchain.kyc.KycNavXmlDirections
 import piuk.blockchain.kyc.R
 import timber.log.Timber
 import java.util.Locale
@@ -61,9 +64,13 @@ import kotlinx.android.synthetic.main.fragment_kyc_home_address.edit_text_kyc_ad
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.edit_text_kyc_address_first_line as editTextFirstLine
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.edit_text_kyc_address_state as editTextState
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.edit_text_kyc_address_zip_code as editTextZipCode
+import kotlinx.android.synthetic.main.fragment_kyc_home_address.input_layout_kyc_address_first_line as textInputAddress1
+import kotlinx.android.synthetic.main.fragment_kyc_home_address.input_layout_kyc_address_apt_name as textInputAddress2
+import kotlinx.android.synthetic.main.fragment_kyc_home_address.input_layout_kyc_address_city as textInputCity
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.input_layout_kyc_address_state as textInputLayoutState
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.input_layout_kyc_address_zip_code as textInputLayoutZipCode
 import kotlinx.android.synthetic.main.fragment_kyc_home_address.search_view_kyc_address as searchViewAddress
+import kotlinx.android.synthetic.main.fragment_kyc_home_address.text_view_kyc_terms_and_conditions as textViewTerms
 
 class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddressPresenter>(),
     KycHomeAddressView {
@@ -73,14 +80,14 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
     private val compositeDisposable = CompositeDisposable()
     private var progressDialog: MaterialProgressDialog? = null
     override val profileModel: ProfileModel by unsafeLazy {
-        arguments!!.getParcelable(ARGUMENT_PROFILE_MODEL) as ProfileModel
+        KycHomeAddressFragmentArgs.fromBundle(arguments).profileModel
     }
     private val initialState by unsafeLazy {
         AddressModel(
             "",
             null,
             "",
-            null,
+            "",
             "",
             profileModel.countryCode
         )
@@ -99,7 +106,8 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        get<EventLogger>().logEvent(LoggableEvent.KycAddress)
+        logEvent(LoggableEvent.KycAddress)
+        textViewTerms.renderTermsLinks(R.string.kyc_splash_terms_and_conditions_submit)
 
         progressListener.setHostTitle(R.string.kyc_address_title)
         progressListener.incrementProgress(KycStep.AddressPage)
@@ -111,12 +119,27 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
     }
 
     override fun continueToMobileVerification(countryCode: String) {
-        val args = KycMobileEntryFragment.bundleArgs(countryCode)
-        findNavController(this).navigate(R.id.kycPhoneNumberFragment, args)
+        closeKeyboard()
+        navigate(KycNavXmlDirections.ActionStartMobileVerification(countryCode))
     }
 
-    override fun continueToOnfidoSplash() {
-        findNavController(this).navigate(R.id.onfidoSplashFragment)
+    override fun continueToOnfidoSplash(countryCode: String) {
+        closeKeyboard()
+        if (BuildConfig.VERIFF) {
+            navigate(KycNavXmlDirections.ActionStartVeriff(countryCode))
+        } else {
+            navigate(KycNavXmlDirections.ActionStartOnfido(countryCode))
+        }
+    }
+
+    override fun tier1Complete() {
+        closeKeyboard()
+        navigate(KycHomeAddressFragmentDirections.ActionTier1Complete())
+    }
+
+    override fun continueToTier2MoreInfoNeeded(countryCode: String) {
+        closeKeyboard()
+        navigate(KycNavXmlDirections.ActionStartTier2NeedMoreInfo(countryCode))
     }
 
     override fun restoreUiState(
@@ -294,15 +317,21 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
                 R.string.kyc_address_search_hint,
                 getString(R.string.kyc_address_search_hint_zipcode)
             )
-            textInputLayoutState.hint = getString(R.string.kyc_address_address_state_hint)
-            textInputLayoutZipCode.hint = getString(R.string.kyc_address_address_zip_code_hint)
+            setHint(textInputAddress1, getString(R.string.kyc_address_street_line_1), true)
+            setHint(textInputAddress2, getString(R.string.kyc_address_street_line_2), false)
+            setHint(textInputCity, getString(R.string.kyc_address_address_city_hint), true)
+            setHint(textInputLayoutState, getString(R.string.kyc_address_address_state_hint), true)
+            setHint(textInputLayoutZipCode, getString(R.string.kyc_address_address_zip_code_hint), true)
         } else {
             searchViewAddress.queryHint = getString(
                 R.string.kyc_address_search_hint,
                 getString(R.string.kyc_address_search_hint_postcode)
             )
-            textInputLayoutState.hint = getString(R.string.kyc_address_address_county_hint)
-            textInputLayoutZipCode.hint = getString(R.string.kyc_address_address_postcode_hint)
+            setHint(textInputAddress1, getString(R.string.kyc_address_address_line_1), true)
+            setHint(textInputAddress2, getString(R.string.kyc_address_address_line_2), false)
+            setHint(textInputCity, getString(R.string.kyc_address_city_town_village), true)
+            setHint(textInputLayoutState, getString(R.string.kyc_address_state_region_province_county), true)
+            setHint(textInputLayoutZipCode, getString(R.string.kyc_address_postal_code), false)
         }
 
         editTextCountry.setText(
@@ -311,6 +340,10 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
                 profileModel.countryCode
             ).displayCountry
         )
+    }
+
+    private fun setHint(textInput: TextInputLayout, hint: String, isRequired: Boolean) {
+        textInput.hint = if (isRequired) "$hint*" else hint
     }
 
     private fun TextView.onDelayedChange(kycStep: KycStep): Observable<String> =
@@ -348,11 +381,15 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
                         EditorInfo.IME_ACTION_NEXT ->
                             editTexts.nextAfterOrNull { it === editText }?.requestFocus()
                         EditorInfo.IME_ACTION_DONE ->
-                            ViewUtils.hideKeyboard(requireActivity())
+                            closeKeyboard()
                     }
                 }
             }
         }
+    }
+
+    private fun closeKeyboard() {
+        ViewUtils.hideKeyboard(requireActivity())
     }
 
     override fun createPresenter(): KycHomeAddressPresenter = presenter
@@ -365,11 +402,5 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
 
         private const val REQUEST_CODE_PLACE_AUTOCOMPLETE = 707
         private const val REQUEST_CODE_PLAY_SERVICES_RESOLUTION = 708
-
-        private const val ARGUMENT_PROFILE_MODEL = "ARGUMENT_PROFILE_MODEL"
-
-        fun bundleArgs(profileModel: ProfileModel): Bundle = Bundle().apply {
-            putParcelable(ARGUMENT_PROFILE_MODEL, profileModel)
-        }
     }
 }

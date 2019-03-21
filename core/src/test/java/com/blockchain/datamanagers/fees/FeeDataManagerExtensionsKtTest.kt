@@ -54,7 +54,7 @@ class FeeDataManagerExtensionsKtTest {
             .values()
             .single()
             .apply {
-                this `should equal` EthereumFees(feeOptions.regularFee, feeOptions.gasLimit)
+                this `should equal` EthereumFees(feeOptions.regularFee, feeOptions.priorityFee, feeOptions.gasLimit)
             }
     }
 

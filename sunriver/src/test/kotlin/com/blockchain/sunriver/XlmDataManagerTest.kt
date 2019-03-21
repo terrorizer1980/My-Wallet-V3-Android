@@ -32,11 +32,8 @@ import org.amshove.kluent.`should equal`
 import org.amshove.kluent.mock
 import org.junit.Rule
 import org.junit.Test
-import org.stellar.sdk.AssetTypeNative
 import org.stellar.sdk.KeyPair
-import org.stellar.sdk.PaymentOperation
 import org.stellar.sdk.Transaction
-import org.stellar.sdk.responses.AccountResponse
 import org.stellar.sdk.responses.TransactionResponse
 import org.stellar.sdk.responses.operations.CreateAccountOperationResponse
 import org.stellar.sdk.responses.operations.OperationResponse
@@ -51,22 +48,12 @@ class XlmDataManagerTest {
     }
 
     @Test
-    fun `fee matches the SDK hardcoded figure`() {
-        val singleOperationFeeFromSdk =
-            Transaction.Builder(AccountResponse(KeyPair.random(), 0))
-                .addOperation(
-                    PaymentOperation.Builder(
-                        KeyPair.random(),
-                        AssetTypeNative(),
-                        "10"
-                    ).build()
-                )
-                .build()
-                .fee
-
-        val fees = givenXlmDataManager().fees()
-        fees `should equal` singleOperationFeeFromSdk.stroops()
-        fees `should equal` 100.stroops()
+    fun `fee comes from XlmFees`() {
+        givenXlmDataManager(fees = givenXlmFees(9999.stroops()))
+            .fees()
+            .test()
+            .values()
+            .single() `should equal` 9999.stroops()
     }
 
     @Test
@@ -84,11 +71,47 @@ class XlmDataManagerTest {
     }
 
     @Test
-    fun `get balance for an address`() {
+    fun `balanceOf with reference - there should be no interactions before subscribe`() {
+        verifyNoInteractionsBeforeSubscribe {
+            balanceOf(AccountReference.Xlm("", "ANY"))
+        }
+    }
+
+    @Test
+    fun `get balance for an account reference`() {
         givenXlmDataManager(
             givenBalances("ANY" to 123.lumens())
         )
             .getBalance(AccountReference.Xlm("", "ANY"))
+            .testSingle() `should equal` 123.lumens()
+    }
+
+    @Test
+    fun `balanceOf an account reference`() {
+        givenXlmDataManager(
+            givenBalances("ANY" to 456.lumens())
+        )
+            .balanceOf(AccountReference.Xlm("", "ANY"))
+            .testSingle() `should equal` 456.lumens()
+    }
+
+    @Test
+    fun `balanceOf a non-xlm account reference should be empty`() {
+        givenXlmDataManager(
+            givenBalances("ANY" to 456.lumens())
+        )
+            .balanceOf(AccountReference.Ethereum("", "ANY"))
+            .test()
+            .assertComplete()
+            .assertValueCount(0)
+    }
+
+    @Test
+    fun `get balance for an address`() {
+        givenXlmDataManager(
+            givenBalances("ANY" to 123.lumens())
+        )
+            .getBalance("ANY")
             .testSingle() `should equal` 123.lumens()
     }
 
@@ -135,10 +158,11 @@ class XlmDataManagerTest {
                     ),
                     transactionNotes = emptyMap()
                 )
-            )
+            ),
+            fees = givenXlmFees(450.stroops())
         )
             .getMaxSpendableAfterFees()
-            .testSingle() `should equal` 456.lumens() - 4.lumens() - 100.stroops()
+            .testSingle() `should equal` 456.lumens() - 4.lumens() - 450.stroops()
     }
 
     @Test
@@ -521,6 +545,19 @@ class XlmDataManagerSendTransactionTest {
     }
 
     @Test
+    fun `dryRunSendFunds with reference - there should be no interactions before subscribe`() {
+        verifyNoInteractionsBeforeSubscribe {
+            dryRunSendFunds(
+                SendDetails(
+                    AccountReference.Xlm("", "ANY"),
+                    100.lumens(),
+                    "ANY"
+                )
+            )
+        }
+    }
+
+    @Test
     fun `sendFunds with reference - there should be no interactions before subscribe`() {
         verifyNoInteractionsBeforeSubscribe {
             sendFunds(
@@ -548,7 +585,8 @@ class XlmDataManagerSendTransactionTest {
                     ),
                     destinationAccountId = eq("GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"),
                     amount = eq(199.456.lumens()),
-                    memo = eq(org.stellar.sdk.Memo.none())
+                    memo = eq(org.stellar.sdk.Memo.none()),
+                    perOperationFee = eq(256.stroops())
                 )
             } `it returns` HorizonProxy.SendResult(
                 success = true,
@@ -573,7 +611,8 @@ class XlmDataManagerSendTransactionTest {
             givenPrivateForPublic(
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
                     "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
-            )
+            ),
+            fees = givenXlmFees(256.stroops())
         ).sendFunds(
             SendDetails(
                 AccountReference.Xlm("", "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR"),
@@ -591,7 +630,7 @@ class XlmDataManagerSendTransactionTest {
     @Test
     fun `any failure bubbles up`() {
         val horizonProxy: HorizonProxy = mock {
-            on { sendTransaction(any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
+            on { sendTransaction(any(), any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
                 success = false,
                 transaction = mock()
             )
@@ -637,7 +676,7 @@ class XlmDataManagerSendTransactionTest {
     @Test
     fun `any failure bubbles up - dry run`() {
         val horizonProxy: HorizonProxy = mock {
-            on { dryRunTransaction(any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
+            on { dryRunTransaction(any(), any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
                 success = false,
                 transaction = mock()
             )
@@ -683,7 +722,7 @@ class XlmDataManagerSendTransactionTest {
     @Test
     fun `bad destination address - dry run`() {
         val horizonProxy: HorizonProxy = mock {
-            on { dryRunTransaction(any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
+            on { dryRunTransaction(any(), any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
                 success = false,
                 transaction = mock(),
                 failureReason = HorizonProxy.FailureReason.BadDestinationAccountId
@@ -743,7 +782,8 @@ class XlmDataManagerSendTransactionTest {
                     ),
                     destinationAccountId = eq("GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"),
                     amount = eq(1.23.lumens()),
-                    memo = any()
+                    memo = any(),
+                    perOperationFee = eq(256.stroops())
                 )
             } `it returns` HorizonProxy.SendResult(
                 success = true,
@@ -780,7 +820,8 @@ class XlmDataManagerSendTransactionTest {
                     "SBGS72YDKMO7K6YBDGXSD2U7BGFK3LRDCR36KNNXVL7N7L2OSEQSWO25",
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
                     "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
-            )
+            ),
+            fees = givenXlmFees(256.stroops())
         ).sendFunds(
             sendDetails
         ).test()
@@ -803,7 +844,7 @@ class XlmDataManagerSendTransactionTest {
     fun `can dry run send from a specific account`() {
         val transaction = mock<Transaction> {
             on { hash() } `it returns` byteArrayOf(0, 1, 2, 3, 255.toByte())
-            on { fee } `it returns` 101.stroops().amount.toInt()
+            on { fee } `it returns` 1000.stroops().amount.toInt()
         }
         val horizonProxy: HorizonProxy = mock {
             on {
@@ -815,7 +856,8 @@ class XlmDataManagerSendTransactionTest {
                     ),
                     destinationAccountId = eq("GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"),
                     amount = eq(1.23.lumens()),
-                    memo = any()
+                    memo = any(),
+                    perOperationFee = eq(500.stroops())
                 )
             } `it returns` HorizonProxy.SendResult(
                 success = true,
@@ -846,7 +888,8 @@ class XlmDataManagerSendTransactionTest {
                     ),
                     transactionNotes = emptyMap()
                 )
-            )
+            ),
+            fees = givenXlmFees(500.stroops())
         ).dryRunSendFunds(
             sendDetails
         ).test()
@@ -859,7 +902,7 @@ class XlmDataManagerSendTransactionTest {
                 hash = "00010203FF",
                 confirmationDetails = SendConfirmationDetails(
                     sendDetails = sendDetails,
-                    fees = 101.stroops()
+                    fees = 1000.stroops()
                 )
             )
         horizonProxy.verifyJustTheOneDryRunNoSends()
@@ -869,7 +912,7 @@ class XlmDataManagerSendTransactionTest {
     fun `when the address is not valid - do not throw`() {
         val horizonProxy: HorizonProxy = mock {
             on {
-                sendTransaction(any(), any(), any(), any())
+                sendTransaction(any(), any(), any(), any(), any())
             } `it returns` HorizonProxy.SendResult(
                 success = false,
                 failureReason = HorizonProxy.FailureReason.BadDestinationAccountId
@@ -934,7 +977,7 @@ class XlmDataManagerSendWithMemoTest {
         }
         val horizonProxy: HorizonProxy = mock {
             on {
-                sendTransaction(any(), any(), any(), eq(memoText))
+                sendTransaction(any(), any(), any(), eq(memoText), any())
             } `it returns` HorizonProxy.SendResult(
                 success = true,
                 transaction = transaction
@@ -980,7 +1023,7 @@ class XlmDataManagerSendWithMemoTest {
         }
         val horizonProxy: HorizonProxy = mock {
             on {
-                dryRunTransaction(any(), any(), any(), eq(memoId))
+                dryRunTransaction(any(), any(), any(), eq(memoId), any())
             } `it returns` HorizonProxy.SendResult(
                 success = true,
                 transaction = transaction
@@ -1018,16 +1061,18 @@ class XlmDataManagerSendWithMemoTest {
 }
 
 private fun HorizonProxy.verifyJustTheOneSendAttempt() {
-    verify(this).sendTransaction(any(), any(), any(), any())
+    verify(this).sendTransaction(any(), any(), any(), any(), any())
     verifyNoMoreInteractions(this)
 }
 
 private fun HorizonProxy.verifyJustTheOneDryRunNoSends() {
-    verify(this).dryRunTransaction(any(), any(), any(), any())
+    verify(this).dryRunTransaction(any(), any(), any(), any(), any())
     verifyNoMoreInteractions(this)
 }
 
 private fun <T> Single<T>.testSingle() = test().values().single()
+
+private fun <T> Maybe<T>.testSingle() = test().values().single()
 
 private fun givenBalances(
     vararg balances: Pair<String, CryptoValue>
@@ -1096,27 +1141,37 @@ private fun givenNoMetaData(): XlmMetaDataInitializer =
 private fun verifyNoInteractionsBeforeSubscribe(function: XlmDataManager.() -> Unit) {
     val horizonProxy = mock<HorizonProxy>()
     val metaDataInitializer = mock<XlmMetaDataInitializer>()
+    val fees = mock<XlmFees>()
     val xlmDataManager = givenXlmDataManager(
         horizonProxy,
-        metaDataInitializer
+        metaDataInitializer,
+        fees = fees
     )
     function(xlmDataManager)
     verifyZeroInteractions(horizonProxy)
     verifyZeroInteractions(metaDataInitializer)
+    verifyZeroInteractions(fees)
 }
 
 private fun givenXlmDataManager(
     horizonProxy: HorizonProxy = mock(),
     metaDataInitializer: XlmMetaDataInitializer = mock(),
     secretAccess: XlmSecretAccess = givenNoExpectedSecretAccess(),
-    memoMapper: MemoMapper = givenAllMemosMapToNone()
+    memoMapper: MemoMapper = givenAllMemosMapToNone(),
+    fees: XlmFees = givenXlmFees(999.stroops())
 ): XlmDataManager =
     XlmDataManager(
         horizonProxy,
         metaDataInitializer,
         secretAccess,
-        memoMapper
+        memoMapper,
+        fees
     )
+
+private fun givenXlmFees(perOperationFee: CryptoValue): XlmFees =
+    mock {
+        on { this.perOperationFee } `it returns` Single.just(perOperationFee)
+    }
 
 private fun givenAllMemosMapToNone(): MemoMapper =
     mock {

@@ -48,13 +48,8 @@ androidExtensions {
     experimental = true
 }
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-}
-
 dependencies {
+    api project(':common:interface')
     api project(':coreui')
     // Google services
     api Libraries.firebaseMessaging

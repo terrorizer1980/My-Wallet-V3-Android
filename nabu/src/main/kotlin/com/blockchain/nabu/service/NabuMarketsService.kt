@@ -5,9 +5,11 @@ import com.blockchain.morph.exchange.service.FiatPeriodicLimit
 import com.blockchain.morph.exchange.service.FiatTradesLimits
 import com.blockchain.morph.exchange.service.TradeLimitService
 import com.blockchain.nabu.Authenticator
+import com.blockchain.nabu.api.FailureReasonJson
 import com.blockchain.nabu.api.NabuMarkets
 import com.blockchain.nabu.api.NabuTransaction
 import com.blockchain.nabu.api.PeriodicLimit
+import com.blockchain.nabu.api.TradeFailureJson
 import com.blockchain.nabu.api.TradeJson
 import com.blockchain.nabu.api.TradeRequest
 import com.blockchain.nabu.api.Value
@@ -15,6 +17,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.withMajorValue
+import io.reactivex.Completable
 import io.reactivex.Single
 
 class NabuMarketsService internal constructor(
@@ -43,16 +46,16 @@ class NabuMarketsService internal constructor(
             nabuMarkets.getTradesLimits(
                 fiatCurrency,
                 it.authHeader
-            ).map {
-                FiatTradesLimits(
-                    minOrder = FiatValue.fromMajor(it.currency, it.minOrder),
-                    maxOrder = FiatValue.fromMajor(it.currency, it.maxOrder),
-                    maxPossibleOrder = FiatValue.fromMajor(it.currency, it.maxPossibleOrder),
-                    daily = it.daily.toFiat(it.currency),
-                    weekly = it.weekly.toFiat(it.currency),
-                    annual = it.annual.toFiat(it.currency)
-                )
-            }
+            )
+        }.map {
+            FiatTradesLimits(
+                minOrder = FiatValue.fromMajor(it.currency, it.minOrder),
+                maxOrder = FiatValue.fromMajor(it.currency, it.maxOrder),
+                maxPossibleOrder = FiatValue.fromMajor(it.currency, it.maxPossibleOrder),
+                daily = it.daily.toFiat(it.currency),
+                weekly = it.weekly.toFiat(it.currency),
+                annual = it.annual.toFiat(it.currency)
+            )
         }
     }
 
@@ -61,27 +64,47 @@ class NabuMarketsService internal constructor(
     ): Single<NabuTransaction> {
         return authenticator.authenticate {
             nabuMarkets.executeTrade(tradeRequest, it.authHeader)
-        }.map { it.map() }
+        }.map(TradeJson::mapTrade)
+    }
+
+    fun putTradeFailureReason(
+        tradeRequestId: String,
+        txHash: String?,
+        message: String?
+    ): Completable {
+        return authenticator.authenticateCompletable {
+            nabuMarkets.putTradeFailureReason(
+                tradeRequestId, TradeFailureJson(
+                    txHash = txHash,
+                    failureReason = message?.let(::FailureReasonJson)
+                ),
+                it.authHeader
+            )
+        }
     }
 
     fun getTrades(userFiatCurrency: String): Single<List<NabuTransaction>> {
         return authenticator.authenticate {
             nabuMarkets.getTrades(userFiatCurrency, it.authHeader)
-        }.flattenAsObservable { it }
-            .map { it.map() }
-            .toList()
+        }.map { list ->
+            list.mapNotNull(TradeJson::mapTrade)
+        }
     }
 }
 
-private fun PeriodicLimit.toFiat(currencyCode: String) =
-    FiatPeriodicLimit(
-        limit = FiatValue.fromMajor(currencyCode, limit),
-        available = FiatValue.fromMajor(currencyCode, available),
-        used = FiatValue.fromMajor(currencyCode, used)
-    )
+private fun PeriodicLimit?.toFiat(currencyCode: String) =
+    if (this == null) FiatPeriodicLimit(
+        null, null, null
+    ) else {
+        FiatPeriodicLimit(
+            limit = limit?.let { FiatValue.fromMajor(currencyCode, it) },
+            available = available?.let { FiatValue.fromMajor(currencyCode, it) },
+            used = used?.let { FiatValue.fromMajor(currencyCode, it) }
+        )
+    }
 
-private fun TradeJson.map(): NabuTransaction {
-    val coinPair = CoinPair.fromPairCode(this.pair.replace("-", "_"))
+private fun TradeJson.mapTrade(): NabuTransaction? {
+    val coinPair = CoinPair.fromPairCodeOrNull(this.pair.replace("-", "_")) ?: return null
 
     return NabuTransaction(
         id = this.id,

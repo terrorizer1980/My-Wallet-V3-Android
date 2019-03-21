@@ -17,11 +17,15 @@ public class EthPushTxRequest {
     @JsonProperty("rawTx")
     public String rawTx;
 
+    @JsonProperty("api_code")
+    public String apiCode;
+
     public EthPushTxRequest() {
         //empty constructor needed for jackson
     }
 
-    public EthPushTxRequest(String rawTx) {
+    public EthPushTxRequest(String rawTx, String apiCode) {
         this.rawTx = rawTx;
+        this.apiCode = apiCode;
     }
 }

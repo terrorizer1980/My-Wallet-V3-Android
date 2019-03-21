@@ -11,6 +11,9 @@ import com.blockchain.kyc.models.nabu.OnfidoApiKey
 import com.blockchain.kyc.models.nabu.RecordCountryRequest
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.SupportedDocumentsResponse
+import com.blockchain.kyc.models.nabu.TierUpdateJson
+import com.blockchain.kyc.models.nabu.TiersJson
+import com.blockchain.kyc.models.nabu.VeriffToken
 import com.blockchain.nabu.models.NabuOfflineTokenRequest
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.nabu.models.NabuSessionTokenResponse
@@ -93,8 +96,17 @@ internal interface Nabu {
         @Header("authorization") authorization: String
     ): Single<OnfidoApiKey>
 
+    /**
+     * This is a GET, but it actually starts a veriff session on the server for historical reasons.
+     * So do not call more than once per veriff launch.
+     */
+    @GET(NABU_VERIFF_TOKEN)
+    fun startVeriffSession(
+        @Header("authorization") authorization: String
+    ): Single<VeriffToken>
+
     @POST(NABU_SUBMIT_VERIFICATION)
-    fun submitOnfidoVerification(
+    fun submitVerification(
         @Body applicantIdRequest: ApplicantIdRequest,
         @Header("authorization") authorization: String
     ): Completable
@@ -110,6 +122,17 @@ internal interface Nabu {
     fun registerCampaign(
         @Body campaignRequest: RegisterCampaignRequest,
         @Header("X-CAMPAIGN") campaignHeader: String,
+        @Header("authorization") authorization: String
+    ): Completable
+
+    @GET(NABU_KYC_TIERS)
+    fun getTiers(
+        @Header("authorization") authorization: String
+    ): Single<TiersJson>
+
+    @POST(NABU_KYC_TIERS)
+    fun setTier(
+        @Body tierUpdateJson: TierUpdateJson,
         @Header("authorization") authorization: String
     ): Completable
 }

@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.home;
 
 import android.content.Context;
 import android.util.Pair;
+
 import com.blockchain.kyc.models.nabu.CampaignData;
 import com.blockchain.kyc.models.nabu.KycState;
 import com.blockchain.kyc.models.nabu.NabuApiException;
@@ -13,14 +14,19 @@ import com.blockchain.kycui.sunriver.SunriverCardType;
 import com.blockchain.lockbox.data.LockboxDataManager;
 import com.blockchain.preferences.FiatCurrencyPreference;
 import com.blockchain.sunriver.XlmDataManager;
+
 import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.api.Environment;
 import info.blockchain.wallet.exceptions.HDWalletException;
 import info.blockchain.wallet.exceptions.InvalidCredentialsException;
 import info.blockchain.wallet.payload.PayloadManagerWiper;
+
+import java.util.NoSuchElementException;
+
+import javax.inject.Inject;
+
 import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import piuk.blockchain.android.BuildConfig;
@@ -28,8 +34,10 @@ import piuk.blockchain.android.R;
 import piuk.blockchain.android.data.cache.DynamicFeeCache;
 import piuk.blockchain.android.data.datamanagers.PromptManager;
 import piuk.blockchain.android.data.rxjava.RxUtil;
+import piuk.blockchain.android.deeplink.DeepLinkProcessor;
+import piuk.blockchain.android.deeplink.LinkState;
+import piuk.blockchain.android.kyc.KycLinkState;
 import piuk.blockchain.android.sunriver.CampaignLinkState;
-import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper;
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter;
 import piuk.blockchain.android.ui.home.models.MetadataEvent;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
@@ -57,9 +65,6 @@ import piuk.blockchain.androidcoreui.utils.AppUtil;
 import piuk.blockchain.androidcoreui.utils.logging.Logging;
 import piuk.blockchain.androidcoreui.utils.logging.SecondPasswordEvent;
 import timber.log.Timber;
-
-import javax.inject.Inject;
-import java.util.NoSuchElementException;
 
 public class MainPresenter extends BasePresenter<MainView> {
 
@@ -89,7 +94,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private KycStatusHelper kycStatusHelper;
     private FiatCurrencyPreference fiatCurrencyPreference;
     private LockboxDataManager lockboxDataManager;
-    private SunriverDeepLinkHelper deepLinkHelper;
+    private DeepLinkProcessor deepLinkProcessor;
     private SunriverCampaignHelper sunriverCampaignHelper;
     private XlmDataManager xlmDataManager;
 
@@ -120,7 +125,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                   KycStatusHelper kycStatusHelper,
                   FiatCurrencyPreference fiatCurrencyPreference,
                   LockboxDataManager lockboxDataManager,
-                  SunriverDeepLinkHelper deepLinkHelper,
+                  DeepLinkProcessor deepLinkProcessor,
                   SunriverCampaignHelper sunriverCampaignHelper,
                   XlmDataManager xlmDataManager) {
 
@@ -150,7 +155,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.kycStatusHelper = kycStatusHelper;
         this.fiatCurrencyPreference = fiatCurrencyPreference;
         this.lockboxDataManager = lockboxDataManager;
-        this.deepLinkHelper = deepLinkHelper;
+        this.deepLinkProcessor = deepLinkProcessor;
         this.sunriverCampaignHelper = sunriverCampaignHelper;
         this.xlmDataManager = xlmDataManager;
     }
@@ -196,9 +201,9 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     /**
-     * Initial setup of push notifications.
-     * We don't subscribe to addresses for notifications when creating a new wallet.
-     * To accommodate existing wallets we need subscribe to the next available addresses.
+     * Initial setup of push notifications. We don't subscribe to addresses for notifications when
+     * creating a new wallet. To accommodate existing wallets we need subscribe to the next
+     * available addresses.
      */
     private void doPushNotifications() {
         if (!prefs.has(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED)) {
@@ -221,22 +226,13 @@ public class MainPresenter extends BasePresenter<MainView> {
         }
     }
 
-    /*
-    // TODO: 24/10/2017  WalletOptions api is also accessed in BuyDataManager - This should be improved soon.
-     */
-    private void doWalletOptionsChecks() {
-        Single.zip(
-                walletOptionsDataManager.showShapeshift(
-                        payloadDataManager.getWallet().getGuid(),
-                        payloadDataManager.getWallet().getSharedKey())
-                        .singleOrError(),
-                kycStatusHelper.shouldDisplayKyc(),
-                (showShapeShift, showKyc) -> showShapeShift || showKyc
-        ).observeOn(AndroidSchedulers.mainThread())
+    private void checkKycStatus() {
+        kycStatusHelper.shouldDisplayKyc()
+                .observeOn(AndroidSchedulers.mainThread())
                 .compose(RxUtil.addSingleToCompositeDisposable(this))
                 .subscribe(
                         this::setExchangeVisiblity,
-                        throwable -> Timber.e(throwable)
+                        Timber::e
                 );
     }
 
@@ -288,7 +284,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                         }
                 )
                 .subscribe(() -> {
-                    doWalletOptionsChecks();
+                    checkKycStatus();
                     if (getView().isBuySellPermitted()) {
                         initBuyService();
                     } else {
@@ -315,14 +311,32 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private void checkForPendingLinks() {
         getCompositeDisposable().add(
-                deepLinkHelper
-                        .getCampaignCode(getView().getIntent())
+                deepLinkProcessor
+                        .getLink(getView().getIntent())
                         .subscribe(
-                                campaignLinkState -> {
-                                    if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
-                                        getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
-                                    } else if (campaignLinkState instanceof CampaignLinkState.Data) {
-                                        registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
+                                linkState -> {
+                                    if (linkState instanceof LinkState.SunriverDeepLink) {
+                                        final CampaignLinkState campaignLinkState = ((LinkState.SunriverDeepLink) linkState).getLink();
+                                        if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
+                                            getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
+                                        } else if (campaignLinkState instanceof CampaignLinkState.Data) {
+                                            registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
+                                        }
+                                    } else if (linkState instanceof LinkState.KycDeepLink) {
+                                        final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
+                                        final KycLinkState kycLinkState = deepLink.getLink();
+                                        if (kycLinkState instanceof KycLinkState.Resubmit) {
+                                            getView().launchKyc(CampaignType.Resubmission);
+                                        } else if (kycLinkState instanceof KycLinkState.EmailVerified) {
+                                            getView().launchKyc(CampaignType.Swap);
+                                        } else if (kycLinkState instanceof KycLinkState.General) {
+                                            final CampaignData data = ((KycLinkState.General) kycLinkState).getCampaignData();
+                                            if (data != null) {
+                                                registerForCampaign(data);
+                                            } else {
+                                                getView().launchKyc(CampaignType.Swap);
+                                            }
+                                        }
                                     }
                                 }, Timber::e
                         )
@@ -351,14 +365,19 @@ public class MainPresenter extends BasePresenter<MainView> {
                                 throwable -> {
                                     Timber.e(throwable);
                                     if (throwable instanceof NabuApiException) {
-                                        NabuApiException apiException = (NabuApiException) throwable;
-                                        if (apiException.getErrorCode() == NabuErrorCodes.AlreadyRegistered) {
-                                            getView().displayDialog(R.string.sunriver_incorrect_code_title, R.string.sunriver_incorrect_code_message);
-                                        } else if (apiException.getErrorCode() == NabuErrorCodes.TokenExpired) {
-                                            getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_code_does_not_exist_title);
+                                        final NabuErrorCodes errorCode = ((NabuApiException) throwable).getErrorCode();
+                                        final int errorMessageStringId;
+                                        if (errorCode == NabuErrorCodes.InvalidCampaignUser) {
+                                            errorMessageStringId = R.string.sunriver_invalid_campaign_user;
+                                        } else if (errorCode == NabuErrorCodes.CampaignUserAlreadyRegistered) {
+                                            errorMessageStringId = R.string.sunriver_user_already_registered;
+                                        } else if (errorCode == NabuErrorCodes.CampaignExpired) {
+                                            errorMessageStringId = R.string.sunriver_campaign_expired;
                                         } else {
-                                            getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_incorrect_code_message);
+                                            Timber.e("Unknown server error %s %d", errorCode, errorCode.getCode());
+                                            errorMessageStringId = R.string.sunriver_generic_error;
                                         }
+                                        getView().displayDialog(R.string.sunriver_invalid_url_title, errorMessageStringId);
                                     }
                                 }
                         )
@@ -388,6 +407,7 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private Completable shapeshiftCompletable() {
         return shapeShiftDataManager.initShapeshiftTradeData()
+                .onErrorComplete()
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
                 .doOnError(throwable -> {
                     Logging.INSTANCE.logException(throwable);
@@ -402,7 +422,8 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     /**
-     * All of these calls are allowed to fail here, we're just caching them in advance because we can.
+     * All of these calls are allowed to fail here, we're just caching them in advance because we
+     * can.
      */
     private Completable feesCompletable() {
         return feeDataManager.getBtcFeeOptions()

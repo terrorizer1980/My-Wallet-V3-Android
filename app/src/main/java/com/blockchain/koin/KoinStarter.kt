@@ -2,6 +2,7 @@ package com.blockchain.koin
 
 import android.app.Application
 import com.blockchain.injection.kycModule
+import com.blockchain.injection.kycNabuModule
 import com.blockchain.koin.modules.apiInterceptorsModule
 import com.blockchain.koin.modules.appProperties
 import com.blockchain.koin.modules.applicationModule
@@ -23,6 +24,7 @@ import com.blockchain.notifications.koin.notificationModule
 import org.koin.android.ext.android.startKoin
 import org.koin.log.Logger
 import org.koin.standalone.StandAloneContext
+import piuk.blockchain.android.ui.dashboard.announcements.dashboardAnnouncementsModule
 import timber.log.Timber
 
 object KoinStarter {
@@ -39,7 +41,9 @@ object KoinStarter {
                 walletModule,
                 coreModule,
                 coreUiModule,
+                coreUiFeatureFlagsModule,
                 dashboardModule,
+                dashboardAnnouncementsModule,
                 apiModule,
                 apiInterceptorsModule,
                 serviceModule,
@@ -49,6 +53,7 @@ object KoinStarter {
                 buySellModule,
                 moshiModule,
                 kycModule,
+                kycNabuModule,
                 morphMethodModule,
                 morphUiModule,
                 nabuModule,

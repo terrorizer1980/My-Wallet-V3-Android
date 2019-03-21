@@ -4,11 +4,13 @@ import info.blockchain.api.blockexplorer.BlockExplorer;
 import info.blockchain.api.data.UnspentOutput;
 import info.blockchain.api.data.UnspentOutputs;
 import info.blockchain.wallet.BlockchainFramework;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.bitcoinj.script.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
+
 import retrofit2.Call;
 
 import java.math.BigInteger;
@@ -35,6 +37,15 @@ class Coins {
         return blockExplorer.getUnspentOutputs("bch", addresses, null, null);
     }
 
+    /**
+     * Computes the available amount to send and the associated fee in satoshis provided a list of
+     * coins and the fee per Kilobyte.
+     *
+     * @param coins               the UTXOs
+     * @param feePerKb            the fee per KB
+     * @param addReplayProtection boolean whether replay protection should be considered
+     * @return a Pair of maximum available amount to send and the associated fee in satoshis.
+     */
     public static Pair<BigInteger, BigInteger> getMaximumAvailable(UnspentOutputs coins,
                                                                    BigInteger feePerKb,
                                                                    boolean addReplayProtection) {
@@ -53,10 +64,10 @@ class Coins {
         }
 
         double inputCost = inputCost(feePerKb);
-        // 1st input will be non-replayable if possible
-        boolean hasReplayProtection = !unspentOutputs.get(0).isReplayable();
 
-        if (addReplayProtection && !hasReplayProtection) {
+        final boolean includesReplayDust = addReplayProtection && requiresReplayProtection(unspentOutputs);
+
+        if (includesReplayDust) {
             log.info("Calculating maximum available with non-replayable dust included.");
             unspentOutputs.add(0, getPlaceholderDustInput());
         }
@@ -64,23 +75,19 @@ class Coins {
         for (int i = 0; i < unspentOutputs.size(); i++) {
             UnspentOutput output = unspentOutputs.get(i);
             // Filter usable coins
-            if (output.isForceInclude() || output.getValue().doubleValue() >= inputCost) {
+            if (output.isForceInclude() || output.getValue().doubleValue() > inputCost) {
                 usableCoins.add(output);
                 sweepBalance = sweepBalance.add(output.getValue());
             }
         }
 
         // All inputs, 1 output = no change. (Correct way)
-        // sweepFee = Fees.estimatedFee(usableCoins.size(), 1, feePerKb);
-
-        // Assume 2 outputs to line up with web. Not 100% correct but acceptable to
-        // keep values across platforms constant.
-        int outputCount = 2;
+        int outputCount = 1;
 
         BigInteger sweepFee = calculateFee(usableCoins.size(),
                 outputCount,
                 feePerKb,
-                addReplayProtection && !hasReplayProtection);
+                includesReplayDust);
 
         sweepBalance = sweepBalance.subtract(sweepFee);
 
@@ -91,7 +98,8 @@ class Coins {
     }
 
     /**
-     * Sort in order - 1 smallest non-replayable coin, descending replayable, descending non-relayable
+     * Sort in order - 1 smallest non-replayable coin, descending replayable, descending
+     * non-replayable
      */
     private static ArrayList<UnspentOutput> getSortedCoins(ArrayList<UnspentOutput> unspentOutputs) {
         ArrayList<UnspentOutput> sortedCoins = new ArrayList<>();
@@ -124,6 +132,15 @@ class Coins {
         return sortedCoins;
     }
 
+    /**
+     * Returns the spendable coins provided the desired amount to send.
+     *
+     * @param coins               a list of coins
+     * @param paymentAmount       the desired amount to send
+     * @param feePerKb            the fee per KB
+     * @param addReplayProtection whether or no replay protection should be considered
+     * @return a list of spendable coins
+     */
     public static SpendableUnspentOutputs getMinimumCoinsForPayment(UnspentOutputs coins,
                                                                     BigInteger paymentAmount,
                                                                     BigInteger feePerKb,
@@ -147,16 +164,16 @@ class Coins {
 
         double inputCost = inputCost(feePerKb);
 
-        int outputCount = 2;//initially assume change
 
-        // 1st input will be non-replayable if possible
-        boolean hasReplayProtection = !unspentOutputs.get(0).isReplayable();
-
-        if (addReplayProtection && !hasReplayProtection) {
+        final boolean requiresReplayProtection = requiresReplayProtection(unspentOutputs);
+        final boolean includesReplayDust = addReplayProtection && requiresReplayProtection;
+        if (includesReplayDust) {
             log.info("Adding non-replayable dust to selected coins.");
             unspentOutputs.add(0, getPlaceholderDustInput());
         }
 
+        // initially assume change
+        int outputCount = 2;
         for (int i = 0; i < unspentOutputs.size(); i++) {
             UnspentOutput output = unspentOutputs.get(i);
 
@@ -173,6 +190,7 @@ class Coins {
 
             // Collect coin
             spendWorthyList.add(output);
+
             collectedAmount = collectedAmount.add(output.getValue());
 
             // Fee
@@ -205,18 +223,21 @@ class Coins {
         BigInteger absoluteFee = calculateFee(spendWorthyList.size(),
                 outputCount,
                 feePerKb,
-                addReplayProtection && !hasReplayProtection);
+                includesReplayDust);
 
         SpendableUnspentOutputs paymentBundle = new SpendableUnspentOutputs();
         paymentBundle.setSpendableOutputs(spendWorthyList);
         paymentBundle.setAbsoluteFee(absoluteFee);
         paymentBundle.setConsumedAmount(consumedAmount);
-        paymentBundle.setReplayProtected(hasReplayProtection);
+        paymentBundle.setReplayProtected(!requiresReplayProtection);
         return paymentBundle;
     }
 
-    private static BigInteger calculateFee(int inputCount, int outputCount, BigInteger feePerKb, boolean replayProtection) {
-        if (replayProtection) {
+    private static BigInteger calculateFee(int inputCount, int outputCount, BigInteger feePerKb, boolean includesReplayDust) {
+        if (inputCount == 0) {
+            return BigInteger.ZERO;
+        }
+        if (includesReplayDust) {
             // No non-replayable outputs in wallet - a dust input and output will be added to tx later
             log.info("Modifying tx size for fee calculation.");
             int size = Fees.estimatedSize(inputCount, outputCount) + DUST_INPUT_TX_SIZE_ADAPT;
@@ -226,14 +247,18 @@ class Coins {
         }
     }
 
-    private static BigInteger estimateAmount(int CoinCount, BigInteger paymentAmount, BigInteger feePerKb, int outputCount) {
-        BigInteger fee = Fees.estimatedFee(CoinCount, outputCount, feePerKb);
+    private static BigInteger estimateAmount(int coinCount, BigInteger paymentAmount, BigInteger feePerKb, int outputCount) {
+        BigInteger fee = Fees.estimatedFee(coinCount, outputCount, feePerKb);
         return paymentAmount.add(fee);
     }
 
     private static double inputCost(BigInteger feePerKb) {
         double d = Math.ceil(feePerKb.doubleValue() * 0.148);
         return Math.ceil(d);
+    }
+
+    private static boolean requiresReplayProtection(final List<UnspentOutput> unspentOutputs) {
+        return !unspentOutputs.isEmpty() && unspentOutputs.get(0).isReplayable();
     }
 
     /**

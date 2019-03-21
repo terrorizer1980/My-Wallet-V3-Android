@@ -6,9 +6,9 @@ import retrofit2.http.GET;
 
 public interface FeeEndpoints {
 
-    @GET("mempool/fees")
-    Observable<FeeOptions> getFeeOptions();
+    @GET("mempool/fees/btc")
+    Observable<FeeOptions> getBtcFeeOptions();
 
-    @GET("eth/fees")
+    @GET("mempool/fees/eth")
     Observable<FeeOptions> getEthFeeOptions();
 }

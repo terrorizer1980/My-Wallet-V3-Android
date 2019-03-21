@@ -2,6 +2,9 @@ package com.blockchain.kycui.navhost.models
 
 enum class KycStep(val relativeValue: Int) {
     SplashPage(0),
+    EmailPage(10),
+    EmailEntered(10),
+    EmailVerifiedPage(10),
     CountrySelection(10),
     ProfilePage(10),
     FirstName(5),
@@ -17,6 +20,6 @@ enum class KycStep(val relativeValue: Int) {
     MobileNumberEntered(10),
     MobileVerifiedPage(10),
     VerificationCodeEntered(10),
-    OnfidoSplashPage(5),
+    VeriffSplashPage(5),
     CompletePage(30)
 }

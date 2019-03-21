@@ -1,20 +1,24 @@
 package com.blockchain.kyc.models.nabu
 
+import com.blockchain.serialization.JsonSerializable
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.ToJson
+import kotlin.math.max
 
 data class NabuUser(
     val firstName: String?,
     val lastName: String?,
     val email: String?,
-    val mobile: String?,
+    val emailVerified: Boolean?,
     val dob: String?,
+    val mobile: String?,
     val mobileVerified: Boolean,
     val address: Address?,
     val state: UserState,
     val kycState: KycState,
+    val resubmission: Any? = null,
     /**
      * ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
      */
@@ -23,7 +27,41 @@ data class NabuUser(
      * ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
      */
     val updatedAt: String? = null,
-    val tags: Map<String, Map<String, String>>? = null
+    val tags: Map<String, Map<String, String>>? = null,
+    val tiers: Tiers? = null
+) : JsonSerializable {
+    val tierInProgress
+        get() =
+            tiers?.let {
+                if (kycState == KycState.None) {
+                    max(it.selected ?: 0, it.next ?: 0)
+                } else {
+                    0
+                }
+            } ?: 0
+
+    val tierInProgressOrCurrentTier
+        get() =
+            tiers?.let {
+                if (kycState == KycState.Verified) {
+                    it.current
+                } else {
+                    max(it.selected ?: 0, it.next ?: 0)
+                }
+            } ?: 0
+
+    fun requireCountryCode(): String {
+        return address?.countryCode ?: throw IllegalStateException("User has no country code set")
+    }
+
+    val isMarkedForResubmission: Boolean
+        get() = resubmission != null
+}
+
+data class Tiers(
+    val current: Int?,
+    val selected: Int?,
+    val next: Int?
 )
 
 data class Address(
@@ -76,7 +114,7 @@ sealed class UserState {
     object Blocked : UserState()
 }
 
-class KycStateAdapter {
+internal class KycStateAdapter {
 
     @FromJson
     fun fromJson(input: String): KycState = when (input) {
@@ -109,7 +147,7 @@ class KycStateAdapter {
     }
 }
 
-class UserStateAdapter {
+internal class UserStateAdapter {
 
     @FromJson
     fun fromJson(input: String): UserState = when (input) {

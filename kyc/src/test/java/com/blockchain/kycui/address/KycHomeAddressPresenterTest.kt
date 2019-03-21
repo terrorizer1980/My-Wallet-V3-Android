@@ -7,35 +7,36 @@ import com.blockchain.kyc.models.nabu.Address
 import com.blockchain.kyc.models.nabu.NabuCountryResponse
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kycui.address.models.AddressModel
-import com.blockchain.nabu.metadata.NabuCredentialsMetadata
-import com.blockchain.nabu.models.mapFromMetadata
-import com.blockchain.serialization.toMoshiJson
+import com.blockchain.nabu.NabuToken
 import com.blockchain.validOfflineToken
-import com.google.common.base.Optional
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
-import info.blockchain.wallet.api.data.Settings
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`should equal to`
 import org.amshove.kluent.`should equal`
+import org.amshove.kluent.itReturns
 import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import piuk.blockchain.androidcore.data.metadata.MetadataManager
-import piuk.blockchain.androidcore.data.settings.SettingsDataManager
+import piuk.blockchain.androidcore.data.settings.PhoneVerificationQuery
 
 class KycHomeAddressPresenterTest {
 
     private lateinit var subject: KycHomeAddressPresenter
     private val view: KycHomeAddressView = mock()
     private val nabuDataManager: NabuDataManager = mock()
-    private val metadataManager: MetadataManager = mock()
-    private val settingsDataManager: SettingsDataManager = mock()
+    private val nabuToken: NabuToken = mock()
+    private val phoneVerificationQuery: PhoneVerificationQuery = mock()
+    private val tier2Decision: Tier2Decision = mock {
+        on { progressToTier2() } `it returns` Single.just(Tier2Decision.NextStep.Tier2Continue)
+    }
 
     @Suppress("unused")
     @get:Rule
@@ -47,9 +48,10 @@ class KycHomeAddressPresenterTest {
     @Before
     fun setUp() {
         subject = KycHomeAddressPresenter(
-            metadataManager,
+            nabuToken,
             nabuDataManager,
-            settingsDataManager
+            tier2Decision,
+            phoneVerificationQuery
         )
         subject.initView(view)
     }
@@ -88,12 +90,27 @@ class KycHomeAddressPresenterTest {
     }
 
     @Test
-    fun `onViewReady country emitted complete should enable button`() {
+    fun `onViewReady country not US emitted complete should enable button`() {
         // Arrange
         whenever(view.address)
             .thenReturn(
                 Observable.just(
-                    addressModel(firstLine = "FIRST_LINE", city = "CITY", postCode = "POST_CODE")
+                    addressModel(firstLine = "FIRST_LINE", city = "CITY", state = "STATE", postCode = "POSTCODE")
+                )
+            )
+        // Act
+        subject.onViewReady()
+        // Assert
+        verify(view).setButtonEnabled(true)
+    }
+
+    @Test
+    fun `onViewReady country is US emitted complete should enable button`() {
+        // Arrange
+        whenever(view.address)
+            .thenReturn(
+                Observable.just(
+                    addressModel(firstLine = "FIRST_LINE", city = "CITY", state = "STATE", postCode = "POSTCODE")
                 )
             )
         // Act
@@ -107,11 +124,9 @@ class KycHomeAddressPresenterTest {
         // Arrange
         whenever(view.address).thenReturn(Observable.just(addressModel()))
         whenever(
-            metadataManager.fetchMetadata(
-                NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE
-            )
-        ).thenReturn(Observable.just(Optional.of(validOfflineToken.toMoshiJson())))
-        whenever(nabuDataManager.getUser(validOfflineToken.mapFromMetadata()))
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
+        whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(Single.just(getBlankNabuUser()))
         // Act
         subject.onViewReady()
@@ -124,15 +139,13 @@ class KycHomeAddressPresenterTest {
         // Arrange
         whenever(view.address).thenReturn(Observable.just(addressModel(firstLine = "FIRST_LINE")))
         whenever(
-            metadataManager.fetchMetadata(
-                NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE
-            )
-        ).thenReturn(Observable.just(Optional.of(validOfflineToken.toMoshiJson())))
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
         // Act
         subject.onViewReady()
         // Assert
         verify(view, never()).restoreUiState(any(), any(), any(), any(), any(), any())
-        verify(nabuDataManager, never()).getUser(validOfflineToken.mapFromMetadata())
+        verify(nabuDataManager, never()).getUser(validOfflineToken)
     }
 
     @Test
@@ -141,10 +154,8 @@ class KycHomeAddressPresenterTest {
         whenever(view.address)
             .thenReturn(Observable.just(addressModel()))
         whenever(
-            metadataManager.fetchMetadata(
-                NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE
-            )
-        ).thenReturn(Observable.just(Optional.of(validOfflineToken.toMoshiJson())))
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
         val firstLine = "FIRST_LINE"
         val city = "CITY"
         val postCode = "POST_CODE"
@@ -158,7 +169,7 @@ class KycHomeAddressPresenterTest {
             postCode = postCode,
             countryCode = country
         )
-        whenever(nabuDataManager.getUser(validOfflineToken.mapFromMetadata()))
+        whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(Single.just(getBlankNabuUser().copy(address = address)))
         val countryList =
             listOf(NabuCountryResponse(country, countryName, emptyList(), emptyList()))
@@ -176,11 +187,9 @@ class KycHomeAddressPresenterTest {
         whenever(view.address)
             .thenReturn(Observable.just(addressModel()))
         whenever(
-            metadataManager.fetchMetadata(
-                NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE
-            )
-        ).thenReturn(Observable.just(Optional.of(validOfflineToken.toMoshiJson())))
-        whenever(nabuDataManager.getUser(validOfflineToken.mapFromMetadata()))
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
+        whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(Single.just(getBlankNabuUser().copy(address = null)))
         // Act
         subject.onViewReady()
@@ -194,11 +203,9 @@ class KycHomeAddressPresenterTest {
         whenever(view.address)
             .thenReturn(Observable.just(addressModel()))
         whenever(
-            metadataManager.fetchMetadata(
-                NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE
-            )
-        ).thenReturn(Observable.just(Optional.of(validOfflineToken.toMoshiJson())))
-        whenever(nabuDataManager.getUser(validOfflineToken.mapFromMetadata()))
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
+        whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(Single.error { Throwable() })
         // Act
         subject.onViewReady()
@@ -216,13 +223,11 @@ class KycHomeAddressPresenterTest {
         whenever(view.address)
             .thenReturn(Observable.just(addressModel(firstLine, city, zipCode, countryCode)))
         whenever(
-            metadataManager.fetchMetadata(
-                NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE
-            )
-        ).thenReturn(Observable.error { Throwable() })
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.error { Throwable() })
         whenever(
             nabuDataManager.addAddress(
-                validOfflineToken.mapFromMetadata(),
+                validOfflineToken,
                 firstLine,
                 null,
                 city,
@@ -244,27 +249,26 @@ class KycHomeAddressPresenterTest {
         // Arrange
         val firstLine = "1"
         val city = "2"
-        val zipCode = "3"
+        val state = "3"
+        val zipCode = "4"
         val countryCode = "UK"
         whenever(view.address)
-            .thenReturn(Observable.just(addressModel(firstLine, city, zipCode, countryCode)))
+            .thenReturn(Observable.just(addressModel(firstLine, city, state, zipCode, countryCode)))
         whenever(
-            metadataManager.fetchMetadata(
-                NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE
-            )
-        ).thenReturn(Observable.just(Optional.of(validOfflineToken.toMoshiJson())))
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
         whenever(
             nabuDataManager.addAddress(
-                validOfflineToken.mapFromMetadata(),
+                validOfflineToken,
                 firstLine,
                 null,
                 city,
-                null,
+                state,
                 zipCode,
                 countryCode
             )
         ).thenReturn(Completable.complete())
-        whenever(settingsDataManager.fetchSettings()).thenReturn(Observable.just(Settings()))
+        givenPhoneNumberNeedsToBeVerified()
         // Act
         subject.onContinueClicked()
         // Assert
@@ -278,49 +282,122 @@ class KycHomeAddressPresenterTest {
         // Arrange
         val firstLine = "1"
         val city = "2"
-        val zipCode = "3"
+        val state = "3"
+        val zipCode = "4"
         val countryCode = "UK"
         whenever(view.address)
-            .thenReturn(Observable.just(addressModel(firstLine, city, zipCode, countryCode)))
+            .thenReturn(Observable.just(addressModel(firstLine, city, state, zipCode, countryCode)))
         whenever(
-            metadataManager.fetchMetadata(
-                NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE
-            )
-        ).thenReturn(Observable.just(Optional.of(validOfflineToken.toMoshiJson())))
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
         whenever(
             nabuDataManager.addAddress(
-                validOfflineToken.mapFromMetadata(),
+                validOfflineToken,
                 firstLine,
                 null,
                 city,
-                null,
+                state,
                 zipCode,
                 countryCode
             )
         ).thenReturn(Completable.complete())
-        val settings: Settings = mock()
-        whenever(settings.isSmsVerified).thenReturn(true)
-        whenever(settingsDataManager.fetchSettings()).thenReturn(Observable.just(settings))
+        givenPhoneNumberDoesNotNeedToBeVerified()
         val jwt = "JWT"
         whenever(nabuDataManager.requestJwt()).thenReturn(Single.just(jwt))
-        whenever(nabuDataManager.updateUserWalletInfo(validOfflineToken.mapFromMetadata(), jwt))
+        whenever(nabuDataManager.updateUserWalletInfo(validOfflineToken, jwt))
             .thenReturn(Single.just(getBlankNabuUser()))
         // Act
         subject.onContinueClicked()
         // Assert
         verify(view).showProgressDialog()
         verify(view).dismissProgressDialog()
-        verify(view).continueToOnfidoSplash()
+        verify(view).continueToOnfidoSplash(countryCode)
+    }
+
+    @Test
+    fun `on continue clicked and tier2 decision reports to not continue, tier1 is complete`() {
+        whenever(tier2Decision.progressToTier2()).itReturns(Single.just(Tier2Decision.NextStep.Tier1Complete))
+        // Arrange
+        val firstLine = "1"
+        val city = "2"
+        val state = "3"
+        val zipCode = "4"
+        val countryCode = "UK"
+        whenever(view.address)
+            .thenReturn(Observable.just(addressModel(firstLine, city, state, zipCode, countryCode)))
+        whenever(
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
+        whenever(
+            nabuDataManager.addAddress(
+                validOfflineToken,
+                firstLine,
+                null,
+                city,
+                state,
+                zipCode,
+                countryCode
+            )
+        ).thenReturn(Completable.complete())
+        givenPhoneNumberNeedsToBeVerified()
+        // Act
+        subject.onContinueClicked()
+        // Assert
+        verify(view).showProgressDialog()
+        verify(view).dismissProgressDialog()
+        verify(view).tier1Complete()
+    }
+
+    @Test
+    fun `on continue clicked and tier2 decision reports to get more info, tier2 continues`() {
+        whenever(
+            tier2Decision.progressToTier2()
+        ).itReturns(Single.just(Tier2Decision.NextStep.Tier2ContinueTier1NeedsMoreInfo))
+        // Arrange
+        val firstLine = "1"
+        val city = "2"
+        val state = "3"
+        val zipCode = "4"
+        val countryCode = "UK"
+        whenever(view.address)
+            .thenReturn(Observable.just(addressModel(firstLine, city, state, zipCode, countryCode)))
+        whenever(
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
+        whenever(
+            nabuDataManager.addAddress(
+                validOfflineToken,
+                firstLine,
+                null,
+                city,
+                state,
+                zipCode,
+                countryCode
+            )
+        ).thenReturn(Completable.complete())
+        givenPhoneNumberNeedsToBeVerified()
+        // Act
+        subject.onContinueClicked()
+        // Assert
+        verify(view).showProgressDialog()
+        verify(view).dismissProgressDialog()
+        verify(view).continueToTier2MoreInfoNeeded(countryCode)
+    }
+
+    private fun givenPhoneNumberDoesNotNeedToBeVerified() {
+        whenever(phoneVerificationQuery.needsPhoneVerification()).thenReturn(Single.just(false))
+    }
+
+    private fun givenPhoneNumberNeedsToBeVerified() {
+        whenever(phoneVerificationQuery.needsPhoneVerification()).thenReturn(Single.just(true))
     }
 
     @Test
     fun `countryCodeSingle should return sorted country map`() {
         // Arrange
         whenever(
-            metadataManager.fetchMetadata(
-                NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE
-            )
-        ).thenReturn(Observable.just(Optional.of(validOfflineToken.toMoshiJson())))
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
         val countryList = listOf(
             NabuCountryResponse("DE", "Germany", emptyList(), emptyList()),
             NabuCountryResponse("UK", "United Kingdom", emptyList(), emptyList()),
@@ -346,13 +423,14 @@ class KycHomeAddressPresenterTest {
     private fun addressModel(
         firstLine: String = "",
         city: String = "",
+        state: String = "",
         postCode: String = "",
         country: String = ""
     ): AddressModel = AddressModel(
         firstLine,
         null,
         city,
-        null,
+        state,
         postCode,
         country
     )

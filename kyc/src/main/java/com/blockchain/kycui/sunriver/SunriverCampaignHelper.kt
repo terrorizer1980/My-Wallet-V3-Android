@@ -1,51 +1,50 @@
 package com.blockchain.kycui.sunriver
 
-import com.blockchain.exceptions.MetadataNotFoundException
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.CampaignData
 import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.UserState
-import com.blockchain.kycui.extensions.fetchNabuToken
 import com.blockchain.kycui.settings.KycStatusHelper
+import com.blockchain.nabu.NabuToken
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.mapToMetadata
 import com.blockchain.remoteconfig.FeatureFlag
+import com.blockchain.sunriver.SunriverCampaignSignUp
 import info.blockchain.balance.AccountReference
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.functions.Function3
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.androidcore.data.metadata.MetadataManager
-import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+
+private const val SunRiverCampaign = "SUNRIVER"
 
 class SunriverCampaignHelper(
     private val featureFlag: FeatureFlag,
     private val nabuDataManager: NabuDataManager,
-    private val metadataManager: MetadataManager,
-    private val kycStatusHelper: KycStatusHelper
-) {
+    private val nabuToken: NabuToken,
+    private val kycStatusHelper: KycStatusHelper,
+    private val xlmAccountProvider: XlmAccountProvider
+) : SunriverCampaignSignUp {
 
-    private val fetchOfflineToken by unsafeLazy { metadataManager.fetchNabuToken() }
+    interface XlmAccountProvider {
+        fun defaultAccount(): Single<AccountReference.Xlm>
+    }
 
     fun getCampaignCardType(): Single<SunriverCardType> =
         featureFlag.enabled
             .flatMap { enabled -> if (enabled) getCardsForUserState() else Single.just(SunriverCardType.None) }
 
     private fun getCardsForUserState(): Single<SunriverCardType> =
-        Single.zip(
+        Singles.zip(
             kycStatusHelper.getUserState(),
             kycStatusHelper.getKycStatus(),
-            getCampaignList(),
-            Function3 { userState: UserState, kycState: KycState, campaigns: List<String> ->
-                Triple(userState, kycState, campaigns)
-            }
-        ).map { (userState, kycState, campaigns) ->
-            if (kycState == KycState.Verified && campaigns.contains("SUNRIVER")) {
+            userIsInSunRiverCampaign()
+        ).map { (userState, kycState, inSunRiverCampaign) ->
+            if (kycState == KycState.Verified && inSunRiverCampaign) {
                 SunriverCardType.Complete
             } else if (kycState != KycState.Verified &&
                 userState == UserState.Created &&
-                campaigns.contains("SUNRIVER")
+                inSunRiverCampaign
             ) {
                 SunriverCardType.FinishSignUp
             } else {
@@ -53,15 +52,20 @@ class SunriverCampaignHelper(
             }
         }
 
+    override fun registerSunRiverCampaign(): Completable =
+        xlmAccountProvider.defaultAccount().flatMapCompletable { xlmAccount ->
+            nabuToken.fetchNabuToken()
+                .flatMapCompletable {
+                    Completable.complete()
+                    registerSunriverCampaign(it, xlmAccount, CampaignData(SunRiverCampaign, false))
+                }
+        }
+
     fun registerCampaignAndSignUpIfNeeded(xlmAccount: AccountReference.Xlm, campaignData: CampaignData): Completable =
-        fetchOfflineToken.onErrorResumeNext {
-            if (it is MetadataNotFoundException) {
-                createUserAndStoreInMetadata()
-                    .map { pair -> pair.second }
-            } else {
-                Single.error(it)
+        nabuToken.fetchNabuToken()
+            .flatMapCompletable {
+                registerSunriverCampaign(it, xlmAccount, campaignData)
             }
-        }.flatMapCompletable { registerSunriverCampaign(it, xlmAccount, campaignData) }
 
     private fun registerSunriverCampaign(
         token: NabuOfflineTokenResponse,
@@ -72,28 +76,18 @@ class SunriverCampaignHelper(
             token,
             RegisterCampaignRequest.registerSunriver(
                 xlmAccount.accountId,
-                campaignData.campaignCode,
-                campaignData.campaignEmail,
                 campaignData.newUser
             ),
             campaignData.campaignName
         ).subscribeOn(Schedulers.io())
 
-    private fun createUserAndStoreInMetadata(): Single<Pair<String, NabuOfflineTokenResponse>> =
-        nabuDataManager.requestJwt()
-            .subscribeOn(Schedulers.io())
-            .flatMap { jwt ->
-                nabuDataManager.getAuthToken(jwt)
-                    .subscribeOn(Schedulers.io())
-                    .flatMap { tokenResponse ->
-                        metadataManager.saveToMetadata(tokenResponse.mapToMetadata())
-                            .toSingle { jwt to tokenResponse }
-                    }
-            }
+    override fun userIsInSunRiverCampaign(): Single<Boolean> =
+        getCampaignList().map { it.contains(SunRiverCampaign) }
 
-    private fun getCampaignList(): Single<List<String>> = fetchOfflineToken.flatMap {
-        nabuDataManager.getCampaignList(it)
-    }.onErrorReturn { emptyList() }
+    private fun getCampaignList(): Single<List<String>> =
+        nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.getCampaignList(it)
+        }.onErrorReturn { emptyList() }
 }
 
 sealed class SunriverCardType {

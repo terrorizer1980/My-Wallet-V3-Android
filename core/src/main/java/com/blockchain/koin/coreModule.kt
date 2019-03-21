@@ -1,5 +1,6 @@
 package com.blockchain.koin
 
+import android.content.Context
 import com.blockchain.accounts.AccountList
 import com.blockchain.accounts.AllAccountList
 import com.blockchain.accounts.AllAccountsImplementation
@@ -12,16 +13,27 @@ import com.blockchain.accounts.BtcAccountListAdapter
 import com.blockchain.accounts.BtcAsyncAccountListAdapter
 import com.blockchain.accounts.EthAccountListAdapter
 import com.blockchain.accounts.EthAsyncAccountListAdapter
+import com.blockchain.balance.AsyncAccountBalanceReporter
+import com.blockchain.balance.AsyncAddressBalanceReporter
+import com.blockchain.balance.BchBalanceAdapter
+import com.blockchain.balance.BtcBalanceAdapter
+import com.blockchain.balance.EthBalanceAdapter
+import com.blockchain.balance.plus
 import com.blockchain.datamanagers.AccountLookup
 import com.blockchain.datamanagers.AddressResolver
+import com.blockchain.datamanagers.DataManagerPayloadDecrypt
 import com.blockchain.datamanagers.MaximumSpendableCalculator
-import com.blockchain.datamanagers.MaximumSpendableCalculatorImplementation
-import com.blockchain.datamanagers.TransactionSendDataManager
+import com.blockchain.datamanagers.SelfFeeCalculatingTransactionExecutor
+import com.blockchain.datamanagers.TransactionExecutor
+import com.blockchain.datamanagers.TransactionExecutorViaDataManagers
+import com.blockchain.datamanagers.TransactionExecutorWithoutFees
+import com.blockchain.datamanagers.fees.FeeType
 import com.blockchain.logging.LastTxUpdateDateOnSettingsService
 import com.blockchain.logging.LastTxUpdater
 import com.blockchain.logging.NullLogger
 import com.blockchain.logging.TimberLogger
 import com.blockchain.metadata.MetadataRepository
+import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.wallet.DefaultLabels
 import com.blockchain.wallet.ResourceDefaultLabels
@@ -33,6 +45,7 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.androidcore.BuildConfig
 import piuk.blockchain.androidcore.data.access.AccessState
+import piuk.blockchain.androidcore.data.access.LogoutTimer
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.auth.AuthService
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataStore
@@ -59,8 +72,14 @@ import piuk.blockchain.androidcore.data.payload.PromptingSeedAccessAdapter
 import piuk.blockchain.androidcore.data.payments.PaymentService
 import piuk.blockchain.androidcore.data.payments.SendDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.data.settings.EmailSyncUpdater
+import piuk.blockchain.androidcore.data.settings.PhoneNumberUpdater
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
+import piuk.blockchain.androidcore.data.settings.SettingsEmailAndSyncUpdater
+import piuk.blockchain.androidcore.data.settings.SettingsPhoneNumberUpdater
+import piuk.blockchain.androidcore.data.settings.SettingsPhoneVerificationQuery
 import piuk.blockchain.androidcore.data.settings.SettingsService
+import piuk.blockchain.androidcore.data.settings.applyFlag
 import piuk.blockchain.androidcore.data.settings.datastore.SettingsDataStore
 import piuk.blockchain.androidcore.data.settings.datastore.SettingsMemoryStore
 import piuk.blockchain.androidcore.data.transactions.TransactionListStore
@@ -87,6 +106,8 @@ val coreModule = applicationContext {
 
         factory { PayloadDataManager(get(), get(), get(), get(), get()) }
 
+        factory { DataManagerPayloadDecrypt(get(), get()) as PayloadDecrypt }
+
         factory { PromptingSeedAccessAdapter(PayloadDataManagerSeedAccessAdapter(get()), get()) }
             .bind(SeedAccessWithoutPrompt::class)
             .bind(SeedAccess::class)
@@ -99,9 +120,42 @@ val coreModule = applicationContext {
 
         factory { AccountLookup(get(), get(), get()) }
 
-        factory { TransactionSendDataManager(get(), get(), get(), get(), get(), get(), get(), get()) }
+        factory {
+            TransactionExecutorViaDataManagers(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get()
+            ) as TransactionExecutor
+        }
 
-        factory { MaximumSpendableCalculatorImplementation(get(), get()) as MaximumSpendableCalculator }
+        factory("Regular") {
+            SelfFeeCalculatingTransactionExecutor(
+                get(),
+                get(),
+                FeeType.Regular
+            ) as TransactionExecutorWithoutFees
+        }
+
+        factory("Priority") {
+            SelfFeeCalculatingTransactionExecutor(
+                get(),
+                get(),
+                FeeType.Priority
+            ) as TransactionExecutorWithoutFees
+        }
+
+        factory("Regular") {
+            get<TransactionExecutorWithoutFees>("Regular") as MaximumSpendableCalculator
+        }
+
+        factory("Priority") {
+            get<TransactionExecutorWithoutFees>("Priority") as MaximumSpendableCalculator
+        }
 
         factory("BTC") { BtcAccountListAdapter(get()) as AccountList }
         factory("BCH") { BchAccountListAdapter(get()) as AccountList }
@@ -110,6 +164,21 @@ val coreModule = applicationContext {
         factory("BTC") { BtcAsyncAccountListAdapter(get()) as AsyncAccountList }
         factory("BCH") { BchAsyncAccountListAdapter(get()) as AsyncAccountList }
         factory("ETH") { EthAsyncAccountListAdapter(EthAccountListAdapter(get())) as AsyncAccountList }
+
+        factory("BTC") { BtcBalanceAdapter(get()) }
+            .bind(AsyncAddressBalanceReporter::class)
+            .bind(AsyncAccountBalanceReporter::class)
+        factory("BCH") { BchBalanceAdapter(get()) }
+            .bind(AsyncAddressBalanceReporter::class)
+            .bind(AsyncAccountBalanceReporter::class)
+        factory("ETH") { EthBalanceAdapter(get()) }
+            .bind(AsyncAddressBalanceReporter::class)
+            .bind(AsyncAccountBalanceReporter::class)
+
+        factory("all") {
+            get<AsyncAccountBalanceReporter>("BTC") +
+                get("BCH") + get("ETH") + get("XLM")
+        }
 
         factory {
             AllAccountsImplementation(
@@ -176,6 +245,12 @@ val coreModule = applicationContext {
         factory { LastTxUpdateDateOnSettingsService(get()) as LastTxUpdater }
 
         factory { SendDataManager(get(), get(), get()) }
+
+        factory { SettingsPhoneVerificationQuery(get()).applyFlag(get("ff_sms_verification")) }
+
+        factory { SettingsPhoneNumberUpdater(get()) as PhoneNumberUpdater }
+
+        factory { SettingsEmailAndSyncUpdater(get(), get()) as EmailSyncUpdater }
     }
 
     bean { BlockExplorer(get("explorer"), get("api"), getProperty("api-code")) }
@@ -202,6 +277,19 @@ val coreModule = applicationContext {
     factory { EthereumAccountWrapper() }
 
     factory { AccessState.getInstance() }
+
+    factory {
+        val accessState = get<AccessState>()
+        object : LogoutTimer {
+            override fun start(context: Context) {
+                accessState.startLogoutTimer(context)
+            }
+
+            override fun stop(context: Context) {
+                accessState.stopLogoutTimer(context)
+            }
+        } as LogoutTimer
+    }
 
     factory { AESUtilWrapper() }
 

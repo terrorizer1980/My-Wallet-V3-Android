@@ -17,7 +17,8 @@
         android:icon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:allowBackup">
         <activity
             android:name=".ui.launcher.LauncherActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -46,12 +47,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.home.MainActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:theme="@style/AppTheme.MainActivity"
-            android:windowSoftInputMode="adjustPan">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -61,7 +56,16 @@
                 <data
                     android:host="${DYNAMIC_LINK_HOST}"
                     android:scheme="https" />
+                <data
+                    android:host="${DYNAMIC_LINK_HOST_2}"
+                    android:scheme="https" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.home.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.MainActivity"
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name=".ui.settings.SettingsActivity"
@@ -128,19 +132,6 @@
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".ui.pairingcode.PairingCodeActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
-        <activity
-            android:name=".ui.shapeshift.overview.ShapeShiftActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
-        <activity
-            android:name=".ui.shapeshift.newexchange.NewExchangeActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name=".ui.shapeshift.confirmation.ShapeShiftConfirmationActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
-        <activity
-            android:name=".ui.shapeshift.inprogress.TradeInProgressActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".ui.charts.ChartsActivity"

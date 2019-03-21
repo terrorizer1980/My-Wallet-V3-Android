@@ -4,6 +4,7 @@ import com.blockchain.logging.EventLogger
 import com.blockchain.metadata.MetadataWarningLog
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.remoteconfig.RemoteConfiguration
+import com.blockchain.remoteconfig.featureFlag
 import com.blockchain.transactions.ResourceSendFundsResultLocalizer
 import com.blockchain.transactions.SendFundsResultLocalizer
 import com.blockchain.ui.chooser.AccountChooserPresenter
@@ -29,7 +30,7 @@ val coreUiModule = applicationContext {
             AsyncDashboardDataCalculator(
                 get(),
                 get(),
-                get()
+                get("all")
             ) as DashboardData
         }
 
@@ -70,4 +71,12 @@ val coreUiModule = applicationContext {
     factory { Answers.getInstance() }
 
     factory { AnswersEventLogger(get()) as EventLogger }
+}
+
+val coreUiFeatureFlagsModule = applicationContext {
+    factory("ff_animate_stellar_ship") { get<RemoteConfig>().featureFlag("animate_stellar_ship") }
+
+    factory("ff_notify_coinify_users_to_kyc") {
+        get<RemoteConfig>().featureFlag("android_notify_coinify_users_to_kyc")
+    }
 }

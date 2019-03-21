@@ -109,7 +109,7 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "")
                 )
-                on { fees() } `it returns` 99.stroops()
+                on { fees() } `it returns` Single.just(99.stroops())
             },
             mock(),
             fiatExchangeRates,
@@ -149,7 +149,7 @@ class XlmSendPresenterStrategyTest {
                 on { getMaxSpendableAfterFees() } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` 200.stroops()
+                on { fees() } `it returns` Single.just(200.stroops())
             },
             transactionSendDataManager,
             mock {
@@ -208,7 +208,7 @@ class XlmSendPresenterStrategyTest {
                 on { getMaxSpendableAfterFees() } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` 200.stroops()
+                on { fees() } `it returns` Single.just(200.stroops())
             },
             transactionSendDataManager,
             mock(),
@@ -254,7 +254,7 @@ class XlmSendPresenterStrategyTest {
                 on { getMaxSpendableAfterFees() } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` 200.stroops()
+                on { fees() } `it returns` Single.just(200.stroops())
             },
             transactionSendDataManager,
             mock(),
@@ -302,7 +302,7 @@ class XlmSendPresenterStrategyTest {
                 on { getMaxSpendableAfterFees() } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` 200.stroops()
+                on { fees() } `it returns` Single.just(200.stroops())
             },
             transactionSendDataManager,
             mock(),
@@ -350,7 +350,7 @@ class XlmSendPresenterStrategyTest {
                 on { getMaxSpendableAfterFees() } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` 200.stroops()
+                on { fees() } `it returns` Single.just(200.stroops())
             },
             transactionSendDataManager,
             mock(),
@@ -406,7 +406,7 @@ class XlmSendPresenterStrategyTest {
                 on { getMaxSpendableAfterFees() } `it returns` Single.just(
                     200.lumens()
                 )
-                on { fees() } `it returns` 150.stroops()
+                on { fees() } `it returns` Single.just(150.stroops())
             },
             transactionSendDataManager,
             mock {
@@ -458,7 +458,7 @@ class XlmSendPresenterStrategyTest {
                 on { getMaxSpendableAfterFees() } `it returns` Single.just(
                     200.lumens()
                 )
-                on { fees() } `it returns` 150.stroops()
+                on { fees() } `it returns` Single.just(150.stroops())
             },
             transactionSendDataManager,
             mock {
@@ -593,7 +593,7 @@ class XlmSendPresenterStrategyTest {
                 on { getMaxSpendableAfterFees() } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` 200.stroops()
+                on { fees() } `it returns` Single.just(200.stroops())
             },
             transactionSendDataManager,
             mock {
@@ -669,7 +669,7 @@ class XlmSendPresenterStrategyTest {
                 on { getMaxSpendableAfterFees() } `it returns` Single.just(
                     200.lumens()
                 )
-                on { fees() } `it returns` 150.stroops()
+                on { fees() } `it returns` Single.just(150.stroops())
             },
             transactionSendDataManager,
             mock {

@@ -25,6 +25,7 @@ fun FeeDataManager.getFeeOptions(cryptoCurrency: CryptoCurrency): Single<out Net
         CryptoCurrency.ETHER -> ethFeeOptions.map {
             EthereumFees(
                 it.regularFee,
+                it.priorityFee,
                 it.gasLimit
             )
         } // Tech debt AND-1663 Repeated Hardcoded fee
@@ -44,14 +45,20 @@ data class BitcoinLikeFees(
 }
 
 data class EthereumFees(
-    private val gasPriceGwei: Long,
+    private val gasPriceRegularGwei: Long,
+    private val gasPricePriorityGwei: Long,
     private val gasLimitGwei: Long
 ) : NetworkFees() {
 
-    val absoluteFeeInWei: CryptoValue =
-        CryptoValue.etherFromWei((gasPriceGwei * gasLimitGwei).gweiToWei())
+    val absoluteRegularFeeInWei: CryptoValue =
+        CryptoValue.etherFromWei((gasPriceRegularGwei * gasLimitGwei).gweiToWei())
 
-    val gasPriceInWei: BigInteger = gasPriceGwei.gweiToWei()
+    val absolutePriorityFeeInWei: CryptoValue =
+        CryptoValue.etherFromWei((gasPricePriorityGwei * gasLimitGwei).gweiToWei())
+
+    val gasPriceRegularInWei: BigInteger = gasPriceRegularGwei.gweiToWei()
+
+    val gasPricePriorityInWei: BigInteger = gasPricePriorityGwei.gweiToWei()
 
     val gasLimitInGwei: BigInteger = gasLimitGwei.toBigInteger()
 }

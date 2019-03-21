@@ -5,7 +5,6 @@ import com.blockchain.koin.KoinDaggerModule;
 import com.blockchain.koin.modules.MorphActivityLauncher;
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager;
 import com.blockchain.kycui.settings.KycStatusHelper;
-import com.blockchain.kycui.sunriver.SunriverAirdropRemoteConfig;
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper;
 import com.blockchain.lockbox.data.LockboxDataManager;
 import com.blockchain.logging.LastTxUpdater;
@@ -23,8 +22,9 @@ import info.blockchain.wallet.payload.PayloadManagerWiper;
 import info.blockchain.wallet.util.PrivateKeyFactory;
 import piuk.blockchain.android.data.cache.DynamicFeeCache;
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager;
-import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper;
+import piuk.blockchain.android.deeplink.DeepLinkProcessor;
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter;
+import piuk.blockchain.android.ui.launcher.DeepLinkPersistence;
 import piuk.blockchain.android.ui.receive.WalletAccountHelper;
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper;
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager;
@@ -42,6 +42,7 @@ import piuk.blockchain.androidcore.data.fees.FeeDataManager;
 import piuk.blockchain.androidcore.data.metadata.MetadataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.payments.SendDataManager;
+import piuk.blockchain.androidcore.data.settings.EmailSyncUpdater;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
 import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager;
 import piuk.blockchain.androidcore.data.transactions.TransactionListStore;
@@ -262,13 +263,13 @@ public class ApplicationModule extends KoinDaggerModule {
     }
 
     @Provides
-    SunriverDeepLinkHelper provideSunriverDeepLinkHelper() {
-        return get(SunriverDeepLinkHelper.class);
+    DeepLinkProcessor provideDeepLinkProcessor() {
+        return get(DeepLinkProcessor.class);
     }
 
     @Provides
-    SunriverAirdropRemoteConfig provideSunriverAirdropRemoteConfig() {
-        return get(SunriverAirdropRemoteConfig.class);
+    DeepLinkPersistence provideDeepLinkPersistence() {
+        return get(DeepLinkPersistence.class);
     }
 
     @Provides
@@ -284,5 +285,10 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     LastTxUpdater provideLastTxUpdater() {
         return get(LastTxUpdater.class);
+    }
+
+    @Provides
+    EmailSyncUpdater provideEmailSyncUpdater() {
+        return get(EmailSyncUpdater.class);
     }
 }

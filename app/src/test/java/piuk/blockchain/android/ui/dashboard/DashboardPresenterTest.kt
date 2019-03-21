@@ -1,13 +1,12 @@
 package piuk.blockchain.android.ui.dashboard
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.models.nabu.KycState
-import com.blockchain.kyc.models.nabu.UserState
-import com.blockchain.kycui.settings.KycStatusHelper
+import com.blockchain.announcement.AnnouncementList
+import com.blockchain.balance.TotalBalance
+import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
-import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.ether
@@ -26,6 +25,7 @@ import info.blockchain.balance.CryptoValue
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import org.amshove.kluent.`it returns`
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -59,10 +59,11 @@ class DashboardPresenterTest {
     private val swipeToReceiveHelper: SwipeToReceiveHelper = mock()
     private val view: DashboardView = mock()
     private val currencyFormatManager: CurrencyFormatManager = mock()
-    private val kycStatusHelper: KycStatusHelper = mock()
+    private val kycTiersQueries: KycTiersQueries = mock {
+        on { isKycResumbissionRequired() } `it returns` Single.just(false)
+    }
     private val lockboxDataManager: LockboxDataManager = mock()
     private val sunriverCampaignHelper: SunriverCampaignHelper = mock()
-    private val featureFlag: FeatureFlag = mock()
 
     @get:Rule
     val rxSchedulers = rxInit {
@@ -90,10 +91,12 @@ class DashboardPresenterTest {
             rxBus,
             swipeToReceiveHelper,
             currencyFormatManager,
-            kycStatusHelper,
+            kycTiersQueries,
             lockboxDataManager,
             sunriverCampaignHelper,
-            featureFlag
+            mock {
+                on { this.announcementList } `it returns` AnnouncementList()
+            }
         )
 
         subject.initView(view)
@@ -177,7 +180,6 @@ class DashboardPresenterTest {
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
         // Ignore Sunriver
         whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
-        whenever(featureFlag.enabled).thenReturn(Single.just(false))
 
         // Act
         subject.onViewReady()
@@ -293,7 +295,6 @@ class DashboardPresenterTest {
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
         // Ignore Sunriver
         whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
-        whenever(featureFlag.enabled).thenReturn(Single.just(false))
 
         // Act
         subject.onViewReady()
@@ -407,7 +408,6 @@ class DashboardPresenterTest {
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
         // Ignore Sunriver
         whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
-        whenever(featureFlag.enabled).thenReturn(Single.just(false))
 
         // Act
         subject.onViewReady()
@@ -515,14 +515,12 @@ class DashboardPresenterTest {
         // KYC already dismissed
         whenever(prefsUtil.getValue(DashboardPresenter.KYC_INCOMPLETE_DISMISSED, false))
             .thenReturn(false)
-        whenever(kycStatusHelper.getKycStatus()).thenReturn(Single.just(KycState.None))
-        whenever(kycStatusHelper.getUserState()).thenReturn(Single.just(UserState.Created))
+        whenever(kycTiersQueries.isKycInProgress()).thenReturn(Single.just(true))
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
         // Ignore Sunriver
         whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
-        whenever(featureFlag.enabled).thenReturn(Single.just(false))
 
         // Act
         subject.onViewReady()
@@ -556,8 +554,7 @@ class DashboardPresenterTest {
 //            true
 //        )
         // KYC
-        verify(kycStatusHelper).getKycStatus()
-        verify(kycStatusHelper).getUserState()
+        verify(kycTiersQueries).isKycInProgress()
         verify(view, atLeastOnce()).notifyItemAdded(any(), eq(0))
         verify(view, atLeastOnce()).scrollToTop()
 
@@ -646,7 +643,6 @@ class DashboardPresenterTest {
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
         // Ignore Sunriver
         whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
-        whenever(featureFlag.enabled).thenReturn(Single.just(false))
 
         // Act
         subject.onViewReady()
@@ -783,16 +779,22 @@ class DashboardPresenterTest {
     private fun givenBalance(
         cryptoValue: CryptoValue
     ) {
-        whenever(transactionListDataManager.balanceSpendableToWatchOnly(cryptoValue.currency)).thenReturn(
-            Single.just(cryptoValue to cryptoValue.toZero())
+        whenever(transactionListDataManager.totalBalance(cryptoValue.currency)).thenReturn(
+            Single.just(
+                TotalBalance.Balance(
+                    spendable = cryptoValue,
+                    watchOnly = cryptoValue.toZero(),
+                    coldStorage = cryptoValue.toZero()
+                )
+            )
         )
     }
 
     private fun verifyBalanceQueries() {
-        verify(transactionListDataManager).balanceSpendableToWatchOnly(CryptoCurrency.BTC)
-        verify(transactionListDataManager).balanceSpendableToWatchOnly(CryptoCurrency.BCH)
-        verify(transactionListDataManager).balanceSpendableToWatchOnly(CryptoCurrency.ETHER)
-        verify(transactionListDataManager).balanceSpendableToWatchOnly(CryptoCurrency.XLM)
+        verify(transactionListDataManager).totalBalance(CryptoCurrency.BTC)
+        verify(transactionListDataManager).totalBalance(CryptoCurrency.BCH)
+        verify(transactionListDataManager).totalBalance(CryptoCurrency.ETHER)
+        verify(transactionListDataManager).totalBalance(CryptoCurrency.XLM)
     }
 
     @Test
@@ -810,7 +812,7 @@ class DashboardPresenterTest {
         // Arrange
         whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.just(SunriverCardType.None))
         // Act
-        subject.addSunriverPrompts()
+        subject.addSunriverPrompts().test()
         // Assert
         verifyZeroInteractions(view)
     }
@@ -821,7 +823,7 @@ class DashboardPresenterTest {
         whenever(sunriverCampaignHelper.getCampaignCardType())
             .thenReturn(Single.just(SunriverCardType.JoinWaitList))
         // Act
-        subject.addSunriverPrompts()
+        subject.addSunriverPrompts().test()
         // Assert
         verify(view).notifyItemAdded(any(), eq(0))
         verify(view).scrollToTop()
@@ -835,7 +837,7 @@ class DashboardPresenterTest {
         whenever(prefsUtil.getValue(SunriverCardType.FinishSignUp.javaClass.simpleName, false))
             .thenReturn(true)
         // Act
-        subject.addSunriverPrompts()
+        subject.addSunriverPrompts().test()
         // Assert
         verifyZeroInteractions(view)
     }

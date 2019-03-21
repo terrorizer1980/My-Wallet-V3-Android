@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:visibility="gone"
             app:iconifiedByDefault="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -113,15 +114,13 @@
             android:id="@+id/input_layout_kyc_address_state"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
             android:hint="@string/kyc_address_address_state_hint"
-            app:layout_constraintEnd_toStartOf="@+id/input_layout_kyc_address_zip_code"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_city"
-            tools:ignore="RtlHardcoded">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_city">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/edit_text_kyc_address_state"
@@ -137,15 +136,13 @@
             android:id="@+id/input_layout_kyc_address_zip_code"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginLeft="8dp"
             android:hint="@string/kyc_address_address_postcode_hint"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/input_layout_kyc_address_state"
-            app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_city"
-            tools:ignore="RtlHardcoded">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_state">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/edit_text_kyc_address_zip_code"
@@ -178,17 +175,33 @@
 
         </android.support.design.widget.TextInputLayout>
 
+        <TextView
+            android:id="@+id/text_view_kyc_terms_and_conditions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/button_kyc_address_next"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_country"
+            tools:text="By tapping Submit, you agree to Blockchain’s Terms of Service &amp; Privacy Policy" />
+
         <Button
             android:id="@+id/button_kyc_address_next"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="32dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginRight="32dp"
             android:layout_marginBottom="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="32dp"
             android:enabled="false"
-            android:text="@string/kyc_profile_next"
+            android:text="@string/kyc_profile_submit"
             android:theme="@style/LightBlueButtonTheme"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

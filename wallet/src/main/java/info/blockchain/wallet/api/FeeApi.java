@@ -15,8 +15,8 @@ public final class FeeApi {
      * Returns a {@link FeeOptions} object for BTC which contains both a "regular" and a "priority" fee
      * option, both listed in Satoshis per byte.
      */
-    public Observable<FeeOptions> getFeeOptions() {
-        return feeEndpoints.getFeeOptions();
+    public Observable<FeeOptions> getBtcFeeOptions() {
+        return feeEndpoints.getBtcFeeOptions();
     }
 
     /**

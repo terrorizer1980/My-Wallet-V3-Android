@@ -6,7 +6,7 @@ import info.blockchain.wallet.api.data.FeeLimits;
 import info.blockchain.wallet.api.data.FeeOptions;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+
 import org.web3j.tx.Transfer;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
@@ -39,8 +39,8 @@ public class FeeDataManager {
         if (environmentSettings.getEnvironment().equals(Environment.TESTNET)) {
             return Observable.just(createTestnetFeeOptions());
         } else {
-            return rxPinning.call(() -> feeApi.getFeeOptions())
-                    .subscribeOn(Schedulers.io())
+            return rxPinning.call(() -> feeApi.getBtcFeeOptions())
+                    .onErrorReturnItem(FeeOptions.defaultForBtc())
                     .observeOn(AndroidSchedulers.mainThread());
         }
     }
@@ -57,7 +57,7 @@ public class FeeDataManager {
             return Observable.just(createTestnetFeeOptions());
         } else {
             return rxPinning.call(() -> feeApi.getEthFeeOptions())
-                    .subscribeOn(Schedulers.io())
+                    .onErrorReturnItem(FeeOptions.defaultForEth())
                     .observeOn(AndroidSchedulers.mainThread());
         }
     }
@@ -75,7 +75,9 @@ public class FeeDataManager {
                     feeOptions.setRegularFee(fee);
                     feeOptions.setPriorityFee(fee);
                     return feeOptions;
-                }).toObservable();
+                })
+                .onErrorReturnItem(FeeOptions.defaultForBch())
+                .toObservable();
     }
 
     private FeeOptions createTestnetFeeOptions() {

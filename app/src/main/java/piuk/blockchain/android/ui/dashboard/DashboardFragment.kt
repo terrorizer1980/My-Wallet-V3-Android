@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.BottomSheetDialogFragment
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -17,18 +18,18 @@ import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.LoggableEvent
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_dashboard.*
-import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.websocket.WebSocketService
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.charts.ChartsActivity
 import piuk.blockchain.android.ui.customviews.BottomSpacerDecoration
 import piuk.blockchain.android.ui.dashboard.adapter.DashboardDelegateAdapter
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.MainActivity.ACCOUNT_EDIT
-import piuk.blockchain.android.ui.home.MainActivity.ACTION_EXCHANGE
+import piuk.blockchain.android.ui.home.MainActivity.ACTION_EXCHANGE_KYC
 import piuk.blockchain.android.ui.home.MainActivity.ACTION_RECEIVE_BCH
+import piuk.blockchain.android.ui.home.MainActivity.ACTION_RESUBMIT_KYC
 import piuk.blockchain.android.ui.home.MainActivity.ACTION_SUNRIVER_KYC
 import piuk.blockchain.android.ui.home.MainActivity.CONTACTS_EDIT
 import piuk.blockchain.android.ui.home.MainActivity.SETTINGS_EDIT
@@ -41,23 +42,25 @@ import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import java.util.Locale
-import javax.inject.Inject
 
 class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), DashboardView {
 
     override val shouldShowBuy: Boolean = AndroidUtils.is19orHigher()
-    override val locale: Locale = Locale.getDefault()
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    @Inject
-    lateinit var dashboardPresenter: DashboardPresenter
-    @Inject
-    lateinit var osUtil: OSUtil
+    override val locale: Locale by inject()
+
+    private val dashboardPresenter: DashboardPresenter by inject()
+
+    private val osUtil: OSUtil by inject()
+
+    private val eventLogger: EventLogger by inject()
+
     private val dashboardAdapter by unsafeLazy {
         DashboardDelegateAdapter(
             context!!,
             { ChartsActivity.start(context!!, it) },
-            { startBalance(it) }
+            { startBalance(it) },
+            { presenter.setBalanceFilter(it) }
         )
     }
     private val receiver = object : BroadcastReceiver() {
@@ -73,10 +76,6 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
     }
     private val safeLayoutManager by unsafeLazy { SafeLayoutManager(context!!) }
 
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -86,7 +85,7 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        get<EventLogger>().logEvent(LoggableEvent.Dashboard)
+        eventLogger.logEvent(LoggableEvent.Dashboard)
 
         recycler_view?.apply {
             layoutManager = safeLayoutManager
@@ -160,7 +159,13 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
     }
 
     override fun startKycFlow(campaignType: CampaignType) {
-        broadcastIntent(if (campaignType == CampaignType.NativeBuySell) ACTION_EXCHANGE else ACTION_SUNRIVER_KYC)
+        broadcastIntent(
+            when (campaignType) {
+                CampaignType.Swap -> ACTION_EXCHANGE_KYC
+                CampaignType.Sunriver -> ACTION_SUNRIVER_KYC
+                CampaignType.Resubmission -> ACTION_RESUBMIT_KYC
+            }
+        )
     }
 
     override fun startWebsocketService() {
@@ -233,6 +238,10 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
         fun newInstance(): DashboardFragment {
             return DashboardFragment()
         }
+    }
+
+    override fun showBottomSheetDialog(bottomSheetDialogFragment: BottomSheetDialogFragment) {
+        bottomSheetDialogFragment.show(fragmentManager, "BOTTOM_DIALOG")
     }
 
     /**

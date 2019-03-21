@@ -1,31 +1,41 @@
 package com.blockchain.kycui.address
 
+import com.blockchain.BaseKycPresenter
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kycui.address.models.AddressModel
-import com.blockchain.kycui.extensions.fetchNabuToken
+import com.blockchain.nabu.NabuToken
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.androidcore.data.metadata.MetadataManager
-import piuk.blockchain.androidcore.data.settings.SettingsDataManager
+import piuk.blockchain.androidcore.data.settings.PhoneVerificationQuery
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.kyc.R
 import timber.log.Timber
 import java.util.SortedMap
 
-class KycHomeAddressPresenter(
-    private val metadataManager: MetadataManager,
-    private val nabuDataManager: NabuDataManager,
-    private val settingsDataManager: SettingsDataManager
-) : BasePresenter<KycHomeAddressView>() {
+interface Tier2Decision {
 
-    private val fetchOfflineToken by unsafeLazy { metadataManager.fetchNabuToken() }
+    enum class NextStep {
+        Tier1Complete,
+        Tier2ContinueTier1NeedsMoreInfo,
+        Tier2Continue
+    }
+
+    fun progressToTier2(): Single<NextStep>
+}
+
+class KycHomeAddressPresenter(
+    nabuToken: NabuToken,
+    private val nabuDataManager: NabuDataManager,
+    private val tier2Decision: Tier2Decision,
+    private val phoneVerificationQuery: PhoneVerificationQuery
+) : BaseKycPresenter<KycHomeAddressView>(nabuToken) {
 
     val countryCodeSingle: Single<SortedMap<String, String>> by unsafeLazy {
         fetchOfflineToken
@@ -44,9 +54,7 @@ class KycHomeAddressPresenter(
     override fun onViewReady() {
         compositeDisposable += view.address
             .subscribeBy(
-                onNext = {
-                    enableButtonIfComplete(it.firstLine, it.city, it.postCode)
-                },
+                onNext = { enableButtonIfComplete(it) },
                 onError = {
                     Timber.e(it)
                     // This is fatal - back out and allow the user to try again
@@ -99,31 +107,52 @@ class KycHomeAddressPresenter(
                 )
     }
 
+    private data class State(
+        val phoneNeedsToBeVerified: Boolean,
+        val progressToTier2: Tier2Decision.NextStep,
+        val countryCode: String
+    )
+
     internal fun onContinueClicked() {
         compositeDisposable += view.address
             .firstOrError()
             .flatMap { address ->
                 addAddress(address)
-                    .andThen(checkVerifiedPhoneNumber())
+                    .andThen(phoneVerificationQuery.needsPhoneVerification())
                     .map { verified -> verified to address.country }
             }
             .flatMap { (verified, countryCode) ->
-                if (verified) {
-                    updateNabuData()
-                } else {
+                (if (verified) {
                     Completable.complete()
-                }.andThen(Single.just(verified to countryCode))
+                } else {
+                    updateNabuData()
+                }).andThen(Single.just(verified to countryCode))
             }
+            .map { (verified, countryCode) ->
+                State(
+                    progressToTier2 = Tier2Decision.NextStep.Tier1Complete,
+                    countryCode = countryCode,
+                    phoneNeedsToBeVerified = verified
+                )
+            }
+            .zipWith(tier2Decision.progressToTier2())
+            .map { (x, progress) -> x.copy(progressToTier2 = progress) }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view.showProgressDialog() }
             .doOnEvent { _, _ -> view.dismissProgressDialog() }
             .doOnError(Timber::e)
             .subscribeBy(
-                onSuccess = { (verified, countryCode) ->
-                    if (verified) {
-                        view.continueToOnfidoSplash()
-                    } else {
-                        view.continueToMobileVerification(countryCode)
+                onSuccess = {
+                    when (it.progressToTier2) {
+                        Tier2Decision.NextStep.Tier1Complete -> view.tier1Complete()
+                        Tier2Decision.NextStep.Tier2ContinueTier1NeedsMoreInfo ->
+                            view.continueToTier2MoreInfoNeeded(it.countryCode)
+                        Tier2Decision.NextStep.Tier2Continue ->
+                            if (it.phoneNeedsToBeVerified) {
+                                view.continueToMobileVerification(it.countryCode)
+                            } else {
+                                view.continueToOnfidoSplash(it.countryCode)
+                            }
                     }
                 },
                 onError = { view.showErrorToast(R.string.kyc_address_error_saving) }
@@ -143,10 +172,6 @@ class KycHomeAddressPresenter(
             ).subscribeOn(Schedulers.io())
         }
 
-    private fun checkVerifiedPhoneNumber(): Single<Boolean> = settingsDataManager.fetchSettings()
-        .map { it.isSmsVerified }
-        .single(false)
-
     private fun updateNabuData(): Completable = nabuDataManager.requestJwt()
         .subscribeOn(Schedulers.io())
         .flatMap { jwt ->
@@ -161,8 +186,21 @@ class KycHomeAddressPresenter(
         .map { it.entries.first { (_, value) -> value == countryCode }.key }
         .toMaybe()
 
-    private fun enableButtonIfComplete(firstLine: String, city: String, zipCode: String) {
-        view.setButtonEnabled(!firstLine.isEmpty() && !city.isEmpty() && !zipCode.isEmpty())
+    private fun enableButtonIfComplete(addressModel: AddressModel) {
+        if (addressModel.country.equals("US", ignoreCase = true)) {
+            view.setButtonEnabled(
+                !addressModel.firstLine.isEmpty() &&
+                    !addressModel.city.isEmpty() &&
+                    !addressModel.state.isEmpty() &&
+                    !addressModel.postCode.isEmpty()
+            )
+        } else {
+            view.setButtonEnabled(
+                !addressModel.firstLine.isEmpty() &&
+                    !addressModel.city.isEmpty() &&
+                    !addressModel.state.isEmpty()
+            )
+        }
     }
 
     internal fun onProgressCancelled() {
@@ -173,6 +211,6 @@ class KycHomeAddressPresenter(
         !firstLine.isEmpty() ||
             !secondLine.isNullOrEmpty() ||
             !city.isEmpty() ||
-            !state.isNullOrEmpty() ||
+            !state.isEmpty() ||
             !postCode.isEmpty()
 }
