@@ -100,6 +100,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/select_from_account_button"
+        app:layout_constraintVertical_bias="0.3"
         tools:text="0.1 BTC" />
 
     <TextView
@@ -120,34 +121,54 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_view_base_rate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/smallValue"
         tools:text="Your min is 0.1 BTC" />
 
     <TextView
+        android:id="@+id/text_view_balance_title"
+        style="@style/ExchangeText.Footer.Titles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/text_view_base_rate"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Your BTC Balance"/>
+
+    <TextView
+        android:id="@+id/text_view_balance_value"
+        style="@style/ExchangeText.Footer.Values"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/text_view_counter_rate"
+        app:layout_constraintEnd_toStartOf="@+id/text_view_counter_rate"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/text_view_balance_title"
+        tools:text="$6,293.40 6,293.40 eUSD" />
+
+    <TextView
         android:id="@+id/text_view_base_rate"
+        style="@style/ExchangeText.Footer.Titles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:fontFamily="@font/montserrat_semi_bold"
         android:textAlignment="textEnd"
-        android:textColor="@color/exchange_blue"
-        android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/text_view_counter_rate"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="1 BTC =" />
 
     <TextView
         android:id="@+id/text_view_counter_rate"
+        style="@style/ExchangeText.Footer.Values"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        android:fontFamily="@font/montserrat_semi_bold"
         android:textAlignment="textEnd"
-        android:textColor="@color/exchange_grey_700"
-        android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/layout_keyboard_group"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="1.23456789 ETH" />

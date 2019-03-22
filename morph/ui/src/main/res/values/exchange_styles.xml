@@ -31,6 +31,20 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+
+    <style name="ExchangeText.Footer">
+        <item name="android:fontFamily">@font/montserrat_semi_bold</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="ExchangeText.Footer.Titles">
+        <item name="android:textColor">@color/exchange_blue</item>
+    </style>
+
+    <style name="ExchangeText.Footer.Values">
+        <item name="android:textColor">@color/exchange_grey_700</item>
+    </style>
+
     <style name="ExchangeText.ExchangeReceiveHeaders">
         <item name="android:textColor">@color/exchange_blue</item>
         <item name="android:textSize">12sp</item>

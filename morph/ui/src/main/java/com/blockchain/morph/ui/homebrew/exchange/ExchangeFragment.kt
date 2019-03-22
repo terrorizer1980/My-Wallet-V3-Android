@@ -10,10 +10,13 @@ import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v4.app.Fragment
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.view.ContextThemeWrapper
+import android.text.Spannable
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +47,7 @@ import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
 import com.jakewharton.rxbinding2.view.clicks
 import info.blockchain.balance.CryptoValue
+import info.blockchain.balance.ExchangeRate
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.Money
 import io.reactivex.Observable
@@ -57,7 +61,6 @@ import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.logging.Logging
-import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Locale
@@ -86,6 +89,8 @@ internal class ExchangeFragment : Fragment() {
     private lateinit var selectReceiveAccountButton: Button
     private lateinit var exchangeButton: Button
     private lateinit var feedback: TextView
+    private lateinit var textViewBalanceTitle: TextView
+    private lateinit var textViewBalance: TextView
     private lateinit var textViewBaseRate: TextView
     private lateinit var textViewCounterRate: TextView
     private lateinit var root: ConstraintLayout
@@ -126,6 +131,8 @@ internal class ExchangeFragment : Fragment() {
         selectReceiveAccountButton = view.findViewById(R.id.select_to_account_button)
         exchangeButton = view.findViewById(R.id.exchange_action_button)
         feedback = view.findViewById(R.id.feedback)
+        textViewBalanceTitle = view.findViewById(R.id.text_view_balance_title)
+        textViewBalance = view.findViewById(R.id.text_view_balance_value)
         textViewBaseRate = view.findViewById(R.id.text_view_base_rate)
         textViewCounterRate = view.findViewById(R.id.text_view_counter_rate)
         root = view.findViewById(R.id.constraint_layout_exchange)
@@ -184,22 +191,29 @@ internal class ExchangeFragment : Fragment() {
                 keyboard.setValue(it.lastUserValue.userDecimalPlaces, it.lastUserValue.toBigDecimal())
                 exchangeButton.isEnabled = it.isValid()
                 updateUserFeedBack(it)
-
-                if (it.latestQuote != null) {
-                    textViewBaseRate.text = it.formatBase()
-                    textViewCounterRate.text = it.formatCounter(it.latestQuote!!)
-                } else {
-                    textViewBaseRate.text = ""
-                    textViewCounterRate.text = ""
-                }
+                updateExchangeRate(it)
+                updateBalance(it)
             }
 
-        compositeDisposable +=
-            inputTypeRelay.map { it.toLoggingFixType() }
+        compositeDisposable += inputTypeRelay.map { it.toLoggingFixType() }
                 .distinctUntilChanged()
                 .subscribeBy {
                     Logging.logCustom(FixTypeEvent(it))
                 }
+    }
+
+    private fun updateBalance(exchangeViewState: ExchangeViewState) {
+        exchangeViewState.apply {
+            textViewBalanceTitle.text = getString(R.string.morph_balance_title, fromCrypto.currencyCode)
+            textViewBalance.text = formatSpendableString()
+        }
+    }
+
+    private fun updateExchangeRate(exchangeViewState: ExchangeViewState) {
+        textViewBaseRate.text = exchangeViewState.formatBase()
+        textViewCounterRate.text = exchangeViewState.latestQuote?.let {
+            exchangeViewState.formatCounter(it)
+        } ?: ""
     }
 
     private fun updateUserFeedBack(exchangeViewState: ExchangeViewState) {
@@ -319,20 +333,36 @@ internal class ExchangeFragment : Fragment() {
         errorType?.let { Logging.logCustom(AmountErrorEvent(it)) }
     }
 
+    private fun ExchangeViewState.formatSpendableString(): CharSequence {
+        val cryptoCurrency = fromCrypto.currency
+        val fiatCode = fromFiat.currencyCode
+        val spendable = maxSpendable ?: CryptoValue.zero(cryptoCurrency)
+
+        val spendableString = SpannableStringBuilder()
+
+        latestQuote?.baseToFiatRate?.let { baseToFiatRate ->
+            val fiatSpendable = ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate).applyRate(spendable)
+            fiatSpendable?.let {
+                val fiatString = SpannableString(it.toStringWithSymbol())
+                fiatString.setSpan(
+                    ForegroundColorSpan(getResolvedColor(R.color.product_green_medium)),
+                    0,
+                    fiatString.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                spendableString.append(fiatString)
+                spendableString.append(" ")
+            }
+        }
+        spendableString.append(spendable.toStringWithSymbol())
+        return spendableString
+    }
+
     private fun ExchangeViewState.formatBase(): String =
         "1 ${fromCrypto.currencyCode} ="
 
     private fun ExchangeViewState.formatCounter(quote: Quote): String =
         "${quote.baseToCounterRate} ${toCrypto.currencyCode}"
-
-    private fun formatRate(from: Money, to: Money, rate: BigDecimal?): String =
-        rate?.let { getRatesString(from, it, to) } ?: getPlaceholderString(from, to)
-
-    private fun getRatesString(base: Money, rate: BigDecimal, counter: Money) =
-        getString(R.string.morph_exchange_rate_formatted, base.currencyCode, rate, counter.currencyCode)
-
-    private fun getPlaceholderString(from: Money, to: Money): String =
-        getString(R.string.morph_exchange_rate_placeholder, from.currencyCode, to.currencyCode)
 
     private fun Fix.toLoggingFixType(): FixType = when (this) {
         Fix.BASE_FIAT -> FixType.BaseFiat
