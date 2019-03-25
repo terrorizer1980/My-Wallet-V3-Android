@@ -41,7 +41,7 @@ internal class HorizonProxy(url: String) {
     fun fees(): CryptoValue? = try {
         val lastLedgerBaseFee = server.operationFeeStats()
             .execute()
-            .lastLedgerBaseFee
+            .min
         CryptoValue.lumensFromStroop(lastLedgerBaseFee.toBigInteger())
     } catch (e: ErrorResponse) {
         null
