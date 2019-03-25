@@ -37,7 +37,10 @@ class KycNavHostPresenter(
             }.observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { view.displayLoading(true) }
                 .subscribeBy(
-                    onSuccess = { redirectUserFlow(it) },
+                    onSuccess = {
+                        updateTier2SelectedTierIfNeeded(it)
+                        redirectUserFlow(it)
+                    },
                     onError = {
                         Timber.e(it)
                         if (it is MetadataNotFoundException) {
@@ -48,6 +51,24 @@ class KycNavHostPresenter(
                         }
                     }
                 )
+    }
+
+    private fun updateTier2SelectedTierIfNeeded(user: NabuUser) {
+
+        // Check if user selection already captured
+        if (user.tiers?.selected != 0) {
+            return
+        }
+
+        // Check if Sunriver campaign
+        if (view.campaignType != CampaignType.Sunriver) {
+            return
+        }
+
+        compositeDisposable += tierUpdater
+            .setUserTier(2)
+            .doOnError(Timber::e)
+            .subscribe()
     }
 
     private fun redirectUserFlow(user: NabuUser) {
@@ -62,10 +83,6 @@ class KycNavHostPresenter(
                 Logging.logCustom(KycResumedEvent(reentryPoint))
             }
         } else if (view.campaignType == CampaignType.Sunriver) {
-            compositeDisposable += tierUpdater
-                .setUserTier(2)
-                .doOnError(Timber::e)
-                .subscribe()
             view.navigateToAirdropSplash()
         }
 

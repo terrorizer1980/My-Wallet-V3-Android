@@ -2,7 +2,7 @@ package com.blockchain.sunriver.ui
 
 import android.content.Intent
 import android.net.Uri
-import com.blockchain.nabu.StartKyc
+import com.blockchain.nabu.StartKycAirdrop
 import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.LoggableEvent
 import org.koin.android.ext.android.inject
@@ -19,8 +19,7 @@ class CoinifyKycBottomDialog : BaseAirdropBottomDialog(
 
     private val eventLogger: EventLogger by inject()
 
-    // TODO: should register for campaign before starting KYC
-    private val startKyc: StartKyc by inject()
+    private val startKyc: StartKycAirdrop by inject()
 
     override fun onStart() {
         super.onStart()
