@@ -15,6 +15,7 @@ import com.blockchain.kycui.reentry.ReentryDecision
 import com.blockchain.kycui.reentry.ReentryDecisionKycNavigator
 import com.blockchain.kycui.reentry.ReentryPoint
 import com.blockchain.nabu.NabuToken
+import com.blockchain.sunriver.SunriverCampaignSignUp
 import com.blockchain.validOfflineToken
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.never
@@ -32,6 +33,7 @@ class KycNavHostPresenterTest {
 
     private lateinit var subject: KycNavHostPresenter
     private val view: KycNavHostView = mock()
+    private val sunriverSignUpCampaign: SunriverCampaignSignUp = mock()
     private val nabuDataManager: NabuDataManager = mock()
     private val nabuToken: NabuToken = mock()
     private val reentryDecision: ReentryDecision = mock()
@@ -49,6 +51,7 @@ class KycNavHostPresenterTest {
         subject = KycNavHostPresenter(
             nabuToken,
             nabuDataManager,
+            sunriverSignUpCampaign,
             reentryDecision,
             ReentryDecisionKycNavigator(mock(), mock(), mock()),
             tierUpdater
@@ -133,6 +136,86 @@ class KycNavHostPresenterTest {
     }
 
     @Test
+    fun `register for sunriver campaign if campaign type is sunriver but not registered yet`() {
+        // Arrange
+        whenever(view.campaignType).thenReturn(CampaignType.Sunriver)
+        whenever(
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
+        whenever(
+            tierUpdater.setUserTier(2)
+        ).thenReturn(Completable.complete())
+        whenever(
+            sunriverSignUpCampaign.userIsInSunRiverCampaign()
+        ).thenReturn(Single.just(false))
+        whenever(nabuDataManager.getUser(validOfflineToken))
+            .thenReturn(
+                Single.just(
+                    NabuUser(
+                        firstName = "FIRST_NAME",
+                        lastName = "LAST_NAME",
+                        email = null,
+                        emailVerified = false,
+                        dob = null,
+                        mobile = null,
+                        mobileVerified = false,
+                        address = null,
+                        state = UserState.None,
+                        kycState = KycState.None,
+                        insertedAt = null,
+                        updatedAt = null
+                    )
+                )
+            )
+        // Act
+        subject.onViewReady()
+        // Assert
+        verify(view).displayLoading(true)
+        verify(sunriverSignUpCampaign).registerSunRiverCampaign()
+        verify(view).displayLoading(false)
+    }
+
+    @Test
+    fun `not register for sunriver campaign if campaign type is sunriver and user is registered`() {
+        // Arrange
+        whenever(view.campaignType).thenReturn(CampaignType.Sunriver)
+        whenever(
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
+        whenever(
+            tierUpdater.setUserTier(2)
+        ).thenReturn(Completable.complete())
+        whenever(
+            sunriverSignUpCampaign.userIsInSunRiverCampaign()
+        ).thenReturn(Single.just(true))
+        whenever(nabuDataManager.getUser(validOfflineToken))
+            .thenReturn(
+                Single.just(
+                    NabuUser(
+                        firstName = "FIRST_NAME",
+                        lastName = "LAST_NAME",
+                        email = null,
+                        emailVerified = false,
+                        dob = null,
+                        mobile = null,
+                        mobileVerified = false,
+                        address = null,
+                        state = UserState.None,
+                        kycState = KycState.None,
+                        insertedAt = null,
+                        updatedAt = null
+                    )
+                )
+            )
+        // Act
+        subject.onViewReady()
+        // Assert
+        verify(view).displayLoading(true)
+        verify(sunriverSignUpCampaign, never()).registerSunRiverCampaign()
+        verify(view).displayLoading(false)
+    }
+
+    @Test
     fun `onViewReady sunriver, should redirect to splash`() {
         // Arrange
         givenReentryDecision(ReentryPoint.CountrySelection)
@@ -143,6 +226,9 @@ class KycNavHostPresenterTest {
         whenever(
             tierUpdater.setUserTier(2)
         ).thenReturn(Completable.complete())
+        whenever(
+            sunriverSignUpCampaign.userIsInSunRiverCampaign()
+        ).thenReturn(Single.just(true))
         whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(
                 Single.just(

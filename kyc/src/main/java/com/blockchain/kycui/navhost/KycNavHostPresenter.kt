@@ -13,6 +13,8 @@ import com.blockchain.kycui.profile.models.ProfileModel
 import com.blockchain.kycui.reentry.KycNavigator
 import com.blockchain.kycui.reentry.ReentryDecision
 import com.blockchain.nabu.NabuToken
+import com.blockchain.sunriver.SunriverCampaignSignUp
+import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -24,6 +26,7 @@ import timber.log.Timber
 class KycNavHostPresenter(
     nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
+    private val sunriverCampaignSignUp: SunriverCampaignSignUp,
     private val reentryDecision: ReentryDecision,
     private val kycNavigator: KycNavigator,
     private val tierUpdater: TierUpdater
@@ -38,6 +41,7 @@ class KycNavHostPresenter(
                 .doOnSubscribe { view.displayLoading(true) }
                 .subscribeBy(
                     onSuccess = {
+                        registerForCampaignIfNeeded()
                         updateTier2SelectedTierIfNeeded(it)
                         redirectUserFlow(it)
                     },
@@ -51,6 +55,28 @@ class KycNavHostPresenter(
                         }
                     }
                 )
+    }
+
+    /**
+     * Registers the user to the sunriver campaign if they are not yet registered and the view campaignType is Sunriver
+     */
+    private fun registerForCampaignIfNeeded() {
+        // Check if Sunriver campaign
+        if (view.campaignType != CampaignType.Sunriver) {
+            return
+        }
+
+        compositeDisposable += sunriverCampaignSignUp.userIsInSunRiverCampaign()
+            .flatMapCompletable { isInCampaign ->
+                if (isInCampaign) {
+                    Completable.complete()
+                } else {
+                    sunriverCampaignSignUp.registerSunRiverCampaign()
+                }
+            }
+            .subscribeOn(Schedulers.io())
+            .doOnError(Timber::e)
+            .subscribe()
     }
 
     private fun updateTier2SelectedTierIfNeeded(user: NabuUser) {
