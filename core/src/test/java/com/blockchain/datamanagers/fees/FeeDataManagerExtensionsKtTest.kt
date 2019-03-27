@@ -20,6 +20,7 @@ class FeeDataManagerExtensionsKtTest {
         whenever(feeDataManager.bchFeeOptions).thenReturn(Observable.just(feeOptions))
         whenever(feeDataManager.btcFeeOptions).thenReturn(Observable.just(feeOptions))
         whenever(feeDataManager.ethFeeOptions).thenReturn(Observable.just(feeOptions))
+        whenever(feeDataManager.xlmFeeOptions).thenReturn(Observable.just(feeOptions))
     }
 
     @Test
@@ -66,7 +67,7 @@ class FeeDataManagerExtensionsKtTest {
             .values()
             .single()
             .apply {
-                this `should equal` XlmFees(100.stroops())
+                this `should equal` XlmFees(10.stroops(), 100.stroops())
             }
     }
 

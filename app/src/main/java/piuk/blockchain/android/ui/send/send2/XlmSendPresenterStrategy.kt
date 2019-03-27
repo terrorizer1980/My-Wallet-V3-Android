@@ -1,7 +1,9 @@
 package piuk.blockchain.android.ui.send.send2
 
 import android.content.Intent
+import com.blockchain.fees.FeeType
 import com.blockchain.sunriver.XlmDataManager
+import com.blockchain.sunriver.XlmFeesFetcher
 import com.blockchain.sunriver.fromStellarUri
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendDetails
@@ -35,6 +37,7 @@ import java.util.concurrent.TimeUnit
 class XlmSendPresenterStrategy(
     currencyState: CurrencyState,
     private val xlmDataManager: XlmDataManager,
+    private val xlmFeesFetcher: XlmFeesFetcher,
     private val xlmTransactionSender: TransactionSender,
     private val fiatExchangeRates: FiatExchangeRates,
     private val sendFundsResultLocalizer: SendFundsResultLocalizer
@@ -48,19 +51,20 @@ class XlmSendPresenterStrategy(
     private var cryptoTextSubject = BehaviorSubject.create<CryptoValue>()
     private var continueClick = PublishSubject.create<Unit>()
     private var submitPaymentClick = PublishSubject.create<Unit>()
-    private fun fees() = xlmDataManager.fees()
 
     private val allSendRequests: Observable<SendDetails> =
         Observables.combineLatest(
             xlmDataManager.defaultAccount().toObservable(),
             cryptoTextSubject,
             addressSubject,
+            xlmFeesFetcher.operationFee(FeeType.Regular).toObservable(),
             memoSubject
-        ) { accountReference, value, address, memo ->
+        ) { accountReference, value, address, fee, memo ->
             SendDetails(
                 from = accountReference,
                 toAddress = address,
                 value = value,
+                fee = fee,
                 memo = memo
             )
         }
@@ -68,7 +72,8 @@ class XlmSendPresenterStrategy(
     private val confirmationDetails: Observable<SendConfirmationDetails> =
         allSendRequests.sampleThrottledClicks(continueClick)
             .flatMapSingle { sendDetails ->
-                fees().map { sendDetails to it }
+                xlmFeesFetcher.operationFee(FeeType.Regular)
+                    .map { sendDetails to it }
             }
             .map { (sendDetails, fees) ->
                 SendConfirmationDetails(
@@ -116,7 +121,7 @@ class XlmSendPresenterStrategy(
     }
 
     private fun calculateMax() {
-        xlmDataManager.getMaxSpendableAfterFees()
+        xlmDataManager.getMaxSpendableAfterFees(FeeType.Regular)
             .observeOn(AndroidSchedulers.mainThread())
             .addToCompositeDisposable(this)
             .subscribeBy {
@@ -154,7 +159,7 @@ class XlmSendPresenterStrategy(
             .subscribeBy(onError = { Timber.e(it) }) {
                 view.updateSendingAddress(it.label)
             }
-        compositeDisposable += fees()
+        compositeDisposable += xlmFeesFetcher.operationFee(FeeType.Regular)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(onError = { Timber.e(it) }) {
                 view.updateFeeAmount(it, fiatExchangeRates)

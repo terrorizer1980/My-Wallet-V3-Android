@@ -3,9 +3,10 @@ package com.blockchain.datamanagers
 import com.blockchain.account.DefaultAccountDataManager
 import com.blockchain.datamanagers.fees.BitcoinLikeFees
 import com.blockchain.datamanagers.fees.EthereumFees
-import com.blockchain.datamanagers.fees.FeeType
 import com.blockchain.datamanagers.fees.NetworkFees
 import com.blockchain.datamanagers.fees.XlmFees
+import com.blockchain.datamanagers.fees.feeForType
+import com.blockchain.fees.FeeType
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendDetails
 import com.blockchain.transactions.TransactionSender
@@ -68,8 +69,15 @@ internal class TransactionExecutorViaDataManagers(
                 sourceAccount.toJsonAccount(),
                 (fees as BitcoinLikeFees).feeForType(feeType)
             )
-            CryptoCurrency.XLM -> xlmSender.sendFundsOrThrow(SendDetails(sourceAccount, amount, destination, memo))
-                .map { it.hash!! }
+            CryptoCurrency.XLM -> xlmSender.sendFundsOrThrow(
+                SendDetails(
+                    sourceAccount,
+                    amount,
+                    destination,
+                    (fees as XlmFees).feeForType(feeType),
+                    memo
+                )
+            ).map { it.hash!! }
         }
 
     override fun getMaximumSpendable(
@@ -84,7 +92,7 @@ internal class TransactionExecutorViaDataManagers(
                     feeType
                 )
             is AccountReference.Ethereum -> getMaxEther(fees as EthereumFees, feeType)
-            is AccountReference.Xlm -> defaultAccountDataManager.getMaxSpendableAfterFees()
+            is AccountReference.Xlm -> defaultAccountDataManager.getMaxSpendableAfterFees(feeType)
         }
 
     override fun getFeeForTransaction(
@@ -105,7 +113,7 @@ internal class TransactionExecutorViaDataManagers(
                     FeeType.Priority -> (fees as EthereumFees).absolutePriorityFeeInWei.just()
                 }
             }
-            is AccountReference.Xlm -> (fees as XlmFees).perOperationFee.just()
+            is AccountReference.Xlm -> (fees as XlmFees).feeForType(feeType).just()
         }
 
     override fun getChangeAddress(

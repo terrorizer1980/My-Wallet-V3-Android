@@ -1,6 +1,7 @@
 package com.blockchain.sunriver
 
 import com.blockchain.account.BalanceAndMin
+import com.blockchain.fees.FeeType
 import com.blockchain.sunriver.datamanager.XlmAccount
 import com.blockchain.sunriver.datamanager.XlmMetaData
 import com.blockchain.sunriver.datamanager.XlmMetaDataInitializer
@@ -45,15 +46,6 @@ class XlmDataManagerTest {
     @get:Rule
     val initSchedulers = rxInit {
         ioTrampoline()
-    }
-
-    @Test
-    fun `fee comes from XlmFees`() {
-        givenXlmDataManager(fees = givenXlmFees(9999.stroops()))
-            .fees()
-            .test()
-            .values()
-            .single() `should equal` 9999.stroops()
     }
 
     @Test
@@ -159,9 +151,9 @@ class XlmDataManagerTest {
                     transactionNotes = emptyMap()
                 )
             ),
-            fees = givenXlmFees(450.stroops())
+            feesFetcher = givenXlmFees(450.stroops())
         )
-            .getMaxSpendableAfterFees()
+            .getMaxSpendableAfterFees(FeeType.Regular)
             .testSingle() `should equal` 456.lumens() - 4.lumens() - 450.stroops()
     }
 
@@ -551,7 +543,8 @@ class XlmDataManagerSendTransactionTest {
                 SendDetails(
                     AccountReference.Xlm("", "ANY"),
                     100.lumens(),
-                    "ANY"
+                    "ANY",
+                    1.stroops()
                 )
             )
         }
@@ -564,7 +557,8 @@ class XlmDataManagerSendTransactionTest {
                 SendDetails(
                     AccountReference.Xlm("", "ANY"),
                     100.lumens(),
-                    "ANY"
+                    "ANY",
+                    1.stroops()
                 )
             )
         }
@@ -612,12 +606,13 @@ class XlmDataManagerSendTransactionTest {
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
                     "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
             ),
-            fees = givenXlmFees(256.stroops())
+            feesFetcher = givenXlmFees(256.stroops())
         ).sendFunds(
             SendDetails(
                 AccountReference.Xlm("", "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR"),
                 199.456.lumens(),
-                "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"
+                "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3",
+                256.stroops()
             )
         )
             .test()
@@ -638,7 +633,8 @@ class XlmDataManagerSendTransactionTest {
         val sendDetails = SendDetails(
             AccountReference.Xlm("", "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR"),
             199.456.lumens(),
-            "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"
+            "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3",
+            1.stroops()
         )
         givenXlmDataManager(
             horizonProxy,
@@ -684,7 +680,8 @@ class XlmDataManagerSendTransactionTest {
         val sendDetails = SendDetails(
             AccountReference.Xlm("", "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR"),
             199.456.lumens(),
-            "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"
+            "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3",
+            1.stroops()
         )
         givenXlmDataManager(
             horizonProxy,
@@ -731,7 +728,8 @@ class XlmDataManagerSendTransactionTest {
         val sendDetails = SendDetails(
             AccountReference.Xlm("", "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR"),
             199.456.lumens(),
-            "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED4"
+            "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED4",
+            1.stroops()
         )
         givenXlmDataManager(
             horizonProxy,
@@ -793,7 +791,8 @@ class XlmDataManagerSendTransactionTest {
         val sendDetails = SendDetails(
             AccountReference.Xlm("", "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR"),
             1.23.lumens(),
-            "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"
+            "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3",
+            256.stroops()
         )
         givenXlmDataManager(
             horizonProxy,
@@ -821,7 +820,7 @@ class XlmDataManagerSendTransactionTest {
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
                     "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
             ),
-            fees = givenXlmFees(256.stroops())
+            feesFetcher = givenXlmFees(256.stroops())
         ).sendFunds(
             sendDetails
         ).test()
@@ -867,7 +866,8 @@ class XlmDataManagerSendTransactionTest {
         val sendDetails = SendDetails(
             AccountReference.Xlm("", "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR"),
             1.23.lumens(),
-            "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"
+            "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3",
+            500.stroops()
         )
         givenXlmDataManager(
             horizonProxy,
@@ -889,7 +889,7 @@ class XlmDataManagerSendTransactionTest {
                     transactionNotes = emptyMap()
                 )
             ),
-            fees = givenXlmFees(500.stroops())
+            feesFetcher = givenXlmFees(500.stroops())
         ).dryRunSendFunds(
             sendDetails
         ).test()
@@ -929,7 +929,8 @@ class XlmDataManagerSendTransactionTest {
             SendDetails(
                 AccountReference.Xlm("", "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR"),
                 1.23.lumens(),
-                "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED4"
+                "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED4",
+                1.stroops()
             )
         ).test()
             .assertNoErrors()
@@ -950,7 +951,8 @@ class XlmDataManagerSendTransactionTest {
             SendDetails(
                 AccountReference.Ethereum("", "0xAddress"),
                 1.23.lumens(),
-                "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"
+                "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3",
+                1.stroops()
             )
         )
             .test()
@@ -1000,6 +1002,7 @@ class XlmDataManagerSendWithMemoTest {
                 AccountReference.Xlm("", "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR"),
                 1.23.lumens(),
                 "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3",
+                1.stroops(),
                 memo
             )
         ).test()
@@ -1046,6 +1049,7 @@ class XlmDataManagerSendWithMemoTest {
                 AccountReference.Xlm("", "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR"),
                 1.23.lumens(),
                 "GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3",
+                1.stroops(),
                 memo
             )
         ).test()
@@ -1141,11 +1145,11 @@ private fun givenNoMetaData(): XlmMetaDataInitializer =
 private fun verifyNoInteractionsBeforeSubscribe(function: XlmDataManager.() -> Unit) {
     val horizonProxy = mock<HorizonProxy>()
     val metaDataInitializer = mock<XlmMetaDataInitializer>()
-    val fees = mock<XlmFees>()
+    val fees = mock<XlmFeesFetcher>()
     val xlmDataManager = givenXlmDataManager(
         horizonProxy,
         metaDataInitializer,
-        fees = fees
+        feesFetcher = fees
     )
     function(xlmDataManager)
     verifyZeroInteractions(horizonProxy)
@@ -1158,19 +1162,19 @@ private fun givenXlmDataManager(
     metaDataInitializer: XlmMetaDataInitializer = mock(),
     secretAccess: XlmSecretAccess = givenNoExpectedSecretAccess(),
     memoMapper: MemoMapper = givenAllMemosMapToNone(),
-    fees: XlmFees = givenXlmFees(999.stroops())
+    feesFetcher: XlmFeesFetcher = givenXlmFees(999.stroops())
 ): XlmDataManager =
     XlmDataManager(
         horizonProxy,
         metaDataInitializer,
         secretAccess,
         memoMapper,
-        fees
+        feesFetcher
     )
 
-private fun givenXlmFees(perOperationFee: CryptoValue): XlmFees =
+private fun givenXlmFees(perOperationFee: CryptoValue): XlmFeesFetcher =
     mock {
-        on { this.perOperationFee } `it returns` Single.just(perOperationFee)
+        on { this.operationFee(any()) } `it returns` Single.just(perOperationFee)
     }
 
 private fun givenAllMemosMapToNone(): MemoMapper =

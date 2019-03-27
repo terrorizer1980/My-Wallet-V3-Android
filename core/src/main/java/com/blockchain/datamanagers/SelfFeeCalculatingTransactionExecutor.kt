@@ -1,7 +1,7 @@
 package com.blockchain.datamanagers
 
-import com.blockchain.datamanagers.fees.FeeType
 import com.blockchain.datamanagers.fees.getFeeOptions
+import com.blockchain.fees.FeeType
 import com.blockchain.transactions.Memo
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoValue

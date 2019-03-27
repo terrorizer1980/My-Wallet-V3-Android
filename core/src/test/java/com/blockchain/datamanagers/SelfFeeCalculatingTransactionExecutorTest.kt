@@ -2,7 +2,7 @@ package com.blockchain.datamanagers
 
 import com.blockchain.datamanagers.fees.BitcoinLikeFees
 import com.blockchain.datamanagers.fees.EthereumFees
-import com.blockchain.datamanagers.fees.FeeType
+import com.blockchain.fees.FeeType
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.ether
 import com.blockchain.transactions.Memo

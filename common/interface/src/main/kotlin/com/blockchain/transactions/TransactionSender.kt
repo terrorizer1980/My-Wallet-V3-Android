@@ -43,6 +43,7 @@ data class SendDetails(
     val from: AccountReference,
     val value: CryptoValue,
     val toAddress: String,
+    val fee: CryptoValue,
     val memo: Memo? = null
 )
 

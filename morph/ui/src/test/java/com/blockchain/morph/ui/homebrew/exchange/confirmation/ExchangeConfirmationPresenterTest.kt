@@ -195,6 +195,7 @@ class ExchangeConfirmationPresenterTest {
                             fromAccount,
                             1.lumens(),
                             "SERVER_DEPOSIT_ADDRESS",
+                            1.lumens(),
                             memo
                         ),
                         99,

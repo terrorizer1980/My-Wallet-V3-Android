@@ -20,7 +20,8 @@ class SendOrThrowTest {
         val details = SendDetails(
             from = AccountReference.Ethereum("", ""),
             toAddress = "",
-            value = 100.ether()
+            value = 100.ether(),
+            fee = 1.ether()
         )
         val fundsResult = SendFundsResult(
             errorCode = 0,
@@ -43,7 +44,8 @@ class SendOrThrowTest {
         val details = SendDetails(
             from = AccountReference.Ethereum("", ""),
             toAddress = "",
-            value = 100.ether()
+            value = 100.ether(),
+            fee = 1.ether()
         )
         val fundsResult = SendFundsResult(
             errorCode = 1,
@@ -67,7 +69,8 @@ class SendOrThrowTest {
         val details = SendDetails(
             from = AccountReference.Ethereum("", ""),
             toAddress = "",
-            value = 100.ether()
+            value = 100.ether(),
+            fee = 1.ether()
         )
         val fundsResult = SendFundsResult(
             errorCode = 0,

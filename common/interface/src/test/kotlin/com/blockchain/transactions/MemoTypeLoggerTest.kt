@@ -86,6 +86,7 @@ class MemoTypeLoggerTest {
             from = AccountReference.Xlm("", "GABC"),
             toAddress = "GDEF",
             value = 100.lumens(),
-            memo = memo
+            memo = memo,
+            fee = 1.lumens()
         )
 }

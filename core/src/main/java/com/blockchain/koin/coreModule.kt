@@ -27,7 +27,7 @@ import com.blockchain.datamanagers.SelfFeeCalculatingTransactionExecutor
 import com.blockchain.datamanagers.TransactionExecutor
 import com.blockchain.datamanagers.TransactionExecutorViaDataManagers
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees
-import com.blockchain.datamanagers.fees.FeeType
+import com.blockchain.fees.FeeType
 import com.blockchain.logging.LastTxUpdateDateOnSettingsService
 import com.blockchain.logging.LastTxUpdater
 import com.blockchain.logging.NullLogger
@@ -234,7 +234,7 @@ val coreModule = applicationContext {
          */
         factory { get<ExchangeRateDataManager>().ratesFor(get<FiatCurrencyPreference>()) }
 
-        factory { FeeDataManager(get(), get(), get(), get()) }
+        factory { FeeDataManager(get(), get(), get()) }
 
         bean { TransactionListStore() }
 

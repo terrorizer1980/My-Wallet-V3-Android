@@ -4,8 +4,8 @@ import com.blockchain.account.DefaultAccountDataManager
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.datamanagers.fees.BitcoinLikeFees
 import com.blockchain.datamanagers.fees.EthereumFees
-import com.blockchain.datamanagers.fees.FeeType
 import com.blockchain.datamanagers.fees.XlmFees
+import com.blockchain.fees.FeeType
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.ether
@@ -421,6 +421,7 @@ class TransactionExecutorViaDataManagersTest {
             from = accountReference,
             value = amount,
             toAddress = destination,
+            fee = 100.stroops(),
             memo = memo
         )
         whenever(
@@ -438,8 +439,13 @@ class TransactionExecutorViaDataManagersTest {
         whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)) `it throws` IllegalArgumentException()
         // Act
         val testObserver =
-            subject.executeTransaction(amount, destination, accountReference, XlmFees(100.stroops()), memo = memo)
-                .test()
+            subject.executeTransaction(
+                amount,
+                destination,
+                accountReference,
+                XlmFees(100.stroops(), 100.stroops()),
+                memo = memo
+            ).test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertValue(txHash)
@@ -452,13 +458,20 @@ class TransactionExecutorViaDataManagersTest {
         val destination = "DESTINATION"
         val accountReference = AccountReference.Xlm("", "")
         val txHash = "TX_HASH"
-        val sendDetails = SendDetails(from = accountReference, value = amount, toAddress = destination)
+        val sendDetails = SendDetails(
+            from = accountReference,
+            value = amount,
+            toAddress = destination,
+            fee = 100.stroops()
+        )
         whenever(
             xlmSender.sendFunds(sendDetails)
         ).thenReturn(
             Single.just(
                 SendFundsResult(
-                    errorCode = 100, confirmationDetails = null, hash = txHash,
+                    errorCode = 100,
+                    confirmationDetails = null,
+                    hash = txHash,
                     sendDetails = sendDetails
                 )
             )
@@ -466,7 +479,7 @@ class TransactionExecutorViaDataManagersTest {
         whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)) `it throws` IllegalArgumentException()
         // Act
         val testObserver =
-            subject.executeTransaction(amount, destination, accountReference, XlmFees(100.stroops()))
+            subject.executeTransaction(amount, destination, accountReference, XlmFees(100.stroops(), 1.stroops()))
                 .test()
         // Assert
         testObserver.assertNotComplete().assertError(SendException::class.java)
@@ -619,10 +632,10 @@ class TransactionExecutorViaDataManagersTest {
     fun `get maximum spendable XLM`() {
         // Arrange
         val account = AccountReference.Xlm("", "")
-        whenever(defaultAccountDataManager.getMaxSpendableAfterFees())
+        whenever(defaultAccountDataManager.getMaxSpendableAfterFees(FeeType.Regular))
             .thenReturn(Single.just(150.lumens()))
         // Act
-        val testObserver = subject.getMaximumSpendable(account, XlmFees(99.stroops()))
+        val testObserver = subject.getMaximumSpendable(account, XlmFees(99.stroops(), 99.stroops()))
             .test()
         // Assert
         testObserver.assertComplete()
@@ -763,7 +776,7 @@ class TransactionExecutorViaDataManagersTest {
         val amount = 150.stroops()
         val account = AccountReference.Xlm("", "")
         // Act
-        val testObserver = subject.getFeeForTransaction(amount, account, XlmFees(200.stroops()))
+        val testObserver = subject.getFeeForTransaction(amount, account, XlmFees(200.stroops(), 250.stroops()))
             .test()
         // Assert
         testObserver.assertComplete()

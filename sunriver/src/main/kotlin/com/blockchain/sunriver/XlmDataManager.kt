@@ -4,6 +4,7 @@ import com.blockchain.account.BalanceAndMin
 import com.blockchain.account.DefaultAccountDataManager
 import com.blockchain.balance.AsyncAccountBalanceReporter
 import com.blockchain.balance.AsyncAddressBalanceReporter
+import com.blockchain.fees.FeeType
 import com.blockchain.sunriver.datamanager.XlmAccount
 import com.blockchain.sunriver.datamanager.XlmMetaData
 import com.blockchain.sunriver.datamanager.XlmMetaDataInitializer
@@ -26,7 +27,7 @@ class XlmDataManager internal constructor(
     metaDataInitializer: XlmMetaDataInitializer,
     private val xlmSecretAccess: XlmSecretAccess,
     private val memoMapper: MemoMapper,
-    private val xlmFees: XlmFees
+    private val xlmFeesFetcher: XlmFeesFetcher
 ) : TransactionSender,
     DefaultAccountDataManager,
     AsyncAddressBalanceReporter,
@@ -36,39 +37,34 @@ class XlmDataManager internal constructor(
         sendDetails: SendDetails
     ): Single<SendFundsResult> =
         Single.defer {
-            xlmFees.perOperationFee
-                .flatMap { fee ->
-                    xlmSecretAccess.getPrivate(HorizonKeyPair.Public(sendDetails.fromXlm.accountId))
-                        .map { private ->
-                            horizonProxy.sendTransaction(
-                                private.toKeyPair(),
-                                sendDetails.toAddress,
-                                sendDetails.value,
-                                memoMapper.mapMemo(sendDetails.memo),
-                                fee
-                            )
-                        }
-                        .map { it.mapToSendFundsResult(sendDetails) }
-                        .toSingle()
+            xlmSecretAccess.getPrivate(HorizonKeyPair.Public(sendDetails.fromXlm.accountId))
+                .map { private ->
+                    horizonProxy.sendTransaction(
+                        private.toKeyPair(),
+                        sendDetails.toAddress,
+                        sendDetails.value,
+                        memoMapper.mapMemo(sendDetails.memo),
+                        sendDetails.fee
+                    )
                 }
+                .map { it.mapToSendFundsResult(sendDetails) }
+                .toSingle()
         }
 
     override fun dryRunSendFunds(
         sendDetails: SendDetails
     ): Single<SendFundsResult> =
         Single.defer {
-            xlmFees.perOperationFee
-                .map { fee ->
-                    horizonProxy.dryRunTransaction(
-                        HorizonKeyPair.Public(sendDetails.fromXlm.accountId).toKeyPair(),
-                        sendDetails.toAddress,
-                        sendDetails.value,
-                        memoMapper.mapMemo(sendDetails.memo),
-                        fee
-                    ).mapToSendFundsResult(sendDetails)
-                }
-                .subscribeOn(Schedulers.io())
+            horizonProxy.dryRunTransaction(
+                HorizonKeyPair.Public(sendDetails.fromXlm.accountId).toKeyPair(),
+                sendDetails.toAddress,
+                sendDetails.value,
+                memoMapper.mapMemo(sendDetails.memo),
+                sendDetails.fee
+            ).mapToSendFundsResult(sendDetails).just()
         }
+
+    private fun <T> T.just(): Single<T> = Single.just(this)
 
     private val wallet = Single.defer { metaDataInitializer.initWalletMaybePrompt.toSingle() }
     private val maybeWallet = Maybe.defer { metaDataInitializer.initWalletMaybe }
@@ -97,16 +93,14 @@ class XlmDataManager internal constructor(
             Maybe.just(CryptoValue.ZeroXlm)
         ).firstOrError()
 
-    fun fees(): Single<CryptoValue> = xlmFees.perOperationFee
-
     /**
      * Balance - minimum - fees
      */
-    override fun getMaxSpendableAfterFees(): Single<CryptoValue> =
+    override fun getMaxSpendableAfterFees(feeType: FeeType): Single<CryptoValue> =
         Maybe.concat(
             maybeDefaultAccount()
                 .flatMapSingle { accountRef ->
-                    fees().map { accountRef to it }
+                    xlmFeesFetcher.operationFee(feeType).map { accountRef to it }
                 }
                 .flatMap { (accountRef, fee) ->
                     getBalanceAndMin(accountRef).map { it.balance - it.minimumBalance - fee }

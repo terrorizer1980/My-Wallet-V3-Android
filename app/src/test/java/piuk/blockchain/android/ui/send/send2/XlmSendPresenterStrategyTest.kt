@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.send.send2
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.fees.FeeType
 import com.blockchain.testutils.lumens
 import com.blockchain.testutils.stroops
 import com.blockchain.testutils.usd
@@ -57,9 +58,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "")
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     199.5.lumens()
                 )
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
             },
             mock(),
             mock(),
@@ -85,9 +89,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "")
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     150.lumens()
                 )
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
             },
             mock(),
             mock(),
@@ -109,7 +116,9 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "")
                 )
-                on { fees() } `it returns` Single.just(99.stroops())
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
             mock(),
             fiatExchangeRates,
@@ -146,10 +155,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` Single.just(200.stroops())
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(200.stroops())
             },
             transactionSendDataManager,
             mock {
@@ -176,6 +187,7 @@ class XlmSendPresenterStrategyTest {
                     from = xlmAccountRef,
                     toAddress = "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT",
                     value = 100.lumens(),
+                    fee = 200.stroops(),
                     memo = Memo.None
                 ),
                 fees = 200.stroops(),
@@ -205,10 +217,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` Single.just(200.stroops())
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
             transactionSendDataManager,
             mock(),
@@ -251,10 +265,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` Single.just(200.stroops())
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
             transactionSendDataManager,
             mock(),
@@ -299,10 +315,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` Single.just(200.stroops())
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
             transactionSendDataManager,
             mock(),
@@ -347,10 +365,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` Single.just(200.stroops())
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
             transactionSendDataManager,
             mock(),
@@ -379,6 +399,7 @@ class XlmSendPresenterStrategyTest {
             ),
             value = 100.lumens(),
             toAddress = "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT",
+            fee = 150.stroops(),
             memo = Memo.None
         )
         val view = TestSendView()
@@ -403,10 +424,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     200.lumens()
                 )
-                on { fees() } `it returns` Single.just(150.stroops())
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(150.stroops())
             },
             transactionSendDataManager,
             mock {
@@ -455,10 +478,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     200.lumens()
                 )
-                on { fees() } `it returns` Single.just(150.stroops())
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(150.stroops())
             },
             transactionSendDataManager,
             mock {
@@ -484,6 +509,7 @@ class XlmSendPresenterStrategyTest {
                 ),
                 value = 100.lumens(),
                 toAddress = "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT",
+                fee = 150.stroops(),
                 memo = Memo.None
             )
         )
@@ -502,6 +528,9 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
                 )
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(100.stroops())
             },
             mock(),
             mock(),
@@ -522,6 +551,9 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
                 )
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
             },
             mock(),
             mock {
@@ -546,6 +578,9 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
                 )
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
             },
             mock(),
             mock {
@@ -590,10 +625,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     99.lumens()
                 )
-                on { fees() } `it returns` Single.just(200.stroops())
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(200.stroops())
             },
             transactionSendDataManager,
             mock {
@@ -622,6 +659,7 @@ class XlmSendPresenterStrategyTest {
                     from = xlmAccountRef,
                     toAddress = "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO",
                     value = 120.1234567.lumens(),
+                    fee = 200.stroops(),
                     memo = Memo("1234", type = "id")
                 ),
                 fees = 200.stroops(),
@@ -642,6 +680,7 @@ class XlmSendPresenterStrategyTest {
             ),
             value = 100.lumens(),
             toAddress = "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT",
+            fee = 150.stroops(),
             memo = memo
         )
         val view = TestSendView()
@@ -666,10 +705,12 @@ class XlmSendPresenterStrategyTest {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
                 )
-                on { getMaxSpendableAfterFees() } `it returns` Single.just(
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     200.lumens()
                 )
-                on { fees() } `it returns` Single.just(150.stroops())
+            },
+            mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(150.stroops())
             },
             transactionSendDataManager,
             mock {

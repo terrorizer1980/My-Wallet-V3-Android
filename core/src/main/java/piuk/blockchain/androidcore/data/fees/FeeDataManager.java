@@ -1,5 +1,6 @@
 package piuk.blockchain.androidcore.data.fees;
 
+import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.api.Environment;
 import info.blockchain.wallet.api.FeeApi;
 import info.blockchain.wallet.api.data.FeeLimits;
@@ -9,6 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import org.web3j.tx.Transfer;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
+import piuk.blockchain.androidcore.data.currency.CurrencyFormatManagerKt;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
 import piuk.blockchain.androidcore.data.rxjava.RxPinning;
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
@@ -19,12 +21,8 @@ public class FeeDataManager {
     private FeeApi feeApi;
     private EnvironmentConfig environmentSettings;
 
-    //Bitcoin cash fees are temporarily fetched from wallet-options until an endpoint can be provided
-    private WalletOptionsDataManager walletOptionsDataManager;
-
-    public FeeDataManager(FeeApi feeApi, WalletOptionsDataManager walletOptionsDataManager, EnvironmentConfig environmentSettings, RxBus rxBus) {
+    public FeeDataManager(FeeApi feeApi, EnvironmentConfig environmentSettings, RxBus rxBus) {
         this.feeApi = feeApi;
-        this.walletOptionsDataManager = walletOptionsDataManager;
         this.environmentSettings = environmentSettings;
         rxPinning = new RxPinning(rxBus);
     }
@@ -40,7 +38,7 @@ public class FeeDataManager {
             return Observable.just(createTestnetFeeOptions());
         } else {
             return rxPinning.call(() -> feeApi.getBtcFeeOptions())
-                    .onErrorReturnItem(FeeOptions.defaultForBtc())
+                    .onErrorReturnItem(FeeOptions.defaultFee(CryptoCurrency.BTC))
                     .observeOn(AndroidSchedulers.mainThread());
         }
     }
@@ -57,7 +55,7 @@ public class FeeDataManager {
             return Observable.just(createTestnetFeeOptions());
         } else {
             return rxPinning.call(() -> feeApi.getEthFeeOptions())
-                    .onErrorReturnItem(FeeOptions.defaultForEth())
+                    .onErrorReturnItem(FeeOptions.defaultFee(CryptoCurrency.ETHER))
                     .observeOn(AndroidSchedulers.mainThread());
         }
     }
@@ -69,15 +67,16 @@ public class FeeDataManager {
      * @return An {@link Observable} wrapping a {@link FeeOptions} object
      */
     public Observable<FeeOptions> getBchFeeOptions() {
-        return walletOptionsDataManager.getBchFee()
-                .map(fee -> {
-                    FeeOptions feeOptions = new FeeOptions();
-                    feeOptions.setRegularFee(fee);
-                    feeOptions.setPriorityFee(fee);
-                    return feeOptions;
-                })
-                .onErrorReturnItem(FeeOptions.defaultForBch())
-                .toObservable();
+        return feeApi.getBchFeeOptions()
+                .onErrorReturnItem(FeeOptions.defaultFee(CryptoCurrency.BCH));
+    }
+
+    /**
+     * Returns a {@link FeeOptions} object for XLM fees.
+     */
+    public Observable<FeeOptions> getXlmFeeOptions() {
+        return feeApi.getXlmFeeOptions()
+                .onErrorReturnItem(FeeOptions.defaultFee(CryptoCurrency.XLM));
     }
 
     private FeeOptions createTestnetFeeOptions() {
