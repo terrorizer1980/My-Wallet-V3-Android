@@ -128,7 +128,8 @@ class XlmDataManager internal constructor(
 
     fun getTransactionList(accountReference: AccountReference.Xlm): Single<List<XlmTransaction>> =
         Single.fromCallable {
-            horizonProxy.getTransactionList(accountReference.accountId).map(accountReference.accountId)
+            horizonProxy.getTransactionList(accountReference.accountId)
+                .map(accountReference.accountId, horizonProxy)
         }.subscribeOn(Schedulers.io())
 
     /**

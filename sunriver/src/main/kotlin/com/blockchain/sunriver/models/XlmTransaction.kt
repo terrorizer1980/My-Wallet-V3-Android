@@ -6,8 +6,7 @@ import info.blockchain.balance.CryptoValue
 data class XlmTransaction(
     val timeStamp: String,
     val value: CryptoValue,
-    // Tech debt AND-1663 Repeated Hardcoded fee
-    val fee: CryptoValue = CryptoValue.lumensFromStroop(100.toBigInteger()),
+    val fee: CryptoValue,
     val hash: String,
     val to: HorizonKeyPair.Public,
     val from: HorizonKeyPair.Public

@@ -435,7 +435,7 @@ class XlmDataManagerTransactionListTest {
     @Test
     fun `get transaction list from default account`() {
         givenXlmDataManager(
-            givenTransactions("GC24LNYWXIYYB6OGCMAZZ5RX6WPI2F74ZV7HNBV4ADALLXJRT7ZTLHP2" to getResponseList()),
+            givenTransactions(1, "GC24LNYWXIYYB6OGCMAZZ5RX6WPI2F74ZV7HNBV4ADALLXJRT7ZTLHP2" to getResponseList()),
             givenMetaDataPrompt(
                 XlmMetaData(
                     defaultAccountIndex = 0,
@@ -457,7 +457,7 @@ class XlmDataManagerTransactionListTest {
     @Test
     fun `get transactions`() {
         givenXlmDataManager(
-            givenTransactions("GC24LNYWXIYYB6OGCMAZZ5RX6WPI2F74ZV7HNBV4ADALLXJRT7ZTLHP2" to getResponseList())
+            givenTransactions(1, "GC24LNYWXIYYB6OGCMAZZ5RX6WPI2F74ZV7HNBV4ADALLXJRT7ZTLHP2" to getResponseList())
         )
             .getTransactionList(AccountReference.Xlm("", "GC24LNYWXIYYB6OGCMAZZ5RX6WPI2F74ZV7HNBV4ADALLXJRT7ZTLHP2"))
             .testSingle() `should equal` getXlmList()
@@ -490,6 +490,7 @@ class XlmDataManagerTransactionListTest {
         XlmTransaction(
             timeStamp = "createdAt",
             value = 10000.lumens(),
+            fee = 1.stroops(),
             hash = "transactionHash",
             to = HorizonKeyPair.Public("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI"),
             from = HorizonKeyPair.Public("GAIH3ULLFQ4DGSECF2AR555KZ4KNDGEKN4AFI4SU2M7B43MGK3QJZNSR")
@@ -497,6 +498,7 @@ class XlmDataManagerTransactionListTest {
         XlmTransaction(
             timeStamp = "createdAt",
             value = (-100).lumens(),
+            fee = 1.stroops(),
             hash = "transactionHash",
             to = HorizonKeyPair.Public("GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT"),
             from = HorizonKeyPair.Public("GC24LNYWXIYYB6OGCMAZZ5RX6WPI2F74ZV7HNBV4ADALLXJRT7ZTLHP2")
@@ -1099,13 +1101,16 @@ private fun givenBalancesAndMinimums(
 }
 
 private fun givenTransactions(
+    fee: Long,
     vararg transactions: Pair<String, List<OperationResponse>>
 ): HorizonProxy {
     val horizonProxy: HorizonProxy = mock()
+    val mockTx: TransactionResponse = mock { on { feePaid } `it returns` fee }
     transactions
         .forEach { pair ->
             whenever(horizonProxy.getTransactionList(pair.first)) `it returns` pair.second
         }
+    whenever(horizonProxy.getTransaction(any())) `it returns` mockTx
     return horizonProxy
 }
 
