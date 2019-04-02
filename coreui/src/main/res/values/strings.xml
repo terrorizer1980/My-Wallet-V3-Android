@@ -80,7 +80,7 @@
 
     <string name="claim_your_free_crypto">Claim Your Free Crypto</string>
     <string name="claim_your_xlm">Claim Your XLM</string>
-    <string name="claim_your_free_crypto_body">Tap the button to automatically receive your $25 of free Stellar (XLM) once Gold level is unlocked.</string>
+    <string name="claim_your_free_crypto_body">Tap the button to automatically receive your free Stellar (XLM) once Gold level is unlocked.</string>
     <string name="claim_your_free_crypto_cta">@string/claim_your_xlm</string>
     <string name="claim_your_free_crypto_dismiss">@string/maybe_later</string>
 
