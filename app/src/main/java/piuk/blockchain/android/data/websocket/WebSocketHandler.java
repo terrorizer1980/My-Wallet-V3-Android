@@ -579,7 +579,7 @@ class WebSocketHandler {
                 title,
                 marquee,
                 text,
-                R.drawable.ic_notification_white,
+                R.drawable.ic_launcher_round,
                 pendingIntent,
                 1000);
     }
