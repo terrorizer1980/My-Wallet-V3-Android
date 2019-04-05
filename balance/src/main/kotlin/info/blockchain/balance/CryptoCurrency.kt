@@ -3,8 +3,8 @@ package info.blockchain.balance
 enum class CryptoCurrency(
     val symbol: String,
     val unit: String,
-    val dp: Int,
-    internal val userDp: Int,
+    val dp: Int,                    // max decimal places
+    internal val userDp: Int,       // user decimal places
     val requiredConfirmations: Int
 ) {
     BTC(
@@ -34,6 +34,14 @@ enum class CryptoCurrency(
         dp = 7,
         userDp = 7,
         requiredConfirmations = 1
+    ),
+    PAX(
+        symbol = "USDp",
+        unit = "USD Pax",
+        // TODO AND-2003 - these are guesses - check!
+        dp = 4,
+        userDp = 2,
+        requiredConfirmations = 3 // Same as ETHER
     );
 
     companion object {

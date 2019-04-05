@@ -38,6 +38,7 @@ sealed class PieChartsState {
                 CryptoCurrency.ETHER -> ether
                 CryptoCurrency.BCH -> bitcoinCash
                 CryptoCurrency.XLM -> lumen
+                CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
             }
 
         private val totalValue =

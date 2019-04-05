@@ -117,6 +117,7 @@ class SwipeToReceivePresenter @Inject constructor(
                 nextAddress = xlmAddress,
                 hasAddresses = !swipeToReceiveHelper.getXlmReceiveAddress().isNullOrEmpty()
             )
+            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
 
     companion object {

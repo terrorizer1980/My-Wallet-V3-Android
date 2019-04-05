@@ -44,6 +44,7 @@ class WalletAccountHelper(
         CryptoCurrency.BCH -> allBchAccountItems()
         CryptoCurrency.ETHER -> getEthAccount()
         CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
+        CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
     }
 
     /**
@@ -58,6 +59,7 @@ class WalletAccountHelper(
             CryptoCurrency.BCH -> Single.just(allBchAccountItems())
             CryptoCurrency.ETHER -> Single.just(getEthAccount())
             CryptoCurrency.XLM -> getXlmAccount()
+            CryptoCurrency.PAX -> Single.just(getEthAccount())
         }
 
     private fun allBtcAccountItems() = getHdAccounts() + getLegacyAddresses()
@@ -200,6 +202,7 @@ class WalletAccountHelper(
         CryptoCurrency.BCH -> getDefaultOrFirstFundedBchAccount()
         CryptoCurrency.ETHER -> getDefaultEthAccount()
         CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
+        CryptoCurrency.PAX -> getDefaultEthAccount()
     }
 
     fun getEthAccount() =
@@ -350,6 +353,7 @@ class WalletAccountHelper(
             CryptoCurrency.BCH -> Single.just(getBchOverviewList())
             CryptoCurrency.ETHER -> Single.just(getEthOverviewList())
             CryptoCurrency.XLM -> getDefaultXlmAccountItem().map { listOf(it) }
+            CryptoCurrency.PAX -> Single.just(getEthOverviewList())
         }
 
     private fun getEthOverviewList(): List<ItemAccount> = getEthAccount()
@@ -476,5 +480,6 @@ class WalletAccountHelper(
             CryptoCurrency.ETHER -> getEthAccount().size
             CryptoCurrency.BCH -> allBchAccountItems().size
             CryptoCurrency.XLM -> 1 // TODO("AND-1511") Ideally we're getting real account count here, even if one
+            CryptoCurrency.PAX -> getEthAccount().size
         } > 1
 }

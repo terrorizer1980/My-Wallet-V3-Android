@@ -64,6 +64,12 @@
                 android:text="@string/lumens"
                 tools:drawableLeft="@drawable/vector_stellar_rocket" />
 
+            <TextView
+                    android:id="@+id/textview_pax"
+                    style="@style/CryptoCurrencySelectorTextView"
+                    android:text="@string/usd_pax"
+                    tools:drawableLeft="@drawable/vector_pax" />
+
         </LinearLayout>
     </FrameLayout>
 </RelativeLayout>

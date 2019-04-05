@@ -109,7 +109,6 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             setHasFixedSize(true)
             adapter = accountsAdapter
         }
-
         onViewReady()
     }
 
@@ -119,6 +118,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             CryptoCurrency.BCH -> true
             CryptoCurrency.ETHER -> false
             CryptoCurrency.XLM -> false
+            CryptoCurrency.PAX -> false
         }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

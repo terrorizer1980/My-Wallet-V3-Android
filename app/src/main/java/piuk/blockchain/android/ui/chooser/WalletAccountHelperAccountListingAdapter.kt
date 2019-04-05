@@ -18,6 +18,7 @@ class WalletAccountHelperAccountListingAdapter(
             CryptoCurrency.BCH -> Single.just(walletAccountHelper.getHdBchAccounts())
             CryptoCurrency.ETHER -> Single.just(walletAccountHelper.getEthAccount())
             CryptoCurrency.XLM -> walletAccountHelper.getXlmAccount()
+            CryptoCurrency.PAX -> Single.just(walletAccountHelper.getEthAccount())
         }
         return single.map { it.map { account -> mapAccountSummary(account) } }
     }
@@ -29,6 +30,7 @@ class WalletAccountHelperAccountListingAdapter(
                 CryptoCurrency.BCH -> walletAccountHelper.getLegacyBchAddresses()
                 CryptoCurrency.ETHER -> emptyList()
                 CryptoCurrency.XLM -> emptyList()
+                CryptoCurrency.PAX -> emptyList()
             }.map(this::mapLegacyAddress)
         )
 

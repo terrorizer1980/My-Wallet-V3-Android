@@ -67,6 +67,7 @@ class AccountPresenter @Inject internal constructor(
             CryptoCurrency.BCH -> getBchAccounts().size
             CryptoCurrency.ETHER -> throw IllegalStateException("Ether not a supported cryptocurrency on this page")
             CryptoCurrency.XLM -> throw IllegalStateException("Xlm not a supported cryptocurrency on this page")
+            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
 
     override fun onViewReady() {
@@ -87,6 +88,7 @@ class AccountPresenter @Inject internal constructor(
      * Silently check if there are any spendable legacy funds that need to be sent to default
      * account. Prompt user when done calculating.
      */
+    @SuppressLint("CheckResult")
     internal fun checkTransferableLegacyFunds(isAutoPopup: Boolean, showWarningDialog: Boolean) {
         fundsDataManager.transferableFundTransactionListForDefaultAccount
             .addToCompositeDisposable(this)
@@ -116,6 +118,7 @@ class AccountPresenter @Inject internal constructor(
      *
      * @param accountLabel A label for the account to be created
      */
+    @SuppressLint("CheckResult")
     internal fun createNewAccount(accountLabel: String) {
         if (LabelUtil.isExistingLabel(payloadDataManager, bchDataManager, accountLabel)) {
             view.showToast(R.string.label_name_match, ToastCustom.TYPE_ERROR)
@@ -172,6 +175,7 @@ class AccountPresenter @Inject internal constructor(
      *
      * @param address The [LegacyAddress] to be sync'd with the server
      */
+    @SuppressLint("CheckResult")
     internal fun updateLegacyAddress(address: LegacyAddress) {
         payloadDataManager.updateLegacyAddress(address)
             .addToCompositeDisposable(this)
@@ -259,6 +263,7 @@ class AccountPresenter @Inject internal constructor(
      *
      * @param address The address to be saved
      */
+    @SuppressLint("CheckResult")
     internal fun confirmImportWatchOnly(address: String) {
         val legacyAddress = LegacyAddress()
         legacyAddress.address = address
@@ -306,7 +311,7 @@ class AccountPresenter @Inject internal constructor(
         return addressCopy
     }
 
-    @SuppressLint("VisibleForTests")
+    @SuppressLint("VisibleForTests", "CheckResult")
     private fun importNonBip38Address(format: String, data: String, secondPassword: String?) {
         payloadDataManager.getKeyFromImportedData(format, data)
             .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
@@ -319,6 +324,7 @@ class AccountPresenter @Inject internal constructor(
             )
     }
 
+    @SuppressLint("CheckResult")
     @Suppress("MemberVisibilityCanBePrivate")
     @VisibleForTesting
     internal fun handlePrivateKey(key: ECKey?, secondPassword: String?) {
@@ -353,6 +359,7 @@ class AccountPresenter @Inject internal constructor(
             CryptoCurrency.BCH -> getBchDisplayList()
             CryptoCurrency.ETHER -> throw IllegalStateException("Ether not a supported cryptocurrency on this page")
             CryptoCurrency.XLM -> throw IllegalStateException("Xlm not a supported cryptocurrency on this page")
+            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
     }
 

@@ -40,12 +40,14 @@ data class CryptoValue(
         val ZeroBch = bitcoinCashFromSatoshis(0L)
         val ZeroEth = CryptoValue(CryptoCurrency.ETHER, BigInteger.ZERO)
         val ZeroXlm = CryptoValue(CryptoCurrency.XLM, BigInteger.ZERO)
+        val ZeroPax = CryptoValue(CryptoCurrency.PAX, BigInteger.ZERO)
 
         fun zero(cryptoCurrency: CryptoCurrency) = when (cryptoCurrency) {
             CryptoCurrency.BTC -> ZeroBtc
             CryptoCurrency.BCH -> ZeroBch
             CryptoCurrency.ETHER -> ZeroEth
             CryptoCurrency.XLM -> ZeroXlm
+            CryptoCurrency.PAX -> ZeroPax
         }
 
         fun bitcoinFromSatoshis(satoshi: Long) = CryptoValue(CryptoCurrency.BTC, satoshi.toBigInteger())

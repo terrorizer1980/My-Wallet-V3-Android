@@ -78,6 +78,8 @@ internal class TransactionExecutorViaDataManagers(
                     memo
                 )
             ).map { it.hash!! }
+            CryptoCurrency.PAX ->
+                throw NotImplementedError("PAX transactions are not yet supported")
         }
 
     override fun getMaximumSpendable(
@@ -93,6 +95,7 @@ internal class TransactionExecutorViaDataManagers(
                 )
             is AccountReference.Ethereum -> getMaxEther(fees as EthereumFees, feeType)
             is AccountReference.Xlm -> defaultAccountDataManager.getMaxSpendableAfterFees(feeType)
+            is AccountReference.Erc20 -> TODO("PAX is not yet supported - AND-2003")
         }
 
     override fun getFeeForTransaction(
@@ -114,6 +117,7 @@ internal class TransactionExecutorViaDataManagers(
                 }
             }
             is AccountReference.Xlm -> (fees as XlmFees).feeForType(feeType).just()
+            is AccountReference.Erc20 -> TODO("PAX is not yet supported - AND-2003")
         }
 
     override fun getChangeAddress(
@@ -281,6 +285,7 @@ internal class TransactionExecutorViaDataManagers(
             CryptoCurrency.BCH -> sendDataManager.getUnspentBchOutputs(address)
             CryptoCurrency.ETHER -> throw IllegalArgumentException("Ether does not have unspent outputs")
             CryptoCurrency.XLM -> throw IllegalArgumentException("Xlm does not have unspent outputs")
+            CryptoCurrency.PAX -> throw IllegalArgumentException("PAX does not have unspent outputs")
         }.subscribeOn(Schedulers.io())
             .singleOrError()
 
@@ -310,6 +315,7 @@ internal class TransactionExecutorViaDataManagers(
         )
         CryptoCurrency.ETHER -> throw IllegalArgumentException("Ether not supported by this method")
         CryptoCurrency.XLM -> throw IllegalArgumentException("XLM not supported by this method")
+        CryptoCurrency.PAX -> throw IllegalArgumentException("PAX not supported by this method")
     }.subscribeOn(Schedulers.io())
         .singleOrError()
 

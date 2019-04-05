@@ -169,6 +169,7 @@ class BalancePresenter @Inject constructor(
             CryptoCurrency.ETHER -> ethDataManager.fetchEthAddressCompletable()
             CryptoCurrency.BCH -> bchDataManager.updateAllBalances()
             CryptoCurrency.XLM -> Completable.complete()
+            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
 
     /**

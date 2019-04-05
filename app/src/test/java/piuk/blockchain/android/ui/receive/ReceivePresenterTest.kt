@@ -304,7 +304,7 @@ class ReceivePresenterTest {
         whenever(payloadDataManager.updateAllTransactions()).thenReturn(Completable.complete())
         whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         // Act
-        subject.onAccountSelected(account)
+        subject.onAccountBtcSelected(account)
         // Assert
         verify(activity).setSelectedCurrency(CryptoCurrency.BTC)
         verify(activity).getBtcAmount()
@@ -335,7 +335,7 @@ class ReceivePresenterTest {
             .thenReturn(Observable.error { Throwable() })
         whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         // Act
-        subject.onAccountSelected(account)
+        subject.onAccountBtcSelected(account)
         // Assert
         verify(activity).setSelectedCurrency(CryptoCurrency.BTC)
         verify(activity).showQrLoading()
@@ -375,6 +375,35 @@ class ReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(currencyState).cryptoCurrency = CryptoCurrency.ETHER
+        verify(currencyState).cryptoCurrency
+        verifyNoMoreInteractions(currencyState)
+        subject.selectedAccount `should be` null
+        subject.selectedAddress `should be` ethAccount
+        subject.selectedBchAccount `should be` null
+    }
+
+    @Test
+    fun onPaxSelected() {
+        // Arrange
+        val ethAccount = "0x879dBFdE84B0239feB355f55F81fb29f898C778C"
+        val combinedEthModel: CombinedEthModel = mock()
+        val ethResponse: EthAddressResponse = mock()
+        whenever(ethDataStore.ethAddressResponse).thenReturn(combinedEthModel)
+        whenever(combinedEthModel.getAddressResponse()).thenReturn(ethResponse)
+        whenever(ethResponse.account).thenReturn(ethAccount)
+        whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt()))
+            .thenReturn(Observable.empty())
+        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
+        // Act
+        subject.onPaxSelected()
+        // Assert
+        verify(activity).setSelectedCurrency(CryptoCurrency.PAX)
+        verify(activity).updateReceiveAddress(ethAccount)
+        verify(activity).showQrLoading()
+        verifyNoMoreInteractions(activity)
+        verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
+        verifyNoMoreInteractions(qrCodeDataManager)
+        verify(currencyState).cryptoCurrency = CryptoCurrency.PAX
         verify(currencyState).cryptoCurrency
         verifyNoMoreInteractions(currencyState)
         subject.selectedAccount `should be` null

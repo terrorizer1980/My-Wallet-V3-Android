@@ -761,6 +761,10 @@
     <string name="eth_unconfirmed_wait">Please wait until your previous transaction confirms</string>
     <string name="eth_transaction_complete">Transaction complete! Your transactions and balance will update soon, this can take a few minutes.\n</string>
 
+    <!-- PAX/ERC 20 -->
+    <string name="pax_to_field_helper">Enter PAX/ETH address or select</string>
+    <string name="pax_to_field_helper_no_dropdown">Enter PAX/ETH address</string>
+
     <!-- DASHBOARD -->
     <string name="dashboard_title">Dashboard</string>
     <string name="dashboard_time_span_day">Day</string>

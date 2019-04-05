@@ -112,6 +112,7 @@ class CurrencyFormatManager(
                 CryptoCurrency.ETHER ->
                     throw IllegalArgumentException("${currencyState.cryptoCurrency} denomination not supported.")
                 CryptoCurrency.XLM -> throw IllegalArgumentException("XLM formatting should be done via CryptoValue.")
+                CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
             }
         }
     }

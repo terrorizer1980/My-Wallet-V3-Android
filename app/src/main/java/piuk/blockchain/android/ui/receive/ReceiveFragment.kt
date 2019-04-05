@@ -20,7 +20,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -80,6 +79,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
+import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import timber.log.Timber
 import java.io.IOException
 import java.text.DecimalFormatSymbols
@@ -172,6 +172,7 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
                 CryptoCurrency.ETHER -> presenter?.onEthSelected()
                 CryptoCurrency.BCH -> presenter?.onSelectBchDefault()
                 CryptoCurrency.XLM -> presenter?.onXlmSelected()
+                CryptoCurrency.PAX -> presenter?.onPaxSelected()
             }
         }
     }
@@ -308,7 +309,7 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
         currencyFiat.text = presenter.getFiatUnit()
     }
 
-    private val btcTextWatcher = object : TextWatcher {
+    private val btcTextWatcher = object : AfterTextChangedWatcher() {
         override fun afterTextChanged(s: Editable?) {
             var editable = s
             amountCrypto.removeTextChangedListener(this)
@@ -328,17 +329,9 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
                 textChangeAllowed = true
             }
         }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            // No-op
-        }
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            // No-op
-        }
     }
 
-    private val fiatTextWatcher = object : TextWatcher {
+    private val fiatTextWatcher = object : AfterTextChangedWatcher() {
         override fun afterTextChanged(s: Editable) {
             var editable = s
             amountFiat.removeTextChangedListener(this)
@@ -358,14 +351,6 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
                 textChangeSubject.onNext(editable.toString())
                 textChangeAllowed = true
             }
-        }
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            // No-op
-        }
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            // No-op
         }
     }
 
@@ -463,6 +448,10 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
         }
     }
 
+    private fun displayERC20Layout() {
+        displayEtherLayout()
+    }
+
     private fun displayXlmLayout() {
         custom_keyboard.hideKeyboard()
         divider1.gone()
@@ -501,6 +490,7 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
             CryptoCurrency.ETHER -> displayEtherLayout()
             CryptoCurrency.BCH -> displayBitcoinCashLayout()
             CryptoCurrency.XLM -> displayXlmLayout()
+            CryptoCurrency.PAX -> displayERC20Layout()
         }
         updateUnits()
     }
@@ -533,7 +523,7 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
 
                 when (any) {
                     is LegacyAddress -> presenter.onLegacyAddressSelected(any)
-                    is Account -> presenter.onAccountSelected(any)
+                    is Account -> presenter.onAccountBtcSelected(any)
                     else -> throw IllegalArgumentException("No method for handling $type available")
                 }
             } catch (e: ClassNotFoundException) {

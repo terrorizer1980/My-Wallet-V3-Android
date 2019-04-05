@@ -202,6 +202,7 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
             CryptoCurrency.ETHER -> MainActivity.ACTION_ETH_BALANCE
             CryptoCurrency.BCH -> MainActivity.ACTION_BCH_BALANCE
             CryptoCurrency.XLM -> MainActivity.ACTION_XLM_BALANCE
+            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
 
         broadcastIntent(action)

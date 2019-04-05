@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.send
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.support.design.widget.Snackbar
 import com.blockchain.transactions.Memo
@@ -296,6 +297,7 @@ class OriginalSendPresenterStrategy(
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun submitBitcoinTransaction() {
         view.showProgressDialog(R.string.app_name)
 
@@ -320,16 +322,7 @@ class OriginalSendPresenterStrategy(
             }
             .subscribe(
                 { hash ->
-                    Logging.logCustom(
-                        PaymentSentEvent()
-                            .putSuccess(true)
-                            .putAmountForRange(
-                                CryptoValue(
-                                    CryptoCurrency.BTC,
-                                    pendingTransaction.bigIntAmount
-                                )
-                            )
-                    )
+                    logPaymentSentEvent(true, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
 
                     clearBtcUnspentResponseCache()
                     view.dismissProgressDialog()
@@ -347,20 +340,12 @@ class OriginalSendPresenterStrategy(
                         Snackbar.LENGTH_INDEFINITE
                     )
 
-                    Logging.logCustom(
-                        PaymentSentEvent()
-                            .putSuccess(false)
-                            .putAmountForRange(
-                                CryptoValue(
-                                    CryptoCurrency.BTC,
-                                    pendingTransaction.bigIntAmount
-                                )
-                            )
-                    )
+                    logPaymentSentEvent(false, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
                 }
             )
     }
 
+    @SuppressLint("CheckResult")
     private fun submitBchTransaction() {
         view.showProgressDialog(R.string.app_name)
 
@@ -388,16 +373,7 @@ class OriginalSendPresenterStrategy(
             }
             .subscribe(
                 { hash ->
-                    Logging.logCustom(
-                        PaymentSentEvent()
-                            .putSuccess(true)
-                            .putAmountForRange(
-                                CryptoValue(
-                                    CryptoCurrency.BCH,
-                                    pendingTransaction.bigIntAmount
-                                )
-                            )
-                    )
+                    logPaymentSentEvent(true, CryptoCurrency.BCH, pendingTransaction.bigIntAmount)
 
                     clearBchUnspentResponseCache()
                     view.dismissProgressDialog()
@@ -415,16 +391,7 @@ class OriginalSendPresenterStrategy(
                         Snackbar.LENGTH_INDEFINITE
                     )
 
-                    Logging.logCustom(
-                        PaymentSentEvent()
-                            .putSuccess(false)
-                            .putAmountForRange(
-                                CryptoValue(
-                                    CryptoCurrency.BCH,
-                                    pendingTransaction.bigIntAmount
-                                )
-                            )
-                    )
+                    logPaymentSentEvent(false, CryptoCurrency.BCH, pendingTransaction.bigIntAmount)
                 }
             )
     }
@@ -520,8 +487,7 @@ class OriginalSendPresenterStrategy(
     private fun getBchChangeAddress(): Observable<String>? {
         return if (pendingTransaction.isHD(currencyState.cryptoCurrency)) {
             val account = pendingTransaction.sendingObject.accountObject as GenericMetadataAccount
-            val position =
-                bchDataManager.getAccountMetadataList().indexOfFirst { it.xpub == account.xpub }
+            val position = bchDataManager.getAccountMetadataList().indexOfFirst { it.xpub == account.xpub }
             bchDataManager.getNextChangeCashAddress(position)
         } else {
             val legacyAddress = pendingTransaction.sendingObject.accountObject as LegacyAddress
@@ -534,6 +500,7 @@ class OriginalSendPresenterStrategy(
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun submitEthTransaction() {
         createEthTransaction()
             .addToCompositeDisposable(this)
@@ -564,37 +531,29 @@ class OriginalSendPresenterStrategy(
             }
             .subscribe(
                 {
-                    Logging.logCustom(
-                        PaymentSentEvent()
-                            .putSuccess(true)
-                            .putAmountForRange(
-                                CryptoValue(
-                                    CryptoCurrency.ETHER,
-                                    pendingTransaction.bigIntAmount
-                                )
-                            )
-                    )
+                    logPaymentSentEvent(true, CryptoCurrency.ETHER, pendingTransaction.bigIntAmount)
+
                     // handleSuccessfulPayment(...) clears PendingTransaction object
                     handleSuccessfulPayment(it, CryptoCurrency.ETHER)
                 },
                 {
                     Timber.e(it)
-                    Logging.logCustom(
-                        PaymentSentEvent()
-                            .putSuccess(false)
-                            .putAmountForRange(
-                                CryptoValue(
-                                    CryptoCurrency.ETHER,
-                                    pendingTransaction.bigIntAmount
-                                )
-                            )
-                    )
+                    logPaymentSentEvent(false, CryptoCurrency.ETHER, pendingTransaction.bigIntAmount)
+
                     view.showSnackbar(
                         R.string.transaction_failed,
                         Snackbar.LENGTH_INDEFINITE
                     )
                 }
             )
+    }
+
+    private fun logPaymentSentEvent(success: Boolean, currency: CryptoCurrency, amount: BigInteger) {
+        Logging.logCustom(
+            PaymentSentEvent()
+                .putSuccess(success)
+                .putAmountForRange(CryptoValue(currency, amount))
+        )
     }
 
     private fun createEthTransaction(): Observable<RawTransaction> {
@@ -917,6 +876,7 @@ class OriginalSendPresenterStrategy(
     /**
      * Get cached dynamic fee from new Fee options endpoint
      */
+    @SuppressLint("CheckResult")
     private fun getSuggestedFee() {
         val observable = when (currencyState.cryptoCurrency) {
             CryptoCurrency.BTC -> feeDataManager.btcFeeOptions
@@ -932,6 +892,7 @@ class OriginalSendPresenterStrategy(
                 .doOnNext { dynamicFeeCache.bchFeeOptions = it }
 
             CryptoCurrency.XLM -> xlmNotSupported()
+            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
 
         observable.addToCompositeDisposable(this)
@@ -939,10 +900,7 @@ class OriginalSendPresenterStrategy(
                 { /* No-op */ },
                 {
                     Timber.e(it)
-                    view.showSnackbar(
-                        R.string.confirm_payment_fee_sync_error,
-                        Snackbar.LENGTH_LONG
-                    )
+                    view.showSnackbar(R.string.confirm_payment_fee_sync_error, Snackbar.LENGTH_LONG)
                     view.finishPage()
                 }
             )
@@ -1074,6 +1032,7 @@ class OriginalSendPresenterStrategy(
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun calculateUnspentBtc(
         spendAll: Boolean,
         amountToSendText: String?,
@@ -1125,6 +1084,7 @@ class OriginalSendPresenterStrategy(
             )
     }
 
+    @SuppressLint("CheckResult")
     private fun calculateUnspentBch(
         spendAll: Boolean,
         amountToSendText: String?,
@@ -1207,6 +1167,7 @@ class OriginalSendPresenterStrategy(
         pendingTransaction.bigIntFee = pendingTransaction.unspentOutputBundle.absoluteFee
     }
 
+    @SuppressLint("CheckResult")
     private fun getEthAccountResponse(spendAll: Boolean, amountToSendText: String?) {
         view.showMaxAvailable()
 
@@ -1367,6 +1328,7 @@ class OriginalSendPresenterStrategy(
         }
     }
 
+    @SuppressLint("CheckResult")
     override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) {
         sendDataManager.getEcKeyFromBip38(
             pw,
@@ -1565,6 +1527,7 @@ class OriginalSendPresenterStrategy(
         prefsUtil.setValue(PREF_WARN_WATCH_ONLY_SPEND, warn)
     }
 
+    @SuppressLint("CheckResult")
     private fun onReceivingBtcAccountSelected(account: Account) {
         var label = account.label
         if (label.isNullOrEmpty()) {
@@ -1645,8 +1608,7 @@ class OriginalSendPresenterStrategy(
 
     private fun selectSendingAccountBch(data: Intent?) {
         try {
-            val type: Class<*> =
-                Class.forName(data?.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_OBJECT_TYPE))
+            val type: Class<*> = Class.forName(data?.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_OBJECT_TYPE))
             val any = ObjectMapper().readValue(
                 data!!.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_ITEM),
                 type
@@ -1668,8 +1630,7 @@ class OriginalSendPresenterStrategy(
 
     private fun selectReceivingAccountBtc(data: Intent?) {
         try {
-            val type: Class<*> =
-                Class.forName(data?.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_OBJECT_TYPE))
+            val type: Class<*> = Class.forName(data?.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_OBJECT_TYPE))
             val any = ObjectMapper().readValue(
                 data?.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_ITEM),
                 type

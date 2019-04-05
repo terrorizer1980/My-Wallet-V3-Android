@@ -33,6 +33,11 @@ class CryptoCurrencyTests {
     }
 
     @Test
+    fun `uppercase ETH`() {
+        CryptoCurrency.fromSymbol("ETH") `should be` CryptoCurrency.ETHER
+    }
+
+    @Test
     fun `uppercase XLM`() {
         CryptoCurrency.fromSymbol("XLM") `should be` CryptoCurrency.XLM
     }
@@ -43,8 +48,18 @@ class CryptoCurrencyTests {
     }
 
     @Test
-    fun `uppercase ETH`() {
-        CryptoCurrency.fromSymbol("ETH") `should be` CryptoCurrency.ETHER
+    fun `uppercase PAX`() {
+        CryptoCurrency.fromSymbol("USDp") `should be` CryptoCurrency.PAX
+    }
+
+    @Test
+    fun `lowercase pax`() {
+        CryptoCurrency.fromSymbol("usdp") `should be` CryptoCurrency.PAX
+    }
+
+    @Test
+    fun `mixed case pax`() {
+        CryptoCurrency.fromSymbol("USDp") `should be` CryptoCurrency.PAX
     }
 
     @Test
@@ -125,5 +140,10 @@ class CryptoCurrencyTests {
     @Test
     fun `unit name XLM`() {
         CryptoCurrency.XLM.unit `should be` "Stellar"
+    }
+
+    @Test
+    fun `unit name PAX`() {
+        CryptoCurrency.PAX.unit `should be` "USD Pax"
     }
 }

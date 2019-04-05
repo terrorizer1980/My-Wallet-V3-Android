@@ -60,8 +60,8 @@ class FeeDataManagerTest {
                 priorityFee `should equal to` 23
                 regularFee `should equal to` 23
                 gasLimit `should equal to` 21000
-                limits.min `should equal to` 23
-                limits.max `should equal to` 23
+                limits!!.min `should equal to` 23
+                limits!!.max `should equal to` 23
             }
     }
 
@@ -78,8 +78,8 @@ class FeeDataManagerTest {
             .apply {
                 priorityFee `should equal to` 11
                 regularFee `should equal to` 5
-                limits.min `should equal to` 2
-                limits.max `should equal to` 16
+                limits!!.min `should equal to` 2
+                limits!!.max `should equal to` 16
             }
     }
 

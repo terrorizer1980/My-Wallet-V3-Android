@@ -26,6 +26,7 @@ import piuk.blockchain.android.ui.send.SendPresenterXSendView
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.PerCurrencySendPresenter
 import piuk.blockchain.android.ui.send.external.SendPresenterStrategy
+import piuk.blockchain.android.ui.send.send2.Erc20SendStrategy
 import piuk.blockchain.android.ui.send.send2.XlmSendPresenterStrategy
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.OSUtil
@@ -114,6 +115,7 @@ val applicationModule = applicationContext {
                 PerCurrencySendPresenter(
                     originalStrategy = originalStrategy,
                     xlmStrategy = XlmSendPresenterStrategy(get(), get(), get(), get(), get(), get()),
+                    erc20Strategy = Erc20SendStrategy(),
                     currencyState = get(),
                     exchangeRates = get(),
                     stringUtils = get(),

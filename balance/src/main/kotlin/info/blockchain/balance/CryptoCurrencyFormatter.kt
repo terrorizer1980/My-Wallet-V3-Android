@@ -40,6 +40,7 @@ class CryptoCurrencyFormatter(locale: Locale) {
     private val ethFormat = createCryptoDecimalFormat(locale, CryptoCurrency.ETHER.dp)
     private val ethShortFormat = createCryptoDecimalFormat(locale, CryptoCurrency.ETHER.userDp)
     private val xlmFormat = createCryptoDecimalFormat(locale, CryptoCurrency.XLM.dp)
+    private val paxFormat = createCryptoDecimalFormat(locale, CryptoCurrency.PAX.dp)
 
     fun format(
         cryptoValue: CryptoValue,
@@ -64,6 +65,7 @@ class CryptoCurrencyFormatter(locale: Locale) {
             FormatPrecision.Full -> ethFormat
         }
         CryptoCurrency.XLM -> xlmFormat
+        CryptoCurrency.PAX -> paxFormat
     }
 
     private fun DecimalFormat.formatWithUnit(value: BigDecimal, symbol: String) =

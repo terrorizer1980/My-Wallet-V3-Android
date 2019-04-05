@@ -71,9 +71,9 @@ class FeeDataManagerExtensionsKtTest {
             }
     }
 
-    private val feeOptions = FeeOptions().apply {
-        priorityFee = 100L
-        regularFee = 10L
+    private val feeOptions = FeeOptions(
+        priorityFee = 100L,
+        regularFee = 10L,
         gasLimit = 21000L
-    }
+    )
 }

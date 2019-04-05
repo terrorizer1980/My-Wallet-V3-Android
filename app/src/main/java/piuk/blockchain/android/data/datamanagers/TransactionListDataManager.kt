@@ -48,6 +48,7 @@ class TransactionListDataManager(
             CryptoCurrency.ETHER -> getEthereumObservable()
             CryptoCurrency.BCH -> fetchBchTransactions(itemAccount, limit, offset)
             CryptoCurrency.XLM -> fetchXlmTransactions()
+            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
 
         return observable.doOnNext { insertTransactionList(it.toMutableList()) }
@@ -293,6 +294,7 @@ class TransactionListDataManager(
             CryptoCurrency.BCH -> bchDataManager.toBalanceReporter().toAsync()
             CryptoCurrency.ETHER -> ethDataManager.toAsyncBalanceReporter()
             CryptoCurrency.XLM -> xlmDataManager.toAsyncBalanceReporter()
+            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
     }
 }

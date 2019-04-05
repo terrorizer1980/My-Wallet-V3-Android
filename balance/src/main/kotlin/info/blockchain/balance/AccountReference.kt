@@ -19,6 +19,12 @@ sealed class AccountReference(
         private val _label: String,
         val accountId: String
     ) : AccountReference(CryptoCurrency.XLM, _label)
+
+    data class Erc20(
+        private val _label: String,
+        val ethAddress: String,
+        val apiCode: String
+    ) : AccountReference(CryptoCurrency.XLM, _label)
 }
 
 enum class AccountType {

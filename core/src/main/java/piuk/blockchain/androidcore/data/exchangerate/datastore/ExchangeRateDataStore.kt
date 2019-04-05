@@ -19,6 +19,7 @@ class ExchangeRateDataStore(
     private var ethTickerData: Map<String, PriceDatum>? = null
     private var bchTickerData: Map<String, PriceDatum>? = null
     private var xlmTickerData: Map<String, PriceDatum>? = null
+    private val paxTickerData: Map<String, PriceDatum> = emptyMap() // TODO: AND-2003 - STUB!
 
     fun updateExchangeRates(): Completable = Single.merge(
         exchangeRateService.getExchangeRateMap(CryptoCurrency.BTC)
@@ -66,6 +67,7 @@ class ExchangeRateDataStore(
             CryptoCurrency.ETHER -> ethTickerData
             CryptoCurrency.BCH -> bchTickerData
             CryptoCurrency.XLM -> xlmTickerData
+            CryptoCurrency.PAX -> paxTickerData
         }
 
     fun getHistoricPrice(cryptoCurrency: CryptoCurrency, fiat: String, timeInSeconds: Long): Single<BigDecimal> =

@@ -290,6 +290,7 @@ class PieChartDelegate<in T>(
                 CryptoCurrency.ETHER -> itemView.textview_value_ether
                 CryptoCurrency.BCH -> itemView.textview_value_bitcoin_cash
                 CryptoCurrency.XLM -> itemView.textview_value_lumens
+                CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
             }
 
         internal fun amountTextView(cryptoCurrency: CryptoCurrency) =
@@ -298,6 +299,7 @@ class PieChartDelegate<in T>(
                 CryptoCurrency.ETHER -> itemView.textview_amount_ether
                 CryptoCurrency.BCH -> itemView.textview_amount_bitcoin_cash
                 CryptoCurrency.XLM -> itemView.textview_amount_lumens
+                CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
             }
 
         // Lockbox
@@ -347,4 +349,5 @@ private fun CryptoCurrency.label() =
         CryptoCurrency.ETHER -> R.string.ether
         CryptoCurrency.BCH -> R.string.bitcoin_cash
         CryptoCurrency.XLM -> R.string.lumens
+        CryptoCurrency.PAX -> R.string.usd_pax
     }

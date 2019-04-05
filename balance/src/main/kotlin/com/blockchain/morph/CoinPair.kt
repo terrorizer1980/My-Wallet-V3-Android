@@ -61,23 +61,28 @@ infix fun CryptoCurrency.to(other: CryptoCurrency) =
             CryptoCurrency.ETHER -> CoinPair.BTC_TO_ETH
             CryptoCurrency.BCH -> CoinPair.BTC_TO_BCH
             CryptoCurrency.XLM -> CoinPair.BTC_TO_XLM
+            else -> TODO("PAX is not yet supported - AND-2003")
         }
         CryptoCurrency.ETHER -> when (other) {
             CryptoCurrency.ETHER -> CoinPair.ETH_TO_ETH
             CryptoCurrency.BTC -> CoinPair.ETH_TO_BTC
             CryptoCurrency.BCH -> CoinPair.ETH_TO_BCH
             CryptoCurrency.XLM -> CoinPair.ETH_TO_XLM
+            else -> TODO("PAX is not yet supported - AND-2003")
         }
         CryptoCurrency.BCH -> when (other) {
             CryptoCurrency.BCH -> CoinPair.BCH_TO_BCH
             CryptoCurrency.BTC -> CoinPair.BCH_TO_BTC
             CryptoCurrency.ETHER -> CoinPair.BCH_TO_ETH
             CryptoCurrency.XLM -> CoinPair.BCH_TO_XLM
+            else -> TODO("PAX is not yet supported - AND-2003")
         }
         CryptoCurrency.XLM -> when (other) {
             CryptoCurrency.XLM -> CoinPair.XLM_TO_XLM
             CryptoCurrency.BTC -> CoinPair.XLM_TO_BTC
             CryptoCurrency.ETHER -> CoinPair.XLM_TO_ETH
             CryptoCurrency.BCH -> CoinPair.XLM_TO_BCH
+            else -> TODO("PAX is not yet supported - AND-2003")
         }
+        CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
     }

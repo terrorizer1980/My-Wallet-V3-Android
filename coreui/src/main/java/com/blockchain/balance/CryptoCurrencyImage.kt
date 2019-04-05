@@ -13,6 +13,7 @@ fun CryptoCurrency.layerListDrawableRes() =
         CryptoCurrency.ETHER -> R.drawable.layer_list_eth
         CryptoCurrency.BCH -> R.drawable.layer_list_bitcoin_cash
         CryptoCurrency.XLM -> R.drawable.layer_list_lumen
+        CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
     }
 
 @DrawableRes
@@ -22,6 +23,7 @@ fun CryptoCurrency.drawableRes() =
         CryptoCurrency.ETHER -> R.drawable.vector_eth
         CryptoCurrency.BCH -> R.drawable.vector_bitcoin_cash
         CryptoCurrency.XLM -> R.drawable.vector_stellar_rocket
+        CryptoCurrency.PAX -> R.drawable.vector_pax
     }
 
 @DrawableRes
@@ -31,6 +33,7 @@ fun CryptoCurrency.drawableResFilled() =
         CryptoCurrency.ETHER -> R.drawable.vector_eth_filled
         CryptoCurrency.BCH -> R.drawable.vector_bitcoin_cash_filled
         CryptoCurrency.XLM -> R.drawable.vector_stellar_rocket_filled
+        CryptoCurrency.PAX -> R.drawable.vector_pax
     }
 
 fun ImageView.setImageDrawable(@DrawableRes res: Int) {

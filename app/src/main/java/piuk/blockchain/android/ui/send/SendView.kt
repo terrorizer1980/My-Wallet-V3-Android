@@ -58,7 +58,7 @@ interface SendView : BaseSendView {
 
     fun showMemo()
 
-    fun displayMemo(memo: Memo)
+    fun displayMemo(usersMemo: Memo)
 
     // Enable / Disable
     fun enableFeeDropdown()

@@ -41,11 +41,13 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-    doLast {
-        subprojects.forEach { delete it.buildDir }
-    }
-}
+// This causes random "file/directory not found" errors at build time and does nothing the default
+// clean operation does, so we'll remove it for now
+//task clean(type: Delete) {
+//    delete rootProject.buildDir
+//    doLast {
+//        subprojects.forEach { delete it.buildDir }
+//    }
+//}
 
 apply from: 'quality/jacocoRootReport.gradle'

@@ -26,7 +26,6 @@ import android.support.v7.widget.AppCompatEditText
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -90,6 +89,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
+import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import timber.log.Timber
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -458,30 +458,14 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         enableFiatTextChangeListener()
     }
 
-    private val cryptoTextWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            // No-op
-        }
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            // No-op
-        }
-
+    private val cryptoTextWatcher = object : AfterTextChangedWatcher() {
         override fun afterTextChanged(editable: Editable) {
             presenter.updateFiatTextField(editable, amountContainer.amountCrypto)
             updateTotals()
         }
     }
 
-    private val fiatTextWatcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            // No-op
-        }
-
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-            // No-op
-        }
-
+    private val fiatTextWatcher = object : AfterTextChangedWatcher() {
         override fun afterTextChanged(editable: Editable) {
             presenter.updateCryptoTextField(editable, amountContainer.amountFiat)
             updateTotals()
@@ -498,7 +482,6 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
                 // TODO: AND-1637 Abstract away all currency scanning and remove this selection
                 presenter.onCurrencySelected(currencyState.cryptoCurrency)
             }
-            presenter.selectDefaultOrFirstFundedSendingAccount()
         }
     }
 
@@ -525,6 +508,7 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
                 CryptoCurrency.ETHER -> R.string.eth_to_field_helper
                 CryptoCurrency.BCH -> R.string.bch_to_field_helper
                 CryptoCurrency.XLM -> R.string.xlm_to_field_helper
+                CryptoCurrency.PAX -> R.string.pax_to_field_helper
             }
         } else {
             when (currencyState.cryptoCurrency) {
@@ -532,6 +516,7 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
                 CryptoCurrency.ETHER -> R.string.eth_to_field_helper_no_dropdown
                 CryptoCurrency.BCH -> R.string.bch_to_field_helper_no_dropdown
                 CryptoCurrency.XLM -> R.string.xlm_to_field_helper_no_dropdown
+                CryptoCurrency.PAX -> R.string.pax_to_field_helper_no_dropdown
             }
         }
         toContainer.toAddressEditTextView.setHint(hint)
@@ -1038,6 +1023,7 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         spinnerPriority.setSelection(index)
     }
 
+    @SuppressLint("CheckResult")
     internal fun displayCustomFeeField() {
         textviewFeeAbsolute.visibility = View.GONE
         textviewFeeTime.visibility = View.INVISIBLE
@@ -1066,14 +1052,12 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
             .filter { !it.isEmpty() }
             .map { it.toLong() }
             .onErrorReturnItem(0L)
+
             .doOnNext { value ->
-                if (presenter.getBitcoinFeeOptions() != null &&
-                    value < presenter.getBitcoinFeeOptions()!!.limits.min
-                ) {
+                val feeOptions = presenter.getBitcoinFeeOptions()
+                if (feeOptions != null && value < feeOptions.limits!!.min) {
                     textInputLayout.error = getString(R.string.fee_options_fee_too_low)
-                } else if (presenter.getBitcoinFeeOptions() != null &&
-                    value > presenter.getBitcoinFeeOptions()!!.limits.max
-                ) {
+                } else if (feeOptions != null && value > feeOptions.limits!!.max) {
                     textInputLayout.error = getString(R.string.fee_options_fee_too_high)
                 } else {
                     textInputLayout.error = null

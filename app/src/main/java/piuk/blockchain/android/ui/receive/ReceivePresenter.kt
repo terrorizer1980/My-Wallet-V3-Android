@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.receive
 
+import android.annotation.SuppressLint
 import android.support.annotation.VisibleForTesting
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.isValidXlmQr
@@ -89,7 +90,7 @@ class ReceivePresenter @Inject internal constructor(
             CryptoCurrency.ETHER -> onEthSelected()
             CryptoCurrency.BCH -> onSelectBchDefault()
             CryptoCurrency.XLM -> onXlmSelected()
-            else -> throw IllegalArgumentException("${currencyState.cryptoCurrency.unit} is not currently supported")
+            CryptoCurrency.PAX -> onPaxSelected()
         }
     }
 
@@ -153,7 +154,8 @@ class ReceivePresenter @Inject internal constructor(
         generateQrCode(bech32)
     }
 
-    internal fun onAccountSelected(account: Account) {
+    @SuppressLint("CheckResult")
+    internal fun onAccountBtcSelected(account: Account) {
         currencyState.cryptoCurrency = CryptoCurrency.BTC
         view.setSelectedCurrency(currencyState.cryptoCurrency)
         selectedAccount = account
@@ -182,6 +184,21 @@ class ReceivePresenter @Inject internal constructor(
         view.setSelectedCurrency(currencyState.cryptoCurrency)
         selectedAccount = null
         selectedBchAccount = null
+
+        lookupEthAccountAndUpdateView()
+    }
+
+    internal fun onPaxSelected() {
+        currencyState.cryptoCurrency = CryptoCurrency.PAX
+        compositeDisposable.clear()
+        view.setSelectedCurrency(currencyState.cryptoCurrency)
+        selectedAccount = null
+        selectedBchAccount = null
+
+        lookupEthAccountAndUpdateView()
+    }
+
+    private fun lookupEthAccountAndUpdateView() {
         // This can be null at this stage for some reason - TODO investigate thoroughly
         val account: String? = ethDataStore.ethAddressResponse?.getAddressResponse()?.account
         if (account != null) {
@@ -195,6 +212,7 @@ class ReceivePresenter @Inject internal constructor(
         }
     }
 
+    @SuppressLint("CheckResult")
     internal fun onXlmSelected() {
         currencyState.cryptoCurrency = CryptoCurrency.XLM
         compositeDisposable.clear()
@@ -222,6 +240,7 @@ class ReceivePresenter @Inject internal constructor(
         onBchAccountSelected(bchDataManager.getDefaultGenericMetadataAccount()!!)
     }
 
+    @SuppressLint("CheckResult")
     internal fun onBchAccountSelected(account: GenericMetadataAccount) {
         currencyState.cryptoCurrency = CryptoCurrency.BCH
         view.setSelectedCurrency(currencyState.cryptoCurrency)
@@ -256,7 +275,7 @@ class ReceivePresenter @Inject internal constructor(
 
     internal fun onSelectDefault(defaultAccountPosition: Int) {
         compositeDisposable.clear()
-        onAccountSelected(
+        onAccountBtcSelected(
             if (defaultAccountPosition > -1) {
                 payloadDataManager.getAccount(defaultAccountPosition)
             } else {
@@ -361,6 +380,7 @@ class ReceivePresenter @Inject internal constructor(
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun generateQrCode(uri: String) {
         view.showQrLoading()
         compositeDisposable.clear()

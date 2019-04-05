@@ -252,19 +252,19 @@ private fun givenSomeFees() = BitcoinLikeFees(10, 20)
 
 private fun givenEthFeeDataManager(ethFees: EthereumFees): FeeDataManager =
     mock {
-        on { ethFeeOptions } `it returns` Observable.just(FeeOptions().apply {
-            regularFee = ethFees.gasPriceRegularInWei.toLong() / 1_000_000_000L
-            priorityFee = ethFees.gasPricePriorityInWei.toLong() / 1_000_000_000L
+        on { ethFeeOptions } `it returns` Observable.just(FeeOptions(
+            regularFee = ethFees.gasPriceRegularInWei.toLong() / 1_000_000_000L,
+            priorityFee = ethFees.gasPricePriorityInWei.toLong() / 1_000_000_000L,
             gasLimit = ethFees.gasLimitInGwei.toLong()
-        })
+        ))
     }
 
 private fun givenFeeDataManager(bitcoinLikeFees: BitcoinLikeFees): FeeDataManager =
     mock {
-        on { btcFeeOptions } `it returns` Observable.just(FeeOptions().apply {
-            regularFee = bitcoinLikeFees.regularFeePerKb.toLong() / 1000L
+        on { btcFeeOptions } `it returns` Observable.just(FeeOptions(
+            regularFee = bitcoinLikeFees.regularFeePerKb.toLong() / 1000L,
             priorityFee = bitcoinLikeFees.priorityFeePerKb.toLong() / 1000L
-        })
+        ))
     }
 
 private fun anAccountReference(): AccountReference = AccountReference.BitcoinLike(CryptoCurrency.BTC, "", "")

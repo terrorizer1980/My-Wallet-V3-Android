@@ -22,6 +22,7 @@ class PerCurrencySendPresenterTest {
         PerCurrencySendPresenter(
             mock(),
             xlmStrategy,
+            mock(),
             currencyState,
             mock(),
             mock(),
@@ -42,8 +43,10 @@ class PerCurrencySendPresenterTest {
     fun `handles btc address scan, delegates to original strategy`() {
         val view: SendView = mock()
         val originalStrategy: SendPresenter<SendView> = mock()
+
         PerCurrencySendPresenter(
             originalStrategy,
+            mock(),
             mock(),
             mock(),
             mock(),

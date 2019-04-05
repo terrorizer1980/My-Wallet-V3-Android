@@ -35,6 +35,7 @@ fun FeeDataManager.getFeeOptions(cryptoCurrency: CryptoCurrency): Single<out Net
                 CryptoValue.lumensFromStroop(it.priorityFee.toBigInteger())
             )
         }
+        CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
     }.singleOrError()
 
 sealed class NetworkFees
