@@ -33,7 +33,7 @@ fun TransactionSender.sendFundsOrThrow(
 
 class SendException(
     result: SendFundsResult
-) : RuntimeException("SendException ${result.errorCode}") {
+) : RuntimeException("SendException - code: ${result.errorCode}, extra: '${result.errorExtra}'") {
     val errorCode = result.errorCode
     val hash = result.hash
     val details = result.sendDetails
@@ -72,7 +72,8 @@ data class SendFundsResult(
     val errorCode: Int,
     val confirmationDetails: SendConfirmationDetails?,
     val hash: String?,
-    val errorValue: CryptoValue? = null
+    val errorValue: CryptoValue? = null,
+    val errorExtra: String? = null
 ) {
     val success = errorCode == 0 && hash != null
 }

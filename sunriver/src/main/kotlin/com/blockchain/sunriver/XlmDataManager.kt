@@ -175,7 +175,8 @@ internal fun HorizonProxy.SendResult.mapToSendFundsResult(sendDetails: SendDetai
             errorCode = failureReason.errorCode,
             errorValue = failureValue,
             confirmationDetails = null,
-            hash = null
+            hash = null,
+            errorExtra = failureExtra
         )
     }
 
