@@ -54,8 +54,13 @@
     <color name="product_light_blue_background">#1A10ADE4</color>
     <color name="product_light_gray_background">#FFF5F6F8</color>
     <color name="product_light_gray_divider">#FFDCD9DB</color>
+
     <!-- Used for hint/disclaimer/footnote text -->
     <color name="product_gray_hint">#B0B0B0</color>
+
+    <!-- For the pax coming soon screen -->
+    <color name="soon_title_blue">#074B7A</color>
+    <color name="soon_text_grey">#50596B</color>
 
     <!-- Non-official Cryptocurrency colours -->
     <color name="color_bitcoin_logo">#FF9B22</color>

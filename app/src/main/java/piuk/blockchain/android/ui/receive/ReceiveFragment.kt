@@ -111,8 +111,8 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
     private var handlingActivityResult = false
 
     private val intentFilter = IntentFilter(BalanceFragment.ACTION_INTENT)
-    private val defaultDecimalSeparator =
-        DecimalFormatSymbols.getInstance().decimalSeparator.toString()
+    private val defaultDecimalSeparator = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
+
     private val receiveIntentHelper by unsafeLazy {
         ReceiveIntentHelper(context!!, appUtil)
     }
@@ -412,6 +412,7 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
     }
 
     private fun displayBitcoinLayout() {
+        showSubview(RECEIVE_VIEW)
         divider1.visible()
         amount_container.visible()
         divider3.visible()
@@ -433,6 +434,7 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
     }
 
     private fun displayEtherLayout() {
+        showSubview(RECEIVE_VIEW)
         custom_keyboard.hideKeyboard()
         divider1.gone()
         amount_container.gone()
@@ -449,10 +451,12 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
     }
 
     private fun displayERC20Layout() {
-        displayEtherLayout()
+        showSubview(COMING_SOON_VIEW)
+//        displayEtherLayout()
     }
 
     private fun displayXlmLayout() {
+        showSubview(RECEIVE_VIEW)
         custom_keyboard.hideKeyboard()
         divider1.gone()
         amount_container.gone()
@@ -469,6 +473,7 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
     }
 
     private fun displayBitcoinCashLayout() {
+        showSubview(RECEIVE_VIEW)
         custom_keyboard.hideKeyboard()
         divider1.gone()
         amount_container.gone()
@@ -796,6 +801,14 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
         }
     }
 
+    @Suppress("DeprecatedCallableAddReplaceWith")
+    @Deprecated("Remove once PAX fully implemented")
+    private fun showSubview(whichSubview: Int) {
+        if (view_Switcher.displayedChild != whichSubview) {
+            view_Switcher.displayedChild = whichSubview
+        }
+    }
+
     interface OnReceiveFragmentInteractionListener {
 
         fun onReceiveFragmentClose()
@@ -810,6 +823,9 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
     }
 
     companion object {
+
+        private const val RECEIVE_VIEW = 0
+        private const val COMING_SOON_VIEW = 1
 
         private const val REQUEST_CODE_RECEIVE_BITCOIN = 800
         private const val REQUEST_CODE_RECEIVE_BITCOIN_CASH = 801

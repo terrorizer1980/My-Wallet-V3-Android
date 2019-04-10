@@ -859,4 +859,9 @@
     <string name="claim_your_free_crypto_card_body">You\'re all set! Tap this card to claim your free XLM.</string>
     <string name="claim_your_free_crypto_card_button">@string/claim_your_xlm</string>
 
+    <!-- PAX coming soon fragment -->
+    <string name="pax_coming_soon_title">USD Pax Coming Soon!</string>
+    <string name="pax_coming_soon_message">We\'re bringing you USD Pax to Android. While you wait, Send, Receive &amp; Exchange USD Pax on the web</string>
+    <string name="pax_coming_soon_link">What is USD Pax?</string>
+
 </resources>
