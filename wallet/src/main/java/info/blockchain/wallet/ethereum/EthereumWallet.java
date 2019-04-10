@@ -49,6 +49,8 @@ public class EthereumWallet {
         this.walletData.setDefaultAccountIdx(0);
         this.walletData.setTxNotes(new HashMap<String, String>());
         this.walletData.setAccounts(accounts);
+
+        updateErc20Tokens();
     }
 
     /**
@@ -91,7 +93,7 @@ public class EthereumWallet {
     }
 
     public boolean hasSeen() {
-        return walletData.hasSeen();
+        return walletData.getHasSeen();
     }
 
     /**
@@ -142,5 +144,25 @@ public class EthereumWallet {
 
     public long getLastTransactionTimestamp() {
         return walletData.getLastTxTimestamp();
+    }
+
+    public Erc20TokenData getErc20TokenData(String tokenName) {
+        return walletData.getErc20Tokens().get(tokenName);
+    }
+
+    public boolean updateErc20Tokens() {
+        boolean wasUpdated = false;
+        if (walletData.getErc20Tokens() == null) {
+            walletData.setErc20Tokens(new HashMap<String, Erc20TokenData>());
+            wasUpdated = true;
+        }
+
+        HashMap<String, Erc20TokenData> map = walletData.getErc20Tokens();
+        if (map.isEmpty()) {
+            map.put(Erc20TokenData.PAX_CONTRACT_NAME, Erc20TokenData.Companion.createPaxTokenData());
+            wasUpdated = true;
+        }
+
+        return wasUpdated;
     }
 }

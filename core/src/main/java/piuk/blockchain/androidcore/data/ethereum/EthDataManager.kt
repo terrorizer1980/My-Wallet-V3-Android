@@ -1,7 +1,9 @@
 package piuk.blockchain.androidcore.data.ethereum
 
 import com.blockchain.logging.LastTxUpdater
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.Environment
+import info.blockchain.wallet.ethereum.Erc20TokenData
 import info.blockchain.wallet.ethereum.EthAccountApi
 import info.blockchain.wallet.ethereum.EthereumWallet
 import info.blockchain.wallet.ethereum.data.EthAddressResponse
@@ -314,6 +316,10 @@ class EthDataManager(
                         throw InvalidCredentialsException(e.message)
                     }
                 }
+                // AND-2011: Add erc20 token data if not present
+                if (ethWallet.updateErc20Tokens()) {
+                    needsSave = true
+                }
 
                 Pair(ethWallet, needsSave)
             }
@@ -322,4 +328,11 @@ class EthDataManager(
         ethDataStore.ethWallet!!.toJson(),
         EthereumWallet.METADATA_TYPE_EXTERNAL
     )
+
+    fun getErc20TokenData(currency: CryptoCurrency): Erc20TokenData {
+        when (currency) {
+            CryptoCurrency.PAX -> return getEthWallet()!!.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME)
+            else -> throw IllegalArgumentException("Not an ERC20 token")
+        }
+    }
 }

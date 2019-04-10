@@ -78,9 +78,7 @@ class FeeOptions constructor(
             )
         }
 
-        private fun defaultForPax(): FeeOptions {
-            TODO("PAX is not yet supported - AND-2003")
-        }
+        private fun defaultForErc20(): FeeOptions = defaultForEth()
 
         /**
          * @param currency the currency
@@ -92,7 +90,7 @@ class FeeOptions constructor(
                 CryptoCurrency.ETHER -> defaultForEth()
                 CryptoCurrency.BCH -> defaultForBch()
                 CryptoCurrency.XLM -> defaultForXlm()
-                CryptoCurrency.PAX -> defaultForPax()
+                CryptoCurrency.PAX -> defaultForErc20()
             }
         }
 

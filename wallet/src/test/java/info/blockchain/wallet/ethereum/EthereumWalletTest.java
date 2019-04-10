@@ -15,6 +15,9 @@ import org.web3j.utils.Numeric;
 import java.math.BigInteger;
 import java.util.LinkedList;
 
+import static com.blockchain.testutils.GetStringFromResourceKt.getStringFromResource;
+
+
 public class EthereumWalletTest extends MockedResponseTest {
 
     EthereumWallet subject;
@@ -145,6 +148,53 @@ public class EthereumWalletTest extends MockedResponseTest {
 
         //Assert
         Assert.assertNull(subject);
+    }
+
+    @Test
+    public void paxErc20Created() throws Exception {
+        //Arrange
+        HDWallet wallet = getWallet3();
+
+        //Act
+        subject = new EthereumWallet(wallet.getMasterKey(), "My Ether Wallet");
+
+        //Assert
+        Erc20TokenData tokenData = subject.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME);
+        Assert.assertNotNull(tokenData);
+    }
+
+    @Test
+    public void paxErc20UpdateWallet() throws Exception {
+        //Arrange
+        String json = getStringFromResource(this, "eth_wallet_no_pax.json");
+        subject = EthereumWallet.fromJson(json);
+
+        //Act
+        boolean wasUpdated = subject.updateErc20Tokens();
+
+        //Assert
+        Assert.assertTrue(wasUpdated);
+        Erc20TokenData tokenData = subject.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME);
+        Assert.assertNotNull(tokenData);
+    }
+
+    @Test
+    public void load_with_erc20_txNote() throws Exception {
+
+        //Arrange
+        HDWallet wallet = getWallet3();
+
+        EthereumWallet eth = new EthereumWallet(wallet.getMasterKey(), "label");
+        eth.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME)
+           .putTxNote("one", "two");
+
+        //Act
+        subject = EthereumWallet.load(eth.toJson());
+
+        //Assert
+        Erc20TokenData tokenData = subject.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME);
+        Assert.assertEquals(tokenData.getTxNotes().size(), 1);
+        Assert.assertEquals(eth.toJson(), subject.toJson());
     }
 
     @Test
