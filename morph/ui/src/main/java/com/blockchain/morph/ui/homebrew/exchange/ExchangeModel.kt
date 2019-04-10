@@ -1,6 +1,7 @@
 package com.blockchain.morph.ui.homebrew.exchange
 
 import android.arch.lifecycle.ViewModel
+import android.widget.TextView
 import com.blockchain.accounts.AllAccountList
 import com.blockchain.datamanagers.MaximumSpendableCalculator
 import com.blockchain.morph.exchange.mvi.ExchangeDialog
@@ -192,4 +193,19 @@ interface ExchangeViewModelProvider {
 interface ExchangeLimitState {
 
     fun setOverTierLimit(overLimit: Boolean)
+}
+
+interface ExchangeMenuState {
+    sealed class ExchangeMenu {
+        data class Error(val error: ExchangeMenuError) : ExchangeMenu()
+
+        object Help : ExchangeMenu()
+    }
+
+    data class ExchangeMenuError(
+        val message: CharSequence,
+        var bufferType: TextView.BufferType
+    )
+
+    fun setMenuState(state: ExchangeMenu)
 }
