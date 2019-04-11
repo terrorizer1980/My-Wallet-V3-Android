@@ -846,6 +846,7 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
         addFragmentToBackStack(ContactRequestSuccessFragment.newInstance(paymentRequestType, contactName, btcAmount));
     }
 
+    //  TICKET: AND-2083 Dashboard screens never released
     private void startSendFragment(@Nullable String scanData) {
         binding.bottomNavigation.removeOnTabSelectedListener();
         binding.bottomNavigation.setCurrentItem(ITEM_SEND);
@@ -856,12 +857,14 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
         addFragmentToBackStack(sendFragment);
     }
 
+    //  TICKET: AND-2083 Dashboard screens never released
     private void startReceiveFragment() {
         ReceiveFragment receiveFragment =
                 ReceiveFragment.newInstance(getSelectedAccountFromFragments());
         addFragmentToBackStack(receiveFragment);
     }
 
+    //  TICKET: AND-2083 Dashboard screens never released
     private void startDashboardFragment() {
         DashboardFragment fragment = DashboardFragment.newInstance();
         addFragmentToBackStack(fragment);

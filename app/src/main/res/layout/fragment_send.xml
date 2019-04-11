@@ -3,48 +3,48 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.send.SendFragment">
 
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar"
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:animateLayoutChanges="true"
             android:fitsSystemWindows="true"
-            android:theme="@style/AppTheme.AppBarOverlay">
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="snap"
+            app:titleEnabled="false">
 
-            <android.support.design.widget.CollapsingToolbarLayout
-                android:id="@+id/toolbar_layout"
+            <piuk.blockchain.android.ui.customviews.ExpandableCurrencyHeader
+                android:id="@+id/currency_header"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:animateLayoutChanges="true"
-                android:fitsSystemWindows="true"
-                app:contentScrim="?attr/colorPrimary"
-                app:layout_scrollFlags="snap"
-                app:titleEnabled="false">
+                android:layout_height="wrap_content"
+                android:layout_gravity="top" />
 
-                <piuk.blockchain.android.ui.customviews.ExpandableCurrencyHeader
-                    android:id="@+id/currency_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top" />
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
 
-            </android.support.design.widget.CollapsingToolbarLayout>
-        </android.support.design.widget.AppBarLayout>
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <android.support.v4.widget.NestedScrollView
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="?attr/actionBarSize"
             android:animateLayoutChanges="true"
+            android:descendantFocusability="beforeDescendants"
             android:background="@color/white"
             android:focusable="true"
             android:focusableInTouchMode="true"
@@ -55,6 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:paddingTop="56dp"
                 android:paddingBottom="@dimen/action_bar_height">
 
                 <include
@@ -309,7 +310,14 @@
                 </LinearLayout>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
-    </LinearLayout>
+
+        <include
+            android:id="@+id/soon_overlay"
+            layout="@layout/include_pax_soon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </FrameLayout>
 
     <piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboard
         android:id="@+id/keyboard"

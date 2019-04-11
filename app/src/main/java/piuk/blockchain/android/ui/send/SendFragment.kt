@@ -17,7 +17,6 @@ import android.support.annotation.ColorRes
 import android.support.annotation.Nullable
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
@@ -32,7 +31,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AdapterView
-import android.widget.LinearLayout
+import android.widget.FrameLayout
 import com.blockchain.koin.injectActivity
 import com.blockchain.sunriver.ui.MemoEditDialog
 import com.blockchain.sunriver.ui.MinBalanceExplanationDialog
@@ -104,8 +103,6 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
     SendView,
     NumericKeyboardCallback {
 
-    val fragment: Fragment = this
-
     override val locale: Locale = Locale.getDefault()
 
     private val sendPresenter: SendPresenterXSendView by inject()
@@ -167,7 +164,6 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         }
 
         setCustomKeypad()
-
         setupCurrencyHeader()
         handleIncomingArguments()
         setupSendingView()
@@ -185,7 +181,14 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         }
         max.setOnClickListener { presenter.onSpendMaxClicked() }
 
-        learnMoreMinBalance.setOnClickListener { MinBalanceExplanationDialog().show(fragmentManager, "Dialog") }
+        learnMoreMinBalance.setOnClickListener {
+            MinBalanceExplanationDialog().show(fragmentManager, "Dialog")
+        }
+
+        // TODO: AND-2003 Remove this check when PAX fully implemented
+        if (CryptoCurrency.PAX != currency_header.getCurrentlySelectedCurrency()) {
+            soon_overlay.gone()
+        }
 
         onViewReady()
     }
@@ -259,9 +262,9 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         // Resize activity to default
         scrollView.apply {
             setPadding(0, 0, 0, 0)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
         }
     }
@@ -280,9 +283,9 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         val translationY = keyboard.height
         scrollView.apply {
             setPadding(0, 0, 0, translationY)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
         }
     }
@@ -1025,9 +1028,9 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
 
     @SuppressLint("CheckResult")
     internal fun displayCustomFeeField() {
-        textviewFeeAbsolute.visibility = View.GONE
-        textviewFeeTime.visibility = View.INVISIBLE
-        textInputLayout.visibility = View.VISIBLE
+        textviewFeeAbsolute.gone()
+        textviewFeeTime.invisible()
+        textInputLayout.visible()
         buttonContinue.isEnabled = false
         textInputLayout.hint = getString(R.string.fee_options_sat_byte_hint)
 
@@ -1111,9 +1114,7 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
     }
 
     interface OnSendFragmentInteractionListener {
-
         fun onSelectCurrency(cryptoCurrency: CryptoCurrency)
-
         fun onSendFragmentClose()
     }
 
@@ -1148,7 +1149,6 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
     }
 
     companion object {
-
         const val SCAN_PRIVX = 2011
         const val ARGUMENT_SCAN_DATA = "scan_data"
         private const val ARGUMENT_SELECTED_ACCOUNT_POSITION = "selected_account_position"

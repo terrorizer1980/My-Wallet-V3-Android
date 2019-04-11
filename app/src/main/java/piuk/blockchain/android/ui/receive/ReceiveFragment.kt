@@ -13,7 +13,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetDialog
-import android.support.design.widget.CoordinatorLayout
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -24,6 +23,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionGrantedResponse
@@ -769,9 +769,9 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
         // Resize activity to default
         scrollview.apply {
             setPadding(0, 0, 0, 0)
-            layoutParams = CoordinatorLayout.LayoutParams(
-                CoordinatorLayout.LayoutParams.MATCH_PARENT,
-                CoordinatorLayout.LayoutParams.MATCH_PARENT
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             ).apply { setMargins(0, height, 0, height) }
 
             postDelayed({ smoothScrollTo(0, 0) }, 100)
@@ -792,9 +792,9 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
         val height = activity!!.resources.getDimension(R.dimen.action_bar_height).toInt()
         scrollview.apply {
             setPadding(0, 0, 0, custom_keyboard.height)
-            layoutParams = CoordinatorLayout.LayoutParams(
-                CoordinatorLayout.LayoutParams.MATCH_PARENT,
-                CoordinatorLayout.LayoutParams.MATCH_PARENT
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             ).apply { setMargins(0, height, 0, 0) }
 
             scrollTo(0, bottom)

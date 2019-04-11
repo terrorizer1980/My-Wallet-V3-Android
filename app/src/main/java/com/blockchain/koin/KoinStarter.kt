@@ -25,6 +25,7 @@ import com.blockchain.notifications.koin.notificationModule
 import org.koin.android.ext.android.startKoin
 import org.koin.log.Logger
 import org.koin.standalone.StandAloneContext
+import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.ui.dashboard.announcements.dashboardAnnouncementsModule
 import timber.log.Timber
 
@@ -35,6 +36,7 @@ object KoinStarter {
     @JvmStatic
     fun start(application: Application) {
         StandAloneContext.closeKoin()
+        @Suppress("ConstantConditionIf")
         application.startKoin(
             application,
             listOf(
@@ -66,7 +68,7 @@ object KoinStarter {
                 xlmModule
             ),
             extraProperties = features + appProperties + keys + urls,
-            logger = TimberLogger()
+            logger = if (BuildConfig.LOG_KOIN_STARTUP) TimberLogger() else NullLogger()
         )
         KoinStarter.application = application
     }
@@ -84,4 +86,10 @@ private class TimberLogger : Logger {
     override fun log(msg: String) {
         Timber.i(msg)
     }
+}
+
+private class NullLogger : Logger {
+    override fun debug(msg: String) { }
+    override fun err(msg: String) { }
+    override fun log(msg: String) { }
 }
