@@ -88,6 +88,7 @@ import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
 import piuk.blockchain.androidcore.utils.AESUtilWrapper
 import piuk.blockchain.androidcore.utils.MetadataUtils
 import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.SharedPreferencesFiatCurrencyPreference
 
 val coreModule = applicationContext {
@@ -258,6 +259,8 @@ val coreModule = applicationContext {
     factory { ExchangeRateService(get()) }
 
     bean { PrefsUtil(get()) }
+
+    bean { PrefsUtil(get()) as PersistentPrefs }
 
     bean { SharedPreferencesFiatCurrencyPreference(get()) as FiatCurrencyPreference }
 

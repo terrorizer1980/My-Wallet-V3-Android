@@ -855,4 +855,9 @@
     <string name="claim_your_free_crypto_card_body">You\'re all set! Tap this card to claim your free XLM.</string>
     <string name="claim_your_free_crypto_card_button">@string/claim_your_xlm</string>
 
+    <!-- Claim Your Free Crypto Card -->
+    <string name="swap_announcement_new">New</string>
+    <string name="swap_announcement_title">Swap</string>
+    <string name="swap_announcement_description">Exchange one crypto for another without ever leaving your Blockchain Wallet.</string>
+    <string name="swap_announcement_introducing_link">Check it out!</string>
 </resources>

@@ -24,6 +24,7 @@
     <color name="primary_blue_accent">#10ADE4</color>
     <color name="primary_blue_medium">#3558A8</color>
     <color name="primary_gray">#799EB2</color>
+    <color name="primary_navy_gray">#50596B</color>
     <color name="primary_navy_medium">#004A7C</color>
 
     <color name="secondary_yellow_light">#FFE6B4</color>
@@ -78,5 +79,8 @@
     <color name="xlm_dialog_text_title">#014A7C</color>
     <color name="xlm_dialog_text_body">#5B5B5B</color>
     <color name="xlm_dialog_background">#FFFFFF</color>
+
+    <!-- swap announcement card colors -->
+    <color name="swap_announcement_card_background">#13153B</color>
 
 </resources>
