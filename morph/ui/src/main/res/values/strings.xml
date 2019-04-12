@@ -19,6 +19,7 @@
     <string name="morph_deposit_to">Deposited to ShapeShift</string>
 
     <!-- NEW TRADE -->
+    <string name="morph_error">Error</string>
     <string name="morph_use_minimum">Use minimum</string>
     <string name="morph_use_maximum">Use maximum</string>
     <string name="morph_arrow_unicode" translatable="false">→</string>

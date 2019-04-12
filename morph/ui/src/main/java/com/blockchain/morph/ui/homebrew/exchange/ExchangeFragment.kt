@@ -99,6 +99,7 @@ internal class ExchangeFragment : Fragment() {
     private lateinit var exchangeModel: ExchangeModel
 
     private lateinit var exchangeLimitState: ExchangeLimitState
+    private lateinit var exchangeMenuState: ExchangeMenuState
 
     private val startKyc: StartKyc by inject()
 
@@ -108,6 +109,8 @@ internal class ExchangeFragment : Fragment() {
             ?: throw Exception("Host activity must support ExchangeViewModelProvider")
         exchangeLimitState = (context as? ExchangeLimitState)
             ?: throw Exception("Host activity must support ExchangeLimitState")
+        exchangeMenuState = (context as? ExchangeMenuState)
+            ?: throw Exception("Host activity must support ExchangeMenuState")
         exchangeModel = provider.exchangeViewModel
     }
 
@@ -217,11 +220,19 @@ internal class ExchangeFragment : Fragment() {
     }
 
     private fun updateUserFeedBack(exchangeViewState: ExchangeViewState) {
-        val (validMessage, bufferType) = exchangeViewState.isValidMessage()
+        val error = exchangeViewState.exchangeError()
+
+        // Set menu state
+        val errorState = if (error == null)
+            ExchangeMenuState.ExchangeMenu.Help else
+            ExchangeMenuState.ExchangeMenu.Error(error)
+        exchangeMenuState.setMenuState(errorState)
+
+        // TODO(AND-2059): remove feedback text in favor of displaying error dialog
         feedback.apply {
             movementMethod = LinkMovementMethod.getInstance()
             highlightColor = Color.TRANSPARENT
-            setText(validMessage, bufferType)
+            setText(error?.message, error?.bufferType)
         }
     }
 
@@ -285,37 +296,39 @@ internal class ExchangeFragment : Fragment() {
             }.format(toMajorUnitDouble())
     }
 
-    private fun ExchangeViewState.isValidMessage(): Pair<CharSequence, TextView.BufferType> {
+    private fun ExchangeViewState.exchangeError(): ExchangeMenuState.ExchangeMenuError? {
         logMinMaxErrors()
         val validity = validity()
         exchangeLimitState.setOverTierLimit(validity == QuoteValidity.OverTierLimit)
         return when (validity) {
             QuoteValidity.Valid,
             QuoteValidity.NoQuote,
-            QuoteValidity.MissMatch -> "" to TextView.BufferType.NORMAL
-            QuoteValidity.UnderMinTrade -> getString(
-                R.string.under_min,
-                minTradeLimit?.toStringWithSymbol()
-            ) to TextView.BufferType.NORMAL
-            QuoteValidity.OverMaxTrade -> getString(
-                R.string.over_max,
-                maxTradeLimit?.toStringWithSymbol()
-            ) to TextView.BufferType.NORMAL
+            QuoteValidity.MissMatch -> null
+            QuoteValidity.UnderMinTrade -> ExchangeMenuState.ExchangeMenuError(
+                getString(R.string.under_min, minTradeLimit?.toStringWithSymbol()),
+                TextView.BufferType.NORMAL
+            )
+            QuoteValidity.OverMaxTrade -> ExchangeMenuState.ExchangeMenuError(
+                getString(R.string.over_max, maxTradeLimit?.toStringWithSymbol()),
+                TextView.BufferType.NORMAL
+            )
             QuoteValidity.OverTierLimit -> {
                 val overMax = getString(
                     R.string.over_max,
                     maxTierLimit?.toStringWithSymbol()
                 )
                 if (userTier < 2) {
-                    addLink(overMax, getString(R.string.upgrade_now))
+                    val (text, bufferType) = addLink(overMax, getString(R.string.upgrade_now))
+                    ExchangeMenuState.ExchangeMenuError(text, bufferType)
                 } else {
-                    overMax to TextView.BufferType.NORMAL
+                    ExchangeMenuState.ExchangeMenuError(overMax, TextView.BufferType.NORMAL)
                 }
             }
-            QuoteValidity.OverUserBalance -> getString(
-                R.string.over_max,
-                maxSpendable?.toStringWithSymbol()
-            ) to TextView.BufferType.NORMAL
+            QuoteValidity.OverUserBalance ->
+                ExchangeMenuState.ExchangeMenuError(
+                    getString(R.string.over_max, maxSpendable?.toStringWithSymbol()),
+                    TextView.BufferType.NORMAL
+                )
         }
     }
 

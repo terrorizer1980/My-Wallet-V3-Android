@@ -114,10 +114,20 @@ internal class HorizonProxy(url: String) {
             return result
         }
         result.transaction.sign(source)
-        return SendResult(
-            server.submitTransaction(result.transaction).isSuccess,
-            result.transaction
-        )
+        val submitTransactionResponse = server.submitTransaction(result.transaction)
+        return if (submitTransactionResponse.isSuccess) {
+            SendResult(
+                true,
+                result.transaction
+            )
+        } else {
+            val extras = submitTransactionResponse.extras
+            SendResult(
+                false,
+                result.transaction,
+                failureExtra = extras.resultCodes.transactionResultCode
+            )
+        }
     }
 
     fun dryRunTransaction(
@@ -189,7 +199,8 @@ internal class HorizonProxy(url: String) {
         val success: Boolean,
         val transaction: Transaction? = null,
         val failureReason: FailureReason = FailureReason.Unknown,
-        val failureValue: CryptoValue? = null
+        val failureValue: CryptoValue? = null,
+        val failureExtra: String? = null
     )
 
     enum class FailureReason(val errorCode: Int) {

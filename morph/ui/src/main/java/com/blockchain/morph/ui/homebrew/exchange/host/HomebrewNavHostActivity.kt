@@ -16,12 +16,14 @@ import com.blockchain.morph.exchange.service.QuoteService
 import com.blockchain.morph.ui.R
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeFragment
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeLimitState
+import com.blockchain.morph.ui.homebrew.exchange.ExchangeMenuState
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeModel
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeViewModelProvider
 import com.blockchain.morph.ui.homebrew.exchange.REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT
 import com.blockchain.morph.ui.homebrew.exchange.REQUEST_CODE_CHOOSE_SENDING_ACCOUNT
 import com.blockchain.morph.ui.homebrew.exchange.confirmation.ExchangeConfirmationFragment
 import com.blockchain.morph.ui.logging.WebsocketConnectionFailureEvent
+import com.blockchain.morph.ui.showErrorDialog
 import com.blockchain.morph.ui.showHelpDialog
 import com.blockchain.nabu.StartKyc
 import com.blockchain.notifications.analytics.LoggableEvent
@@ -41,6 +43,7 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     HomebrewHostActivityListener,
     ExchangeViewModelProvider,
     ExchangeLimitState,
+    ExchangeMenuState,
     AccountChooserBottomDialog.Callback {
 
     private val toolbar by unsafeLazy { findViewById<Toolbar>(R.id.toolbar_general) }
@@ -101,15 +104,39 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
                 })
                 return true
             }
+            R.id.action_error -> {
+                menuState?.let {
+                    when (it) {
+                        is ExchangeMenuState.ExchangeMenu.Error -> {
+                            showErrorDialog(it.error)
+                        }
+                        is ExchangeMenuState.ExchangeMenu.Help -> {
+                            // Invalid menu state
+                        }
+                    }
+                }
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
 
     private var showKycItem: MenuItem? = null
+    private var errorItem: MenuItem? = null
+    private var helpItem: MenuItem? = null
+    private var menuState: ExchangeMenuState.ExchangeMenu? = null
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         showKycItem = menu?.findItem(R.id.action_show_kyc)
+        errorItem = menu?.findItem(R.id.action_error)
+        helpItem = menu?.findItem(R.id.action_help)
         return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun setMenuState(state: ExchangeMenuState.ExchangeMenu) {
+        menuState = state
+        errorItem?.isVisible = (state is ExchangeMenuState.ExchangeMenu.Error)
+        helpItem?.isVisible = (state is ExchangeMenuState.ExchangeMenu.Help)
     }
 
     override fun setOverTierLimit(overLimit: Boolean) {

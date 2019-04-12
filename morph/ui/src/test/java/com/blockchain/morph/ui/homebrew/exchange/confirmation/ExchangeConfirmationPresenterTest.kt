@@ -219,7 +219,11 @@ class ExchangeConfirmationPresenterTest {
         verify(transactionExecutor).executeTransaction(any(), any(), any(), any())
         verifyNoMoreInteractions(transactionExecutor)
         verify(tradeExecutionService).executeTrade(any(), any(), any())
-        verify(tradeExecutionService).putTradeFailureReason(tradeTransaction, "TX_HASH", "SendException 99")
+        verify(tradeExecutionService).putTradeFailureReason(
+            tradeTransaction,
+            "TX_HASH",
+            "SendException - code: 99, extra: 'null'"
+        )
         verifyNoMoreInteractions(tradeExecutionService)
         verify(view, never()).continueToExchangeLocked(any())
     }
