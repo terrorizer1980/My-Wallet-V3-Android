@@ -73,7 +73,7 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(), BalanceVi
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == ACTION_INTENT && activity != null) {
                 recyclerview?.scrollToPosition(0)
-                presenter.onRefreshRequested()
+                presenter.requestRefresh()
             }
         }
     }
@@ -104,7 +104,7 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(), BalanceVi
             false,
             ViewUtils.convertDpToPixel(72F + 20F, context).toInt()
         )
-        swipe_container.setOnRefreshListener { presenter.onRefreshRequested() }
+        swipe_container.setOnRefreshListener { presenter.requestRefresh() }
         swipe_container.setColorSchemeResources(
             R.color.product_green_medium,
             R.color.primary_blue_medium,
@@ -118,8 +118,7 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(), BalanceVi
         currency_header.setSelectionListener { presenter.onCurrencySelected(it) }
 
         onViewReady()
-
-        presenter.onRefreshRequested()
+        presenter.requestRefresh()
     }
 
     override fun disableCurrencyHeader() {
@@ -366,6 +365,11 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(), BalanceVi
     }
 
     override fun getCurrentAccountPosition() = accounts_spinner.selectedItemPosition
+
+    override fun showComingSoon(show: Boolean) {
+        coming_soon_overlay.goneIf(!show)
+        textview_balance.goneIf(show)
+    }
 
     companion object {
 

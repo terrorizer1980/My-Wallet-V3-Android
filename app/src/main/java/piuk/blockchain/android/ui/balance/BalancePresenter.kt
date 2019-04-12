@@ -86,6 +86,19 @@ class BalancePresenter @Inject constructor(
             currencyState.cryptoCurrency = CryptoCurrency.BTC
             view.disableCurrencyHeader()
         }
+
+        // TODO: AND-2003 - remove when PAX fully implemented
+        checkPaxComingSoonStateAndUpdateView()
+    }
+
+    @Deprecated("Remove remove when PAX fully implemented")
+    private fun checkPaxComingSoonStateAndUpdateView() {
+        if (currencyState.cryptoCurrency == CryptoCurrency.PAX) {
+            view.updateSelectedCurrency(CryptoCurrency.PAX)
+            view.showComingSoon(true)
+        } else {
+            view.showComingSoon(false)
+        }
     }
 
     override fun onViewDestroyed() {
@@ -126,7 +139,7 @@ class BalancePresenter @Inject constructor(
         )
         .andThen(getAccounts().map { it.size > 1 })
 
-    internal fun onRefreshRequested() {
+    internal fun requestRefresh() {
         compositeDisposable +=
             getCurrentAccount()
                 .flatMap { refreshAll(it) }
@@ -220,13 +233,16 @@ class BalancePresenter @Inject constructor(
         // Set new currency state
         currencyState.cryptoCurrency = cryptoCurrency
 
+        // TODO: AND-2003 - remove when PAX fully implemented
+        checkPaxComingSoonStateAndUpdateView()
+
         // Select default account for this currency
         compositeDisposable +=
             getAccounts()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess {
                     view.setDropdownVisibility(it.size > 1)
-                    refreshBalanceHeader(it.first())
+                    refreshViewHeaders(it.first())
                 }
                 .flatMapCompletable { updateTransactionsListCompletable(it.first()) }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -271,7 +287,7 @@ class BalancePresenter @Inject constructor(
                     updateTransactionsListCompletable(it)
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnComplete {
-                            refreshBalanceHeader(it)
+                            refreshViewHeaders(it)
                             refreshAccountDataSet()
                         }
                 }
@@ -290,7 +306,7 @@ class BalancePresenter @Inject constructor(
         compositeDisposable +=
             getCurrentAccount()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy { refreshBalanceHeader(it) }
+                .subscribeBy { refreshViewHeaders(it) }
 
         // Update tx list balances
         view.updateTransactionValueType(showCrypto)
@@ -306,7 +322,7 @@ class BalancePresenter @Inject constructor(
     // endregion
 
     // region Update UI
-    internal fun refreshBalanceHeader(account: ItemAccount) {
+    internal fun refreshViewHeaders(account: ItemAccount) {
         view.updateSelectedCurrency(currencyState.cryptoCurrency)
         view.updateBalanceHeader(account.displayBalance ?: "")
     }

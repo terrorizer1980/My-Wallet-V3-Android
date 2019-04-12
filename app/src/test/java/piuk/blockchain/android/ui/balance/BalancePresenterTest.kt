@@ -161,7 +161,7 @@ class BalancePresenterTest {
     }
 
     @Test
-    fun `onRefreshRequested`() {
+    fun requestRefresh() {
         // Arrange
 
         // getCurrentAccount()
@@ -183,7 +183,7 @@ class BalancePresenterTest {
         whenever(swipeToReceiveHelper.storeAll())
             .thenReturn(Completable.complete())
         // Act
-        subject.onRefreshRequested()
+        subject.requestRefresh()
 
         // Assert
         verify(view).setUiState(UiState.LOADING)
@@ -324,7 +324,7 @@ class BalancePresenterTest {
         val value = "0.052 BTC"
         whenever(account.displayBalance).thenReturn(value)
         // Act
-        subject.refreshBalanceHeader(account)
+        subject.refreshViewHeaders(account)
         // Assert
         verify(view).updateSelectedCurrency(CryptoCurrency.BTC)
         verify(view).updateBalanceHeader(value)

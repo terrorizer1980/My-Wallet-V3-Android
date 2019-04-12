@@ -117,5 +117,13 @@
             </LinearLayout>
 
         </android.support.v4.widget.SwipeRefreshLayout>
+
+        <include
+            android:id="@+id/coming_soon_overlay"
+            layout="@layout/include_pax_soon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>
