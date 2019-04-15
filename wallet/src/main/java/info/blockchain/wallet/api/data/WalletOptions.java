@@ -14,6 +14,8 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WalletOptions {
 
+    public static Long XLM_DEFAULT_TIMEOUT_SECS = 10L;
+
     @JsonProperty("showBuySellTab")
     private List<String> buySellCountries = new ArrayList<>();
 
@@ -37,6 +39,9 @@ public class WalletOptions {
 
     @JsonProperty("bcash")
     private Map<String, Integer> bitcoinCashFees = new HashMap<>();
+
+    @JsonProperty("xlm")
+    private Map<String, Long> xlm = new HashMap<>();
 
     @JsonProperty("mobile")
     private Map<String, String> mobile = new HashMap<>();
@@ -74,6 +79,17 @@ public class WalletOptions {
 
     public int getBchFeePerByte() {
         return bitcoinCashFees.get("feePerByte");
+    }
+
+    /**
+     * Returns the XLM transaction timeout in seconds.
+     *
+     * See: https://github.com/stellar/stellar-core/issues/1811
+     *
+     * @return the timeout
+     */
+    public long getXlmTransactionTimeout() {
+        return xlm.get("sendTimeOutSeconds");
     }
 
     @Nullable

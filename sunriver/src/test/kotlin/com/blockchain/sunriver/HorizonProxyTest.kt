@@ -311,7 +311,8 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         proxy.sendTransaction(
             source,
             "GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI",
-            123.4567891.lumens()
+            123.4567891.lumens(),
+            10
         ).apply {
             success `should be` true
             success `should be` true
@@ -590,7 +591,8 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         proxy.sendTransaction(
             sourceAccount,
             destinationAccount.accountId,
-            value
+            value,
+            10
         ).apply {
             success `should be` false
             transaction `should be` null
@@ -663,7 +665,8 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         proxy.sendTransaction(
             sourceAccount,
             destinationAccount.accountId,
-            value
+            value,
+            10
         ).apply {
             success `should be` true
             transaction?.signatures?.size `should be` 1
@@ -720,7 +723,8 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         proxy.sendTransaction(
             KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I"),
             "GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI",
-            123.456789.lumens()
+            123.456789.lumens(),
+            10
         ).success `should be` false
 
         server.requestCount `should be` 3
@@ -740,7 +744,8 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         proxy.sendTransaction(
             source,
             "GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI",
-            CryptoCurrency.XLM.withMajorValue("1.23E+4".toBigDecimal())
+            CryptoCurrency.XLM.withMajorValue("1.23E+4".toBigDecimal()),
+            10
         ).apply {
             success `should be` true
             transaction `should not be` null
@@ -774,7 +779,8 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             source,
             "GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI",
             CryptoCurrency.XLM.withMajorValue("1.23E+4".toBigDecimal()),
-            memo = memo
+            memo,
+            10
         ).apply {
             success `should be` true
             transaction `should not be` null
@@ -823,6 +829,7 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             source,
             "GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI",
             CryptoCurrency.XLM.withMajorValue("1.23E+4".toBigDecimal()),
+            timeout = 10,
             memo = memo,
             perOperationFee = 2100.stroops()
         ).apply {
@@ -879,7 +886,7 @@ class HorizonProxyTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun `transaction time bounds are not specified`() {
+    fun `transaction time bounds are specified`() {
         server.givenAccountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
         server.givenAccountExists("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
         server.givenPostWillBeSuccessful()
@@ -892,9 +899,10 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         proxy.sendTransaction(
             source,
             "GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI",
-            CryptoCurrency.XLM.withMajorValue("1.23E+4".toBigDecimal())
+            CryptoCurrency.XLM.withMajorValue("1.23E+4".toBigDecimal()),
+            10
         ).apply {
-            transaction!!.timeBounds `should be` null
+            transaction!!.timeBounds `should not be` null
         }
     }
 }

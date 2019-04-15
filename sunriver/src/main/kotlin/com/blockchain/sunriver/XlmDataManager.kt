@@ -20,6 +20,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 
 class XlmDataManager internal constructor(
@@ -27,7 +28,8 @@ class XlmDataManager internal constructor(
     metaDataInitializer: XlmMetaDataInitializer,
     private val xlmSecretAccess: XlmSecretAccess,
     private val memoMapper: MemoMapper,
-    private val xlmFeesFetcher: XlmFeesFetcher
+    private val xlmFeesFetcher: XlmFeesFetcher,
+    private val xlmTimeoutFetcher: XlmTransactionTimeoutFetcher
 ) : TransactionSender,
     DefaultAccountDataManager,
     AsyncAddressBalanceReporter,
@@ -37,18 +39,20 @@ class XlmDataManager internal constructor(
         sendDetails: SendDetails
     ): Single<SendFundsResult> =
         Single.defer {
-            xlmSecretAccess.getPrivate(HorizonKeyPair.Public(sendDetails.fromXlm.accountId))
-                .map { private ->
-                    horizonProxy.sendTransaction(
-                        private.toKeyPair(),
-                        sendDetails.toAddress,
-                        sendDetails.value,
-                        memoMapper.mapMemo(sendDetails.memo),
-                        sendDetails.fee
-                    )
-                }
-                .map { it.mapToSendFundsResult(sendDetails) }
-                .toSingle()
+            Single.zip(
+                xlmSecretAccess.getPrivate(HorizonKeyPair.Public(sendDetails.fromXlm.accountId)).toSingle(),
+                xlmTimeoutFetcher.transactionTimeout(),
+                BiFunction { private: HorizonKeyPair.Private, timeout: Long -> private to timeout }
+            ).map {
+                horizonProxy.sendTransaction(
+                    it.first.toKeyPair(),
+                    sendDetails.toAddress,
+                    sendDetails.value,
+                    memoMapper.mapMemo(sendDetails.memo),
+                    it.second,
+                    sendDetails.fee
+                )
+            }.map { it.mapToSendFundsResult(sendDetails) }
         }
 
     override fun dryRunSendFunds(

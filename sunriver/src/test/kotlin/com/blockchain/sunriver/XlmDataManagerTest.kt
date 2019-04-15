@@ -582,6 +582,7 @@ class XlmDataManagerSendTransactionTest {
                     destinationAccountId = eq("GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"),
                     amount = eq(199.456.lumens()),
                     memo = eq(org.stellar.sdk.Memo.none()),
+                    timeout = any(),
                     perOperationFee = eq(256.stroops())
                 )
             } `it returns` HorizonProxy.SendResult(
@@ -627,7 +628,7 @@ class XlmDataManagerSendTransactionTest {
     @Test
     fun `any failure bubbles up`() {
         val horizonProxy: HorizonProxy = mock {
-            on { sendTransaction(any(), any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
+            on { sendTransaction(any(), any(), any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
                 success = false,
                 transaction = mock()
             )
@@ -674,7 +675,7 @@ class XlmDataManagerSendTransactionTest {
     @Test
     fun `any failure bubbles up - dry run`() {
         val horizonProxy: HorizonProxy = mock {
-            on { dryRunTransaction(any(), any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
+            on { dryRunTransaction(any(), any(), any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
                 success = false,
                 transaction = mock()
             )
@@ -721,7 +722,7 @@ class XlmDataManagerSendTransactionTest {
     @Test
     fun `bad destination address - dry run`() {
         val horizonProxy: HorizonProxy = mock {
-            on { dryRunTransaction(any(), any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
+            on { dryRunTransaction(any(), any(), any(), any(), any(), any()) } `it returns` HorizonProxy.SendResult(
                 success = false,
                 transaction = mock(),
                 failureReason = HorizonProxy.FailureReason.BadDestinationAccountId
@@ -783,6 +784,7 @@ class XlmDataManagerSendTransactionTest {
                     destinationAccountId = eq("GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"),
                     amount = eq(1.23.lumens()),
                     memo = any(),
+                    timeout = any(),
                     perOperationFee = eq(256.stroops())
                 )
             } `it returns` HorizonProxy.SendResult(
@@ -858,7 +860,8 @@ class XlmDataManagerSendTransactionTest {
                     destinationAccountId = eq("GDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED3"),
                     amount = eq(1.23.lumens()),
                     memo = any(),
-                    perOperationFee = eq(500.stroops())
+                    perOperationFee = eq(500.stroops()),
+                    timeout = any()
                 )
             } `it returns` HorizonProxy.SendResult(
                 success = true,
@@ -914,7 +917,7 @@ class XlmDataManagerSendTransactionTest {
     fun `when the address is not valid - do not throw`() {
         val horizonProxy: HorizonProxy = mock {
             on {
-                sendTransaction(any(), any(), any(), any(), any())
+                sendTransaction(any(), any(), any(), any(), any(), any())
             } `it returns` HorizonProxy.SendResult(
                 success = false,
                 failureReason = HorizonProxy.FailureReason.BadDestinationAccountId
@@ -981,7 +984,7 @@ class XlmDataManagerSendWithMemoTest {
         }
         val horizonProxy: HorizonProxy = mock {
             on {
-                sendTransaction(any(), any(), any(), eq(memoText), any())
+                sendTransaction(any(), any(), any(), eq(memoText), any(), any())
             } `it returns` HorizonProxy.SendResult(
                 success = true,
                 transaction = transaction
@@ -1028,7 +1031,7 @@ class XlmDataManagerSendWithMemoTest {
         }
         val horizonProxy: HorizonProxy = mock {
             on {
-                dryRunTransaction(any(), any(), any(), eq(memoId), any())
+                dryRunTransaction(any(), any(), any(), eq(memoId), any(), any())
             } `it returns` HorizonProxy.SendResult(
                 success = true,
                 transaction = transaction
@@ -1067,12 +1070,12 @@ class XlmDataManagerSendWithMemoTest {
 }
 
 private fun HorizonProxy.verifyJustTheOneSendAttempt() {
-    verify(this).sendTransaction(any(), any(), any(), any(), any())
+    verify(this).sendTransaction(any(), any(), any(), any(), any(), any())
     verifyNoMoreInteractions(this)
 }
 
 private fun HorizonProxy.verifyJustTheOneDryRunNoSends() {
-    verify(this).dryRunTransaction(any(), any(), any(), any(), any())
+    verify(this).dryRunTransaction(any(), any(), any(), any(), any(), any())
     verifyNoMoreInteractions(this)
 }
 
@@ -1167,15 +1170,22 @@ private fun givenXlmDataManager(
     metaDataInitializer: XlmMetaDataInitializer = mock(),
     secretAccess: XlmSecretAccess = givenNoExpectedSecretAccess(),
     memoMapper: MemoMapper = givenAllMemosMapToNone(),
-    feesFetcher: XlmFeesFetcher = givenXlmFees(999.stroops())
+    feesFetcher: XlmFeesFetcher = givenXlmFees(999.stroops()),
+    timeoutFetcher: XlmTransactionTimeoutFetcher = givenTimeoutFetcher(10)
 ): XlmDataManager =
     XlmDataManager(
         horizonProxy,
         metaDataInitializer,
         secretAccess,
         memoMapper,
-        feesFetcher
+        feesFetcher,
+        timeoutFetcher
     )
+
+private fun givenTimeoutFetcher(timeout: Long): XlmTransactionTimeoutFetcher =
+    mock {
+        on { this.transactionTimeout() } `it returns` Single.just(timeout)
+    }
 
 private fun givenXlmFees(perOperationFee: CryptoValue): XlmFeesFetcher =
     mock {

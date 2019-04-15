@@ -31,19 +31,29 @@ class ExchangeConfirmationPresenter internal constructor(
     private val payloadDecrypt: PayloadDecrypt
 ) : BasePresenter<ExchangeConfirmationView>() {
 
+    private var executeTradeSingle: Single<ExchangeLockedModel>? = null
+
     override fun onViewReady() {
         // Ensure user hasn't got a double encrypted wallet
-        if (payloadDecrypt.isDoubleEncrypted) {
-            view.showSecondPasswordDialog()
-        } else {
-            subscribeToViewState()
-        }
+        subscribeToViewState()
     }
 
     private fun subscribeToViewState() {
         compositeDisposable +=
             view.exchangeViewState
-                .flatMapSingle { executeTrade(it.latestQuote!!, it.fromAccount, it.toAccount) }
+                .flatMapSingle { state ->
+                    if (!payloadDecrypt.isDoubleEncrypted) {
+                        executeTrade(state.latestQuote!!,
+                            state.fromAccount,
+                            state.toAccount)
+                    } else {
+                        view.showSecondPasswordDialog()
+                        executeTradeSingle = executeTrade(state.latestQuote!!,
+                            state.fromAccount,
+                            state.toAccount)
+                        Single.never()
+                    }
+                }
                 .retry()
                 .subscribeBy(onError = { Timber.e(it) })
     }
@@ -154,10 +164,11 @@ class ExchangeConfirmationPresenter internal constructor(
                 .andThen(decryptBch())
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
+                .andThen(executeTradeSingle?.ignoreElement())
                 .doOnSubscribe { view.showProgressDialog() }
                 .doOnTerminate { view.dismissProgressDialog() }
                 .doOnError { Timber.e(it) }
-                .subscribeBy(onComplete = { subscribeToViewState() })
+                .subscribe()
     }
 
     private fun decryptPayload(validatedSecondPassword: String): Completable =

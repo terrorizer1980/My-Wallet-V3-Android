@@ -35,6 +35,7 @@ import com.blockchain.logging.TimberLogger
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.preferences.FiatCurrencyPreference
+import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
 import com.blockchain.wallet.DefaultLabels
 import com.blockchain.wallet.ResourceDefaultLabels
 import com.blockchain.wallet.SeedAccess
@@ -225,6 +226,7 @@ val coreModule = applicationContext {
         factory { ContactsDataManager(get(), get(), get(), get()) }
 
         factory { WalletOptionsDataManager(get(), get(), get(), get("explorer-url")) }
+            .bind(XlmTransactionTimeoutFetcher::class)
 
         factory { ExchangeRateDataManager(get(), get()) }
 
