@@ -7,11 +7,13 @@ class DashboardAnnouncements internal constructor(
     coinifyKycModalPopupAnnouncement: CoinifyKycModalPopupAnnouncement,
     stellarModalPopupAnnouncement: StellarModalPopupAnnouncement,
     completeYourProfileCardAnnouncement: CompleteYourProfileCardAnnouncement,
-    claimYourFreeCryptoCardAnnouncement: ClaimYourFreeCryptoCardAnnouncement
+    claimYourFreeCryptoCardAnnouncement: ClaimYourFreeCryptoCardAnnouncement,
+    swapAnnouncement: SwapAnnouncement
 ) {
     val announcementList = AnnouncementList<DashboardPresenter>()
         .add(coinifyKycModalPopupAnnouncement)
         .add(stellarModalPopupAnnouncement)
         .add(completeYourProfileCardAnnouncement)
         .add(claimYourFreeCryptoCardAnnouncement)
+        .add(swapAnnouncement)
 }

@@ -12,6 +12,7 @@ import android.view.MenuItem
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.morph.exchange.mvi.ChangeCryptoFromAccount
 import com.blockchain.morph.exchange.mvi.ChangeCryptoToAccount
+import com.blockchain.morph.exchange.mvi.SimpleFieldUpdateIntent
 import com.blockchain.morph.exchange.service.QuoteService
 import com.blockchain.morph.ui.R
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeFragment
@@ -195,10 +196,16 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
                 exchangeViewModel.inputEventSink.onNext(
                     ChangeCryptoFromAccount(accountReference)
                 )
+                exchangeViewModel.inputEventSink.onNext(
+                    SimpleFieldUpdateIntent(0.toBigDecimal())
+                )
             }
             REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT -> {
                 exchangeViewModel.inputEventSink.onNext(
                     ChangeCryptoToAccount(accountReference)
+                )
+                exchangeViewModel.inputEventSink.onNext(
+                    SimpleFieldUpdateIntent(0.toBigDecimal())
                 )
             }
             else -> throw IllegalArgumentException("Unknown request code $requestCode")

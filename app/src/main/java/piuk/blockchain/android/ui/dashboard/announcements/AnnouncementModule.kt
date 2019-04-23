@@ -6,7 +6,7 @@ val dashboardAnnouncementsModule = applicationContext {
 
     context("Payload") {
 
-        factory { DashboardAnnouncements(get(), get(), get(), get()) }
+        factory { DashboardAnnouncements(get(), get(), get(), get(), get()) }
 
         bean { CoinifyKycModalPopupAnnouncement(get(), get(), get("ff_notify_coinify_users_to_kyc")) }
 
@@ -15,6 +15,8 @@ val dashboardAnnouncementsModule = applicationContext {
         factory { CompleteYourProfileCardAnnouncement(get(), get()) }
 
         factory { ClaimYourFreeCryptoCardAnnouncement(get(), get(), get()) }
+
+        factory { SwapAnnouncement(get(), get("merge"), get()) }
     }
 
     factory { DismissRecorder(get()) }

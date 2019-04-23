@@ -864,4 +864,10 @@
     <string name="pax_coming_soon_message">We\'re bringing you USD Pax to Android. While you wait, Send, Receive &amp; Exchange USD Pax on the web</string>
     <string name="pax_coming_soon_link">What is USD Pax?</string>
 
+    <!-- Claim Your Free Crypto Card -->
+    <string name="swap_announcement_new">New</string>
+    <string name="swap_announcement_title">Swap</string>
+    <string name="swap_announcement_description">Exchange one crypto for another without ever leaving your Blockchain Wallet.</string>
+    <string name="swap_announcement_introducing_link">Check it out!</string>
+
 </resources>

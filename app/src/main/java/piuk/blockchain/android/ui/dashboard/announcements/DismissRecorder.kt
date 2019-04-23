@@ -1,11 +1,11 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 /**
  * Maintains a boolean flag for recording if a dialog has been dismissed.
  */
-class DismissRecorder(private val prefsUtil: PrefsUtil) {
+class DismissRecorder(private val prefs: PersistentPrefs) {
 
     operator fun get(key: String) = DismissEntry(key)
 
@@ -13,7 +13,7 @@ class DismissRecorder(private val prefsUtil: PrefsUtil) {
         val prefsKey: String
     ) {
         var isDismissed: Boolean
-            get() = prefsUtil.getValue(prefsKey, false)
-            set(value) = prefsUtil.setValue(prefsKey, value)
+            get() = prefs.getValue(prefsKey, false)
+            set(value) = prefs.setValue(prefsKey, value)
     }
 }

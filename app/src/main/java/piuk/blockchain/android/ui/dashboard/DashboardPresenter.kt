@@ -30,6 +30,7 @@ import piuk.blockchain.android.ui.balance.ImageRightAnnouncementCard
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.SunriverCard
+import piuk.blockchain.android.ui.dashboard.adapter.delegates.SwapAnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.DashboardAnnouncements
 import piuk.blockchain.android.ui.dashboard.models.OnboardingModel
 import piuk.blockchain.android.ui.home.MainActivity
@@ -237,6 +238,27 @@ class DashboardPresenter(
                         notifyItemRemoved(displayList, index)
                         scrollToTop()
                     }
+                }
+            }
+    }
+
+    internal fun showSwapAnnouncement(swapAnnouncementCard: SwapAnnouncementCard) {
+        val index = 0
+        displayList.add(index, swapAnnouncementCard)
+        with(view) {
+            notifyItemAdded(displayList, index)
+            scrollToTop()
+        }
+    }
+
+    internal fun dismissSwapAnnouncementCard() {
+        displayList.filterIsInstance<SwapAnnouncementCard>()
+            .forEach {
+                val originalIndex = displayList.indexOf(it)
+                displayList.remove(it)
+                with(view) {
+                    notifyItemRemoved(displayList, originalIndex)
+                    scrollToTop()
                 }
             }
     }

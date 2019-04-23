@@ -62,7 +62,7 @@
                 android:id="@+id/textview_lumens"
                 style="@style/CryptoCurrencySelectorTextView"
                 android:text="@string/lumens"
-                tools:drawableLeft="@drawable/vector_stellar_rocket" />
+                tools:drawableLeft="@drawable/vector_xlm_icon" />
 
             <TextView
                     android:id="@+id/textview_pax"

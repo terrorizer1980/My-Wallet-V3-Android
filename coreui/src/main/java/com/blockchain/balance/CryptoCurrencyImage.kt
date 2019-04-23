@@ -22,7 +22,7 @@ fun CryptoCurrency.drawableRes() =
         CryptoCurrency.BTC -> R.drawable.vector_bitcoin
         CryptoCurrency.ETHER -> R.drawable.vector_eth
         CryptoCurrency.BCH -> R.drawable.vector_bitcoin_cash
-        CryptoCurrency.XLM -> R.drawable.vector_stellar_rocket
+        CryptoCurrency.XLM -> R.drawable.vector_xlm_icon
         CryptoCurrency.PAX -> R.drawable.vector_pax
     }
 
@@ -32,7 +32,7 @@ fun CryptoCurrency.drawableResFilled() =
         CryptoCurrency.BTC -> R.drawable.vector_bitcoin_filled
         CryptoCurrency.ETHER -> R.drawable.vector_eth_filled
         CryptoCurrency.BCH -> R.drawable.vector_bitcoin_cash_filled
-        CryptoCurrency.XLM -> R.drawable.vector_stellar_rocket_filled
+        CryptoCurrency.XLM -> R.drawable.vector_xlm_icon
         CryptoCurrency.PAX -> R.drawable.vector_pax
     }
 

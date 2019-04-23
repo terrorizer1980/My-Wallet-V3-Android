@@ -13,7 +13,7 @@ import piuk.blockchain.android.ui.dashboard.adapter.delegates.ImageRightAnnounce
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.OnboardingDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.PieChartDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.SunriverAnnouncementDelegate
-
+import piuk.blockchain.android.ui.dashboard.adapter.delegates.SwapAnnouncementDelegate
 /**
  * @param context The Activity/Fragment [Context]
  * @param assetSelector A callback for getting the selected coin from the asset balance card
@@ -37,6 +37,7 @@ class DashboardDelegateAdapter(
         delegatesManager.addAdapterDelegate(ImageRightAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(SunriverAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(HeaderDelegate())
+        delegatesManager.addAdapterDelegate(SwapAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(onboardingDelegate)
         delegatesManager.addAdapterDelegate(pieChartDelegate)
         delegatesManager.addAdapterDelegate(assetPriceDelegate)

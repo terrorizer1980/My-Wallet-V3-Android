@@ -20,7 +20,7 @@ val sunriverModule = applicationContext {
 
         factory { XlmSecretAccess(get()) }
 
-        factory { XlmDataManager(get(), get(), get(), get(), get()) }
+        factory { XlmDataManager(get(), get(), get(), get(), get(), get()) }
             .bind(DefaultAccountDataManager::class)
             .bind(AsyncAddressBalanceReporter::class)
 
