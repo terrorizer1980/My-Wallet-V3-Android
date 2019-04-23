@@ -38,9 +38,8 @@ enum class CryptoCurrency(
     PAX(
         symbol = "USDp",
         unit = "USD Pax",
-        // TODO AND-2003 - these are guesses - check!
-        dp = 4,
-        userDp = 2,
+        dp = 18,
+        userDp = 8,
         requiredConfirmations = 3 // Same as ETHER
     );
 

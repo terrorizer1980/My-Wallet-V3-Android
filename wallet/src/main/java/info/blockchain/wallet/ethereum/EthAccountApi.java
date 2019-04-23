@@ -6,9 +6,11 @@ import info.blockchain.wallet.ethereum.data.EthAddressResponse;
 import info.blockchain.wallet.ethereum.data.EthAddressResponseMap;
 import info.blockchain.wallet.ethereum.data.EthLatestBlock;
 import info.blockchain.wallet.ethereum.data.EthPushTxRequest;
+import info.blockchain.wallet.ethereum.data.Erc20AddressResponse;
 import info.blockchain.wallet.ethereum.data.EthTxDetails;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +85,11 @@ public class EthAccountApi {
         return getApiInstance().getLatestBlock();
     }
 
+    @NotNull
+    public Observable<Erc20AddressResponse> getErc20Address(String address, String hash) {
+        return getApiInstance().getErc20Address(address, hash);
+    }
+
     /**
      * Returns an {@link EthTxDetails} containing information about a specific ETH transaction. This
      * call will return a error 400 with the payload "message": "Transaction not found" if the hash
@@ -105,5 +112,4 @@ public class EthAccountApi {
         }
         return endpoints;
     }
-
 }

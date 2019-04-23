@@ -10,6 +10,7 @@ import info.blockchain.wallet.ethereum.data.EthAddressResponse
 import info.blockchain.wallet.ethereum.data.EthAddressResponseMap
 import info.blockchain.wallet.ethereum.data.EthLatestBlock
 import info.blockchain.wallet.ethereum.data.EthTransaction
+import info.blockchain.wallet.ethereum.data.Erc20AddressResponse
 import info.blockchain.wallet.exceptions.HDWalletException
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
 import info.blockchain.wallet.payload.PayloadManager
@@ -80,6 +81,10 @@ class EthDataManager(
             .doOnError(Timber::e)
             .onErrorReturn { BigInteger.ZERO }
             .subscribeOn(Schedulers.io())
+
+    fun getErc20Address(currency: CryptoCurrency): Observable<Erc20AddressResponse> =
+        ethAccountApi.getErc20Address(ethDataStore.ethWallet!!.account.address,
+            getErc20TokenData(currency).contractAddress).applySchedulers()
 
     fun fetchEthAddressCompletable(): Completable = Completable.fromObservable(fetchEthAddress())
 

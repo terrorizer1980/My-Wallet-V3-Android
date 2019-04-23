@@ -197,7 +197,8 @@ class DashboardPresenter(
                             hasBtcBalance = !it.bitcoin.displayable.isZero,
                             hasBchBalance = !it.bitcoinCash.displayable.isZero,
                             hasEthBalance = !it.ether.displayable.isZero,
-                            hasXlmBalance = !it.lumen.displayable.isZero
+                            hasXlmBalance = !it.lumen.displayable.isZero,
+                            hasPaxBalance = !it.usdPax.displayable.isZero
                         )
                     )
                     cachedData = it

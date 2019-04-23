@@ -84,9 +84,16 @@ class PieChartsStateTest {
                     cryptoValueString = "3 XLM"
                 ),
                 watchOnly = zeroDataPoint()
+            ),
+            usdPax = PieChartsState.Coin(
+                displayable = PieChartsState.DataPoint(
+                    fiatValue = 20.usd(),
+                    cryptoValueString = "2 USDp"
+                ),
+                watchOnly = zeroDataPoint()
             )
-        ).apply {
-            totalValueString `should equal` "$650.00"
+            ).apply {
+            totalValueString `should equal` "$670.00"
         }
     }
 
@@ -97,7 +104,8 @@ class PieChartsStateTest {
             bitcoin = zeroCoin(),
             bitcoinCash = zeroCoin(),
             ether = zeroCoin(),
-            lumen = zeroCoin()
+            lumen = zeroCoin(),
+            usdPax = zeroCoin()
         ).apply {
             isZero `should be` true
         }
@@ -110,7 +118,8 @@ class PieChartsStateTest {
             bitcoin = nonZeroCoin(),
             bitcoinCash = zeroCoin(),
             ether = zeroCoin(),
-            lumen = zeroCoin()
+            lumen = zeroCoin(),
+            usdPax = zeroCoin()
         ).apply {
             isZero `should be` false
         }
@@ -123,7 +132,8 @@ class PieChartsStateTest {
             bitcoin = zeroCoin(),
             bitcoinCash = nonZeroCoin(),
             ether = zeroCoin(),
-            lumen = zeroCoin()
+            lumen = zeroCoin(),
+            usdPax = zeroCoin()
         ).apply {
             isZero `should be` false
         }
@@ -136,7 +146,8 @@ class PieChartsStateTest {
             bitcoin = zeroCoin(),
             bitcoinCash = zeroCoin(),
             ether = nonZeroCoin(),
-            lumen = zeroCoin()
+            lumen = zeroCoin(),
+            usdPax = zeroCoin()
         ).apply {
             isZero `should be` false
         }
@@ -149,7 +160,8 @@ class PieChartsStateTest {
             bitcoin = nonZeroWatchOnlyCoin(),
             bitcoinCash = zeroCoin(),
             ether = zeroCoin(),
-            lumen = zeroCoin()
+            lumen = zeroCoin(),
+            usdPax = zeroCoin()
         ).apply {
             isZero `should be` false
         }
@@ -162,7 +174,8 @@ class PieChartsStateTest {
             bitcoin = zeroCoin(),
             bitcoinCash = nonZeroWatchOnlyCoin(),
             ether = zeroCoin(),
-            lumen = zeroCoin()
+            lumen = zeroCoin(),
+            usdPax = zeroCoin()
         ).apply {
             isZero `should be` false
         }
@@ -175,7 +188,8 @@ class PieChartsStateTest {
             bitcoin = zeroCoin(),
             bitcoinCash = zeroCoin(),
             ether = nonZeroWatchOnlyCoin(),
-            lumen = zeroCoin()
+            lumen = zeroCoin(),
+            usdPax = zeroCoin()
         ).apply {
             isZero `should be` false
         }
@@ -188,7 +202,8 @@ class PieChartsStateTest {
             bitcoin = zeroCoin(),
             bitcoinCash = zeroCoin(),
             ether = zeroCoin(),
-            lumen = nonZeroWatchOnlyCoin()
+            lumen = nonZeroWatchOnlyCoin(),
+            usdPax = zeroCoin()
         ).apply {
             isZero `should be` false
         }
@@ -201,7 +216,8 @@ class PieChartsStateTest {
             bitcoin = zeroCoin(),
             bitcoinCash = zeroCoin(),
             ether = zeroCoin(),
-            lumen = zeroCoin()
+            lumen = zeroCoin(),
+            usdPax = zeroCoin()
         ).also {
             it[CryptoCurrency.BTC] `should be` it.bitcoin
             it[CryptoCurrency.BCH] `should be` it.bitcoinCash

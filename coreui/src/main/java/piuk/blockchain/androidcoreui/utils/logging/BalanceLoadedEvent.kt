@@ -6,7 +6,8 @@ class BalanceLoadedEvent(
     hasBtcBalance: Boolean,
     hasBchBalance: Boolean,
     hasEthBalance: Boolean,
-    hasXlmBalance: Boolean
+    hasXlmBalance: Boolean,
+    hasPaxBalance: Boolean
 ) : CustomEventBuilder("Balances loaded") {
 
     init {
@@ -14,8 +15,9 @@ class BalanceLoadedEvent(
         putCustomAttribute("Has BCH balance", hasBchBalance)
         putCustomAttribute("Has ETH balance", hasEthBalance)
         putCustomAttribute("Has XLM balance", hasXlmBalance)
+        putCustomAttribute("Has PAX balance", hasPaxBalance)
 
-        val hasAnyBalance = hasBtcBalance || hasBchBalance || hasEthBalance || hasXlmBalance
+        val hasAnyBalance = hasBtcBalance || hasBchBalance || hasEthBalance || hasXlmBalance || hasPaxBalance
 
         putCustomAttribute("Has any balance", hasAnyBalance)
     }

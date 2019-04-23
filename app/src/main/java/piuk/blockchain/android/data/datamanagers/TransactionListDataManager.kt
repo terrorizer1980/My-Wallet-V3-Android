@@ -19,6 +19,7 @@ import piuk.blockchain.android.data.datamanagers.models.XlmDisplayable
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.erc20.Erc20Manager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.transactions.TransactionListStore
 import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
@@ -33,6 +34,7 @@ class TransactionListDataManager(
     private val ethDataManager: EthDataManager,
     private val bchDataManager: BchDataManager,
     private val xlmDataManager: XlmDataManager,
+    private val erc20Manager: Erc20Manager,
     private val transactionListStore: TransactionListStore,
     private val currencyState: CurrencyState
 ) : TotalBalance {
@@ -57,9 +59,10 @@ class TransactionListDataManager(
             .subscribeOn(Schedulers.io())
     }
 
-    private fun fetchXlmTransactions(): Observable<List<Displayable>> = xlmDataManager.getTransactionList()
-        .toObservable()
-        .mapList { XlmDisplayable(it) }
+    private fun fetchXlmTransactions(): Observable<List<Displayable>> =
+        xlmDataManager.getTransactionList()
+            .toObservable()
+            .mapList { XlmDisplayable(it) }
 
     private fun fetchBtcTransactions(
         itemAccount: ItemAccount,
@@ -294,7 +297,7 @@ class TransactionListDataManager(
             CryptoCurrency.BCH -> bchDataManager.toBalanceReporter().toAsync()
             CryptoCurrency.ETHER -> ethDataManager.toAsyncBalanceReporter()
             CryptoCurrency.XLM -> xlmDataManager.toAsyncBalanceReporter()
-            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
+            CryptoCurrency.PAX -> erc20Manager.toAsyncBalanceReporter()
         }
     }
 }

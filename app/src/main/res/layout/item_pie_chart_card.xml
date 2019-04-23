@@ -71,6 +71,18 @@
             app:layout_constraintTop_toBottomOf="@+id/linear_layout_bitcoin"
             app:layout_constraintWidth_percent="0.2" />
 
+        <View
+            android:id="@+id/line_usd_pax"
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/color_pax_logo"
+            app:layout_constraintEnd_toEndOf="@+id/linear_layout_bitcoin"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/linear_layout_bitcoin_cash"
+            app:layout_constraintTop_toBottomOf="@+id/linear_layout_bitcoin_cash"
+            app:layout_constraintWidth_percent="0.2" />
+
         <!-- BITCOIN -->
         <LinearLayout
             android:id="@+id/linear_layout_bitcoin"
@@ -200,10 +212,40 @@
                 app:autoSizePresetSizes="@array/autosize_text_sizes"
                 app:autoSizeTextType="uniform"
                 tools:text="0.6352324 BCH" />
+        </LinearLayout>
+        <!-- USD PAX -->
+        <LinearLayout
+            android:id="@+id/linear_layout_usd_pax"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="@+id/linear_layout_bitcoin"
+            app:layout_constraintStart_toStartOf="@+id/linear_layout_bitcoin"
+            app:layout_constraintTop_toBottomOf="@+id/line_usd_pax">
 
+            <TextView
+                android:id="@+id/textview_title_usd_pax"
+                style="@style/DashboardCoinTitle.LayoutMatchParentWidth"
+                android:text="@string/usd_pax" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/textview_value_usd_pax"
+                style="@style/DashboardCoinAmounts.LayoutMatchParentWidth"
+                app:autoSizePresetSizes="@array/autosize_text_sizes"
+                app:autoSizeTextType="uniform"
+                tools:text="$3,301.35" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/textview_amount_usd_pax"
+                style="@style/DashboardCoinAmounts.LayoutMatchParentWidth"
+                app:autoSizePresetSizes="@array/autosize_text_sizes"
+                app:autoSizeTextType="uniform"
+                tools:text="532.36271836 USDp" />
         </LinearLayout>
 
-        <include layout="@layout/item_pie_chart_bitcoin_unspendable" />
+        <include
+            layout="@layout/item_pie_chart_bitcoin_unspendable" />
 
         <ProgressBar
             android:id="@+id/progress_bar"

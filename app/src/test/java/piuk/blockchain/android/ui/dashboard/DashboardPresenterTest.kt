@@ -7,10 +7,11 @@ import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
-import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
-import com.blockchain.testutils.ether
+import com.blockchain.testutils.bitcoin
+import com.blockchain.testutils.usdPax
 import com.blockchain.testutils.lumens
+import com.blockchain.testutils.ether
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.anyOrNull
 import com.nhaarman.mockito_kotlin.atLeastOnce
@@ -146,6 +147,7 @@ class DashboardPresenterTest {
         givenBalance(200.bitcoinCash())
         givenBalance(220.ether())
         givenBalance(100.lumens())
+        givenBalance(50.usdPax())
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BTC, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.ETHER, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BCH, "USD")).thenReturn(2.0)
@@ -195,6 +197,7 @@ class DashboardPresenterTest {
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.ETHER), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.BCH), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.XLM), any())
+        verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.PAX), any())
         verify(payloadDataManager).updateAllBalances()
         verify(payloadDataManager).updateAllTransactions()
         verifyBalanceQueries()
@@ -259,6 +262,7 @@ class DashboardPresenterTest {
         givenBalance(200.bitcoinCash())
         givenBalance(220.ether())
         givenBalance(100.lumens())
+        givenBalance(50.usdPax())
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BTC, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.ETHER, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BCH, "USD")).thenReturn(2.0)
@@ -308,6 +312,7 @@ class DashboardPresenterTest {
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.ETHER), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.BCH), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.XLM), any())
+        verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.PAX), any())
         verify(payloadDataManager).updateAllBalances()
         verify(payloadDataManager).updateAllTransactions()
         verifyBalanceQueries()
@@ -371,6 +376,7 @@ class DashboardPresenterTest {
         givenBalance(200.bitcoinCash())
         givenBalance(220.ether())
         givenBalance(100.lumens())
+        givenBalance(50.usdPax())
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BTC, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.ETHER, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BCH, "USD")).thenReturn(2.0)
@@ -420,6 +426,7 @@ class DashboardPresenterTest {
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.ETHER), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.BCH), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.XLM), any())
+        verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.PAX), any())
         verify(payloadDataManager).updateAllBalances()
         verify(payloadDataManager).updateAllTransactions()
         verifyBalanceQueries()
@@ -483,6 +490,7 @@ class DashboardPresenterTest {
         givenBalance(200.bitcoinCash())
         givenBalance(220.ether())
         givenBalance(100.lumens())
+        givenBalance(50.usdPax())
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BTC, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.ETHER, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BCH, "USD")).thenReturn(2.0)
@@ -533,6 +541,7 @@ class DashboardPresenterTest {
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.ETHER), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.BCH), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.XLM), any())
+        verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.PAX), any())
         verify(payloadDataManager).updateAllBalances()
         verify(payloadDataManager).updateAllTransactions()
         verifyBalanceQueries()
@@ -607,6 +616,7 @@ class DashboardPresenterTest {
         givenBalance(200.bitcoinCash())
         givenBalance(220.ether())
         givenBalance(100.lumens())
+        givenBalance(50.usdPax())
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BTC, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.ETHER, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BCH, "USD")).thenReturn(2.0)
@@ -656,6 +666,7 @@ class DashboardPresenterTest {
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.ETHER), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.BCH), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.XLM), any())
+        verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.PAX), any())
         verify(payloadDataManager).updateAllBalances()
         verify(payloadDataManager).updateAllTransactions()
         verifyBalanceQueries()
@@ -721,6 +732,7 @@ class DashboardPresenterTest {
         givenBalance(200.bitcoinCash())
         givenBalance(220.ether())
         givenBalance(100.lumens())
+        givenBalance(50.usdPax())
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BTC, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.ETHER, "USD")).thenReturn(2.0)
         whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BCH, "USD")).thenReturn(2.0)
@@ -759,6 +771,7 @@ class DashboardPresenterTest {
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.ETHER), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.BCH), any())
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.XLM), any())
+        verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.PAX), any())
         verify(payloadDataManager).updateAllBalances()
         verify(payloadDataManager).updateAllTransactions()
         verifyBalanceQueries()
@@ -795,6 +808,7 @@ class DashboardPresenterTest {
         verify(transactionListDataManager).totalBalance(CryptoCurrency.BCH)
         verify(transactionListDataManager).totalBalance(CryptoCurrency.ETHER)
         verify(transactionListDataManager).totalBalance(CryptoCurrency.XLM)
+        verify(transactionListDataManager).totalBalance(CryptoCurrency.PAX)
     }
 
     @Test
@@ -810,7 +824,8 @@ class DashboardPresenterTest {
     @Test
     fun `addSunriverPrompts type none`() {
         // Arrange
-        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.just(SunriverCardType.None))
+        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.just(
+            SunriverCardType.None))
         // Act
         subject.addSunriverPrompts().test()
         // Assert

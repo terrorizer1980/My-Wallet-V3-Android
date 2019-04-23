@@ -22,6 +22,7 @@ import piuk.blockchain.android.testutils.RxTest;
 import piuk.blockchain.android.ui.account.ItemAccount;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyState;
+import piuk.blockchain.androidcore.data.erc20.Erc20Manager;
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager;
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel;
 import piuk.blockchain.androidcore.data.transactions.TransactionListStore;
@@ -48,6 +49,7 @@ public class TransactionListDataManagerTest extends RxTest {
     @Mock private BchDataManager bchDataManager;
     @Mock private CurrencyState currencyState;
     @Mock private XlmDataManager xlmDataManager;
+    @Mock private Erc20Manager erc20Manager;
     private TransactionListStore transactionListStore;
     private TransactionListDataManager subject;
 
@@ -62,6 +64,7 @@ public class TransactionListDataManagerTest extends RxTest {
                 ethDataManager,
                 bchDataManager,
                 xlmDataManager,
+                erc20Manager,
                 transactionListStore,
                 currencyState
         );

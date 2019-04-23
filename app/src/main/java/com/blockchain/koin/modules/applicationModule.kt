@@ -34,6 +34,7 @@ import piuk.blockchain.android.util.PrngHelper
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
+import piuk.blockchain.androidcore.data.erc20.Erc20Manager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.utils.DateUtil
@@ -55,6 +56,10 @@ val applicationModule = applicationContext {
 
         factory {
             EthDataManager(get(), get(), get(), get(), get(), get(), get(), get())
+        }
+
+        factory {
+            Erc20Manager(get())
         }
 
         factory {
@@ -89,7 +94,7 @@ val applicationModule = applicationContext {
 
         factory { KycStatusHelper(get(), get(), get(), get()) }
 
-        factory { TransactionListDataManager(get(), get(), get(), get(), get(), get()) }
+        factory { TransactionListDataManager(get(), get(), get(), get(), get(), get(), get()) }
 
         factory("spendable") { get<TransactionListDataManager>() as TotalBalance }
 
@@ -123,7 +128,12 @@ val applicationModule = applicationContext {
             SendPresenterXSendView(
                 PerCurrencySendPresenter(
                     originalStrategy = originalStrategy,
-                    xlmStrategy = XlmSendPresenterStrategy(get(), get(), get(), get(), get(), get()),
+                    xlmStrategy = XlmSendPresenterStrategy(get(),
+                        get(),
+                        get(),
+                        get(),
+                        get(),
+                        get()),
                     erc20Strategy = Erc20SendStrategy(),
                     currencyState = get(),
                     exchangeRates = get(),
