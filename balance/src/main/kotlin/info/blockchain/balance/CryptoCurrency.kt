@@ -36,8 +36,8 @@ enum class CryptoCurrency(
         requiredConfirmations = 1
     ),
     PAX(
-        symbol = "USDp",
-        unit = "USD Pax",
+        symbol = "PAX",
+        unit = "USDp",
         dp = 18,
         userDp = 8,
         requiredConfirmations = 3 // Same as ETHER

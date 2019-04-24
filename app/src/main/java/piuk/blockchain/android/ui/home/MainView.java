@@ -29,7 +29,7 @@ interface MainView extends View {
 
     void setBuySellEnabled(boolean enabled, boolean useWebView);
 
-    void onTradeCompleted(String txHash);
+    void showTradeCompleteMsg(String txHash);
 
     void setWebViewLoginDetails(WebViewLoginDetails webViewLoginDetails);
 

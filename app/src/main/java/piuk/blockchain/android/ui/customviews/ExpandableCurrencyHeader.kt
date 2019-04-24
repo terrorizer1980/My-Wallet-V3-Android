@@ -54,8 +54,7 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
 
     init {
         // Inflate layout
-        LayoutInflater.from(getContext())
-            .inflate(R.layout.view_expanding_currency_header, this, true)
+        LayoutInflater.from(getContext()).inflate(R.layout.view_expanding_currency_header, this, true)
         CryptoCurrency.values().forEach { currency ->
             textView(currency).apply {
                 // Add compound drawables manually to avoid inflation errors on <21

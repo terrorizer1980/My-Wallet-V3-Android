@@ -53,12 +53,10 @@ import com.karumi.dexter.listener.single.CompositePermissionListener;
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
 import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.util.FormatsUtil;
-import io.reactivex.Observable;
 import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.R;
-import piuk.blockchain.android.data.rxjava.RxUtil;
 import piuk.blockchain.android.databinding.ActivityMainBinding;
 import piuk.blockchain.android.injection.Injector;
 import piuk.blockchain.android.ui.account.AccountActivity;
@@ -711,7 +709,7 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
     }
 
     @Override
-    public void onTradeCompleted(String txHash) {
+    public void showTradeCompleteMsg(String txHash) {
         new AlertDialog.Builder(this, R.style.AlertDialogStyle)
                 .setTitle(getString(R.string.trade_complete))
                 .setMessage(R.string.trade_complete_details)
@@ -774,9 +772,10 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
 
     @Override
     public void onCompletedTrade(String txHash) {
-        Observable.just(txHash)
-                .compose(RxUtil.applySchedulersToObservable())
-                .subscribe(this::onTradeCompleted);
+        /** Called from javascript in a webview at the end of a 'buy' operation, so ensure it runs
+         * on the UI thread. see {@link piuk.blockchain.android.ui.buy.BuyActivity.java }
+         **/
+        runOnUiThread(() -> showTradeCompleteMsg(txHash));
     }
 
     @Override

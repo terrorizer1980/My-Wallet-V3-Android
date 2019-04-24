@@ -49,17 +49,17 @@ class CryptoCurrencyTests {
 
     @Test
     fun `uppercase PAX`() {
-        CryptoCurrency.fromSymbol("USDp") `should be` CryptoCurrency.PAX
+        CryptoCurrency.fromSymbol("PAX") `should be` CryptoCurrency.PAX
     }
 
     @Test
     fun `lowercase pax`() {
-        CryptoCurrency.fromSymbol("usdp") `should be` CryptoCurrency.PAX
+        CryptoCurrency.fromSymbol("pax") `should be` CryptoCurrency.PAX
     }
 
     @Test
     fun `mixed case pax`() {
-        CryptoCurrency.fromSymbol("USDp") `should be` CryptoCurrency.PAX
+        CryptoCurrency.fromSymbol("Pax") `should be` CryptoCurrency.PAX
     }
 
     @Test
@@ -144,6 +144,6 @@ class CryptoCurrencyTests {
 
     @Test
     fun `unit name PAX`() {
-        CryptoCurrency.PAX.unit `should be` "USD Pax"
+        CryptoCurrency.PAX.unit `should be` "USDp"
     }
 }

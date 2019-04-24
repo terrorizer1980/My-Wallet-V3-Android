@@ -504,7 +504,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                             if (isEnabled && !isCoinifyAllowed) {
                                 buyDataManager.watchPendingTrades()
                                         .compose(RxUtil.applySchedulersToObservable())
-                                        .subscribe(getView()::onTradeCompleted, Throwable::printStackTrace);
+                                        .subscribe(getView()::showTradeCompleteMsg, Throwable::printStackTrace);
 
                                 buyDataManager.getWebViewLoginDetails()
                                         .subscribe(getView()::setWebViewLoginDetails, Throwable::printStackTrace);
@@ -525,7 +525,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                txHash -> getView().onTradeCompleted(txHash),
+                                txHash -> getView().showTradeCompleteMsg(txHash),
                                 Timber::e)
         );
     }
