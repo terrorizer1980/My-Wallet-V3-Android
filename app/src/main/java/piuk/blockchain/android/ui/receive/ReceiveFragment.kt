@@ -60,7 +60,10 @@ import piuk.blockchain.android.util.EditTextFormatUtil
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.contacts.models.PaymentRequestType
 import info.blockchain.balance.CryptoCurrency
+import kotlinx.android.synthetic.main.include_pax_soon.*
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_FAQ
+import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
@@ -174,6 +177,10 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
                 CryptoCurrency.XLM -> presenter?.onXlmSelected()
                 CryptoCurrency.PAX -> presenter?.onPaxSelected()
             }
+        }
+
+        link_what_is_pax.setOnClickListener {
+            calloutToExternalSupportLinkDlg(activity!!, URL_BLOCKCHAIN_PAX_FAQ)
         }
     }
 
@@ -677,8 +684,7 @@ class ReceiveFragment : BaseFragment<ReceiveView, ReceivePresenter>(), ReceiveVi
                 .setMessage(R.string.receive_address_to_clipboard)
                 .setCancelable(false)
                 .setPositiveButton(R.string.yes) { _, _ ->
-                    val clipboard =
-                        getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText("Send address", address)
                     toast(R.string.copied_to_clipboard)
                     clipboard.primaryClip = clip

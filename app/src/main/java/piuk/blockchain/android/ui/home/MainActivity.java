@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ShortcutManager;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -80,6 +79,7 @@ import piuk.blockchain.android.ui.send.SendFragment;
 import piuk.blockchain.android.ui.settings.SettingsActivity;
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity;
 import piuk.blockchain.android.ui.zxing.CaptureActivity;
+import piuk.blockchain.android.util.StandardDialogsKt;
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.contacts.models.PaymentRequestType;
@@ -127,7 +127,6 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
     public static final String ACTION_XLM_BALANCE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_XLM_BALANCE";
     public static final String ACTION_PAX_BALANCE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_PAX_BALANCE";
 
-    private static final String SUPPORT_URI = "https://support.blockchain.com/";
     private static final int REQUEST_BACKUP = 2225;
     private static final int COOL_DOWN_MILLIS = 2 * 1000;
 
@@ -569,14 +568,10 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
 
     private void onSupportClicked() {
         eventLogger.logEvent(LoggableEvent.Support);
-
-        new AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                .setTitle(R.string.app_name)
-                .setMessage(R.string.support_leaving_app_warning)
-                .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(SUPPORT_URI))))
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+        StandardDialogsKt.calloutToExternalSupportLinkDlg(
+                this,
+                StandardDialogsKt.URL_BLOCKCHAIN_SUPPORT_PORTAL
+        );
     }
 
     @Override

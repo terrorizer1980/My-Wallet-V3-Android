@@ -55,6 +55,7 @@ import kotlinx.android.synthetic.main.fragment_send.*
 import kotlinx.android.synthetic.main.include_amount_row.*
 import kotlinx.android.synthetic.main.include_amount_row.view.*
 import kotlinx.android.synthetic.main.include_from_row.view.*
+import kotlinx.android.synthetic.main.include_pax_soon.*
 import kotlinx.android.synthetic.main.include_to_row_editable.*
 import kotlinx.android.synthetic.main.include_to_row_editable.view.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
@@ -71,6 +72,8 @@ import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import piuk.blockchain.android.ui.send.external.SendPresenter
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.AppRate
+import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_FAQ
+import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
@@ -183,6 +186,10 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
 
         learnMoreMinBalance.setOnClickListener {
             MinBalanceExplanationDialog().show(fragmentManager, "Dialog")
+        }
+
+        link_what_is_pax.setOnClickListener {
+            calloutToExternalSupportLinkDlg(activity!!, URL_BLOCKCHAIN_PAX_FAQ)
         }
 
         // TODO: AND-2003 Remove this check when PAX fully implemented

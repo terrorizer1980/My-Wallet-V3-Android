@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_balance.*
 import kotlinx.android.synthetic.main.include_no_transaction_message.*
+import kotlinx.android.synthetic.main.include_pax_soon.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.websocket.WebSocketService
@@ -31,6 +32,8 @@ import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListen
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
+import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_FAQ
+import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.base.UiState
@@ -116,6 +119,10 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(), BalanceVi
             currency_header?.close()
         }
         currency_header.setSelectionListener { presenter.onCurrencySelected(it) }
+
+        link_what_is_pax.setOnClickListener {
+            calloutToExternalSupportLinkDlg(activity!!, URL_BLOCKCHAIN_PAX_FAQ)
+        }
 
         onViewReady()
         presenter.requestRefresh()
