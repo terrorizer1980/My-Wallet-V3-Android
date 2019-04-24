@@ -71,9 +71,11 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
             }
         }
     }
+
     private val spacerDecoration: BottomSpacerDecoration by unsafeLazy {
         BottomSpacerDecoration(ViewUtils.convertDpToPixel(56f, context).toInt())
     }
+
     private val safeLayoutManager by unsafeLazy { SafeLayoutManager(context!!) }
 
     override fun onCreateView(
@@ -202,7 +204,7 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
             CryptoCurrency.ETHER -> MainActivity.ACTION_ETH_BALANCE
             CryptoCurrency.BCH -> MainActivity.ACTION_BCH_BALANCE
             CryptoCurrency.XLM -> MainActivity.ACTION_XLM_BALANCE
-            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
+            CryptoCurrency.PAX -> MainActivity.ACTION_PAX_BALANCE
         }
 
         broadcastIntent(action)

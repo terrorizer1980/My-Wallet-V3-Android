@@ -120,10 +120,12 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
     public static final String ACTION_EXCHANGE_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_EXCHANGE_KYC";
     public static final String ACTION_SUNRIVER_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_SUNRIVER_KYC";
     public static final String ACTION_RESUBMIT_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_RESUBMIT_KYC";
+
     public static final String ACTION_BTC_BALANCE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_BTC_BALANCE";
     public static final String ACTION_ETH_BALANCE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_ETH_BALANCE";
     public static final String ACTION_BCH_BALANCE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_BCH_BALANCE";
     public static final String ACTION_XLM_BALANCE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_XLM_BALANCE";
+    public static final String ACTION_PAX_BALANCE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_PAX_BALANCE";
 
     private static final String SUPPORT_URI = "https://support.blockchain.com/";
     private static final int REQUEST_BACKUP = 2225;
@@ -200,14 +202,19 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
                 launchKyc(CampaignType.Swap);
             } else if (action.equals(ACTION_RESUBMIT_KYC) && getActivity() != null) {
                 launchKyc(CampaignType.Resubmission);
-            } else if (action.equals(ACTION_BTC_BALANCE)) {
-                goToTransactionsFor(CryptoCurrency.BTC);
-            } else if (action.equals(ACTION_ETH_BALANCE)) {
-                goToTransactionsFor(CryptoCurrency.ETHER);
-            } else if (action.equals(ACTION_BCH_BALANCE)) {
-                goToTransactionsFor(CryptoCurrency.BCH);
-            } else if (action.equals(ACTION_XLM_BALANCE)) {
-                goToTransactionsFor(CryptoCurrency.XLM);
+            } else {
+                switch(action) {
+                    case ACTION_BTC_BALANCE: goToTransactionsFor(CryptoCurrency.BTC);
+                                             break;
+                    case ACTION_ETH_BALANCE: goToTransactionsFor(CryptoCurrency.ETHER);
+                                             break;
+                    case ACTION_BCH_BALANCE: goToTransactionsFor(CryptoCurrency.BCH);
+                                             break;
+                    case ACTION_XLM_BALANCE: goToTransactionsFor(CryptoCurrency.XLM);
+                                             break;
+                    case ACTION_PAX_BALANCE: goToTransactionsFor(CryptoCurrency.PAX);
+                                             break;
+                }
             }
         }
 
@@ -276,6 +283,7 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
         instance.registerReceiver(receiver, new IntentFilter(ACTION_ETH_BALANCE));
         instance.registerReceiver(receiver, new IntentFilter(ACTION_BCH_BALANCE));
         instance.registerReceiver(receiver, new IntentFilter(ACTION_XLM_BALANCE));
+        instance.registerReceiver(receiver, new IntentFilter(ACTION_PAX_BALANCE));
 
         balanceFragment = BalanceFragment.newInstance(false);
 
@@ -541,18 +549,22 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
                 onSupportClicked();
                 break;
             case R.id.nav_logout:
-                new AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                        .setTitle(R.string.unpair_wallet)
-                        .setMessage(R.string.ask_you_sure_unpair)
-                        .setPositiveButton(R.string.unpair, (dialog, which) -> {
-                            eventLogger.logEvent(LoggableEvent.Logout);
-                            getPresenter().unPair();
-                        })
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show();
+                showLogoutDialog();
                 break;
         }
         binding.drawerLayout.closeDrawers();
+    }
+
+    private void showLogoutDialog() {
+        new AlertDialog.Builder(this, R.style.AlertDialogStyle)
+                .setTitle(R.string.unpair_wallet)
+                .setMessage(R.string.ask_you_sure_unpair)
+                .setPositiveButton(R.string.unpair, (dialog, which) -> {
+                    eventLogger.logEvent(LoggableEvent.Logout);
+                    getPresenter().unPair();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     private void onSupportClicked() {

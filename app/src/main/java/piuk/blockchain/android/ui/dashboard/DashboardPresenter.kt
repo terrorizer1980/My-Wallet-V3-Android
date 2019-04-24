@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.dashboard
 
+import android.annotation.SuppressLint
 import android.support.annotation.DrawableRes
 import android.support.annotation.VisibleForTesting
 import com.blockchain.balance.drawableRes
@@ -141,6 +142,7 @@ class DashboardPresenter(
         super.onViewDestroyed()
     }
 
+    @SuppressLint("CheckResult")
     private fun updatePrices() {
         exchangeRateFactory.updateTickers()
             .observeOn(AndroidSchedulers.mainThread())
