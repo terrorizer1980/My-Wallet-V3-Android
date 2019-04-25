@@ -36,6 +36,16 @@ fun CryptoCurrency.drawableResFilled() =
         CryptoCurrency.PAX -> R.drawable.vector_pax
     }
 
+@DrawableRes
+fun CryptoCurrency.coinIconWhite() =
+    when (this) {
+        CryptoCurrency.BTC -> R.drawable.vector_bitcoin_white
+        CryptoCurrency.ETHER -> R.drawable.vector_eth_white
+        CryptoCurrency.BCH -> R.drawable.vector_bitcoin_cash_white
+        CryptoCurrency.XLM -> R.drawable.vector_xlm_white
+        CryptoCurrency.PAX -> R.drawable.vector_pax
+    }
+
 fun ImageView.setImageDrawable(@DrawableRes res: Int) {
     setImageDrawable(AppCompatResources.getDrawable(context, res))
 }

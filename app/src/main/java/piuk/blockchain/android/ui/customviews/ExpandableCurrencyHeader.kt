@@ -19,7 +19,7 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.blockchain.balance.drawableResFilled
+import com.blockchain.balance.coinIconWhite
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.view_expanding_currency_header.view.*
 import piuk.blockchain.android.R
@@ -58,7 +58,7 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
         CryptoCurrency.values().forEach { currency ->
             textView(currency).apply {
                 // Add compound drawables manually to avoid inflation errors on <21
-                setRightDrawable(currency.drawableResFilled())
+                setRightDrawable(currency.coinIconWhite())
                 setOnClickListener { closeLayout(currency) }
             }
         }
@@ -111,7 +111,7 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
 
     fun setCurrentlySelectedCurrency(cryptoCurrency: CryptoCurrency) {
         selectedCurrency = cryptoCurrency
-        updateCurrencyUi(selectedCurrency.drawableResFilled(), selectedCurrency.unit)
+        updateCurrencyUi(selectedCurrency.coinIconWhite(), selectedCurrency.unit)
     }
 
     fun getCurrentlySelectedCurrency() = selectedCurrency

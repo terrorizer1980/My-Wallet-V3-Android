@@ -151,20 +151,11 @@ class DashboardPresenter(
             .subscribe(
                 {
                     handleAssetPriceUpdate(
-                        currencies.map {
-                            AssetPriceCardState.Data(
-                                getPriceString(it),
-                                it,
-                                it.drawableRes()
-                            )
-                        })
+                        currencies.filter { it != CryptoCurrency.PAX }
+                            .map { AssetPriceCardState.Data(getPriceString(it), it, it.drawableRes()) })
                 },
                 {
-                    handleAssetPriceUpdate(
-                        currencies.map {
-                            AssetPriceCardState.Error(it)
-                        }
-                    )
+                    handleAssetPriceUpdate(currencies.map { AssetPriceCardState.Error(it) })
                 }
             )
     }

@@ -144,6 +144,6 @@ class CryptoCurrencyTests {
 
     @Test
     fun `unit name PAX`() {
-        CryptoCurrency.PAX.unit `should be` "USDp"
+        CryptoCurrency.PAX.unit `should be` "USD Pax"
     }
 }
