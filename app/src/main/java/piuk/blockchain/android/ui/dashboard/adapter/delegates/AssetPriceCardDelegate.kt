@@ -27,11 +27,7 @@ class AssetPriceCardDelegate<in T>(
         items[position] is AssetPriceCardState
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        AssetPriceCardViewHolder(
-            parent.inflate(
-                R.layout.item_asset_price_card
-            ), assetSelector
-        )
+        AssetPriceCardViewHolder(parent.inflate(R.layout.item_asset_price_card), assetSelector)
 
     override fun onBindViewHolder(
         items: List<T>,
@@ -55,24 +51,14 @@ class AssetPriceCardDelegate<in T>(
         internal var imageView: ImageView = itemView.imageview_chart_icon
 
         internal fun bind(state: AssetPriceCardState, context: Context) {
-            // TODO: AND-2003 - we don't support charts for PAX at this time, so let's do a little
-            // special case customisation here:
-            if (state.currency == CryptoCurrency.PAX) {
-                imageView.invisible()
-                button.invisible()
+            imageView.visible()
+            button.visible()
 
-                button.setOnClickListener(null)
-                itemView.setOnClickListener(null)
-            } else {
-                imageView.visible()
-                button.visible()
+            val onClick: (View) -> Unit = { assetSelector(state.currency) }
+            button.setOnClickListener(onClick)
+            itemView.setOnClickListener(onClick)
 
-                val onClick: (View) -> Unit = { assetSelector(state.currency) }
-                button.setOnClickListener(onClick)
-                itemView.setOnClickListener(onClick)
-            }
             currency.text = context.getString(R.string.dashboard_price, state.currency.unit)
-
             updateChartState(state)
         }
 
