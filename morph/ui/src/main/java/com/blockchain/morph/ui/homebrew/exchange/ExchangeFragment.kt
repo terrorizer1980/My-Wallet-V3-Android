@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.support.annotation.IdRes
 import android.support.constraint.ConstraintLayout
 import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v4.app.Fragment
@@ -32,7 +31,6 @@ import com.blockchain.morph.exchange.mvi.Maximums
 import com.blockchain.morph.exchange.mvi.Quote
 import com.blockchain.morph.exchange.mvi.QuoteValidity
 import com.blockchain.morph.exchange.mvi.SimpleFieldUpdateIntent
-import com.blockchain.morph.exchange.mvi.ToggleFiatCryptoIntent
 import com.blockchain.morph.ui.R
 import com.blockchain.morph.ui.customviews.CurrencyTextView
 import com.blockchain.morph.ui.customviews.ThreePartText
@@ -45,7 +43,6 @@ import com.blockchain.nabu.StartKyc
 import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
-import com.jakewharton.rxbinding2.view.clicks
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.ExchangeRate
 import info.blockchain.balance.FiatValue
@@ -154,6 +151,7 @@ internal class ExchangeFragment : Fragment() {
             ).show(fragmentManager, "BottomDialog")
         }
         exchangeButton.setOnClickListener {
+            exchangeModel.fixAsCrypto()
             activityListener.launchConfirmation()
         }
     }
@@ -168,13 +166,7 @@ internal class ExchangeFragment : Fragment() {
             )
         )
 
-        compositeDisposable +=
-            Observable.merge(
-                allTextUpdates(),
-                clicksToIntents(R.id.imageview_switch_currency) { ToggleFiatCryptoIntent() }
-            ).subscribeBy {
-                exchangeModel.inputEventSink.onNext(it)
-            }
+        compositeDisposable += allTextUpdates().subscribeBy { exchangeModel.inputEventSink.onNext(it) }
 
         compositeDisposable += exchangeModel
             .exchangeViewStates
@@ -203,6 +195,8 @@ internal class ExchangeFragment : Fragment() {
                 .subscribeBy {
                     Logging.logCustom(FixTypeEvent(it))
                 }
+
+        exchangeModel.fixAsFiat()
     }
 
     private fun updateBalance(exchangeViewState: ExchangeViewState) {
@@ -224,8 +218,10 @@ internal class ExchangeFragment : Fragment() {
 
         // Set menu state
         val errorState = if (error == null)
-            ExchangeMenuState.ExchangeMenu.Help else
+            ExchangeMenuState.ExchangeMenu.Help
+        else
             ExchangeMenuState.ExchangeMenu.Error(error)
+
         exchangeMenuState.setMenuState(errorState)
 
         // TODO(AND-2059): remove feedback text in favor of displaying error dialog
@@ -235,12 +231,6 @@ internal class ExchangeFragment : Fragment() {
             setText(error?.message, error?.bufferType)
         }
     }
-
-    private fun clicksToIntents(@IdRes id: Int, function: () -> ExchangeIntent) =
-        clicksToIntents(view!!.findViewById<View>(id), function)
-
-    private fun clicksToIntents(view: View, function: () -> ExchangeIntent) =
-        view.clicks().map { function() }
 
     private fun displayFiatLarge(fiatValue: FiatValue, cryptoValue: CryptoValue, decimalCursor: Int) {
         val parts = fiatValue.toStringParts()

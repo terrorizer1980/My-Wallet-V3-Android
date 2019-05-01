@@ -14,7 +14,7 @@ fun calloutToExternalSupportLinkDlg(ctx: Context, supportUrl: String) {
     AlertDialog.Builder(ctx, R.style.AlertDialogStyle)
         .setTitle(R.string.app_name)
         .setMessage(R.string.support_leaving_app_warning)
-        .setPositiveButton(android.R.string.ok) { dialog, which ->
+        .setPositiveButton(android.R.string.ok) { _, _ ->
             ctx.startActivity(
                 Intent(
                     Intent.ACTION_VIEW,

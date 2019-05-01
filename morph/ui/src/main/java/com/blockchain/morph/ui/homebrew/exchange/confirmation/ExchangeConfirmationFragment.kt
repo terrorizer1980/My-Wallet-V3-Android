@@ -3,12 +3,12 @@ package com.blockchain.morph.ui.homebrew.exchange.confirmation
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.StringRes
+import android.support.annotation.UiThread
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
+import com.blockchain.annotations.CommonCode
 import com.blockchain.balance.colorRes
 import com.blockchain.koin.injectActivity
 import com.blockchain.morph.exchange.mvi.ExchangeViewState
@@ -32,6 +32,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import kotlinx.android.synthetic.main.fragment_homebrew_trade_confirmation.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -44,20 +45,13 @@ import timber.log.Timber
 import java.util.Locale
 
 class ExchangeConfirmationFragment :
-    BaseMvpFragment<ExchangeConfirmationView, ExchangeConfirmationPresenter>(),
+    BaseMvpFragment<ExchangeConfirmationView,
+    ExchangeConfirmationPresenter>(),
     ExchangeConfirmationView {
 
     private val presenter: ExchangeConfirmationPresenter by inject()
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
     private val activityListener: HomebrewHostActivityListener by ParentActivityDelegate(this)
-
-    private lateinit var sendButton: Button
-    private lateinit var fromButton: Button
-    private lateinit var toButton: Button
-    private lateinit var valueTextView: TextView
-    private lateinit var feesTextView: TextView
-    private lateinit var receiveTextView: TextView
-    private lateinit var sendToTextView: TextView
 
     private var progressDialog: MaterialProgressDialog? = null
 
@@ -65,7 +59,7 @@ class ExchangeConfirmationFragment :
     override val exchangeViewState: Observable<ExchangeViewState> by unsafeLazy {
         exchangeModel.exchangeViewStates
             .observeOn(AndroidSchedulers.mainThread())
-            .sampleThrottledClicks(sendButton)
+            .sampleThrottledClicks(confirm_button)
     }
 
     override fun onCreateView(
@@ -86,13 +80,6 @@ class ExchangeConfirmationFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sendButton = view.findViewById(R.id.button_send_now)
-        fromButton = view.findViewById(R.id.select_from_account_button)
-        toButton = view.findViewById(R.id.select_to_account_button)
-        valueTextView = view.findViewById(R.id.value_textView)
-        feesTextView = view.findViewById(R.id.fees_textView)
-        receiveTextView = view.findViewById(R.id.receive_textView)
-        sendToTextView = view.findViewById(R.id.send_to_textView)
 
         activityListener.setToolbarTitle(R.string.confirm_exchange)
         get<EventLogger>().logEvent(LoggableEvent.ExchangeDetailConfirm)
@@ -126,14 +113,16 @@ class ExchangeConfirmationFragment :
 
     private fun renderUi(viewModel: ExchangeConfirmationViewModel) {
         with(viewModel) {
-            fromButton.setBackgroundResource(sending.currency.colorRes())
-            fromButton.text = sending.formatWithUnit(locale)
-            toButton.setBackgroundResource(receiving.currency.colorRes())
+            from_amount.setBackgroundResource(sending.currency.colorRes())
+            from_amount.text = sending.formatWithUnit(locale)
+
             val receivingCryptoValue = receiving.formatWithUnit(locale)
-            toButton.text = receivingCryptoValue
-            receiveTextView.text = receivingCryptoValue
-            valueTextView.text = value.toStringWithSymbol(locale)
-            sendToTextView.text = viewModel.toAccount.label
+            to_amount.setBackgroundResource(receiving.currency.colorRes())
+            to_amount.text = receivingCryptoValue
+
+            receive_amount.text = receivingCryptoValue
+            fiat_value.text = value.toStringWithSymbol(locale)
+            send_to_wallet.text = viewModel.toAccount.label
         }
     }
 
@@ -143,7 +132,7 @@ class ExchangeConfirmationFragment :
     }
 
     override fun updateFee(cryptoValue: CryptoValue) {
-        feesTextView.text = cryptoValue.formatWithUnit()
+        fees_value.text = cryptoValue.formatWithUnit()
     }
 
     override fun showSecondPasswordDialog() {
@@ -156,19 +145,24 @@ class ExchangeConfirmationFragment :
         })
     }
 
+    @UiThread
+    @CommonCode("Move to base")
     override fun showProgressDialog() {
         progressDialog = MaterialProgressDialog(activity).apply {
-            setMessage(R.string.please_wait)
+            setMessage(piuk.blockchain.androidcoreui.R.string.please_wait)
             setCancelable(false)
             show()
         }
     }
 
+    @UiThread
+    @CommonCode("Move to base")
     override fun dismissProgressDialog() {
         progressDialog?.apply { dismiss() }
         progressDialog = null
     }
 
+    @CommonCode("Move to base")
     override fun displayErrorDialog(@StringRes message: Int) {
         AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
             .setTitle(R.string.execution_error_title)

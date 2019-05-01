@@ -7,7 +7,7 @@
     android:background="@color/exchange_confirmation_blue_bg">
 
     <Button
-        android:id="@+id/select_from_account_button"
+        android:id="@+id/from_amount"
         style="@style/ExchangeButton.SendReceive"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -18,12 +18,12 @@
         android:layout_marginStart="16dp"
         app:layout_constraintEnd_toStartOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/receive_heading"
         tools:background="@color/color_bitcoin_logo"
         tools:text="0.25 BTC" />
 
     <Button
-        android:id="@+id/select_to_account_button"
+        android:id="@+id/to_amount"
         style="@style/ExchangeButton.SendReceive"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
         android:textColor="@color/exchange_button_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/swap_heading"
         tools:background="@color/color_ether_logo"
         tools:text="5.67 ETH" />
 
@@ -43,20 +43,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="select_to_account_button, select_from_account_button" />
+        app:constraint_referenced_ids="to_amount, from_amount" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/swap_heading"
         style="@style/ExchangeText.ExchangeReceiveHeaders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/receive"
-        app:layout_constraintStart_toStartOf="@+id/select_to_account_button"
+        app:layout_constraintStart_toStartOf="@+id/to_amount"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/receive_heading"
         style="@style/ExchangeText.ExchangeReceiveHeaders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_send_now"
+        android:id="@+id/confirm_button"
         style="@style/ExchangeButton.Exchange"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -85,13 +85,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="@id/value_title_textView"
+        app:layout_constraintBottom_toBottomOf="@id/fiat_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/value_title_textView" />
+        app:layout_constraintTop_toTopOf="@id/fiat_title" />
 
     <TextView
-        android:id="@+id/value_title_textView"
+        android:id="@+id/fiat_title"
         android:layout_width="0dp"
         android:layout_height="@dimen/exchange_row_height"
         android:layout_marginTop="16dp"
@@ -105,7 +105,7 @@
         app:layout_constraintTop_toBottomOf="@+id/barrier" />
 
     <TextView
-        android:id="@+id/value_textView"
+        android:id="@+id/fiat_value"
         android:layout_width="0dp"
         android:layout_height="@dimen/exchange_row_height"
         android:layout_gravity="end"
@@ -114,10 +114,10 @@
         android:padding="16dp"
         android:textColor="@color/exchange_text_dark_color"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/value_title_textView"
+        app:layout_constraintBottom_toBottomOf="@+id/fiat_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/value_title_textView"
-        app:layout_constraintTop_toTopOf="@+id/value_title_textView"
+        app:layout_constraintStart_toEndOf="@+id/fiat_title"
+        app:layout_constraintTop_toTopOf="@+id/fiat_title"
         tools:text="$1,642.50" />
 
     <!-- Fees -->
@@ -125,13 +125,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="@id/fees_textView"
+        app:layout_constraintBottom_toBottomOf="@id/fees_value"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/fees_textView" />
+        app:layout_constraintTop_toTopOf="@id/fees_value" />
 
     <TextView
-        android:id="@+id/fees_title_textView"
+        android:id="@+id/fees_title"
         android:layout_width="0dp"
         android:layout_height="@dimen/exchange_row_height"
         android:layout_marginTop="2dp"
@@ -142,10 +142,10 @@
         android:textSize="16sp"
         android:text="@string/fees"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/value_title_textView" />
+        app:layout_constraintTop_toBottomOf="@+id/fiat_title" />
 
     <TextView
-        android:id="@+id/fees_textView"
+        android:id="@+id/fees_value"
         android:layout_width="0dp"
         android:layout_height="@dimen/exchange_row_height"
         android:layout_gravity="end"
@@ -154,10 +154,10 @@
         android:padding="16dp"
         android:textColor="@color/exchange_text_dark_color"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/fees_title_textView"
+        app:layout_constraintBottom_toBottomOf="@+id/fees_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fees_title_textView"
-        app:layout_constraintTop_toTopOf="@+id/fees_title_textView"
+        app:layout_constraintStart_toEndOf="@+id/fees_title"
+        app:layout_constraintTop_toTopOf="@+id/fees_title"
         tools:text="0.000414 BTC" />
 
     <!-- Receive -->
@@ -166,13 +166,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="@id/receive_textView"
+        app:layout_constraintBottom_toBottomOf="@id/receive_amount"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/receive_textView" />
+        app:layout_constraintTop_toTopOf="@id/receive_amount" />
 
     <TextView
-        android:id="@+id/receive_title_textView"
+        android:id="@+id/receive_title"
         android:layout_width="0dp"
         android:layout_height="@dimen/exchange_row_height"
         android:layout_marginTop="2dp"
@@ -184,10 +184,10 @@
         android:textStyle="bold"
         android:text="@string/receive"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fees_title_textView" />
+        app:layout_constraintTop_toBottomOf="@+id/fees_title" />
 
     <TextView
-        android:id="@+id/receive_textView"
+        android:id="@+id/receive_amount"
         android:layout_width="0dp"
         android:layout_height="@dimen/exchange_row_height"
         android:layout_gravity="end"
@@ -197,10 +197,10 @@
         android:textColor="@color/exchange_text_dark_color"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/receive_title_textView"
+        app:layout_constraintBottom_toBottomOf="@+id/receive_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/receive_title_textView"
-        app:layout_constraintTop_toTopOf="@+id/receive_title_textView"
+        app:layout_constraintStart_toEndOf="@+id/receive_title"
+        app:layout_constraintTop_toTopOf="@+id/receive_title"
         tools:text="5.668586 ETH" />
 
     <!-- Send -->
@@ -209,13 +209,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="@id/send_to_textView"
+        app:layout_constraintBottom_toBottomOf="@id/send_to_wallet"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/send_to_textView" />
+        app:layout_constraintTop_toTopOf="@id/send_to_wallet" />
 
     <TextView
-        android:id="@+id/send_to_title_textView"
+        android:id="@+id/send_to_wallet_title"
         android:layout_width="0dp"
         android:layout_height="58dp"
         android:layout_marginTop="2dp"
@@ -226,10 +226,10 @@
         android:textSize="16sp"
         android:text="@string/send_to"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/receive_title_textView" />
+        app:layout_constraintTop_toBottomOf="@+id/receive_title" />
 
     <TextView
-        android:id="@+id/send_to_textView"
+        android:id="@+id/send_to_wallet"
         android:layout_width="0dp"
         android:layout_height="58dp"
         android:layout_gravity="end"
@@ -238,14 +238,14 @@
         android:padding="16dp"
         android:textColor="@color/exchange_text_dark_color"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/send_to_title_textView"
+        app:layout_constraintBottom_toBottomOf="@+id/send_to_wallet_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/send_to_title_textView"
-        app:layout_constraintTop_toTopOf="@+id/send_to_title_textView"
+        app:layout_constraintStart_toEndOf="@+id/send_to_wallet_title"
+        app:layout_constraintTop_toTopOf="@+id/send_to_wallet_title"
         tools:text="My Wallet" />
 
     <TextView
-        android:id="@+id/confirm_disclaimer_textView"
+        android:id="@+id/confirm_disclaimer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -258,7 +258,7 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/send_to_title_textView" />
+        app:layout_constraintTop_toBottomOf="@+id/send_to_wallet_title" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -268,10 +268,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/select_from_account_button"
-        app:layout_constraintEnd_toStartOf="@+id/select_to_account_button"
-        app:layout_constraintStart_toEndOf="@+id/select_from_account_button"
-        app:layout_constraintTop_toTopOf="@+id/select_from_account_button"
+        app:layout_constraintBottom_toBottomOf="@+id/from_amount"
+        app:layout_constraintEnd_toStartOf="@+id/to_amount"
+        app:layout_constraintStart_toEndOf="@+id/from_amount"
+        app:layout_constraintTop_toTopOf="@+id/from_amount"
         app:srcCompat="@drawable/vector_arrow_forward_blue"
         tools:ignore="ContentDescription,VectorDrawableCompat" />
 

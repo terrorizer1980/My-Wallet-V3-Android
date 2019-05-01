@@ -9,7 +9,9 @@ import com.blockchain.morph.exchange.mvi.ExchangeIntent
 import com.blockchain.morph.exchange.mvi.ExchangeViewState
 import com.blockchain.morph.exchange.mvi.FiatExchangeRateIntent
 import com.blockchain.morph.exchange.mvi.Fix
+import com.blockchain.morph.exchange.mvi.LockQuoteIntent
 import com.blockchain.morph.exchange.mvi.Quote
+import com.blockchain.morph.exchange.mvi.SetFixIntent
 import com.blockchain.morph.exchange.mvi.SetTierLimit
 import com.blockchain.morph.exchange.mvi.SetTradeLimits
 import com.blockchain.morph.exchange.mvi.SetUserTier
@@ -154,6 +156,22 @@ class ExchangeModel(
 
     private fun newViewModel(exchangeViewModel: ExchangeViewState) {
         exchangeViewModelsSubject.onNext(exchangeViewModel)
+    }
+
+    fun lockQuote() {
+        inputEventSink.onNext(LockQuoteIntent(true))
+    }
+
+    fun unlockQuote() {
+        inputEventSink.onNext(LockQuoteIntent(false))
+    }
+
+    fun fixAsFiat() {
+        inputEventSink.onNext(SetFixIntent(Fix.BASE_FIAT))
+    }
+
+    fun fixAsCrypto() {
+        inputEventSink.onNext(SetFixIntent(Fix.BASE_CRYPTO))
     }
 }
 

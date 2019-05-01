@@ -18,6 +18,7 @@ class ExchangeDialog(intents: Observable<ExchangeIntent>, initial: ExchangeViewM
     val viewStates: Observable<ExchangeViewState> =
         intents.scan(initial.toInternalState()) { previousState, intent ->
             when (intent) {
+                is LockQuoteIntent -> previousState.mapLock(intent)
                 is SimpleFieldUpdateIntent -> previousState.map(intent)
                 is SwapIntent -> previousState.mapSwap()
                 is QuoteIntent -> previousState.mapQuote(intent)
@@ -113,6 +114,10 @@ internal fun ExchangeViewModel.toInternalState(): ExchangeViewState {
     )
 }
 
+private fun ExchangeViewState.mapLock(intent: LockQuoteIntent): ExchangeViewState {
+    return copy(quoteLocked = intent.lockQuote)
+}
+
 private fun ExchangeViewState.resetToZero(): ExchangeViewState {
     return copy(
         fromFiat = fromFiat.toZero(),
@@ -174,7 +179,8 @@ data class ExchangeViewState(
     val c2fRate: ExchangeRate.CryptoToFiat? = null,
     val maxSpendable: CryptoValue? = null,
     val decimalCursor: Int = 0,
-    val userTier: Int = 0
+    val userTier: Int = 0,
+    val quoteLocked: Boolean = false
 ) {
     private val maxTradeOrTierLimit: FiatValue?
         get() {
@@ -323,7 +329,8 @@ private fun ExchangeViewState.resetToZeroKeepingUserFiat() =
         )
 
 private fun ExchangeViewState.mapQuote(intent: QuoteIntent) =
-    if (intent.quote.fix == fix &&
+    if (!quoteLocked &&
+        intent.quote.fix == fix &&
         intent.quote.fixValue == lastUserValue &&
         fromCurrencyMatch(intent) &&
         toCurrencyMatch(intent)
@@ -334,8 +341,7 @@ private fun ExchangeViewState.mapQuote(intent: QuoteIntent) =
             toCrypto = intent.quote.to.cryptoValue,
             toFiat = intent.quote.to.fiatValue,
             latestQuote = intent.quote,
-            upToDate = true
-        )
+            upToDate = true)
     } else {
         this
     }

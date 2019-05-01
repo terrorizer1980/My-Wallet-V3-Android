@@ -36,22 +36,22 @@ class TradeHistoryPresenterTest {
     }
 
     @Test
-    fun `onViewReady fails to load trades`() {
+    fun `getTradeHistory fails to load trades`() {
         // Arrange
         whenever(dataManager.getTrades()).thenReturn(Single.error { Throwable() })
         // Act
-        subject.onViewReady()
+        subject.getTradeHistory()
         // Assert
         verify(view).renderUi(ExchangeUiState.Loading)
         verify(view).renderUi(ExchangeUiState.Error)
     }
 
     @Test
-    fun `onViewReady loads empty list`() {
+    fun `getTradeHistory loads empty list`() {
         // Arrange
         whenever(dataManager.getTrades()).thenReturn(Single.just(emptyList()))
         // Act
-        subject.onViewReady()
+        subject.getTradeHistory()
         // Assert
         verify(view).renderUi(ExchangeUiState.Loading)
         verify(view).renderUi(ExchangeUiState.Empty)

@@ -213,9 +213,7 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     }
 
     companion object {
-
-        private const val EXTRA_DEFAULT_CURRENCY =
-            "com.blockchain.morph.ui.homebrew.exchange.EXTRA_DEFAULT_CURRENCY"
+        private const val EXTRA_DEFAULT_CURRENCY = "com.blockchain.morph.ui.homebrew.exchange.EXTRA_DEFAULT_CURRENCY"
 
         @JvmStatic
         fun start(context: Context, defaultCurrency: String) {
@@ -227,8 +225,6 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
 }
 
 internal interface HomebrewHostActivityListener {
-
     fun setToolbarTitle(@StringRes title: Int)
-
     fun launchConfirmation()
 }

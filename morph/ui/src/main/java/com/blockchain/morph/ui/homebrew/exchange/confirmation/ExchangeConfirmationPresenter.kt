@@ -42,15 +42,15 @@ class ExchangeConfirmationPresenter internal constructor(
         compositeDisposable +=
             view.exchangeViewState
                 .flatMapSingle { state ->
+
+                    // State is latest value of behaviour subject.
+                    // NOT the state when confirm displayed
+
                     if (!payloadDecrypt.isDoubleEncrypted) {
-                        executeTrade(state.latestQuote!!,
-                            state.fromAccount,
-                            state.toAccount)
+                        executeTrade(state.latestQuote!!, state.fromAccount, state.toAccount)
                     } else {
                         view.showSecondPasswordDialog()
-                        executeTradeSingle = executeTrade(state.latestQuote!!,
-                            state.fromAccount,
-                            state.toAccount)
+                        executeTradeSingle = executeTrade(state.latestQuote!!, state.fromAccount, state.toAccount)
                         Single.never()
                     }
                 }
@@ -63,20 +63,14 @@ class ExchangeConfirmationPresenter internal constructor(
         sendingAccount: AccountReference
     ) {
         compositeDisposable +=
-            transactionExecutor.getFeeForTransaction(
-                amount,
-                sendingAccount
-            )
+            transactionExecutor.getFeeForTransaction(amount, sendingAccount)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onSuccess = { view.updateFee(it) },
                     onError = {
                         Timber.e(it)
-                        view.showToast(
-                            R.string.homebrew_confirmation_error_fetching_fee,
-                            ToastCustom.TYPE_ERROR
-                        )
+                        view.showToast(R.string.homebrew_confirmation_error_fetching_fee, ToastCustom.TYPE_ERROR)
                     }
                 )
     }
