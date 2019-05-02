@@ -19,7 +19,9 @@ class ChartsActivity : BaseAuthActivity(), TimeSpanUpdateListener {
     private val cryptoCurrency: CryptoCurrency by unsafeLazy {
         intent.getSerializableExtra(EXTRA_CRYPTOCURRENCY) as CryptoCurrency
     }
-    private val fragments = CryptoCurrency.values().map { ChartsFragment.newInstance(it) }
+    private val fragments = CryptoCurrency.values()
+        .filter { it.hasFeature(CryptoCurrency.PRICE_CHARTING) }
+        .map { ChartsFragment.newInstance(it) }
 
     init {
         Injector.getInstance().presenterComponent.inject(this)
@@ -38,12 +40,8 @@ class ChartsActivity : BaseAuthActivity(), TimeSpanUpdateListener {
             indicator.setViewPager(viewpager)
         }
 
-        when (cryptoCurrency) {
-            CryptoCurrency.BTC -> viewpager.currentItem = 0
-            CryptoCurrency.ETHER -> viewpager.currentItem = 1
-            CryptoCurrency.BCH -> viewpager.currentItem = 2
-            CryptoCurrency.XLM -> viewpager.currentItem = 3
-        }
+        val index = fragments.indexOfFirst { it.cryptoCurrency == cryptoCurrency }
+        viewpager.currentItem = if (index >= 0) index else 0
 
         button_close.setOnClickListener { finish() }
     }

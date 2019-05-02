@@ -3,45 +3,54 @@ package info.blockchain.balance
 enum class CryptoCurrency(
     val symbol: String,
     val unit: String,
-    val dp: Int,                    // max decimal places
-    internal val userDp: Int,       // user decimal places
-    val requiredConfirmations: Int
+    val dp: Int,           // max decimal places
+    val userDp: Int,       // user decimal places
+    val requiredConfirmations: Int,
+    private val featureFlags: Long
 ) {
     BTC(
         symbol = "BTC",
         unit = "Bitcoin",
         dp = 8,
         userDp = 8,
-        requiredConfirmations = 3
+        requiredConfirmations = 3,
+        featureFlags = CryptoCurrency.PRICE_CHARTING
+
     ),
     ETHER(
         symbol = "ETH",
         unit = "Ether",
         dp = 18,
         userDp = 8,
-        requiredConfirmations = 12
+        requiredConfirmations = 12,
+        featureFlags = CryptoCurrency.PRICE_CHARTING
     ),
     BCH(
         symbol = "BCH",
         unit = "Bitcoin Cash",
         dp = 8,
         userDp = 8,
-        requiredConfirmations = 3
+        requiredConfirmations = 3,
+        featureFlags = CryptoCurrency.PRICE_CHARTING
     ),
     XLM(
         symbol = "XLM",
         unit = "Stellar",
         dp = 7,
         userDp = 7,
-        requiredConfirmations = 1
+        requiredConfirmations = 1,
+        featureFlags = CryptoCurrency.PRICE_CHARTING
     ),
     PAX(
         symbol = "PAX",
         unit = "USD PAX",
         dp = 18,
         userDp = 8,
-        requiredConfirmations = 3 // Same as ETHER
+        requiredConfirmations = 3, // Same as ETHER
+        featureFlags = 0L
     );
+
+    fun hasFeature(feature: Long): Boolean = (0L != (featureFlags and feature))
 
     companion object {
 
@@ -50,5 +59,7 @@ enum class CryptoCurrency(
 
         fun fromSymbolOrThrow(symbol: String?): CryptoCurrency =
             fromSymbol(symbol) ?: throw IllegalArgumentException("Bad currency symbol \"$symbol\"")
+
+        const val PRICE_CHARTING = 0x00000001L
     }
 }

@@ -151,7 +151,7 @@ class DashboardPresenter(
             .subscribe(
                 {
                     handleAssetPriceUpdate(
-                        currencies.filter { it != CryptoCurrency.PAX }
+                        currencies.filter { it.hasFeature(CryptoCurrency.PRICE_CHARTING) }
                             .map { AssetPriceCardState.Data(getPriceString(it), it, it.drawableRes()) })
                 },
                 {
