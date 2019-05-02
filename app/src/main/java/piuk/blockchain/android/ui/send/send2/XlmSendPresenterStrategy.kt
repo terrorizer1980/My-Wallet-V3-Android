@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.send.send2
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import com.blockchain.fees.FeeType
 import com.blockchain.sunriver.XlmDataManager
@@ -59,14 +60,15 @@ class XlmSendPresenterStrategy(
             addressSubject,
             xlmFeesFetcher.operationFee(FeeType.Regular).toObservable(),
             memoSubject
-        ) { accountReference, value, address, fee, memo ->
-            SendDetails(
-                from = accountReference,
-                toAddress = address,
-                value = value,
-                fee = fee,
-                memo = memo
-            )
+        ) {
+            accountReference, value, address, fee, memo ->
+                SendDetails(
+                    from = accountReference,
+                    toAddress = address,
+                    value = value,
+                    fee = fee,
+                    memo = memo
+                )
         }
 
     private val confirmationDetails: Observable<SendConfirmationDetails> =
@@ -118,8 +120,11 @@ class XlmSendPresenterStrategy(
         view.showMinBalanceLearnMore()
         view.showMemo()
         calculateMax()
+
+        selectDefaultOrFirstFundedSendingAccount()
     }
 
+    @SuppressLint("CheckResult")
     private fun calculateMax() {
         xlmDataManager.getMaxSpendableAfterFees(FeeType.Regular)
             .observeOn(AndroidSchedulers.mainThread())
