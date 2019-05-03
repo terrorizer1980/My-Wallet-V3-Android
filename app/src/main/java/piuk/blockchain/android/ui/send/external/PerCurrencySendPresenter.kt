@@ -1,39 +1,52 @@
 package piuk.blockchain.android.ui.send.external
 
 import android.annotation.SuppressLint
-import android.content.Intent
+import android.support.design.widget.Snackbar
 import android.text.Editable
 import android.widget.EditText
+import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.isValidXlmQr
 import com.blockchain.transactions.Memo
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.withMajorValueOrZero
+import info.blockchain.wallet.api.Environment
+import info.blockchain.wallet.util.FormatsUtil
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.send.DisplayFeeOptions
+import piuk.blockchain.android.ui.send.SendView
+import piuk.blockchain.android.ui.send.strategy.SendStrategy
 import piuk.blockchain.android.util.EditTextFormatUtil
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toCrypto
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import timber.log.Timber
+import java.lang.IllegalStateException
 
 /**
  * Does some of the basic work, using the [BaseSendView] interface.
  * Delegates the rest of the work to one of the [SendPresenterStrategy] supplied to it depending on currency.
  */
-internal class PerCurrencySendPresenter<View : BaseSendView>(
-    private val originalStrategy: SendPresenterStrategy<View>,
-    private val xlmStrategy: SendPresenterStrategy<View>,
-    private val erc20Strategy: SendPresenterStrategy<View>,
-    private val currencyState: CurrencyState,
+internal class PerCurrencySendPresenter<View : SendView>(
+    private val btcStrategy: SendStrategy<View>,
+    private val bchStrategy: SendStrategy<View>,
+    private val etherStrategy: SendStrategy<View>,
+    private val xlmStrategy: SendStrategy<View>,
+    private val erc20Strategy: SendStrategy<View>,
     private val exchangeRates: FiatExchangeRates,
+    private val envSettings: EnvironmentConfig,
     private val stringUtils: StringUtils,
-    private val exchangeRateFactory: ExchangeRateDataManager
+    private val exchangeRateFactory: ExchangeRateDataManager,
+    private val prefs: PersistentPrefs
 ) : SendPresenter<View>() {
+
+    var selectedCrypto: CryptoCurrency = CryptoCurrency.BTC
 
     override fun getFeeOptionsForDropDown(): List<DisplayFeeOptions> {
         val regular = DisplayFeeOptions(
@@ -51,11 +64,11 @@ internal class PerCurrencySendPresenter<View : BaseSendView>(
         return listOf(regular, priority, custom)
     }
 
-    private fun delegate(): SendPresenterStrategy<View> =
-        when (currencyState.cryptoCurrency) {
-            CryptoCurrency.BTC -> originalStrategy
-            CryptoCurrency.ETHER -> originalStrategy
-            CryptoCurrency.BCH -> originalStrategy
+    private fun delegate(): SendStrategy<View> =
+        when (selectedCrypto) {
+            CryptoCurrency.BTC -> btcStrategy
+            CryptoCurrency.ETHER -> etherStrategy
+            CryptoCurrency.BCH -> bchStrategy
             CryptoCurrency.XLM -> xlmStrategy
             CryptoCurrency.PAX -> erc20Strategy
         }
@@ -84,18 +97,84 @@ internal class PerCurrencySendPresenter<View : BaseSendView>(
     }
 
     override fun onCurrencySelected(currency: CryptoCurrency) {
+        selectedCrypto = currency
         updateTicker()
         view?.setSelectedCurrency(currency)
-        delegate().onCurrencySelected(currency)
+        delegate().onCurrencySelected()
     }
 
     override fun handleURIScan(untrimmedscanData: String?) {
-        if (untrimmedscanData?.isValidXlmQr() == true) {
-            currencyState.cryptoCurrency = CryptoCurrency.XLM
+        if (untrimmedscanData == null)
+            return
+
+        val address: String
+
+        if (untrimmedscanData.isValidXlmQr()) {
             onCurrencySelected(CryptoCurrency.XLM)
-            xlmStrategy.handleURIScan(untrimmedscanData)
+            address = untrimmedscanData
         } else {
-            originalStrategy.handleURIScan(untrimmedscanData)
+
+            var scanData = untrimmedscanData.trim { it <= ' ' }
+                .replace("ethereum:", "")
+
+            scanData = FormatsUtil.getURIFromPoorlyFormedBIP21(scanData)
+
+            when {
+                FormatsUtil.isValidBitcoinCashAddress(envSettings.bitcoinCashNetworkParameters, scanData) -> {
+                    onCurrencySelected(CryptoCurrency.BCH)
+                    address = scanData
+                }
+                FormatsUtil.isBitcoinUri(envSettings.bitcoinNetworkParameters, scanData) -> {
+                    onCurrencySelected(CryptoCurrency.BTC)
+                    address = FormatsUtil.getBitcoinAddress(scanData)
+
+                    val amount: String = FormatsUtil.getBitcoinAmount(scanData)
+
+                    if (address.isEmpty() && amount == "0.0000" && scanData.contains("bitpay")) {
+                        view.showSnackbar(R.string.error_bitpay_not_supported, Snackbar.LENGTH_LONG)
+                        return
+                    }
+
+                    // Convert to correct units
+                    try {
+                        val cryptoValue = CryptoValue(selectedCrypto, amount.toBigInteger())
+                        val fiatValue = cryptoValue.toFiat(exchangeRates)
+                        view?.updateCryptoAmount(cryptoValue)
+                        view?.updateFiatAmount(fiatValue)
+                    } catch (e: Exception) {
+                        // ignore
+                    }
+                }
+                FormatsUtil.isValidBitcoinAddress(envSettings.bitcoinNetworkParameters, scanData) -> {
+                    address = if (selectedCrypto == CryptoCurrency.BTC) {
+                        onCurrencySelected(CryptoCurrency.BTC)
+                        scanData
+                    } else {
+                        onCurrencySelected(CryptoCurrency.BCH)
+                        scanData
+                    }
+                }
+                FormatsUtil.isValidEthereumAddress(scanData) -> {
+                    when (selectedCrypto) {
+                        CryptoCurrency.ETHER -> onCurrencySelected(CryptoCurrency.ETHER)
+                        CryptoCurrency.PAX -> onCurrencySelected(CryptoCurrency.PAX)
+                        else -> throw IllegalStateException("Currency Mismatch!") // TODO: default to ETH?
+                    }
+
+                    address = scanData
+                    view?.updateCryptoAmount(CryptoValue.zero(selectedCrypto))
+                }
+                else -> {
+                    onCurrencySelected(CryptoCurrency.BTC)
+                    view.showSnackbar(R.string.invalid_address, Snackbar.LENGTH_LONG)
+                    return
+                }
+            }
+        }
+
+        if (address != "") {
+            delegate().processURIScanAddress(address)
+            view.updateReceivingAddress(address)
         }
     }
 
@@ -103,11 +182,11 @@ internal class PerCurrencySendPresenter<View : BaseSendView>(
 
     override fun clearReceivingObject() = delegate().clearReceivingObject()
 
-    override fun selectSendingAccount(data: Intent?, currency: CryptoCurrency) =
-        delegate().selectSendingAccount(data, currency)
+    override fun selectSendingAccount(account: JsonSerializableAccount?) =
+        delegate().selectSendingAccount(account)
 
-    override fun selectReceivingAccount(data: Intent?, currency: CryptoCurrency) =
-        delegate().selectReceivingAccount(data, currency)
+    override fun selectReceivingAccount(account: JsonSerializableAccount?) =
+        delegate().selectReceivingAccount(account)
 
     override fun updateCryptoTextField(editable: Editable, amountFiat: EditText) {
         val maxLength = 2
@@ -119,30 +198,28 @@ internal class PerCurrencySendPresenter<View : BaseSendView>(
         ).toString()
 
         val fiatValue = FiatValue.fromMajorOrZero(exchangeRates.fiatUnit, fiat)
-        val cryptoValue = fiatValue.toCrypto(exchangeRates, currencyState.cryptoCurrency)
+        val cryptoValue = fiatValue.toCrypto(exchangeRates, selectedCrypto)
 
-        view.updateCryptoAmountWithoutTriggeringListener(cryptoValue)
+        view.updateCryptoAmount(cryptoValue, true)
     }
 
     override fun updateFiatTextField(editable: Editable, amountCrypto: EditText) {
         val crypto = EditTextFormatUtil.formatEditable(
             editable,
-            currencyState.cryptoCurrency.dp,
+            selectedCrypto.dp,
             amountCrypto,
             getDefaultDecimalSeparator()
         ).toString()
 
-        val cryptoValue = currencyState.cryptoCurrency.withMajorValueOrZero(crypto)
+        val cryptoValue = selectedCrypto.withMajorValueOrZero(crypto)
         val fiatValue = cryptoValue.toFiat(exchangeRates)
 
-        view.updateFiatAmountWithoutTriggeringListener(fiatValue)
+        view.updateFiatAmount(fiatValue, true)
     }
 
     override fun selectDefaultOrFirstFundedSendingAccount() = delegate().selectDefaultOrFirstFundedSendingAccount()
 
     override fun submitPayment() = delegate().submitPayment()
-
-    override fun shouldShowAdvancedFeeWarning() = delegate().shouldShowAdvancedFeeWarning()
 
     override fun onCryptoTextChange(cryptoText: String) = delegate().onCryptoTextChange(cryptoText)
 
@@ -153,27 +230,41 @@ internal class PerCurrencySendPresenter<View : BaseSendView>(
     override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) =
         delegate().spendFromWatchOnlyBIP38(pw, scanData)
 
-    override fun setWarnWatchOnlySpend(warn: Boolean) = delegate().setWarnWatchOnlySpend(warn)
-
     override fun onNoSecondPassword() = delegate().onNoSecondPassword()
 
     override fun onSecondPasswordValidated(validateSecondPassword: String) =
         delegate().onSecondPasswordValidated(validateSecondPassword)
 
-    override fun disableAdvancedFeeWarning() = delegate().disableAdvancedFeeWarning()
-
-    override fun getBitcoinFeeOptions() = delegate().getBitcoinFeeOptions()
+    override fun getBitcoinFeeOptions() = delegate().getFeeOptions()
 
     override fun onViewReady() {
         updateTicker()
-        view?.updateFiatCurrency(currencyState.fiatUnit)
-        view?.updateReceivingHintAndAccountDropDowns(currencyState.cryptoCurrency, 1)
+        view?.updateReceivingHintAndAccountDropDowns(selectedCrypto, 1)
+
+        if (envSettings.environment == Environment.TESTNET) {
+            selectedCrypto = CryptoCurrency.BTC
+            view.hideCurrencyHeader()
+        }
+
         delegate().onViewReady()
     }
 
     override fun initView(view: View?) {
         super.initView(view)
         xlmStrategy.initView(view)
-        originalStrategy.initView(view)
+        btcStrategy.initView(view)
+        bchStrategy.initView(view)
+        etherStrategy.initView(view)
+    }
+
+    override fun disableAdvancedFeeWarning() {
+        prefs.setValue(PersistentPrefs.KEY_WARN_ADVANCED_FEE, false)
+    }
+
+    override fun shouldShowAdvancedFeeWarning(): Boolean =
+        prefs.getValue(PersistentPrefs.KEY_WARN_ADVANCED_FEE, true)
+
+    override fun setWarnWatchOnlySpend(warn: Boolean) {
+        prefs.setValue(PersistentPrefs.KEY_WARN_WATCH_ONLY_SPEND, warn)
     }
 }

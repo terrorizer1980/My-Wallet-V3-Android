@@ -235,13 +235,14 @@ class EthDataManager(
         rxPinning.call {
             fetchOrCreateEthereumWallet(defaultLabel)
                 .flatMapCompletable {
-                    ethDataStore.ethWallet = it.first
+                        (wallet, needsSave) ->
+                            ethDataStore.ethWallet = wallet
 
-                    if (it.second) {
-                        save()
-                    } else {
-                        Completable.complete()
-                    }
+                            if (needsSave) {
+                                save()
+                            } else {
+                                Completable.complete()
+                            }
                 }
         }.observeOn(Schedulers.io())
 

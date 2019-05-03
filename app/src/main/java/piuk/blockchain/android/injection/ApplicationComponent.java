@@ -4,7 +4,6 @@ import dagger.Component;
 import info.blockchain.wallet.util.PrivateKeyFactory;
 import piuk.blockchain.android.BlockchainApplication;
 import com.blockchain.notifications.InstanceIdService;
-import piuk.blockchain.android.util.exceptions.LoggingExceptionHandler;
 import piuk.blockchain.androidcore.data.contacts.ContactsDataManager;
 
 import javax.inject.Singleton;
@@ -27,8 +26,6 @@ public interface ApplicationComponent {
     // Subcomponent with its own scope (technically unscoped now that we're not deliberately
     // destroying a module between pages)
     PresenterComponent presenterComponent();
-
-    void inject(LoggingExceptionHandler loggingExceptionHandler);
 
     void inject(PrivateKeyFactory privateKeyFactory);
 

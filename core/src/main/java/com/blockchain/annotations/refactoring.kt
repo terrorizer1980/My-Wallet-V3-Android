@@ -7,6 +7,7 @@ package com.blockchain.annotations
 annotation class MoveCandidate(val whereTo: String, val why: String = "")
 
 @Target(AnnotationTarget.TYPE,
+    AnnotationTarget.CLASS,
     AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY,
     AnnotationTarget.FIELD,
@@ -15,12 +16,14 @@ annotation class MoveCandidate(val whereTo: String, val why: String = "")
 annotation class BurnCandidate(val why: String)
 
 @Target(AnnotationTarget.TYPE,
+    AnnotationTarget.CLASS,
     AnnotationTarget.FUNCTION,
     AnnotationTarget.FILE)
 @Retention(AnnotationRetention.SOURCE)
 annotation class MergeCandidate(val why: String)
 
 @Target(AnnotationTarget.TYPE,
+    AnnotationTarget.CLASS,
     AnnotationTarget.FUNCTION,
     AnnotationTarget.FILE)
 @Retention(AnnotationRetention.SOURCE)

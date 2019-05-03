@@ -1,25 +1,20 @@
-package piuk.blockchain.android.ui.send.external
+package piuk.blockchain.android.ui.send.strategy
 
-import android.text.Editable
-import android.widget.EditText
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.transactions.Memo
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.api.data.FeeOptions
-import piuk.blockchain.android.ui.send.DisplayFeeOptions
+import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
+import piuk.blockchain.androidcoreui.utils.logging.Logging
+import piuk.blockchain.androidcoreui.utils.logging.PaymentSentEvent
+import java.math.BigInteger
 import java.text.DecimalFormatSymbols
 
-abstract class SendPresenter<View : piuk.blockchain.androidcoreui.ui.base.View> : SendPresenterStrategy<View>() {
-
-    abstract fun getFeeOptionsForDropDown(): List<DisplayFeeOptions>
-
-    abstract fun updateFiatTextField(editable: Editable, amountCrypto: EditText)
-
-    abstract fun updateCryptoTextField(editable: Editable, amountFiat: EditText)
-}
-
-abstract class SendPresenterStrategy<View : piuk.blockchain.androidcoreui.ui.base.View> : BasePresenter<View>() {
+abstract class SendStrategy<View : piuk.blockchain.androidcoreui.ui.base.View>(
+    protected val currencyState: CurrencyState
+) : BasePresenter<View>() {
 
     abstract fun onContinueClicked()
 
@@ -29,9 +24,9 @@ abstract class SendPresenterStrategy<View : piuk.blockchain.androidcoreui.ui.bas
 
     abstract fun onResume()
 
-    abstract fun onCurrencySelected(currency: CryptoCurrency)
+    abstract fun onCurrencySelected()
 
-    abstract fun handleURIScan(untrimmedscanData: String?)
+    abstract fun processURIScanAddress(address: String)
 
     abstract fun handlePrivxScan(scanData: String?)
 
@@ -45,25 +40,27 @@ abstract class SendPresenterStrategy<View : piuk.blockchain.androidcoreui.ui.bas
 
     abstract fun submitPayment()
 
-    abstract fun shouldShowAdvancedFeeWarning(): Boolean
-
     abstract fun onAddressTextChange(address: String)
 
-    abstract fun onMemoChange(memo: Memo)
+    open fun onMemoChange(memo: Memo) {}
 
     abstract fun onCryptoTextChange(cryptoText: String)
 
     abstract fun spendFromWatchOnlyBIP38(pw: String, scanData: String)
 
-    abstract fun setWarnWatchOnlySpend(warn: Boolean)
-
     abstract fun onNoSecondPassword()
 
-    abstract fun onSecondPasswordValidated(validateSecondPassword: String)
+    abstract fun onSecondPasswordValidated(secondPassword: String)
 
-    abstract fun disableAdvancedFeeWarning()
-
-    abstract fun getBitcoinFeeOptions(): FeeOptions?
+    abstract fun getFeeOptions(): FeeOptions?
 
     fun getDefaultDecimalSeparator() = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
+
+    protected fun logPaymentSentEvent(success: Boolean, currency: CryptoCurrency, amount: BigInteger) {
+        Logging.logCustom(
+            PaymentSentEvent()
+                .putSuccess(success)
+                .putAmountForRange(CryptoValue(currency, amount))
+        )
+    }
 }

@@ -32,13 +32,16 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.FrameLayout
+import com.blockchain.annotations.CommonCode
 import com.blockchain.koin.injectActivity
+import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.ui.MemoEditDialog
 import com.blockchain.sunriver.ui.MinBalanceExplanationDialog
 import com.blockchain.transactions.Memo
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
 import com.blockchain.ui.password.SecondPasswordHandler
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionGrantedResponse
@@ -76,8 +79,6 @@ import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_FAQ
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
-import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
@@ -93,6 +94,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import timber.log.Timber
+import java.io.IOException
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -123,7 +125,9 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
     private var progressDialog: MaterialProgressDialog? = null
     private var confirmPaymentDialog: ConfirmPaymentDialog? = null
     private var transactionSuccessDialog: AlertDialog? = null
+
     private var listener: SendFragment.OnSendFragmentInteractionListener? = null
+
     private var handlingActivityResult = false
 
     private val dialogHandler = Handler()
@@ -158,20 +162,24 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
 
         activity?.apply {
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-            (activity as MainActivity).setOnTouchOutsideViewListener(currency_header,
+            with(activity as MainActivity) {
+                setOnTouchOutsideViewListener(currency_header,
                 object : OnTouchOutsideViewListener {
                     override fun onTouchOutside(view: View, event: MotionEvent) {
                         currency_header.close()
                     }
                 })
+            }
         }
 
         setCustomKeypad()
         setupCurrencyHeader()
+
         handleIncomingArguments()
+
         setupSendingView()
         setupReceivingView()
-        setupBtcTextField()
+        setupCryptoTextField()
         setupFiatTextField()
         setupFeesView()
 
@@ -196,6 +204,8 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         if (CryptoCurrency.PAX != currency_header.getCurrentlySelectedCurrency()) {
             soon_overlay.gone()
         }
+
+        amountContainer.currencyFiat.text = currencyState.fiatUnit
 
         onViewReady()
     }
@@ -338,15 +348,31 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         when (requestCode) {
             MainActivity.SCAN_URI -> presenter.handleURIScan(data?.getStringExtra(CaptureActivity.SCAN_RESULT))
             SCAN_PRIVX -> presenter.handlePrivxScan(data?.getStringExtra(CaptureActivity.SCAN_RESULT))
-            REQUEST_CODE_BTC_SENDING -> presenter.selectSendingAccount(data, CryptoCurrency.BTC)
-            REQUEST_CODE_BTC_RECEIVING -> presenter.selectReceivingAccount(data, CryptoCurrency.BTC)
-            REQUEST_CODE_BCH_SENDING -> presenter.selectSendingAccount(data, CryptoCurrency.BCH)
-            REQUEST_CODE_BCH_RECEIVING -> presenter.selectReceivingAccount(data, CryptoCurrency.BCH)
+            REQUEST_CODE_BTC_SENDING -> presenter.selectSendingAccount(unpackAccountResult(data))
+            REQUEST_CODE_BTC_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
+            REQUEST_CODE_BCH_SENDING -> presenter.selectSendingAccount(unpackAccountResult(data))
+            REQUEST_CODE_BCH_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
             REQUEST_CODE_MEMO -> presenter.onMemoChange(MemoEditDialog.toMemo(data))
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
+    private fun unpackAccountResult(data: Intent?): JsonSerializableAccount? {
+        return try {
+            val type: Class<*> = Class.forName(data?.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_OBJECT_TYPE))
+            val any = ObjectMapper().readValue(data!!.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_ITEM), type)
+
+            any as JsonSerializableAccount
+        } catch (e: ClassNotFoundException) {
+            Timber.e(e)
+            null
+        } catch (e: IOException) {
+            Timber.e(e)
+            null
+        }
+    }
+
+    @SuppressLint("CheckResult")
     private fun setupReceivingView() {
         // Avoid OntouchListener - causes paste issues on some Samsung devices
         toContainer.toAddressEditTextView.setOnClickListener {
@@ -398,10 +424,6 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
-    override fun updateFiatCurrency(currency: String) {
-        amountContainer.currencyFiat.text = currency
-    }
-
     private fun disableCryptoTextChangeListener() {
         amountContainer.amountCrypto.removeTextChangedListener(cryptoTextWatcher)
     }
@@ -417,14 +439,10 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
-    override fun updateCryptoAmount(cryptoValue: CryptoValue) {
+    override fun updateCryptoAmount(cryptoValue: CryptoValue, silent: Boolean) {
+        if (silent) disableCryptoTextChangeListener()
         amountContainer.amountCrypto.setText(cryptoValue.toStringWithoutSymbol())
-    }
-
-    override fun updateCryptoAmountWithoutTriggeringListener(cryptoValue: CryptoValue) {
-        disableCryptoTextChangeListener()
-        updateCryptoAmount(cryptoValue)
-        enableCryptoTextChangeListener()
+        if (silent) enableCryptoTextChangeListener()
     }
 
     private fun disableFiatTextChangeListener() {
@@ -442,19 +460,15 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
-    override fun updateFiatAmount(fiatValue: FiatValue) {
+    override fun updateFiatAmount(fiatValue: FiatValue, silent: Boolean) {
+        if (silent) disableFiatTextChangeListener()
         amountContainer.amountFiat.setText(fiatValue.toStringWithoutSymbol())
-    }
-
-    override fun updateFiatAmountWithoutTriggeringListener(fiatValue: FiatValue) {
-        disableFiatTextChangeListener()
-        updateFiatAmount(fiatValue)
-        enableFiatTextChangeListener()
+        if (silent) enableFiatTextChangeListener()
     }
 
     // BTC Field
     @SuppressLint("NewApi")
-    private fun setupBtcTextField() {
+    private fun setupCryptoTextField() {
         amountContainer.amountCrypto.hint = "0" + presenter.getDefaultDecimalSeparator() + "00"
         amountContainer.amountCrypto.setSelectAllOnFocus(true)
         enableCryptoTextChangeListener()
@@ -608,7 +622,7 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
 
     override fun showSnackbar(message: String, @Nullable extraInfo: String?, duration: Int) {
         activity?.run {
-            val snackbar = Snackbar.make(findViewById(R.id.coordinator_layout), message, duration)
+            val snackbar = Snackbar.make(coordinator_layout, message, duration)
                 .setActionTextColor(ContextCompat.getColor(this, R.color.primary_blue_accent))
 
             if (extraInfo != null) {
@@ -631,8 +645,7 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
 
     override fun showEthContractSnackbar() {
         activity?.run {
-            Snackbar.make(
-                findViewById(R.id.coordinator_layout),
+            Snackbar.make(coordinator_layout,
                 R.string.eth_support_contract_not_allowed,
                 Snackbar.LENGTH_INDEFINITE
             ).setActionTextColor(ContextCompat.getColor(this, R.color.primary_blue_accent))
@@ -687,8 +700,8 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
                         if (currencyState.cryptoCurrency != CryptoCurrency.XLM) {
                             buttonContinue.isEnabled = true
                         }
-                        textviewFeeAbsolute.visibility = View.VISIBLE
-                        textInputLayout.visibility = View.GONE
+                        textviewFeeAbsolute.visible()
+                        textInputLayout.gone()
                         updateTotals()
                     }
                     2 -> if (presenter.shouldShowAdvancedFeeWarning()) {
@@ -794,12 +807,13 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         learnMoreMinBalance.visible()
     }
 
-    override fun updateFeeAmount(fee: String) {
-        textviewFeeAbsolute.text = fee
+    @SuppressLint("SetTextI18n")
+    override fun updateFeeAmount(feeCrypto: CryptoValue, feeFiat: FiatValue) {
+        textviewFeeAbsolute.text = "${feeCrypto.toStringWithSymbol()} (${feeFiat.toStringWithSymbol()})"
     }
 
-    override fun updateFeeAmount(fee: CryptoValue, fiatExchangeRates: FiatExchangeRates) {
-        updateFeeAmount("${fee.toStringWithSymbol()} (${fee.toFiat(fiatExchangeRates).toStringWithSymbol()})")
+    override fun clearFeeAmount() {
+        textviewFeeAbsolute.text = ""
     }
 
     override fun updateMaxAvailable(maxAmount: String) {
@@ -906,9 +920,9 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
+    @CommonCode("Move to base")
     override fun showProgressDialog(title: Int) {
-        progressDialog =
-            MaterialProgressDialog(activity)
+        progressDialog = MaterialProgressDialog(activity)
         progressDialog?.apply {
             setCancelable(false)
             setMessage(R.string.please_wait)
@@ -916,6 +930,7 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
+    @CommonCode("Move to base")
     override fun dismissProgressDialog() {
         if (progressDialog != null) {
             progressDialog?.apply { dismiss() }

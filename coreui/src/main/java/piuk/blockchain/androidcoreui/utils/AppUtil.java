@@ -14,6 +14,7 @@ import javax.inject.Singleton;
 
 import dagger.Lazy;
 import info.blockchain.wallet.payload.PayloadManagerWiper;
+import piuk.blockchain.androidcore.BuildConfig;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.utils.PrefsUtil;
 

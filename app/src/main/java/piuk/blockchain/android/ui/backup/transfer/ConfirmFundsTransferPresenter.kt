@@ -111,7 +111,7 @@ class ConfirmFundsTransferPresenter @Inject constructor(
     @VisibleForTesting
     internal fun archiveAll() {
         for (spend in pendingTransactions) {
-            (spend.sendingObject.accountObject as LegacyAddress).tag =
+            (spend.sendingObject!!.accountObject as LegacyAddress).tag =
                 LegacyAddress.ARCHIVED_ADDRESS
         }
 

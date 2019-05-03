@@ -48,7 +48,8 @@ import piuk.blockchain.androidcoreui.utils.helperfunctions.onItemSelectedListene
 import javax.inject.Inject
 
 @Suppress("MemberVisibilityCanPrivate")
-class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(), BalanceView,
+class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
+    BalanceView,
     TxFeedClickListener {
 
     private var accountsAdapter: AccountsAdapter? = null

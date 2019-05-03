@@ -1,8 +1,8 @@
-package piuk.blockchain.android.ui.send.send2
+package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import com.blockchain.fees.FeeType
+import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.XlmFeesFetcher
 import com.blockchain.sunriver.fromStellarUri
@@ -27,7 +27,6 @@ import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
-import piuk.blockchain.android.ui.send.external.SendPresenterStrategy
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
@@ -35,14 +34,14 @@ import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class XlmSendPresenterStrategy(
+class XlmSendStrategy(
     currencyState: CurrencyState,
     private val xlmDataManager: XlmDataManager,
     private val xlmFeesFetcher: XlmFeesFetcher,
     private val xlmTransactionSender: TransactionSender,
     private val fiatExchangeRates: FiatExchangeRates,
     private val sendFundsResultLocalizer: SendFundsResultLocalizer
-) : SendPresenterStrategy<SendView>() {
+) : SendStrategy<SendView>(currencyState) {
 
     private val currency: CryptoCurrency by lazy { currencyState.cryptoCurrency }
     private var addressSubject = BehaviorSubject.create<String>()
@@ -105,11 +104,8 @@ class XlmSendPresenterStrategy(
     override fun onResume() {
     }
 
-    override fun onCurrencySelected(currency: CryptoCurrency) {
-        when (currency) {
-            CryptoCurrency.XLM -> xlmSelected()
-            else -> throw IllegalArgumentException("This presented is not for $currency")
-        }
+    override fun onCurrencySelected() {
+        xlmSelected()
     }
 
     private fun xlmSelected() {
@@ -139,8 +135,8 @@ class XlmSendPresenterStrategy(
         view.updateMaxAvailable(balanceAfterFee, CryptoValue.ZeroXlm)
     }
 
-    override fun handleURIScan(untrimmedscanData: String?) {
-        val (public, cryptoValue, memo) = untrimmedscanData?.fromStellarUri() ?: return
+    override fun processURIScanAddress(address: String) {
+        val (public, cryptoValue, memo) = address.fromStellarUri()
         val fiatValue = cryptoValue.toFiat(fiatExchangeRates)
         view.updateCryptoAmount(cryptoValue)
         view.updateFiatAmount(fiatValue)
@@ -154,28 +150,28 @@ class XlmSendPresenterStrategy(
 
     override fun clearReceivingObject() {}
 
-    override fun selectSendingAccount(data: Intent?, currency: CryptoCurrency) {}
+    override fun selectSendingAccount(account: JsonSerializableAccount?) {}
 
-    override fun selectReceivingAccount(data: Intent?, currency: CryptoCurrency) {}
+    override fun selectReceivingAccount(account: JsonSerializableAccount?) {}
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
         compositeDisposable += xlmDataManager.defaultAccount()
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(onError = { Timber.e(it) }) {
-                view.updateSendingAddress(it.label)
-            }
+            .subscribeBy(
+                onSuccess = { view.updateSendingAddress(it.label) },
+                onError = { Timber.e(it) }
+            )
         compositeDisposable += xlmFeesFetcher.operationFee(FeeType.Regular)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(onError = { Timber.e(it) }) {
-                view.updateFeeAmount(it, fiatExchangeRates)
-            }
+            .subscribeBy(
+                onSuccess = { view.updateFeeAmount(it, it.toFiat(fiatExchangeRates)) },
+                onError = { Timber.e(it) }
+            )
     }
 
     override fun submitPayment() {
         submitPaymentClick.onNext(Unit)
     }
-
-    override fun shouldShowAdvancedFeeWarning(): Boolean = false
 
     override fun onCryptoTextChange(cryptoText: String) {
         cryptoTextSubject.onNext(currency.withMajorValueOrZero(cryptoText))
@@ -192,16 +188,13 @@ class XlmSendPresenterStrategy(
 
     override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) {}
 
-    override fun setWarnWatchOnlySpend(warn: Boolean) {}
-
     override fun onNoSecondPassword() {}
 
-    override fun onSecondPasswordValidated(validateSecondPassword: String) {}
+    override fun onSecondPasswordValidated(secondPassword: String) {}
 
-    override fun disableAdvancedFeeWarning() {}
+    override fun getFeeOptions(): FeeOptions? = null
 
-    override fun getBitcoinFeeOptions(): FeeOptions? = null
-
+    @SuppressLint("CheckResult")
     override fun onViewReady() {
         view.setSendButtonEnabled(false)
 

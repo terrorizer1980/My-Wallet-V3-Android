@@ -2,6 +2,8 @@ package piuk.blockchain.android.ui.send.send2
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.fees.FeeType
+import com.blockchain.sunriver.XlmDataManager
+import com.blockchain.sunriver.XlmFeesFetcher
 import com.blockchain.testutils.lumens
 import com.blockchain.testutils.stroops
 import com.blockchain.testutils.usd
@@ -14,10 +16,10 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyZeroInteractions
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
+import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.TestScheduler
@@ -29,6 +31,7 @@ import org.junit.Test
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
+import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import java.util.concurrent.TimeUnit
@@ -49,68 +52,76 @@ class XlmSendPresenterStrategyTest {
             on { cryptoCurrency } `it returns` CryptoCurrency.XLM
         }
 
+    private fun mockExchangeRateResult(fiatValue: FiatValue): FiatExchangeRates =
+        mock { on { getFiat(any()) } `it returns` fiatValue }
+
     @Test
     fun `on onCurrencySelected`() {
         val view = TestSendView()
-        XlmSendPresenterStrategy(
-            givenXlmCurrencyState(),
-            mock {
-                on { defaultAccount() } `it returns` Single.just(
-                    AccountReference.Xlm("The Xlm account", "")
-                )
-                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
-                    199.5.lumens()
-                )
-            },
-            mock {
-                on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
-            },
-            mock(),
-            mock(),
-            mock()
+
+        val dataManager = mock<XlmDataManager> {
+            on { defaultAccount() } `it returns` Single.just(AccountReference.Xlm("The Xlm account", ""))
+            on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(199.5.lumens())
+        }
+
+        val feesFetcher = mock<XlmFeesFetcher> {
+            on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
+        }
+
+        XlmSendStrategy(
+            currencyState = givenXlmCurrencyState(),
+            xlmDataManager = dataManager,
+            xlmFeesFetcher = feesFetcher,
+            xlmTransactionSender = mock(),
+            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            sendFundsResultLocalizer = mock()
         ).apply {
             initView(view)
-        }.onCurrencySelected(CryptoCurrency.XLM)
+        }.onCurrencySelected()
+
         verify(view.mock).hideFeePriority()
         verify(view.mock).setFeePrioritySelection(0)
         verify(view.mock).disableFeeDropdown()
         verify(view.mock).setCryptoMaxLength(15)
         verify(view.mock).showMemo()
         verify(view.mock).updateMaxAvailable(199.5.lumens(), CryptoValue.ZeroXlm)
-        verify(view.mock, never()).updateCryptoAmount(any())
+        verify(view.mock, never()).updateCryptoAmount(any(), any())
     }
 
     @Test
     fun `on onSpendMaxClicked updates the CryptoAmount`() {
         val view = TestSendView()
-        XlmSendPresenterStrategy(
-            givenXlmCurrencyState(),
-            mock {
-                on { defaultAccount() } `it returns` Single.just(
-                    AccountReference.Xlm("The Xlm account", "")
-                )
-                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
-                    150.lumens()
-                )
+
+        XlmSendStrategy(
+            currencyState = givenXlmCurrencyState(),
+            xlmDataManager = mock {
+                on { defaultAccount() } `it returns` Single.just(AccountReference.Xlm("The Xlm account", ""))
+                on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(150.lumens())
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
             },
-            mock(),
-            mock(),
-            mock()
+            xlmTransactionSender = mock(),
+            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            sendFundsResultLocalizer = mock()
         ).apply {
             initView(view)
-            onCurrencySelected(CryptoCurrency.XLM)
+            onCurrencySelected()
         }.onSpendMaxClicked()
+
         verify(view.mock).updateCryptoAmount(150.lumens())
     }
 
     @Test
     fun `on selectDefaultOrFirstFundedSendingAccount, it updates the address`() {
+        val fiatFees = FiatValue.fromMinor("USD", 10)
+
         val view = TestSendView()
-        val fiatExchangeRates = mock<FiatExchangeRates>()
-        XlmSendPresenterStrategy(
+        val fiatExchangeRates = mock<FiatExchangeRates>() {
+            on { getFiat(any()) } `it returns` fiatFees
+        }
+
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
@@ -127,7 +138,7 @@ class XlmSendPresenterStrategyTest {
             initView(view)
         }.selectDefaultOrFirstFundedSendingAccount()
         verify(view.mock).updateSendingAddress("The Xlm account")
-        verify(view.mock).updateFeeAmount(99.stroops(), fiatExchangeRates)
+        verify(view.mock).updateFeeAmount(99.stroops(), fiatFees)
     }
 
     @Test
@@ -149,7 +160,7 @@ class XlmSendPresenterStrategyTest {
                 )
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
@@ -211,7 +222,7 @@ class XlmSendPresenterStrategyTest {
             on { dryRunSendFunds(any()) } `it returns` Single.just(result)
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
@@ -259,7 +270,7 @@ class XlmSendPresenterStrategyTest {
             on { dryRunSendFunds(any()) } `it returns` Single.just(result)
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
@@ -309,7 +320,7 @@ class XlmSendPresenterStrategyTest {
             on { dryRunSendFunds(any()) } `it returns` Single.just(result)
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
@@ -359,7 +370,7 @@ class XlmSendPresenterStrategyTest {
             on { dryRunSendFunds(any()) } `it returns` Single.just(result)
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
@@ -418,11 +429,14 @@ class XlmSendPresenterStrategyTest {
                 )
             on { dryRunSendFunds(any()) } `it returns` Single.just(result)
         }
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
-                    AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
+                    AccountReference.Xlm(
+                        "The Xlm account",
+                        "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT"
+                    )
                 )
                 on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     200.lumens()
@@ -472,11 +486,14 @@ class XlmSendPresenterStrategyTest {
             on { sendFunds(any()) } `it returns` Single.error(Exception("Failure"))
             on { dryRunSendFunds(any()) } `it returns` Single.error(Exception("Failure"))
         }
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
-                    AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
+                    AccountReference.Xlm(
+                        "The Xlm account",
+                        "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT"
+                    )
                 )
                 on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     200.lumens()
@@ -520,36 +537,16 @@ class XlmSendPresenterStrategyTest {
     }
 
     @Test
-    fun `handle address scan, data is null`() {
-        val view = TestSendView()
-        XlmSendPresenterStrategy(
-            givenXlmCurrencyState(),
-            mock {
-                on { defaultAccount() } `it returns` Single.just(
-                    AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
-                )
-            },
-            mock {
-                on { operationFee(FeeType.Regular) } `it returns` Single.just(100.stroops())
-            },
-            mock(),
-            mock(),
-            mock()
-        ).apply {
-            initView(view)
-            handleURIScan(null)
-        }
-        verifyZeroInteractions(view.mock)
-    }
-
-    @Test
     fun `handle address scan valid address`() {
         val view = TestSendView()
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
-                    AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
+                    AccountReference.Xlm(
+                        "The Xlm account",
+                        "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT"
+                    )
                 )
             },
             mock {
@@ -562,7 +559,7 @@ class XlmSendPresenterStrategyTest {
             mock()
         ).apply {
             initView(view)
-            handleURIScan("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4")
+            processURIScanAddress("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4")
         }
         verify(view.mock).updateCryptoAmount(0.lumens())
         verify(view.mock).updateFiatAmount(0.usd())
@@ -572,11 +569,14 @@ class XlmSendPresenterStrategyTest {
     @Test
     fun `handle address scan valid uri`() {
         val view = TestSendView()
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
-                    AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
+                    AccountReference.Xlm(
+                        "The Xlm account",
+                        "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT"
+                    )
                 )
             },
             mock {
@@ -589,7 +589,7 @@ class XlmSendPresenterStrategyTest {
             mock()
         ).apply {
             initView(view)
-            handleURIScan(
+            processURIScanAddress(
                 "web+stellar:pay?destination=" +
                     "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO&amount=" +
                     "120.1234567&memo=skdjfasf&msg=pay%20me%20with%20lumens"
@@ -619,7 +619,7 @@ class XlmSendPresenterStrategyTest {
                 )
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
@@ -640,7 +640,7 @@ class XlmSendPresenterStrategyTest {
             mock()
         ).apply {
             initView(view)
-            handleURIScan(
+            processURIScanAddress(
                 "web+stellar:pay?destination=" +
                     "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO&amount=" +
                     "120.1234567&memo=1234&memo_type=MEMO_ID&msg=pay%20me%20with%20lumens"
@@ -699,11 +699,14 @@ class XlmSendPresenterStrategyTest {
                 )
             on { dryRunSendFunds(any()) } `it returns` Single.just(result)
         }
-        XlmSendPresenterStrategy(
+        XlmSendStrategy(
             givenXlmCurrencyState(),
             mock {
                 on { defaultAccount() } `it returns` Single.just(
-                    AccountReference.Xlm("The Xlm account", "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
+                    AccountReference.Xlm(
+                        "The Xlm account",
+                        "GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT"
+                    )
                 )
                 on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(
                     200.lumens()
