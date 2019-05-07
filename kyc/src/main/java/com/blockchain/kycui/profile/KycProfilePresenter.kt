@@ -4,7 +4,9 @@ import com.blockchain.BaseKycPresenter
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuApiException
 import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes
+import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
 import com.blockchain.kyc.util.toISO8601DateString
+import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.profile.models.ProfileModel
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.nabu.NabuToken
@@ -31,7 +33,8 @@ import com.google.common.base.Optional
 class KycProfilePresenter(
     nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
-    private val metadataRepository: MetadataRepository
+    private val metadataRepository: MetadataRepository,
+    private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator
 ) : BaseKycPresenter<KycProfileView>(nabuToken) {
 
     var firstNameSet by Delegates.observable(false) { _, _, _ -> enableButtonIfComplete() }
@@ -42,7 +45,7 @@ class KycProfilePresenter(
         restoreDataIfPresent()
     }
 
-    internal fun onContinueClicked() {
+    internal fun onContinueClicked(campaignType: CampaignType? = null) {
         check(!view.firstName.isEmpty()) { "firstName is empty" }
         check(!view.lastName.isEmpty()) { "lastName is empty" }
         check(view.dateOfBirth != null) { "dateOfBirth is null" }
@@ -64,6 +67,7 @@ class KycProfilePresenter(
                         createUserAndStoreInMetadata()
                     }
                 }
+                .andThen(createCoinifyAccountIfNeeded(campaignType))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { view.showProgressDialog() }
                 .doOnTerminate { view.dismissProgressDialog() }
@@ -87,6 +91,14 @@ class KycProfilePresenter(
                     }
                 )
     }
+
+    private fun createCoinifyAccountIfNeeded(campaignType: CampaignType?): Completable =
+        if (campaignType != CampaignType.BuySell) {
+            Completable.complete()
+        } else {
+            nabuCoinifyAccountCreator.createCoinifyAccountIfNeeded()
+                .doOnError(Timber::e)
+        }
 
     private fun restoreDataIfPresent() {
         // Don't restore data if data already present, as it'll overwrite what the user

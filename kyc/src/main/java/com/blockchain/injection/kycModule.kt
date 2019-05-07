@@ -13,6 +13,8 @@ import com.blockchain.kyc.datamanagers.onfido.OnfidoDataManager
 import com.blockchain.kyc.models.nabu.KycStateAdapter
 import com.blockchain.kyc.models.nabu.KycTierStateAdapter
 import com.blockchain.kyc.models.nabu.UserStateAdapter
+import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
+import com.blockchain.kyc.services.nabu.NabuCoinifyAccountService
 import com.blockchain.kyc.services.nabu.NabuService
 import com.blockchain.kyc.services.nabu.NabuTierService
 import com.blockchain.kyc.services.nabu.TierService
@@ -35,6 +37,7 @@ import com.blockchain.kycui.mobile.validation.KycMobileValidationPresenter
 import com.blockchain.kycui.navhost.KycNavHostPresenter
 import com.blockchain.kycui.navhost.KycStarter
 import com.blockchain.kycui.navhost.KycStarterAirdrop
+import com.blockchain.kycui.navhost.KycStarterBuySell
 import com.blockchain.kycui.onfidosplash.OnfidoSplashPresenter
 import com.blockchain.kycui.profile.KycProfilePresenter
 import com.blockchain.kycui.reentry.KycNavigator
@@ -51,9 +54,13 @@ import com.blockchain.nabu.CurrentTier
 import com.blockchain.nabu.NabuUserSync
 import com.blockchain.nabu.StartKyc
 import com.blockchain.nabu.StartKycAirdrop
+import com.blockchain.nabu.StartKycForBuySell
 import com.blockchain.nabu.stores.NabuSessionTokenStore
 import com.blockchain.sunriver.SunriverCampaignSignUp
 import org.koin.dsl.module.applicationContext
+import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
+import piuk.blockchain.androidbuysell.repositories.AccessTokenStore
+import piuk.blockchain.androidbuysell.services.CoinifyService
 import retrofit2.Retrofit
 
 val kycModule = applicationContext {
@@ -61,6 +68,8 @@ val kycModule = applicationContext {
     factory { KycStarter() as StartKyc }
 
     factory { KycStarterAirdrop() as StartKycAirdrop }
+
+    factory { KycStarterBuySell() as StartKycForBuySell }
 
     bean { NabuSessionTokenStore() }
 
@@ -82,7 +91,7 @@ val kycModule = applicationContext {
 
         factory { KycCountrySelectionPresenter(get()) }
 
-        factory { KycProfilePresenter(get(), get(), get()) }
+        factory { KycProfilePresenter(get(), get(), get(), get()) }
 
         factory { KycHomeAddressPresenter(get(), get(), get(), get()) }
 
@@ -123,6 +132,18 @@ val kycModule = applicationContext {
     }
 }
 
+val kycCoinifyModule = applicationContext {
+
+    context("Payload") {
+
+        bean { AccessTokenStore() }
+
+        factory { CoinifyDataManager(get(), get(), get()) }
+
+        factory { CoinifyService(get(), get("kotlin"), get()) }
+    }
+}
+
 val kycNabuModule = applicationContext {
 
     context("Payload") {
@@ -137,6 +158,19 @@ val kycNabuModule = applicationContext {
                 get(),
                 get()
             ) as NabuDataManager
+        }
+
+        factory {
+            NabuCoinifyAccountService(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get()
+            ) as NabuCoinifyAccountCreator
         }
 
         factory {

@@ -1,9 +1,11 @@
 package com.blockchain.koin
 
 import android.app.Application
+import com.blockchain.injection.kycCoinifyModule
 import com.blockchain.injection.kycModule
 import com.blockchain.injection.kycNabuModule
 import com.blockchain.koin.modules.apiInterceptorsModule
+import com.blockchain.koin.modules.appBuySellModule
 import com.blockchain.koin.modules.appProperties
 import com.blockchain.koin.modules.applicationModule
 import com.blockchain.koin.modules.dashboardModule
@@ -40,31 +42,33 @@ object KoinStarter {
         application.startKoin(
             application,
             listOf(
-                environmentModule,
-                walletModule,
-                coreModule,
-                coreUiModule,
-                coreUiFeatureFlagsModule,
-                dashboardModule,
-                dashboardAnnouncementsModule,
-                apiModule,
                 apiInterceptorsModule,
-                serviceModule,
+                apiModule,
+                appBuySellModule,
                 applicationModule,
-                shapeShiftModule,
-                localShapeShift,
                 buySellModule,
-                moshiModule,
+                coreModule,
+                coreUiFeatureFlagsModule,
+                coreUiModule,
+                dashboardAnnouncementsModule,
+                dashboardModule,
+                environmentModule,
+                homeBrewModule,
+                kycCoinifyModule,
                 kycModule,
                 kycNabuModule,
+                localShapeShift,
+                lockboxModule,
                 morphMethodModule,
                 morphUiModule,
+                moshiModule,
                 nabuModule,
                 nabuUrlModule,
-                homeBrewModule,
                 notificationModule,
+                serviceModule,
+                shapeShiftModule,
                 sunriverModule,
-                lockboxModule,
+                walletModule,
                 xlmModule
             ),
             extraProperties = features + appProperties + keys + urls,

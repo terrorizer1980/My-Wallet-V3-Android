@@ -7,7 +7,9 @@ import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kyc.models.nabu.NabuApiException
 import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.UserState
+import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
 import com.blockchain.kyc.util.toISO8601DateString
+import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.nabu.NabuToken
 import com.blockchain.nabu.metadata.NabuCredentialsMetadata
@@ -40,6 +42,7 @@ class KycProfilePresenterTest {
     private val view: KycProfileView = mock()
     private val nabuDataManager: NabuDataManager = mock()
     private val metadataRepository: MetadataRepository = mock()
+    private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator = mock()
     private val nabuToken: NabuToken = mock()
 
     @Suppress("unused")
@@ -54,7 +57,8 @@ class KycProfilePresenterTest {
         subject = KycProfilePresenter(
             nabuToken,
             nabuDataManager,
-            metadataRepository
+            metadataRepository,
+            nabuCoinifyAccountCreator
         )
         subject.initView(view)
     }
@@ -169,6 +173,43 @@ class KycProfilePresenterTest {
         verify(view).showProgressDialog()
         verify(view).dismissProgressDialog()
         verify(view).continueSignUp(any())
+    }
+
+    @Test
+    fun `on continue clicked, buy & sell user`() {
+        // Assemble
+        val firstName = "Adam"
+        val lastName = "Bennett"
+        val dateOfBirth = date(Locale.US, 2014, 8, 10)
+        val countryCode = "UK"
+        whenever(view.firstName).thenReturn(firstName)
+        whenever(view.lastName).thenReturn(lastName)
+        whenever(view.dateOfBirth).thenReturn(dateOfBirth)
+        whenever(view.countryCode).thenReturn(countryCode)
+        whenever(
+            nabuToken.fetchNabuToken()
+        ).thenReturn(Single.just(validOfflineToken))
+        whenever(
+            metadataRepository.loadMetadata(
+                NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE,
+                NabuCredentialsMetadata::class.java
+            )
+        ).thenReturn(Maybe.just(validOfflineTokenMetadata))
+        whenever(nabuCoinifyAccountCreator.createCoinifyAccountIfNeeded()).thenReturn(Completable.complete())
+        whenever(
+            nabuDataManager.createBasicUser(
+                firstName,
+                lastName,
+                dateOfBirth.toISO8601DateString(),
+                validOfflineToken
+            )
+        ).thenReturn(Completable.complete())
+
+        // Act
+        subject.onContinueClicked(CampaignType.BuySell)
+
+        // Assert
+        verify(nabuCoinifyAccountCreator).createCoinifyAccountIfNeeded()
     }
 
     @Test

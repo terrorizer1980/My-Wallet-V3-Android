@@ -62,6 +62,7 @@ androidExtensions {
 }
 
 dependencies {
+    api project(':buysell')
     api project(':coreui')
     api project(':notifications')
     api project(':nabu')
