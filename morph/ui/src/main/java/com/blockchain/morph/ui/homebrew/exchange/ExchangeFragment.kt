@@ -2,7 +2,6 @@ package com.blockchain.morph.ui.homebrew.exchange
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.graphics.drawable.VectorDrawableCompat
@@ -13,7 +12,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
@@ -47,6 +45,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.ExchangeRate
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.Money
+import info.blockchain.balance.times
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -85,7 +84,6 @@ internal class ExchangeFragment : Fragment() {
     private lateinit var selectSendAccountButton: Button
     private lateinit var selectReceiveAccountButton: Button
     private lateinit var exchangeButton: Button
-    private lateinit var feedback: TextView
     private lateinit var textViewBalanceTitle: TextView
     private lateinit var textViewBalance: TextView
     private lateinit var textViewBaseRate: TextView
@@ -130,7 +128,6 @@ internal class ExchangeFragment : Fragment() {
         selectSendAccountButton = view.findViewById(R.id.select_from_account_button)
         selectReceiveAccountButton = view.findViewById(R.id.select_to_account_button)
         exchangeButton = view.findViewById(R.id.exchange_action_button)
-        feedback = view.findViewById(R.id.feedback)
         textViewBalanceTitle = view.findViewById(R.id.text_view_balance_title)
         textViewBalance = view.findViewById(R.id.text_view_balance_value)
         textViewBaseRate = view.findViewById(R.id.text_view_base_rate)
@@ -174,16 +171,21 @@ internal class ExchangeFragment : Fragment() {
             .subscribeBy {
                 when (it.fix) {
                     Fix.BASE_FIAT -> displayFiatLarge(it.fromFiat, it.fromCrypto, it.decimalCursor)
-                    Fix.BASE_CRYPTO -> displayCryptoLarge(it.fromCrypto, it.fromFiat, it.decimalCursor)
+                    Fix.BASE_CRYPTO -> displayCryptoLarge(it.fromCrypto,
+                        it.fromFiat,
+                        it.decimalCursor)
                     Fix.COUNTER_FIAT -> displayFiatLarge(it.toFiat, it.toCrypto, it.decimalCursor)
-                    Fix.COUNTER_CRYPTO -> displayCryptoLarge(it.toCrypto, it.toFiat, it.decimalCursor)
+                    Fix.COUNTER_CRYPTO -> displayCryptoLarge(it.toCrypto,
+                        it.toFiat,
+                        it.decimalCursor)
                 }
 
                 inputTypeRelay.onNext(it.fix)
 
                 selectSendAccountButton.setButtonGraphicsAndTextFromCryptoValue(it.fromCrypto)
                 selectReceiveAccountButton.setButtonGraphicsAndTextFromCryptoValue(it.toCrypto)
-                keyboard.setValue(it.lastUserValue.userDecimalPlaces, it.lastUserValue.toBigDecimal())
+                keyboard.setValue(it.lastUserValue.userDecimalPlaces,
+                    it.lastUserValue.toBigDecimal())
                 exchangeButton.isEnabled = it.isValid()
                 updateUserFeedBack(it)
                 updateExchangeRate(it)
@@ -191,17 +193,18 @@ internal class ExchangeFragment : Fragment() {
             }
 
         compositeDisposable += inputTypeRelay.map { it.toLoggingFixType() }
-                .distinctUntilChanged()
-                .subscribeBy {
-                    Logging.logCustom(FixTypeEvent(it))
-                }
+            .distinctUntilChanged()
+            .subscribeBy {
+                Logging.logCustom(FixTypeEvent(it))
+            }
 
         exchangeModel.fixAsFiat()
     }
 
     private fun updateBalance(exchangeViewState: ExchangeViewState) {
         exchangeViewState.apply {
-            textViewBalanceTitle.text = getString(R.string.morph_balance_title, fromCrypto.currencyCode)
+            textViewBalanceTitle.text =
+                getString(R.string.morph_balance_title, fromCrypto.currencyCode)
             textViewBalance.text = formatSpendableString()
         }
     }
@@ -217,24 +220,18 @@ internal class ExchangeFragment : Fragment() {
         val error = exchangeViewState.exchangeError()
 
         // Set menu state
-        val errorState = if (error == null)
-            ExchangeMenuState.ExchangeMenu.Help
-        else
-            ExchangeMenuState.ExchangeMenu.Error(error)
+        val errorState = error?.let {
+            ExchangeMenuState.ExchangeMenu.Error(it)
+        } ?: ExchangeMenuState.ExchangeMenu.Help
 
         exchangeMenuState.setMenuState(errorState)
-
-        // TODO(AND-2059): remove feedback text in favor of displaying error dialog
-        feedback.apply {
-            movementMethod = LinkMovementMethod.getInstance()
-            highlightColor = Color.TRANSPARENT
-            setText(error?.message, error?.bufferType)
-        }
     }
 
     private fun displayFiatLarge(fiatValue: FiatValue, cryptoValue: CryptoValue, decimalCursor: Int) {
         val parts = fiatValue.toStringParts()
-        largeValue.setText(ThreePartText(parts.symbol, parts.major, if (decimalCursor != 0) parts.minor else ""))
+        largeValue.setText(ThreePartText(parts.symbol,
+            parts.major,
+            if (decimalCursor != 0) parts.minor else ""))
 
         val fromCryptoString = cryptoValue.toStringWithSymbol()
         smallValue.text = fromCryptoString
@@ -242,7 +239,9 @@ internal class ExchangeFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun displayCryptoLarge(cryptoValue: CryptoValue, fiatValue: FiatValue, decimalCursor: Int) {
-        largeValue.setText(ThreePartText("", cryptoValue.formatExactly(decimalCursor) + " " + cryptoValue.symbol(), ""))
+        largeValue.setText(ThreePartText("",
+            cryptoValue.formatExactly(decimalCursor) + " " + cryptoValue.symbol(),
+            ""))
 
         val fromFiatString = fiatValue.toStringWithSymbol()
         smallValue.text = fromFiatString
@@ -275,8 +274,7 @@ internal class ExchangeFragment : Fragment() {
 
     private fun CryptoValue.formatExactly(decimalPlacesForCrypto: Int): String {
         val show = when (decimalPlacesForCrypto) {
-            0 -> 0
-            1 -> 1
+            0, 1 -> decimalPlacesForCrypto
             else -> decimalPlacesForCrypto - 1
         }
         return customCryptoEntryFormat
@@ -295,30 +293,38 @@ internal class ExchangeFragment : Fragment() {
             QuoteValidity.NoQuote,
             QuoteValidity.MissMatch -> null
             QuoteValidity.UnderMinTrade -> ExchangeMenuState.ExchangeMenuError(
-                getString(R.string.under_min, minTradeLimit?.toStringWithSymbol()),
-                TextView.BufferType.NORMAL
+                fromCrypto.currency,
+                userTier,
+                getString(R.string.below_trading_limit),
+                getString(R.string.under_min, minTradeLimit?.formatOrSymbolForZero()),
+                ExchangeMenuState.ErrorType.TRADE
             )
             QuoteValidity.OverMaxTrade -> ExchangeMenuState.ExchangeMenuError(
-                getString(R.string.over_max, maxTradeLimit?.toStringWithSymbol()),
-                TextView.BufferType.NORMAL
+                fromCrypto.currency,
+                userTier,
+                getString(R.string.above_trading_limit),
+                getString(R.string.over_max, maxTradeLimit?.formatOrSymbolForZero()),
+                ExchangeMenuState.ErrorType.TRADE
             )
-            QuoteValidity.OverTierLimit -> {
-                val overMax = getString(
-                    R.string.over_max,
-                    maxTierLimit?.toStringWithSymbol()
-                )
-                if (userTier < 2) {
-                    val (text, bufferType) = addLink(overMax, getString(R.string.upgrade_now))
-                    ExchangeMenuState.ExchangeMenuError(text, bufferType)
-                } else {
-                    ExchangeMenuState.ExchangeMenuError(overMax, TextView.BufferType.NORMAL)
-                }
-            }
-            QuoteValidity.OverUserBalance ->
+            QuoteValidity.OverTierLimit -> ExchangeMenuState.ExchangeMenuError(
+                fromCrypto.currency,
+                userTier,
+                getString(R.string.above_trading_limit),
+                getString(R.string.over_max, maxTierLimit?.formatOrSymbolForZero()),
+                ExchangeMenuState.ErrorType.TIER
+            )
+            QuoteValidity.OverUserBalance -> {
+                val maxSpendableFiat = maxSpendable * c2fRate
                 ExchangeMenuState.ExchangeMenuError(
-                    getString(R.string.over_max, maxSpendable?.toStringWithSymbol()),
-                    TextView.BufferType.NORMAL
+                    fromCrypto.currency,
+                    userTier,
+                    getString(R.string.not_enough_balance_for_coin, fromCrypto.currency.symbol),
+                    getString(R.string.not_enough_balance,
+                        maxSpendable?.toStringWithSymbol(),
+                        maxSpendableFiat?.toStringWithSymbol()),
+                    ExchangeMenuState.ErrorType.BALANCE
                 )
+            }
         }
     }
 
@@ -344,7 +350,8 @@ internal class ExchangeFragment : Fragment() {
         val spendableString = SpannableStringBuilder()
 
         latestQuote?.baseToFiatRate?.let { baseToFiatRate ->
-            val fiatSpendable = ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate).applyRate(spendable)
+            val fiatSpendable = ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate)
+                .applyRate(spendable)
             fiatSpendable?.let {
                 val fiatString = SpannableString(it.toStringWithSymbol())
                 fiatString.setSpan(

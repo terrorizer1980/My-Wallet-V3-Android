@@ -10,8 +10,14 @@
 
     <string name="connection_error">Connection error</string>
 
-    <string name="under_min">Your Min is %1$s</string>
-    <string name="over_max">Your Max is %1$s</string>
+    <string name="below_trading_limit">Low blow!</string>
+    <string name="above_trading_limit">Rollin\' high!</string>
+    <string name="not_enough_x">Not enough %1$s</string>
+    <string name="not_enough_balance">You have %1$s available worth %2$s</string>
+    <string name="not_enough_balance_for_coin">%1$s Balance</string>
+    <string name="under_min">The minimum amount for an exchange is %1$s</string>
+    <string name="over_max">The maximum amount for an exchange is %1$s</string>
+    <string name="over_max_amount_exchange">The maximum amount for an exchange is %1$s</string>
     <string name="upgrade_now">Upgrade now</string>
 
     <string name="dialog_title_exchange">What do you want to exchange?</string>

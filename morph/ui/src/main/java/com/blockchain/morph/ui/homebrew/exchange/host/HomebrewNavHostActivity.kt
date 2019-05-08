@@ -109,7 +109,7 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
                 menuState?.let {
                     when (it) {
                         is ExchangeMenuState.ExchangeMenu.Error -> {
-                            showErrorDialog(it.error)
+                            showErrorDialog(supportFragmentManager, it.error)
                         }
                         is ExchangeMenuState.ExchangeMenu.Help -> {
                             // Invalid menu state

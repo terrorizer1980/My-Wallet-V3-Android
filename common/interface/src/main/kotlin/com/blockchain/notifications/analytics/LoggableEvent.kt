@@ -46,7 +46,10 @@ enum class LoggableEvent(override val eventName: String) : Loggable {
     CoinifyKycBottomDialogLearnMoreClicked("coinify_kyc_bottom_dialog_learn_more_clicked"),
     ClaimFreeCryptoSuccessDialog("claim_free_crypto_success_dialog"),
     ClaimFreeCryptoSuccessDialogClicked("claim_free_crypto_success_dialog_clicked"),
-    ClaimFreeCryptoSuccessDialogClickedRocket("claim_free_crypto_success_clicked_rocket")
+    ClaimFreeCryptoSuccessDialogClickedRocket("claim_free_crypto_success_clicked_rocket"),
+    SwapErrorDialog("swap_error_dialog"),
+    SwapErrorDialogCtaClicked("swap_error_dialog_cta_clicked"),
+    SwapErrorDialogDismissClicked("swap_error_dialog_dismiss_clicked")
 }
 
 fun kycTierStart(tier: Int): Loggable = object : Loggable {

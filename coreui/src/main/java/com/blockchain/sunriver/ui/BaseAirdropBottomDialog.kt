@@ -59,10 +59,7 @@ abstract class BaseAirdropBottomDialog(
         view.findViewById<TextView>(R.id.dialog_body).setText(content.description)
         view.findViewById<Button>(R.id.button_cta)
             .apply {
-                setText(content.ctaButtonText)
-                setOnClickListener {
-                    ctaButtonClick()
-                }
+                gone()
             }
         view.findViewById<TextView>(R.id.button_dismiss).apply {
             if (content.dismissText != 0) {
