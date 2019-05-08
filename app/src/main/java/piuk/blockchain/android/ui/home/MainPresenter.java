@@ -29,6 +29,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.Unit;
 import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.data.cache.DynamicFeeCache;
@@ -58,7 +59,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
 import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager;
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AppUtil;
@@ -68,7 +69,7 @@ import timber.log.Timber;
 
 public class MainPresenter extends BasePresenter<MainView> {
 
-    private PrefsUtil prefs;
+    private PersistentPrefs prefs;
     private AppUtil appUtil;
     private AccessState accessState;
     private PayloadManagerWiper payloadManagerWiper;
@@ -99,7 +100,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private XlmDataManager xlmDataManager;
 
     @Inject
-    MainPresenter(PrefsUtil prefs,
+    MainPresenter(PersistentPrefs prefs,
                   AppUtil appUtil,
                   AccessState accessState,
                   PayloadManagerWiper payloadManagerWiper,
@@ -160,14 +161,14 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.xlmDataManager = xlmDataManager;
     }
 
-    private void initPrompts(Context context) {
+    private void initPrompts() {
         settingsDataManager.getSettings()
-                .flatMap(settings -> promptManager.getCustomPrompts(context, settings))
+                .flatMap(settings -> promptManager.getCustomPrompts(settings))
                 .compose(RxUtil.addObservableToCompositeDisposable(this))
                 .flatMap(Observable::fromIterable)
                 .firstOrError()
                 .subscribe(
-                        getView()::showCustomPrompt,
+                        factory -> getView().showCustomPrompt(factory),
                         throwable -> {
                             if (!(throwable instanceof NoSuchElementException)) {
                                 Timber.e(throwable);
@@ -206,11 +207,11 @@ public class MainPresenter extends BasePresenter<MainView> {
      * available addresses.
      */
     private void doPushNotifications() {
-        if (!prefs.has(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED)) {
-            prefs.setValue(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED, true);
+        if (!prefs.has(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED)) {
+            prefs.setValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true);
         }
 
-        if (prefs.getValue(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED, true)) {
+        if (prefs.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true)) {
             payloadDataManager.syncPayloadAndPublicKeys()
                     .compose(RxUtil.addCompletableToCompositeDisposable(this))
                     .subscribe(() -> {
@@ -251,14 +252,14 @@ public class MainPresenter extends BasePresenter<MainView> {
     // Could be used in the future
     @SuppressWarnings("unused")
     private SecurityPromptDialog getWarningPrompt(String message) {
-        SecurityPromptDialog prompt = SecurityPromptDialog.newInstance(
+        SecurityPromptDialog prompt = SecurityPromptDialog.Companion.newInstance(
                 R.string.warning,
                 message,
                 R.drawable.vector_warning,
                 R.string.ok_cap,
                 false,
                 false);
-        prompt.setPositiveButtonListener(view -> prompt.dismiss());
+        prompt.setPositiveButtonListener(() -> { prompt.dismiss(); return Unit.INSTANCE; });
         return prompt;
     }
 
@@ -274,18 +275,18 @@ public class MainPresenter extends BasePresenter<MainView> {
                 .doAfterTerminate(() -> {
                             getView().hideProgressDialog();
 
-                            initPrompts(getView().getActivityContext());
+                            initPrompts();
 
-                            if (!prefs.getValue(PrefsUtil.KEY_SCHEME_URL, "").isEmpty()) {
-                                String strUri = prefs.getValue(PrefsUtil.KEY_SCHEME_URL, "");
-                                prefs.removeValue(PrefsUtil.KEY_SCHEME_URL);
+                            if (!prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "").isEmpty()) {
+                                String strUri = prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "");
+                                prefs.removeValue(PersistentPrefs.KEY_SCHEME_URL);
                                 getView().onScanInput(strUri);
                             }
                         }
                 )
                 .subscribe(() -> {
                     checkKycStatus();
-                    if (getView().isBuySellPermitted()) {
+                    if (AppUtil.isBuySellPermitted()) {
                         initBuyService();
                     } else {
                         getView().setBuySellEnabled(false, false);
@@ -311,35 +312,35 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private void checkForPendingLinks() {
         getCompositeDisposable().add(
-                deepLinkProcessor
-                        .getLink(getView().getIntent())
-                        .subscribe(
-                                linkState -> {
-                                    if (linkState instanceof LinkState.SunriverDeepLink) {
-                                        final CampaignLinkState campaignLinkState = ((LinkState.SunriverDeepLink) linkState).getLink();
-                                        if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
-                                            getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
-                                        } else if (campaignLinkState instanceof CampaignLinkState.Data) {
-                                            registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
-                                        }
-                                    } else if (linkState instanceof LinkState.KycDeepLink) {
-                                        final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
-                                        final KycLinkState kycLinkState = deepLink.getLink();
-                                        if (kycLinkState instanceof KycLinkState.Resubmit) {
-                                            getView().launchKyc(CampaignType.Resubmission);
-                                        } else if (kycLinkState instanceof KycLinkState.EmailVerified) {
-                                            getView().launchKyc(CampaignType.Swap);
-                                        } else if (kycLinkState instanceof KycLinkState.General) {
-                                            final CampaignData data = ((KycLinkState.General) kycLinkState).getCampaignData();
-                                            if (data != null) {
-                                                registerForCampaign(data);
-                                            } else {
-                                                getView().launchKyc(CampaignType.Swap);
-                                            }
-                                        }
+            deepLinkProcessor
+                .getLink(getView().getStartIntent())
+                    .subscribe(
+                        linkState -> {
+                            if (linkState instanceof LinkState.SunriverDeepLink) {
+                                final CampaignLinkState campaignLinkState = ((LinkState.SunriverDeepLink) linkState).getLink();
+                                if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
+                                    getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
+                                } else if (campaignLinkState instanceof CampaignLinkState.Data) {
+                                    registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
+                                }
+                            } else if (linkState instanceof LinkState.KycDeepLink) {
+                                final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
+                                final KycLinkState kycLinkState = deepLink.getLink();
+                                if (kycLinkState instanceof KycLinkState.Resubmit) {
+                                    getView().launchKyc(CampaignType.Resubmission);
+                                } else if (kycLinkState instanceof KycLinkState.EmailVerified) {
+                                    getView().launchKyc(CampaignType.Swap);
+                                } else if (kycLinkState instanceof KycLinkState.General) {
+                                    final CampaignData data = ((KycLinkState.General) kycLinkState).getCampaignData();
+                                    if (data != null) {
+                                        registerForCampaign(data);
+                                    } else {
+                                        getView().launchKyc(CampaignType.Swap);
                                     }
-                                }, Timber::e
-                        )
+                                }
+                            }
+                        }, Timber::e
+                    )
         );
     }
 
@@ -531,9 +532,9 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     private void dismissAnnouncementIfOnboardingCompleted() {
-        if (prefs.getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false)
-                && prefs.getValue(PrefsUtil.KEY_LATEST_ANNOUNCEMENT_SEEN, false)) {
-            prefs.setValue(PrefsUtil.KEY_LATEST_ANNOUNCEMENT_DISMISSED, true);
+        if (prefs.getValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, false)
+                && prefs.getValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_SEEN, false)) {
+            prefs.setValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_DISMISSED, true);
         }
     }
 

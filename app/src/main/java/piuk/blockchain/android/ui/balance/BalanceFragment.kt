@@ -29,26 +29,24 @@ import piuk.blockchain.android.ui.balance.adapter.TxFeedAdapter
 import piuk.blockchain.android.ui.balance.adapter.TxFeedClickListener
 import piuk.blockchain.android.ui.customviews.BottomSpacerDecoration
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
+import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_FAQ
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
-import piuk.blockchain.androidcore.data.access.AccessState
-import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
-import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.onItemSelectedListener
 import javax.inject.Inject
 
 @Suppress("MemberVisibilityCanPrivate")
-class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
+class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
     BalanceView,
     TxFeedClickListener {
 
@@ -59,9 +57,8 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
     @Inject
     lateinit var balancePresenter: BalancePresenter
 
-    private var interactionListener: OnFragmentInteractionListener? = null
     private var spacerDecoration: BottomSpacerDecoration? = null
-    private var backPressed: Long = 0
+
     private val itemSelectedListener =
         onItemSelectedListener {
             currency_header?.close()
@@ -145,9 +142,7 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
 
     override fun onResume() {
         super.onResume()
-        if (activity is MainActivity) {
-            (activity as MainActivity).bottomNavigationView.restoreBottomNavigation()
-        }
+        navigator().showNavigation()
 
         LocalBroadcastManager.getInstance(context!!)
             .registerReceiver(receiver, IntentFilter(ACTION_INTENT))
@@ -156,19 +151,15 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
     override fun onPause() {
         super.onPause()
         LocalBroadcastManager.getInstance(context!!).unregisterReceiver(receiver)
+
         // Fixes issue with Swipe Layout messing with Fragment transitions
         swipe_container?.let {
-            swipe_container.isRefreshing = false
-            swipe_container.destroyDrawingCache()
-            swipe_container.clearAnimation()
+            it.isRefreshing = false
+            it.destroyDrawingCache()
+            it.clearAnimation()
         }
 
         currency_header?.close()
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        interactionListener = activity as OnFragmentInteractionListener?
     }
 
     override fun shouldShowBuy() = AndroidUtils.is19orHigher()
@@ -258,20 +249,13 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
         txFeedAdapter?.onViewFormatUpdated(showCrypto)
     }
 
-    fun onBackPressed() {
+    override fun onBackPressed(): Boolean =
         if (currency_header.isOpen()) {
             currency_header.close()
+            true
         } else {
-            if (backPressed + COOL_DOWN_MILLIS > System.currentTimeMillis()) {
-                AccessState.getInstance().logout(context)
-                return
-            } else {
-                toast(R.string.exit_confirm)
-            }
-
-            backPressed = System.currentTimeMillis()
+            false
         }
-    }
 
     private fun setShowRefreshing(showRefreshing: Boolean) {
         swipe_container.isRefreshing = showRefreshing
@@ -283,7 +267,8 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
 
     override fun setUiState(uiState: Int) {
         when (uiState) {
-            UiState.FAILURE, UiState.EMPTY -> onEmptyState()
+            UiState.FAILURE,
+            UiState.EMPTY -> onEmptyState()
             UiState.CONTENT -> onContentLoaded()
             UiState.LOADING -> {
                 textview_balance.text = ""
@@ -303,24 +288,24 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
                     if (shouldShowBuy()) {
                         presenter.onGetBitcoinClicked()
                     } else {
-                        startReceiveFragmentBtc()
+                        navigator().gotoReceiveFor(CryptoCurrency.BTC)
                     }
                 }
                 description.setText(R.string.transaction_occur_when_bitcoin)
             }
             CryptoCurrency.ETHER -> {
                 button_get_bitcoin.setText(R.string.onboarding_get_eth)
-                button_get_bitcoin.setOnClickListener { startReceiveFragmentEth() }
+                button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.ETHER) }
                 description.setText(R.string.transaction_occur_when_eth)
             }
             CryptoCurrency.BCH -> {
                 button_get_bitcoin.setText(R.string.onboarding_get_bitcoin_cash)
-                button_get_bitcoin.setOnClickListener { startReceiveFragmentBch() }
+                button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.BCH) }
                 description.setText(R.string.transaction_occur_when_bitcoin_cash)
             }
             CryptoCurrency.XLM -> {
                 button_get_bitcoin.setText(R.string.onboarding_get_lumens)
-                button_get_bitcoin.setOnClickListener { startReceiveFragmentXlm() }
+                button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.XLM) }
                 description.setText(R.string.transaction_occur_when_lumens)
             }
             else -> throw IllegalArgumentException(
@@ -328,6 +313,9 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
             )
         }
     }
+
+    // Called back by presenter.onGetBitcoinClicked() if buy/sell is not available
+    override fun startReceiveFragmentBtc() = navigator().gotoReceiveFor(CryptoCurrency.BTC)
 
     override fun updateBalanceHeader(balance: String) {
         textview_balance.text = balance
@@ -337,14 +325,6 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
         setShowRefreshing(false)
         no_transaction_include.gone()
     }
-
-    override fun startReceiveFragmentBtc() = broadcastIntent(MainActivity.ACTION_RECEIVE)
-
-    private fun startReceiveFragmentEth() = broadcastIntent(MainActivity.ACTION_RECEIVE_ETH)
-
-    private fun startReceiveFragmentBch() = broadcastIntent(MainActivity.ACTION_RECEIVE_BCH)
-
-    private fun startReceiveFragmentXlm() = broadcastIntent(MainActivity.ACTION_RECEIVE_XLM)
 
     override fun startBuyActivity() = broadcastIntent(MainActivity.ACTION_BUY)
 
@@ -386,7 +366,6 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
         const val KEY_TRANSACTION_HASH = "transaction_hash"
 
         private const val ARGUMENT_BROADCASTING_PAYMENT = "broadcasting_payment"
-        private const val COOL_DOWN_MILLIS = 2 * 1000
 
         @JvmStatic
         fun newInstance(broadcastingPayment: Boolean): BalanceFragment {
@@ -396,10 +375,6 @@ class BalanceFragment : BaseFragment<BalanceView, BalancePresenter>(),
                 }
             }
         }
-    }
-
-    interface OnFragmentInteractionListener {
-        fun resetNavigationDrawer()
     }
 
     private inner class LayoutManager(context: Context) : LinearLayoutManager(context) {

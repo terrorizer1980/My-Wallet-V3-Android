@@ -16,6 +16,7 @@ import dagger.Lazy;
 import info.blockchain.wallet.payload.PayloadManagerWiper;
 import piuk.blockchain.androidcore.BuildConfig;
 import piuk.blockchain.androidcore.data.access.AccessState;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.PrefsUtil;
 
 @SuppressWarnings("WeakerAccess")
@@ -24,7 +25,7 @@ public class AppUtil {
 
     private static final String REGEX_UUID = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 
-    @Inject PrefsUtil prefs;
+    @Inject PersistentPrefs prefs;
     @Inject Lazy<PayloadManagerWiper> payloadManager;
     @Inject Lazy<AccessState> accessState;
     private Context context;
@@ -93,6 +94,22 @@ public class AppUtil {
         return !(encryptedPassword.isEmpty() || pinID.isEmpty());
     }
 
+    public String getSharedKey() {
+        return prefs.getValue(PrefsUtil.KEY_SHARED_KEY, "");
+    }
+
+    public void setSharedKey(String sharedKey) {
+        prefs.setValue(PrefsUtil.KEY_SHARED_KEY, sharedKey);
+    }
+
+    public PackageManager getPackageManager() {
+        return context.getPackageManager();
+    }
+
+    public static boolean isBuySellPermitted() {
+        return AndroidUtils.is19orHigher();
+    }
+
     public boolean isCameraOpen() {
         Camera camera = null;
 
@@ -107,17 +124,5 @@ public class AppUtil {
         }
 
         return false;
-    }
-
-    public String getSharedKey() {
-        return prefs.getValue(PrefsUtil.KEY_SHARED_KEY, "");
-    }
-
-    public void setSharedKey(String sharedKey) {
-        prefs.setValue(PrefsUtil.KEY_SHARED_KEY, sharedKey);
-    }
-
-    public PackageManager getPackageManager() {
-        return context.getPackageManager();
     }
 }

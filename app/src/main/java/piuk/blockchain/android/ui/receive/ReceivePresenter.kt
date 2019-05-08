@@ -6,7 +6,6 @@ import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.isValidXlmQr
 import com.blockchain.sunriver.toUri
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.format
 import info.blockchain.balance.withMajorValueOrZero
@@ -22,7 +21,6 @@ import org.bitcoinj.core.Coin
 import org.bitcoinj.uri.BitcoinURI
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
@@ -58,8 +56,6 @@ class ReceivePresenter @Inject internal constructor(
     @VisibleForTesting
     internal var selectedAddress: String? = null
     @VisibleForTesting
-    internal var selectedContactId: String? = null
-    @VisibleForTesting
     internal var selectedAccount: Account? = null
     @VisibleForTesting
     internal var selectedBchAccount: GenericMetadataAccount? = null
@@ -70,14 +66,6 @@ class ReceivePresenter @Inject internal constructor(
     fun getFiatUnit() = fiatExchangeRates.fiatUnit
 
     override fun onViewReady() {
-        if (view.isContactsEnabled) {
-            if (prefsUtil.getValue(PrefsUtil.KEY_CONTACTS_INTRODUCTION_COMPLETE, false)) {
-                view.hideContactsIntroduction()
-            } else {
-                view.showContactsIntroduction()
-            }
-        } else view.hideContactsIntroduction()
-
         if (environmentSettings.environment == Environment.TESTNET) {
             currencyState.cryptoCurrency = CryptoCurrency.BTC
             view.disableCurrencyHeader()
@@ -92,10 +80,6 @@ class ReceivePresenter @Inject internal constructor(
             CryptoCurrency.XLM -> onXlmSelected()
             CryptoCurrency.PAX -> onPaxSelected()
         }
-    }
-
-    internal fun onSendToContactClicked() {
-        view.startContactSelectionActivity()
     }
 
     internal fun isValidAmount(btcAmount: String) = btcAmount.toSafeLong(Locale.getDefault()) > 0
@@ -314,21 +298,6 @@ class ReceivePresenter @Inject internal constructor(
         prefsUtil.setValue(KEY_WARN_WATCH_ONLY_SPEND, warn)
     }
 
-    internal fun clearSelectedContactId() {
-        this.selectedContactId = null
-    }
-
-    internal fun getConfirmationDetails() =
-        currencyState.cryptoCurrency.withMajorValueOrZero(view.getBtcAmount())
-            .let { crypto ->
-                paymentConfirmationDetails(
-                    accountLabel = payloadDataManager.getAccount(getSelectedAccountPosition()).label,
-                    contactName = view.getContactName(),
-                    crypto = crypto,
-                    fiat = crypto.toFiat(fiatExchangeRates)
-                )
-            }
-
     internal fun onShowBottomSheetSelected() {
         selectedAddress?.let {
             when {
@@ -401,21 +370,4 @@ class ReceivePresenter @Inject internal constructor(
         const val KEY_WARN_WATCH_ONLY_SPEND = "warn_watch_only_spend"
         private const val DIMENSION_QR_CODE = 600
     }
-}
-
-private fun paymentConfirmationDetails(
-    accountLabel: String,
-    contactName: String,
-    crypto: CryptoValue,
-    fiat: FiatValue
-) = PaymentConfirmationDetails().apply {
-    fromLabel = accountLabel
-    toLabel = contactName
-
-    cryptoAmount = crypto.toStringWithoutSymbol()
-    cryptoUnit = crypto.currency.name
-    fiatUnit = fiat.currencyCode
-
-    fiatAmount = fiat.toStringWithoutSymbol()
-    fiatSymbol = fiat.symbol()
 }

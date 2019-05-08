@@ -12,6 +12,7 @@ import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.serialization.toMoshiJson
 import com.blockchain.wallet.toAccountReference
 import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.android.synthetic.main.activity_account_chooser.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import com.squareup.moshi.Moshi
@@ -24,6 +25,8 @@ import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.visible
+import timber.log.Timber
+import java.io.IOException
 
 class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChooserPresenter>(),
     AccountChooserView {
@@ -152,11 +155,26 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
             putExtra(EXTRA_ACTIVITY_TITLE, title)
         }
 
+        fun unpackAccountResult(data: Intent?): JsonSerializableAccount? {
+            return try {
+                val type: Class<*> = Class.forName(data?.getStringExtra(EXTRA_SELECTED_OBJECT_TYPE))
+                val any = ObjectMapper().readValue(data!!.getStringExtra(EXTRA_SELECTED_ITEM), type)
+
+                any as JsonSerializableAccount
+            } catch (e: ClassNotFoundException) {
+                Timber.e(e)
+                null
+            } catch (e: IOException) {
+                Timber.e(e)
+                null
+            }
+        }
+
         fun getSelectedRawAccount(data: Intent): JsonSerializableAccount {
             val clazz =
-                Class.forName(data.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_OBJECT_TYPE))
+                Class.forName(data.getStringExtra(EXTRA_SELECTED_OBJECT_TYPE))
 
-            val json = data.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_ITEM)
+            val json = data.getStringExtra(EXTRA_SELECTED_ITEM)
             val any = Moshi.Builder().build().adapter(clazz)
                 .fromJson(json)
             return any as JsonSerializableAccount

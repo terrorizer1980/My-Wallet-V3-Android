@@ -37,6 +37,15 @@ fun View?.gone() {
 }
 
 /**
+ * Sets the visibility of a [View] to [View.VISIBLE] epending on a value
+ */
+fun View?.visibleIf(value: Boolean) {
+    if (this != null) {
+        visibility = if (value) View.VISIBLE else visibility
+    }
+}
+
+/**
  * Sets the visibility of a [View] to [View.GONE] depending on a predicate
  *
  * @param func If true, the visibility of the [View] will be set to [View.GONE], else [View.VISIBLE]

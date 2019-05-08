@@ -216,8 +216,7 @@ class AccountPresenter @Inject internal constructor(
     internal fun importBip38Address(data: String, password: String) {
         view.showProgressDialog(R.string.please_wait)
         try {
-            val bip38 =
-                BIP38PrivateKey.fromBase58(environmentSettings.bitcoinNetworkParameters, data)
+            val bip38 = BIP38PrivateKey.fromBase58(environmentSettings.bitcoinNetworkParameters, data)
             val key = bip38.decrypt(password)
             handlePrivateKey(key, doubleEncryptionPassword)
         } catch (e: Exception) {

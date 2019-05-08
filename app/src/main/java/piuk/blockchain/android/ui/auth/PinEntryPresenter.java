@@ -20,6 +20,7 @@ import info.blockchain.wallet.exceptions.PayloadException;
 import info.blockchain.wallet.exceptions.ServerConnectionException;
 import info.blockchain.wallet.exceptions.UnsupportedVersionException;
 
+import kotlin.Unit;
 import org.spongycastle.crypto.InvalidCipherTextException;
 
 import java.net.SocketTimeoutException;
@@ -522,14 +523,14 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
     }
 
     private SecurityPromptDialog getWarningPrompt(String message) {
-        SecurityPromptDialog prompt = SecurityPromptDialog.newInstance(
+        SecurityPromptDialog prompt = SecurityPromptDialog.Companion.newInstance(
                 R.string.information,
                 message,
                 R.drawable.vector_help,
                 R.string.ok_cap,
                 false,
                 false);
-        prompt.setPositiveButtonListener(view -> prompt.dismiss());
+        prompt.setPositiveButtonListener(() -> { prompt.dismiss(); return Unit.INSTANCE; });
         return prompt;
     }
 }

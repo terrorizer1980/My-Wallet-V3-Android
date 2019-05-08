@@ -76,7 +76,7 @@ public class ContactDetailActivity extends BaseAuthActivity implements
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragmentById = fragmentManager.findFragmentById(R.id.content_frame);
-        if (fragmentById != null && fragmentById instanceof SendFragment) {
+        if (fragmentById instanceof SendFragment) {
             submitFragmentTransaction(
                     ContactDetailFragment.newInstance(
                             getIntent().getStringExtra(KEY_BUNDLE_CONTACT_ID)));
@@ -92,7 +92,7 @@ public class ContactDetailActivity extends BaseAuthActivity implements
         bundle.putString(EXTRA_RECIPIENT_ID, recipientId);
         bundle.putString(EXTRA_MDID, mdid);
         bundle.putString(EXTRA_FCTX_ID, fctxId);
-        MainActivity.start(this, bundle);
+        MainActivity.Companion.start(this, bundle);
     }
 
     @Override

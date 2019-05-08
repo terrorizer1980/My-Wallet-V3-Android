@@ -13,7 +13,6 @@ import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.BlockchainFramework
-import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.ethereum.data.EthAddressResponse
 import info.blockchain.wallet.payload.data.Account
@@ -97,65 +96,6 @@ class ReceivePresenterTest {
     @get:Rule
     val initSchedulers = rxInit {
         mainTrampoline()
-    }
-
-    @Test
-    fun `onViewReady hide contacts introduction`() {
-        // Arrange
-        whenever(environmentSettings.environment).thenReturn(Environment.PRODUCTION)
-        whenever(activity.isContactsEnabled).thenReturn(true)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_CONTACTS_INTRODUCTION_COMPLETE, false))
-            .thenReturn(true)
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(prefsUtil).getValue(PrefsUtil.KEY_CONTACTS_INTRODUCTION_COMPLETE, false)
-        verifyNoMoreInteractions(prefsUtil)
-        verify(activity).isContactsEnabled
-        verify(activity).hideContactsIntroduction()
-        verifyNoMoreInteractions(activity)
-    }
-
-    @Test
-    fun `onViewReady show contacts introduction`() {
-        // Arrange
-        whenever(environmentSettings.environment).thenReturn(Environment.PRODUCTION)
-        whenever(activity.isContactsEnabled).thenReturn(true)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_CONTACTS_INTRODUCTION_COMPLETE, false))
-            .thenReturn(false)
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(prefsUtil).getValue(PrefsUtil.KEY_CONTACTS_INTRODUCTION_COMPLETE, false)
-        verifyNoMoreInteractions(prefsUtil)
-        verify(activity).isContactsEnabled
-        verify(activity).showContactsIntroduction()
-        verifyNoMoreInteractions(activity)
-    }
-
-    @Test
-    fun `onViewReady don't show contacts`() {
-        // Arrange
-        whenever(environmentSettings.environment).thenReturn(Environment.PRODUCTION)
-        whenever(activity.isContactsEnabled).thenReturn(false)
-        // Act
-        subject.onViewReady()
-        // Assert
-        verifyZeroInteractions(prefsUtil)
-        verify(activity).isContactsEnabled
-        verify(activity).hideContactsIntroduction()
-        verifyNoMoreInteractions(activity)
-    }
-
-    @Test
-    fun onSendToContactClicked() {
-        // Arrange
-
-        // Act
-        subject.onSendToContactClicked()
-        // Assert
-        verify(activity).startContactSelectionActivity()
-        verifyZeroInteractions(activity)
     }
 
     @Test
@@ -659,62 +599,6 @@ class ReceivePresenterTest {
         subject.setWarnWatchOnlySpend(true)
         // Assert
         verify(prefsUtil).setValue(ReceivePresenter.KEY_WARN_WATCH_ONLY_SPEND, true)
-    }
-
-    @Test
-    fun clearSelectedContactId() {
-        // Arrange
-        val contactId = "1337"
-        subject.selectedContactId = contactId
-        // Act
-        subject.clearSelectedContactId()
-        // Assert
-        subject.selectedContactId `should be` null
-    }
-
-    @Test
-    fun getConfirmationDetails() {
-        // Arrange
-        val label = "LABEL"
-        val xPub = "X_PUB"
-        val account = Account().apply {
-            this.label = label
-            xpub = xPub
-        }
-        val contactName = "CONTACT_NAME"
-        val accountPosition = 10
-        subject.selectedAccount = account
-        whenever(payloadDataManager.accounts).thenReturn(listOf(account))
-        whenever(payloadDataManager.getPositionOfAccountInActiveList(0))
-            .thenReturn(10)
-        subject.selectedAccount = account
-        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(payloadDataManager.wallet!!.hdWallets[0].accounts.indexOf(account))
-            .thenReturn(accountPosition)
-        whenever(activity.getContactName())
-            .thenReturn(contactName)
-        whenever(payloadDataManager.getAccount(accountPosition))
-            .thenReturn(account)
-        whenever(activity.getBtcAmount()).thenReturn("1.0")
-        Locale.setDefault(Locale.UK)
-
-        whenever(fiatExchangeRates.fiatUnit) `it returns` "GBP"
-        whenever(fiatExchangeRates.getFiat(1.bitcoin())) `it returns` 3426.gbp()
-
-        // Act
-        val result = subject.getConfirmationDetails()
-        // Assert
-        verify(activity).getContactName()
-        verify(activity).getBtcAmount()
-        verifyNoMoreInteractions(activity)
-        verifyZeroInteractions(prefsUtil)
-        result.fromLabel `should equal to` label
-        result.toLabel `should equal to` contactName
-        result.cryptoAmount `should equal to` "1.0"
-        result.cryptoUnit `should equal to` "BTC"
-        result.fiatUnit `should equal to` "GBP"
-        result.fiatAmount `should equal to` "3,426.00"
-        result.fiatSymbol `should equal to` "£"
     }
 
     @Test

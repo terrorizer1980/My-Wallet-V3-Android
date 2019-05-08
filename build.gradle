@@ -42,4 +42,18 @@ allprojects {
     }
 }
 
+subprojects {
+    // Increase the error output of the compiler, to prevent a flood of databinder errors
+    // masking any dagger - and, indeed, other - annotation processor failures.
+    afterEvaluate {
+        if (project.plugins.hasPlugin("kotlin-kapt")) {
+            kapt {
+                javacOptions {
+                    option("-Xmaxerrs", 500)
+                }
+            }
+        }
+    }
+}
+
 apply from: 'quality/jacocoRootReport.gradle'

@@ -9,13 +9,9 @@ import java.util.Locale
 
 interface ReceiveView : View {
 
-    val isContactsEnabled: Boolean
-
     val locale: Locale
 
     fun getQrBitmap(): Bitmap
-
-    fun getContactName(): String
 
     fun getBtcAmount(): String
 
@@ -29,13 +25,7 @@ interface ReceiveView : View {
 
     fun updateBtcTextField(text: String)
 
-    fun startContactSelectionActivity()
-
     fun updateReceiveAddress(address: String)
-
-    fun hideContactsIntroduction()
-
-    fun showContactsIntroduction()
 
     fun showWatchOnlyWarning()
 

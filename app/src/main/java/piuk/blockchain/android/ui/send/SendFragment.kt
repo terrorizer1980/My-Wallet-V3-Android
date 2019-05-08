@@ -41,7 +41,6 @@ import com.blockchain.transactions.Memo
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
 import com.blockchain.ui.password.SecondPasswordHandler
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionGrantedResponse
@@ -70,6 +69,7 @@ import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
+import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import piuk.blockchain.android.ui.send.external.SendPresenter
@@ -77,9 +77,7 @@ import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.AppRate
 import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_FAQ
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
-import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
@@ -94,7 +92,6 @@ import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import timber.log.Timber
-import java.io.IOException
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -104,7 +101,7 @@ import javax.inject.Inject
  */
 class SendPresenterXSendView(val presenter: SendPresenter<SendView>)
 
-class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
+class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     SendView,
     NumericKeyboardCallback {
 
@@ -119,14 +116,9 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
 
     private val currencyState: CurrencyState by inject()
 
-    private val accessState: AccessState by inject()
-
-    private var backPressed: Long = 0
     private var progressDialog: MaterialProgressDialog? = null
     private var confirmPaymentDialog: ConfirmPaymentDialog? = null
     private var transactionSuccessDialog: AlertDialog? = null
-
-    private var listener: SendFragment.OnSendFragmentInteractionListener? = null
 
     private var handlingActivityResult = false
 
@@ -271,10 +263,7 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
 
     override fun onKeypadClose() {
         // Show bottom nav if applicable
-        if (activity is MainActivity) {
-            (activity as MainActivity).bottomNavigationView.restoreBottomNavigation()
-            (activity as MainActivity).bottomNavigationView.isBehaviorTranslationEnabled = true
-        }
+        navigator().showNavigation()
 
         // Resize activity to default
         scrollView.apply {
@@ -288,11 +277,7 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
 
     override fun onKeypadOpen() {
         currency_header?.close()
-        // Hide bottom nav if applicable
-        if (activity is MainActivity) {
-            (activity as MainActivity).bottomNavigationView.hideBottomNavigation()
-            (activity as MainActivity).bottomNavigationView.isBehaviorTranslationEnabled = false
-        }
+        navigator().hideNavigation()
     }
 
     override fun onKeypadOpenCompleted() {
@@ -312,7 +297,8 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         closeKeypad()
         currency_header.setSelectionListener { currency ->
             currencyState.cryptoCurrency = currency
-            listener!!.onSelectCurrency(currency)
+            // This will restart a new instance of this activity for the selected currency.
+            navigator().gotoSendFor(currency)
         }
     }
 
@@ -328,7 +314,7 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
     }
 
     override fun finishPage() {
-        listener?.onSendFragmentClose()
+        navigator().gotoDashboard()
     }
 
     private fun startScanActivity(code: Int) {
@@ -357,20 +343,8 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
-    private fun unpackAccountResult(data: Intent?): JsonSerializableAccount? {
-        return try {
-            val type: Class<*> = Class.forName(data?.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_OBJECT_TYPE))
-            val any = ObjectMapper().readValue(data!!.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_ITEM), type)
-
-            any as JsonSerializableAccount
-        } catch (e: ClassNotFoundException) {
-            Timber.e(e)
-            null
-        } catch (e: IOException) {
-            Timber.e(e)
-            null
-        }
-    }
+    private fun unpackAccountResult(intent: Intent?): JsonSerializableAccount? =
+        AccountChooserActivity.unpackAccountResult(intent)
 
     @SuppressLint("CheckResult")
     private fun setupReceivingView() {
@@ -582,34 +556,22 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
 
     override fun getReceivingAddress() = toContainer.toAddressEditTextView.getTextString()
 
-    fun onBackPressed() {
-        if (isKeyboardVisible()) {
-            closeKeypad()
-        } else {
-            handleBackPressed()
+    override fun onBackPressed(): Boolean =
+        when {
+            isKeyboardVisible() -> {
+                closeKeypad()
+                true
+            }
+            currency_header.isOpen() -> {
+                currency_header.close()
+                true
+            }
+            else -> false
         }
-    }
 
     override fun setSelectedCurrency(cryptoCurrency: CryptoCurrency) {
         currency_header.setCurrentlySelectedCurrency(cryptoCurrency)
         amountContainer.currencyCrypto.text = cryptoCurrency.symbol
-    }
-
-    private fun handleBackPressed() {
-        when {
-            isKeyboardVisible() -> closeKeypad()
-            currency_header.isOpen() -> currency_header.close()
-            else -> {
-                if (backPressed + COOL_DOWN_MILLIS > System.currentTimeMillis()) {
-                    accessState.logout(context)
-                    return
-                } else {
-                    toast(R.string.exit_confirm)
-                }
-
-                backPressed = System.currentTimeMillis()
-            }
-        }
     }
 
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
@@ -1135,25 +1097,6 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         dialogHandler.postDelayed(dialogRunnable, (10 * 1000).toLong())
     }
 
-    interface OnSendFragmentInteractionListener {
-        fun onSelectCurrency(cryptoCurrency: CryptoCurrency)
-        fun onSendFragmentClose()
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if (context is OnSendFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement OnSendFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
     override fun enableInput() {
         toAddressEditTextView.isEnabled = true
         toArrow.isEnabled = true
@@ -1175,7 +1118,6 @@ class SendFragment : BaseFragment<SendView, SendPresenter<SendView>>(),
         const val ARGUMENT_SCAN_DATA = "scan_data"
         private const val ARGUMENT_SELECTED_ACCOUNT_POSITION = "selected_account_position"
 
-        private const val COOL_DOWN_MILLIS = 2 * 1000
         private const val ARGUMENT_CONTACT_ID = "contact_id"
         private const val ARGUMENT_CONTACT_MDID = "contact_mdid"
         private const val ARGUMENT_FCTX_ID = "fctx_id"
