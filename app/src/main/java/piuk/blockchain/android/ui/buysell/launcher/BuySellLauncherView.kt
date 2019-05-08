@@ -9,6 +9,8 @@ interface BuySellLauncherView : View {
 
     fun onStartCoinifyOverview()
 
+    fun showPendingVerificationView()
+
     fun finishPage()
 
     fun showErrorToast(@StringRes message: Int)

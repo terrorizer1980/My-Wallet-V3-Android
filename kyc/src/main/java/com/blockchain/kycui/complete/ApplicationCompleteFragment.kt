@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.kycui.navhost.KycProgressListener
+import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.navigate
+import com.blockchain.kycui.status.KycStatusActivity
 import com.blockchain.sunriver.ui.SunriverCampaignSignupBottomDialog
 import com.blockchain.ui.extensions.throttledClicks
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,7 +48,12 @@ class ApplicationCompleteFragment : Fragment() {
                 .throttledClicks()
                 .subscribeBy(
                     onNext = {
-                        navigate(ApplicationCompleteFragmentDirections.actionTier2Complete())
+                        if (progressListener.campaignType == CampaignType.BuySell) {
+                            activity?.finish()
+                            KycStatusActivity.start(context!!, CampaignType.BuySell)
+                        } else {
+                            navigate(ApplicationCompleteFragmentDirections.actionTier2Complete())
+                        }
                     },
                     onError = { Timber.e(it) }
                 )

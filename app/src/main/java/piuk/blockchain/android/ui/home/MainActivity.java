@@ -120,7 +120,7 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
     public static final String ACTION_EXCHANGE_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_EXCHANGE_KYC";
     public static final String ACTION_SUNRIVER_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_SUNRIVER_KYC";
     public static final String ACTION_RESUBMIT_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_RESUBMIT_KYC";
-
+    public static final String ACTION_BUY_SELL_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_BUY_SELL_KYC";
     public static final String ACTION_BTC_BALANCE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_BTC_BALANCE";
     public static final String ACTION_ETH_BALANCE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_ETH_BALANCE";
     public static final String ACTION_BCH_BALANCE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_BCH_BALANCE";
@@ -201,6 +201,8 @@ public class MainActivity extends BaseMvpActivity<MainView, MainPresenter> imple
                 launchKyc(CampaignType.Swap);
             } else if (action.equals(ACTION_RESUBMIT_KYC) && getActivity() != null) {
                 launchKyc(CampaignType.Resubmission);
+            } else if (action.equals(ACTION_BUY_SELL_KYC) && getActivity() != null) {
+                launchKyc(CampaignType.BuySell);
             } else {
                 switch(action) {
                     case ACTION_BTC_BALANCE: goToTransactionsFor(CryptoCurrency.BTC);

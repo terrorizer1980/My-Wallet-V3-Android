@@ -43,6 +43,7 @@ class KycSplashFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         logEvent(
             when (progressListener.campaignType) {
+                CampaignType.BuySell,
                 CampaignType.Swap -> LoggableEvent.KycWelcome
                 CampaignType.Sunriver -> LoggableEvent.KycSunriverStart
                 CampaignType.Resubmission -> LoggableEvent.KycResubmission
@@ -51,6 +52,7 @@ class KycSplashFragment : Fragment() {
         textViewTerms.renderTermsLinks(R.string.kyc_splash_terms_and_conditions)
 
         val title = when (progressListener.campaignType) {
+            CampaignType.BuySell -> R.string.buy_sell_splash_title
             CampaignType.Swap -> R.string.kyc_splash_title
             CampaignType.Sunriver, CampaignType.Resubmission -> R.string.sunriver_splash_title
         }

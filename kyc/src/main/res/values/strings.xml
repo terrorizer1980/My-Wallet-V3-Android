@@ -210,6 +210,9 @@
     <string name="sunriver_splash_message">Verify your identity to claim your XLM. It only takes a few minutes. Once verified, you\'ll be able to use our next generation trading product, Swap.</string>
     <string name="sunriver_status_message">Your information is being reviewed. The review should complete in 5 minutes. Once you\'re successfully verified, we\'ll send your Stellar within one week.</string>
 
+    <!-- Buy/Sell -->
+    <string name="buy_sell_splash_title">Buy &amp; Sell</string>
+
     <!-- KYC Tiers -->
     <string name="tiers_splash_header_text">Trading your crypto doesn\'t mean trading away control</string>
     <string name="announcing_swap">Swap by Blockchain enables you to trade crypto with best prices, and quick settlement, all while maintaining full control of your funds.</string>

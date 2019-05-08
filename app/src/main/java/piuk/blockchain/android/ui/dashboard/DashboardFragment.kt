@@ -27,6 +27,7 @@ import piuk.blockchain.android.ui.customviews.BottomSpacerDecoration
 import piuk.blockchain.android.ui.dashboard.adapter.DashboardDelegateAdapter
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.MainActivity.ACCOUNT_EDIT
+import piuk.blockchain.android.ui.home.MainActivity.ACTION_BUY_SELL_KYC
 import piuk.blockchain.android.ui.home.MainActivity.ACTION_EXCHANGE_KYC
 import piuk.blockchain.android.ui.home.MainActivity.ACTION_RECEIVE_BCH
 import piuk.blockchain.android.ui.home.MainActivity.ACTION_RESUBMIT_KYC
@@ -166,6 +167,7 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
                 CampaignType.Swap -> ACTION_EXCHANGE_KYC
                 CampaignType.Sunriver -> ACTION_SUNRIVER_KYC
                 CampaignType.Resubmission -> ACTION_RESUBMIT_KYC
+                CampaignType.BuySell -> ACTION_BUY_SELL_KYC
             }
         )
     }

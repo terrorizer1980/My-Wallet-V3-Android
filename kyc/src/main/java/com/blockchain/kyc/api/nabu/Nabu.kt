@@ -13,6 +13,7 @@ import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.SupportedDocumentsResponse
 import com.blockchain.kyc.models.nabu.TierUpdateJson
 import com.blockchain.kyc.models.nabu.TiersJson
+import com.blockchain.kyc.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.kyc.models.nabu.VeriffToken
 import com.blockchain.nabu.models.NabuOfflineTokenRequest
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
@@ -133,6 +134,12 @@ internal interface Nabu {
     @POST(NABU_KYC_TIERS)
     fun setTier(
         @Body tierUpdateJson: TierUpdateJson,
+        @Header("authorization") authorization: String
+    ): Completable
+
+    @PUT(NABU_UPDATE_COINIFY_ID)
+    fun setCoinifyTraderId(
+        @Body coinifyTraderId: UpdateCoinifyTraderIdRequest,
         @Header("authorization") authorization: String
     ): Completable
 }

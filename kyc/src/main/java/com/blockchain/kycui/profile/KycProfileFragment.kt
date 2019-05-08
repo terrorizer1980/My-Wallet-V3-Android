@@ -94,7 +94,7 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
             buttonNext
                 .throttledClicks()
                 .subscribeBy(
-                    onNext = { presenter.onContinueClicked() },
+                    onNext = { presenter.onContinueClicked(progressListener.campaignType) },
                     onError = { Timber.e(it) }
                 )
 
