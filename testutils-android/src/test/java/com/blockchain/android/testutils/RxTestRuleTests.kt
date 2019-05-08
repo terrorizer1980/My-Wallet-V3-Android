@@ -111,5 +111,4 @@ class RxTestRuleTests {
             }
         Schedulers.newThread() `should not be` scheduler
     }
-
 }

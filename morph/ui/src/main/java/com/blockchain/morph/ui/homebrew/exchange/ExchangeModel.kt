@@ -1,7 +1,6 @@
 package com.blockchain.morph.ui.homebrew.exchange
 
 import android.arch.lifecycle.ViewModel
-import android.widget.TextView
 import com.blockchain.accounts.AllAccountList
 import com.blockchain.datamanagers.MaximumSpendableCalculator
 import com.blockchain.morph.exchange.mvi.ExchangeDialog
@@ -221,9 +220,16 @@ interface ExchangeMenuState {
     }
 
     data class ExchangeMenuError(
+        val fromCrypto: CryptoCurrency,
+        val tier: Int,
+        val title: CharSequence,
         val message: CharSequence,
-        var bufferType: TextView.BufferType
+        val errorType: ErrorType
     )
+
+    enum class ErrorType {
+        TRADE, TIER, BALANCE
+    }
 
     fun setMenuState(state: ExchangeMenu)
 }

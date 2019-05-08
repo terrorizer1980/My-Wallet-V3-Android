@@ -88,5 +88,9 @@
 
     <!-- swap announcement card colors -->
     <color name="swap_announcement_card_background">#13153B</color>
+    <!-- swap error dialog colors -->
+    <color name="swap_error_dialog_title_text_color">#074B7A</color>
+    <color name="swap_error_dialog_message_text_color">#5B5B5B</color>
+
 
 </resources>
