@@ -15,7 +15,7 @@ interface KycNavHostView : View {
 
     fun navigate(directions: NavDirections)
 
-    fun navigateToAirdropSplash()
+    fun navigateToKycSplash()
 
     fun navigateToResubmissionSplash()
 }

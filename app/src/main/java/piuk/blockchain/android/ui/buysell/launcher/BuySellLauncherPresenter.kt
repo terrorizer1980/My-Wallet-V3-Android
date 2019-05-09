@@ -1,32 +1,31 @@
 package piuk.blockchain.android.ui.buysell.launcher
 
 import com.blockchain.kyc.models.nabu.Kyc2TierState
-import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
 import com.blockchain.kycui.settings.KycStatusHelper
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
+import piuk.blockchain.androidbuysell.models.CoinifyData
+import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
 
 class BuySellLauncherPresenter constructor(
     private val kycStatusHelper: KycStatusHelper,
-    private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator
+    private val exchangeService: ExchangeService
 ) : BasePresenter<BuySellLauncherView>() {
 
     override fun onViewReady() {
-        compositeDisposable += kycStatusHelper.getKyc2TierStatus()
-            .subscribeOn(Schedulers.io())
-            .flatMap {
-                if (it == Kyc2TierState.Tier2Approved) {
-                    nabuCoinifyAccountCreator.createCoinifyAccountIfNeeded()
-                        .toSingle { Single.just(it) }
-                }
-                Single.just(it)
-            }
+        compositeDisposable +=
+            Singles.zip(
+                exchangeService.getCoinifyData()
+                    .switchIfEmpty(Single.just(CoinifyData(0, ""))),
+                kycStatusHelper.getKyc2TierStatus()
+            ).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view.displayProgressDialog() }
             .doAfterTerminate { view.dismissProgressDialog() }
@@ -37,13 +36,23 @@ class BuySellLauncherPresenter constructor(
                     view.finishPage()
                 },
                 onSuccess = {
-                    when (it) {
-                        Kyc2TierState.Tier2Approved -> view.onStartCoinifyOverview()
+                    val coinifyData = it.first
+                    val tierState = it.second
+                    when (tierState) {
+                        Kyc2TierState.Tier2Approved -> {
+                            if (coinifyData.user != 0) {
+                                view.onStartCoinifyOverview()
+                            } else {
+                                view.onStartCoinifyOptIn()
+                            }
+                        }
+                        Kyc2TierState.Tier1InReview,
+                        Kyc2TierState.Tier1Failed,
+                        Kyc2TierState.Tier1Approved -> {
+                            view.onStartCoinifyOptIn()
+                        }
                         Kyc2TierState.Hidden,
                         Kyc2TierState.Locked -> view.onStartCoinifySignUp()
-                        Kyc2TierState.Tier1InReview,
-                        Kyc2TierState.Tier1Approved,
-                        Kyc2TierState.Tier1Failed,
                         Kyc2TierState.Tier2InReview,
                         Kyc2TierState.Tier2Failed -> view.showPendingVerificationView()
                     }

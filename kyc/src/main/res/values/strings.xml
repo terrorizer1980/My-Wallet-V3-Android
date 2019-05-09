@@ -212,6 +212,9 @@
 
     <!-- Buy/Sell -->
     <string name="buy_sell_splash_title">Buy &amp; Sell</string>
+    <string name="buy_sell_splash_message">You can buy &amp; sell bitcoin (BTC) using your credit card or bank account through our partner Coinify.</string>
+    <string name="buy_sell_splash_terms_and_conditions">By tapping Begin Now, you agree to Coinify’s</string>
+    <string name="buy_sell_please_wait">Please wait…</string>
 
     <!-- KYC Tiers -->
     <string name="tiers_splash_header_text">Trading your crypto doesn\'t mean trading away control</string>

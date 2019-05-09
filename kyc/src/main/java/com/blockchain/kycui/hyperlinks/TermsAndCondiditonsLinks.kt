@@ -16,13 +16,17 @@ import piuk.blockchain.android.constants.URL_PRIVACY_POLICY
 import piuk.blockchain.android.constants.URL_TOS_POLICY
 import piuk.blockchain.kyc.R
 
-fun TextView.renderTermsLinks(@StringRes startText: Int) {
+fun TextView.renderTermsLinks(
+    @StringRes startText: Int,
+    tos: String = URL_TOS_POLICY,
+    privacyPolicyUrl: String = URL_PRIVACY_POLICY
+) {
     val disclaimerStart = context.getString(startText) + "\n"
     val terms = context.getString(R.string.kyc_splash_terms_and_conditions_terms)
     val ampersand = "&"
     val privacy = context.getString(R.string.kyc_splash_terms_and_conditions_privacy)
-    val termsClickSpan = context.goToUrlClickableSpan(URL_TOS_POLICY)
-    val privacyClickSpan = context.goToUrlClickableSpan(URL_PRIVACY_POLICY)
+    val termsClickSpan = context.goToUrlClickableSpan(tos)
+    val privacyClickSpan = context.goToUrlClickableSpan(privacyPolicyUrl)
 
     formatLinks(
         disclaimerStart to defaultClickSpan,

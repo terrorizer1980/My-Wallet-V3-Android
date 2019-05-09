@@ -42,7 +42,7 @@ class KycNavHostPresenter(
                 .subscribeBy(
                     onSuccess = {
                         registerForCampaignIfNeeded()
-                        updateTier2SelectedTierIfNeeded(it)
+                        updateTier2SelectedTierIfNeeded()
                         redirectUserFlow(it)
                     },
                     onError = {
@@ -79,15 +79,8 @@ class KycNavHostPresenter(
             .subscribe()
     }
 
-    private fun updateTier2SelectedTierIfNeeded(user: NabuUser) {
-
-        // Check if user selection already captured
-        if (user.tiers?.selected != 0) {
-            return
-        }
-
-        // Check if Sunriver campaign
-        if (view.campaignType != CampaignType.Sunriver) {
+    private fun updateTier2SelectedTierIfNeeded() {
+        if (view.campaignType != CampaignType.Sunriver || view.campaignType != CampaignType.BuySell) {
             return
         }
 
@@ -98,7 +91,9 @@ class KycNavHostPresenter(
     }
 
     private fun redirectUserFlow(user: NabuUser) {
-        if (view.campaignType == CampaignType.Resubmission || user.isMarkedForResubmission) {
+        if (view.campaignType == CampaignType.BuySell) {
+            view.navigateToKycSplash()
+        } else if (view.campaignType == CampaignType.Resubmission || user.isMarkedForResubmission) {
             view.navigateToResubmissionSplash()
         } else if (user.state != UserState.None && user.kycState == KycState.None) {
             val current = user.tiers?.current
@@ -109,7 +104,7 @@ class KycNavHostPresenter(
                 Logging.logCustom(KycResumedEvent(reentryPoint))
             }
         } else if (view.campaignType == CampaignType.Sunriver) {
-            view.navigateToAirdropSplash()
+            view.navigateToKycSplash()
         }
 
         // If no other methods are triggered, this will start KYC from scratch. If others have been called,
