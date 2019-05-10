@@ -20,6 +20,11 @@ class FeeOptions constructor(
      */
     @JsonProperty("regular")
     val regularFee: Long = 0,
+    /**
+     * Returns a "gasLimit" for Erc20 contract
+     */
+    @JsonProperty("gasLimitContract")
+    val gasLimitContract: Long = 0,
 
     /**
      * Returns a "priority" fee, which should result in a transaction being included in a block in
