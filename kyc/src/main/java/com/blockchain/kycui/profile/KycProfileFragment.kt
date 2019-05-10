@@ -111,7 +111,7 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
         navigate(KycProfileFragmentDirections.ActionKycProfileFragmentToKycHomeAddressFragment(profileModel))
     }
 
-    override fun showErrorToast(message: Int) {
+    override fun showErrorToast(message: String) {
         toast(message, ToastCustom.TYPE_ERROR)
     }
 

@@ -29,12 +29,15 @@ import java.util.Date
 import java.util.Locale
 import kotlin.properties.Delegates
 import com.google.common.base.Optional
+import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.androidbuysell.models.coinify.exceptions.CoinifyApiException
 
 class KycProfilePresenter(
     nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
     private val metadataRepository: MetadataRepository,
-    private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator
+    private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator,
+    private val stringUtils: StringUtils
 ) : BaseKycPresenter<KycProfileView>(nabuToken) {
 
     var firstNameSet by Delegates.observable(false) { _, _, _ -> enableButtonIfComplete() }
@@ -84,9 +87,11 @@ class KycProfilePresenter(
                         if (it is NabuApiException &&
                             it.getErrorStatusCode() == NabuErrorStatusCodes.AlreadyRegistered
                         ) {
-                            view.showErrorToast(R.string.kyc_profile_error_conflict)
+                            view.showErrorToast(stringUtils.getString(R.string.kyc_profile_error_conflict))
+                        } else if (it is CoinifyApiException) {
+                            view.showErrorToast(it.getErrorDescription())
                         } else {
-                            view.showErrorToast(R.string.kyc_profile_error)
+                            view.showErrorToast(stringUtils.getString(R.string.kyc_profile_error))
                         }
                     }
                 )

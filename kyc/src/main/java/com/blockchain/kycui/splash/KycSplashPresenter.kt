@@ -12,6 +12,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.androidbuysell.models.coinify.exceptions.CoinifyApiException
 import piuk.blockchain.kyc.R
 import timber.log.Timber
 
@@ -19,7 +21,8 @@ class KycSplashPresenter(
     nabuToken: NabuToken,
     private val kycStatusHelper: KycStatusHelper,
     private val kycNavigator: KycNavigator,
-    private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator
+    private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator,
+    private val stringUtils: StringUtils
 ) : BaseKycPresenter<KycSplashView>(nabuToken) {
 
     override fun onViewReady() {}
@@ -50,7 +53,11 @@ class KycSplashPresenter(
             .subscribeBy(
                 onError = {
                     Timber.e(it)
-                    view.showError(R.string.kyc_non_specific_server_error)
+                    if (it is CoinifyApiException) {
+                        view.showError(it.getErrorDescription())
+                    } else {
+                        view.showError(stringUtils.getString(R.string.kyc_non_specific_server_error))
+                    }
                 },
                 onSuccess = {
                     if (it == Kyc2TierState.Tier2Approved) {

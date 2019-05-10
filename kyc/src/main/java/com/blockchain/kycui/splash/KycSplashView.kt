@@ -1,6 +1,5 @@
 package com.blockchain.kycui.splash
 
-import android.support.annotation.StringRes
 import androidx.navigation.NavDirections
 import piuk.blockchain.androidcoreui.ui.base.View
 
@@ -11,5 +10,5 @@ interface KycSplashView : View {
 
     fun goToBuySellView()
 
-    fun showError(@StringRes message: Int)
+    fun showError(message: String)
 }

@@ -124,7 +124,7 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
             progressDialog = null
         }
     }
-    override fun showError(message: Int) {
+    override fun showError(message: String) {
         toast(message, ToastCustom.TYPE_ERROR)
     }
 

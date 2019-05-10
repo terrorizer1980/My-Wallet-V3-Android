@@ -90,11 +90,11 @@ val kycModule = applicationContext {
 
         factory { KycTierSplashPresenter(get(), get(), get()) }
 
-        factory { KycSplashPresenter(get(), get(), get(), get()) }
+        factory { KycSplashPresenter(get(), get(), get(), get(), get()) }
 
         factory { KycCountrySelectionPresenter(get()) }
 
-        factory { KycProfilePresenter(get(), get(), get(), get()) }
+        factory { KycProfilePresenter(get(), get(), get(), get(), get()) }
 
         factory { KycHomeAddressPresenter(get(), get(), get(), get()) }
 
