@@ -117,6 +117,7 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
 
     override fun displayCoinType(requestString: String) {
         textview_request_currency.text = requestString
+        textview_request_currency.contentDescription = requestString
     }
 
     override fun setUiState(uiState: Int) {

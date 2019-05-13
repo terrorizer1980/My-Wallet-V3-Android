@@ -69,6 +69,22 @@
     <string name="pairing_failed">Pairing failed. Please try again.</string>
     <string name="account_locked_title">Account locked</string>
     <string name="account_locked_message">Your account has been locked temporarily as a precaution. Please check your email for more information and try again later.</string>
+    <string name="pin_box_0">Pin Box 0</string>
+    <string name="pin_box_1">Pin Box 1</string>
+    <string name="pin_box_2">Pin Box 2</string>
+    <string name="pin_box_3">Pin Box 3</string>
+    <string name="fingerprint_logo">Fingerprint Logo</string>
+    <string name="keyboard_input_1">Keyboard Input 1</string>
+    <string name="keyboard_input_2">Keyboard Input 2</string>
+    <string name="keyboard_input_3">Keyboard Input 3</string>
+    <string name="keyboard_input_4">Keyboard Input 4</string>
+    <string name="keyboard_input_5">Keyboard Input 5</string>
+    <string name="keyboard_input_6">Keyboard Input 6</string>
+    <string name="keyboard_input_7">Keyboard Input 7</string>
+    <string name="keyboard_input_8">Keyboard Input 8</string>
+    <string name="keyboard_input_9">Keyboard Input 9</string>
+    <string name="keyboard_input_0">Keyboard Input 0</string>
+    <string name="keyboard_input_delete">Keyboard Input Delete</string>
 
     <string name="check_connectivity_exit">Blockchain Wallet cannot obtain an Internet connection. Please check the connectivity on your device and try again.</string>
 
@@ -683,6 +699,8 @@
     <string name="swipe_receive_address_info">Five addresses will be loaded consecutively, after which logging in is required to show new addresses.</string>
     <string name="swipe_receive_no_addresses">No more addresses can be loaded right now. Log in to the app to load more.</string>
     <string name="swipe_receive_request">Request %1$s</string>
+    <string name="swipe_receive_left_arrow">Swipe to Receive Left Arrow</string>
+    <string name="swipe_receive_right_arrow">Swipe to Receive Right Arrow</string>
 
     <!-- ONBOARDING -->
     <string name="onboarding_fingerprint_title">Fingerprint Login</string>
