@@ -24,6 +24,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.utils.extensions.gone
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 
 abstract class BaseAirdropBottomDialog(
@@ -59,7 +60,15 @@ abstract class BaseAirdropBottomDialog(
         view.findViewById<TextView>(R.id.dialog_body).setText(content.description)
         view.findViewById<Button>(R.id.button_cta)
             .apply {
-                gone()
+                if (content.ctaButtonText != 0) {
+                    setText(content.ctaButtonText)
+                    setOnClickListener {
+                        ctaButtonClick()
+                    }
+                    visible()
+                } else {
+                    gone()
+                }
             }
         view.findViewById<TextView>(R.id.button_dismiss).apply {
             if (content.dismissText != 0) {
@@ -67,6 +76,7 @@ abstract class BaseAirdropBottomDialog(
                 setOnClickListener {
                     dismissButtonClick()
                 }
+                visible()
             } else {
                 gone()
             }
