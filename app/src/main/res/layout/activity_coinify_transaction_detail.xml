@@ -26,7 +26,6 @@
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginRight="32dp"
-                android:height="43dp"
                 android:fontFamily="@font/montserrat"
                 android:gravity="center"
                 android:textColor="@color/black"
