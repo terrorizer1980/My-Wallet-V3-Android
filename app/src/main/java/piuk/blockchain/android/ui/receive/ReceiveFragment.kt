@@ -25,11 +25,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.blockchain.serialization.JsonSerializableAccount
+import com.blockchain.ui.chooser.AccountChooserActivity
+import com.blockchain.ui.chooser.AccountMode
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.single.BasePermissionListener
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
@@ -41,20 +44,14 @@ import kotlinx.android.synthetic.main.include_amount_row.*
 import kotlinx.android.synthetic.main.include_amount_row.view.*
 import kotlinx.android.synthetic.main.include_to_row.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.balance.BalanceFragment
-import com.blockchain.ui.chooser.AccountChooserActivity
-import com.blockchain.ui.chooser.AccountMode
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
+import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.util.EditTextFormatUtil
-import info.blockchain.balance.CryptoCurrency
-import kotlinx.android.synthetic.main.include_pax_soon.*
-import org.koin.android.ext.android.inject
-import piuk.blockchain.android.ui.home.HomeFragment
-import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_FAQ
-import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
@@ -163,10 +160,6 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
                 CryptoCurrency.XLM -> presenter?.onXlmSelected()
                 CryptoCurrency.PAX -> presenter?.onPaxSelected()
             }
-        }
-
-        link_what_is_pax.setOnClickListener {
-            calloutToExternalSupportLinkDlg(activity!!, URL_BLOCKCHAIN_PAX_FAQ)
         }
     }
 

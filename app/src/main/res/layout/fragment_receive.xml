@@ -185,11 +185,6 @@
             </android.support.constraint.ConstraintLayout>
         </android.support.v4.widget.NestedScrollView>
 
-        <include
-            layout="@layout/include_pax_soon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
     </ViewSwitcher>
 
     <piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboard

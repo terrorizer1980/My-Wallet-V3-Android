@@ -104,21 +104,6 @@ public class EthAccountApiTest extends MockedResponseTest {
     }
 
     @Test
-    public void getTransactionFromHash() {
-        // Arrange
-        LinkedList<Pair> responses = new LinkedList<>();
-        responses.add(Pair.of(200, TX_DETAILS_RESPONSE));
-        mockInterceptor.setResponseList(responses);
-        // Act
-        final TestObserver<EthTxDetails> response = subject.getTransaction("hash").test();
-        // Assert
-        response.assertComplete();
-        response.assertNoErrors();
-        final EthTxDetails txDetails = response.values().get(0);
-        assertEquals("0xcc6952c8f5c6e90d1addcaf3717b6df251982637f0cafc32c7f6348018dd2a7b", txDetails.getHash());
-    }
-
-    @Test
     public void pushTx_returns_200() {
         // Arrange
         LinkedList<Pair> responses = new LinkedList<>();

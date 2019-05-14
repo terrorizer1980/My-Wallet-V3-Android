@@ -4,15 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/pax_no_transactions_container"
     android:background="@color/white"
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="149dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="100dp"
         android:layout_gravity="center_horizontal"
         app:srcCompat="@drawable/vector_pax_filled"/>
 
@@ -22,7 +23,7 @@
         android:fontFamily="@font/montserrat"
         android:gravity="center_horizontal"
         android:layout_gravity="center"
-        android:text="@string/pax_coming_soon_title"
+        android:text="@string/pax_title"
         android:textColor="@color/soon_title_blue"
         android:layout_marginTop="26dp"
         android:textSize="18sp"/>
@@ -33,7 +34,7 @@
         android:fontFamily="@font/montserrat"
         android:gravity="center_horizontal"
         android:layout_gravity="center"
-        android:text="@string/pax_coming_soon_message"
+        android:text="@string/pax_no_transactions_message"
         android:textColor="@color/soon_text_grey"
         android:layout_marginTop="26dp"
         android:layout_marginLeft="24dp"
@@ -47,7 +48,7 @@
         android:fontFamily="@font/montserrat"
         android:gravity="center_horizontal"
         android:layout_gravity="center"
-        android:text="@string/pax_coming_soon_link"
+        android:text="@string/pax_learn_more_link"
         android:textColor="@color/primary_blue_accent"
         android:layout_marginTop="40dp"
         android:textSize="18sp"/>

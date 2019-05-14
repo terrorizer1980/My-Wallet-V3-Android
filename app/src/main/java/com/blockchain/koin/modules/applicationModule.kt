@@ -61,7 +61,7 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            Erc20Manager(get())
+            Erc20Manager(ethDataManager = get(), erc20DataStore = get(), environmentSettings = get())
         }
 
         factory {
@@ -76,15 +76,17 @@ val applicationModule = applicationContext {
             SwipeToReceiveHelper(get(), get(), get(), get(), get(), get(), get())
         }
 
-        factory { WalletAccountHelper(
-            payloadManager = get(),
-            stringUtils = get(),
-            currencyState = get(),
-            ethDataManager = get(),
-            bchDataManager = get(),
-            xlmDataManager = get(),
-            environmentSettings = get(),
-            exchangeRates = get())
+        factory {
+            WalletAccountHelper(
+                payloadManager = get(),
+                stringUtils = get(),
+                currencyState = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                xlmDataManager = get(),
+                environmentSettings = get(),
+                exchangeRates = get(),
+                erc20DataManager = get())
         }
 
         factory { WalletAccountHelperAccountListingAdapter(get()) }

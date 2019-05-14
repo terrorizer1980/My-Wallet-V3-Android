@@ -38,7 +38,4 @@ interface BalanceView : View {
     fun setDropdownVisibility(visible: Boolean)
 
     fun disableCurrencyHeader()
-
-    // TODO: AND-2003 Remove once PAX fully implemented
-    fun showComingSoon(show: Boolean)
 }

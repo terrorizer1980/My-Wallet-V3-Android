@@ -1,6 +1,7 @@
 package piuk.blockchain.android.injection;
 
 import android.app.NotificationManager;
+
 import com.blockchain.koin.KoinDaggerModule;
 import com.blockchain.koin.modules.MorphActivityLauncher;
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager;
@@ -15,6 +16,7 @@ import com.blockchain.remoteconfig.RemoteConfig;
 import com.blockchain.remoteconfig.RemoteConfiguration;
 import com.blockchain.sunriver.XlmDataManager;
 import com.blockchain.ui.CurrentContextAccess;
+
 import dagger.Module;
 import dagger.Provides;
 import info.blockchain.wallet.payload.PayloadManager;
@@ -36,6 +38,7 @@ import piuk.blockchain.androidcore.data.auth.AuthDataManager;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyState;
+import piuk.blockchain.androidcore.data.erc20.Erc20Manager;
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager;
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates;
 import piuk.blockchain.androidcore.data.fees.FeeDataManager;
@@ -51,6 +54,7 @@ import piuk.blockchain.androidcore.utils.AESUtilWrapper;
 import piuk.blockchain.androidcore.utils.PrngFixer;
 
 import javax.inject.Named;
+
 import java.util.Locale;
 
 @Module
@@ -150,6 +154,11 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     EthDataManager provideEthDataManager() {
         return get(EthDataManager.class);
+    }
+
+    @Provides
+    Erc20Manager provideErc20Manager() {
+        return get(Erc20Manager.class);
     }
 
     @Provides

@@ -50,6 +50,7 @@ import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyState;
+import piuk.blockchain.androidcore.data.erc20.Erc20Manager;
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager;
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager;
 import piuk.blockchain.androidcore.data.fees.FeeDataManager;
@@ -83,6 +84,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private FeeDataManager feeDataManager;
     private PromptManager promptManager;
     private EthDataManager ethDataManager;
+    private Erc20Manager erc20Manager;
     private BchDataManager bchDataManager;
     private CurrencyState currencyState;
     private WalletOptionsDataManager walletOptionsDataManager;
@@ -459,6 +461,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         accessState.setPIN(null);
         buyDataManager.wipe();
         ethDataManager.clearEthAccountDetails();
+        erc20Manager.clearErc20AccountDetails();
         bchDataManager.clearBchAccountDetails();
         DashboardPresenter.onLogout();
     }

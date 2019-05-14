@@ -57,7 +57,6 @@ import kotlinx.android.synthetic.main.fragment_send.*
 import kotlinx.android.synthetic.main.include_amount_row.*
 import kotlinx.android.synthetic.main.include_amount_row.view.*
 import kotlinx.android.synthetic.main.include_from_row.view.*
-import kotlinx.android.synthetic.main.include_pax_soon.*
 import kotlinx.android.synthetic.main.include_to_row_editable.*
 import kotlinx.android.synthetic.main.include_to_row_editable.view.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
@@ -75,8 +74,6 @@ import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import piuk.blockchain.android.ui.send.external.SendPresenter
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.AppRate
-import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_FAQ
-import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
@@ -84,12 +81,12 @@ import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
-import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
+import piuk.blockchain.androidcoreui.utils.extensions.visible
+import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
-import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import timber.log.Timber
 import java.util.Locale
@@ -186,15 +183,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
         learnMoreMinBalance.setOnClickListener {
             MinBalanceExplanationDialog().show(fragmentManager, "Dialog")
-        }
-
-        link_what_is_pax.setOnClickListener {
-            calloutToExternalSupportLinkDlg(activity!!, URL_BLOCKCHAIN_PAX_FAQ)
-        }
-
-        // TODO: AND-2003 Remove this check when PAX fully implemented
-        if (CryptoCurrency.PAX != currency_header.getCurrentlySelectedCurrency()) {
-            soon_overlay.gone()
         }
 
         amountContainer.currencyFiat.text = currencyState.fiatUnit

@@ -13,11 +13,12 @@ private class Erc20BalanceReportAdapter(
 ) : AsyncBalanceReporter {
 
     override fun entireBalance(): Single<CryptoValue> =
-        erc20Manager.getBalance(CryptoCurrency.PAX)
+        erc20Manager.fetchErc20Address()
+            .singleOrError()
             .map {
                 CryptoValue(
                     CryptoCurrency.PAX,
-                    it
+                    it.totalBalance
                 )
             }
 

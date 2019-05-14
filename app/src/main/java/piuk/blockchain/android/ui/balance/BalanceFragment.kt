@@ -18,7 +18,7 @@ import android.view.ViewGroup
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_balance.*
 import kotlinx.android.synthetic.main.include_no_transaction_message.*
-import kotlinx.android.synthetic.main.include_pax_soon.*
+import kotlinx.android.synthetic.main.layout_pax_no_transactions.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.websocket.WebSocketService
@@ -92,14 +92,12 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activity?.apply {
-            (activity as MainActivity).setOnTouchOutsideViewListener(app_bar,
-                object : OnTouchOutsideViewListener {
-                    override fun onTouchOutside(view: View, event: MotionEvent) {
-                        currency_header.close()
-                    }
-                })
-        }
+        (activity as? MainActivity)?.setOnTouchOutsideViewListener(app_bar,
+            object : OnTouchOutsideViewListener {
+                override fun onTouchOutside(view: View, event: MotionEvent) {
+                    currency_header.close()
+                }
+            })
 
         swipe_container.setProgressViewEndTarget(
             false,
@@ -142,8 +140,8 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
 
     override fun onResume() {
         super.onResume()
-        navigator().showNavigation()
 
+        navigator().showNavigation()
         LocalBroadcastManager.getInstance(context!!)
             .registerReceiver(receiver, IntentFilter(ACTION_INTENT))
     }
@@ -151,7 +149,6 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
     override fun onPause() {
         super.onPause()
         LocalBroadcastManager.getInstance(context!!).unregisterReceiver(receiver)
-
         // Fixes issue with Swipe Layout messing with Fragment transitions
         swipe_container?.let {
             it.isRefreshing = false
@@ -292,21 +289,33 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
                     }
                 }
                 description.setText(R.string.transaction_occur_when_bitcoin)
+                pax_no_transactions.gone()
+                non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.ETHER -> {
                 button_get_bitcoin.setText(R.string.onboarding_get_eth)
                 button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.ETHER) }
                 description.setText(R.string.transaction_occur_when_eth)
+                pax_no_transactions.gone()
+                non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.BCH -> {
                 button_get_bitcoin.setText(R.string.onboarding_get_bitcoin_cash)
                 button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.BCH) }
                 description.setText(R.string.transaction_occur_when_bitcoin_cash)
+                pax_no_transactions.gone()
+                non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.XLM -> {
                 button_get_bitcoin.setText(R.string.onboarding_get_lumens)
                 button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.XLM) }
                 description.setText(R.string.transaction_occur_when_lumens)
+                pax_no_transactions.gone()
+                non_pax_no_transactions_container.visible()
+            }
+            CryptoCurrency.PAX -> {
+                pax_no_transactions.visible()
+                non_pax_no_transactions_container.gone()
             }
             else -> throw IllegalArgumentException(
                 "Cryptocurrency ${presenter.getCurrentCurrency().unit} not supported"
@@ -353,11 +362,6 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
     }
 
     override fun getCurrentAccountPosition() = accounts_spinner.selectedItemPosition
-
-    override fun showComingSoon(show: Boolean) {
-        coming_soon_overlay.goneIf(!show)
-        textview_balance.goneIf(show)
-    }
 
     companion object {
 

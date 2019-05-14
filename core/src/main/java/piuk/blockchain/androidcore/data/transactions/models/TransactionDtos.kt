@@ -3,6 +3,8 @@ package piuk.blockchain.androidcore.data.transactions.models
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.ethereum.data.EthTransaction
 import info.blockchain.wallet.multiaddress.TransactionSummary
+import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
+import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import java.math.BigInteger
 
@@ -25,20 +27,20 @@ abstract class Displayable {
     open var note: String? = null
 
     override fun toString(): String = "cryptoCurrency = $cryptoCurrency" +
-        "direction  = $direction " +
-        "timeStamp  = $timeStamp " +
-        "total  = $total " +
-        "fee  = $fee " +
-        "hash  = $hash " +
-        "inputsMap  = $inputsMap " +
-        "outputsMap  = $outputsMap " +
-        "confirmations  = $confirmations " +
-        "watchOnly  = $watchOnly " +
-        "doubleSpend  = $doubleSpend " +
-        "isPending  = $isPending " +
-        "totalDisplayableCrypto  = $totalDisplayableCrypto " +
-        "totalDisplayableFiat  = $totalDisplayableFiat " +
-        "note = $note"
+            "direction  = $direction " +
+            "timeStamp  = $timeStamp " +
+            "total  = $total " +
+            "fee  = $fee " +
+            "hash  = $hash " +
+            "inputsMap  = $inputsMap " +
+            "outputsMap  = $outputsMap " +
+            "confirmations  = $confirmations " +
+            "watchOnly  = $watchOnly " +
+            "doubleSpend  = $doubleSpend " +
+            "isPending  = $isPending " +
+            "totalDisplayableCrypto  = $totalDisplayableCrypto " +
+            "totalDisplayableFiat  = $totalDisplayableFiat " +
+            "note = $note"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -46,20 +48,20 @@ abstract class Displayable {
         val that = other as Displayable?
 
         return this.cryptoCurrency == that?.cryptoCurrency &&
-            this.direction == that.direction &&
-            this.timeStamp == that.timeStamp &&
-            this.total == that.total &&
-            this.fee == that.fee &&
-            this.hash == that.hash &&
-            this.inputsMap == that.inputsMap &&
-            this.outputsMap == that.outputsMap &&
-            this.confirmations == that.confirmations &&
-            this.watchOnly == that.watchOnly &&
-            this.doubleSpend == that.doubleSpend &&
-            this.isPending == that.isPending &&
-            this.totalDisplayableCrypto == that.totalDisplayableCrypto &&
-            this.totalDisplayableFiat == that.totalDisplayableFiat &&
-            this.note == that.note
+                this.direction == that.direction &&
+                this.timeStamp == that.timeStamp &&
+                this.total == that.total &&
+                this.fee == that.fee &&
+                this.hash == that.hash &&
+                this.inputsMap == that.inputsMap &&
+                this.outputsMap == that.outputsMap &&
+                this.confirmations == that.confirmations &&
+                this.watchOnly == that.watchOnly &&
+                this.doubleSpend == that.doubleSpend &&
+                this.isPending == that.isPending &&
+                this.totalDisplayableCrypto == that.totalDisplayableCrypto &&
+                this.totalDisplayableFiat == that.totalDisplayableFiat &&
+                this.note == that.note
     }
 
     override fun hashCode(): Int {
@@ -93,7 +95,8 @@ class EthDisplayable(
     override val direction: TransactionSummary.Direction
         get() = when {
             combinedEthModel.getAccounts()[0] == ethTransaction.to
-                && combinedEthModel.getAccounts()[0] == ethTransaction.from -> TransactionSummary.Direction.TRANSFERRED
+                    && combinedEthModel.getAccounts()[0] ==
+                    ethTransaction.from -> TransactionSummary.Direction.TRANSFERRED
             combinedEthModel.getAccounts().contains(ethTransaction.from) -> TransactionSummary.Direction.SENT
             else -> TransactionSummary.Direction.RECEIVED
         }
@@ -178,4 +181,42 @@ class BchDisplayable(
         get() = transactionSummary.isDoubleSpend
     override val isPending: Boolean
         get() = transactionSummary.isPending
+}
+
+class Erc20Displayable(
+    private val feedTransfer: FeedErc20Transfer,
+    private val accountHash: String,
+    private val lastBlockNumber: BigInteger
+) :
+    Displayable() {
+
+    private val transfer: Erc20Transfer
+        get() = feedTransfer.transfer
+    override val cryptoCurrency: CryptoCurrency
+        get() = CryptoCurrency.PAX
+    override val direction: TransactionSummary.Direction
+        get() = when {
+            transfer.isToAccount(accountHash)
+                    && transfer.isFromAccount(accountHash) -> TransactionSummary.Direction.TRANSFERRED
+            transfer.isFromAccount(accountHash) -> TransactionSummary.Direction.SENT
+            else -> TransactionSummary.Direction.RECEIVED
+        }
+    override val timeStamp: Long
+        get() = transfer.timestamp
+    override val total: BigInteger
+        get() = transfer.value
+    override val fee: BigInteger
+        get() = feedTransfer.gasUsed * feedTransfer.gasPrice
+    override val hash: String
+        get() = transfer.transactionHash
+    override val inputsMap: HashMap<String, BigInteger>
+        get() = HashMap<String, BigInteger>().apply {
+            put(transfer.from, transfer.value)
+        }
+    override val outputsMap: HashMap<String, BigInteger>
+        get() = HashMap<String, BigInteger>().apply {
+            put(transfer.to, transfer.value)
+        }
+    override val confirmations: Int
+        get() = (lastBlockNumber - transfer.blockNumber).toInt()
 }

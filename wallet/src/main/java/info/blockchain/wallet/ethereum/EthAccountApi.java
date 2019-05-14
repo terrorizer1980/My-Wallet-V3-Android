@@ -5,8 +5,10 @@ import info.blockchain.wallet.BlockchainFramework;
 import info.blockchain.wallet.ethereum.data.EthAddressResponse;
 import info.blockchain.wallet.ethereum.data.EthAddressResponseMap;
 import info.blockchain.wallet.ethereum.data.EthLatestBlock;
+import info.blockchain.wallet.ethereum.data.EthLatestBlockNumber;
 import info.blockchain.wallet.ethereum.data.EthPushTxRequest;
 import info.blockchain.wallet.ethereum.data.Erc20AddressResponse;
+import info.blockchain.wallet.ethereum.data.EthTransaction;
 import info.blockchain.wallet.ethereum.data.EthTxDetails;
 
 import org.apache.commons.lang3.StringUtils;
@@ -85,21 +87,23 @@ public class EthAccountApi {
         return getApiInstance().getLatestBlock();
     }
 
+    public Observable<EthLatestBlockNumber> getLatestBlockNumber() {
+        return getApiInstance().getLatestBlockNumber();
+    }
+
     @NotNull
     public Observable<Erc20AddressResponse> getErc20Address(String address, String hash) {
         return getApiInstance().getErc20Address(address, hash);
     }
 
     /**
-     * Returns an {@link EthTxDetails} containing information about a specific ETH transaction. This
-     * call will return a error 400 with the payload "message": "Transaction not found" if the hash
-     * is incorrect or the transaction is still in the mempool.
+     * Returns an {@link EthTransaction} containing information about a specific ETH transaction.
      *
-     * @param txHash The hash of the transaction you wish to check
-     * @return An {@link Observable} wrapping an {@link EthTxDetails}
+     * @param hash The hash of the transaction you wish to check
+     * @return An {@link Observable} wrapping an {@link EthTransaction}
      */
-    public Observable<EthTxDetails> getTransaction(String txHash) {
-        return getApiInstance().getTransaction(txHash);
+    public Observable<EthTransaction> getTransaction(String hash) {
+        return getApiInstance().getTransaction(hash);
     }
 
     /**

@@ -77,6 +77,7 @@ data class CryptoValue(
         fun lumensFromStroop(stroop: BigInteger) = CryptoValue(CryptoCurrency.XLM, stroop)
 
         fun usdPaxFromMajor(usdPax: BigDecimal) = fromMajor(CryptoCurrency.PAX, usdPax)
+        fun usdPaxFromMinor(value: BigInteger) = CryptoValue(CryptoCurrency.PAX, value)
 
         fun fromMajor(
             currency: CryptoCurrency,

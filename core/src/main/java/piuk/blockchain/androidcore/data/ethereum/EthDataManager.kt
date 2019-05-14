@@ -6,11 +6,11 @@ import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.ethereum.Erc20TokenData
 import info.blockchain.wallet.ethereum.EthAccountApi
 import info.blockchain.wallet.ethereum.EthereumWallet
-import info.blockchain.wallet.ethereum.data.EthAddressResponse
+import info.blockchain.wallet.ethereum.data.Erc20AddressResponse
 import info.blockchain.wallet.ethereum.data.EthAddressResponseMap
 import info.blockchain.wallet.ethereum.data.EthLatestBlock
+import info.blockchain.wallet.ethereum.data.EthLatestBlockNumber
 import info.blockchain.wallet.ethereum.data.EthTransaction
-import info.blockchain.wallet.ethereum.data.Erc20AddressResponse
 import info.blockchain.wallet.exceptions.HDWalletException
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
 import info.blockchain.wallet.payload.PayloadManager
@@ -185,6 +185,23 @@ class EthDataManager(
         }
 
     /**
+     * Returns a [Number] representing the most recently
+     * mined block.
+     *
+     * @return An [Observable] wrapping a [Number]
+     */
+    fun getLatestBlockNumber(): Observable<EthLatestBlockNumber> =
+        if (environmentSettings.environment == Environment.TESTNET) {
+            // TODO(eth testnet explorer coming soon)
+            Observable.just(EthLatestBlockNumber())
+        } else {
+            rxPinning.call<EthLatestBlockNumber> {
+                ethAccountApi.latestBlockNumber
+                    .applySchedulers()
+            }
+        }
+
+    /**
      * Returns true if a given ETH address is associated with an Ethereum contract, which is
      * currently unsupported. This should be used to validate any proposed destination address for
      * funds.
@@ -234,15 +251,14 @@ class EthDataManager(
     fun initEthereumWallet(defaultLabel: String): Completable =
         rxPinning.call {
             fetchOrCreateEthereumWallet(defaultLabel)
-                .flatMapCompletable {
-                        (wallet, needsSave) ->
-                            ethDataStore.ethWallet = wallet
+                .flatMapCompletable { (wallet, needsSave) ->
+                    ethDataStore.ethWallet = wallet
 
-                            if (needsSave) {
-                                save()
-                            } else {
-                                Completable.complete()
-                            }
+                    if (needsSave) {
+                        save()
+                    } else {
+                        Completable.complete()
+                    }
                 }
         }.observeOn(Schedulers.io())
 
@@ -266,6 +282,17 @@ class EthDataManager(
         to,
         weiValue
     )
+
+    fun getTransaction(hash: String): Observable<EthTransaction> =
+        if (environmentSettings.environment == Environment.TESTNET) {
+            // TODO(eth testnet explorer coming soon)
+            Observable.just(EthTransaction())
+        } else {
+            rxPinning.call<EthTransaction> {
+                ethAccountApi.getTransaction(hash)
+                    .applySchedulers()
+            }
+        }
 
     fun signEthTransaction(rawTransaction: RawTransaction, ecKey: ECKey): Observable<ByteArray> =
         Observable.fromCallable {

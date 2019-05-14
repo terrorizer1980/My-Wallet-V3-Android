@@ -311,12 +311,6 @@
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 
-        <include
-            android:id="@+id/soon_overlay"
-            layout="@layout/include_pax_soon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
     </FrameLayout>
 
     <piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboard

@@ -51,17 +51,4 @@ public class EthAccountApiIntegTest extends BaseIntegTest {
         //Tx already submitted = "message" : "Transaction with the same hash was already imported."
         testObserver.assertErrorMessage("HTTP 400 Bad Request");
     }
-
-    @Test
-    public void getTransactionFromHash() {
-        // Arrange
-        final String hash = "0xcc6952c8f5c6e90d1addcaf3717b6df251982637f0cafc32c7f6348018dd2a7b";
-        // Act
-        final TestObserver<EthTxDetails> testObserver = accountApi.getTransaction(hash).test();
-        // Assert
-        testObserver.assertComplete();
-        testObserver.assertNoErrors();
-        final EthTxDetails ethTxDetails = testObserver.values().get(0);
-        assertEquals(hash, ethTxDetails.getHash());
-    }
 }

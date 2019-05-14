@@ -10,6 +10,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.payload.PayloadManager
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.data.balance.adapters.toAsync
@@ -20,12 +21,14 @@ import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.transactions.TransactionListStore
-import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
 import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
 import piuk.blockchain.androidcore.data.transactions.models.Displayable
+import piuk.blockchain.androidcore.data.transactions.models.Erc20Displayable
 import piuk.blockchain.androidcore.data.transactions.models.EthDisplayable
+import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -50,7 +53,7 @@ class TransactionListDataManager(
             CryptoCurrency.ETHER -> getEthereumObservable()
             CryptoCurrency.BCH -> fetchBchTransactions(itemAccount, limit, offset)
             CryptoCurrency.XLM -> fetchXlmTransactions()
-            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
+            CryptoCurrency.PAX -> getErc20Transactions().onErrorReturn { emptyList() }
         }
 
         return observable.doOnNext { insertTransactionList(it.toMutableList()) }
@@ -212,7 +215,7 @@ class TransactionListDataManager(
             .filter { it.isPending }
             .forEach { pendingMap[it.hash] = it }
 
-        if (!pendingMap.isEmpty()) {
+        if (pendingMap.isNotEmpty()) {
             filterProcessed(newlyFetchedTxs, pendingMap)
         }
 
@@ -265,6 +268,28 @@ class TransactionListDataManager(
                     }.toList()
                     .toObservable()
             }
+
+    private fun getErc20Transactions(): Observable<List<Displayable>> {
+        val feedTransactions =
+            erc20Manager.getTransactions()
+                .flatMapIterable { it }
+                .flatMap { erc20Transaction ->
+                    ethDataManager.getTransaction(erc20Transaction.transactionHash)
+                        .map { parentTransaction ->
+                            FeedErc20Transfer(erc20Transaction, parentTransaction.gasUsed, parentTransaction.gasPrice)
+                        }
+                }.toList().toObservable()
+
+        return Observables.zip(
+            feedTransactions,
+            erc20Manager.getErc20AccountHash(),
+            ethDataManager.getLatestBlockNumber()
+        ).map { (transactions, accountHash, latestBlockNumber) ->
+            transactions.map { transaction ->
+                Erc20Displayable(transaction, accountHash, latestBlockNumber.number)
+            }
+        }
+    }
 
     private fun getBchAllTransactionsObservable(
         limit: Int,
