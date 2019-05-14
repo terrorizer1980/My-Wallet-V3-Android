@@ -9,7 +9,6 @@ import com.blockchain.kycui.hyperlinks.renderTermsLinks
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.navhost.models.KycStep
-import com.blockchain.kycui.navigate
 import com.blockchain.nabu.StartBuySell
 import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.notifications.analytics.logEvent
@@ -106,7 +105,7 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
     }
 
     override fun goToNextKycStep(direction: NavDirections) =
-        navigate(direction)
+        progressListener.kycNavigate(direction)
 
     override fun goToBuySellView() {
         activity?.finish()

@@ -14,7 +14,6 @@ import com.blockchain.kycui.mobile.entry.models.PhoneVerificationModel
 import com.blockchain.kycui.mobile.validation.models.VerificationCode
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
-import com.blockchain.kycui.navigate
 import com.blockchain.ui.extensions.throttledClicks
 import com.jakewharton.rxbinding2.widget.afterTextChangeEvents
 import io.reactivex.Observable

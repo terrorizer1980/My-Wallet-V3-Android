@@ -9,12 +9,11 @@ import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.kycui.countryselection.adapter.CountryCodeAdapter
 import com.blockchain.kycui.countryselection.models.CountrySelectionState
 import com.blockchain.kycui.countryselection.util.CountryDisplayModel
-import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
-import com.blockchain.kycui.navigate
 import com.blockchain.kycui.search.filterCountries
 import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.logEvent
 import com.jakewharton.rxbinding2.support.v7.widget.queryTextChanges
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -102,13 +101,13 @@ internal class KycCountrySelectionFragment :
     }
 
     override fun continueFlow(countryCode: String) {
-        navigate(
+        progressListener.kycNavigate(
             KycCountrySelectionFragmentDirections.ActionKycCountrySelectionFragmentToKycProfileFragment(countryCode)
         )
     }
 
     override fun invalidCountry(displayModel: CountryDisplayModel) {
-        navigate(
+        progressListener.kycNavigate(
             KycCountrySelectionFragmentDirections.ActionKycCountrySelectionFragmentToKycInvalidCountryFragment(
                 displayModel
             )

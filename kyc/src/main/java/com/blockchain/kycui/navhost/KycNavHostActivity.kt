@@ -10,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.animation.DecelerateInterpolator
 import androidx.navigation.NavDirections
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.kycui.complete.ApplicationCompleteFragment
 import com.blockchain.kycui.navhost.models.CampaignType
@@ -91,16 +92,28 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
         finish()
     }
 
+    override fun kycNavigate(directions: NavDirections) {
+        navigateAndSetPopUp(directions)
+    }
+
     override fun navigate(directions: NavDirections) {
-        navController.navigate(directions)
+        navigateAndSetPopUp(directions)
     }
 
     override fun navigateToKycSplash() {
-        navController.navigate(KycNavXmlDirections.ActionDisplayKycSplash())
+        navigateAndSetPopUp(KycNavXmlDirections.ActionDisplayKycSplash())
+    }
+
+    private fun navigateAndSetPopUp(directions: NavDirections) {
+        val navOptions = NavOptions.Builder()
+        if (campaignType == CampaignType.BuySell) {
+            navOptions.setPopUpTo(R.id.kycTierSplashFragment, true)
+        }
+        navController.navigate(directions, navOptions.build())
     }
 
     override fun navigateToResubmissionSplash() {
-        navController.navigate(KycNavXmlDirections.ActionDisplayResubmissionSplash())
+        navigateAndSetPopUp(KycNavXmlDirections.ActionDisplayKycSplash())
     }
 
     override fun incrementProgress(kycStep: KycStep) {
@@ -207,4 +220,6 @@ interface KycProgressListener {
     fun decrementProgress(kycStep: KycStep)
 
     fun hideBackButton()
+
+    fun kycNavigate(directions: NavDirections)
 }

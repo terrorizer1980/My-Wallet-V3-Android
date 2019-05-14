@@ -5,11 +5,10 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
-import com.blockchain.kycui.navigate
 import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -45,7 +44,7 @@ class KycMoreInfoSplashFragment : Fragment() {
             .throttledClicks()
             .subscribeBy(
                 onNext = {
-                    navigate(
+                    progressListener.kycNavigate(
                         KycMoreInfoSplashFragmentDirections.ActionKycMoreInfoSplashFragmentToMobileVerification(
                             KycMoreInfoSplashFragmentArgs.fromBundle(arguments).countryCode
                         )
