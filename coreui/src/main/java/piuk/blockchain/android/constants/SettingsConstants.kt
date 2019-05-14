@@ -1,5 +1,6 @@
 package piuk.blockchain.android.constants
 
+const val URL_COINIFY_POLICY = "https://coinify.com/legal"
 const val URL_TOS_POLICY = "https://blockchain.com/terms"
 const val URL_PRIVACY_POLICY = "https://blockchain.com/privacy"
 const val URL_CONTACT_SUPPORT = "https://support.blockchain.com/hc/requests/new"

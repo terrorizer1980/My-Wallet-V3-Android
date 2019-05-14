@@ -44,6 +44,7 @@ import com.blockchain.kycui.reentry.KycNavigator
 import com.blockchain.kycui.reentry.ReentryDecision
 import com.blockchain.kycui.reentry.ReentryDecisionKycNavigator
 import com.blockchain.kycui.reentry.TiersReentryDecision
+import com.blockchain.kycui.splash.KycSplashPresenter
 import com.blockchain.kycui.status.KycStatusPresenter
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.tiersplash.KycTierSplashPresenter
@@ -89,9 +90,11 @@ val kycModule = applicationContext {
 
         factory { KycTierSplashPresenter(get(), get(), get()) }
 
-        factory { KycCountrySelectionPresenter(get()) }
+        factory { KycSplashPresenter(get(), get(), get(), get(), get()) }
 
-        factory { KycProfilePresenter(get(), get(), get(), get()) }
+        factory { KycCountrySelectionPresenter(get(), get()) }
+
+        factory { KycProfilePresenter(get(), get(), get(), get(), get()) }
 
         factory { KycHomeAddressPresenter(get(), get(), get(), get()) }
 

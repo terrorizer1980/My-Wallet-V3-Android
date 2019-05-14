@@ -7,20 +7,28 @@ import com.blockchain.kyc.models.nabu.NabuStateResponse
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kycui.countryselection.models.CountrySelectionState
 import com.blockchain.kycui.countryselection.util.CountryDisplayModel
+import com.blockchain.kycui.navhost.models.CampaignType
+import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
+import info.blockchain.wallet.api.data.WalletOptions
 import io.reactivex.Single
+import io.reactivex.subjects.ReplaySubject
 import org.amshove.kluent.any
 import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import piuk.blockchain.androidbuysell.services.BuyConditions
 
 class KycCountrySelectionPresenterTest {
 
     private lateinit var subject: KycCountrySelectionPresenter
     private val view: KycCountrySelectionView = mock()
     private val nabuDataManager: NabuDataManager = mock()
+    private val buyConditions: BuyConditions = mock()
+    private val mockWalletOptions: WalletOptions = mock(defaultAnswer = RETURNS_DEEP_STUBS)
 
     @Suppress("unused")
     @get:Rule
@@ -31,7 +39,7 @@ class KycCountrySelectionPresenterTest {
 
     @Before
     fun setUp() {
-        subject = KycCountrySelectionPresenter(nabuDataManager)
+        subject = KycCountrySelectionPresenter(nabuDataManager, buyConditions)
         subject.initView(view)
     }
 
@@ -91,6 +99,52 @@ class KycCountrySelectionPresenterTest {
         // Assert
         verify(nabuDataManager).getCountriesList(Scope.None)
         verify(view).requiresStateSelection()
+    }
+
+    @Test
+    fun `onRegionSelected in restricted countries`() {
+        // Arrange
+        whenever(view.regionType).thenReturn(RegionType.Country)
+        val countryCode = "UK"
+        val countryList =
+            listOf(NabuCountryResponse("UK", "United Kingdom", listOf("KYC"), emptyList()))
+        whenever(nabuDataManager.getCountriesList(Scope.None))
+            .thenReturn(Single.just(countryList))
+        whenever(buyConditions.walletOptionsSource).thenReturn(mockWalletOptionsReplay())
+        whenever(mockWalletOptions.partners.coinify.countries).thenReturn(
+            listOf("US")
+        )
+        val countryDisplayModel = CountryDisplayModel(
+            name = "United Kingdom",
+            countryCode = "UK"
+        )
+        // Act
+        subject.onRegionSelected(countryDisplayModel, campaignType = CampaignType.BuySell)
+        // Assert
+        verify(view).invalidCountry(countryDisplayModel)
+    }
+
+    @Test
+    fun `onRegionSelected not in restricted countries`() {
+        // Arrange
+        whenever(view.regionType).thenReturn(RegionType.Country)
+        val countryCode = "UK"
+        val countryList =
+            listOf(NabuCountryResponse("UK", "United Kingdom", listOf("KYC"), emptyList()))
+        whenever(nabuDataManager.getCountriesList(Scope.None))
+            .thenReturn(Single.just(countryList))
+        whenever(buyConditions.walletOptionsSource).thenReturn(mockWalletOptionsReplay())
+        whenever(mockWalletOptions.partners.coinify.countries).thenReturn(
+            listOf("UK")
+        )
+        val countryDisplayModel = CountryDisplayModel(
+            name = "United Kingdom",
+            countryCode = "UK"
+        )
+        // Act
+        subject.onRegionSelected(countryDisplayModel, campaignType = CampaignType.BuySell)
+        // Assert
+        verify(view).continueFlow(countryCode)
     }
 
     @Test
@@ -180,5 +234,11 @@ class KycCountrySelectionPresenterTest {
         // Assert
         verify(nabuDataManager).getCountriesList(Scope.None)
         verify(view).requiresStateSelection()
+    }
+
+    private fun mockWalletOptionsReplay(): ReplaySubject<WalletOptions> {
+        val source = ReplaySubject.create<WalletOptions>()
+        source.onNext(mockWalletOptions)
+        return source
     }
 }

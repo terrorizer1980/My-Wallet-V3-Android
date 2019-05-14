@@ -1,6 +1,5 @@
 package com.blockchain.kycui.profile
 
-import android.support.annotation.StringRes
 import com.blockchain.kycui.profile.models.ProfileModel
 import piuk.blockchain.androidcoreui.ui.base.View
 import java.util.Calendar
@@ -19,7 +18,7 @@ interface KycProfileView : View {
 
     fun continueSignUp(profileModel: ProfileModel)
 
-    fun showErrorToast(@StringRes message: Int)
+    fun showErrorToast(message: String)
 
     fun dismissProgressDialog()
 

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.status.KycStatusActivity
+import com.blockchain.nabu.StartBuySell
 import com.blockchain.nabu.StartKycForBuySell
 import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.LoggableEvent
@@ -17,6 +18,12 @@ import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.toast
+
+internal class BuySellStarter : StartBuySell {
+    override fun startBuySellActivity(context: Any) {
+        BuySellLauncherActivity.start(context as Context)
+    }
+}
 
 /**
  * This activity checks the user's current buy sell account status and redirects to specified signup or overview components.
@@ -38,6 +45,11 @@ class BuySellLauncherActivity : BaseMvpActivity<BuySellLauncherView, BuySellLaun
         get<EventLogger>().logEvent(LoggableEvent.BuyBitcoin)
 
         onViewReady()
+    }
+
+    override fun onStartCoinifyOptIn() {
+        startBuySellKyc.startKycActivity(this)
+        finishPage()
     }
 
     override fun onStartCoinifySignUp() {

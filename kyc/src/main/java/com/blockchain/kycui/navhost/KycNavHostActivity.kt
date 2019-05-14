@@ -95,8 +95,8 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
         navController.navigate(directions)
     }
 
-    override fun navigateToAirdropSplash() {
-        navController.navigate(KycNavXmlDirections.ActionDisplayAirDropSplash())
+    override fun navigateToKycSplash() {
+        navController.navigate(KycNavXmlDirections.ActionDisplayKycSplash())
     }
 
     override fun navigateToResubmissionSplash() {

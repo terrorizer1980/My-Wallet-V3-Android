@@ -33,6 +33,7 @@ import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import piuk.blockchain.android.util.StringUtils
 import retrofit2.Response
 import java.util.Locale
 
@@ -43,6 +44,7 @@ class KycProfilePresenterTest {
     private val nabuDataManager: NabuDataManager = mock()
     private val metadataRepository: MetadataRepository = mock()
     private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator = mock()
+    private val stringUtils: StringUtils = mock()
     private val nabuToken: NabuToken = mock()
 
     @Suppress("unused")
@@ -58,8 +60,10 @@ class KycProfilePresenterTest {
             nabuToken,
             nabuDataManager,
             metadataRepository,
-            nabuCoinifyAccountCreator
+            nabuCoinifyAccountCreator,
+            stringUtils
         )
+        whenever(stringUtils.getString(any())).thenReturn("")
         subject.initView(view)
     }
 
