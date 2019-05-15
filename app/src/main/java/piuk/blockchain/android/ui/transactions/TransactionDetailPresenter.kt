@@ -61,14 +61,16 @@ class TransactionDetailPresenter @Inject constructor(
     // Currently no available notes for bch
     // Only BTC and ETHER currently supported
     var transactionNote: String?
-        get() = when {
-            displayable.cryptoCurrency == CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(displayable.hash)
-            displayable.cryptoCurrency == CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(displayable.hash)
+        get() = when (displayable.cryptoCurrency) {
+            CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(displayable.hash)
+            CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[displayable.hash]
+            CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(displayable.hash)
             else -> ""
         }
         private set(txHash) {
             val notes: String? = when (displayable.cryptoCurrency) {
                 CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(txHash!!)
+                CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[displayable.hash]
                 CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(displayable.hash)
                 else -> {
                     view.hideDescriptionField()
@@ -110,11 +112,13 @@ class TransactionDetailPresenter @Inject constructor(
                 displayable.hash,
                 description
             )
+            CryptoCurrency.PAX -> ethDataManager.updateErc20TransactionNotes(displayable.hash,
+                description)
             CryptoCurrency.ETHER -> ethDataManager.updateTransactionNotes(
                 displayable.hash,
                 description
             )
-            else -> throw IllegalArgumentException("Only BTC and ETHER currently supported")
+            else -> throw IllegalArgumentException("Only BTC, ETHER and PAX currently supported")
         }
 
         compositeDisposable +=
@@ -142,7 +146,8 @@ class TransactionDetailPresenter @Inject constructor(
                 CryptoCurrency.ETHER -> handleEthToAndFrom(this)
                 CryptoCurrency.BCH -> handleBchToAndFrom(this)
                 CryptoCurrency.XLM -> handleXlmToAndFrom(this)
-                else -> throw IllegalArgumentException(cryptoCurrency.toString() + " is not currently supported")
+                CryptoCurrency.PAX -> handlePaxToAndFrom(this)
+                else -> throw IllegalArgumentException("$cryptoCurrency is not currently supported")
             }
 
             compositeDisposable +=
@@ -189,7 +194,21 @@ class TransactionDetailPresenter @Inject constructor(
         if (toAddress == ethAddress) {
             toAddress = stringUtils.getString(R.string.eth_default_account_label)
         }
+        view.setFromAddress(listOf(TransactionDetailModel(fromAddress, "", "")))
+        view.setToAddresses(listOf(TransactionDetailModel(toAddress, "", "")))
+    }
 
+    private fun handlePaxToAndFrom(displayable: Displayable) {
+        var fromAddress = displayable.inputsMap.keys.first()
+        var toAddress = displayable.outputsMap.keys.first()
+
+        val ethAddress = ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account
+        if (fromAddress == ethAddress) {
+            fromAddress = stringUtils.getString(R.string.pax_default_account_label)
+        }
+        if (toAddress == ethAddress) {
+            toAddress = stringUtils.getString(R.string.pax_default_account_label)
+        }
         view.setFromAddress(listOf(TransactionDetailModel(fromAddress, "", "")))
         view.setToAddresses(listOf(TransactionDetailModel(toAddress, "", "")))
     }
@@ -291,7 +310,7 @@ class TransactionDetailPresenter @Inject constructor(
             CryptoCurrency.ETHER -> CryptoValue.etherFromWei(fee)
             CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(fee)
             CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(fee)
-            else -> throw IllegalArgumentException("$currency is not currently supported")
+            else -> CryptoValue.usdPaxFromMinor(fee)
         }.run { view.setFee(this.formatWithUnit()) }
     }
 
@@ -301,6 +320,7 @@ class TransactionDetailPresenter @Inject constructor(
             CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(total)
             CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(total)
             CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(total)
+            CryptoCurrency.PAX -> CryptoValue.usdPaxFromMinor(total)
             else -> throw IllegalArgumentException("$currency is not currently supported")
         }.run { view.setTransactionValue(this.formatWithUnit()) }
     }

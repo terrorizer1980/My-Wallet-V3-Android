@@ -24,6 +24,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Answers
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import piuk.blockchain.android.R
@@ -40,6 +41,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
 import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
 import piuk.blockchain.androidcore.data.transactions.models.Displayable
+import piuk.blockchain.androidcore.data.transactions.models.Erc20Displayable
 import piuk.blockchain.androidcore.data.transactions.models.EthDisplayable
 import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -396,6 +398,55 @@ class TransactionDetailPresenterTest {
     }
 
     @Test
+    fun `onViewReady transaction found via hash pax`() {
+        // Arrange
+        val displayable: Erc20Displayable = mock()
+        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
+        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
+        whenever(displayable.hash).thenReturn("hash")
+        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
+        whenever(displayable.fee).thenReturn(BigInteger.valueOf(1L))
+        val maps = HashMap<String, BigInteger>()
+        maps[""] = BigInteger.TEN
+        whenever(displayable.inputsMap).thenReturn(maps)
+        whenever(displayable.outputsMap).thenReturn(maps)
+        val mockIntent: Intent = mock()
+        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
+        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("hash")
+        whenever(view.getPageIntent()).thenReturn(mockIntent)
+        whenever(transactionListDataManager.getTxFromHash("hash"))
+            .thenReturn(Single.just(displayable))
+        whenever(stringUtils.getString(R.string.transaction_detail_pending))
+            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
+        whenever(stringUtils.getString(R.string.pax_default_account_label))
+            .thenReturn("My Usd pax Wallet")
+        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
+            .thenReturn("Value when sent: ")
+        whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
+        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+            .thenReturn(Single.just(1000.usd()))
+        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
+
+        // Act
+        subject.onViewReady()
+        // Assert
+        verify(view).getPageIntent()
+        verify(view).setStatus(CryptoCurrency.PAX, "Pending (0/3 Confirmations)", "hash")
+        verify(view).setTransactionType(TransactionSummary.Direction.SENT)
+        verify(view).setTransactionColour(R.color.product_red_sent_50)
+        verify(view).setDescription(any())
+        verify(view).setDate(any())
+        verify(view).setToAddresses(any())
+        verify(view).setFromAddress(any())
+        verify(view, atLeastOnce()).setFee(any())
+        verify(view).setTransactionValue(any())
+        verify(view).setTransactionValueFiat(any())
+        verify(view).onDataLoaded()
+        verify(view).setIsDoubleSpend(any())
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
     fun getTransactionValueStringUsd() {
         // Arrange
         val displayable: BtcDisplayable = mock()
@@ -420,6 +471,25 @@ class TransactionDetailPresenterTest {
         // Arrange
         val displayable: BtcDisplayable = mock()
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
+        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
+        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
+        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+            .thenReturn(Single.just(1000.usd()))
+        whenever(stringUtils.getString(any())).thenReturn("Value when received: ")
+        // Act
+        val observer = subject.getTransactionValueString("USD", displayable).test()
+        // Assert
+        verify(exchangeRateFactory).getHistoricPrice(any(), any(), any())
+        assertEquals("Value when received: $1,000.00", observer.values()[0])
+        observer.onComplete()
+        observer.assertNoErrors()
+    }
+
+    @Test
+    fun getTransactionValueStringReceivedPax() {
+        // Arrange
+        val displayable: Erc20Displayable = mock()
+        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
         whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
@@ -492,6 +562,24 @@ class TransactionDetailPresenterTest {
     }
 
     @Test
+    fun updateTransactionNotePaxSuccess() {
+        // Arrange
+        val displayable: Erc20Displayable = mock()
+        whenever(displayable.hash).thenReturn("hash")
+        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
+        subject.displayable = displayable
+        whenever(ethDataManager.updateErc20TransactionNotes(any(), any()))
+            .thenReturn(Completable.complete())
+        // Act
+        subject.updateTransactionNote("note")
+        // Assert
+        verify(ethDataManager).updateErc20TransactionNotes("hash", "note")
+
+        verify(view).showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
+        verify(view).setDescription("note")
+    }
+
+    @Test
     fun updateTransactionNoteFailure() {
         // Arrange
         val displayable: BtcDisplayable = mock()
@@ -553,6 +641,21 @@ class TransactionDetailPresenterTest {
     }
 
     @Test
+    fun getTransactionNotePax() {
+        // Arrange
+        val displayable: Erc20Displayable = mock()
+        whenever(displayable.hash).thenReturn("hash")
+        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
+        subject.displayable = displayable
+        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
+        // Act
+        val value = subject.transactionNote
+        // Assert
+        assertEquals("note", value)
+        verify(ethDataManager.getErc20TokenData(CryptoCurrency.PAX), times(2)).txNotes
+    }
+
+    @Test
     fun getTransactionNoteBch() {
         // Arrange
         val displayable: BchDisplayable = mock()
@@ -572,6 +675,15 @@ class TransactionDetailPresenterTest {
             on { cryptoCurrency } `it returns` CryptoCurrency.BCH
         }
         subject.transactionHash `should equal` TransactionHash(CryptoCurrency.BCH, "hash1")
+    }
+
+    @Test
+    fun `getTransactionHash Pax`() {
+        subject.displayable = mock<Erc20Displayable> {
+            on { hash } `it returns` "hash1"
+            on { cryptoCurrency } `it returns` CryptoCurrency.PAX
+        }
+        subject.transactionHash `should equal` TransactionHash(CryptoCurrency.PAX, "hash1")
     }
 
     @Test

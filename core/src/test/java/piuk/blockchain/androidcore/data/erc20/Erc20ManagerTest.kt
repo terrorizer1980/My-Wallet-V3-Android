@@ -71,7 +71,8 @@ class Erc20ManagerTest {
         testObserver.assertNoErrors()
         testObserver.assertValue {
             it.accountHash == erc20AddressResponse.accountHash &&
-                    it.totalBalance == erc20AddressResponse.balance
+                    it.totalBalance.amount == erc20AddressResponse.balance &&
+                    it.totalBalance.currency == CryptoCurrency.PAX
         }
         verify(erc20DataStore).erc20DataModel = any(Erc20DataModel::class)
         verify(ethDataManager).getErc20Address(CryptoCurrency.PAX)

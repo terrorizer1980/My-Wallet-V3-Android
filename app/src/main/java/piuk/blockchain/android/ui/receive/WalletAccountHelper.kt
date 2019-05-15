@@ -337,7 +337,7 @@ class WalletAccountHelper(
     private fun getDefaultErc20Account(): ItemAccount {
         val erc20DataModel = erc20DataManager.getErc20Model()
         val ethAccount = ethDataManager.getEthWallet()!!.account
-        val balance = CryptoValue.usdPaxFromMinor(erc20DataModel?.totalBalance ?: BigInteger.ZERO)
+        val balance = erc20DataModel?.totalBalance ?: CryptoValue.ZeroPax
         return ItemAccount(
             ethAccount?.label,
             balance.toBalanceString(),

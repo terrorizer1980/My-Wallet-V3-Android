@@ -242,6 +242,11 @@ class EthDataManager(
         }
     }.applySchedulers()
 
+    fun updateErc20TransactionNotes(hash: String, note: String): Completable = rxPinning.call {
+        getErc20TokenData(CryptoCurrency.PAX).putTxNote(hash, note)
+        return@call save()
+    }.applySchedulers()
+
     /**
      * Fetches EthereumWallet stored in metadata. If metadata entry doesn't exists it will be created.
      *

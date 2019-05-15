@@ -16,10 +16,7 @@ private class Erc20BalanceReportAdapter(
         erc20Manager.fetchErc20Address()
             .singleOrError()
             .map {
-                CryptoValue(
-                    CryptoCurrency.PAX,
-                    it.totalBalance
-                )
+                it.totalBalance
             }
 
     private val zero = Single.just(CryptoValue.ZeroEth)
