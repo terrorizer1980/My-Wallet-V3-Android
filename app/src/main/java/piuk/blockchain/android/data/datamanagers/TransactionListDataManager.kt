@@ -271,14 +271,11 @@ class TransactionListDataManager(
 
     private fun getErc20Transactions(): Observable<List<Displayable>> {
         val feedTransactions =
-            erc20Manager.getTransactions()
-                .flatMapIterable { it }
-                .flatMap { erc20Transaction ->
-                    ethDataManager.getTransaction(erc20Transaction.transactionHash)
-                        .map { parentTransaction ->
-                            FeedErc20Transfer(erc20Transaction, parentTransaction.gasUsed, parentTransaction.gasPrice)
-                        }
-                }.toList().toObservable()
+            erc20Manager.getTransactions().mapList {
+                val feeObservable = ethDataManager.getTransaction(it.transactionHash)
+                    .map { transaction -> transaction.gasUsed * transaction.gasPrice }
+                FeedErc20Transfer(it, feeObservable)
+            }
 
         return Observables.zip(
             feedTransactions,

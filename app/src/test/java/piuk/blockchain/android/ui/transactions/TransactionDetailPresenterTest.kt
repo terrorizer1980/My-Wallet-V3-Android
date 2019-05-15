@@ -13,6 +13,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.payload.data.Wallet
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import junit.framework.Assert.assertEquals
 import org.amshove.kluent.`it returns`
@@ -184,7 +185,7 @@ class TransactionDetailPresenterTest {
         whenever(displayableToFind.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
         whenever(displayableToFind.hash).thenReturn("txMoved_hash")
         whenever(displayableToFind.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayableToFind.fee).thenReturn(BigInteger.valueOf(1L))
+        whenever(displayableToFind.fee).thenReturn(Observable.just(BigInteger.valueOf(10000L)))
 
         val displayable2: BtcDisplayable = mock()
         whenever(displayable2.hash).thenReturn("")
@@ -230,7 +231,7 @@ class TransactionDetailPresenterTest {
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
         verify(view).setFromAddress(any())
-        verify(view).setFee(any())
+        verify(view).setFee("0.0001 BTC")
         verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
         verify(view).onDataLoaded()
@@ -246,7 +247,7 @@ class TransactionDetailPresenterTest {
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
         whenever(displayable.hash).thenReturn("txMoved_hash")
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(BigInteger.valueOf(1L))
+        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(1L)))
         val mockIntent: Intent = mock()
         val mockPayload: Wallet = mock()
         whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
@@ -286,7 +287,7 @@ class TransactionDetailPresenterTest {
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
         verify(view).setFromAddress(any())
-        verify(view).setFee(any())
+        verify(view).setFee("0.00000001 BTC")
         verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
         verify(view).onDataLoaded()
@@ -302,7 +303,7 @@ class TransactionDetailPresenterTest {
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(BigInteger.valueOf(1L))
+        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(3000000000L)))
         val maps = HashMap<String, BigInteger>()
         maps[""] = BigInteger.TEN
         whenever(displayable.inputsMap).thenReturn(maps)
@@ -356,7 +357,7 @@ class TransactionDetailPresenterTest {
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(BigInteger.valueOf(1L))
+        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(396684365L)))
         val maps = HashMap<String, BigInteger>()
         maps[""] = BigInteger.TEN
         whenever(displayable.inputsMap).thenReturn(maps)
@@ -388,7 +389,7 @@ class TransactionDetailPresenterTest {
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
         verify(view).setFromAddress(any())
-        verify(view, atLeastOnce()).setFee(any())
+        verify(view, atLeastOnce()).setFee("39.6684365 XLM")
         verify(view).hideDescriptionField()
         verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
@@ -405,7 +406,7 @@ class TransactionDetailPresenterTest {
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(BigInteger.valueOf(1L))
+        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
         val maps = HashMap<String, BigInteger>()
         maps[""] = BigInteger.TEN
         whenever(displayable.inputsMap).thenReturn(maps)
@@ -438,7 +439,7 @@ class TransactionDetailPresenterTest {
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
         verify(view).setFromAddress(any())
-        verify(view, atLeastOnce()).setFee(any())
+        verify(view).setFee("0.00000155 ETH")
         verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
         verify(view).onDataLoaded()

@@ -528,7 +528,6 @@ class TransactionListDataManagerTest : RxTest() {
                     it[0].hash == "0xfd7d583fa54bf55f6cfbfec97c0c55cc6af8c121b71addb7d06a9e1e305ae8ff" &&
                     it[0].confirmations == 3 &&
                     it[0].total == 10000.toBigInteger() &&
-                    it[0].fee == 200.toBigInteger() &&
                     it[0].inputsMap["0x4058a004dd718babab47e14dd0d744742e5b9903"] == 10000.toBigInteger() &&
                     it[0].outputsMap["0x2ca28ffadd20474ffe2705580279a1e67cd10a29"] == 10000.toBigInteger()
         }

@@ -3,6 +3,7 @@ package piuk.blockchain.androidcore.data.transactions.models
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.ethereum.data.EthTransaction
 import info.blockchain.wallet.multiaddress.TransactionSummary
+import io.reactivex.Observable
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
@@ -14,7 +15,7 @@ abstract class Displayable {
     abstract val direction: TransactionSummary.Direction
     abstract val timeStamp: Long
     abstract val total: BigInteger
-    abstract val fee: BigInteger
+    abstract val fee: Observable<BigInteger>
     abstract val hash: String
     abstract val inputsMap: HashMap<String, BigInteger>
     abstract val outputsMap: HashMap<String, BigInteger>
@@ -30,7 +31,6 @@ abstract class Displayable {
             "direction  = $direction " +
             "timeStamp  = $timeStamp " +
             "total  = $total " +
-            "fee  = $fee " +
             "hash  = $hash " +
             "inputsMap  = $inputsMap " +
             "outputsMap  = $outputsMap " +
@@ -51,7 +51,6 @@ abstract class Displayable {
                 this.direction == that.direction &&
                 this.timeStamp == that.timeStamp &&
                 this.total == that.total &&
-                this.fee == that.fee &&
                 this.hash == that.hash &&
                 this.inputsMap == that.inputsMap &&
                 this.outputsMap == that.outputsMap &&
@@ -70,7 +69,6 @@ abstract class Displayable {
         result = 31 * result + direction.hashCode()
         result = 31 * result + timeStamp.hashCode()
         result = 31 * result + total.hashCode()
-        result = 31 * result + fee.hashCode()
         result = 31 * result + hash.hashCode()
         result = 31 * result + inputsMap.hashCode()
         result = 31 * result + outputsMap.hashCode()
@@ -105,10 +103,10 @@ class EthDisplayable(
     override val total: BigInteger
         get() = when (direction) {
             TransactionSummary.Direction.RECEIVED -> ethTransaction.value
-            else -> ethTransaction.value.plus(fee)
+            else -> ethTransaction.value.plus(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
         }
-    override val fee: BigInteger
-        get() = ethTransaction.gasUsed.multiply(ethTransaction.gasPrice)
+    override val fee: Observable<BigInteger>
+        get() = Observable.just(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
     override val hash: String
         get() = ethTransaction.hash
     override val inputsMap: HashMap<String, BigInteger>
@@ -135,8 +133,8 @@ class BtcDisplayable(
         get() = transactionSummary.time
     override val total: BigInteger
         get() = transactionSummary.total
-    override val fee: BigInteger
-        get() = transactionSummary.fee
+    override val fee: Observable<BigInteger>
+        get() = Observable.just(transactionSummary.fee)
     override val hash: String
         get() = transactionSummary.hash
     override val inputsMap: HashMap<String, BigInteger>
@@ -165,8 +163,8 @@ class BchDisplayable(
         get() = transactionSummary.time
     override val total: BigInteger
         get() = transactionSummary.total
-    override val fee: BigInteger
-        get() = transactionSummary.fee
+    override val fee: Observable<BigInteger>
+        get() = Observable.just(transactionSummary.fee)
     override val hash: String
         get() = transactionSummary.hash
     override val inputsMap: HashMap<String, BigInteger>
@@ -205,8 +203,8 @@ class Erc20Displayable(
         get() = transfer.timestamp
     override val total: BigInteger
         get() = transfer.value
-    override val fee: BigInteger
-        get() = feedTransfer.gasUsed * feedTransfer.gasPrice
+    override val fee: Observable<BigInteger>
+        get() = feedTransfer.feeObservable
     override val hash: String
         get() = transfer.transactionHash
     override val inputsMap: HashMap<String, BigInteger>

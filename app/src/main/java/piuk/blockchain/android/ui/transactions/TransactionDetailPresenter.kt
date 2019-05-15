@@ -12,10 +12,13 @@ import info.blockchain.wallet.multiaddress.MultiAddressFactory
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.util.FormatsUtil
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.ui.balance.BalanceFragment.Companion.KEY_TRANSACTION_HASH
@@ -35,10 +38,10 @@ import timber.log.Timber
 import java.math.BigInteger
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.HashMap
 import java.util.Locale
+import java.util.Date
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 class TransactionDetailPresenter @Inject constructor(
     private val transactionHelper: TransactionHelper,
@@ -304,14 +307,24 @@ class TransactionDetailPresenter @Inject constructor(
         }
     }
 
-    private fun setTransactionFee(currency: CryptoCurrency, fee: BigInteger) {
-        when (currency) {
-            CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(fee)
-            CryptoCurrency.ETHER -> CryptoValue.etherFromWei(fee)
-            CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(fee)
-            CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(fee)
-            else -> CryptoValue.usdPaxFromMinor(fee)
-        }.run { view.setFee(this.formatWithUnit()) }
+    private fun setTransactionFee(currency: CryptoCurrency, fee: Observable<BigInteger>) {
+        fee.map {
+            when (currency) {
+                CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(it)
+                CryptoCurrency.ETHER -> CryptoValue.etherFromWei(it)
+                CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(it)
+                CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(it)
+                CryptoCurrency.PAX -> CryptoValue.etherFromWei(it)
+                else -> CryptoValue.usdPaxFromMinor(it)
+            }
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError {
+                view.setFee("")
+            }
+            .subscribe { view.setFee(it.formatWithUnit()) }
+            .addTo(compositeDisposable)
     }
 
     private fun setTransactionValue(currency: CryptoCurrency, total: BigInteger) {
@@ -331,7 +344,8 @@ class TransactionDetailPresenter @Inject constructor(
             view.setStatus(cryptoCurrency, stringUtils.getString(R.string.transaction_detail_confirmed), txHash)
         } else {
             var pending = stringUtils.getString(R.string.transaction_detail_pending)
-            pending = String.format(Locale.getDefault(), pending, confirmations, cryptoCurrency.requiredConfirmations)
+            pending =
+                String.format(Locale.getDefault(), pending, confirmations, cryptoCurrency.requiredConfirmations)
             view.setStatus(cryptoCurrency, pending, txHash)
         }
     }
