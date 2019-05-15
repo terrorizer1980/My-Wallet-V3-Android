@@ -8,11 +8,12 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.blockchain.kycui.extensions.skipFirstUnless
+import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
+import com.blockchain.kycui.navigate
 import com.blockchain.kycui.profile.models.ProfileModel
 import com.blockchain.notifications.analytics.LoggableEvent
-import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
 import com.jakewharton.rxbinding2.widget.afterTextChangeEvents
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
@@ -107,9 +108,7 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
     }
 
     override fun continueSignUp(profileModel: ProfileModel) {
-        progressListener.kycNavigate(
-            KycProfileFragmentDirections.ActionKycProfileFragmentToKycHomeAddressFragment(profileModel)
-        )
+        navigate(KycProfileFragmentDirections.ActionKycProfileFragmentToKycHomeAddressFragment(profileModel))
     }
 
     override fun showErrorToast(message: String) {

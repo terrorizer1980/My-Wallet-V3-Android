@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
+import com.blockchain.kycui.navigate
 import com.blockchain.kycui.reentry.KycNavigator
 import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.notifications.analytics.logEvent
@@ -19,7 +20,8 @@ import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.kyc.R
 import timber.log.Timber
-import kotlinx.android.synthetic.main.fragment_kyc_resubmission_splash.button_kyc_resubmission_splash_next as buttonContinue
+import kotlinx.android.synthetic.main.fragment_kyc_resubmission_splash
+    .button_kyc_resubmission_splash_next as buttonContinue
 
 class KycResubmissionSplashFragment : Fragment() {
 
@@ -49,7 +51,7 @@ class KycResubmissionSplashFragment : Fragment() {
             .throttledClicks()
             .flatMapSingle { kycNavigator.findNextStep() }
             .subscribeBy(
-                onNext = { progressListener.kycNavigate(it) },
+                onNext = { navigate(it) },
                 onError = { Timber.e(it) }
             )
     }

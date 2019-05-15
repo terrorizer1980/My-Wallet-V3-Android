@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.blockchain.kycui.extensions.skipFirstUnless
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
+import com.blockchain.kycui.navigate
 import com.blockchain.ui.extensions.throttledClicks
 import com.jakewharton.rxbinding2.widget.afterTextChangeEvents
 import io.reactivex.Observable
@@ -97,7 +98,7 @@ class KycEmailEntryFragment : BaseFragment<KycEmailEntryView, KycEmailEntryPrese
     }
 
     override fun continueSignUp(email: String) {
-        progressListener.kycNavigate(KycEmailEntryFragmentDirections.ActionValidateEmail(email))
+        navigate(KycEmailEntryFragmentDirections.ActionValidateEmail(email))
     }
 
     override fun showProgressDialog() {

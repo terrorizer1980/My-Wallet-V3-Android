@@ -10,11 +10,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.animation.DecelerateInterpolator
 import androidx.navigation.NavDirections
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.kycui.complete.ApplicationCompleteFragment
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.navhost.models.KycStep
+import com.blockchain.kycui.splash.KycSplashFragment
 import com.blockchain.nabu.StartKyc
 import com.blockchain.nabu.StartKycAirdrop
 import com.blockchain.nabu.StartKycForBuySell
@@ -92,28 +92,16 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
         finish()
     }
 
-    override fun kycNavigate(directions: NavDirections) {
-        navigateAndSetPopUp(directions)
-    }
-
     override fun navigate(directions: NavDirections) {
-        navigateAndSetPopUp(directions)
+        navController.navigate(directions)
     }
 
     override fun navigateToKycSplash() {
-        navigateAndSetPopUp(KycNavXmlDirections.ActionDisplayKycSplash())
-    }
-
-    private fun navigateAndSetPopUp(directions: NavDirections) {
-        val navOptions = NavOptions.Builder()
-        if (campaignType == CampaignType.BuySell) {
-            navOptions.setPopUpTo(R.id.kycTierSplashFragment, true)
-        }
-        navController.navigate(directions, navOptions.build())
+        navController.navigate(KycNavXmlDirections.ActionDisplayKycSplash())
     }
 
     override fun navigateToResubmissionSplash() {
-        navigateAndSetPopUp(KycNavXmlDirections.ActionDisplayKycSplash())
+        navController.navigate(KycNavXmlDirections.ActionDisplayResubmissionSplash())
     }
 
     override fun incrementProgress(kycStep: KycStep) {
@@ -164,6 +152,8 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
     override fun onSupportNavigateUp(): Boolean = consume {
         // If on final page, close host Activity on navigate up
         if (currentFragment is ApplicationCompleteFragment ||
+            // If coming from buy/sell, we want the intro/splash screen to be the 1st screen in the stack
+            (currentFragment is KycSplashFragment && campaignType == CampaignType.BuySell) ||
             // If navigating up unsuccessful, close host Activity
             !navController.navigateUp()
         ) {
@@ -220,6 +210,4 @@ interface KycProgressListener {
     fun decrementProgress(kycStep: KycStep)
 
     fun hideBackButton()
-
-    fun kycNavigate(directions: NavDirections)
 }

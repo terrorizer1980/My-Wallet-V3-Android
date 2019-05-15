@@ -24,6 +24,7 @@ import com.blockchain.kycui.hyperlinks.renderTermsLinks
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
+import com.blockchain.kycui.navigate
 import com.blockchain.kycui.profile.models.ProfileModel
 import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.ui.extensions.throttledClicks
@@ -119,26 +120,26 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
 
     override fun continueToMobileVerification(countryCode: String) {
         closeKeyboard()
-        progressListener.kycNavigate(KycNavXmlDirections.ActionStartMobileVerification(countryCode))
+        navigate(KycNavXmlDirections.ActionStartMobileVerification(countryCode))
     }
 
     override fun continueToOnfidoSplash(countryCode: String) {
         closeKeyboard()
         if (BuildConfig.VERIFF) {
-            progressListener.kycNavigate(KycNavXmlDirections.ActionStartVeriff(countryCode))
+            navigate(KycNavXmlDirections.ActionStartVeriff(countryCode))
         } else {
-            progressListener.kycNavigate(KycNavXmlDirections.ActionStartOnfido(countryCode))
+            navigate(KycNavXmlDirections.ActionStartOnfido(countryCode))
         }
     }
 
     override fun tier1Complete() {
         closeKeyboard()
-        progressListener.kycNavigate(KycHomeAddressFragmentDirections.ActionTier1Complete())
+        navigate(KycHomeAddressFragmentDirections.ActionTier1Complete())
     }
 
     override fun continueToTier2MoreInfoNeeded(countryCode: String) {
         closeKeyboard()
-        progressListener.kycNavigate(KycNavXmlDirections.ActionStartTier2NeedMoreInfo(countryCode))
+        navigate(KycNavXmlDirections.ActionStartTier2NeedMoreInfo(countryCode))
     }
 
     override fun restoreUiState(

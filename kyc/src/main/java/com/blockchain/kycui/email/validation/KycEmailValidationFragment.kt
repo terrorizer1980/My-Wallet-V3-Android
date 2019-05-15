@@ -7,10 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.blockchain.kycui.hyperlinks.insertSingleLink
+import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
+import com.blockchain.kycui.navigate
 import com.blockchain.notifications.analytics.LoggableEvent
-import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.Observables
@@ -87,7 +88,7 @@ class KycEmailValidationFragment :
 
     fun continueSignUp() {
         ViewUtils.hideKeyboard(requireActivity())
-        progressListener.kycNavigate(
+        navigate(
             KycEmailValidationFragmentDirections.ActionAfterValidation()
         )
     }

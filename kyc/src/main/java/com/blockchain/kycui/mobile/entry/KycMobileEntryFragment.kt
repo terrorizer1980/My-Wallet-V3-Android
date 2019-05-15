@@ -11,6 +11,7 @@ import com.blockchain.kycui.extensions.skipFirstUnless
 import com.blockchain.kycui.mobile.entry.models.PhoneDisplayModel
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
+import com.blockchain.kycui.navigate
 import com.blockchain.ui.extensions.throttledClicks
 import com.jakewharton.rxbinding2.widget.afterTextChangeEvents
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
@@ -129,7 +130,7 @@ class KycMobileEntryFragment : BaseFragment<KycMobileEntryView, KycMobileEntryPr
     }
 
     override fun continueSignUp(displayModel: PhoneDisplayModel) {
-        progressListener.kycNavigate(KycMobileEntryFragmentDirections.ActionMobileCodeEntry(countryCode, displayModel))
+        navigate(KycMobileEntryFragmentDirections.ActionMobileCodeEntry(countryCode, displayModel))
     }
 
     override fun showProgressDialog() {
