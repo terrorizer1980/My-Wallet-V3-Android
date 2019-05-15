@@ -13,7 +13,6 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.wallet.api.data.WalletOptions
 import io.reactivex.Single
-import io.reactivex.subjects.ReplaySubject
 import org.amshove.kluent.any
 import org.amshove.kluent.mock
 import org.junit.Before
@@ -105,15 +104,11 @@ class KycCountrySelectionPresenterTest {
     fun `onRegionSelected in restricted countries`() {
         // Arrange
         whenever(view.regionType).thenReturn(RegionType.Country)
-        val countryCode = "UK"
         val countryList =
             listOf(NabuCountryResponse("UK", "United Kingdom", listOf("KYC"), emptyList()))
         whenever(nabuDataManager.getCountriesList(Scope.None))
             .thenReturn(Single.just(countryList))
-        whenever(buyConditions.walletOptionsSource).thenReturn(mockWalletOptionsReplay())
-        whenever(mockWalletOptions.partners.coinify.countries).thenReturn(
-            listOf("US")
-        )
+        whenever(buyConditions.buySellCountries()).thenReturn(Single.just(listOf("US")))
         val countryDisplayModel = CountryDisplayModel(
             name = "United Kingdom",
             countryCode = "UK"
@@ -133,10 +128,7 @@ class KycCountrySelectionPresenterTest {
             listOf(NabuCountryResponse("UK", "United Kingdom", listOf("KYC"), emptyList()))
         whenever(nabuDataManager.getCountriesList(Scope.None))
             .thenReturn(Single.just(countryList))
-        whenever(buyConditions.walletOptionsSource).thenReturn(mockWalletOptionsReplay())
-        whenever(mockWalletOptions.partners.coinify.countries).thenReturn(
-            listOf("UK")
-        )
+        whenever(buyConditions.buySellCountries()).thenReturn(Single.just(listOf("UK")))
         val countryDisplayModel = CountryDisplayModel(
             name = "United Kingdom",
             countryCode = "UK"
@@ -234,11 +226,5 @@ class KycCountrySelectionPresenterTest {
         // Assert
         verify(nabuDataManager).getCountriesList(Scope.None)
         verify(view).requiresStateSelection()
-    }
-
-    private fun mockWalletOptionsReplay(): ReplaySubject<WalletOptions> {
-        val source = ReplaySubject.create<WalletOptions>()
-        source.onNext(mockWalletOptions)
-        return source
     }
 }

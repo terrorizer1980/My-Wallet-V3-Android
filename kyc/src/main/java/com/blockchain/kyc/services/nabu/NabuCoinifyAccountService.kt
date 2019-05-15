@@ -10,6 +10,7 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.models.CoinifyData
+import piuk.blockchain.androidbuysell.services.BuyConditions
 import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
@@ -25,7 +26,8 @@ internal class NabuCoinifyAccountService(
     private val walletOptionsDataManager: WalletOptionsDataManager,
     private val currencyState: CurrencyState,
     private val exchangeService: ExchangeService,
-    private val metadataManager: MetadataManager
+    private val metadataManager: MetadataManager,
+    private val buyConditions: BuyConditions
 ) : NabuCoinifyAccountCreator {
 
     private val user: Single<NabuUser> by lazy {
@@ -58,19 +60,31 @@ internal class NabuCoinifyAccountService(
         exchangeService.getCoinifyData()
             .filter { it.user != 0 }
 
-    private fun createCoinifyAccount(): Single<CoinifyData> =
+    private fun validatedNabuUser(): Single<NabuUser> =
         Singles.zip(
             user,
+            buyConditions.buySellCountries()
+        ).map { (user, supportedCountries) ->
+            val countryCode = user.address?.countryCode ?: "US"
+            if (!supportedCountries.contains(countryCode)) {
+                throw IllegalStateException("Cannot create Coinify account for country")
+            } else {
+                user
+            }
+        }
+
+    private fun createCoinifyAccount(): Single<CoinifyData> =
+        Singles.zip(
+            validatedNabuUser(),
             walletOptionsDataManager.getCoinifyPartnerId().firstOrError()
-        ).flatMap {
-            val user = it.first
-            val partnerId = it.second
+        ).flatMap { (user, partnerId) ->
+            val countryCode = user.address?.countryCode ?: "US"
             coinifyDataManager.getEmailTokenAndSignUp(
                 payloadDataManager.guid,
                 payloadDataManager.sharedKey,
                 user.email ?: "",
                 currencyState.fiatUnit,
-                user.address?.countryCode ?: "US",
+                countryCode,
                 partnerId
             )
         }.map {

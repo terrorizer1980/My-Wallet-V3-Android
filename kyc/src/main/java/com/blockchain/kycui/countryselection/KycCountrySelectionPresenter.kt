@@ -8,7 +8,6 @@ import com.blockchain.kycui.countryselection.util.CountryDisplayModel
 import com.blockchain.kycui.countryselection.util.toDisplayList
 import com.blockchain.kycui.navhost.models.CampaignType
 import io.reactivex.Maybe
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -62,7 +61,7 @@ internal class KycCountrySelectionPresenter(
             getRegionList()
                 .flatMapMaybe { regions ->
                     if (campaignType == CampaignType.BuySell && !countryDisplayModel.isState) {
-                        buySellCountries()
+                        buyConditions.buySellCountries()
                             .filter { it.contains(countryDisplayModel.countryCode) }
                             .map { regions }
                     } else {
@@ -88,11 +87,6 @@ internal class KycCountrySelectionPresenter(
                     }
                 )
     }
-
-    private fun buySellCountries(): Single<List<String>> =
-        buyConditions.walletOptionsSource.firstOrError().map {
-            it.partners.coinify.countries
-        }
 
     private fun List<NabuRegion>.isKycAllowed(regionCode: String): Boolean =
         this.any { it.isMatchingRegion(regionCode) && it.isKycAllowed }
