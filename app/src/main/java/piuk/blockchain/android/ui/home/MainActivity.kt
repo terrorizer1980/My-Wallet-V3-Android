@@ -596,7 +596,7 @@ class MainActivity
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private fun checkTradesIfReady() {
-        if (initialized && webViewLoginDetails != null && AppUtil.isBuySellPermitted()) {
+        if (initialized && webViewLoginDetails != null && AppUtil.isBuySellPermitted) {
             frontendJavascriptManager!!.checkForCompletedTrades(webViewLoginDetails)
         }
     }

@@ -310,7 +310,6 @@
                 </LinearLayout>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
-
     </FrameLayout>
 
     <piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboard

@@ -133,8 +133,6 @@ public interface PresenterComponent {
 
     void inject(@NotNull LandingActivity landingActivity);
 
-    void inject(@NotNull SendFragment sendFragment);
-
     void inject(@NotNull DashboardFragment dashboardFragment);
 
     void inject(@NotNull TradeDetailActivity tradeDetailActivity);

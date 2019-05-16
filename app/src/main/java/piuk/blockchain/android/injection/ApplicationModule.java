@@ -52,6 +52,7 @@ import piuk.blockchain.androidcore.data.transactions.TransactionListStore;
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
 import piuk.blockchain.androidcore.utils.AESUtilWrapper;
 import piuk.blockchain.androidcore.utils.PrngFixer;
+import piuk.blockchain.androidcoreui.utils.AppUtil;
 
 import javax.inject.Named;
 
@@ -64,6 +65,9 @@ public class ApplicationModule extends KoinDaggerModule {
     AccessState provideAccessState() {
         return get(AccessState.class);
     }
+
+    @Provides
+    AppUtil providesAppUtil() { return get(AppUtil.class); }
 
     @Provides
     PrivateKeyFactory privateKeyFactory() {

@@ -184,7 +184,7 @@
                                 tools:ignore="MissingPrefix" />
 
                             <TextView
-                                android:id="@+id/textview_total_btc"
+                                android:id="@+id/textview_primary_total"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
@@ -196,7 +196,7 @@
                                 tools:text="0.0082444 BTC" />
 
                             <TextView
-                                android:id="@+id/textview_total_fiat"
+                                android:id="@+id/textview_secondary_total"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"

@@ -199,13 +199,18 @@ class WalletAccountHelper(
         )
     } ?: emptyList()
 
-    fun getDefaultOrFirstFundedAccount(): ItemAccount = when (currencyState.cryptoCurrency) {
-        CryptoCurrency.BTC -> getDefaultOrFirstFundedBtcAccount()
-        CryptoCurrency.BCH -> getDefaultOrFirstFundedBchAccount()
-        CryptoCurrency.ETHER -> getDefaultEthAccount()
-        CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
-        CryptoCurrency.PAX -> getDefaultErc20Account()
-    }
+    @Deprecated("CurrencyState is deprecated, so pass currency into alternative",
+        ReplaceWith("getDefaultOrFirstFundedAccount(cryptoCurrency)"))
+    fun getDefaultOrFirstFundedAccount(): ItemAccount = getDefaultOrFirstFundedAccount(currencyState.cryptoCurrency)
+
+    fun getDefaultOrFirstFundedAccount(cryptoCurrency: CryptoCurrency): ItemAccount =
+        when (cryptoCurrency) {
+            CryptoCurrency.BTC -> getDefaultOrFirstFundedBtcAccount()
+            CryptoCurrency.BCH -> getDefaultOrFirstFundedBchAccount()
+            CryptoCurrency.ETHER -> getDefaultEthAccount()
+            CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
+            CryptoCurrency.PAX -> getDefaultErc20Account()
+        }
 
     fun getEthAccount() =
         listOf(getDefaultEthAccount())
@@ -338,6 +343,7 @@ class WalletAccountHelper(
         val erc20DataModel = erc20DataManager.getErc20Model()
         val ethAccount = ethDataManager.getEthWallet()!!.account
         val balance = erc20DataModel?.totalBalance ?: CryptoValue.ZeroPax
+
         return ItemAccount(
             ethAccount?.label,
             balance.toBalanceString(),

@@ -35,7 +35,7 @@ val coreUiModule = applicationContext {
         }
 
         factory {
-            AccountChooserPresenter(get(), get(), get())
+            AccountChooserPresenter(get(), get())
         }
     }
 

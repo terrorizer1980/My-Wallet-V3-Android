@@ -21,15 +21,15 @@ import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
-import piuk.blockchain.android.ui.send.SendPresenterXSendView
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.PerCurrencySendPresenter
+import piuk.blockchain.android.ui.send.external.SendPresenter
 import piuk.blockchain.android.ui.send.strategy.BitcoinCashSendStrategy
 import piuk.blockchain.android.ui.send.strategy.BitcoinSendStrategy
-import piuk.blockchain.android.ui.send.strategy.Erc20SendStrategy
 import piuk.blockchain.android.ui.send.strategy.EtherSendStrategy
 import piuk.blockchain.android.ui.send.strategy.SendStrategy
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
+import piuk.blockchain.android.ui.send.strategy.paxSendStrategy
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
@@ -39,6 +39,7 @@ import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.erc20.Erc20Manager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
+import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import java.util.Locale
 
@@ -47,6 +48,14 @@ val applicationModule = applicationContext {
     factory { OSUtil(get()) }
 
     factory { StringUtils(get()) }
+
+    bean { AppUtil(
+            context = get(),
+            payloadManager = get(),
+            accessState = get(),
+            prefs = get()
+        )
+    }
 
     factory { get<Context>().resources }
 
@@ -110,20 +119,18 @@ val applicationModule = applicationContext {
             }
         }
 
-        factory {
-            SendPresenterXSendView(
-                PerCurrencySendPresenter(
-                    btcStrategy = get("BTCStrategy"),
-                    bchStrategy = get("BCHStrategy"),
-                    etherStrategy = get("EtherStrategy"),
-                    xlmStrategy = get("XLMStrategy"),
-                    erc20Strategy = get("erc20Strategy"),
-                    prefs = get(),
-                    exchangeRates = get(),
-                    stringUtils = get(),
-                    envSettings = get(),
-                    exchangeRateFactory = get()
-                )
+        factory<SendPresenter<SendView>> {
+            PerCurrencySendPresenter(
+                btcStrategy = get("BTCStrategy"),
+                bchStrategy = get("BCHStrategy"),
+                etherStrategy = get("EtherStrategy"),
+                xlmStrategy = get("XLMStrategy"),
+                paxStrategy = get("paxStrategy"),
+                prefs = get(),
+                exchangeRates = get(),
+                stringUtils = get(),
+                envSettings = get(),
+                exchangeRateFactory = get()
             )
         }
 
@@ -170,11 +177,8 @@ val applicationModule = applicationContext {
                 payloadDataManager = get(),
                 ethDataManager = get(),
                 stringUtils = get(),
-                sendDataManager = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
-                privateKeyFactory = get(),
-                environmentSettings = get(),
                 currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
@@ -193,8 +197,18 @@ val applicationModule = applicationContext {
             )
         }
 
-        factory<SendStrategy<SendView>>("erc20Strategy") {
-            Erc20SendStrategy(
+        factory<SendStrategy<SendView>>("paxStrategy") {
+            paxSendStrategy(
+                walletAccountHelper = get(),
+                payloadDataManager = get(),
+                ethDataManager = get(),
+                erc20Manager = get(),
+                stringUtils = get(),
+                dynamicFeeCache = get(),
+                feeDataManager = get(),
+                currencyFormatter = get(),
+                exchangeRates = get(),
+                environmentConfig = get(),
                 currencyState = get()
             )
         }

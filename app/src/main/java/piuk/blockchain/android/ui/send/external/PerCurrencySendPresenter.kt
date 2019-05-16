@@ -27,7 +27,6 @@ import piuk.blockchain.androidcore.data.exchangerate.toCrypto
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import timber.log.Timber
-import java.lang.IllegalStateException
 
 /**
  * Does some of the basic work, using the [BaseSendView] interface.
@@ -38,7 +37,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
     private val bchStrategy: SendStrategy<View>,
     private val etherStrategy: SendStrategy<View>,
     private val xlmStrategy: SendStrategy<View>,
-    private val erc20Strategy: SendStrategy<View>,
+    private val paxStrategy: SendStrategy<View>,
     private val exchangeRates: FiatExchangeRates,
     private val envSettings: EnvironmentConfig,
     private val stringUtils: StringUtils,
@@ -70,7 +69,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
             CryptoCurrency.ETHER -> etherStrategy
             CryptoCurrency.BCH -> bchStrategy
             CryptoCurrency.XLM -> xlmStrategy
-            CryptoCurrency.PAX -> erc20Strategy
+            CryptoCurrency.PAX -> paxStrategy
         }
 
     override fun onContinueClicked() = delegate().onContinueClicked()
@@ -158,7 +157,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
                     when (selectedCrypto) {
                         CryptoCurrency.ETHER -> onCurrencySelected(CryptoCurrency.ETHER)
                         CryptoCurrency.PAX -> onCurrencySelected(CryptoCurrency.PAX)
-                        else -> throw IllegalStateException("Currency Mismatch!") // TODO: default to ETH?
+                        else -> onCurrencySelected(CryptoCurrency.ETHER) // Default to ETH
                     }
 
                     address = scanData
@@ -255,6 +254,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
         btcStrategy.initView(view)
         bchStrategy.initView(view)
         etherStrategy.initView(view)
+        paxStrategy.initView(view)
     }
 
     override fun disableAdvancedFeeWarning() {

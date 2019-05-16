@@ -16,6 +16,7 @@
     <string name="overview">Transactions</string>
 
     <string name="cancel">Cancel</string>
+    <string name="btn_ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="polite_no">No thanks</string>
@@ -882,11 +883,14 @@
     <string name="pax_title">USD PAX</string>
     <string name="pax_no_transactions_message">Your USD PAX transactions will show up here once you make your first transaction.</string>
     <string name="pax_learn_more_link">Learn more about USD PAX</string>
+    <string name="pax_need_more_eth_error_title">More ETH Needed</string>
+    <string name="pax_need_more_eth_error_body">You\'ll need ETH to send your ERC20 Token, USD PAX. <annotation link="pax_faq">Learn more.</annotation></string>
 
     <!-- Claim Your Free Crypto Card -->
     <string name="swap_announcement_new">New</string>
     <string name="swap_announcement_title">Swap</string>
     <string name="swap_announcement_description">Exchange one crypto for another without ever leaving your Blockchain Wallet.</string>
     <string name="swap_announcement_introducing_link">Check it out!</string>
+    <string name="pax_wallet_name">My USD PAX Wallet</string>
 
 </resources>

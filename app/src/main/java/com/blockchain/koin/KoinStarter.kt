@@ -10,7 +10,6 @@ import com.blockchain.koin.modules.appProperties
 import com.blockchain.koin.modules.applicationModule
 import com.blockchain.koin.modules.dashboardModule
 import com.blockchain.koin.modules.environmentModule
-import com.blockchain.koin.modules.features
 import com.blockchain.koin.modules.homeBrewModule
 import com.blockchain.koin.modules.keys
 import com.blockchain.koin.modules.localShapeShift
@@ -71,7 +70,7 @@ object KoinStarter {
                 walletModule,
                 xlmModule
             ),
-            extraProperties = features + appProperties + keys + urls,
+            extraProperties = appProperties + keys + urls,
             logger = if (BuildConfig.LOG_KOIN_STARTUP) TimberLogger() else NullLogger()
         )
         KoinStarter.application = application

@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import com.blockchain.features.FeatureNames
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.serialization.toMoshiJson
 import com.blockchain.wallet.toAccountReference
@@ -18,13 +17,10 @@ import kotlinx.android.synthetic.main.toolbar_general.*
 import com.squareup.moshi.Moshi
 import info.blockchain.balance.AccountReference
 import org.koin.android.ext.android.inject
-import org.koin.android.ext.android.property
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.utils.extensions.gone
-import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 import java.io.IOException
 
@@ -32,8 +28,6 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
     AccountChooserView {
 
     private val accountChooserPresenter: AccountChooserPresenter by inject()
-
-    override val isContactsEnabled: Boolean by property(FeatureNames.CONTACTS)
 
     override val accountMode: AccountMode by unsafeLazy {
         intent.getSerializableExtra(EXTRA_CHOOSER_MODE) as AccountMode
@@ -53,11 +47,6 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
         supportActionBar?.run { setDisplayHomeAsUpEnabled(true) }
 
         onViewReady()
-    }
-
-    override fun showNoContacts() {
-        recyclerview.gone()
-        layout_no_contacts.visible()
     }
 
     override fun onSupportNavigateUp(): Boolean =

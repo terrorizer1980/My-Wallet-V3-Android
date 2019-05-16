@@ -11,6 +11,7 @@ import android.content.IntentFilter
 import android.content.res.Resources
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.ColorRes
@@ -33,6 +34,7 @@ import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.FrameLayout
 import com.blockchain.annotations.CommonCode
+import com.blockchain.balance.errorIcon
 import com.blockchain.koin.injectActivity
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.ui.MemoEditDialog
@@ -60,10 +62,10 @@ import kotlinx.android.synthetic.main.include_from_row.view.*
 import kotlinx.android.synthetic.main.include_to_row_editable.*
 import kotlinx.android.synthetic.main.include_to_row_editable.view.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.connectivity.ConnectivityStatus
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
@@ -74,11 +76,14 @@ import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import piuk.blockchain.android.ui.send.external.SendPresenter
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.AppRate
+import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_FAQ
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
+import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -89,29 +94,18 @@ import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import timber.log.Timber
-import java.util.Locale
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-
-/**
- * Wrapper for Koin
- */
-class SendPresenterXSendView(val presenter: SendPresenter<SendView>)
 
 class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     SendView,
     NumericKeyboardCallback {
 
-    override val locale: Locale = Locale.getDefault()
-
-    private val sendPresenter: SendPresenterXSendView by inject()
-
-    @Inject
-    lateinit var appUtil: AppUtil
+    private val appUtil: AppUtil by inject()
 
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
     private val currencyState: CurrencyState by inject()
+    private val stringUtils: StringUtils by inject()
 
     private var progressDialog: MaterialProgressDialog? = null
     private var confirmPaymentDialog: ConfirmPaymentDialog? = null
@@ -126,10 +120,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                 dismiss()
             }
         }
-    }
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
     }
 
     private val receiver = object : BroadcastReceiver() {
@@ -167,7 +157,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         handleIncomingArguments()
 
         setupSendingView()
-        setupReceivingView()
+        setupTransferReceiveView()
         setupCryptoTextField()
         setupFiatTextField()
         setupFeesView()
@@ -217,7 +207,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         currency_header?.close()
     }
 
-    override fun createPresenter() = sendPresenter.presenter
+    override fun createPresenter(): SendPresenter<SendView> = get()
 
     override fun getMvpView() = this
 
@@ -335,7 +325,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         AccountChooserActivity.unpackAccountResult(intent)
 
     @SuppressLint("CheckResult")
-    private fun setupReceivingView() {
+    private fun setupTransferReceiveView() {
         // Avoid OntouchListener - causes paste issues on some Samsung devices
         toContainer.toAddressEditTextView.setOnClickListener {
             if (currencyState.cryptoCurrency != CryptoCurrency.XLM) {
@@ -459,21 +449,19 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     }
 
     private fun handleIncomingArguments() {
+        presenter.onCurrencySelected(currencyState.cryptoCurrency)
         if (arguments != null) {
             val scanData = arguments!!.getString(ARGUMENT_SCAN_DATA)
             if (scanData != null) {
                 handlingActivityResult = true
                 presenter.handleURIScan(scanData)
-            } else {
-                // TODO: AND-1637 Abstract away all currency scanning and remove this selection
-                presenter.onCurrencySelected(currencyState.cryptoCurrency)
             }
         }
     }
 
     private fun setupSendingView() {
-        fromContainer.fromAddressTextView.setOnClickListener { startFromFragment() }
-        fromContainer.fromArrowImage.setOnClickListener { startFromFragment() }
+        fromContainer.fromAddressTextView.setOnClickListener { startAccountChooser() }
+        fromContainer.fromArrowImage.setOnClickListener { startAccountChooser() }
     }
 
     override fun updateSendingAddress(label: String) {
@@ -508,7 +496,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         toContainer.toAddressEditTextView.setHint(hint)
     }
 
-    private fun startFromFragment() {
+    private fun startAccountChooser() {
         val currency = currencyState.cryptoCurrency
         AccountChooserActivity.startForResult(
             this,
@@ -1085,6 +1073,24 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         dialogHandler.postDelayed(dialogRunnable, (10 * 1000).toLong())
     }
 
+    override fun showInsufficientGasDlg() {
+
+        val linksMap = mapOf<String, Uri>(
+            "pax_faq" to Uri.parse(URL_BLOCKCHAIN_PAX_FAQ)
+        )
+
+        val body = stringUtils.getStringWithMappedLinks(R.string.pax_need_more_eth_error_body, linksMap)
+
+        ErrorBottomDialog.newInstance(
+            ErrorBottomDialog.Content(
+                title = getString(R.string.pax_need_more_eth_error_title),
+                description = body,
+                icon = CryptoCurrency.ETHER.errorIcon(),
+                dismissText = R.string.btn_ok
+            )
+        ).show(fragmentManager, "BottomDialog")
+    }
+
     override fun enableInput() {
         toAddressEditTextView.isEnabled = true
         toArrow.isEnabled = true
@@ -1118,10 +1124,10 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         @JvmStatic
         fun newInstance(scanData: String?, selectedAccountPosition: Int): SendFragment {
             val fragment = SendFragment()
-            val args = Bundle()
-            args.putString(ARGUMENT_SCAN_DATA, scanData)
-            args.putInt(ARGUMENT_SELECTED_ACCOUNT_POSITION, selectedAccountPosition)
-            fragment.arguments = args
+            fragment.arguments = Bundle().apply {
+                putString(ARGUMENT_SCAN_DATA, scanData)
+                putInt(ARGUMENT_SELECTED_ACCOUNT_POSITION, selectedAccountPosition)
+            }
             return fragment
         }
 
@@ -1133,12 +1139,12 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             fctxId: String
         ): SendFragment {
             val fragment = SendFragment()
-            val args = Bundle()
-            args.putString(ARGUMENT_SCAN_DATA, uri)
-            args.putString(ARGUMENT_CONTACT_ID, contactId)
-            args.putString(ARGUMENT_CONTACT_MDID, contactMdid)
-            args.putString(ARGUMENT_FCTX_ID, fctxId)
-            fragment.arguments = args
+            fragment.arguments = Bundle().apply {
+                putString(ARGUMENT_SCAN_DATA, uri)
+                putString(ARGUMENT_CONTACT_ID, contactId)
+                putString(ARGUMENT_CONTACT_MDID, contactMdid)
+                putString(ARGUMENT_FCTX_ID, fctxId)
+            }
             return fragment
         }
     }

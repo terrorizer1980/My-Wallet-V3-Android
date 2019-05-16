@@ -136,7 +136,6 @@ class BitcoinCashSendStrategy(
         resetAccountList()
         selectDefaultOrFirstFundedSendingAccount()
         view.hideMaxAvailable()
-        clearCryptoAmount()
         clearReceivingAddress()
     }
 
@@ -378,12 +377,12 @@ class BitcoinCashSendStrategy(
         val pending = pendingTransaction
 
         return PaymentConfirmationDetails().apply {
-            fromLabel = pending.sendingObject!!.label
+            fromLabel = pending.sendingObject!!.label ?: ""
             toLabel = pending.displayableReceivingLabel!!.removeBchUri()
 
             cryptoUnit = CryptoCurrency.BCH.symbol
             fiatUnit = exchangeRates.fiatUnit
-            fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode, view.locale)
+            fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode)
 
             // -----
             val separator = getDefaultDecimalSeparator()

@@ -12,11 +12,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import piuk.blockchain.android.ui.send.external.BaseSendView
 
-import java.util.Locale
-
 interface SendView : BaseSendView {
-
-    val locale: Locale
 
     fun setSelectedCurrency(cryptoCurrency: CryptoCurrency)
 
@@ -112,6 +108,8 @@ interface SendView : BaseSendView {
     fun showTransactionSuccess(cryptoCurrency: CryptoCurrency)
 
     fun showTransactionFailed() = showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
+
+    fun showInsufficientGasDlg()
 
     fun dismissConfirmationDialog()
 

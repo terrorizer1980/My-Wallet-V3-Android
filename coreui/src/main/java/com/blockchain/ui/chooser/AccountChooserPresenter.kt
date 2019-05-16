@@ -6,8 +6,6 @@ import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
-import piuk.blockchain.androidcore.data.contacts.ContactsDataManager
-import piuk.blockchain.androidcore.data.contacts.ContactsPredicates
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
@@ -15,14 +13,12 @@ import javax.inject.Inject
 
 class AccountChooserPresenter @Inject constructor(
     private val accountHelper: AccountListing,
-    private val stringUtils: StringUtils,
-    private val contactsDataManager: ContactsDataManager
+    private val stringUtils: StringUtils
 ) : BasePresenter<AccountChooserView>() {
 
     override fun onViewReady() {
         when (view.accountMode) {
             AccountMode.Exchange -> loadExchangeAccounts()
-            AccountMode.ContactsOnly -> loadContactsOnly()
             AccountMode.Bitcoin -> loadBitcoinOnly()
             AccountMode.BitcoinHdOnly -> loadBitcoinHdOnly()
             AccountMode.BitcoinCash -> loadBitcoinCashOnly()
@@ -58,38 +54,6 @@ class AccountChooserPresenter @Inject constructor(
             .add(bchAccountListWithHeader(R.string.bitcoin_cash))
             .subscribeToUpdateList()
     }
-
-    private fun loadContactsOnly() {
-        contactsList()
-            .addToCompositeDisposable(this)
-            .subscribe(
-                {
-                    when {
-                        !it.isEmpty() -> view.updateUi(it)
-                        else -> view.showNoContacts()
-                    }
-                },
-                { Timber.e(it) }
-            )
-    }
-
-    private fun contactsList() =
-        if (!view.isContactsEnabled) {
-            Single.just(emptyList())
-        } else {
-            contactsDataManager.getContactList()
-                .filter(ContactsPredicates.filterByConfirmed())
-                .filter { it.name != null }
-                .map {
-                    AccountChooserItem.Contact(it.name!!, it)
-                }
-                .toList()
-                .map {
-                    if (!it.isEmpty()) {
-                        prefixHeader(R.string.contacts_title, it)
-                    } else it
-                }
-        }
 
     private fun btcAccountListWithoutHeader() =
         accountListWithoutHeader(CryptoCurrency.BTC)

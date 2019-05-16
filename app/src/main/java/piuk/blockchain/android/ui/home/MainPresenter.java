@@ -288,7 +288,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                 )
                 .subscribe(() -> {
                     checkKycStatus();
-                    if (AppUtil.isBuySellPermitted()) {
+                    if (AppUtil.Companion.isBuySellPermitted()) {
                         initBuyService();
                     } else {
                         getView().setBuySellEnabled(false, false);

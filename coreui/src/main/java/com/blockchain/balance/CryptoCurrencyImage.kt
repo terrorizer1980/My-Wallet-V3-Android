@@ -49,3 +49,13 @@ fun CryptoCurrency.coinIconWhite() =
 fun ImageView.setImageDrawable(@DrawableRes res: Int) {
     setImageDrawable(AppCompatResources.getDrawable(context, res))
 }
+
+@DrawableRes
+fun CryptoCurrency.errorIcon(): Int =
+    when (this) {
+        CryptoCurrency.BTC -> R.drawable.vector_btc_error
+        CryptoCurrency.BCH -> R.drawable.vector_bch_error
+        CryptoCurrency.ETHER -> R.drawable.vector_eth_error
+        CryptoCurrency.XLM -> R.drawable.vector_xlm_error
+        CryptoCurrency.PAX -> TODO("ADD PAX ICON WHEN SWAP IS SUPPORTED FOR STABLECOIN")
+    }

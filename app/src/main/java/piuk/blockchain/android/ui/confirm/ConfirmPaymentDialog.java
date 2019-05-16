@@ -51,6 +51,7 @@ public class ConfirmPaymentDialog extends BaseDialogFragment<ConfirmPaymentView,
         if (note != null) args.putString(ARGUMENT_CONTACT_NOTE, note);
         if (noteDescription != null) args.putString(ARGUMENT_CONTACT_NOTE_DESCRIPTION, noteDescription);
         args.putBoolean(ARGUMENT_SHOW_FEE_CHOICE, showFeeChoice);
+
         ConfirmPaymentDialog fragment = new ConfirmPaymentDialog();
         fragment.setArguments(args);
         fragment.setStyle(DialogFragment.STYLE_NO_TITLE, R.style.FullscreenDialog);
@@ -123,13 +124,14 @@ public class ConfirmPaymentDialog extends BaseDialogFragment<ConfirmPaymentView,
     }
 
     @Override
-    public void setTotalBtc(String totalBtc) {
-        binding.textviewTotalBtc.setText(totalBtc);
+    public void setTotals(String totalCrypto, String totalFiat) {
+        binding.textviewPrimaryTotal.setText(totalCrypto);
+        binding.textviewSecondaryTotal.setText(totalFiat);
     }
 
     @Override
-    public void setTotalFiat(String totalFiat) {
-        binding.textviewTotalFiat.setText(totalFiat);
+    public void setFiatTotalOnly(String totalFiat) {
+        binding.textviewPrimaryTotal.setText(totalFiat);
     }
 
     @Override

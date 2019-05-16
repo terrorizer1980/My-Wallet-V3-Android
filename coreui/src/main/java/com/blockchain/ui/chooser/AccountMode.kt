@@ -8,11 +8,6 @@ enum class AccountMode {
     Exchange,
 
     /**
-     * Show only the contacts list
-     */
-    ContactsOnly,
-
-    /**
      * Show all bitcoin accounts, including HD + legacy addresses
      */
     Bitcoin,

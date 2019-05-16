@@ -1,18 +1,15 @@
-package com.blockchain.morph.ui.homebrew.exchange.error
+package piuk.blockchain.androidcoreui.ui.dlg
 
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetDialogFragment
+import android.text.method.LinkMovementMethod
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import com.blockchain.morph.ui.R
 import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.ui.extensions.throttledClicks
@@ -20,11 +17,13 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.synthetic.main.error_bottom_dialog.*
 import org.koin.android.ext.android.inject
+import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import java.lang.IllegalStateException
 
-class SwapErrorBottomDialog : BottomSheetDialogFragment() {
+class ErrorBottomDialog : BottomSheetDialogFragment() {
 
     @Parcelize
     data class Content(
@@ -40,35 +39,34 @@ class SwapErrorBottomDialog : BottomSheetDialogFragment() {
     private val clicksDisposable = CompositeDisposable()
 
     private lateinit var content: Content
-    private lateinit var ctaButton: Button
-    private lateinit var dismissButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         eventLogger.logEvent(LoggableEvent.SwapErrorDialog)
-        setStyle(STYLE_NORMAL,
-            piuk.blockchain.androidcoreui.R.style.TransparentBottomSheetDialogTheme)
-        content = arguments?.getParcelable(ARG_CONTENT)
-            ?: throw IllegalStateException("No content provided")
+        setStyle(STYLE_NORMAL, R.style.TransparentBottomSheetDialogTheme)
+
+        content = arguments?.getParcelable(ARG_CONTENT) ?: throw IllegalStateException("No content provided")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val contextThemeWrapper = ContextThemeWrapper(activity, R.style.AppTheme)
         val themedInflater = inflater.cloneInContext(contextThemeWrapper)
-        val view = themedInflater.inflate(R.layout.swap_error_bottom_dialog, container, false)
-        init(view)
-        return view
+        return themedInflater.inflate(R.layout.error_bottom_dialog, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        init()
     }
 
     override fun onResume() {
         super.onResume()
-        clicksDisposable += ctaButton.throttledClicks()
+        clicksDisposable += button_cta.throttledClicks()
             .subscribeBy(onNext = {
                 // TODO CTA?
                 eventLogger.logEvent(LoggableEvent.SwapErrorDialogCtaClicked)
                 dismiss()
             })
-        clicksDisposable += dismissButton.throttledClicks()
+        clicksDisposable += button_dismiss.throttledClicks()
             .subscribeBy(onNext = {
                 eventLogger.logEvent(LoggableEvent.SwapErrorDialogDismissClicked)
                 dismiss()
@@ -80,28 +78,31 @@ class SwapErrorBottomDialog : BottomSheetDialogFragment() {
         super.onPause()
     }
 
-    private fun init(view: View) {
-        view.findViewById<TextView>(R.id.dialog_title).apply {
-            text = content.title
-        }
-        view.findViewById<ImageView>(R.id.dialog_icon).apply {
-            setImageResource(content.icon)
-        }
-        view.findViewById<TextView>(R.id.dialog_body).apply {
-            text = content.description
-        }
-        ctaButton = view.findViewById<Button>(R.id.button_cta).apply {
-            if (content.ctaButtonText != 0) {
-                setText(content.ctaButtonText)
-            } else {
-                gone()
+    private fun init() {
+
+        with(content) {
+            dialog_title.text = title
+            dialog_icon.setImageResource(icon)
+
+            dialog_body.apply {
+                text = description
+                movementMethod = LinkMovementMethod.getInstance()
             }
-        }
-        dismissButton = view.findViewById<Button>(R.id.button_dismiss).apply {
-            if (content.dismissText != 0) {
-                setText(content.dismissText)
-            } else {
-                gone()
+
+            button_cta.apply {
+                if (ctaButtonText != 0) {
+                    setText(ctaButtonText)
+                } else {
+                    gone()
+                }
+            }
+
+            button_dismiss.apply {
+                if (dismissText != 0) {
+                    setText(dismissText)
+                } else {
+                    gone()
+                }
             }
         }
     }
@@ -110,8 +111,8 @@ class SwapErrorBottomDialog : BottomSheetDialogFragment() {
 
         private const val ARG_CONTENT = "arg_content"
 
-        fun newInstance(content: Content): SwapErrorBottomDialog {
-            val errorDialog = SwapErrorBottomDialog()
+        fun newInstance(content: Content): ErrorBottomDialog {
+            val errorDialog = ErrorBottomDialog()
             errorDialog.arguments = Bundle().apply {
                 putParcelable(ARG_CONTENT, content)
             }

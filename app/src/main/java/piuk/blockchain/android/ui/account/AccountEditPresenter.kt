@@ -55,7 +55,6 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.math.BigInteger
 import java.util.ArrayList
-import java.util.Locale
 import javax.inject.Inject
 
 // TODO: This page is pretty nasty and could do with a proper refactor
@@ -289,9 +288,7 @@ class AccountEditPresenter @Inject internal constructor(
             .doOnNext { pendingTransaction = it }
             .subscribe(
                 { pendingTransaction ->
-                    if (pendingTransaction != null &&
-                        pendingTransaction.bigIntAmount.compareTo(BigInteger.ZERO) == 1
-                    ) {
+                    if (pendingTransaction != null && pendingTransaction.bigIntAmount.compareTo(BigInteger.ZERO) == 1) {
                         val details = getTransactionDetailsForDisplay(pendingTransaction)
                         view.showPaymentDetails(details)
                     } else {
@@ -299,25 +296,22 @@ class AccountEditPresenter @Inject internal constructor(
                     }
                 },
                 {
-                    view.showToast(
-                        R.string.insufficient_funds,
-                        ToastCustom.TYPE_ERROR
-                    )
+                    view.showToast(R.string.insufficient_funds, ToastCustom.TYPE_ERROR)
                 }
             )
     }
 
     internal fun transferFundsClickable(): Boolean = accountModel.transferFundsClickable
 
-    private fun getTransactionDetailsForDisplay(pendingTransaction: PendingTransaction?): PaymentConfirmationDetails {
+    private fun getTransactionDetailsForDisplay(pendingTransaction: PendingTransaction): PaymentConfirmationDetails {
         val details = PaymentConfirmationDetails()
-        details.fromLabel = pendingTransaction!!.sendingObject?.label
+        details.fromLabel = pendingTransaction.sendingObject?.label ?: ""
 
         if (pendingTransaction.receivingObject != null &&
             pendingTransaction.receivingObject?.label != null &&
-            !pendingTransaction.receivingObject?.label!!.isEmpty()
+            !pendingTransaction.receivingObject?.label.isNullOrEmpty()
         ) {
-            details.toLabel = pendingTransaction.receivingObject!!.label
+            details.toLabel = pendingTransaction.receivingObject?.label ?: ""
         } else {
             details.toLabel = pendingTransaction.receivingAddress
         }
@@ -346,7 +340,7 @@ class AccountEditPresenter @Inject internal constructor(
             val totalFiat = pendingTransaction.bigIntAmount.add(pendingTransaction.bigIntFee)
             fiatTotal = currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(totalFiat.toBigDecimal())
 
-            fiatSymbol = currencyFormatManager.getFiatSymbol(fiatUnit, Locale.getDefault())
+            fiatSymbol = currencyFormatManager.getFiatSymbol(fiatUnit)
             isLargeTransaction = isLargeTransaction(pendingTransaction)
             hasConsumedAmounts = pendingTransaction.unspentOutputBundle!!.consumedAmount
                 .compareTo(BigInteger.ZERO) == 1

@@ -135,7 +135,6 @@ class BitcoinSendStrategy(
         resetAccountList()
         selectDefaultOrFirstFundedSendingAccount()
         view.hideMaxAvailable()
-        clearCryptoAmount()
         clearReceivingAddress()
     }
 
@@ -224,7 +223,7 @@ class BitcoinSendStrategy(
     }
 
     private fun getBtcKeys(): Observable<List<ECKey>> {
-        return if (pendingTransaction.isHD(currencyState.cryptoCurrency)) {
+        return if (pendingTransaction.isHD(CryptoCurrency.BTC)) {
             val account = pendingTransaction.sendingObject!!.accountObject as Account
 
             if (payloadDataManager.isDoubleEncrypted) {
@@ -244,7 +243,7 @@ class BitcoinSendStrategy(
     }
 
     private fun getBtcChangeAddress(): Observable<String>? {
-        return if (pendingTransaction.isHD(currencyState.cryptoCurrency)) {
+        return if (pendingTransaction.isHD(CryptoCurrency.BTC)) {
             val account = pendingTransaction.sendingObject!!.accountObject as Account
             payloadDataManager.getNextChangeAddress(account)
         } else {
@@ -254,7 +253,7 @@ class BitcoinSendStrategy(
     }
 
     private fun clearBtcUnspentResponseCache() {
-        if (pendingTransaction.isHD(currencyState.cryptoCurrency)) {
+        if (pendingTransaction.isHD(CryptoCurrency.BTC)) {
             val account = pendingTransaction.sendingObject!!.accountObject as Account
             unspentApiResponsesBtc.remove(account.xpub)
         } else {
@@ -264,7 +263,7 @@ class BitcoinSendStrategy(
     }
 
     private fun incrementBtcReceiveAddress() {
-        if (pendingTransaction.isHD(currencyState.cryptoCurrency)) {
+        if (pendingTransaction.isHD(CryptoCurrency.BTC)) {
             val account = pendingTransaction.sendingObject!!.accountObject as Account
             payloadDataManager.incrementChangeAddress(account)
             payloadDataManager.incrementReceiveAddress(account)
@@ -277,7 +276,6 @@ class BitcoinSendStrategy(
 
         pendingTransaction.clear()
         unspentApiResponsesBtc.clear()
-//        unspentApiResponsesBch.clear()
 
         return hash
     }
@@ -288,7 +286,7 @@ class BitcoinSendStrategy(
     private fun updateInternalBtcBalances() {
         try {
             val totalSent = pendingTransaction.bigIntAmount.add(pendingTransaction.bigIntFee)
-            if (pendingTransaction.isHD(currencyState.cryptoCurrency)) {
+            if (pendingTransaction.isHD(CryptoCurrency.BTC)) {
                 val account = pendingTransaction.sendingObject?.accountObject as Account
                 payloadDataManager.subtractAmountFromAddressBalance(
                     account.xpub,
@@ -337,17 +335,15 @@ class BitcoinSendStrategy(
     private fun getConfirmationDetails(): PaymentConfirmationDetails {
         val pendingTransaction = pendingTransaction
 
-        // --------
         val details = PaymentConfirmationDetails()
 
-        details.fromLabel = pendingTransaction.sendingObject?.label
-        details.toLabel = pendingTransaction.displayableReceivingLabel?.removeBchUri()
+        details.fromLabel = pendingTransaction.sendingObject?.label ?: ""
+        details.toLabel = pendingTransaction.displayableReceivingLabel?.removeBchUri() ?: ""
 
-        details.cryptoUnit = currencyState.cryptoCurrency.symbol
+        details.cryptoUnit = CryptoCurrency.BTC.symbol
         details.fiatUnit = exchangeRates.fiatUnit
         details.fiatSymbol = currencyFormatter.getFiatSymbol(
-            currencyFormatter.fiatCountryCode,
-            view.locale
+            currencyFormatter.fiatCountryCode
         )
 
         details.isLargeTransaction = isLargeTransaction()
@@ -380,7 +376,7 @@ class BitcoinSendStrategy(
             currencyFormatter.getFormattedFiatValueFromSelectedCoinValue(
                 pendingTransaction.total.toBigDecimal()
             )
-        // --------
+
         return details
     }
 
@@ -397,13 +393,13 @@ class BitcoinSendStrategy(
     }
 
     private fun clearCryptoAmount() {
-        view.updateCryptoAmount(CryptoValue.zero(currencyState.cryptoCurrency))
+        view.updateCryptoAmount(CryptoValue.zero(CryptoCurrency.BTC))
     }
 
-    private fun getAddressList(): List<ItemAccount> = walletAccountHelper.getAccountItems(currencyState.cryptoCurrency)
+    private fun getAddressList(): List<ItemAccount> = walletAccountHelper.getAccountItems(CryptoCurrency.BTC)
 
     private fun setReceiveHint(accountsCount: Int) {
-        view.updateReceivingHintAndAccountDropDowns(currencyState.cryptoCurrency, accountsCount)
+        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BTC, accountsCount)
     }
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
@@ -482,7 +478,7 @@ class BitcoinSendStrategy(
     private fun updateFee(fee: BigInteger) {
         absoluteSuggestedFee = fee
 
-        val cryptoValue = CryptoValue(currencyState.cryptoCurrency, absoluteSuggestedFee)
+        val cryptoValue = CryptoValue(CryptoCurrency.BTC, absoluteSuggestedFee)
         view.updateFeeAmount(cryptoValue, cryptoValue.toFiat(exchangeRates))
     }
 
@@ -660,7 +656,7 @@ class BitcoinSendStrategy(
 
         if (spendAll) {
             amount = sweepableAmount
-            view?.updateCryptoAmount(CryptoValue(currencyState.cryptoCurrency, sweepableAmount))
+            view?.updateCryptoAmount(CryptoValue(CryptoCurrency.BTC, sweepableAmount))
         }
 
         val unspentOutputBundle = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb)

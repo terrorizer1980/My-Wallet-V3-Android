@@ -9,7 +9,7 @@
     <View
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/exchange_error_dialog_background"
+        android:background="@color/bottom_error_dialog_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -27,7 +27,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/vector_btc_swap_error" />
+        app:srcCompat="@drawable/vector_btc_error" />
 
     <TextView
         android:id="@+id/dialog_title"

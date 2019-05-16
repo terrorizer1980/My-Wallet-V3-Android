@@ -92,5 +92,8 @@
     <color name="swap_error_dialog_title_text_color">#074B7A</color>
     <color name="swap_error_dialog_message_text_color">#5B5B5B</color>
 
+    <!-- error dlg colors -->
+    <color name="bottom_error_dialog_background">#FFFFFF</color>
+    <color name="bottom_error_title_color">#FF074B7A</color>
 
 </resources>

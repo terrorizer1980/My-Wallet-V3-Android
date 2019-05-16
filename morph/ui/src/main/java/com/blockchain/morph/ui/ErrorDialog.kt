@@ -1,8 +1,9 @@
 package com.blockchain.morph.ui
 
 import android.support.v4.app.FragmentManager
+import com.blockchain.balance.errorIcon
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeMenuState
-import com.blockchain.morph.ui.homebrew.exchange.error.SwapErrorBottomDialog
+import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 import info.blockchain.balance.CryptoCurrency
 
 private fun ExchangeMenuState.ErrorType.icon(cryptoCurrency: CryptoCurrency, userTier: Int): Int =
@@ -12,20 +13,11 @@ private fun ExchangeMenuState.ErrorType.icon(cryptoCurrency: CryptoCurrency, use
         else -> cryptoCurrency.errorIcon()
     }
 
-private fun CryptoCurrency.errorIcon(): Int =
-    when (this) {
-        CryptoCurrency.BTC -> R.drawable.vector_btc_swap_error
-        CryptoCurrency.BCH -> R.drawable.vector_bch_swap_error
-        CryptoCurrency.ETHER -> R.drawable.vector_eth_swap_error
-        CryptoCurrency.XLM -> R.drawable.vector_xlm_swap_error
-        CryptoCurrency.PAX -> TODO("ADD PAX ICON WHEN SWAP IS SUPPORTED FOR STABLECOIN")
-    }
-
 internal fun showErrorDialog(fragmentManager: FragmentManager, error: ExchangeMenuState.ExchangeMenuError) {
-    val bottomSheetDialog = SwapErrorBottomDialog.newInstance(error.toContent())
+    val bottomSheetDialog = ErrorBottomDialog.newInstance(error.toContent())
     bottomSheetDialog.show(fragmentManager, "BottomDialog")
 }
 
-private fun ExchangeMenuState.ExchangeMenuError.toContent(): SwapErrorBottomDialog.Content =
-    SwapErrorBottomDialog.Content(
+private fun ExchangeMenuState.ExchangeMenuError.toContent(): ErrorBottomDialog.Content =
+    ErrorBottomDialog.Content(
         title, message, 0, R.string.ok_cap, errorType.icon(fromCrypto, tier))
