@@ -14,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.kycui.complete.ApplicationCompleteFragment
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.navhost.models.KycStep
+import com.blockchain.kycui.splash.KycSplashFragment
 import com.blockchain.nabu.StartKyc
 import com.blockchain.nabu.StartKycAirdrop
 import com.blockchain.nabu.StartKycForBuySell
@@ -151,6 +152,8 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
     override fun onSupportNavigateUp(): Boolean = consume {
         // If on final page, close host Activity on navigate up
         if (currentFragment is ApplicationCompleteFragment ||
+            // If coming from buy/sell, we want the intro/splash screen to be the 1st screen in the stack
+            (currentFragment is KycSplashFragment && campaignType == CampaignType.BuySell) ||
             // If navigating up unsuccessful, close host Activity
             !navController.navigateUp()
         ) {

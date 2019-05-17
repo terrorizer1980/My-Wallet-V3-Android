@@ -172,6 +172,7 @@ val kycNabuModule = applicationContext {
                 get(),
                 get(),
                 get(),
+                get(),
                 get()
             ) as NabuCoinifyAccountCreator
         }
