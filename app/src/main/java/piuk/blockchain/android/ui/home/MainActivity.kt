@@ -120,8 +120,6 @@ class MainActivity
     private var progressDlg: MaterialProgressDialog? = null
     private var backPressed: Long = 0
 
-    @Thunk
-    internal var paymentMade = false
     private var frontendJavascriptManager: FrontendJavascriptManager? = null
     private var webViewLoginDetails: WebViewLoginDetails? = null
 
@@ -129,8 +127,6 @@ class MainActivity
 
     // Fragment callbacks for currency header
     private val touchOutsideViews = HashMap<View, OnTouchOutsideViewListener>()
-
-    private var balanceFragment: BalanceFragment = BalanceFragment.newInstance(false)
 
     private val tabSelectedListener =
         AHBottomNavigation.OnTabSelectedListener { position, wasSelected ->
@@ -150,7 +146,7 @@ class MainActivity
                         ViewUtils.setElevation(binding.appbarLayout, 4f)
                     }
                     ITEM_TRANSACTIONS -> {
-                        startBalanceFragment(paymentMade)
+                        startBalanceFragment()
                         ViewUtils.setElevation(binding.appbarLayout, 0f)
                     }
                     ITEM_RECEIVE -> {
@@ -321,10 +317,6 @@ class MainActivity
             requestCode == ACCOUNT_EDIT ||
             requestCode == KYC_STARTED
         ) {
-            // Re-init balance & dashboard fragment so that they reload all accounts/settings
-            // incase of changes
-            balanceFragment = BalanceFragment.newInstance(false)
-
             replaceContentFragment(DashboardFragment.newInstance())
             // Reset state incase of changing currency etc
             bottom_navigation.currentItem = ITEM_HOME
@@ -352,8 +344,7 @@ class MainActivity
             else -> {
                 // Switch to balance fragment - it's not clear, though,
                 // how we can ever wind up here...
-                balanceFragment = BalanceFragment.newInstance(false)
-                replaceContentFragment(balanceFragment)
+                startReceiveFragment()
                 true
             }
         }
@@ -562,7 +553,7 @@ class MainActivity
             .setCancelable(false)
             .setPositiveButton(R.string.ok_cap, null)
             .setNegativeButton(R.string.view_details) { _, _ ->
-                startBalanceFragment(false)
+                startBalanceFragment()
                 // Show transaction detail
                 val bundle = Bundle()
                 bundle.putString(BalanceFragment.KEY_TRANSACTION_HASH, txHash)
@@ -801,20 +792,13 @@ class MainActivity
 
     override fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency) {
         presenter.setCryptoCurrency(cryptoCurrency)
-        // This forces the balance page to reload
-        paymentMade = true
         bottom_navigation.currentItem = ITEM_TRANSACTIONS
     }
 
-    override fun startBalanceFragment(paymentToContactMade: Boolean) {
-        if (paymentToContactMade) {
-            balanceFragment = BalanceFragment.newInstance(true)
-            paymentMade = false
-        }
-        replaceContentFragment(balanceFragment)
+    override fun startBalanceFragment() {
+        val fragment = BalanceFragment.newInstance(true)
+        replaceContentFragment(fragment)
         toolbar_general.title = ""
-
-        balanceFragment.refreshSelectedCurrency()
     }
 
     @Suppress("DeprecatedCallableAddReplaceWith")

@@ -15,7 +15,7 @@ interface MainView : View {
 
     fun onScanInput(strUri: String)
 
-    fun startBalanceFragment(paymentToContactMade: Boolean)
+    fun startBalanceFragment()
 
     fun kickToLauncherPage()
 

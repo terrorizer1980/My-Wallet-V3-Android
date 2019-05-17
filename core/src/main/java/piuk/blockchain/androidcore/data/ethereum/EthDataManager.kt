@@ -130,10 +130,7 @@ class EthDataManager(
     fun isLastTxPending(): Observable<Boolean> {
         val lastTxHash = ethDataStore.ethWallet?.lastTransactionHash
         // default 1 day
-        val lastTxTimestamp = Math.max(
-            ethDataStore.ethWallet?.lastTransactionTimestamp
-                ?: 0L, 86400L
-        )
+        val lastTxTimestamp = Math.max(ethDataStore.ethWallet?.lastTransactionTimestamp ?: 0L, 86400L)
 
         // No previous transactions
         if (lastTxHash == null || ethDataStore.ethAddressResponse?.getTransactions()?.size ?: 0 == 0)

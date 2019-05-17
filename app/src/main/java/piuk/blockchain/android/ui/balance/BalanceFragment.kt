@@ -130,14 +130,6 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
         }
     }
 
-    fun refreshSelectedCurrency() {
-        currency_header?.getCurrentlySelectedCurrency()?.run {
-            if (presenter.getCurrentCurrency() != this) {
-                presenter.onCurrencySelected(presenter.getCurrentCurrency())
-            }
-        }
-    }
-
     override fun onResume() {
         super.onResume()
 
