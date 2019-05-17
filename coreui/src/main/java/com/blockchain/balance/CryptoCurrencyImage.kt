@@ -33,7 +33,7 @@ fun CryptoCurrency.drawableResFilled() =
         CryptoCurrency.ETHER -> R.drawable.vector_eth_filled
         CryptoCurrency.BCH -> R.drawable.vector_bitcoin_cash_filled
         CryptoCurrency.XLM -> R.drawable.vector_xlm_icon
-        CryptoCurrency.PAX -> R.drawable.vector_pax
+        CryptoCurrency.PAX -> R.drawable.vector_pax_coloured
     }
 
 @DrawableRes
@@ -57,5 +57,5 @@ fun CryptoCurrency.errorIcon(): Int =
         CryptoCurrency.BCH -> R.drawable.vector_bch_error
         CryptoCurrency.ETHER -> R.drawable.vector_eth_error
         CryptoCurrency.XLM -> R.drawable.vector_xlm_error
-        CryptoCurrency.PAX -> TODO("ADD PAX ICON WHEN SWAP IS SUPPORTED FOR STABLECOIN")
+        CryptoCurrency.PAX -> R.drawable.vector_pax_error
     }

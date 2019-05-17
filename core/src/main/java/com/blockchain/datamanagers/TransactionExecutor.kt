@@ -4,7 +4,9 @@ import com.blockchain.datamanagers.fees.NetworkFees
 import com.blockchain.fees.FeeType
 import com.blockchain.transactions.Memo
 import info.blockchain.balance.AccountReference
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
+import io.reactivex.Observable
 import io.reactivex.Single
 
 interface TransactionExecutorAddresses {
@@ -44,8 +46,11 @@ interface TransactionExecutor : TransactionExecutorAddresses {
 }
 
 interface MaximumSpendableCalculator {
-
     fun getMaximumSpendable(accountReference: AccountReference): Single<CryptoValue>
+}
+
+interface BalanceCalculator {
+    fun balance(cryptoCurrency: CryptoCurrency): Observable<CryptoValue>
 }
 
 interface TransactionExecutorWithoutFees : TransactionExecutorAddresses, MaximumSpendableCalculator {
@@ -54,6 +59,8 @@ interface TransactionExecutorWithoutFees : TransactionExecutorAddresses, Maximum
         amount: CryptoValue,
         account: AccountReference
     ): Single<CryptoValue>
+
+    fun hasEnoughEthFeesForTheTransaction(amount: CryptoValue, sendingAccount: AccountReference): Single<Boolean>
 
     fun executeTransaction(
         amount: CryptoValue,

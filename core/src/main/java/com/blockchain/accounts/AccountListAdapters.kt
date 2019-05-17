@@ -3,6 +3,8 @@ package com.blockchain.accounts
 import com.blockchain.wallet.toAccountReference
 import info.blockchain.balance.AccountReference
 import io.reactivex.Single
+import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.androidcore.R
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -51,4 +53,11 @@ internal class EthAsyncAccountListAdapter(private val ethAccountListAdapter: Eth
 
     override fun accounts(): Single<List<AccountReference>> =
         Single.just(listOf(ethAccountListAdapter.defaultAccountReference()))
+}
+
+internal class PaxAsyncAccountList(private val ethDataManager: EthDataManager, private val stringUtils: StringUtils) :
+    AsyncAccountList {
+    override fun accounts(): Single<List<AccountReference>> =
+        Single.just(listOf(AccountReference.Erc20(stringUtils.getString(R.string.pax_default_account_label),
+            ethDataManager.getEthWallet()?.account?.address ?: throw Exception("No ether wallet found"), "")))
 }

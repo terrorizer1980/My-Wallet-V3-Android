@@ -13,6 +13,7 @@ import com.blockchain.accounts.BtcAccountListAdapter
 import com.blockchain.accounts.BtcAsyncAccountListAdapter
 import com.blockchain.accounts.EthAccountListAdapter
 import com.blockchain.accounts.EthAsyncAccountListAdapter
+import com.blockchain.accounts.PaxAsyncAccountList
 import com.blockchain.balance.AsyncAccountBalanceReporter
 import com.blockchain.balance.AsyncAddressBalanceReporter
 import com.blockchain.balance.BchBalanceAdapter
@@ -132,6 +133,7 @@ val coreModule = applicationContext {
                 get(),
                 get(),
                 get(),
+                get(),
                 get()
             ) as TransactionExecutor
         }
@@ -140,12 +142,14 @@ val coreModule = applicationContext {
             SelfFeeCalculatingTransactionExecutor(
                 get(),
                 get(),
+                get(),
                 FeeType.Regular
             ) as TransactionExecutorWithoutFees
         }
 
         factory("Priority") {
             SelfFeeCalculatingTransactionExecutor(
+                get(),
                 get(),
                 get(),
                 FeeType.Priority
@@ -167,6 +171,7 @@ val coreModule = applicationContext {
         factory("BTC") { BtcAsyncAccountListAdapter(get()) as AsyncAccountList }
         factory("BCH") { BchAsyncAccountListAdapter(get()) as AsyncAccountList }
         factory("ETH") { EthAsyncAccountListAdapter(EthAccountListAdapter(get())) as AsyncAccountList }
+        factory("PAX") { PaxAsyncAccountList(ethDataManager = get(), stringUtils = get()) as AsyncAccountList }
 
         factory("BTC") { BtcBalanceAdapter(get()) }
             .bind(AsyncAddressBalanceReporter::class)
@@ -180,7 +185,7 @@ val coreModule = applicationContext {
 
         factory("all") {
             get<AsyncAccountBalanceReporter>("BTC") +
-                get("BCH") + get("ETH") + get("XLM")
+                    get("BCH") + get("ETH") + get("XLM")
         }
 
         factory {
@@ -197,7 +202,8 @@ val coreModule = applicationContext {
                     get("BTC"),
                     get("ETH"),
                     get("BCH"),
-                    get("XLM")
+                    get("XLM"),
+                    get("PAX")
                 )
             ) as AsyncAllAccountList
         }

@@ -186,6 +186,9 @@ val fakesModule = applicationContext {
 
     bean("Priority") {
         object : TransactionExecutorWithoutFees {
+            override fun hasEnoughEthFeesForTheTransaction(amount: CryptoValue, sendingAccount: AccountReference): Single<Boolean> {
+                return Single.just(true)
+            }
 
             override fun getFeeForTransaction(
                 amount: CryptoValue,

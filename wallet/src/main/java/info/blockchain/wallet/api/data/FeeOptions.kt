@@ -61,6 +61,7 @@ class FeeOptions constructor(
                 gasLimit = 21000,
                 priorityFee = 23,
                 regularFee = 23,
+                gasLimitContract = 65000,
                 limits = FeeLimits(23, 23)
             )
         }

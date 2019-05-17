@@ -41,6 +41,7 @@ import com.blockchain.nabu.StartKyc
 import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.ExchangeRate
 import info.blockchain.balance.FiatValue
@@ -292,6 +293,13 @@ internal class ExchangeFragment : Fragment() {
             QuoteValidity.Valid,
             QuoteValidity.NoQuote,
             QuoteValidity.MissMatch -> null
+            QuoteValidity.NotEnoughFees -> ExchangeMenuState.ExchangeMenuError(
+                CryptoCurrency.ETHER,
+                userTier,
+                "Not Enought ETH",
+                "You'll need ETH to send your ERC20 Token, USD PAX. Learn more.",
+                ExchangeMenuState.ErrorType.TRADE
+            )
             QuoteValidity.UnderMinTrade -> ExchangeMenuState.ExchangeMenuError(
                 fromCrypto.currency,
                 userTier,
@@ -331,6 +339,7 @@ internal class ExchangeFragment : Fragment() {
     private fun ExchangeViewState.logMinMaxErrors() {
         val errorType = when (validity()) {
             QuoteValidity.Valid,
+            QuoteValidity.NotEnoughFees,
             QuoteValidity.NoQuote,
             QuoteValidity.MissMatch -> null
             QuoteValidity.UnderMinTrade -> AmountErrorType.UnderMin

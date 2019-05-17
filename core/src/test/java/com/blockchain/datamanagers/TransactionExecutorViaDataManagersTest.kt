@@ -40,6 +40,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.web3j.crypto.RawTransaction
+import piuk.blockchain.androidcore.data.erc20.Erc20Manager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.exceptions.TransactionInProgressException
@@ -53,6 +54,7 @@ class TransactionExecutorViaDataManagersTest {
     private lateinit var subject: TransactionExecutor
     private val payloadDataManager: PayloadDataManager = mock()
     private val ethDataManager: EthDataManager = mock()
+    private val erc20Manager: Erc20Manager = mock()
     private val sendDataManager: SendDataManager = mock()
     private val defaultAccountDataManager: DefaultAccountDataManager = mock()
     private val ethereumAccountWrapper: EthereumAccountWrapper = mock()
@@ -72,6 +74,7 @@ class TransactionExecutorViaDataManagersTest {
         subject = TransactionExecutorViaDataManagers(
             payloadDataManager,
             ethDataManager,
+            erc20Manager,
             sendDataManager,
             addressResolver,
             accountLookup,
@@ -526,6 +529,24 @@ class TransactionExecutorViaDataManagersTest {
     }
 
     @Test
+    fun `get maximum spendable PAX`() {
+        // Arrange
+        val account = AccountReference.Erc20("", "", "")
+
+        whenever(
+            erc20Manager.getBalance(
+                CryptoCurrency.PAX)
+        ).thenReturn(Single.just(100.toBigInteger()))
+        // Act
+        val testObserver =
+            subject.getMaximumSpendable(account, mock())
+                .test()
+        // Assert
+        testObserver.assertComplete()
+        testObserver.assertValue(CryptoValue(CryptoCurrency.PAX, 100.toBigInteger()))
+    }
+
+    @Test
     fun `get maximum spendable BTC with priority fee`() {
         // Arrange
         val account = AccountReference.BitcoinLike(CryptoCurrency.BTC, "", "XPUB")
@@ -623,7 +644,7 @@ class TransactionExecutorViaDataManagersTest {
         testObserver.assertValue(
             CryptoValue.etherFromWei(
                 1_000_000_000_000_000_000L.toBigInteger() -
-                    ethereumNetworkFee.absoluteRegularFeeInWei.amount
+                        ethereumNetworkFee.absoluteRegularFeeInWei.amount
             )
         )
     }

@@ -7,9 +7,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
@@ -110,5 +112,9 @@ public class EthAddressResponse {
 
     public String toJson() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(this);
+    }
+
+    public void setBalance(BigInteger balance) {
+        this.balance = balance;
     }
 }

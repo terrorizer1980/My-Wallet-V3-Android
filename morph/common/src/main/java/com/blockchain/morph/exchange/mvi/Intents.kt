@@ -37,6 +37,8 @@ class SetTierLimit(val availableOnTier: FiatValue) : ExchangeIntent()
 
 class ApplyMinimumLimit : ExchangeIntent()
 
+class EnoughFeesLimit(val hasEnoughForFess: Boolean) : ExchangeIntent()
+
 class ApplyMaximumLimit : ExchangeIntent()
 
 class FiatExchangeRateIntent(val c2fRate: ExchangeRate.CryptoToFiat) : ExchangeIntent()
