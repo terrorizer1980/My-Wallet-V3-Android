@@ -24,7 +24,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.bitcoinj.core.ECKey
 import org.web3j.crypto.RawTransaction
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.exceptions.TransactionInProgressException
@@ -36,7 +36,7 @@ import java.math.BigInteger
 internal class TransactionExecutorViaDataManagers(
     private val payloadDataManager: PayloadDataManager,
     private val ethDataManager: EthDataManager,
-    private val erc20Manager: Erc20Manager,
+    private val erc20Account: Erc20Account,
     private val sendDataManager: SendDataManager,
     private val addressResolver: AddressResolver,
     private val accountLookup: AccountLookup,
@@ -111,7 +111,7 @@ internal class TransactionExecutorViaDataManagers(
         return ethDataManager.fetchEthAddress()
             .map { ethDataManager.getEthResponseModel()!!.getNonce() }
             .map {
-                erc20Manager.createErc20Transaction(
+                erc20Account.createTransaction(
                     nonce = it,
                     to = receivingAddress,
                     contractAddress = ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
@@ -134,7 +134,7 @@ internal class TransactionExecutorViaDataManagers(
                 )
             is AccountReference.Ethereum -> getMaxEther(fees as EthereumFees, feeType)
             is AccountReference.Xlm -> defaultAccountDataManager.getMaxSpendableAfterFees(feeType)
-            is AccountReference.Erc20 -> getMaxSpendablePax()
+            is AccountReference.Pax -> getMaxSpendablePax()
         }
 
     override fun getFeeForTransaction(
@@ -149,7 +149,7 @@ internal class TransactionExecutorViaDataManagers(
                 amount,
                 (fees as BitcoinLikeFees).feeForType(feeType)
             )
-            is AccountReference.Erc20,
+            is AccountReference.Pax,
             is AccountReference.Ethereum -> {
                 when (feeType) {
                     FeeType.Regular -> (fees as EthereumFees).absoluteRegularFeeInWei.just()
@@ -218,7 +218,7 @@ internal class TransactionExecutorViaDataManagers(
             .singleOrError()
 
     private fun getMaxSpendablePax(): Single<CryptoValue> =
-        erc20Manager.getBalance(CryptoCurrency.PAX).map { CryptoValue.usdPaxFromMinor(it) }
+        erc20Account.getBalance().map { CryptoValue.usdPaxFromMinor(it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroPax }
 

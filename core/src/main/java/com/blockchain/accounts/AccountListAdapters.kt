@@ -58,6 +58,6 @@ internal class EthAsyncAccountListAdapter(private val ethAccountListAdapter: Eth
 internal class PaxAsyncAccountList(private val ethDataManager: EthDataManager, private val stringUtils: StringUtils) :
     AsyncAccountList {
     override fun accounts(): Single<List<AccountReference>> =
-        Single.just(listOf(AccountReference.Erc20(stringUtils.getString(R.string.pax_default_account_label),
+        Single.just(listOf(AccountReference.Pax(stringUtils.getString(R.string.pax_default_account_label),
             ethDataManager.getEthWallet()?.account?.address ?: throw Exception("No ether wallet found"), "")))
 }

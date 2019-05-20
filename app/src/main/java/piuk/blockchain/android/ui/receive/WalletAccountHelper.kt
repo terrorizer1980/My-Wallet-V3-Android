@@ -16,7 +16,7 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
@@ -28,7 +28,7 @@ class WalletAccountHelper(
     private val stringUtils: StringUtils,
     private val currencyState: CurrencyState,
     private val ethDataManager: EthDataManager,
-    private val erc20DataManager: Erc20Manager,
+    private val paxAccount: Erc20Account,
     private val bchDataManager: BchDataManager,
     private val xlmDataManager: XlmDataManager,
     private val environmentSettings: EnvironmentConfig,
@@ -46,7 +46,7 @@ class WalletAccountHelper(
         CryptoCurrency.BCH -> allBchAccountItems()
         CryptoCurrency.ETHER -> getEthAccount()
         CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
-        CryptoCurrency.PAX -> getErc20Account()
+        CryptoCurrency.PAX -> getPaxAccount()
     }
 
     /**
@@ -61,7 +61,7 @@ class WalletAccountHelper(
             CryptoCurrency.BCH -> Single.just(allBchAccountItems())
             CryptoCurrency.ETHER -> Single.just(getEthAccount())
             CryptoCurrency.XLM -> getXlmAccount()
-            CryptoCurrency.PAX -> Single.just(getErc20Account())
+            CryptoCurrency.PAX -> Single.just(getPaxAccount())
         }
 
     private fun allBtcAccountItems() = getHdAccounts() + getLegacyAddresses()
@@ -209,14 +209,14 @@ class WalletAccountHelper(
             CryptoCurrency.BCH -> getDefaultOrFirstFundedBchAccount()
             CryptoCurrency.ETHER -> getDefaultEthAccount()
             CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
-            CryptoCurrency.PAX -> getDefaultErc20Account()
+            CryptoCurrency.PAX -> getDefaultPaxAccount()
         }
 
     fun getEthAccount() =
         listOf(getDefaultEthAccount())
 
-    fun getErc20Account() =
-        listOf(getDefaultErc20Account())
+    fun getPaxAccount() =
+        listOf(getDefaultPaxAccount())
 
     fun getXlmAccount(): Single<List<ItemAccount>> =
         getDefaultXlmAccountItem().map { listOf(it) }
@@ -339,8 +339,8 @@ class WalletAccountHelper(
         )
     }
 
-    private fun getDefaultErc20Account(): ItemAccount {
-        val erc20DataModel = erc20DataManager.getErc20Model()
+    private fun getDefaultPaxAccount(): ItemAccount {
+        val erc20DataModel = paxAccount.getErc20Model()
         val ethAccount = ethDataManager.getEthWallet()!!.account
         val balance = erc20DataModel?.totalBalance ?: CryptoValue.ZeroPax
 
@@ -378,12 +378,12 @@ class WalletAccountHelper(
             CryptoCurrency.BCH -> Single.just(getBchOverviewList())
             CryptoCurrency.ETHER -> Single.just(getEthOverviewList())
             CryptoCurrency.XLM -> getDefaultXlmAccountItem().map { listOf(it) }
-            CryptoCurrency.PAX -> Single.just(getErc20OverviewList())
+            CryptoCurrency.PAX -> Single.just(getPaxOverviewList())
         }
 
     private fun getEthOverviewList(): List<ItemAccount> = getEthAccount()
 
-    private fun getErc20OverviewList(): List<ItemAccount> = getErc20Account()
+    private fun getPaxOverviewList(): List<ItemAccount> = getPaxAccount()
 
     private fun getBchOverviewList(): MutableList<ItemAccount> {
         return mutableListOf<ItemAccount>().apply {

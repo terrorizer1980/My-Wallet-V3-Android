@@ -19,8 +19,8 @@ sealed class AccountReference(
         private val _label: String,
         val accountId: String
     ) : AccountReference(CryptoCurrency.XLM, _label)
-    // TODO reconsider naming
-    data class Erc20(
+
+    data class Pax(
         private val _label: String,
         val ethAddress: String,
         val apiCode: String

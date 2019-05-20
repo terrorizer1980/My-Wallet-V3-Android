@@ -20,9 +20,9 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.erc20.datastores.Erc20DataStore
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 
-class Erc20ManagerTest {
+class PaxAccountTest {
 
-    private lateinit var erc20Manager: Erc20Manager
+    private lateinit var paxAccount: PaxAccount
     private val ethDataManager: EthDataManager = mock()
     private val erc20DataStore: Erc20DataStore = mock()
     private val environmentSettings: EnvironmentConfig = mock()
@@ -42,7 +42,7 @@ class Erc20ManagerTest {
 
     @Before
     fun setUp() {
-        erc20Manager = Erc20Manager(
+        paxAccount = PaxAccount(
             ethDataManager,
             erc20DataStore,
             environmentSettings
@@ -52,7 +52,7 @@ class Erc20ManagerTest {
     @Test
     fun clearErc20AccountDetails() {
         // Actv
-        erc20Manager.clearErc20AccountDetails()
+        paxAccount.clear()
         // Assert
         verify(erc20DataStore).clearData()
         verifyNoMoreInteractions(erc20DataStore)
@@ -65,7 +65,7 @@ class Erc20ManagerTest {
         whenever(ethDataManager.getErc20Address(CryptoCurrency.PAX)).thenReturn(Observable.just(
             erc20AddressResponse))
         // Act
-        val testObserver = erc20Manager.fetchErc20Address().test()
+        val testObserver = paxAccount.fetchErc20Address().test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -83,7 +83,7 @@ class Erc20ManagerTest {
         // Arrange
         whenever(environmentSettings.environment).thenReturn(Environment.TESTNET)
         // Act
-        val testObserver = erc20Manager.fetchErc20Address().test()
+        val testObserver = paxAccount.fetchErc20Address().test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -95,7 +95,7 @@ class Erc20ManagerTest {
     @Test
     fun `no transactions should be returned from empty model`() {
         // Act
-        val testObserver = erc20Manager.getTransactions().test()
+        val testObserver = paxAccount.getTransactions().test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -105,9 +105,9 @@ class Erc20ManagerTest {
     @Test
     fun `transactions from not null model should return the correct transactions`() {
         // Arrange
-        whenever(erc20DataStore.erc20DataModel).thenReturn(Erc20DataModel(erc20AddressResponse))
+        whenever(erc20DataStore.erc20DataModel).thenReturn(Erc20DataModel(erc20AddressResponse, CryptoCurrency.PAX))
         // Act
-        val testObserver = erc20Manager.getTransactions().test()
+        val testObserver = paxAccount.getTransactions().test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -121,9 +121,9 @@ class Erc20ManagerTest {
     @Test
     fun `account has should be the correct one`() {
         // Arrange
-        whenever(erc20DataStore.erc20DataModel).thenReturn(Erc20DataModel(erc20AddressResponse))
+        whenever(erc20DataStore.erc20DataModel).thenReturn(Erc20DataModel(erc20AddressResponse, CryptoCurrency.PAX))
         // Act
-        val testObserver = erc20Manager.getErc20AccountHash().test()
+        val testObserver = paxAccount.getAccountHash().test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -142,7 +142,7 @@ class Erc20ManagerTest {
         val amount = 7.toBigInteger()
 
         val rawTransaction =
-            erc20Manager.createErc20Transaction(nonce, to, contractAddress, gasPrice, gasLimit, amount)
+            paxAccount.createTransaction(nonce, to, contractAddress, gasPrice, gasLimit, amount)
 
         assertEquals(nonce, rawTransaction!!.nonce)
         assertEquals(gasPrice, rawTransaction.gasPrice)

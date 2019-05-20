@@ -13,10 +13,8 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-
 import org.web3j.crypto.RawTransaction
 import org.web3j.utils.Convert
-
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -28,7 +26,7 @@ import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
@@ -46,7 +44,7 @@ class paxSendStrategy(
     private val walletAccountHelper: WalletAccountHelper,
     private val payloadDataManager: PayloadDataManager,
     private val ethDataManager: EthDataManager,
-    private val erc20Manager: Erc20Manager,
+    private val paxAccount: Erc20Account,
     private val dynamicFeeCache: DynamicFeeCache,
     private val feeDataManager: FeeDataManager,
     private val currencyFormatter: CurrencyFormatManager,
@@ -191,7 +189,7 @@ class paxSendStrategy(
         return ethDataManager.fetchEthAddress()
             .map { ethDataManager.getEthResponseModel()!!.getNonce() }
             .map {
-                erc20Manager.createErc20Transaction(
+                paxAccount.createTransaction(
                     nonce = it,
                     to = pendingTx.receivingAddress,
                     contractAddress = ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
@@ -266,7 +264,8 @@ class paxSendStrategy(
         }
     }
 
-    override fun clearReceivingObject() { /* no-op : no transfers in ETH/PAX */ }
+    override fun clearReceivingObject() { /* no-op : no transfers in ETH/PAX */
+    }
 
     override fun selectSendingAccount(account: JsonSerializableAccount?) {
         throw IllegalArgumentException("Multiple accounts not supported for PAX")
@@ -409,9 +408,9 @@ class paxSendStrategy(
         } else {
             // TODO: Not wei, but pax-minor. Since we share dp, we can use this
             pendingTx.amountPax = currencyFormatter.getWeiFromText(
-                    amountToSendSanitised,
-                    getDefaultDecimalSeparator()
-                )
+                amountToSendSanitised,
+                getDefaultDecimalSeparator()
+            )
         }
 
         // Format for display
@@ -427,9 +426,9 @@ class paxSendStrategy(
         }
     }
 
-    override fun handlePrivxScan(scanData: String?) { }
+    override fun handlePrivxScan(scanData: String?) {}
 
-    override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) { }
+    override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) {}
 
     private fun validateTransaction(): Observable<Pair<Boolean, Int>> {
 

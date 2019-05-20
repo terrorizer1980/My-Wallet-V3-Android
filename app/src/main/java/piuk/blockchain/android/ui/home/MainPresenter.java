@@ -50,7 +50,7 @@ import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyState;
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager;
+import piuk.blockchain.androidcore.data.erc20.Erc20Account;
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager;
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager;
 import piuk.blockchain.androidcore.data.fees.FeeDataManager;
@@ -84,7 +84,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private FeeDataManager feeDataManager;
     private PromptManager promptManager;
     private EthDataManager ethDataManager;
-    private Erc20Manager erc20Manager;
+    private Erc20Account paxAccount;
     private BchDataManager bchDataManager;
     private CurrencyState currencyState;
     private WalletOptionsDataManager walletOptionsDataManager;
@@ -261,7 +261,10 @@ public class MainPresenter extends BasePresenter<MainView> {
                 R.string.ok_cap,
                 false,
                 false);
-        prompt.setPositiveButtonListener(() -> { prompt.dismiss(); return Unit.INSTANCE; });
+        prompt.setPositiveButtonListener(() -> {
+            prompt.dismiss();
+            return Unit.INSTANCE;
+        });
         return prompt;
     }
 
@@ -314,35 +317,35 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private void checkForPendingLinks() {
         getCompositeDisposable().add(
-            deepLinkProcessor
-                .getLink(getView().getStartIntent())
-                    .subscribe(
-                        linkState -> {
-                            if (linkState instanceof LinkState.SunriverDeepLink) {
-                                final CampaignLinkState campaignLinkState = ((LinkState.SunriverDeepLink) linkState).getLink();
-                                if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
-                                    getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
-                                } else if (campaignLinkState instanceof CampaignLinkState.Data) {
-                                    registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
-                                }
-                            } else if (linkState instanceof LinkState.KycDeepLink) {
-                                final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
-                                final KycLinkState kycLinkState = deepLink.getLink();
-                                if (kycLinkState instanceof KycLinkState.Resubmit) {
-                                    getView().launchKyc(CampaignType.Resubmission);
-                                } else if (kycLinkState instanceof KycLinkState.EmailVerified) {
-                                    getView().launchKyc(CampaignType.Swap);
-                                } else if (kycLinkState instanceof KycLinkState.General) {
-                                    final CampaignData data = ((KycLinkState.General) kycLinkState).getCampaignData();
-                                    if (data != null) {
-                                        registerForCampaign(data);
-                                    } else {
-                                        getView().launchKyc(CampaignType.Swap);
+                deepLinkProcessor
+                        .getLink(getView().getStartIntent())
+                        .subscribe(
+                                linkState -> {
+                                    if (linkState instanceof LinkState.SunriverDeepLink) {
+                                        final CampaignLinkState campaignLinkState = ((LinkState.SunriverDeepLink) linkState).getLink();
+                                        if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
+                                            getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
+                                        } else if (campaignLinkState instanceof CampaignLinkState.Data) {
+                                            registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
+                                        }
+                                    } else if (linkState instanceof LinkState.KycDeepLink) {
+                                        final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
+                                        final KycLinkState kycLinkState = deepLink.getLink();
+                                        if (kycLinkState instanceof KycLinkState.Resubmit) {
+                                            getView().launchKyc(CampaignType.Resubmission);
+                                        } else if (kycLinkState instanceof KycLinkState.EmailVerified) {
+                                            getView().launchKyc(CampaignType.Swap);
+                                        } else if (kycLinkState instanceof KycLinkState.General) {
+                                            final CampaignData data = ((KycLinkState.General) kycLinkState).getCampaignData();
+                                            if (data != null) {
+                                                registerForCampaign(data);
+                                            } else {
+                                                getView().launchKyc(CampaignType.Swap);
+                                            }
+                                        }
                                     }
-                                }
-                            }
-                        }, Timber::e
-                    )
+                                }, Timber::e
+                        )
         );
     }
 
@@ -461,7 +464,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         accessState.setPIN(null);
         buyDataManager.wipe();
         ethDataManager.clearEthAccountDetails();
-        erc20Manager.clearErc20AccountDetails();
+        paxAccount.clear();
         bchDataManager.clearBchAccountDetails();
         DashboardPresenter.onLogout();
     }

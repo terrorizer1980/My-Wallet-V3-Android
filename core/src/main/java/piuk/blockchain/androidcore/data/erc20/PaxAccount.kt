@@ -16,44 +16,35 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import java.math.BigInteger
 
-class Erc20Manager(
-    private val ethDataManager: EthDataManager,
-    private val erc20DataStore: Erc20DataStore,
+class PaxAccount(
+    override val ethDataManager: EthDataManager,
+    override val dataStore: Erc20DataStore,
     private val environmentSettings: EnvironmentConfig
-) {
+) : Erc20Account {
 
-    /**
-     * Clears the currently stored ERC20 account and [Erc20AddressResponse] from memory.
-     */
-    fun clearErc20AccountDetails() = erc20DataStore.clearData()
+    override val cryptoCurrency: CryptoCurrency
+        get() = CryptoCurrency.PAX
 
-    /**
-     * Returns an [Erc20AddressResponse] object for a given ERC20 address as an [Observable]. An
-     * [Erc20DataModel] contains a list of transactions associated with the account, as well
-     * as a final balance. Calling this function also caches the [Erc20DataModel].
-     *
-     * @return An [Observable] wrapping an [Erc20DataModel]
-     */
-    fun fetchErc20Address(): Observable<Erc20DataModel> =
+    override fun fetchErc20Address(): Observable<Erc20DataModel> =
         if (environmentSettings.environment == Environment.TESTNET) {
-            Observable.just(Erc20DataModel(Erc20AddressResponse()))
-                .doOnNext { erc20DataStore.erc20DataModel = null }
+            Observable.just(Erc20DataModel(Erc20AddressResponse(), cryptoCurrency))
+                .doOnNext { dataStore.erc20DataModel = null }
         } else {
             ethDataManager.getErc20Address(CryptoCurrency.PAX).map {
-                Erc20DataModel(it)
+                Erc20DataModel(it, cryptoCurrency)
             }.doOnNext {
-                erc20DataStore.erc20DataModel = it
+                dataStore.erc20DataModel = it
             }.subscribeOn(Schedulers.io())
         }
 
-    fun getTransactions(): Observable<List<Erc20Transfer>> =
-        erc20DataStore.erc20DataModel?.let { model ->
+    override fun getTransactions(): Observable<List<Erc20Transfer>> =
+        dataStore.erc20DataModel?.let { model ->
             Observable.just(model.transfers)
                 .applySchedulers()
         } ?: Observable.empty()
 
-    fun getErc20AccountHash(): Observable<String> =
-        erc20DataStore.erc20DataModel?.let { model ->
+    override fun getAccountHash(): Observable<String> =
+        dataStore.erc20DataModel?.let { model ->
             Observable.just(model.accountHash)
                 .applySchedulers()
         } ?: Observable.empty()
@@ -63,18 +54,18 @@ class Erc20Manager(
      *
      * @return A nullable [Erc20DataModel] object
      */
-    fun getErc20Model(): Erc20DataModel? = erc20DataStore.erc20DataModel
+    override fun getErc20Model(): Erc20DataModel? = dataStore.erc20DataModel
 
-    fun fetchErc20AddressCompletable(): Completable = Completable.fromObservable(fetchErc20Address())
+    override fun fetchAddressCompletable(): Completable = Completable.fromObservable(fetchErc20Address())
 
-    fun getBalance(currency: CryptoCurrency): Single<BigInteger> =
-        ethDataManager.getErc20Address(currency).map {
+    override fun getBalance(): Single<BigInteger> =
+        ethDataManager.getErc20Address(cryptoCurrency).map {
             it.balance
         }.singleOrError().onErrorReturn {
             0.toBigInteger()
         }
 
-    fun createErc20Transaction(
+    override fun createTransaction(
         nonce: BigInteger,
         to: String,
         contractAddress: String,

@@ -20,7 +20,7 @@ import piuk.blockchain.android.data.datamanagers.models.XlmDisplayable
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.transactions.TransactionListStore
@@ -37,7 +37,7 @@ class TransactionListDataManager(
     private val ethDataManager: EthDataManager,
     private val bchDataManager: BchDataManager,
     private val xlmDataManager: XlmDataManager,
-    private val erc20Manager: Erc20Manager,
+    private val paxAccount: Erc20Account,
     private val transactionListStore: TransactionListStore,
     private val currencyState: CurrencyState
 ) : TotalBalance {
@@ -271,7 +271,7 @@ class TransactionListDataManager(
 
     private fun getErc20Transactions(): Observable<List<Displayable>> {
         val feedTransactions =
-            erc20Manager.getTransactions().mapList {
+            paxAccount.getTransactions().mapList {
                 val feeObservable = ethDataManager.getTransaction(it.transactionHash)
                     .map { transaction -> transaction.gasUsed * transaction.gasPrice }
                 FeedErc20Transfer(it, feeObservable)
@@ -279,7 +279,7 @@ class TransactionListDataManager(
 
         return Observables.zip(
             feedTransactions,
-            erc20Manager.getErc20AccountHash(),
+            paxAccount.getAccountHash(),
             ethDataManager.getLatestBlockNumber()
         ).map { (transactions, accountHash, latestBlockNumber) ->
             transactions.map { transaction ->
@@ -319,7 +319,7 @@ class TransactionListDataManager(
             CryptoCurrency.BCH -> bchDataManager.toBalanceReporter().toAsync()
             CryptoCurrency.ETHER -> ethDataManager.toAsyncBalanceReporter()
             CryptoCurrency.XLM -> xlmDataManager.toAsyncBalanceReporter()
-            CryptoCurrency.PAX -> erc20Manager.toAsyncBalanceReporter()
+            CryptoCurrency.PAX -> paxAccount.toAsyncBalanceReporter()
         }
     }
 }

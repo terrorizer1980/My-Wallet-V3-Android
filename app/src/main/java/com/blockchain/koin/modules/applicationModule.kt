@@ -39,7 +39,8 @@ import piuk.blockchain.android.util.PrngHelper
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
+import piuk.blockchain.androidcore.data.erc20.PaxAccount
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -52,7 +53,8 @@ val applicationModule = applicationContext {
 
     factory { StringUtils(get()) }
 
-    bean { AppUtil(
+    bean {
+        AppUtil(
             context = get(),
             payloadManager = get(),
             accessState = get(),
@@ -71,13 +73,8 @@ val applicationModule = applicationContext {
         factory {
             EthDataManager(get(), get(), get(), get(), get(), get(), get(), get())
         }
-
-        factory {
-            Erc20Manager(
-                ethDataManager = get(),
-                erc20DataStore = get(),
-                environmentSettings = get()
-            )
+        factory("pax") {
+            PaxAccount(ethDataManager = get(), dataStore = get(), environmentSettings = get()) as Erc20Account
         }
 
         factory {
@@ -117,7 +114,7 @@ val applicationModule = applicationContext {
                 xlmDataManager = get(),
                 environmentSettings = get(),
                 exchangeRates = get(),
-                erc20DataManager = get()
+                paxAccount = get("pax")
             )
         }
 
@@ -225,7 +222,7 @@ val applicationModule = applicationContext {
                 walletAccountHelper = get(),
                 payloadDataManager = get(),
                 ethDataManager = get(),
-                erc20Manager = get(),
+                paxAccount = get("pax"),
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
@@ -251,7 +248,7 @@ val applicationModule = applicationContext {
                 exchangeRateDataManager = get(),
                 transactionListDataManager = get(),
                 ethDataManager = get(),
-                erc20Manager = get(),
+                paxAccount = get("pax"),
                 swipeToReceiveHelper = get(),
                 payloadDataManager = get(),
                 buyDataManager = get(),

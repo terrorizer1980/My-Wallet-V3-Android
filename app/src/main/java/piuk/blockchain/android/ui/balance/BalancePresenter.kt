@@ -30,7 +30,7 @@ import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
@@ -47,7 +47,7 @@ class BalancePresenter(
     private val exchangeRateDataManager: ExchangeRateDataManager,
     private val transactionListDataManager: TransactionListDataManager,
     private val ethDataManager: EthDataManager,
-    private val erc20Manager: Erc20Manager,
+    private val paxAccount: Erc20Account,
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     internal val payloadDataManager: PayloadDataManager,
     private val buyDataManager: BuyDataManager,
@@ -170,7 +170,7 @@ class BalancePresenter(
             CryptoCurrency.ETHER -> ethDataManager.fetchEthAddressCompletable()
             CryptoCurrency.BCH -> bchDataManager.updateAllBalances()
             CryptoCurrency.XLM -> Completable.complete()
-            CryptoCurrency.PAX -> erc20Manager.fetchErc20AddressCompletable()
+            CryptoCurrency.PAX -> paxAccount.fetchAddressCompletable()
         }
 
     /**

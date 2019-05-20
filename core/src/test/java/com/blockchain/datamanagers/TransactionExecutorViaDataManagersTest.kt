@@ -40,7 +40,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.web3j.crypto.RawTransaction
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.exceptions.TransactionInProgressException
@@ -54,7 +54,7 @@ class TransactionExecutorViaDataManagersTest {
     private lateinit var subject: TransactionExecutor
     private val payloadDataManager: PayloadDataManager = mock()
     private val ethDataManager: EthDataManager = mock()
-    private val erc20Manager: Erc20Manager = mock()
+    private val erc20Account: Erc20Account = mock()
     private val sendDataManager: SendDataManager = mock()
     private val defaultAccountDataManager: DefaultAccountDataManager = mock()
     private val ethereumAccountWrapper: EthereumAccountWrapper = mock()
@@ -74,7 +74,7 @@ class TransactionExecutorViaDataManagersTest {
         subject = TransactionExecutorViaDataManagers(
             payloadDataManager,
             ethDataManager,
-            erc20Manager,
+            erc20Account,
             sendDataManager,
             addressResolver,
             accountLookup,
@@ -531,11 +531,10 @@ class TransactionExecutorViaDataManagersTest {
     @Test
     fun `get maximum spendable PAX`() {
         // Arrange
-        val account = AccountReference.Erc20("", "", "")
+        val account = AccountReference.Pax("", "", "")
 
         whenever(
-            erc20Manager.getBalance(
-                CryptoCurrency.PAX)
+            erc20Account.getBalance()
         ).thenReturn(Single.just(100.toBigInteger()))
         // Act
         val testObserver =

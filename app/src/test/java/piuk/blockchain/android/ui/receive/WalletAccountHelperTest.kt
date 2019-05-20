@@ -32,7 +32,7 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
@@ -50,7 +50,7 @@ class WalletAccountHelperTest {
     private val xlmDataManager: XlmDataManager = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private val environmentSettings: EnvironmentConfig = mock()
     private val fiatExchangeRates: FiatExchangeRates = mock()
-    private val erc20Manager: Erc20Manager = mock()
+    private val paxAccount: Erc20Account = mock()
 
     @Before
     fun setUp() {
@@ -61,7 +61,7 @@ class WalletAccountHelperTest {
             stringUtils,
             currencyState,
             ethDataManager,
-            erc20Manager,
+            paxAccount,
             bchDataManager,
             xlmDataManager,
             environmentSettings,

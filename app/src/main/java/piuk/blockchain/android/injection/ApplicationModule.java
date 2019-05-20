@@ -39,7 +39,8 @@ import piuk.blockchain.androidcore.data.auth.AuthDataManager;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyState;
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager;
+import piuk.blockchain.androidcore.data.erc20.Erc20Account;
+import piuk.blockchain.androidcore.data.erc20.PaxAccount;
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager;
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates;
 import piuk.blockchain.androidcore.data.fees.FeeDataManager;
@@ -68,7 +69,9 @@ public class ApplicationModule extends KoinDaggerModule {
     }
 
     @Provides
-    AppUtil providesAppUtil() { return get(AppUtil.class); }
+    AppUtil providesAppUtil() {
+        return get(AppUtil.class);
+    }
 
     @Provides
     PrivateKeyFactory privateKeyFactory() {
@@ -172,8 +175,8 @@ public class ApplicationModule extends KoinDaggerModule {
     }
 
     @Provides
-    Erc20Manager provideErc20Manager() {
-        return get(Erc20Manager.class);
+    Erc20Account providePaxAccount() {
+        return get(Erc20Account.class);
     }
 
     @Provides

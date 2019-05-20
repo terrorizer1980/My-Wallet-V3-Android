@@ -4,12 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-
 import javax.inject.Inject;
-
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager;
+import piuk.blockchain.androidcore.data.erc20.Erc20Account;
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager;
 import piuk.blockchain.android.data.websocket.WebSocketService;
 import piuk.blockchain.android.injection.Injector;
@@ -27,7 +25,7 @@ public class LogoutActivity extends AppCompatActivity {
 
     @Inject protected BuyDataManager buyDataManager;
     @Inject protected EthDataManager ethDataManager;
-    @Inject protected Erc20Manager erc20Manager;
+    @Inject protected Erc20Account paxAccount;
     @Inject protected BchDataManager bchDataManager;
     @Inject protected BuyConditions buyConditions;
     @Inject protected WalletOptionsState walletOptionsState;
@@ -61,7 +59,7 @@ public class LogoutActivity extends AppCompatActivity {
                 // Rx events and handle their own state during logout?
                 buyDataManager.wipe();
                 ethDataManager.clearEthAccountDetails();
-                erc20Manager.clearErc20AccountDetails();
+                paxAccount.clear();
                 bchDataManager.clearBchAccountDetails();
                 shapeShiftDataManager.clearShapeShiftData();
                 coinifyDataManager.clearAccessToken();

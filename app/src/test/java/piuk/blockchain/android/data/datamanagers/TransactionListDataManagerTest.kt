@@ -4,7 +4,6 @@ import com.blockchain.sunriver.HorizonKeyPair
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.models.XlmTransaction
 import com.nhaarman.mockito_kotlin.whenever
-
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.ethereum.data.EthLatestBlock
@@ -16,17 +15,14 @@ import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Observable
 import io.reactivex.Single
-
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-
 import piuk.blockchain.android.testutils.RxTest
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.transactions.TransactionListStore
@@ -41,6 +37,7 @@ import org.junit.Assert.assertEquals
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.transactions.models.Erc20Displayable
 
@@ -57,7 +54,7 @@ class TransactionListDataManagerTest : RxTest() {
     @Mock
     private lateinit var xlmDataManager: XlmDataManager
     @Mock
-    private lateinit var erc20Manager: Erc20Manager
+    private lateinit var paxAccount: Erc20Account
     private val transactionListStore = TransactionListStore()
     private lateinit var subject: TransactionListDataManager
 
@@ -69,7 +66,7 @@ class TransactionListDataManagerTest : RxTest() {
             ethDataManager,
             bchDataManager,
             xlmDataManager,
-            erc20Manager,
+            paxAccount,
             transactionListStore,
             currencyState)
     }
@@ -488,7 +485,7 @@ class TransactionListDataManagerTest : RxTest() {
             timestamp = 1557334297
         )
         whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-        whenever(erc20Manager.getTransactions()).thenReturn(Observable.just(
+        whenever(paxAccount.getTransactions()).thenReturn(Observable.just(
             listOf(
                 erc20Transfer
             )
@@ -499,12 +496,12 @@ class TransactionListDataManagerTest : RxTest() {
                 gasPrice = 100.toBigInteger()
                 gasUsed = 2.toBigInteger()
             }))
-        whenever(erc20Manager.getErc20AccountHash())
+        whenever(paxAccount.getAccountHash())
             .thenReturn(Observable.just("0x4058a004dd718babab47e14dd0d744742e5b9903"))
         whenever(ethDataManager.getLatestBlockNumber())
             .thenReturn(Observable.just(EthLatestBlockNumber().apply {
-            number = erc20Transfer.blockNumber.plus(3.toBigInteger())
-        }))
+                number = erc20Transfer.blockNumber.plus(3.toBigInteger())
+            }))
 
         val testObserver = subject.fetchTransactions(ItemAccount(
             "PAX",
@@ -513,7 +510,7 @@ class TransactionListDataManagerTest : RxTest() {
             1L, null,
             "AccountID"
         ), 50, 0).test()
-        verify(erc20Manager).getTransactions()
+        verify(paxAccount).getTransactions()
         testObserver.assertValueCount(1)
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -537,7 +534,7 @@ class TransactionListDataManagerTest : RxTest() {
     fun emptyListShouldBeReturnedOnError() {
         // Arrange
         whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-        whenever(erc20Manager.getTransactions())
+        whenever(paxAccount.getTransactions())
             .thenReturn(Observable.error<List<Erc20Transfer>>(Throwable()))
         whenever(ethDataManager.getTransaction("0xfd7d583fa54bf55f6cfbfec97c0c55cc6af8c121" +
                 "b71addb7d06a9e1e305ae8ff"))
@@ -545,7 +542,7 @@ class TransactionListDataManagerTest : RxTest() {
                 gasPrice = 100.toBigInteger()
                 gasUsed = 2.toBigInteger()
             }))
-        whenever(erc20Manager.getErc20AccountHash())
+        whenever(paxAccount.getAccountHash())
             .thenReturn(Observable.just("0x4058a004dd718babab47e14dd0d744742e5b9903"))
         whenever(ethDataManager.getLatestBlockNumber()).thenReturn(Observable.just(EthLatestBlockNumber().apply {
             number = 1000.toBigInteger()
@@ -558,7 +555,7 @@ class TransactionListDataManagerTest : RxTest() {
             1L, null,
             "AccountID"
         ), 50, 0).test()
-        verify(erc20Manager).getTransactions()
+        verify(paxAccount).getTransactions()
         testObserver.assertValueCount(1)
         testObserver.assertComplete()
         testObserver.assertNoErrors()

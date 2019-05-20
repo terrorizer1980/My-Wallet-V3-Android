@@ -281,7 +281,7 @@ class SelfFeeCalculatingTransactionExecutorTest {
 
         SelfFeeCalculatingTransactionExecutor(transactionExecutor, balanceCalculator, feeDataManager, FeeType.Priority)
             .hasEnoughEthFeesForTheTransaction(CryptoValue(CryptoCurrency.PAX, 100.toBigInteger()),
-                AccountReference.Erc20("", "", "")).test().assertComplete()
+                AccountReference.Pax("", "", "")).test().assertComplete()
             .values()
             .single() `should equal` true
         verify(balanceCalculator).balance(CryptoCurrency.ETHER)
@@ -305,7 +305,7 @@ class SelfFeeCalculatingTransactionExecutorTest {
 
         SelfFeeCalculatingTransactionExecutor(transactionExecutor, balanceCalculator, feeDataManager, FeeType.Priority)
             .hasEnoughEthFeesForTheTransaction(CryptoValue(CryptoCurrency.PAX, 100.toBigInteger()),
-                AccountReference.Erc20("", "", "")).test().assertComplete()
+                AccountReference.Pax("", "", "")).test().assertComplete()
             .values()
             .single() `should equal` false
 
