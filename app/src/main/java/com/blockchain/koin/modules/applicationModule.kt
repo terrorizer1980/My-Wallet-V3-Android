@@ -22,6 +22,7 @@ import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
+import piuk.blockchain.android.ui.receive.ReceivePresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.PerCurrencySendPresenter
@@ -268,6 +269,21 @@ val applicationModule = applicationContext {
 
         factory {
             QrCodeDataManager()
+        }
+
+        factory {
+            ReceivePresenter(
+                prefs = get(),
+                qrCodeDataManager = get(),
+                walletAccountHelper = get(),
+                payloadDataManager = get(),
+                ethDataStore = get(),
+                bchDataManager = get(),
+                xlmDataManager = get(),
+                environmentSettings = get(),
+                currencyState = get(),
+                fiatExchangeRates = get()
+            )
         }
     }
 

@@ -315,7 +315,6 @@ class ReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(currencyState).cryptoCurrency = CryptoCurrency.ETHER
-        verify(currencyState).cryptoCurrency
         verifyNoMoreInteractions(currencyState)
         subject.selectedAccount `should be` null
         subject.selectedAddress `should be` ethAccount
@@ -344,7 +343,6 @@ class ReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(currencyState).cryptoCurrency = CryptoCurrency.PAX
-        verify(currencyState).cryptoCurrency
         verifyNoMoreInteractions(currencyState)
         subject.selectedAccount `should be` null
         subject.selectedAddress `should be` ethAccount
@@ -413,7 +411,6 @@ class ReceivePresenterTest {
         verify(bchDataManager).getWalletTransactions(50, 0)
         verifyNoMoreInteractions(payloadDataManager)
         verify(currencyState).cryptoCurrency = CryptoCurrency.BCH
-        verify(currencyState).cryptoCurrency
         verifyNoMoreInteractions(currencyState)
         subject.selectedAccount `should be` null
         subject.selectedAddress `should equal` bech32Address
@@ -464,7 +461,6 @@ class ReceivePresenterTest {
         verify(bchDataManager).getWalletTransactions(50, 0)
         verifyNoMoreInteractions(payloadDataManager)
         verify(currencyState).cryptoCurrency = CryptoCurrency.BCH
-        verify(currencyState).cryptoCurrency
         verifyNoMoreInteractions(currencyState)
         subject.selectedAccount `should be` null
         subject.selectedAddress `should equal` bech32Address

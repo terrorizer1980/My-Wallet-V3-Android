@@ -31,17 +31,16 @@ import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toCrypto
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.math.BigInteger
 import java.util.Locale
-import javax.inject.Inject
 
 @Suppress("MemberVisibilityCanPrivate")
-class ReceivePresenter @Inject internal constructor(
-    private val prefsUtil: PrefsUtil,
+class ReceivePresenter(
+    private val prefs: PersistentPrefs,
     private val qrCodeDataManager: QrCodeDataManager,
     private val walletAccountHelper: WalletAccountHelper,
     private val payloadDataManager: PayloadDataManager,
@@ -165,7 +164,7 @@ class ReceivePresenter @Inject internal constructor(
     internal fun onEthSelected() {
         currencyState.cryptoCurrency = CryptoCurrency.ETHER
         compositeDisposable.clear()
-        view.setSelectedCurrency(currencyState.cryptoCurrency)
+        view.setSelectedCurrency(CryptoCurrency.ETHER)
         selectedAccount = null
         selectedBchAccount = null
 
@@ -175,7 +174,7 @@ class ReceivePresenter @Inject internal constructor(
     internal fun onPaxSelected() {
         currencyState.cryptoCurrency = CryptoCurrency.PAX
         compositeDisposable.clear()
-        view.setSelectedCurrency(currencyState.cryptoCurrency)
+        view.setSelectedCurrency(CryptoCurrency.PAX)
         selectedAccount = null
         selectedBchAccount = null
 
@@ -200,7 +199,7 @@ class ReceivePresenter @Inject internal constructor(
     internal fun onXlmSelected() {
         currencyState.cryptoCurrency = CryptoCurrency.XLM
         compositeDisposable.clear()
-        view.setSelectedCurrency(currencyState.cryptoCurrency)
+        view.setSelectedCurrency(CryptoCurrency.XLM)
         selectedAccount = null
         selectedBchAccount = null
         xlmDataManager.defaultAccount()
@@ -227,7 +226,7 @@ class ReceivePresenter @Inject internal constructor(
     @SuppressLint("CheckResult")
     internal fun onBchAccountSelected(account: GenericMetadataAccount) {
         currencyState.cryptoCurrency = CryptoCurrency.BCH
-        view.setSelectedCurrency(currencyState.cryptoCurrency)
+        view.setSelectedCurrency(CryptoCurrency.BCH)
         selectedAccount = null
         selectedBchAccount = account
         view.updateReceiveLabel(account.label)
@@ -295,21 +294,19 @@ class ReceivePresenter @Inject internal constructor(
     }
 
     internal fun setWarnWatchOnlySpend(warn: Boolean) {
-        prefsUtil.setValue(KEY_WARN_WATCH_ONLY_SPEND, warn)
+        prefs.setValue(KEY_WARN_WATCH_ONLY_SPEND, warn)
     }
 
     internal fun onShowBottomSheetSelected() {
         selectedAddress?.let {
             when {
-                FormatsUtil.isValidBitcoinAddress(it) ->
-                    view.showBottomSheet(getBitcoinUri(it, view.getBtcAmount()))
+                FormatsUtil.isValidBitcoinAddress(it) -> view.showBottomSheet(getBitcoinUri(it, view.getBtcAmount()))
                 FormatsUtil.isValidEthereumAddress(it) || FormatsUtil.isValidBitcoinCashAddress(
                     environmentSettings.bitcoinCashNetworkParameters,
                     it
                 ) || it.isValidXlmQr() ->
                     view.showBottomSheet(it)
-                else ->
-                    throw IllegalStateException("Unknown address format $selectedAddress")
+                else -> throw IllegalStateException("Unknown address format $selectedAddress")
             }
         }
     }
@@ -360,7 +357,7 @@ class ReceivePresenter @Inject internal constructor(
                 { view.showQrCode(null) })
     }
 
-    private fun shouldWarnWatchOnly() = prefsUtil.getValue(KEY_WARN_WATCH_ONLY_SPEND, true)
+    private fun shouldWarnWatchOnly() = prefs.getValue(KEY_WARN_WATCH_ONLY_SPEND, true)
 
     private fun String.removeBchUri(): String = this.replace("bitcoincash:", "")
 

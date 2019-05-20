@@ -46,7 +46,6 @@ import kotlinx.android.synthetic.main.include_to_row.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
 import piuk.blockchain.android.ui.home.HomeFragment
@@ -72,9 +71,7 @@ import timber.log.Timber
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-@Suppress("MemberVisibilityCanPrivate")
 class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     ReceiveView,
     NumericKeyboardCallback {
@@ -82,12 +79,9 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     override val locale: Locale = Locale.getDefault()
 
     private val currencyState: CurrencyState by inject()
+    private val appUtil: AppUtil by inject()
+    private val receivePresenter: ReceivePresenter by inject()
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    @Inject
-    lateinit var receivePresenter: ReceivePresenter
-    @Inject
-    lateinit var appUtil: AppUtil
     private var bottomSheetDialog: BottomSheetDialog? = null
 
     private var textChangeAllowed = true
@@ -111,10 +105,6 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
                 }
             }
         }
-    }
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -339,7 +329,6 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     private fun displayBitcoinLayout() {
-        showSubview(RECEIVE_VIEW)
         divider1.visible()
         amount_container.visible()
         divider3.visible()
@@ -354,7 +343,6 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     private fun displayEtherLayout() {
-        showSubview(RECEIVE_VIEW)
         custom_keyboard.hideKeyboard()
         divider1.gone()
         amount_container.gone()
@@ -364,12 +352,10 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     private fun displayERC20Layout() {
-        showSubview(COMING_SOON_VIEW)
-//        displayEtherLayout()
+        displayEtherLayout()
     }
 
     private fun displayXlmLayout() {
-        showSubview(RECEIVE_VIEW)
         custom_keyboard.hideKeyboard()
         divider1.gone()
         amount_container.gone()
@@ -379,7 +365,6 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     private fun displayBitcoinCashLayout() {
-        showSubview(RECEIVE_VIEW)
         custom_keyboard.hideKeyboard()
         divider1.gone()
         amount_container.gone()
@@ -632,18 +617,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         }
     }
 
-    @Suppress("DeprecatedCallableAddReplaceWith")
-    @Deprecated("Remove once PAX fully implemented")
-    private fun showSubview(whichSubview: Int) {
-        if (view_Switcher.displayedChild != whichSubview) {
-            view_Switcher.displayedChild = whichSubview
-        }
-    }
-
     companion object {
-
-        private const val RECEIVE_VIEW = 0
-        private const val COMING_SOON_VIEW = 1
 
         private const val REQUEST_CODE_RECEIVE_BITCOIN = 800
         private const val REQUEST_CODE_RECEIVE_BITCOIN_CASH = 801
