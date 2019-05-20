@@ -42,9 +42,8 @@ import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import timber.log.Timber
-import javax.inject.Inject
 
-class BalancePresenter @Inject constructor(
+class BalancePresenter(
     private val exchangeRateDataManager: ExchangeRateDataManager,
     private val transactionListDataManager: TransactionListDataManager,
     private val ethDataManager: EthDataManager,

@@ -35,7 +35,7 @@ class SwipeToReceivePresenterTest {
 
     @Before
     fun setUp() {
-        subject = SwipeToReceivePresenter(qrCodeDataManager, swipeToReceiveHelper, stringUtils)
+        subject = SwipeToReceivePresenter(qrCodeDataManager, swipeToReceiveHelper)
         subject.initView(activity)
     }
 
@@ -55,7 +55,7 @@ class SwipeToReceivePresenterTest {
         // Act
         subject.onViewReady()
         // Assert
-        verify(activity).displayCoinType("BTC")
+        verify(activity).displayCoinType("Bitcoin")
         verify(activity).displayReceiveAccount("Bitcoin account")
         verify(activity).setUiState(UiState.LOADING)
         verify(activity).setUiState(UiState.EMPTY)
@@ -79,7 +79,7 @@ class SwipeToReceivePresenterTest {
         subject.onViewReady()
         // Assert
         verify(activity).setUiState(UiState.LOADING)
-        verify(activity).displayCoinType("BTC")
+        verify(activity).displayCoinType("Bitcoin")
         verify(activity).displayReceiveAccount("Account")
         verify(activity).setUiState(UiState.FAILURE)
     }
@@ -107,7 +107,7 @@ class SwipeToReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(activity).setUiState(UiState.LOADING)
-        verify(activity).displayCoinType("BTC")
+        verify(activity).displayCoinType("Bitcoin")
         verify(activity).displayReceiveAccount("Account")
         verify(activity).displayQrCode(bitmap)
         verify(activity).setUiState(UiState.CONTENT)
@@ -138,7 +138,7 @@ class SwipeToReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(activity).setUiState(UiState.LOADING)
-        verify(activity).displayCoinType("ETH")
+        verify(activity).displayCoinType("Ether")
         verify(activity).displayReceiveAccount("Account")
         verify(activity).displayQrCode(bitmap)
         verify(activity).setUiState(UiState.CONTENT)
@@ -169,7 +169,7 @@ class SwipeToReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(activity).setUiState(UiState.LOADING)
-        verify(activity).displayCoinType("BCH")
+        verify(activity).displayCoinType("Bitcoin Cash")
         verify(activity).displayReceiveAccount("Account")
         verify(activity).displayQrCode(bitmap)
         verify(activity).setUiState(UiState.CONTENT)
@@ -200,7 +200,7 @@ class SwipeToReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(activity).setUiState(UiState.LOADING)
-        verify(activity).displayCoinType("XLM")
+        verify(activity).displayCoinType("Stellar")
         verify(activity).displayReceiveAccount("Account")
         verify(activity).displayQrCode(bitmap)
         verify(activity).setUiState(UiState.CONTENT)

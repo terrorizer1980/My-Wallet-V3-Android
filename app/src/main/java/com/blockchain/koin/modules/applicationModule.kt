@@ -12,12 +12,14 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.data.cache.DynamicFeeCache
+import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
+import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
@@ -31,6 +33,7 @@ import piuk.blockchain.android.ui.send.strategy.SendStrategy
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.send.strategy.paxSendStrategy
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
+import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
 import piuk.blockchain.android.util.StringUtils
@@ -70,7 +73,11 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            Erc20Manager(ethDataManager = get(), erc20DataStore = get(), environmentSettings = get())
+            Erc20Manager(
+                ethDataManager = get(),
+                erc20DataStore = get(),
+                environmentSettings = get()
+            )
         }
 
         factory {
@@ -82,7 +89,22 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            SwipeToReceiveHelper(get(), get(), get(), get(), get(), get(), get())
+            SwipeToReceiveHelper(
+                payloadDataManager = get(),
+                prefsUtil = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                stringUtils = get(),
+                environmentSettings = get(),
+                xlmDataManager = get()
+            )
+        }
+
+        factory {
+            SwipeToReceivePresenter(
+                qrGenerator = get(),
+                swipeToReceiveHelper = get()
+            )
         }
 
         factory {
@@ -95,7 +117,8 @@ val applicationModule = applicationContext {
                 xlmDataManager = get(),
                 environmentSettings = get(),
                 exchangeRates = get(),
-                erc20DataManager = get())
+                erc20DataManager = get()
+            )
         }
 
         factory { WalletAccountHelperAccountListingAdapter(get()) }
@@ -222,6 +245,33 @@ val applicationModule = applicationContext {
         factory { DeepLinkPersistence(get()) }
 
         factory { SunRiverCampaignAccountProviderAdapter(get()) as SunriverCampaignHelper.XlmAccountProvider }
+
+        factory {
+            BalancePresenter(
+                exchangeRateDataManager = get(),
+                transactionListDataManager = get(),
+                ethDataManager = get(),
+                erc20Manager = get(),
+                swipeToReceiveHelper = get(),
+                payloadDataManager = get(),
+                buyDataManager = get(),
+                stringUtils = get(),
+                prefsUtil = get(),
+                rxBus = get(),
+                currencyState = get(),
+                shapeShiftDataManager = get(),
+                bchDataManager = get(),
+                walletAccountHelper = get(),
+                environmentSettings = get(),
+                exchangeService = get(),
+                coinifyDataManager = get(),
+                fiatExchangeRates = get()
+            )
+        }
+
+        factory {
+            QrCodeDataManager()
+        }
     }
 
     factory { DateUtil(get()) }

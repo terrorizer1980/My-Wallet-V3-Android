@@ -51,10 +51,8 @@ import piuk.blockchain.android.ui.pairingcode.PairingCodeActivity;
 import piuk.blockchain.android.ui.receive.ReceiveFragment;
 import piuk.blockchain.android.ui.receive.ReceiveQrActivity;
 import piuk.blockchain.android.ui.recover.RecoverFundsActivity;
-import piuk.blockchain.android.ui.send.SendFragment;
 import piuk.blockchain.android.ui.settings.SettingsFragment;
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity;
-import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveFragment;
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity;
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity;
 import piuk.blockchain.androidcore.injection.PresenterScope;
@@ -75,11 +73,7 @@ public interface PresenterComponent {
 
     void inject(@NotNull LoginActivity loginActivity);
 
-    void inject(@NotNull SwipeToReceiveFragment swipeToReceiveFragment);
-
     void inject(@NotNull UpgradeWalletActivity upgradeWalletActivity);
-
-    void inject(@NotNull BalanceFragment balanceFragment);
 
     void inject(@NotNull CreateWalletActivity createWalletActivity);
 

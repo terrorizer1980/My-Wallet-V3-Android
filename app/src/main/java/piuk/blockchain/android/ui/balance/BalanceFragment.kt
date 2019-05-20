@@ -20,9 +20,9 @@ import kotlinx.android.synthetic.main.fragment_balance.*
 import kotlinx.android.synthetic.main.include_no_transaction_message.*
 import kotlinx.android.synthetic.main.layout_pax_no_transactions.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.websocket.WebSocketService
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.balance.adapter.AccountsAdapter
 import piuk.blockchain.android.ui.balance.adapter.TxFeedAdapter
@@ -43,7 +43,6 @@ import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.onItemSelectedListener
-import javax.inject.Inject
 
 @Suppress("MemberVisibilityCanPrivate")
 class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
@@ -54,8 +53,8 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
     private var txFeedAdapter: TxFeedAdapter? = null
 
     @Suppress("MemberVisibilityCanBePrivate")
-    @Inject
-    lateinit var balancePresenter: BalancePresenter
+
+    val balancePresenter: BalancePresenter by inject()
 
     private var spacerDecoration: BottomSpacerDecoration? = null
 
@@ -65,10 +64,6 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
             presenter.onAccountSelected(it)
             recyclerview.smoothScrollToPosition(0)
         }
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {

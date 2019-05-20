@@ -23,6 +23,7 @@ import info.blockchain.wallet.payload.PayloadManager;
 import info.blockchain.wallet.payload.PayloadManagerWiper;
 import info.blockchain.wallet.util.PrivateKeyFactory;
 import piuk.blockchain.android.data.cache.DynamicFeeCache;
+import piuk.blockchain.android.data.datamanagers.QrCodeDataManager;
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager;
 import piuk.blockchain.android.deeplink.DeepLinkProcessor;
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter;
@@ -116,6 +117,11 @@ public class ApplicationModule extends KoinDaggerModule {
     }
 
     @Provides
+    SwipeToReceiveHelper providesSwipeToReceiveHelper() {
+        return get(SwipeToReceiveHelper.class);
+    }
+
+    @Provides
     EnvironmentConfig provideEnvironmentConfig() {
         return get(EnvironmentConfig.class);
     }
@@ -123,6 +129,11 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     EnvironmentUrls provideEnvironmentUrls() {
         return get(EnvironmentUrls.class);
+    }
+
+    @Provides
+    QrCodeDataManager provideQrDataManager() {
+        return get(QrCodeDataManager.class);
     }
 
     @Provides
@@ -228,11 +239,6 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     AESUtilWrapper provideAESUtilWrapper() {
         return get(AESUtilWrapper.class);
-    }
-
-    @Provides
-    SwipeToReceiveHelper provideSwipeToReceiveHelper() {
-        return get(SwipeToReceiveHelper.class);
     }
 
     @Provides
