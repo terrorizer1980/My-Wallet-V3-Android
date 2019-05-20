@@ -429,44 +429,47 @@ class EtherSendStrategy(
     }
 
     private fun validateTransaction(): Observable<Pair<Boolean, Int>> {
+        return if (pendingTransaction.receivingAddress.isEmpty()) {
+            Observable.just(Pair(false, R.string.eth_invalid_address))
+        } else {
+            ethDataManager.getIfContract(pendingTransaction.receivingAddress)
+                .map { isContract ->
+                    var validated = true
+                    var errorMessage = R.string.unexpected_error
 
-        return ethDataManager.getIfContract(pendingTransaction.receivingAddress)
-            .map { isContract ->
-                var validated = true
-                var errorMessage = R.string.unexpected_error
-
-                // Validate not contract
-                if (isContract) {
-                    errorMessage = R.string.eth_support_contract_not_allowed
-                    validated = false
-                } else {
-                    // Validate address
-                    if (!FormatsUtil.isValidEthereumAddress(pendingTransaction.receivingAddress)) {
-                        errorMessage = R.string.eth_invalid_address
+                    // Validate not contract
+                    if (isContract) {
+                        errorMessage = R.string.eth_support_contract_not_allowed
                         validated = false
+                    } else {
+                        // Validate address
+                        if (!FormatsUtil.isValidEthereumAddress(pendingTransaction.receivingAddress)) {
+                            errorMessage = R.string.eth_invalid_address
+                            validated = false
+                        }
+
+                        // Validate amount
+                        if (!isValidAmount(pendingTransaction.bigIntAmount)) {
+                            errorMessage = R.string.invalid_amount
+                            validated = false
+                        }
+
+                        // Validate sufficient funds
+                        if (maxAvailable.compareTo(pendingTransaction.bigIntAmount) == -1) {
+                            errorMessage = R.string.insufficient_funds
+                            validated = false
+                        }
                     }
-
-                    // Validate amount
-                    if (!isValidAmount(pendingTransaction.bigIntAmount)) {
-                        errorMessage = R.string.invalid_amount
-                        validated = false
-                    }
-
-                    // Validate sufficient funds
-                    if (maxAvailable.compareTo(pendingTransaction.bigIntAmount) == -1) {
-                        errorMessage = R.string.insufficient_funds
-                        validated = false
+                    Pair(validated, errorMessage)
+                }.flatMap { errorPair ->
+                    if (errorPair.first) {
+                        // Validate address does not have unconfirmed funds
+                        isLastTxPending()
+                    } else {
+                        Observable.just(errorPair)
                     }
                 }
-                Pair(validated, errorMessage)
-            }.flatMap { errorPair ->
-                if (errorPair.first) {
-                    // Validate address does not have unconfirmed funds
-                    isLastTxPending()
-                } else {
-                    Observable.just(errorPair)
-                }
-            }
+        }
     }
 
     private fun isLastTxPending() =

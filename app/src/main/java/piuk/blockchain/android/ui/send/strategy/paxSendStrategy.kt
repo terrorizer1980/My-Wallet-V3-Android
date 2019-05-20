@@ -431,50 +431,53 @@ class paxSendStrategy(
     override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) {}
 
     private fun validateTransaction(): Observable<Pair<Boolean, Int>> {
+        return if (pendingTx.receivingAddress.isEmpty()) {
+            Observable.just(Pair(false, R.string.pax_invalid_address))
+        } else {
+            ethDataManager.getIfContract(pendingTx.receivingAddress)
+                .map { isContract ->
+                    var validated = true
+                    var errorMessage = R.string.unexpected_error
 
-        return ethDataManager.getIfContract(pendingTx.receivingAddress)
-            .map { isContract ->
-                var validated = true
-                var errorMessage = R.string.unexpected_error
-
-                // Validate not contract
-                if (isContract) {
-                    errorMessage = R.string.eth_support_contract_not_allowed
-                    validated = false
-                } else {
-                    // Validate address
-                    if (!FormatsUtil.isValidEthereumAddress(pendingTx.receivingAddress)) {
-                        errorMessage = R.string.eth_invalid_address
+                    // Validate not contract
+                    if (isContract) {
+                        errorMessage = R.string.eth_support_contract_not_allowed
                         validated = false
+                    } else {
+                        // Validate address
+                        if (!FormatsUtil.isValidEthereumAddress(pendingTx.receivingAddress)) {
+                            errorMessage = R.string.pax_invalid_address
+                            validated = false
+                        }
+
+                        // Validate amount
+                        if (!pendingTx.isValidAmount()) {
+                            errorMessage = R.string.invalid_amount
+                            validated = false
+                        }
+
+                        // Validate sufficient funds
+                        if (maxPaxAvailable.compareTo(pendingTx.amountPax) == -1) {
+                            errorMessage = R.string.insufficient_funds
+                            validated = false
+                        }
+
+                        // Validate sufficient ETH for gas
+                        if (maxEthAvailable < pendingTx.feeEth) {
+                            errorMessage = R.string.insufficient_eth_for_fees
+                            validated = false
+                        }
                     }
-
-                    // Validate amount
-                    if (!pendingTx.isValidAmount()) {
-                        errorMessage = R.string.invalid_amount
-                        validated = false
-                    }
-
-                    // Validate sufficient funds
-                    if (maxPaxAvailable.compareTo(pendingTx.amountPax) == -1) {
-                        errorMessage = R.string.insufficient_funds
-                        validated = false
-                    }
-
-                    // Validate sufficient ETH for gas
-                    if (maxEthAvailable < pendingTx.feeEth) {
-                        errorMessage = R.string.insufficient_eth_for_fees
-                        validated = false
+                    Pair(validated, errorMessage)
+                }.flatMap { errorPair ->
+                    if (errorPair.first) {
+                        // Validate address does not have unconfirmed funds
+                        isLastTxPending()
+                    } else {
+                        Observable.just(errorPair)
                     }
                 }
-                Pair(validated, errorMessage)
-            }.flatMap { errorPair ->
-                if (errorPair.first) {
-                    // Validate address does not have unconfirmed funds
-                    isLastTxPending()
-                } else {
-                    Observable.just(errorPair)
-                }
-            }
+        }
     }
 
     private fun isLastTxPending() =
@@ -502,5 +505,5 @@ private data class PendingPaxTx(
     var amountPax: BigInteger = BigInteger.ZERO,  // Amount pax as minor
     var feeEth: BigInteger = BigInteger.ZERO      // wei
 ) {
-    fun isValidAmount(): Boolean = amountPax >= BigInteger.ZERO
+    fun isValidAmount(): Boolean = amountPax > BigInteger.ZERO
 }

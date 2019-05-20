@@ -784,6 +784,7 @@
     <!-- PAX/ERC 20 -->
     <string name="pax_to_field_helper">Enter PAX/ETH address or select</string>
     <string name="pax_to_field_helper_no_dropdown">Enter PAX/ETH address</string>
+    <string name="pax_invalid_address">Invalid USD PAX address</string>
 
     <!-- DASHBOARD -->
     <string name="dashboard_title">Dashboard</string>
