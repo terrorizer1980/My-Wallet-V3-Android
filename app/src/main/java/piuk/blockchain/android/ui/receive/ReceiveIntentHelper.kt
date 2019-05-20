@@ -12,9 +12,8 @@ import android.util.Pair
 import android.webkit.MimeTypeMap
 import com.blockchain.sunriver.StellarPayment
 import com.blockchain.sunriver.fromStellarUri
-import com.blockchain.sunriver.isValidXlmQr
 import com.crashlytics.android.answers.ShareEvent
-import info.blockchain.wallet.util.FormatsUtil
+import info.blockchain.balance.CryptoCurrency
 import org.bitcoinj.uri.BitcoinURI
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.BitcoinLinkGenerator
@@ -31,7 +30,11 @@ import java.util.HashMap
 
 class ReceiveIntentHelper(private val context: Context, private val appUtil: AppUtil) {
 
-    internal fun getIntentDataList(uri: String, bitmap: Bitmap): List<SendPaymentCodeData>? {
+    internal fun getIntentDataList(
+        uri: String,
+        bitmap: Bitmap,
+        cryptoCurrency: CryptoCurrency
+    ): List<SendPaymentCodeData> {
 
         val file = getQrFile()
         val outputStream = getFileOutputStream(file)
@@ -43,7 +46,7 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
                 outputStream.close()
             } catch (e: IOException) {
                 Timber.e(e)
-                return null
+                return emptyList()
             }
 
             val dataList = ArrayList<SendPaymentCodeData>()
@@ -54,16 +57,12 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
 
             val emailIntent = Intent(Intent.ACTION_SENDTO).apply { setupIntentForImage(type, file) }
 
-            when {
-                uri.startsWith("bitcoincash") -> emailIntent.apply { setupIntentForEmailBch(uri) }
-                uri.startsWith("bitcoin") -> emailIntent.apply { setupIntentForEmailBtc(uri) }
-                FormatsUtil.isValidEthereumAddress(uri) -> emailIntent.apply {
-                    setupIntentForEmailEth(
-                        uri
-                    )
-                }
-                uri.isValidXlmQr() -> emailIntent.apply { setupIntentForEmailXlm(payment = uri.fromStellarUri()) }
-                else -> throw IllegalArgumentException("Unknown URI $uri")
+            when (cryptoCurrency) {
+                CryptoCurrency.BTC -> emailIntent.setupIntentForEmailBtc(uri)
+                CryptoCurrency.ETHER -> emailIntent.setupIntentForEmailEth(uri)
+                CryptoCurrency.BCH -> emailIntent.setupIntentForEmailBch(uri)
+                CryptoCurrency.XLM -> emailIntent.setupIntentForEmailXlm(payment = uri.fromStellarUri())
+                CryptoCurrency.PAX -> emailIntent.setupIntentForEmailPax(uri)
             }
 
             val imageIntent = Intent().apply { setupIntentForImage(type, file) }
@@ -93,14 +92,11 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
                 it.remove()
             }
 
-            Logging.logShare(
-                ShareEvent()
-                    .putContentName("QR Code + URI")
-            )
+            Logging.logShare(ShareEvent().putContentName("QR Code + URI"))
 
             return dataList
         } else {
-            return null
+            return emptyList()
         }
     }
 
@@ -154,10 +150,10 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
             } else {
                 context.getString(R.string.email_request_body_fallback)
             }
-        val body = String.format(context.getString(R.string.email_request_body), amount, address)
+        val body = String.format(context.getString(R.string.email_request_body_btc), amount, address)
 
         putExtra(Intent.EXTRA_TEXT, "$body\n\n ${BitcoinLinkGenerator.getLink(addressUri)}")
-        putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.email_request_subject))
+        putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.email_request_subject_btc))
     }
 
     private fun Intent.setupIntentForEmailEth(uri: String) {
@@ -166,6 +162,14 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
 
         putExtra(Intent.EXTRA_TEXT, body)
         putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.email_request_subject_eth))
+    }
+
+    private fun Intent.setupIntentForEmailPax(uri: String) {
+        val address = uri.removePrefix("ethereum:")
+        val body = String.format(context.getString(R.string.email_request_body_pax), address)
+
+        putExtra(Intent.EXTRA_TEXT, body)
+        putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.email_request_subject_pax))
     }
 
     private fun Intent.setupIntentForEmailXlm(payment: StellarPayment) {

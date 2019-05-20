@@ -297,15 +297,15 @@ class ReceivePresenter(
         prefs.setValue(KEY_WARN_WATCH_ONLY_SPEND, warn)
     }
 
-    internal fun onShowBottomSheetSelected() {
+    internal fun onShowBottomShareSheetSelected() {
         selectedAddress?.let {
             when {
-                FormatsUtil.isValidBitcoinAddress(it) -> view.showBottomSheet(getBitcoinUri(it, view.getBtcAmount()))
-                FormatsUtil.isValidEthereumAddress(it) || FormatsUtil.isValidBitcoinCashAddress(
-                    environmentSettings.bitcoinCashNetworkParameters,
-                    it
-                ) || it.isValidXlmQr() ->
-                    view.showBottomSheet(it)
+                FormatsUtil.isValidBitcoinAddress(it) ->
+                    view.showShareBottomSheet(getBitcoinUri(it, view.getBtcAmount()))
+                FormatsUtil.isValidEthereumAddress(it) ||
+                FormatsUtil.isValidBitcoinCashAddress(environmentSettings.bitcoinCashNetworkParameters, it) ||
+                it.isValidXlmQr() ->
+                    view.showShareBottomSheet(it)
                 else -> throw IllegalStateException("Unknown address format $selectedAddress")
             }
         }

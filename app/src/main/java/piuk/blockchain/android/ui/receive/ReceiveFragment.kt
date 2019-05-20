@@ -425,10 +425,10 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     private fun unpackAccountResult(intent: Intent?): JsonSerializableAccount? =
         AccountChooserActivity.unpackAccountResult(intent)
 
-    override fun showBottomSheet(uri: String) {
-        receiveIntentHelper.getIntentDataList(uri, getQrBitmap())?.let {
+    override fun showShareBottomSheet(uri: String) {
+        receiveIntentHelper.getIntentDataList(uri, getQrBitmap(), currencyState.cryptoCurrency)?.let {
             val adapter = ShareReceiveIntentAdapter(it).apply {
-                setItemClickedListener { bottomSheetDialog?.dismiss() }
+                itemClickedListener = { bottomSheetDialog?.dismiss() }
             }
 
             val sheetView = View.inflate(activity, R.layout.bottom_sheet_receive, null)
@@ -470,7 +470,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
         val grantedPermissionListener = object : BasePermissionListener() {
             override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                presenter.onShowBottomSheetSelected()
+                presenter.onShowBottomShareSheetSelected()
             }
         }
 

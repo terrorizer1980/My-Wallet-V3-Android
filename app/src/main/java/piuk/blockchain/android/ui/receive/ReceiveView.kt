@@ -31,7 +31,7 @@ interface ReceiveView : View {
 
     fun updateReceiveLabel(label: String)
 
-    fun showBottomSheet(uri: String)
+    fun showShareBottomSheet(uri: String)
 
     fun setSelectedCurrency(cryptoCurrency: CryptoCurrency)
 

@@ -602,11 +602,12 @@ class ReceivePresenterTest {
         // Arrange
         subject.selectedAddress = "1ATy3ktyaYjzZZQQnhvPsuBVheUDYcUP7V"
         whenever(activity.getBtcAmount()).thenReturn("0")
+//        whenever()
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
         // Assert
         verify(activity).getBtcAmount()
-        verify(activity).showBottomSheet(anyString())
+        verify(activity).showShareBottomSheet(anyString())
         verifyNoMoreInteractions(activity)
     }
 
@@ -615,24 +616,22 @@ class ReceivePresenterTest {
         // Arrange
         subject.selectedAddress = "0x879dBFdE84B0239feB355f55F81fb29f898C778C"
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
         // Assert
-        verify(activity).showBottomSheet(anyString())
+        verify(activity).showShareBottomSheet(anyString())
         verifyNoMoreInteractions(activity)
     }
 
     @Test
     fun `onShowBottomSheetSelected xlm`() {
         // Arrange
-        whenever(environmentSettings.bitcoinCashNetworkParameters).thenReturn(
-            BitcoinCashMainNetParams.get()
-        )
+        whenever(environmentSettings.bitcoinCashNetworkParameters).thenReturn(BitcoinCashMainNetParams.get())
         val address = "GAX3ML5G7DLJBPVTNW7GR2Z2YCML2MOJTWNYXN44SVAPQQYMD6NF7DP2"
         subject.selectedAddress = address
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
         // Assert
-        verify(activity).showBottomSheet(address)
+        verify(activity).showShareBottomSheet(address)
         verifyNoMoreInteractions(activity)
     }
 
@@ -649,9 +648,9 @@ class ReceivePresenterTest {
             "msg=pay%20me%20with%20lumens"
         subject.selectedAddress = uri
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
         // Assert
-        verify(activity).showBottomSheet(uri)
+        verify(activity).showShareBottomSheet(uri)
         verifyNoMoreInteractions(activity)
     }
 
@@ -663,7 +662,7 @@ class ReceivePresenterTest {
         )
         subject.selectedAddress = "GAX3ML5G7DLJBPVTNW7GR2Z2YCML2MOJTWNYXN44SVAPQQYMD6NF7DP3"
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
     }
 
     @Test(expected = IllegalStateException::class)
@@ -679,7 +678,7 @@ class ReceivePresenterTest {
             "msg=pay%20me%20with%20lumens"
         subject.selectedAddress = uri
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
     }
 
     @Test(expected = IllegalStateException::class)
@@ -690,7 +689,7 @@ class ReceivePresenterTest {
         )
         subject.selectedAddress = "I am not a valid address"
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
         // Assert
         verifyZeroInteractions(activity)
     }
