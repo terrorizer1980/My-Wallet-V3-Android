@@ -163,7 +163,8 @@ internal class ExchangeFragment : Fragment() {
             )
         )
 
-        compositeDisposable += allTextUpdates().subscribeBy { exchangeModel.inputEventSink.onNext(it) }
+        compositeDisposable += allTextUpdates().distinctUntilChanged()
+            .subscribeBy { exchangeModel.inputEventSink.onNext(it) }
 
         compositeDisposable += exchangeModel
             .exchangeViewStates
