@@ -77,7 +77,7 @@ import piuk.blockchain.android.ui.send.external.SendPresenter
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.AppRate
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_FAQ
+import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
@@ -1076,7 +1076,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     override fun showInsufficientGasDlg() {
 
         val linksMap = mapOf<String, Uri>(
-            "pax_faq" to Uri.parse(URL_BLOCKCHAIN_PAX_FAQ)
+            "pax_faq" to Uri.parse(URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ)
         )
 
         val body = stringUtils.getStringWithMappedLinks(R.string.pax_need_more_eth_error_body, linksMap)
