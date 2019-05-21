@@ -2,6 +2,7 @@ package com.blockchain.morph.ui.homebrew.exchange
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.graphics.drawable.VectorDrawableCompat
@@ -41,6 +42,7 @@ import com.blockchain.nabu.StartKyc
 import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
+import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.ExchangeRate
@@ -54,6 +56,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -98,6 +101,7 @@ internal class ExchangeFragment : Fragment() {
     private lateinit var exchangeMenuState: ExchangeMenuState
 
     private val startKyc: StartKyc by inject()
+    private val stringUtils: StringUtils by inject()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -294,13 +298,19 @@ internal class ExchangeFragment : Fragment() {
             QuoteValidity.Valid,
             QuoteValidity.NoQuote,
             QuoteValidity.MissMatch -> null
-            QuoteValidity.NotEnoughFees -> ExchangeMenuState.ExchangeMenuError(
-                CryptoCurrency.ETHER,
-                userTier,
-                "Not Enought ETH",
-                "You'll need ETH to send your ERC20 Token, USD PAX. Learn more.",
-                ExchangeMenuState.ErrorType.TRADE
-            )
+            QuoteValidity.NotEnoughFees -> {
+                val linksMap = mapOf<String, Uri>(
+                    "pax_faq" to Uri.parse(URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ)
+                )
+                val body = stringUtils.getStringWithMappedLinks(R.string.pax_need_more_eth_error_body, linksMap)
+                return ExchangeMenuState.ExchangeMenuError(
+                    CryptoCurrency.ETHER,
+                    userTier,
+                    getString(R.string.pax_need_more_eth_error_title),
+                    body,
+                    ExchangeMenuState.ErrorType.TRADE
+                )
+            }
             QuoteValidity.UnderMinTrade -> ExchangeMenuState.ExchangeMenuError(
                 fromCrypto.currency,
                 userTier,

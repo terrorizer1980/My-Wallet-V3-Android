@@ -42,6 +42,7 @@ import com.blockchain.sunriver.ui.MinBalanceExplanationDialog
 import com.blockchain.transactions.Memo
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
+import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import com.blockchain.ui.password.SecondPasswordHandler
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.karumi.dexter.Dexter
@@ -77,7 +78,6 @@ import piuk.blockchain.android.ui.send.external.SendPresenter
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.AppRate
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.android.util.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog

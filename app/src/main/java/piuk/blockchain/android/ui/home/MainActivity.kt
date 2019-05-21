@@ -40,6 +40,7 @@ import com.blockchain.lockbox.ui.LockboxLandingActivity
 import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_SUPPORT_PORTAL
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.single.BasePermissionListener
@@ -71,7 +72,6 @@ import piuk.blockchain.android.ui.send.SendFragment
 import piuk.blockchain.android.ui.settings.SettingsActivity
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
-import piuk.blockchain.android.util.URL_BLOCKCHAIN_SUPPORT_PORTAL
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import piuk.blockchain.androidcore.data.access.AccessState

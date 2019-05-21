@@ -886,8 +886,6 @@
     <string name="pax_title">USD PAX</string>
     <string name="pax_no_transactions_message">Your USD PAX transactions will show up here once you make your first transaction.</string>
     <string name="pax_learn_more_link">Learn more about USD PAX</string>
-    <string name="pax_need_more_eth_error_title">More ETH Needed</string>
-    <string name="pax_need_more_eth_error_body">You\'ll need ETH to send your ERC20 Token, USD PAX. <annotation link="pax_faq">Learn more.</annotation></string>
 
     <!-- Claim Your Free Crypto Card -->
     <string name="swap_announcement_new">New</string>
