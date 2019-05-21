@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.home;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Pair;
 
@@ -130,7 +131,8 @@ public class MainPresenter extends BasePresenter<MainView> {
                   LockboxDataManager lockboxDataManager,
                   DeepLinkProcessor deepLinkProcessor,
                   SunriverCampaignHelper sunriverCampaignHelper,
-                  XlmDataManager xlmDataManager) {
+                  XlmDataManager xlmDataManager,
+                  Erc20Account paxAccount) {
 
         this.prefs = prefs;
         this.appUtil = appUtil;
@@ -161,8 +163,10 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.deepLinkProcessor = deepLinkProcessor;
         this.sunriverCampaignHelper = sunriverCampaignHelper;
         this.xlmDataManager = xlmDataManager;
+        this.paxAccount = paxAccount;
     }
 
+    @SuppressLint("CheckResult")
     private void initPrompts() {
         settingsDataManager.getSettings()
                 .flatMap(settings -> promptManager.getCustomPrompts(settings))
@@ -197,6 +201,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         }
     }
 
+    @SuppressLint("CheckResult")
     private void checkLockboxAvailability() {
         lockboxDataManager.isLockboxAvailable()
                 .compose(RxUtil.addSingleToCompositeDisposable(this))
@@ -229,6 +234,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         }
     }
 
+    @SuppressLint("CheckResult")
     private void checkKycStatus() {
         kycStatusHelper.shouldDisplayKyc()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -268,6 +274,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         return prompt;
     }
 
+    @SuppressLint("CheckResult")
     void initMetadataElements() {
         metadataManager.attemptMetadataSetup()
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
@@ -559,6 +566,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         currencyState.setCryptoCurrency(cryptoCurrency);
     }
 
+    @SuppressLint("CheckResult")
     void routeToBuySell() {
         buyDataManager.isCoinifyAllowed()
                 .compose(RxUtil.addObservableToCompositeDisposable(this))
