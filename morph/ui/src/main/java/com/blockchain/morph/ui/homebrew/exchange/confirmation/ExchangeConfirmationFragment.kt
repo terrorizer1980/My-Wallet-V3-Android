@@ -46,7 +46,7 @@ import java.util.Locale
 
 class ExchangeConfirmationFragment :
     BaseMvpFragment<ExchangeConfirmationView,
-    ExchangeConfirmationPresenter>(),
+            ExchangeConfirmationPresenter>(),
     ExchangeConfirmationView {
 
     private val presenter: ExchangeConfirmationPresenter by inject()
