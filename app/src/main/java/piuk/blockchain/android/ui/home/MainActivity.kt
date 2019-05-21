@@ -50,6 +50,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.util.FormatsUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_general.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.PromptDlgFactory
@@ -106,8 +107,7 @@ class MainActivity
     @Inject
     internal lateinit var mainPresenter: MainPresenter
 
-    @Inject
-    internal lateinit var appUtil: AppUtil
+    private val appUtil: AppUtil by inject()
 
     @Inject
     internal lateinit var morphActivityLauncher: MorphActivityLauncher
@@ -162,15 +162,10 @@ class MainActivity
         get() = supportFragmentManager.findFragmentById(R.id.content_frame)
 
     internal val activity: Context
-        @Thunk
         get() = this
 
     private val selectedAccountFromFragments: Int
-        get() = if (currentFragment is ReceiveFragment) {
-            (currentFragment as ReceiveFragment).getSelectedAccountPosition()
-        } else {
-            -1
-        }
+        get() = (currentFragment as? ReceiveFragment)?.getSelectedAccountPosition() ?: -1
 
     private val menu: Menu
         get() = binding.navigationView.menu
@@ -234,37 +229,12 @@ class MainActivity
             setOnTabSelectedListener(tabSelectedListener)
             currentItem = ITEM_HOME
         }
-
-        processStartIntent()
-    }
-
-    @ButWhy("What does this really do? Who call it?")
-    private fun processStartIntent() {
-        with(intent) {
-            if (hasExtra(EXTRA_URI)) {
-                startPrepopulatedSend(
-                    uri = getStringExtra(EXTRA_URI),
-                    recipientId = getStringExtra(EXTRA_RECIPIENT_ID),
-                    mdid = getStringExtra(EXTRA_MDID),
-                    fctxId = getStringExtra(EXTRA_FCTX_ID)
-                )
-            }
-        }
-    }
-
-    private fun startPrepopulatedSend(
-        uri: String,
-        recipientId: String,
-        mdid: String,
-        fctxId: String
-    ) {
-        setCurrentTabItem(ITEM_SEND)
-        replaceContentFragment(SendFragment.newInstance(uri, recipientId, mdid, fctxId))
     }
 
     @SuppressLint("NewApi")
     override fun onResume() {
         super.onResume()
+
         // This can null out in low memory situations, so reset here
         binding.navigationView.setNavigationItemSelectedListener { menuItem ->
             selectDrawerItem(menuItem)
@@ -360,7 +330,7 @@ class MainActivity
     }
 
     private fun showExitConfirmToast() {
-        ToastCustom.makeText(activity,
+        ToastCustom.makeText(this,
             getString(R.string.exit_confirm),
             ToastCustom.LENGTH_SHORT,
             ToastCustom.TYPE_GENERAL)
@@ -651,7 +621,7 @@ class MainActivity
                 Snackbar.LENGTH_SHORT
             )
             val view = snack.view
-            view.setBackgroundColor(ContextCompat.getColor(activity, R.color.product_red_medium))
+            view.setBackgroundColor(ContextCompat.getColor(this, R.color.product_red_medium))
             snack.show()
         }
     }
@@ -883,11 +853,6 @@ class MainActivity
 
         private const val REQUEST_BACKUP = 2225
         private const val COOL_DOWN_MILLIS = 2 * 1000
-
-        const val EXTRA_URI = "transaction_uri"
-        const val EXTRA_RECIPIENT_ID = "recipient_id"
-        const val EXTRA_MDID = "mdid"
-        const val EXTRA_FCTX_ID = "fctx_id"
 
         const val SCAN_URI = 2007
         const val ACCOUNT_EDIT = 2008

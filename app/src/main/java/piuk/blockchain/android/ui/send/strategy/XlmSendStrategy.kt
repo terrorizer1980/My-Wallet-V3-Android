@@ -101,10 +101,10 @@ class XlmSendStrategy(
 
     override fun onBroadcastReceived() {}
 
-    override fun onResume() {
-    }
+    override fun onResume() {}
 
     override fun onCurrencySelected() {
+        currencyState.cryptoCurrency = CryptoCurrency.XLM
         xlmSelected()
     }
 

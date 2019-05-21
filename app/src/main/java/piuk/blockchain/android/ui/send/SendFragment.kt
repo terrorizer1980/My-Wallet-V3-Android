@@ -1112,38 +1112,17 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         const val ARGUMENT_SCAN_DATA = "scan_data"
         private const val ARGUMENT_SELECTED_ACCOUNT_POSITION = "selected_account_position"
 
-        private const val ARGUMENT_CONTACT_ID = "contact_id"
-        private const val ARGUMENT_CONTACT_MDID = "contact_mdid"
-        private const val ARGUMENT_FCTX_ID = "fctx_id"
         private const val REQUEST_CODE_BTC_RECEIVING = 911
         private const val REQUEST_CODE_BTC_SENDING = 912
         private const val REQUEST_CODE_BCH_RECEIVING = 913
         private const val REQUEST_CODE_BCH_SENDING = 914
         private const val REQUEST_CODE_MEMO = 915
 
-        @JvmStatic
         fun newInstance(scanData: String?, selectedAccountPosition: Int): SendFragment {
             val fragment = SendFragment()
             fragment.arguments = Bundle().apply {
                 putString(ARGUMENT_SCAN_DATA, scanData)
                 putInt(ARGUMENT_SELECTED_ACCOUNT_POSITION, selectedAccountPosition)
-            }
-            return fragment
-        }
-
-        @JvmStatic
-        fun newInstance(
-            uri: String,
-            contactId: String,
-            contactMdid: String,
-            fctxId: String
-        ): SendFragment {
-            val fragment = SendFragment()
-            fragment.arguments = Bundle().apply {
-                putString(ARGUMENT_SCAN_DATA, uri)
-                putString(ARGUMENT_CONTACT_ID, contactId)
-                putString(ARGUMENT_CONTACT_MDID, contactMdid)
-                putString(ARGUMENT_FCTX_ID, fctxId)
             }
             return fragment
         }

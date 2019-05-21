@@ -78,8 +78,9 @@ class PerCurrencySendPresenterTest {
         }
 
         verify(btcStrategy).processURIScanAddress("1FBPzxps6kGyk2exqLvz7cRMi2odtLEVQ")
-        verify(btcStrategy).onCurrencySelected()
-        verify(view).setSelectedCurrency(CryptoCurrency.BTC)
+        // BTC is the default, so shouldn't get called again
+        verify(btcStrategy, never()).onCurrencySelected()
+        verify(view, never()).setSelectedCurrency(CryptoCurrency.BTC)
     }
 
     @Test
@@ -123,7 +124,8 @@ class PerCurrencySendPresenterTest {
         verify(xlmStrategy, never()).processURIScanAddress(any())
         verify(erc20Strategy, never()).processURIScanAddress(any())
 
-        verify(btcStrategy).onCurrencySelected()
-        verify(view).setSelectedCurrency(CryptoCurrency.BTC)
+        // BTC is the default, so shouldn't get called again
+        verify(btcStrategy, never()).onCurrencySelected()
+        verify(view, never()).setSelectedCurrency(CryptoCurrency.BTC)
     }
 }

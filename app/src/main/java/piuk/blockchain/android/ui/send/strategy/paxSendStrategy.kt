@@ -115,6 +115,7 @@ class paxSendStrategy(
 
     override fun processURIScanAddress(address: String) {
         pendingTx.receivingAddress = address
+        view.updateReceivingAddress(address)
     }
 
     @SuppressLint("CheckResult")

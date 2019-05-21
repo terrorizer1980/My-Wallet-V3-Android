@@ -106,6 +106,7 @@ class BitcoinSendStrategy(
     override fun processURIScanAddress(address: String) {
         pendingTransaction.receivingObject = null
         pendingTransaction.receivingAddress = address
+        view.updateReceivingAddress(address)
     }
 
     override fun onViewReady() {

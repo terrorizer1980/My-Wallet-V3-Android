@@ -96,6 +96,8 @@ internal class PerCurrencySendPresenter<View : SendView>(
     }
 
     override fun onCurrencySelected(currency: CryptoCurrency) {
+        if (selectedCrypto == currency) return
+
         selectedCrypto = currency
         updateTicker()
         view?.setSelectedCurrency(currency)
@@ -173,7 +175,6 @@ internal class PerCurrencySendPresenter<View : SendView>(
 
         if (address != "") {
             delegate().processURIScanAddress(address)
-            view.updateReceivingAddress(address)
         }
     }
 

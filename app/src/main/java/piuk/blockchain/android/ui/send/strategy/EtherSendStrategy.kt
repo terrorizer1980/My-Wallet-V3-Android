@@ -124,6 +124,7 @@ class EtherSendStrategy(
 
     override fun processURIScanAddress(address: String) {
         pendingTransaction.receivingAddress = address
+        view.updateReceivingAddress(address)
     }
 
     @SuppressLint("CheckResult")

@@ -13,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetDialog
+import android.support.design.widget.CoordinatorLayout
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -23,7 +24,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
@@ -171,7 +171,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     private fun setupLayout() {
-        if (!presenter.shouldShowDropdown()) {
+        if (!presenter.shouldShowAccountDropdown()) {
             constraint_layout_to_row.gone()
             divider_to.gone()
         }
@@ -333,7 +333,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         amount_container.visible()
         divider3.visible()
 
-        if (presenter.shouldShowDropdown()) {
+        if (presenter.shouldShowAccountDropdown()) {
             to_container.visible()
             divider_to.visible()
         } else {
@@ -370,7 +370,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         amount_container.gone()
         divider3.visible()
 
-        if (presenter.shouldShowDropdown()) {
+        if (presenter.shouldShowAccountDropdown()) {
             to_container.visible()
             divider_to.visible()
         } else {
@@ -589,7 +589,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         // Resize activity to default
         scrollview.apply {
             setPadding(0, 0, 0, 0)
-            layoutParams = FrameLayout.LayoutParams(
+            layoutParams = CoordinatorLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             ).apply { setMargins(0, height, 0, height) }
@@ -608,7 +608,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         val height = activity!!.resources.getDimension(R.dimen.action_bar_height).toInt()
         scrollview.apply {
             setPadding(0, 0, 0, custom_keyboard.height)
-            layoutParams = FrameLayout.LayoutParams(
+            layoutParams = CoordinatorLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             ).apply { setMargins(0, height, 0, 0) }

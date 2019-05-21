@@ -83,7 +83,7 @@ class ReceivePresenter(
 
     internal fun isValidAmount(btcAmount: String) = btcAmount.toSafeLong(Locale.getDefault()) > 0
 
-    internal fun shouldShowDropdown() =
+    internal fun shouldShowAccountDropdown() =
         walletAccountHelper.hasMultipleEntries(currencyState.cryptoCurrency)
 
     internal fun onLegacyAddressSelected(legacyAddress: LegacyAddress) {
@@ -242,8 +242,7 @@ class ReceivePresenter(
             .flatMap { bchDataManager.getNextReceiveAddress(position) }
             .addToCompositeDisposable(this)
             .doOnNext {
-                val address =
-                    Address.fromBase58(environmentSettings.bitcoinCashNetworkParameters, it)
+                val address = Address.fromBase58(environmentSettings.bitcoinCashNetworkParameters, it)
                 val bech32 = address.toCashAddress()
                 selectedAddress = bech32
                 view.updateReceiveAddress(bech32.removeBchUri())

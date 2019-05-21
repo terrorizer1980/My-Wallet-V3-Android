@@ -113,7 +113,7 @@ class ReceivePresenterTest {
         // Arrange
         whenever(walletAccountHelper.hasMultipleEntries(CryptoCurrency.BTC)) `it returns` true
         // Act
-        subject.shouldShowDropdown() `should be` true
+        subject.shouldShowAccountDropdown() `should be` true
     }
 
     @Test
@@ -121,7 +121,7 @@ class ReceivePresenterTest {
         // Arrange
         whenever(walletAccountHelper.hasMultipleEntries(CryptoCurrency.BTC)) `it returns` false
         // Act
-        subject.shouldShowDropdown() `should be` false
+        subject.shouldShowAccountDropdown() `should be` false
     }
 
     @Test
