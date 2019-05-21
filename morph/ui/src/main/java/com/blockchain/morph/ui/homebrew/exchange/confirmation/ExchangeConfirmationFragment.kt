@@ -81,6 +81,11 @@ class ExchangeConfirmationFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        progressDialog = MaterialProgressDialog(activity).apply {
+            setMessage(piuk.blockchain.androidcoreui.R.string.please_wait)
+            setCancelable(false)
+        }
+
         activityListener.setToolbarTitle(R.string.confirm_exchange)
         get<EventLogger>().logEvent(LoggableEvent.ExchangeDetailConfirm)
 
@@ -148,17 +153,18 @@ class ExchangeConfirmationFragment :
     @UiThread
     @CommonCode("Move to base")
     override fun showProgressDialog() {
-        progressDialog = MaterialProgressDialog(activity).apply {
-            setMessage(piuk.blockchain.androidcoreui.R.string.please_wait)
-            setCancelable(false)
-            show()
-        }
+        if (progressDialog?.isShowing == true) return
+        progressDialog?.show()
     }
 
     @UiThread
     @CommonCode("Move to base")
     override fun dismissProgressDialog() {
         progressDialog?.apply { dismiss() }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
         progressDialog = null
     }
 
