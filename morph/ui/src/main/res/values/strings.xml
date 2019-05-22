@@ -56,7 +56,6 @@
     <string name="morph_confirmation_eth_pending">Ether transaction failed, please wait until your previous transaction confirms.</string>
 
     <!-- IN PROGRESS -->
-    <string name="morph_in_progress_explanation">Thanks for placing your trade! Swap trades can take up to two hours, and you can keep track of your trade\'s progress in the Order History section.</string>
     <string name="morph_failed_explanation">This trade has failed. Please return to the Swap tab to start a new trade</string>
     <string name="morph_refunded_explanation">This trade has expired as we have still not received your funds. If we receive your funds we will complete your trade. If you require further assistance please contact support.</string>
     <string name="morph_sending_title">Sending Funds</string>
@@ -66,6 +65,8 @@
     <string name="morph_refunded_title">Expired</string>
     <string name="morph_step_number">Step %1$s of 3</string>
     <string name="morph_confirm">Confirm</string>
+    <string name="morph_success_dlg_text">Success! Your exchange has been started!</string>
+    <string name="morph_success_dlg_button">View Order Details</string>
 
     <!-- ORDER DETAIL -->
     <string name="morph_order_id_title">Order ID</string>

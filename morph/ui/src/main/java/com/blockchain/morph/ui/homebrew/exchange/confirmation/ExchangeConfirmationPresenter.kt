@@ -5,13 +5,11 @@ import com.blockchain.morph.exchange.mvi.Quote
 import com.blockchain.morph.exchange.service.TradeExecutionService
 import com.blockchain.morph.exchange.service.TradeTransaction
 import com.blockchain.morph.ui.R
-import com.blockchain.morph.ui.homebrew.exchange.locked.ExchangeLockedModel
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendException
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.formatWithUnit
 import info.blockchain.wallet.exceptions.TransactionHashApiException
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -31,7 +29,7 @@ class ExchangeConfirmationPresenter internal constructor(
     private val payloadDecrypt: PayloadDecrypt
 ) : BasePresenter<ExchangeConfirmationView>() {
 
-    private var executeTradeSingle: Single<ExchangeLockedModel>? = null
+    private var executeTradeSingle: Single<String>? = null
 
     override fun onViewReady() {
         // Ensure user hasn't got a double encrypted wallet
@@ -79,7 +77,7 @@ class ExchangeConfirmationPresenter internal constructor(
         quote: Quote,
         sendingAccount: AccountReference,
         receivingAccount: AccountReference
-    ): Single<ExchangeLockedModel> {
+    ): Single<String> {
         return deriveAddressPair(sendingAccount, receivingAccount)
             .subscribeOn(Schedulers.io())
             .flatMap { (destination, refund) ->
@@ -88,18 +86,6 @@ class ExchangeConfirmationPresenter internal constructor(
                     .flatMap { transaction ->
                         sendFundsForTrade(transaction, sendingAccount)
                             .subscribeOn(Schedulers.io())
-                            .map {
-                                ExchangeLockedModel(
-                                    orderId = transaction.id,
-                                    value = transaction.fiatValue.toStringWithSymbol(view.locale),
-                                    fees = transaction.fee.formatWithUnit(),
-                                    sending = transaction.deposit.formatWithUnit(),
-                                    sendingCurrency = transaction.deposit.currency,
-                                    receiving = transaction.withdrawal.formatWithUnit(),
-                                    receivingCurrency = transaction.withdrawal.currency,
-                                    accountName = receivingAccount.label
-                                )
-                            }
                     }
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -113,7 +99,7 @@ class ExchangeConfirmationPresenter internal constructor(
                     view.displayErrorDialog(R.string.execution_error_message)
                 }
             }
-            .doOnSuccess { view.continueToExchangeLocked(it) }
+            .doOnSuccess { view.showExchangeCompleteDialog(false) }
     }
 
     private fun sendFundsForTrade(

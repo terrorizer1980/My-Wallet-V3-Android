@@ -2,7 +2,6 @@ package com.blockchain.morph.ui.homebrew.exchange.confirmation
 
 import android.support.annotation.StringRes
 import com.blockchain.morph.exchange.mvi.ExchangeViewState
-import com.blockchain.morph.ui.homebrew.exchange.locked.ExchangeLockedModel
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Observable
 import piuk.blockchain.androidcoreui.ui.base.View
@@ -15,7 +14,7 @@ interface ExchangeConfirmationView : View {
 
     val exchangeViewState: Observable<ExchangeViewState>
 
-    fun continueToExchangeLocked(lockedModel: ExchangeLockedModel)
+    fun showExchangeCompleteDialog(firstGoldPaxTrade: Boolean)
 
     fun showSecondPasswordDialog()
 

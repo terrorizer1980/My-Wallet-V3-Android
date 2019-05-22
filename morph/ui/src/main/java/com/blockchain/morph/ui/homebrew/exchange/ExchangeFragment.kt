@@ -30,6 +30,7 @@ import com.blockchain.morph.exchange.mvi.Maximums
 import com.blockchain.morph.exchange.mvi.Quote
 import com.blockchain.morph.exchange.mvi.QuoteValidity
 import com.blockchain.morph.exchange.mvi.SimpleFieldUpdateIntent
+import com.blockchain.morph.exchange.mvi.ToggleFiatCryptoIntent
 import com.blockchain.morph.ui.R
 import com.blockchain.morph.ui.customviews.CurrencyTextView
 import com.blockchain.morph.ui.customviews.ThreePartText
@@ -156,6 +157,12 @@ internal class ExchangeFragment : Fragment() {
             exchangeModel.fixAsCrypto()
             activityListener.launchConfirmation()
         }
+        largeValue.setOnClickListener(toggleOnClickListener)
+        smallValue.setOnClickListener(toggleOnClickListener)
+    }
+
+    val toggleOnClickListener = View.OnClickListener {
+        exchangeModel.inputEventSink.onNext(ToggleFiatCryptoIntent())
     }
 
     override fun onResume() {
@@ -333,14 +340,14 @@ internal class ExchangeFragment : Fragment() {
                 ExchangeMenuState.ErrorType.TIER
             )
             QuoteValidity.OverUserBalance -> {
-                val maxSpendableFiat = maxSpendable * c2fRate
+                val maxSpendableFiat = maxSpenableFiatBalance()
                 ExchangeMenuState.ExchangeMenuError(
                     fromCrypto.currency,
                     userTier,
                     getString(R.string.not_enough_balance_for_coin, fromCrypto.currency.symbol),
                     getString(R.string.not_enough_balance,
                         maxSpendable?.toStringWithSymbol(),
-                        maxSpendableFiat?.toStringWithSymbol()),
+                        maxSpendableFiat),
                     ExchangeMenuState.ErrorType.BALANCE
                 )
             }
@@ -386,6 +393,16 @@ internal class ExchangeFragment : Fragment() {
         }
         spendableString.append(spendable.toStringWithSymbol())
         return spendableString
+    }
+
+    private fun ExchangeViewState.maxSpenableFiatBalance(): CharSequence {
+        val cryptoCurrency = fromCrypto.currency
+        val fiatCode = fromFiat.currencyCode
+        val spendable = maxSpendable ?: CryptoValue.zero(cryptoCurrency)
+        return latestQuote?.baseToFiatRate?.let { baseToFiatRate ->
+            ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate)
+                .applyRate(spendable)?.toStringWithSymbol() ?: ""
+        } ?: ""
     }
 
     private fun ExchangeViewState.formatBase(): String =
