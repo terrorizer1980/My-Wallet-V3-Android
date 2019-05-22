@@ -1,12 +1,9 @@
 package piuk.blockchain.android.ui.confirm
 
-import javax.inject.Inject
-
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.base.UiState
 
-class ConfirmPaymentPresenter @Inject internal constructor()
-    : BasePresenter<ConfirmPaymentView>() {
+class ConfirmPaymentPresenter : BasePresenter<ConfirmPaymentView>() {
 
     override fun onViewReady() {
         val paymentDetails = view.paymentDetails

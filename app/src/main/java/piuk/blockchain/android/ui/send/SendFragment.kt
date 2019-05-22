@@ -754,6 +754,11 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         textviewFeeAbsolute.text = ""
     }
 
+    override fun clearAmount() {
+        amountCrypto.text = null
+        amountFiat.text = null
+    }
+
     override fun updateMaxAvailable(maxAmount: String) {
         max.text = maxAmount
     }

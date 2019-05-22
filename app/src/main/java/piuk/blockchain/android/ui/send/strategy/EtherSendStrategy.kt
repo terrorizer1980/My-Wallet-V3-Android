@@ -109,6 +109,7 @@ class EtherSendStrategy(
         absoluteSuggestedFee = BigInteger.ZERO
 
         view?.setSendButtonEnabled(true)
+        view.clearAmount()
         view.clearFeeAmount()
         view.hideMaxAvailable()
         view.updateReceivingAddress("")

@@ -132,6 +132,7 @@ class BitcoinCashSendStrategy(
         pendingTransaction.clear()
         view?.setSendButtonEnabled(true)
         absoluteSuggestedFee = BigInteger.ZERO
+        view.clearAmount()
         view.clearFeeAmount()
         resetAccountList()
         selectDefaultOrFirstFundedSendingAccount()

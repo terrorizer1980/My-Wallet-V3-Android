@@ -39,6 +39,8 @@ interface SendView : BaseSendView {
 
     fun clearFeeAmount()
 
+    fun clearAmount()
+
     // Set property
     fun setCryptoMaxLength(length: Int)
 

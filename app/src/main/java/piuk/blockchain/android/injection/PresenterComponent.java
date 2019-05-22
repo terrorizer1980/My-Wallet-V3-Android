@@ -80,8 +80,6 @@ public interface PresenterComponent {
 
     void inject(@NotNull BackupWalletWordListFragment backupWalletWordListFragment);
 
-    void inject(@NotNull ConfirmPaymentDialog confirmPaymentDialog);
-
     void inject(@NotNull BackupWalletCompletedFragment backupWalletCompletedFragment);
 
     void inject(@NotNull FingerprintDialog fingerprintDialog);
