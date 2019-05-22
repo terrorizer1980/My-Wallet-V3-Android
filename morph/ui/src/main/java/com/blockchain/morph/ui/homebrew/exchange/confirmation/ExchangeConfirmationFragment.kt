@@ -16,7 +16,6 @@ import com.blockchain.morph.exchange.mvi.Quote
 import com.blockchain.morph.ui.R
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeModel
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeViewModelProvider
-import com.blockchain.morph.ui.homebrew.exchange.error.SwapErrorBottomDialog
 import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewHostActivityListener
 import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.LoggableEvent
@@ -37,6 +36,7 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpFragment
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -131,8 +131,8 @@ class ExchangeConfirmationFragment :
 
     override fun showExchangeCompleteDialog(firstGoldPaxTrade: Boolean) {
 
-        val dlg = SwapErrorBottomDialog.newInstance(
-            SwapErrorBottomDialog.Content(
+        val dlg = ErrorBottomDialog.newInstance(
+            ErrorBottomDialog.Content(
                 title = getString(R.string.morph_success_dlg_text),
                 description = "",
                 ctaButtonText = R.string.morph_success_dlg_button,
