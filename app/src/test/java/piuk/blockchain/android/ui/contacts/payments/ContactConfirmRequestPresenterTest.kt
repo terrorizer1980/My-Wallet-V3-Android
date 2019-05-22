@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.contacts.payments
 
 import android.os.Bundle
+import com.blockchain.annotations.BurnCandidate
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
@@ -15,6 +16,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -28,6 +30,8 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import kotlin.test.assertNull
 
+@Ignore("No0 Contacts in app")
+@BurnCandidate("Contacts are not used and marked for removal")
 @Config(sdk = [23], constants = BuildConfig::class, application = BlockchainTestApplication::class)
 @RunWith(RobolectricTestRunner::class)
 class ContactConfirmRequestPresenterTest {
@@ -102,10 +106,6 @@ class ContactConfirmRequestPresenterTest {
             putString(ContactConfirmRequestFragment.ARGUMENT_CONTACT_ID, contactId)
             putLong(ContactConfirmRequestFragment.ARGUMENT_SATOSHIS, satoshis)
             putInt(ContactConfirmRequestFragment.ARGUMENT_ACCOUNT_POSITION, accountPosition)
-            putParcelable(
-                ContactConfirmRequestFragment.ARGUMENT_CONFIRMATION_DETAILS,
-                paymentDetails
-            )
             putSerializable(ContactConfirmRequestFragment.ARGUMENT_REQUEST_TYPE, paymentRequestType)
         }
         val contact0 = Contact()
@@ -148,21 +148,10 @@ class ContactConfirmRequestPresenterTest {
         val btcUnit = "BTC"
         val fiatSymbol = "$"
         val fiatAmount = "2739.40"
-        val paymentDetails = PaymentConfirmationDetails().apply {
-            this.fromLabel = fromLabel
-            this.cryptoAmount = btcAmount
-            this.cryptoUnit = btcUnit
-            this.fiatSymbol = fiatSymbol
-            this.fiatAmount = fiatAmount
-        }
         val bundle = Bundle().apply {
             putString(ContactConfirmRequestFragment.ARGUMENT_CONTACT_ID, contactId)
             putLong(ContactConfirmRequestFragment.ARGUMENT_SATOSHIS, satoshis)
             putInt(ContactConfirmRequestFragment.ARGUMENT_ACCOUNT_POSITION, accountPosition)
-            putParcelable(
-                ContactConfirmRequestFragment.ARGUMENT_CONFIRMATION_DETAILS,
-                paymentDetails
-            )
             putSerializable(ContactConfirmRequestFragment.ARGUMENT_REQUEST_TYPE, paymentRequestType)
         }
         whenever(mockActivity.fragmentBundle).thenReturn(bundle)
@@ -195,21 +184,10 @@ class ContactConfirmRequestPresenterTest {
         val btcUnit = "BTC"
         val fiatSymbol = "$"
         val fiatAmount = "2739.40"
-        val paymentDetails = PaymentConfirmationDetails().apply {
-            this.fromLabel = fromLabel
-            this.cryptoAmount = btcAmount
-            this.cryptoUnit = btcUnit
-            this.fiatSymbol = fiatSymbol
-            this.fiatAmount = fiatAmount
-        }
         val bundle = Bundle().apply {
             putString(ContactConfirmRequestFragment.ARGUMENT_CONTACT_ID, contactId)
             putLong(ContactConfirmRequestFragment.ARGUMENT_SATOSHIS, satoshis)
             putInt(ContactConfirmRequestFragment.ARGUMENT_ACCOUNT_POSITION, accountPosition)
-            putParcelable(
-                ContactConfirmRequestFragment.ARGUMENT_CONFIRMATION_DETAILS,
-                paymentDetails
-            )
             putSerializable(ContactConfirmRequestFragment.ARGUMENT_REQUEST_TYPE, paymentRequestType)
         }
         val contact0 = Contact()

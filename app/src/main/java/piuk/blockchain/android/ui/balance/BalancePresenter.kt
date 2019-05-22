@@ -30,6 +30,7 @@ import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
@@ -41,12 +42,12 @@ import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import timber.log.Timber
-import javax.inject.Inject
 
-class BalancePresenter @Inject constructor(
+class BalancePresenter(
     private val exchangeRateDataManager: ExchangeRateDataManager,
     private val transactionListDataManager: TransactionListDataManager,
     private val ethDataManager: EthDataManager,
+    private val paxAccount: Erc20Account,
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     internal val payloadDataManager: PayloadDataManager,
     private val buyDataManager: BuyDataManager,
@@ -85,19 +86,6 @@ class BalancePresenter @Inject constructor(
         if (environmentSettings.environment == Environment.TESTNET) {
             currencyState.cryptoCurrency = CryptoCurrency.BTC
             view.disableCurrencyHeader()
-        }
-
-        // TODO: AND-2003 - remove when PAX fully implemented
-        checkPaxComingSoonStateAndUpdateView()
-    }
-
-    @Deprecated("Remove remove when PAX fully implemented")
-    private fun checkPaxComingSoonStateAndUpdateView() {
-        if (currencyState.cryptoCurrency == CryptoCurrency.PAX) {
-            view.updateSelectedCurrency(CryptoCurrency.PAX)
-            view.showComingSoon(true)
-        } else {
-            view.showComingSoon(false)
         }
     }
 
@@ -182,7 +170,7 @@ class BalancePresenter @Inject constructor(
             CryptoCurrency.ETHER -> ethDataManager.fetchEthAddressCompletable()
             CryptoCurrency.BCH -> bchDataManager.updateAllBalances()
             CryptoCurrency.XLM -> Completable.complete()
-            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
+            CryptoCurrency.PAX -> paxAccount.fetchAddressCompletable()
         }
 
     /**
@@ -232,9 +220,6 @@ class BalancePresenter @Inject constructor(
     internal fun onCurrencySelected(cryptoCurrency: CryptoCurrency) {
         // Set new currency state
         currencyState.cryptoCurrency = cryptoCurrency
-
-        // TODO: AND-2003 - remove when PAX fully implemented
-        checkPaxComingSoonStateAndUpdateView()
 
         // Select default account for this currency
         compositeDisposable +=

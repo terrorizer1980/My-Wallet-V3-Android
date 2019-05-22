@@ -6,7 +6,7 @@ import piuk.blockchain.android.ui.account.PaymentConfirmationDetails;
 import piuk.blockchain.androidcoreui.ui.base.UiState;
 import piuk.blockchain.androidcoreui.ui.base.View;
 
-interface ConfirmPaymentView extends View {
+public interface ConfirmPaymentView extends View {
 
     PaymentConfirmationDetails getPaymentDetails();
 
@@ -24,9 +24,9 @@ interface ConfirmPaymentView extends View {
 
     void setFee(String fee);
 
-    void setTotalBtc(String totalBtc);
+    void setTotals(String totalCrypto, String totalFiat);
 
-    void setTotalFiat(String totalFiat);
+    void setFiatTotalOnly(String fiatTotal);
 
     void closeDialog();
 

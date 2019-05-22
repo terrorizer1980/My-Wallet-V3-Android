@@ -22,6 +22,7 @@ import com.blockchain.kyc.services.nabu.TierUpdater
 import com.blockchain.kyc.services.onfido.OnfidoService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
 import com.blockchain.kyc.smsVerificationRemoteConfig
+import com.blockchain.kyc.stableCoinRemoteConfig
 import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kyc.sunriverAirdropRemoteConfig
 import com.blockchain.kycui.address.CurrentTierAdapter
@@ -45,6 +46,7 @@ import com.blockchain.kycui.reentry.ReentryDecision
 import com.blockchain.kycui.reentry.ReentryDecisionKycNavigator
 import com.blockchain.kycui.reentry.TiersReentryDecision
 import com.blockchain.kycui.splash.KycSplashPresenter
+import com.blockchain.kycui.stablecoin.StableCoinCampaignHelper
 import com.blockchain.kycui.status.KycStatusPresenter
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.tiersplash.KycTierSplashPresenter
@@ -117,6 +119,8 @@ val kycModule = applicationContext {
         factory { KycInvalidCountryPresenter(get(), get()) }
 
         factory("sunriver") { sunriverAirdropRemoteConfig(get()) }
+
+        factory("stablecoin") { stableCoinRemoteConfig(get()) }
 
         factory("ff_sms_verification") { smsVerificationRemoteConfig(get()) }
 
@@ -203,5 +207,7 @@ val kycNabuModule = applicationContext {
 
         factory { SunriverCampaignHelper(get("sunriver"), get(), get(), get(), get()) }
             .bind(SunriverCampaignSignUp::class)
+
+        factory { StableCoinCampaignHelper(get("stablecoin")) }
     }
 }

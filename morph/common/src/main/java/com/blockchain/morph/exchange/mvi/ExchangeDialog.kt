@@ -35,6 +35,7 @@ class ExchangeDialog(intents: Observable<ExchangeIntent>, initial: ExchangeViewM
                 is ClearQuoteIntent -> previousState.clearQuote()
                 is SetUserTier -> previousState.copy(userTier = intent.tier)
                 is SetTierLimit -> previousState.mapTierLimits(intent)
+                is EnoughFeesLimit -> previousState.setHasEthEnoughFees(intent)
             }
         }
 
@@ -65,6 +66,10 @@ private fun ExchangeViewState.setFiatRate(c2fRate: ExchangeRate.CryptoToFiat): E
         return this
     }
     return copy(c2fRate = c2fRate)
+}
+
+private fun ExchangeViewState.setHasEthEnoughFees(intent: EnoughFeesLimit): ExchangeViewState {
+    return copy(hasEnoughEthFees = intent.hasEnoughForFess)
 }
 
 private fun ExchangeViewState.applyLimit(tradeLimit: Money?) =
@@ -158,6 +163,7 @@ enum class QuoteValidity {
     NoQuote,
     MissMatch,
     UnderMinTrade,
+    NotEnoughFees,
     OverMaxTrade,
     OverTierLimit,
     OverUserBalance
@@ -180,6 +186,7 @@ data class ExchangeViewState(
     val maxSpendable: CryptoValue? = null,
     val decimalCursor: Int = 0,
     val userTier: Int = 0,
+    val hasEnoughEthFees: Boolean = true,
     val quoteLocked: Boolean = false
 ) {
     private val maxTradeOrTierLimit: FiatValue?
@@ -229,6 +236,7 @@ data class ExchangeViewState(
         if (exceedsTheFiatLimit(latestQuote, maxTradeLimit)) return QuoteValidity.OverMaxTrade
         if (exceedsTheFiatLimit(latestQuote, maxTierLimit)) return QuoteValidity.OverTierLimit
         if (underTheFiatLimit(latestQuote, minTradeLimit)) return QuoteValidity.UnderMinTrade
+        if (!hasEnoughEthFees) return QuoteValidity.NotEnoughFees
         return QuoteValidity.Valid
     }
 
@@ -244,7 +252,7 @@ data class ExchangeViewState(
 
     private fun quoteMatchesFixAndValue(latestQuote: Quote) =
         latestQuote.fix == fix &&
-            latestQuote.fixValue == fixedMoneyValue
+                latestQuote.fixValue == fixedMoneyValue
 
     private fun enoughFundsIfKnown(latestQuote: Quote): Boolean {
         if (maxSpendable == null) return true
@@ -358,7 +366,7 @@ private fun currencyMatch(
     vmFiatValue: FiatValue
 ) =
     quote.fiatValue.currencyCode == vmFiatValue.currencyCode &&
-        quote.cryptoValue.currency == vmValue.currency
+            quote.cryptoValue.currency == vmValue.currency
 
 private fun mode(
     fieldEntered: Fix,

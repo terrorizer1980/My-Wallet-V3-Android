@@ -6,13 +6,13 @@ object Versions {
     const val minSdk = 19
     const val targetSdk = 27
     const val compileSdk = 27
-    const val versionCode = 446
-    const val versionName = "6.24.0"
+    const val versionCode = 447
+    const val versionName = "6.25.0"
     const val buildTools = "28.0.3"
 
     // Build tools and languages
     const val androidPlugin = "3.2.1"
-    const val kotlin = "1.2.71"
+    const val kotlin = "1.3.30"
     const val googleServicesPlugin = "4.1.0"
     const val coveralls = "2.8.2"
     const val buildProperties = "0.4"
@@ -104,11 +104,10 @@ object Libraries {
     const val androidGradlePlugin = "com.android.tools.build:gradle:${Versions.androidPlugin}"
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
+    const val kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:${Versions.kotlin}"
     const val coveralls = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:${Versions.coveralls}"
-    const val googleServicesPlugin =
-        "com.google.gms:google-services:${Versions.googleServicesPlugin}"
-    const val buildProperties =
-        "com.novoda:gradle-build-properties-plugin:${Versions.buildProperties}"
+    const val googleServicesPlugin = "com.google.gms:google-services:${Versions.googleServicesPlugin}"
+    const val buildProperties = "com.novoda:gradle-build-properties-plugin:${Versions.buildProperties}"
     const val ktlint = "com.github.shyiko:ktlint:${Versions.ktlint}"
 
     // Support Libraries
@@ -121,8 +120,7 @@ object Libraries {
     const val v14 = "com.android.support:preference-v14:${Versions.supportLibs}"
     const val dynamicAnims = "com.android.support:support-dynamic-animation:${Versions.supportLibs}"
     const val annotations = "com.android.support:support-annotations:${Versions.supportLibs}"
-    const val constraintLayout =
-        "com.android.support.constraint:constraint-layout:${Versions.constraintLayout}"
+    const val constraintLayout = "com.android.support.constraint:constraint-layout:${Versions.constraintLayout}"
     const val multidex = "com.android.support:multidex:${Versions.multidex}"
     const val navigationControllerCore = "android.arch.navigation:navigation-ui:${Versions.navigation}"
     const val navigationControllerFragments = "android.arch.navigation:navigation-fragment:${Versions.navigation}"
@@ -133,12 +131,9 @@ object Libraries {
     // Google & Firebase
     const val firebaseCore = "com.google.firebase:firebase-core:${Versions.firebaseCore}"
     const val firebaseConfig = "com.google.firebase:firebase-config:${Versions.firebaseConfig}"
-    const val firebaseMessaging =
-        "com.google.firebase:firebase-messaging:${Versions.firebaseMessaging}"
-    const val firebaseDynamicLink =
-        "com.google.firebase:firebase-dynamic-links:${Versions.firebaseDynamicLink}"
-    const val googlePlayServicesBase =
-        "com.google.android.gms:play-services-base:${Versions.googleServices}"
+    const val firebaseMessaging = "com.google.firebase:firebase-messaging:${Versions.firebaseMessaging}"
+    const val firebaseDynamicLink = "com.google.firebase:firebase-dynamic-links:${Versions.firebaseDynamicLink}"
+    const val googlePlayServicesBase = "com.google.android.gms:play-services-base:${Versions.googleServices}"
     const val googlePlaces = "com.google.android.gms:play-services-places:${Versions.googleServices}"
 
     // Networking, RxJava

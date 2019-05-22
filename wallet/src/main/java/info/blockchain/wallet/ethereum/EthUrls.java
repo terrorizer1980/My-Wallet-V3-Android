@@ -23,7 +23,7 @@ final class EthUrls {
     static final String LATEST_BLOCK = ETH + "/latestblock";
     static final String TX = ETH + "/tx";
     static final String FEES = ETH + "/fees";
+    static final String V2_DATA = ETHV2 + DATA;
     static final String V2_DATA_ACCOUNT = ETHV2 + DATA + "/account";
-
-
+    static final String V2_DATA_TRANSACTION = ETHV2 + DATA + "/transaction";
 }

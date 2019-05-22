@@ -1,10 +1,12 @@
 package piuk.blockchain.android.injection;
 
 import android.app.NotificationManager;
+
 import com.blockchain.koin.KoinDaggerModule;
 import com.blockchain.koin.modules.MorphActivityLauncher;
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager;
 import com.blockchain.kycui.settings.KycStatusHelper;
+import com.blockchain.kycui.stablecoin.StableCoinCampaignHelper;
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper;
 import com.blockchain.lockbox.data.LockboxDataManager;
 import com.blockchain.logging.LastTxUpdater;
@@ -15,12 +17,14 @@ import com.blockchain.remoteconfig.RemoteConfig;
 import com.blockchain.remoteconfig.RemoteConfiguration;
 import com.blockchain.sunriver.XlmDataManager;
 import com.blockchain.ui.CurrentContextAccess;
+
 import dagger.Module;
 import dagger.Provides;
 import info.blockchain.wallet.payload.PayloadManager;
 import info.blockchain.wallet.payload.PayloadManagerWiper;
 import info.blockchain.wallet.util.PrivateKeyFactory;
 import piuk.blockchain.android.data.cache.DynamicFeeCache;
+import piuk.blockchain.android.data.datamanagers.QrCodeDataManager;
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager;
 import piuk.blockchain.android.deeplink.DeepLinkProcessor;
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter;
@@ -36,6 +40,8 @@ import piuk.blockchain.androidcore.data.auth.AuthDataManager;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyState;
+import piuk.blockchain.androidcore.data.erc20.Erc20Account;
+import piuk.blockchain.androidcore.data.erc20.PaxAccount;
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager;
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates;
 import piuk.blockchain.androidcore.data.fees.FeeDataManager;
@@ -49,8 +55,10 @@ import piuk.blockchain.androidcore.data.transactions.TransactionListStore;
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
 import piuk.blockchain.androidcore.utils.AESUtilWrapper;
 import piuk.blockchain.androidcore.utils.PrngFixer;
+import piuk.blockchain.androidcoreui.utils.AppUtil;
 
 import javax.inject.Named;
+
 import java.util.Locale;
 
 @Module
@@ -59,6 +67,11 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     AccessState provideAccessState() {
         return get(AccessState.class);
+    }
+
+    @Provides
+    AppUtil providesAppUtil() {
+        return get(AppUtil.class);
     }
 
     @Provides
@@ -108,6 +121,11 @@ public class ApplicationModule extends KoinDaggerModule {
     }
 
     @Provides
+    SwipeToReceiveHelper providesSwipeToReceiveHelper() {
+        return get(SwipeToReceiveHelper.class);
+    }
+
+    @Provides
     EnvironmentConfig provideEnvironmentConfig() {
         return get(EnvironmentConfig.class);
     }
@@ -115,6 +133,11 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     EnvironmentUrls provideEnvironmentUrls() {
         return get(EnvironmentUrls.class);
+    }
+
+    @Provides
+    QrCodeDataManager provideQrDataManager() {
+        return get(QrCodeDataManager.class);
     }
 
     @Provides
@@ -150,6 +173,11 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     EthDataManager provideEthDataManager() {
         return get(EthDataManager.class);
+    }
+
+    @Provides
+    Erc20Account providePaxAccount() {
+        return get(Erc20Account.class);
     }
 
     @Provides
@@ -218,11 +246,6 @@ public class ApplicationModule extends KoinDaggerModule {
     }
 
     @Provides
-    SwipeToReceiveHelper provideSwipeToReceiveHelper() {
-        return get(SwipeToReceiveHelper.class);
-    }
-
-    @Provides
     LockboxDataManager provideLockboxDataManager() {
         return get(LockboxDataManager.class);
     }
@@ -275,6 +298,11 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     SunriverCampaignHelper provideSunriverCampaignHelper() {
         return get(SunriverCampaignHelper.class);
+    }
+
+    @Provides
+    StableCoinCampaignHelper provideStableCoinCampaignHelper() {
+        return get(StableCoinCampaignHelper.class);
     }
 
     @Provides

@@ -10,6 +10,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.payload.PayloadManager
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.data.balance.adapters.toAsync
@@ -19,13 +20,15 @@ import piuk.blockchain.android.data.datamanagers.models.XlmDisplayable
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
+import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.transactions.TransactionListStore
-import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
 import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
 import piuk.blockchain.androidcore.data.transactions.models.Displayable
+import piuk.blockchain.androidcore.data.transactions.models.Erc20Displayable
 import piuk.blockchain.androidcore.data.transactions.models.EthDisplayable
+import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -34,7 +37,7 @@ class TransactionListDataManager(
     private val ethDataManager: EthDataManager,
     private val bchDataManager: BchDataManager,
     private val xlmDataManager: XlmDataManager,
-    private val erc20Manager: Erc20Manager,
+    private val paxAccount: Erc20Account,
     private val transactionListStore: TransactionListStore,
     private val currencyState: CurrencyState
 ) : TotalBalance {
@@ -50,7 +53,7 @@ class TransactionListDataManager(
             CryptoCurrency.ETHER -> getEthereumObservable()
             CryptoCurrency.BCH -> fetchBchTransactions(itemAccount, limit, offset)
             CryptoCurrency.XLM -> fetchXlmTransactions()
-            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
+            CryptoCurrency.PAX -> getErc20Transactions().onErrorReturn { emptyList() }
         }
 
         return observable.doOnNext { insertTransactionList(it.toMutableList()) }
@@ -212,7 +215,7 @@ class TransactionListDataManager(
             .filter { it.isPending }
             .forEach { pendingMap[it.hash] = it }
 
-        if (!pendingMap.isEmpty()) {
+        if (pendingMap.isNotEmpty()) {
             filterProcessed(newlyFetchedTxs, pendingMap)
         }
 
@@ -266,6 +269,25 @@ class TransactionListDataManager(
                     .toObservable()
             }
 
+    private fun getErc20Transactions(): Observable<List<Displayable>> {
+        val feedTransactions =
+            paxAccount.getTransactions().mapList {
+                val feeObservable = ethDataManager.getTransaction(it.transactionHash)
+                    .map { transaction -> transaction.gasUsed * transaction.gasPrice }
+                FeedErc20Transfer(it, feeObservable)
+            }
+
+        return Observables.zip(
+            feedTransactions,
+            paxAccount.getAccountHash(),
+            ethDataManager.getLatestBlockNumber()
+        ).map { (transactions, accountHash, latestBlockNumber) ->
+            transactions.map { transaction ->
+                Erc20Displayable(transaction, accountHash, latestBlockNumber.number)
+            }
+        }
+    }
+
     private fun getBchAllTransactionsObservable(
         limit: Int,
         offset: Int
@@ -297,7 +319,7 @@ class TransactionListDataManager(
             CryptoCurrency.BCH -> bchDataManager.toBalanceReporter().toAsync()
             CryptoCurrency.ETHER -> ethDataManager.toAsyncBalanceReporter()
             CryptoCurrency.XLM -> xlmDataManager.toAsyncBalanceReporter()
-            CryptoCurrency.PAX -> erc20Manager.toAsyncBalanceReporter()
+            CryptoCurrency.PAX -> paxAccount.toAsyncBalanceReporter()
         }
     }
 }

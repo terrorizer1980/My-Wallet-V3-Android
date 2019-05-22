@@ -6,9 +6,6 @@ import android.net.Uri
 import android.support.v7.app.AlertDialog
 import piuk.blockchain.android.R
 
-const val URL_BLOCKCHAIN_SUPPORT_PORTAL = "https://support.blockchain.com/"
-const val URL_BLOCKCHAIN_PAX_FAQ = "https://support.blockchain.com/hc/en-us/sections/360004368351-USD-Pax-FAQ"
-
 fun calloutToExternalSupportLinkDlg(ctx: Context, supportUrl: String) {
 
     AlertDialog.Builder(ctx, R.style.AlertDialogStyle)

@@ -6,7 +6,6 @@ import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.isValidXlmQr
 import com.blockchain.sunriver.toUri
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.format
 import info.blockchain.balance.withMajorValueOrZero
@@ -22,7 +21,6 @@ import org.bitcoinj.core.Coin
 import org.bitcoinj.uri.BitcoinURI
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
@@ -33,17 +31,16 @@ import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toCrypto
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.math.BigInteger
 import java.util.Locale
-import javax.inject.Inject
 
 @Suppress("MemberVisibilityCanPrivate")
-class ReceivePresenter @Inject internal constructor(
-    private val prefsUtil: PrefsUtil,
+class ReceivePresenter(
+    private val prefs: PersistentPrefs,
     private val qrCodeDataManager: QrCodeDataManager,
     private val walletAccountHelper: WalletAccountHelper,
     private val payloadDataManager: PayloadDataManager,
@@ -58,8 +55,6 @@ class ReceivePresenter @Inject internal constructor(
     @VisibleForTesting
     internal var selectedAddress: String? = null
     @VisibleForTesting
-    internal var selectedContactId: String? = null
-    @VisibleForTesting
     internal var selectedAccount: Account? = null
     @VisibleForTesting
     internal var selectedBchAccount: GenericMetadataAccount? = null
@@ -70,14 +65,6 @@ class ReceivePresenter @Inject internal constructor(
     fun getFiatUnit() = fiatExchangeRates.fiatUnit
 
     override fun onViewReady() {
-        if (view.isContactsEnabled) {
-            if (prefsUtil.getValue(PrefsUtil.KEY_CONTACTS_INTRODUCTION_COMPLETE, false)) {
-                view.hideContactsIntroduction()
-            } else {
-                view.showContactsIntroduction()
-            }
-        } else view.hideContactsIntroduction()
-
         if (environmentSettings.environment == Environment.TESTNET) {
             currencyState.cryptoCurrency = CryptoCurrency.BTC
             view.disableCurrencyHeader()
@@ -94,13 +81,9 @@ class ReceivePresenter @Inject internal constructor(
         }
     }
 
-    internal fun onSendToContactClicked() {
-        view.startContactSelectionActivity()
-    }
-
     internal fun isValidAmount(btcAmount: String) = btcAmount.toSafeLong(Locale.getDefault()) > 0
 
-    internal fun shouldShowDropdown() =
+    internal fun shouldShowAccountDropdown() =
         walletAccountHelper.hasMultipleEntries(currencyState.cryptoCurrency)
 
     internal fun onLegacyAddressSelected(legacyAddress: LegacyAddress) {
@@ -181,7 +164,7 @@ class ReceivePresenter @Inject internal constructor(
     internal fun onEthSelected() {
         currencyState.cryptoCurrency = CryptoCurrency.ETHER
         compositeDisposable.clear()
-        view.setSelectedCurrency(currencyState.cryptoCurrency)
+        view.setSelectedCurrency(CryptoCurrency.ETHER)
         selectedAccount = null
         selectedBchAccount = null
 
@@ -191,7 +174,7 @@ class ReceivePresenter @Inject internal constructor(
     internal fun onPaxSelected() {
         currencyState.cryptoCurrency = CryptoCurrency.PAX
         compositeDisposable.clear()
-        view.setSelectedCurrency(currencyState.cryptoCurrency)
+        view.setSelectedCurrency(CryptoCurrency.PAX)
         selectedAccount = null
         selectedBchAccount = null
 
@@ -216,7 +199,7 @@ class ReceivePresenter @Inject internal constructor(
     internal fun onXlmSelected() {
         currencyState.cryptoCurrency = CryptoCurrency.XLM
         compositeDisposable.clear()
-        view.setSelectedCurrency(currencyState.cryptoCurrency)
+        view.setSelectedCurrency(CryptoCurrency.XLM)
         selectedAccount = null
         selectedBchAccount = null
         xlmDataManager.defaultAccount()
@@ -243,7 +226,7 @@ class ReceivePresenter @Inject internal constructor(
     @SuppressLint("CheckResult")
     internal fun onBchAccountSelected(account: GenericMetadataAccount) {
         currencyState.cryptoCurrency = CryptoCurrency.BCH
-        view.setSelectedCurrency(currencyState.cryptoCurrency)
+        view.setSelectedCurrency(CryptoCurrency.BCH)
         selectedAccount = null
         selectedBchAccount = account
         view.updateReceiveLabel(account.label)
@@ -259,8 +242,7 @@ class ReceivePresenter @Inject internal constructor(
             .flatMap { bchDataManager.getNextReceiveAddress(position) }
             .addToCompositeDisposable(this)
             .doOnNext {
-                val address =
-                    Address.fromBase58(environmentSettings.bitcoinCashNetworkParameters, it)
+                val address = Address.fromBase58(environmentSettings.bitcoinCashNetworkParameters, it)
                 val bech32 = address.toCashAddress()
                 selectedAddress = bech32
                 view.updateReceiveAddress(bech32.removeBchUri())
@@ -311,36 +293,19 @@ class ReceivePresenter @Inject internal constructor(
     }
 
     internal fun setWarnWatchOnlySpend(warn: Boolean) {
-        prefsUtil.setValue(KEY_WARN_WATCH_ONLY_SPEND, warn)
+        prefs.setValue(KEY_WARN_WATCH_ONLY_SPEND, warn)
     }
 
-    internal fun clearSelectedContactId() {
-        this.selectedContactId = null
-    }
-
-    internal fun getConfirmationDetails() =
-        currencyState.cryptoCurrency.withMajorValueOrZero(view.getBtcAmount())
-            .let { crypto ->
-                paymentConfirmationDetails(
-                    accountLabel = payloadDataManager.getAccount(getSelectedAccountPosition()).label,
-                    contactName = view.getContactName(),
-                    crypto = crypto,
-                    fiat = crypto.toFiat(fiatExchangeRates)
-                )
-            }
-
-    internal fun onShowBottomSheetSelected() {
+    internal fun onShowBottomShareSheetSelected() {
         selectedAddress?.let {
             when {
                 FormatsUtil.isValidBitcoinAddress(it) ->
-                    view.showBottomSheet(getBitcoinUri(it, view.getBtcAmount()))
-                FormatsUtil.isValidEthereumAddress(it) || FormatsUtil.isValidBitcoinCashAddress(
-                    environmentSettings.bitcoinCashNetworkParameters,
-                    it
-                ) || it.isValidXlmQr() ->
-                    view.showBottomSheet(it)
-                else ->
-                    throw IllegalStateException("Unknown address format $selectedAddress")
+                    view.showShareBottomSheet(getBitcoinUri(it, view.getBtcAmount()))
+                FormatsUtil.isValidEthereumAddress(it) ||
+                FormatsUtil.isValidBitcoinCashAddress(environmentSettings.bitcoinCashNetworkParameters, it) ||
+                it.isValidXlmQr() ->
+                    view.showShareBottomSheet(it)
+                else -> throw IllegalStateException("Unknown address format $selectedAddress")
             }
         }
     }
@@ -391,7 +356,7 @@ class ReceivePresenter @Inject internal constructor(
                 { view.showQrCode(null) })
     }
 
-    private fun shouldWarnWatchOnly() = prefsUtil.getValue(KEY_WARN_WATCH_ONLY_SPEND, true)
+    private fun shouldWarnWatchOnly() = prefs.getValue(KEY_WARN_WATCH_ONLY_SPEND, true)
 
     private fun String.removeBchUri(): String = this.replace("bitcoincash:", "")
 
@@ -401,21 +366,4 @@ class ReceivePresenter @Inject internal constructor(
         const val KEY_WARN_WATCH_ONLY_SPEND = "warn_watch_only_spend"
         private const val DIMENSION_QR_CODE = 600
     }
-}
-
-private fun paymentConfirmationDetails(
-    accountLabel: String,
-    contactName: String,
-    crypto: CryptoValue,
-    fiat: FiatValue
-) = PaymentConfirmationDetails().apply {
-    fromLabel = accountLabel
-    toLabel = contactName
-
-    cryptoAmount = crypto.toStringWithoutSymbol()
-    cryptoUnit = crypto.currency.name
-    fiatUnit = fiat.currencyCode
-
-    fiatAmount = fiat.toStringWithoutSymbol()
-    fiatSymbol = fiat.symbol()
 }

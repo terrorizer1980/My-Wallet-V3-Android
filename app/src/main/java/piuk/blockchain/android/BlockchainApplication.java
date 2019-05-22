@@ -26,7 +26,6 @@ import com.blockchain.ui.CurrentContextAccess;
 import piuk.blockchain.android.ui.auth.LogoutActivity;
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity;
 import piuk.blockchain.android.util.PrngHelper;
-import piuk.blockchain.android.util.exceptions.LoggingExceptionHandler;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.connectivity.ConnectionEvent;
@@ -36,6 +35,7 @@ import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle;
 import piuk.blockchain.androidcoreui.BuildConfig;
 import piuk.blockchain.androidcoreui.utils.AndroidUtils;
+import piuk.blockchain.androidcoreui.utils.AppUtil;
 import piuk.blockchain.androidcoreui.utils.logging.AppLaunchEvent;
 import piuk.blockchain.androidcoreui.utils.logging.Logging;
 import retrofit2.Retrofit;
@@ -69,6 +69,8 @@ public class BlockchainApplication extends Application implements FrameworkInter
     PrngHelper prngHelper;
     @Inject
     CurrentContextAccess currentContextAccess;
+    @Inject
+    AppUtil appUtils;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -102,7 +104,7 @@ public class BlockchainApplication extends Application implements FrameworkInter
         // Pass objects to JAR
         BlockchainFramework.init(this);
 
-        new LoggingExceptionHandler();
+        UncaughtExceptionHandler.Companion.install(appUtils);
 
         RxJavaPlugins.setErrorHandler(throwable -> Timber.tag(RX_ERROR_TAG).e(throwable));
 

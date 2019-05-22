@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
 public class PrefsUtil implements PersistentPrefs {
 
@@ -15,8 +16,7 @@ public class PrefsUtil implements PersistentPrefs {
 
     @Override
     public String getValue(String name, String defaultValue) {
-        return preferenceManager.getString(name,
-                (defaultValue == null || defaultValue.isEmpty()) ? "" : defaultValue);
+        return preferenceManager.getString(name, TextUtils.isEmpty(defaultValue) ? "" : defaultValue);
     }
 
     @Override

@@ -27,10 +27,6 @@ class AccountChooserAdapter(
                     LayoutInflater.from(parent.context).inflate(R.layout.item_accounts_row_header, parent, false)
                 HeaderViewHolder(header)
             }
-            ViewType.VIEW_TYPE_CONTACT -> {
-                val contact = LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false)
-                ContactViewHolder(contact)
-            }
             ViewType.VIEW_TYPE_ACCOUNT -> {
                 val account = LayoutInflater.from(parent.context).inflate(R.layout.item_accounts_row, parent, false)
                 AccountViewHolder(account)
@@ -48,11 +44,6 @@ class AccountChooserAdapter(
                 val headerViewHolder = holder as HeaderViewHolder
                 headerViewHolder.header.text = item.label
                 holder.itemView.setOnClickListener(null)
-            }
-            is AccountChooserItem.Contact -> {
-                val contactViewHolder = holder as ContactViewHolder
-                contactViewHolder.name.text = item.label
-                holder.itemView.setOnClickListener(clickListener(item.accountObject))
             }
             is AccountChooserItem.AccountSummary -> {
                 (holder as AccountViewHolder).apply {
@@ -80,7 +71,6 @@ class AccountChooserAdapter(
     override fun getItemViewType(position: Int) =
         when (items[position]) {
             is AccountChooserItem.Header -> ViewType.VIEW_TYPE_HEADER
-            is AccountChooserItem.Contact -> ViewType.VIEW_TYPE_CONTACT
             is AccountChooserItem.AccountSummary -> ViewType.VIEW_TYPE_ACCOUNT
             is AccountChooserItem.LegacyAddress -> ViewType.VIEW_TYPE_LEGACY
         }.ordinal
@@ -92,17 +82,6 @@ private class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
 
     init {
         itemView.findViewById<View>(R.id.imageview_plus).visibility = View.GONE
-    }
-}
-
-private class ContactViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    internal var name: TextView = itemView.findViewById(R.id.contactName)
-
-    init {
-        itemView.findViewById<View>(R.id.contactStatus).visibility = View.GONE
-        itemView.findViewById<View>(R.id.imageviewIndicator).visibility = View.GONE
-        itemView.findViewById<View>(R.id.imageViewMore).visibility = View.GONE
     }
 }
 
@@ -125,7 +104,6 @@ private class AddressViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVi
 
 private enum class ViewType {
     VIEW_TYPE_HEADER,
-    VIEW_TYPE_CONTACT,
     VIEW_TYPE_ACCOUNT,
     VIEW_TYPE_LEGACY
 }

@@ -132,7 +132,7 @@ class SwipeToReceiveHelper(
      * return an empty String if no unused addresses are found.
      */
     fun getNextAvailableBitcoinAddressSingle(): Single<String> {
-        return getBalanceOfAddresses(getBitcoinReceiveAddresses())
+        return getBalanceOfBtcAddresses(getBitcoinReceiveAddresses())
             .map { map ->
                 for ((address, value) in map) {
                     val balance = value.finalBalance
@@ -204,6 +204,8 @@ class SwipeToReceiveHelper(
     fun getXlmReceiveAddress(): String? =
         prefsUtil.getValue(KEY_SWIPE_RECEIVE_XLM_ADDRESS, null)
 
+    fun getPaxReceiveAddress(): String? = getEthReceiveAddress()
+
     /**
      * Returns the Bitcoin account name associated with the receive addresses.
      */
@@ -224,10 +226,12 @@ class SwipeToReceiveHelper(
 
     fun getXlmAccountName(): String = stringUtils.getString(R.string.xlm_default_account_label)
 
+    fun getPaxAccountName(): String = stringUtils.getString(R.string.pax_default_account_label)
+
     private fun getIfSwipeEnabled(): Boolean =
         prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
 
-    private fun getBalanceOfAddresses(addresses: List<String>): Observable<LinkedHashMap<String, Balance>> =
+    private fun getBalanceOfBtcAddresses(addresses: List<String>): Observable<LinkedHashMap<String, Balance>> =
         payloadDataManager.getBalanceOfAddresses(addresses)
             .applySchedulers()
 

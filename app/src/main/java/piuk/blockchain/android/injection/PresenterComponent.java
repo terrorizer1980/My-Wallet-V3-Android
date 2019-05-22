@@ -16,7 +16,6 @@ import piuk.blockchain.android.ui.backup.start.BackupWalletStartingFragment;
 import piuk.blockchain.android.ui.backup.transfer.ConfirmFundsTransferDialogFragment;
 import piuk.blockchain.android.ui.backup.verify.BackupWalletVerifyFragment;
 import piuk.blockchain.android.ui.backup.wordlist.BackupWalletWordListFragment;
-import piuk.blockchain.android.ui.balance.BalanceFragment;
 import piuk.blockchain.android.ui.buy.BuyActivity;
 import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifySignUpActivity;
 import piuk.blockchain.android.ui.buysell.coinify.signup.identityinreview.CoinifyIdentityInReviewFragment;
@@ -51,10 +50,8 @@ import piuk.blockchain.android.ui.pairingcode.PairingCodeActivity;
 import piuk.blockchain.android.ui.receive.ReceiveFragment;
 import piuk.blockchain.android.ui.receive.ReceiveQrActivity;
 import piuk.blockchain.android.ui.recover.RecoverFundsActivity;
-import piuk.blockchain.android.ui.send.SendFragment;
 import piuk.blockchain.android.ui.settings.SettingsFragment;
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity;
-import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveFragment;
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity;
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity;
 import piuk.blockchain.androidcore.injection.PresenterScope;
@@ -75,19 +72,13 @@ public interface PresenterComponent {
 
     void inject(@NotNull LoginActivity loginActivity);
 
-    void inject(@NotNull SwipeToReceiveFragment swipeToReceiveFragment);
-
     void inject(@NotNull UpgradeWalletActivity upgradeWalletActivity);
-
-    void inject(@NotNull BalanceFragment balanceFragment);
 
     void inject(@NotNull CreateWalletActivity createWalletActivity);
 
     void inject(@NotNull BackupWalletStartingFragment backupWalletStartingFragment);
 
     void inject(@NotNull BackupWalletWordListFragment backupWalletWordListFragment);
-
-    void inject(@NotNull ConfirmPaymentDialog confirmPaymentDialog);
 
     void inject(@NotNull BackupWalletCompletedFragment backupWalletCompletedFragment);
 
@@ -111,8 +102,6 @@ public interface PresenterComponent {
 
     void inject(@NotNull RecoverFundsActivity recoverFundsActivity);
 
-    void inject(@NotNull ReceiveFragment receiveFragment);
-
     void inject(@NotNull ContactsListActivity contactsListActivity);
 
     void inject(@NotNull ContactDetailFragment contactDetailFragment);
@@ -132,10 +121,6 @@ public interface PresenterComponent {
     void inject(@NotNull PairingCodeActivity pairingCodeActivity);
 
     void inject(@NotNull LandingActivity landingActivity);
-
-    void inject(@NotNull SendFragment sendFragment);
-
-    void inject(@NotNull DashboardFragment dashboardFragment);
 
     void inject(@NotNull TradeDetailActivity tradeDetailActivity);
 

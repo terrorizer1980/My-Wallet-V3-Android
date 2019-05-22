@@ -38,195 +38,148 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <ViewSwitcher android:id="@+id/view_Switcher"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent">
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:animateLayoutChanges="true"
+        android:descendantFocusability="beforeDescendants"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/scrollview"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/receive_main_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="?attr/actionBarSize"
-            android:animateLayoutChanges="true"
-            android:descendantFocusability="beforeDescendants"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:paddingBottom="16dp">
 
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/receive_main_content"
+            <TextView
+                android:id="@+id/textview_receive_helper"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center_horizontal|top"
+                android:text="@string/share_instructions"
+                android:textColor="@color/primary_gray_dark"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/progressbar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/image_qr"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/image_qr" />
+
+            <ImageView
+                android:id="@+id/image_qr"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:contentDescription="@string/scan_qr"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textview_receive_helper" />
+
+            <TextView
+                android:id="@+id/textview_receiving_address"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="-8dp"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center_horizontal|center_vertical"
+                android:padding="8dp"
+                android:textColor="@color/primary_gray_dark"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/image_qr"
+                tools:text="Some bitcoin address" />
+
+            <View
+                android:id="@+id/divider1"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/primary_gray_light"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textview_receiving_address" />
+
+            <include
+                android:id="@+id/amount_container"
+                layout="@layout/include_amount_row"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider1" />
+
+            <View
+                android:id="@+id/divider_to"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/primary_gray_light"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/amount_container" />
+
+            <include
+                android:id="@+id/to_container"
+                layout="@layout/include_to_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="16dp">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_to" />
 
-                <TextView
-                    android:id="@+id/textview_receive_helper"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/montserrat"
-                    android:gravity="center_horizontal|top"
-                    android:text="@string/share_instructions"
-                    android:textColor="@color/primary_gray_dark"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/primary_gray_light"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/to_container" />
 
-                <ProgressBar
-                    android:id="@+id/progressbar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/image_qr"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/image_qr" />
-
-                <ImageView
-                    android:id="@+id/image_qr"
-                    android:layout_width="180dp"
-                    android:layout_height="180dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:contentDescription="@string/scan_qr"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textview_receive_helper" />
-
-                <TextView
-                    android:id="@+id/textview_receiving_address"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal|center_vertical"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="-8dp"
-                    android:fontFamily="@font/montserrat"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:padding="8dp"
-                    android:textColor="@color/primary_gray_dark"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/image_qr"
-                    tools:text="Some bitcoin address" />
-
-                <View
-                    android:id="@+id/divider1"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/primary_gray_light"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textview_receiving_address" />
-
-                <include
-                    android:id="@+id/amount_container"
-                    layout="@layout/include_amount_row"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/divider1" />
-
-                <View
-                    android:id="@+id/divider_to"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/primary_gray_light"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/amount_container" />
-
-                <include
-                    android:id="@+id/to_container"
-                    layout="@layout/include_to_row"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/divider_to" />
-
-                <View
-                    android:id="@+id/divider3"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/primary_gray_light"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/to_container" />
-
-                <include
-                    android:id="@+id/from_container"
-                    layout="@layout/include_from_row"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/divider3" />
-
-                <TextView
-                    android:id="@+id/textview_whats_this"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="0dp"
-                    android:text="@string/what_s_this"
-                    android:textAllCaps="true"
-                    android:textColor="@color/primary_blue_accent"
-                    app:layout_constraintBottom_toTopOf="@+id/divider4"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/divider3"
-                    tools:ignore="RtlHardcoded" />
-
-                <View
-                    android:id="@+id/divider4"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/primary_gray_light"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/from_container" />
-
-                <Button
-                    android:id="@+id/button_request"
-                    style="@style/ButtonStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="48dp"
-                    android:layout_marginRight="48dp"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/receive_bitcoin"
-                    android:theme="@style/ButtonLightBlueTheme"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/divider4" />
-            </android.support.constraint.ConstraintLayout>
-        </android.support.v4.widget.NestedScrollView>
-
-        <include
-            layout="@layout/include_pax_soon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </ViewSwitcher>
+            <Button
+                android:id="@+id/button_request"
+                style="@style/ButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="48dp"
+                android:layout_marginRight="48dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/receive_bitcoin"
+                android:theme="@style/ButtonLightBlueTheme"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider3" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v4.widget.NestedScrollView>
 
     <piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboard
         android:id="@+id/custom_keyboard"

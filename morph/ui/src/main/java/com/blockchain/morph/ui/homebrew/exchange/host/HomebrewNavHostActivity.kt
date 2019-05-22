@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import com.blockchain.accounts.AsyncAllAccountList
 import com.blockchain.morph.exchange.mvi.ChangeCryptoFromAccount
 import com.blockchain.morph.exchange.mvi.ChangeCryptoToAccount
 import com.blockchain.morph.exchange.mvi.SimpleFieldUpdateIntent
@@ -31,8 +32,10 @@ import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
 import info.blockchain.balance.AccountReference
+import info.blockchain.balance.CryptoCurrency
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
@@ -55,15 +58,26 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
 
     private val defaultCurrency by unsafeLazy { intent.getStringExtra(EXTRA_DEFAULT_CURRENCY) }
 
+    private val preselectedToCurrency by lazy {
+        (intent.getSerializableExtra(EXTRA_PRESELECTED_TO_CURRENCY)as?CryptoCurrency) ?: CryptoCurrency.ETHER
+    }
+
     override val exchangeViewModel: ExchangeModel by viewModel()
 
     private val startKyc: StartKyc by inject()
+    private val allAccountList: AsyncAllAccountList by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homebrew_host)
 
         val args = ExchangeFragment.bundleArgs(defaultCurrency)
+        compositeDisposable += allAccountList.allAccounts().map { accounts ->
+            accounts.first { it.cryptoCurrency == preselectedToCurrency }
+        }.subscribeBy {
+            exchangeViewModel.initWithPreselectedCurrency(it.cryptoCurrency)
+        }
+
         navController.navigate(R.id.exchangeFragment, args)
     }
 
@@ -214,11 +228,18 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
 
     companion object {
         private const val EXTRA_DEFAULT_CURRENCY = "com.blockchain.morph.ui.homebrew.exchange.EXTRA_DEFAULT_CURRENCY"
+        private const val EXTRA_PRESELECTED_TO_CURRENCY =
+            "com.blockchain.morph.ui.homebrew.exchange.EXTRA_PRESELECTED_TO_CURRENCY"
 
         @JvmStatic
-        fun start(context: Context, defaultCurrency: String) {
+        fun start(
+            context: Context,
+            defaultCurrency: String,
+            preselectedDefaultCurrency: CryptoCurrency = CryptoCurrency.ETHER
+        ) {
             Intent(context, HomebrewNavHostActivity::class.java).apply {
                 putExtra(EXTRA_DEFAULT_CURRENCY, defaultCurrency)
+                putExtra(EXTRA_PRESELECTED_TO_CURRENCY, preselectedDefaultCurrency)
             }.run { context.startActivity(this) }
         }
     }

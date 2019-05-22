@@ -4,21 +4,19 @@ import com.blockchain.balance.AsyncBalanceReporter
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Single
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 
-fun Erc20Manager.toAsyncBalanceReporter(): AsyncBalanceReporter = Erc20BalanceReportAdapter(this)
+fun Erc20Account.toAsyncBalanceReporter(): AsyncBalanceReporter = Erc20BalanceReportAdapter(this)
 
 private class Erc20BalanceReportAdapter(
-    private val erc20Manager: Erc20Manager
+    private val erc20Account: Erc20Account
 ) : AsyncBalanceReporter {
 
     override fun entireBalance(): Single<CryptoValue> =
-        erc20Manager.getBalance(CryptoCurrency.PAX)
+        erc20Account.fetchErc20Address()
+            .singleOrError()
             .map {
-                CryptoValue(
-                    CryptoCurrency.PAX,
-                    it
-                )
+                it.totalBalance
             }
 
     private val zero = Single.just(CryptoValue.ZeroEth)
@@ -28,7 +26,7 @@ private class Erc20BalanceReportAdapter(
     override fun importedAddressBalance(): Single<CryptoValue> = zero
 
     override fun addressBalance(address: String): Single<CryptoValue> =
-        erc20Manager.getBalance(CryptoCurrency.PAX)
+        erc20Account.getBalance()
             .map {
                 CryptoValue(
                     CryptoCurrency.PAX,

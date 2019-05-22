@@ -38,16 +38,22 @@ allprojects {
         resolutionStrategy.force Libraries.findbugs
         resolutionStrategy.force Libraries.jacksonCore
         resolutionStrategy.force Libraries.okIo
+        resolutionStrategy.force Libraries.kotlinReflect
     }
 }
 
-// This causes random "file/directory not found" errors at build time and does nothing the default
-// clean operation does, so we'll remove it for now
-//task clean(type: Delete) {
-//    delete rootProject.buildDir
-//    doLast {
-//        subprojects.forEach { delete it.buildDir }
-//    }
-//}
+subprojects {
+    // Increase the error output of the compiler, to prevent a flood of databinder errors
+    // masking any dagger - and, indeed, other - annotation processor failures.
+    afterEvaluate {
+        if (project.plugins.hasPlugin("kotlin-kapt")) {
+            kapt {
+                javacOptions {
+                    option("-Xmaxerrs", 500)
+                }
+            }
+        }
+    }
+}
 
 apply from: 'quality/jacocoRootReport.gradle'

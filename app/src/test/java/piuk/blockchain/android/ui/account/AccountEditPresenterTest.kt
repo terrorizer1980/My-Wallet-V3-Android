@@ -209,8 +209,13 @@ class AccountEditPresenterTest {
             .thenReturn("USD")
         whenever(sendDataManager.estimateSize(anyInt(), anyInt())).thenReturn(1337)
 
-        whenever(currencyFormatManager.getFormattedSelectedCoinValue(BigInteger.TEN))
+        whenever(currencyFormatManager.getFormattedSelectedCoinValue(any()))
             .thenReturn("")
+
+        whenever(currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(any(), eq(null), eq(null)))
+            .thenReturn("")
+
+        whenever(currencyFormatManager.getFiatSymbol(any())).thenReturn("")
 
         // Act
         subject.onClickTransferFunds()

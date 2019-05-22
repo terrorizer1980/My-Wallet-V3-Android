@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.contacts.payments
 
 import android.support.annotation.VisibleForTesting
+import com.blockchain.annotations.BurnCandidate
 import info.blockchain.wallet.contacts.data.Contact
 import info.blockchain.wallet.contacts.data.PaymentCurrency
 import info.blockchain.wallet.contacts.data.PaymentRequest
@@ -25,6 +26,7 @@ import piuk.blockchain.androidcoreui.utils.logging.ContactsEvent
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import javax.inject.Inject
 
+@BurnCandidate("Contacts are not used")
 class ContactConfirmRequestPresenter @Inject internal constructor(
     private val contactsDataManager: ContactsDataManager,
     private val payloadDataManager: PayloadDataManager
@@ -46,8 +48,7 @@ class ContactConfirmRequestPresenter @Inject internal constructor(
             view.fragmentBundle ?: throw IllegalArgumentException("Fragment bundle is null")
         val contactId = fragmentBundle.getString(ARGUMENT_CONTACT_ID)
         accountPosition = fragmentBundle.getInt(ARGUMENT_ACCOUNT_POSITION, -1)
-        paymentRequestType =
-            fragmentBundle.getSerializable(ARGUMENT_REQUEST_TYPE) as PaymentRequestType
+        paymentRequestType = fragmentBundle.getSerializable(ARGUMENT_REQUEST_TYPE) as PaymentRequestType
         confirmationDetails = fragmentBundle.getParcelable(ARGUMENT_CONFIRMATION_DETAILS)
         satoshis = fragmentBundle.getLong(ARGUMENT_SATOSHIS)
 

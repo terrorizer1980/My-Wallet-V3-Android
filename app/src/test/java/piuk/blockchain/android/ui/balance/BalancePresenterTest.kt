@@ -39,6 +39,7 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
@@ -59,6 +60,7 @@ class BalancePresenterTest {
     private val exchangeRateFactory: ExchangeRateDataManager = mock()
     private val transactionListDataManager: TransactionListDataManager = mock()
     private val swipeToReceiveHelper: SwipeToReceiveHelper = mock()
+    private val paxAccount: Erc20Account = mock()
     private val payloadDataManager: PayloadDataManager = mock()
     private val buyDataManager: BuyDataManager = mock()
     private val stringUtils: StringUtils = mock()
@@ -90,6 +92,7 @@ class BalancePresenterTest {
             exchangeRateFactory,
             transactionListDataManager,
             ethDataManager,
+            paxAccount,
             swipeToReceiveHelper,
             payloadDataManager,
             buyDataManager,

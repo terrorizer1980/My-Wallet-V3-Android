@@ -13,7 +13,6 @@ import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.BlockchainFramework
-import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.ethereum.data.EthAddressResponse
 import info.blockchain.wallet.payload.data.Account
@@ -100,65 +99,6 @@ class ReceivePresenterTest {
     }
 
     @Test
-    fun `onViewReady hide contacts introduction`() {
-        // Arrange
-        whenever(environmentSettings.environment).thenReturn(Environment.PRODUCTION)
-        whenever(activity.isContactsEnabled).thenReturn(true)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_CONTACTS_INTRODUCTION_COMPLETE, false))
-            .thenReturn(true)
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(prefsUtil).getValue(PrefsUtil.KEY_CONTACTS_INTRODUCTION_COMPLETE, false)
-        verifyNoMoreInteractions(prefsUtil)
-        verify(activity).isContactsEnabled
-        verify(activity).hideContactsIntroduction()
-        verifyNoMoreInteractions(activity)
-    }
-
-    @Test
-    fun `onViewReady show contacts introduction`() {
-        // Arrange
-        whenever(environmentSettings.environment).thenReturn(Environment.PRODUCTION)
-        whenever(activity.isContactsEnabled).thenReturn(true)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_CONTACTS_INTRODUCTION_COMPLETE, false))
-            .thenReturn(false)
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(prefsUtil).getValue(PrefsUtil.KEY_CONTACTS_INTRODUCTION_COMPLETE, false)
-        verifyNoMoreInteractions(prefsUtil)
-        verify(activity).isContactsEnabled
-        verify(activity).showContactsIntroduction()
-        verifyNoMoreInteractions(activity)
-    }
-
-    @Test
-    fun `onViewReady don't show contacts`() {
-        // Arrange
-        whenever(environmentSettings.environment).thenReturn(Environment.PRODUCTION)
-        whenever(activity.isContactsEnabled).thenReturn(false)
-        // Act
-        subject.onViewReady()
-        // Assert
-        verifyZeroInteractions(prefsUtil)
-        verify(activity).isContactsEnabled
-        verify(activity).hideContactsIntroduction()
-        verifyNoMoreInteractions(activity)
-    }
-
-    @Test
-    fun onSendToContactClicked() {
-        // Arrange
-
-        // Act
-        subject.onSendToContactClicked()
-        // Assert
-        verify(activity).startContactSelectionActivity()
-        verifyZeroInteractions(activity)
-    }
-
-    @Test
     fun isValidAmount() {
         // Arrange
         val amount = "-1"
@@ -173,7 +113,7 @@ class ReceivePresenterTest {
         // Arrange
         whenever(walletAccountHelper.hasMultipleEntries(CryptoCurrency.BTC)) `it returns` true
         // Act
-        subject.shouldShowDropdown() `should be` true
+        subject.shouldShowAccountDropdown() `should be` true
     }
 
     @Test
@@ -181,7 +121,7 @@ class ReceivePresenterTest {
         // Arrange
         whenever(walletAccountHelper.hasMultipleEntries(CryptoCurrency.BTC)) `it returns` false
         // Act
-        subject.shouldShowDropdown() `should be` false
+        subject.shouldShowAccountDropdown() `should be` false
     }
 
     @Test
@@ -375,7 +315,6 @@ class ReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(currencyState).cryptoCurrency = CryptoCurrency.ETHER
-        verify(currencyState).cryptoCurrency
         verifyNoMoreInteractions(currencyState)
         subject.selectedAccount `should be` null
         subject.selectedAddress `should be` ethAccount
@@ -404,7 +343,6 @@ class ReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(currencyState).cryptoCurrency = CryptoCurrency.PAX
-        verify(currencyState).cryptoCurrency
         verifyNoMoreInteractions(currencyState)
         subject.selectedAccount `should be` null
         subject.selectedAddress `should be` ethAccount
@@ -473,7 +411,6 @@ class ReceivePresenterTest {
         verify(bchDataManager).getWalletTransactions(50, 0)
         verifyNoMoreInteractions(payloadDataManager)
         verify(currencyState).cryptoCurrency = CryptoCurrency.BCH
-        verify(currencyState).cryptoCurrency
         verifyNoMoreInteractions(currencyState)
         subject.selectedAccount `should be` null
         subject.selectedAddress `should equal` bech32Address
@@ -524,7 +461,6 @@ class ReceivePresenterTest {
         verify(bchDataManager).getWalletTransactions(50, 0)
         verifyNoMoreInteractions(payloadDataManager)
         verify(currencyState).cryptoCurrency = CryptoCurrency.BCH
-        verify(currencyState).cryptoCurrency
         verifyNoMoreInteractions(currencyState)
         subject.selectedAccount `should be` null
         subject.selectedAddress `should equal` bech32Address
@@ -662,71 +598,16 @@ class ReceivePresenterTest {
     }
 
     @Test
-    fun clearSelectedContactId() {
-        // Arrange
-        val contactId = "1337"
-        subject.selectedContactId = contactId
-        // Act
-        subject.clearSelectedContactId()
-        // Assert
-        subject.selectedContactId `should be` null
-    }
-
-    @Test
-    fun getConfirmationDetails() {
-        // Arrange
-        val label = "LABEL"
-        val xPub = "X_PUB"
-        val account = Account().apply {
-            this.label = label
-            xpub = xPub
-        }
-        val contactName = "CONTACT_NAME"
-        val accountPosition = 10
-        subject.selectedAccount = account
-        whenever(payloadDataManager.accounts).thenReturn(listOf(account))
-        whenever(payloadDataManager.getPositionOfAccountInActiveList(0))
-            .thenReturn(10)
-        subject.selectedAccount = account
-        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(payloadDataManager.wallet!!.hdWallets[0].accounts.indexOf(account))
-            .thenReturn(accountPosition)
-        whenever(activity.getContactName())
-            .thenReturn(contactName)
-        whenever(payloadDataManager.getAccount(accountPosition))
-            .thenReturn(account)
-        whenever(activity.getBtcAmount()).thenReturn("1.0")
-        Locale.setDefault(Locale.UK)
-
-        whenever(fiatExchangeRates.fiatUnit) `it returns` "GBP"
-        whenever(fiatExchangeRates.getFiat(1.bitcoin())) `it returns` 3426.gbp()
-
-        // Act
-        val result = subject.getConfirmationDetails()
-        // Assert
-        verify(activity).getContactName()
-        verify(activity).getBtcAmount()
-        verifyNoMoreInteractions(activity)
-        verifyZeroInteractions(prefsUtil)
-        result.fromLabel `should equal to` label
-        result.toLabel `should equal to` contactName
-        result.cryptoAmount `should equal to` "1.0"
-        result.cryptoUnit `should equal to` "BTC"
-        result.fiatUnit `should equal to` "GBP"
-        result.fiatAmount `should equal to` "3,426.00"
-        result.fiatSymbol `should equal to` "£"
-    }
-
-    @Test
     fun `onShowBottomSheetSelected btc`() {
         // Arrange
         subject.selectedAddress = "1ATy3ktyaYjzZZQQnhvPsuBVheUDYcUP7V"
         whenever(activity.getBtcAmount()).thenReturn("0")
+//        whenever()
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
         // Assert
         verify(activity).getBtcAmount()
-        verify(activity).showBottomSheet(anyString())
+        verify(activity).showShareBottomSheet(anyString())
         verifyNoMoreInteractions(activity)
     }
 
@@ -735,24 +616,22 @@ class ReceivePresenterTest {
         // Arrange
         subject.selectedAddress = "0x879dBFdE84B0239feB355f55F81fb29f898C778C"
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
         // Assert
-        verify(activity).showBottomSheet(anyString())
+        verify(activity).showShareBottomSheet(anyString())
         verifyNoMoreInteractions(activity)
     }
 
     @Test
     fun `onShowBottomSheetSelected xlm`() {
         // Arrange
-        whenever(environmentSettings.bitcoinCashNetworkParameters).thenReturn(
-            BitcoinCashMainNetParams.get()
-        )
+        whenever(environmentSettings.bitcoinCashNetworkParameters).thenReturn(BitcoinCashMainNetParams.get())
         val address = "GAX3ML5G7DLJBPVTNW7GR2Z2YCML2MOJTWNYXN44SVAPQQYMD6NF7DP2"
         subject.selectedAddress = address
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
         // Assert
-        verify(activity).showBottomSheet(address)
+        verify(activity).showShareBottomSheet(address)
         verifyNoMoreInteractions(activity)
     }
 
@@ -769,9 +648,9 @@ class ReceivePresenterTest {
             "msg=pay%20me%20with%20lumens"
         subject.selectedAddress = uri
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
         // Assert
-        verify(activity).showBottomSheet(uri)
+        verify(activity).showShareBottomSheet(uri)
         verifyNoMoreInteractions(activity)
     }
 
@@ -783,7 +662,7 @@ class ReceivePresenterTest {
         )
         subject.selectedAddress = "GAX3ML5G7DLJBPVTNW7GR2Z2YCML2MOJTWNYXN44SVAPQQYMD6NF7DP3"
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
     }
 
     @Test(expected = IllegalStateException::class)
@@ -799,7 +678,7 @@ class ReceivePresenterTest {
             "msg=pay%20me%20with%20lumens"
         subject.selectedAddress = uri
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
     }
 
     @Test(expected = IllegalStateException::class)
@@ -810,7 +689,7 @@ class ReceivePresenterTest {
         )
         subject.selectedAddress = "I am not a valid address"
         // Act
-        subject.onShowBottomSheetSelected()
+        subject.onShowBottomShareSheetSelected()
         // Assert
         verifyZeroInteractions(activity)
     }

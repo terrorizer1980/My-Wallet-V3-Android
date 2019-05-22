@@ -35,7 +35,13 @@ fun FeeDataManager.getFeeOptions(cryptoCurrency: CryptoCurrency): Single<out Net
                 CryptoValue.lumensFromStroop(it.priorityFee.toBigInteger())
             )
         }
-        CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
+        CryptoCurrency.PAX -> ethFeeOptions.map {
+            EthereumFees(
+                it.regularFee,
+                it.priorityFee,
+                it.gasLimitContract
+            )
+        }
     }.singleOrError()
 
 sealed class NetworkFees

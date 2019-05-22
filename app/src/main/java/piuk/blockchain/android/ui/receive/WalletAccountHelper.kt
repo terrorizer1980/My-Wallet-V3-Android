@@ -16,6 +16,7 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
@@ -27,6 +28,7 @@ class WalletAccountHelper(
     private val stringUtils: StringUtils,
     private val currencyState: CurrencyState,
     private val ethDataManager: EthDataManager,
+    private val paxAccount: Erc20Account,
     private val bchDataManager: BchDataManager,
     private val xlmDataManager: XlmDataManager,
     private val environmentSettings: EnvironmentConfig,
@@ -44,7 +46,7 @@ class WalletAccountHelper(
         CryptoCurrency.BCH -> allBchAccountItems()
         CryptoCurrency.ETHER -> getEthAccount()
         CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
-        CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
+        CryptoCurrency.PAX -> getPaxAccount()
     }
 
     /**
@@ -59,7 +61,7 @@ class WalletAccountHelper(
             CryptoCurrency.BCH -> Single.just(allBchAccountItems())
             CryptoCurrency.ETHER -> Single.just(getEthAccount())
             CryptoCurrency.XLM -> getXlmAccount()
-            CryptoCurrency.PAX -> Single.just(getEthAccount())
+            CryptoCurrency.PAX -> Single.just(getPaxAccount())
         }
 
     private fun allBtcAccountItems() = getHdAccounts() + getLegacyAddresses()
@@ -197,16 +199,24 @@ class WalletAccountHelper(
         )
     } ?: emptyList()
 
-    fun getDefaultOrFirstFundedAccount(): ItemAccount = when (currencyState.cryptoCurrency) {
-        CryptoCurrency.BTC -> getDefaultOrFirstFundedBtcAccount()
-        CryptoCurrency.BCH -> getDefaultOrFirstFundedBchAccount()
-        CryptoCurrency.ETHER -> getDefaultEthAccount()
-        CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
-        CryptoCurrency.PAX -> getDefaultEthAccount()
-    }
+    @Deprecated("CurrencyState is deprecated, so pass currency into alternative",
+        ReplaceWith("getDefaultOrFirstFundedAccount(cryptoCurrency)"))
+    fun getDefaultOrFirstFundedAccount(): ItemAccount = getDefaultOrFirstFundedAccount(currencyState.cryptoCurrency)
+
+    fun getDefaultOrFirstFundedAccount(cryptoCurrency: CryptoCurrency): ItemAccount =
+        when (cryptoCurrency) {
+            CryptoCurrency.BTC -> getDefaultOrFirstFundedBtcAccount()
+            CryptoCurrency.BCH -> getDefaultOrFirstFundedBchAccount()
+            CryptoCurrency.ETHER -> getDefaultEthAccount()
+            CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
+            CryptoCurrency.PAX -> getDefaultPaxAccount()
+        }
 
     fun getEthAccount() =
         listOf(getDefaultEthAccount())
+
+    fun getPaxAccount() =
+        listOf(getDefaultPaxAccount())
 
     fun getXlmAccount(): Single<List<ItemAccount>> =
         getDefaultXlmAccountItem().map { listOf(it) }
@@ -329,6 +339,21 @@ class WalletAccountHelper(
         )
     }
 
+    private fun getDefaultPaxAccount(): ItemAccount {
+        val erc20DataModel = paxAccount.getErc20Model()
+        val ethAccount = ethDataManager.getEthWallet()!!.account
+        val balance = erc20DataModel?.totalBalance ?: CryptoValue.ZeroPax
+
+        return ItemAccount(
+            ethAccount?.label,
+            balance.toBalanceString(),
+            null,
+            0,
+            ethAccount,
+            ethAccount?.address!!
+        )
+    }
+
     private fun getDefaultXlmAccountItem() =
         xlmDataManager.defaultAccount()
             .zipWith(xlmDataManager.getBalance())
@@ -353,10 +378,12 @@ class WalletAccountHelper(
             CryptoCurrency.BCH -> Single.just(getBchOverviewList())
             CryptoCurrency.ETHER -> Single.just(getEthOverviewList())
             CryptoCurrency.XLM -> getDefaultXlmAccountItem().map { listOf(it) }
-            CryptoCurrency.PAX -> Single.just(getEthOverviewList())
+            CryptoCurrency.PAX -> Single.just(getPaxOverviewList())
         }
 
     private fun getEthOverviewList(): List<ItemAccount> = getEthAccount()
+
+    private fun getPaxOverviewList(): List<ItemAccount> = getPaxAccount()
 
     private fun getBchOverviewList(): MutableList<ItemAccount> {
         return mutableListOf<ItemAccount>().apply {

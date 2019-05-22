@@ -12,10 +12,13 @@ import info.blockchain.wallet.multiaddress.MultiAddressFactory
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.util.FormatsUtil
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.ui.balance.BalanceFragment.Companion.KEY_TRANSACTION_HASH
@@ -35,10 +38,10 @@ import timber.log.Timber
 import java.math.BigInteger
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.HashMap
 import java.util.Locale
+import java.util.Date
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 class TransactionDetailPresenter @Inject constructor(
     private val transactionHelper: TransactionHelper,
@@ -61,14 +64,16 @@ class TransactionDetailPresenter @Inject constructor(
     // Currently no available notes for bch
     // Only BTC and ETHER currently supported
     var transactionNote: String?
-        get() = when {
-            displayable.cryptoCurrency == CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(displayable.hash)
-            displayable.cryptoCurrency == CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(displayable.hash)
+        get() = when (displayable.cryptoCurrency) {
+            CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(displayable.hash)
+            CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[displayable.hash]
+            CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(displayable.hash)
             else -> ""
         }
         private set(txHash) {
             val notes: String? = when (displayable.cryptoCurrency) {
                 CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(txHash!!)
+                CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[displayable.hash]
                 CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(displayable.hash)
                 else -> {
                     view.hideDescriptionField()
@@ -110,11 +115,13 @@ class TransactionDetailPresenter @Inject constructor(
                 displayable.hash,
                 description
             )
+            CryptoCurrency.PAX -> ethDataManager.updateErc20TransactionNotes(displayable.hash,
+                description)
             CryptoCurrency.ETHER -> ethDataManager.updateTransactionNotes(
                 displayable.hash,
                 description
             )
-            else -> throw IllegalArgumentException("Only BTC and ETHER currently supported")
+            else -> throw IllegalArgumentException("Only BTC, ETHER and PAX currently supported")
         }
 
         compositeDisposable +=
@@ -142,7 +149,8 @@ class TransactionDetailPresenter @Inject constructor(
                 CryptoCurrency.ETHER -> handleEthToAndFrom(this)
                 CryptoCurrency.BCH -> handleBchToAndFrom(this)
                 CryptoCurrency.XLM -> handleXlmToAndFrom(this)
-                else -> throw IllegalArgumentException(cryptoCurrency.toString() + " is not currently supported")
+                CryptoCurrency.PAX -> handlePaxToAndFrom(this)
+                else -> throw IllegalArgumentException("$cryptoCurrency is not currently supported")
             }
 
             compositeDisposable +=
@@ -189,7 +197,21 @@ class TransactionDetailPresenter @Inject constructor(
         if (toAddress == ethAddress) {
             toAddress = stringUtils.getString(R.string.eth_default_account_label)
         }
+        view.setFromAddress(listOf(TransactionDetailModel(fromAddress, "", "")))
+        view.setToAddresses(listOf(TransactionDetailModel(toAddress, "", "")))
+    }
 
+    private fun handlePaxToAndFrom(displayable: Displayable) {
+        var fromAddress = displayable.inputsMap.keys.first()
+        var toAddress = displayable.outputsMap.keys.first()
+
+        val ethAddress = ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account
+        if (fromAddress == ethAddress) {
+            fromAddress = stringUtils.getString(R.string.pax_default_account_label)
+        }
+        if (toAddress == ethAddress) {
+            toAddress = stringUtils.getString(R.string.pax_default_account_label)
+        }
         view.setFromAddress(listOf(TransactionDetailModel(fromAddress, "", "")))
         view.setToAddresses(listOf(TransactionDetailModel(toAddress, "", "")))
     }
@@ -285,14 +307,24 @@ class TransactionDetailPresenter @Inject constructor(
         }
     }
 
-    private fun setTransactionFee(currency: CryptoCurrency, fee: BigInteger) {
-        when (currency) {
-            CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(fee)
-            CryptoCurrency.ETHER -> CryptoValue.etherFromWei(fee)
-            CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(fee)
-            CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(fee)
-            else -> throw IllegalArgumentException("$currency is not currently supported")
-        }.run { view.setFee(this.formatWithUnit()) }
+    private fun setTransactionFee(currency: CryptoCurrency, fee: Observable<BigInteger>) {
+        fee.map {
+            when (currency) {
+                CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(it)
+                CryptoCurrency.ETHER -> CryptoValue.etherFromWei(it)
+                CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(it)
+                CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(it)
+                CryptoCurrency.PAX -> CryptoValue.etherFromWei(it)
+                else -> CryptoValue.usdPaxFromMinor(it)
+            }
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError {
+                view.setFee("")
+            }
+            .subscribe { view.setFee(it.formatWithUnit()) }
+            .addTo(compositeDisposable)
     }
 
     private fun setTransactionValue(currency: CryptoCurrency, total: BigInteger) {
@@ -301,6 +333,7 @@ class TransactionDetailPresenter @Inject constructor(
             CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(total)
             CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(total)
             CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(total)
+            CryptoCurrency.PAX -> CryptoValue.usdPaxFromMinor(total)
             else -> throw IllegalArgumentException("$currency is not currently supported")
         }.run { view.setTransactionValue(this.formatWithUnit()) }
     }
@@ -311,7 +344,8 @@ class TransactionDetailPresenter @Inject constructor(
             view.setStatus(cryptoCurrency, stringUtils.getString(R.string.transaction_detail_confirmed), txHash)
         } else {
             var pending = stringUtils.getString(R.string.transaction_detail_pending)
-            pending = String.format(Locale.getDefault(), pending, confirmations, cryptoCurrency.requiredConfirmations)
+            pending =
+                String.format(Locale.getDefault(), pending, confirmations, cryptoCurrency.requiredConfirmations)
             view.setStatus(cryptoCurrency, pending, txHash)
         }
     }

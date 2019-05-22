@@ -3,7 +3,6 @@ package piuk.blockchain.android.data.datamanagers
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatDialogFragment
 import info.blockchain.wallet.api.data.Settings
 import io.reactivex.Observable
 import piuk.blockchain.android.R
@@ -17,12 +16,15 @@ import piuk.blockchain.android.ui.settings.SettingsFragment.EXTRA_SHOW_ADD_EMAIL
 import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.injection.PresenterScope
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrefsUtil
 import javax.inject.Inject
 
+typealias PromptDlgFactory = (Context) -> SecurityPromptDialog
+
 @PresenterScope
 class PromptManager @Inject constructor(
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val payloadDataManager: PayloadDataManager,
     private val transactionListDataManager: TransactionListDataManager
 ) {
@@ -30,61 +32,63 @@ class PromptManager @Inject constructor(
     fun getPreLoginPrompts(context: Context): Observable<List<AlertDialog>> {
         val list = mutableListOf<AlertDialog>()
 
-        if (isRooted()) list.add(getRootWarningDialog(context))
+        if (isRooted())
+            list.add(getRootWarningDialog(context))
 
         return Observable.fromArray(list)
     }
 
-    fun getCustomPrompts(
-        context: Context,
-        settings: Settings
-    ): Observable<List<AppCompatDialogFragment>> {
-        val list = mutableListOf<AppCompatDialogFragment>()
+    fun getCustomPrompts(settings: Settings): Observable<List<PromptDlgFactory>> {
+        val list = mutableListOf<PromptDlgFactory>()
 
-        if (isBackedUpReminderAllowed()) list.add(getBackupCustomDialog(context))
-        if (is2FAReminderAllowed(settings)) list.add(get2FACustomDialog(context))
+        if (isBackedUpReminderAllowed())
+            list.add(::getBackupCustomDialog)
+
+        if (is2FAReminderAllowed(settings))
+            list.add(::get2FACustomDialog)
+
         if (isVerifyEmailReminderAllowed(settings)) {
             storeTimeOfLastSecurityPrompt()
-            list.add(getVerifyEmailCustomDialog(context))
+            list.add(::getVerifyEmailCustomDialog)
         }
 
         return Observable.fromArray(list)
     }
 
     private fun isFirstRun(): Boolean {
-        return prefsUtil.getValue(PrefsUtil.KEY_APP_VISITS, 0) == 0
+        return prefs.getValue(PrefsUtil.KEY_APP_VISITS, 0) == 0
     }
 
     private fun getAppVisitCount(): Int {
-        return prefsUtil.getValue(PrefsUtil.KEY_APP_VISITS, 0)
+        return prefs.getValue(PrefsUtil.KEY_APP_VISITS, 0)
     }
 
     private fun getGuid(): String {
-        return prefsUtil.getValue(PrefsUtil.KEY_GUID, "")
+        return prefs.getValue(PrefsUtil.KEY_GUID, "")
     }
 
     private fun getIfNeverPrompt2Fa(): Boolean {
-        return prefsUtil.getValue(PrefsUtil.KEY_SECURITY_TWO_FA_NEVER, false)
+        return prefs.getValue(PrefsUtil.KEY_SECURITY_TWO_FA_NEVER, false)
     }
 
     private fun getTimeOfLastSecurityPrompt(): Long {
-        return prefsUtil.getValue(PrefsUtil.KEY_SECURITY_TIME_ELAPSED, 0L)
+        return prefs.getValue(PrefsUtil.KEY_SECURITY_TIME_ELAPSED, 0L)
     }
 
     private fun storeTimeOfLastSecurityPrompt() {
-        prefsUtil.setValue(PrefsUtil.KEY_SECURITY_TIME_ELAPSED, System.currentTimeMillis())
+        prefs.setValue(PrefsUtil.KEY_SECURITY_TIME_ELAPSED, System.currentTimeMillis())
     }
 
     private fun neverPrompt2Fa() {
-        prefsUtil.setValue(PrefsUtil.KEY_SECURITY_TWO_FA_NEVER, true)
+        prefs.setValue(PrefsUtil.KEY_SECURITY_TWO_FA_NEVER, true)
     }
 
     private fun getIfNeverPromptBackup(): Boolean {
-        return prefsUtil.getValue(PrefsUtil.KEY_SECURITY_BACKUP_NEVER, false)
+        return prefs.getValue(PrefsUtil.KEY_SECURITY_BACKUP_NEVER, false)
     }
 
     private fun setBackupCompleted() {
-        prefsUtil.setValue(PrefsUtil.KEY_SECURITY_BACKUP_NEVER, true)
+        prefs.setValue(PrefsUtil.KEY_SECURITY_BACKUP_NEVER, true)
     }
 
     private fun hasTransactions(): Boolean {
@@ -92,7 +96,7 @@ class PromptManager @Inject constructor(
     }
 
     private fun isRooted(): Boolean {
-        return RootUtil().isDeviceRooted && !prefsUtil.getValue("disable_root_warning", false)
+        return RootUtil().isDeviceRooted && !prefs.getValue("disable_root_warning", false)
     }
 
     private fun isVerifyEmailReminderAllowed(settings: Settings): Boolean {
@@ -170,17 +174,17 @@ class PromptManager @Inject constructor(
             context.getString(R.string.security_centre_add_email_message),
             R.drawable.vector_email,
             R.string.security_centre_add_email_positive_button,
-            true,
-            false
+            true
         )
-        securityPromptDialog.setPositiveButtonListener {
+
+        securityPromptDialog.positiveButtonListener = {
             securityPromptDialog.dismiss()
             val bundle = Bundle()
             bundle.putBoolean(EXTRA_SHOW_ADD_EMAIL_DIALOG, true)
             SettingsActivity.start(context, bundle)
         }
 
-        securityPromptDialog.setNegativeButtonListener { securityPromptDialog.dismiss() }
+        securityPromptDialog.negativeButtonListener = { securityPromptDialog.dismiss() }
 
         return securityPromptDialog
     }
@@ -194,7 +198,7 @@ class PromptManager @Inject constructor(
             true,
             true
         )
-        securityPromptDialog.setPositiveButtonListener {
+        securityPromptDialog.positiveButtonListener = {
             securityPromptDialog.dismiss()
             if (securityPromptDialog.isChecked) {
                 neverPrompt2Fa()
@@ -204,7 +208,7 @@ class PromptManager @Inject constructor(
             SettingsActivity.start(context, bundle)
         }
 
-        securityPromptDialog.setNegativeButtonListener {
+        securityPromptDialog.negativeButtonListener = {
             securityPromptDialog.dismiss()
             if (securityPromptDialog.isChecked) {
                 neverPrompt2Fa()
@@ -223,7 +227,7 @@ class PromptManager @Inject constructor(
             true,
             isLastBackupReminder()
         )
-        securityPromptDialog.setPositiveButtonListener {
+        securityPromptDialog.positiveButtonListener = {
             securityPromptDialog.dismiss()
             if (securityPromptDialog.isChecked) {
                 setBackupCompleted()
@@ -231,7 +235,7 @@ class PromptManager @Inject constructor(
             BackupWalletActivity.start(context, null)
         }
 
-        securityPromptDialog.setNegativeButtonListener {
+        securityPromptDialog.negativeButtonListener = {
             securityPromptDialog.dismiss()
             if (securityPromptDialog.isChecked) {
                 setBackupCompleted()

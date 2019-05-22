@@ -40,6 +40,7 @@
     <string name="transaction_failed">Transaction failed</string>
     <string name="insufficient_funds">Insufficient funds</string>
     <string name="insufficient_funds_with_max">Insufficient funds, the most you can send is %1$s</string>
+    <string name="insufficient_eth_for_fees">Not enough ETH for transaction fees</string>
 
     <string name="not_enough_funds_with_currency">Not enough %1$s</string>
 
@@ -100,5 +101,9 @@
     <string name="help">Help</string>
     <string name="need_some_help">Need some help?</string>
     <string name="contact_support">Contact Support</string>
+
+    <!--More eth needed-->
+    <string name="pax_need_more_eth_error_body">You\'ll need ETH to send your ERC20 Token, USD PAX. <annotation link="pax_faq">Learn more.</annotation></string>
+    <string name="pax_need_more_eth_error_title">More ETH Needed</string>
 
 </resources>

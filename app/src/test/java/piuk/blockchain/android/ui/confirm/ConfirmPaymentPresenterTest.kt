@@ -72,8 +72,55 @@ class ConfirmPaymentPresenterTest {
         verify(mockActivity).setToLabel(toLabel)
         verify(mockActivity).setAmount("$btcAmount $btcUnit ($fiatSymbol$fiatAmount)")
         verify(mockActivity).setFee("$btcFee $btcUnit ($fiatSymbol$fiatFee)")
-        verify(mockActivity).setTotalBtc("$btcTotal $btcUnit")
-        verify(mockActivity).setTotalFiat("$fiatSymbol$fiatTotal")
+        verify(mockActivity).setTotals("$btcTotal $btcUnit", "$fiatSymbol$fiatTotal")
+        verify(mockActivity).contactNote = contactNote
+        verify(mockActivity).contactNoteDescription = contactNoteDescription
+        verify(mockActivity).setUiState(UiState.CONTENT)
+        verifyNoMoreInteractions(mockActivity)
+    }
+
+    @Test
+    fun onViewReady_erc20() {
+        // Arrange
+        val fromLabel = "FROM_LABEL"
+        val toLabel = "TO_LABEL"
+        val erc20Amount = "PAX_AMOUNT"
+        val erc20Unit = "PAX_UNIT"
+        val fiatAmount = "FIAT_AMOUNT"
+        val fiatSymbol = "FIAT_SYMBOL"
+        val ethFee = "ETH_FEE"
+        val ethUnit = "ETH_UNIT"
+        val fiatFee = "FIAT_FEE"
+        val fiatTotal = "FIAT_TOTAL"
+        val confirmationDetails = PaymentConfirmationDetails().apply {
+            this.fromLabel = fromLabel
+            this.toLabel = toLabel
+            this.cryptoAmount = erc20Amount
+            this.cryptoUnit = erc20Unit
+            this.fiatAmount = fiatAmount
+            this.fiatSymbol = fiatSymbol
+            this.cryptoFee = ethFee
+            this.cryptoFeeUnit = ethUnit
+            this.fiatFee = fiatFee
+            this.fiatTotal = fiatTotal
+            this.showCryptoTotal = false
+        }
+        val contactNote = "CONTACT_NOTE"
+        val contactNoteDescription = "CONTACT_NOTE_DESCRIPTION"
+        whenever(mockActivity.paymentDetails).thenReturn(confirmationDetails)
+        whenever(mockActivity.contactNote).thenReturn(contactNote)
+        whenever(mockActivity.contactNoteDescription).thenReturn(contactNoteDescription)
+        // Act
+        subject.onViewReady()
+        // Assert
+        verify(mockActivity).paymentDetails
+        verify(mockActivity).contactNote
+        verify(mockActivity).contactNoteDescription
+        verify(mockActivity).setFromLabel(fromLabel)
+        verify(mockActivity).setToLabel(toLabel)
+        verify(mockActivity).setAmount("$erc20Amount $erc20Unit ($fiatSymbol$fiatAmount)")
+        verify(mockActivity).setFee("$ethFee $ethUnit ($fiatSymbol$fiatFee)")
+        verify(mockActivity).setFiatTotalOnly("$fiatSymbol$fiatTotal")
         verify(mockActivity).contactNote = contactNote
         verify(mockActivity).contactNoteDescription = contactNoteDescription
         verify(mockActivity).setUiState(UiState.CONTENT)

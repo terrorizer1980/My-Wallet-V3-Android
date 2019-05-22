@@ -3,12 +3,13 @@ package piuk.blockchain.android.ui.dashboard
 import android.annotation.SuppressLint
 import android.support.annotation.DrawableRes
 import android.support.annotation.VisibleForTesting
-import com.blockchain.balance.drawableRes
+import com.blockchain.balance.drawableResFilled
 import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
+import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.sunriver.ui.ClaimFreeCryptoSuccessDialog
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
@@ -30,6 +31,7 @@ import piuk.blockchain.android.ui.balance.ImageLeftAnnouncementCard
 import piuk.blockchain.android.ui.balance.ImageRightAnnouncementCard
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
+import piuk.blockchain.android.ui.dashboard.adapter.delegates.StableCoinAnnouncementCard
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.SunriverCard
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.SwapAnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.DashboardAnnouncements
@@ -64,6 +66,7 @@ class DashboardPresenter(
     private val accessState: AccessState,
     private val buyDataManager: BuyDataManager,
     private val rxBus: RxBus,
+    private val fiatCurrencyPreference: FiatCurrencyPreference,
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     private val currencyFormatManager: CurrencyFormatManager,
     private val kycTiersQueries: KycTiersQueries,
@@ -152,7 +155,7 @@ class DashboardPresenter(
                 {
                     handleAssetPriceUpdate(
                         currencies.filter { it.hasFeature(CryptoCurrency.PRICE_CHARTING) }
-                            .map { AssetPriceCardState.Data(getPriceString(it), it, it.drawableRes()) })
+                            .map { AssetPriceCardState.Data(getPriceString(it), it, it.drawableResFilled()) })
                 },
                 {
                     handleAssetPriceUpdate(currencies.map { AssetPriceCardState.Error(it) })
@@ -221,6 +224,29 @@ class DashboardPresenter(
             notifyItemAdded(displayList, index)
             scrollToTop()
         }
+    }
+
+    internal fun showStableCoinIntroduction(
+        index: Int,
+        stableCoinAnnouncementCard: StableCoinAnnouncementCard
+    ) {
+        displayList.add(index, stableCoinAnnouncementCard)
+        with(view) {
+            notifyItemAdded(displayList, index)
+            scrollToTop()
+        }
+    }
+
+    internal fun dismissStableCoinIntroduction() {
+        displayList.filterIsInstance<StableCoinAnnouncementCard>()
+            .forEach {
+                val originalIndex = displayList.indexOf(it)
+                displayList.remove(it)
+                with(view) {
+                    notifyItemRemoved(displayList, originalIndex)
+                    scrollToTop()
+                }
+            }
     }
 
     internal fun dismissAnnouncement(prefKey: String) {
@@ -493,7 +519,7 @@ class DashboardPresenter(
     }
 
     private fun isOnboardingComplete() =
-    // If wallet isn't newly created, don't show onboarding
+        // If wallet isn't newly created, don't show onboarding
         prefsUtil.getValue(
             PrefsUtil.KEY_ONBOARDING_COMPLETE,
             false
@@ -560,6 +586,10 @@ class DashboardPresenter(
 
     private fun showSignUpToSunRiverCampaignSuccessDialog() {
         view.showBottomSheetDialog(ClaimFreeCryptoSuccessDialog())
+    }
+
+    fun exchange(currency: CryptoCurrency) {
+        view.goToExchange(currency, fiatCurrencyPreference.fiatCurrencyPreference)
     }
 
     companion object {

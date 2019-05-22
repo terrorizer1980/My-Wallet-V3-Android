@@ -68,7 +68,7 @@
     <color name="color_bitcoin_cash_logo">#3EDC89</color>
     <color name="color_ether_logo">#473BCB</color>
     <color name="color_stellar_logo">#07B5E5</color>
-    <color name="color_pax_logo">#203EA7</color>
+    <color name="color_pax_logo">#00522c</color>
 
     <!-- Non-Spendable colours -->
     <color name="non_spendable_button_background">#FFEEEEEE</color>
@@ -86,11 +86,16 @@
     <color name="xlm_dialog_text_body">#5B5B5B</color>
     <color name="xlm_dialog_background">#FFFFFF</color>
 
+    <!-- Stablecoin announcement colors -->
+    <color name="stablecoin_announcement_text_description">#505050</color>
     <!-- swap announcement card colors -->
     <color name="swap_announcement_card_background">#13153B</color>
     <!-- swap error dialog colors -->
     <color name="swap_error_dialog_title_text_color">#074B7A</color>
     <color name="swap_error_dialog_message_text_color">#5B5B5B</color>
 
+    <!-- error dlg colors -->
+    <color name="bottom_error_dialog_background">#FFFFFF</color>
+    <color name="bottom_error_title_color">#FF074B7A</color>
 
 </resources>

@@ -19,9 +19,12 @@ import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.ethereum.EthereumAccount
 import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payment.SpendableUnspentOutputs
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.bitcoinj.core.ECKey
+import org.web3j.crypto.RawTransaction
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.exceptions.TransactionInProgressException
@@ -33,6 +36,7 @@ import java.math.BigInteger
 internal class TransactionExecutorViaDataManagers(
     private val payloadDataManager: PayloadDataManager,
     private val ethDataManager: EthDataManager,
+    private val erc20Account: Erc20Account,
     private val sendDataManager: SendDataManager,
     private val addressResolver: AddressResolver,
     private val accountLookup: AccountLookup,
@@ -79,8 +83,43 @@ internal class TransactionExecutorViaDataManagers(
                 )
             ).map { it.hash!! }
             CryptoCurrency.PAX ->
-                throw NotImplementedError("PAX transactions are not yet supported")
+                sendPaxTransaction(fees as EthereumFees, destination, amount)
         }
+
+    private fun sendPaxTransaction(
+        feeOptions: EthereumFees,
+        receivingAddress: String,
+        cryptoValue: CryptoValue
+    ): Single<String> =
+        createPaxTransaction(feeOptions, receivingAddress, cryptoValue.amount)
+            .flatMap {
+                val ecKey = EthereumAccount.deriveECKey(payloadDataManager.wallet!!.hdWallets[0].masterKey, 0)
+                return@flatMap ethDataManager.signEthTransaction(it, ecKey)
+            }
+            .flatMap { ethDataManager.pushEthTx(it) }
+            .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
+            .subscribeOn(Schedulers.io())
+            .singleOrError()
+
+    private fun createPaxTransaction(
+        ethFees: EthereumFees,
+        receivingAddress: String,
+        amount: BigInteger
+    ): Observable<RawTransaction> {
+        val feeWei = ethFees.gasPriceRegularInWei
+
+        return ethDataManager.fetchEthAddress()
+            .map { ethDataManager.getEthResponseModel()!!.getNonce() }
+            .map {
+                erc20Account.createTransaction(
+                    nonce = it,
+                    to = receivingAddress,
+                    contractAddress = ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
+                    gasPriceWei = feeWei,
+                    gasLimitGwei = ethFees.gasLimitInGwei,
+                    amount = amount)
+            }
+    }
 
     override fun getMaximumSpendable(
         account: AccountReference,
@@ -95,7 +134,7 @@ internal class TransactionExecutorViaDataManagers(
                 )
             is AccountReference.Ethereum -> getMaxEther(fees as EthereumFees, feeType)
             is AccountReference.Xlm -> defaultAccountDataManager.getMaxSpendableAfterFees(feeType)
-            is AccountReference.Erc20 -> TODO("PAX is not yet supported - AND-2003")
+            is AccountReference.Pax -> getMaxSpendablePax()
         }
 
     override fun getFeeForTransaction(
@@ -110,6 +149,7 @@ internal class TransactionExecutorViaDataManagers(
                 amount,
                 (fees as BitcoinLikeFees).feeForType(feeType)
             )
+            is AccountReference.Pax,
             is AccountReference.Ethereum -> {
                 when (feeType) {
                     FeeType.Regular -> (fees as EthereumFees).absoluteRegularFeeInWei.just()
@@ -117,7 +157,6 @@ internal class TransactionExecutorViaDataManagers(
                 }
             }
             is AccountReference.Xlm -> (fees as XlmFees).feeForType(feeType).just()
-            is AccountReference.Erc20 -> TODO("PAX is not yet supported - AND-2003")
         }
 
     override fun getChangeAddress(
@@ -177,6 +216,11 @@ internal class TransactionExecutorViaDataManagers(
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroEth }
             .singleOrError()
+
+    private fun getMaxSpendablePax(): Single<CryptoValue> =
+        erc20Account.getBalance().map { CryptoValue.usdPaxFromMinor(it) }
+            .doOnError { Timber.e(it) }
+            .onErrorReturn { CryptoValue.ZeroPax }
 
     private fun sendBtcTransaction(
         amount: CryptoValue,

@@ -3,9 +3,11 @@ package com.blockchain.morph.ui.homebrew.exchange
 import android.arch.lifecycle.ViewModel
 import com.blockchain.accounts.AllAccountList
 import com.blockchain.datamanagers.MaximumSpendableCalculator
+import com.blockchain.datamanagers.TransactionExecutorWithoutFees
 import com.blockchain.morph.exchange.mvi.ExchangeDialog
 import com.blockchain.morph.exchange.mvi.ExchangeIntent
 import com.blockchain.morph.exchange.mvi.ExchangeViewState
+import com.blockchain.morph.exchange.mvi.EnoughFeesLimit
 import com.blockchain.morph.exchange.mvi.FiatExchangeRateIntent
 import com.blockchain.morph.exchange.mvi.Fix
 import com.blockchain.morph.exchange.mvi.LockQuoteIntent
@@ -35,6 +37,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import com.blockchain.preferences.FiatCurrencyPreference
+import io.reactivex.rxkotlin.withLatestFrom
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -44,6 +47,7 @@ class ExchangeModel(
     private val allAccountList: AllAccountList,
     private val tradeLimitService: TradeLimitService,
     private val currentTier: CurrentTier,
+    private val transactionExecutor: TransactionExecutorWithoutFees,
     private val maximumSpendableCalculator: MaximumSpendableCalculator,
     private val currencyPreference: FiatCurrencyPreference
 ) : ViewModel() {
@@ -53,6 +57,8 @@ class ExchangeModel(
     private val dialogDisposable = CompositeDisposable()
 
     private val maxSpendableDisposable = CompositeDisposable()
+
+    private var preselectedToCryptoCurrency = CryptoCurrency.ETHER
 
     val quoteService: QuoteService by lazy {
         quoteServiceFactory.createQuoteService()
@@ -66,6 +72,10 @@ class ExchangeModel(
     val exchangeViewStates: Observable<ExchangeViewState> = exchangeViewModelsSubject
 
     private var accountThatHasCalculatedSpendable = AtomicReference<AccountReference?>()
+
+    fun initWithPreselectedCurrency(cryptoCurrency: CryptoCurrency) {
+        preselectedToCryptoCurrency = cryptoCurrency
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -87,7 +97,7 @@ class ExchangeModel(
                 initial(
                     fiatCurrency,
                     allAccountList[CryptoCurrency.BTC].defaultAccountReference(),
-                    allAccountList[CryptoCurrency.ETHER].defaultAccountReference()
+                    allAccountList[preselectedToCryptoCurrency].defaultAccountReference()
                 )
             )
         )
@@ -136,6 +146,17 @@ class ExchangeModel(
 
                 updateMaxSpendable(it.fromAccount)
             }
+
+        val currency = exchangeViewStates.map { it.fromCrypto.currency }.distinctUntilChanged()
+
+        dialogDisposable += currency.withLatestFrom(exchangeViewStates.map {
+            it.fromCrypto to it.fromAccount
+        }).flatMapSingle { (_, cryptoAccountPair) ->
+            transactionExecutor.hasEnoughEthFeesForTheTransaction(cryptoAccountPair.first, cryptoAccountPair.second)
+        }.subscribeBy {
+            inputEventSink.onNext(EnoughFeesLimit(it))
+        }
+
         dialogDisposable += exchangeViewStates.allQuoteClearingConditions()
             .subscribeBy {
                 inputEventSink.onNext(it)

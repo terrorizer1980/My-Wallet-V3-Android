@@ -12,31 +12,40 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.data.cache.DynamicFeeCache
+import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
+import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
+import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
+import piuk.blockchain.android.ui.receive.ReceivePresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
-import piuk.blockchain.android.ui.send.OriginalSendPresenterStrategy
-import piuk.blockchain.android.ui.send.SendPresenterXSendView
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.PerCurrencySendPresenter
-import piuk.blockchain.android.ui.send.external.SendPresenterStrategy
-import piuk.blockchain.android.ui.send.send2.Erc20SendStrategy
-import piuk.blockchain.android.ui.send.send2.XlmSendPresenterStrategy
+import piuk.blockchain.android.ui.send.external.SendPresenter
+import piuk.blockchain.android.ui.send.strategy.BitcoinCashSendStrategy
+import piuk.blockchain.android.ui.send.strategy.BitcoinSendStrategy
+import piuk.blockchain.android.ui.send.strategy.EtherSendStrategy
+import piuk.blockchain.android.ui.send.strategy.SendStrategy
+import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
+import piuk.blockchain.android.ui.send.strategy.paxSendStrategy
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
+import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
-import piuk.blockchain.androidcore.data.erc20.Erc20Manager
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
+import piuk.blockchain.androidcore.data.erc20.PaxAccount
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
+import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import java.util.Locale
 
@@ -45,6 +54,15 @@ val applicationModule = applicationContext {
     factory { OSUtil(get()) }
 
     factory { StringUtils(get()) }
+
+    bean {
+        AppUtil(
+            context = get(),
+            payloadManager = get(),
+            accessState = get(),
+            prefs = get()
+        )
+    }
 
     factory { get<Context>().resources }
 
@@ -57,9 +75,8 @@ val applicationModule = applicationContext {
         factory {
             EthDataManager(get(), get(), get(), get(), get(), get(), get(), get())
         }
-
-        factory {
-            Erc20Manager(get())
+        factory("pax") {
+            PaxAccount(ethDataManager = get(), dataStore = get(), environmentSettings = get()) as Erc20Account
         }
 
         factory {
@@ -71,18 +88,36 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            SwipeToReceiveHelper(get(), get(), get(), get(), get(), get(), get())
+            SwipeToReceiveHelper(
+                payloadDataManager = get(),
+                prefsUtil = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                stringUtils = get(),
+                environmentSettings = get(),
+                xlmDataManager = get()
+            )
         }
 
-        factory { WalletAccountHelper(
-            payloadManager = get(),
-            stringUtils = get(),
-            currencyState = get(),
-            ethDataManager = get(),
-            bchDataManager = get(),
-            xlmDataManager = get(),
-            environmentSettings = get(),
-            exchangeRates = get())
+        factory {
+            SwipeToReceivePresenter(
+                qrGenerator = get(),
+                swipeToReceiveHelper = get()
+            )
+        }
+
+        factory {
+            WalletAccountHelper(
+                payloadManager = get(),
+                stringUtils = get(),
+                currencyState = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                xlmDataManager = get(),
+                environmentSettings = get(),
+                exchangeRates = get(),
+                paxAccount = get("pax")
+            )
         }
 
         factory { WalletAccountHelperAccountListingAdapter(get()) }
@@ -106,40 +141,97 @@ val applicationModule = applicationContext {
             }
         }
 
-        factory {
-            val originalStrategy: SendPresenterStrategy<SendView> = OriginalSendPresenterStrategy(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get()
+        factory<SendPresenter<SendView>> {
+            PerCurrencySendPresenter(
+                btcStrategy = get("BTCStrategy"),
+                bchStrategy = get("BCHStrategy"),
+                etherStrategy = get("EtherStrategy"),
+                xlmStrategy = get("XLMStrategy"),
+                paxStrategy = get("paxStrategy"),
+                prefs = get(),
+                exchangeRates = get(),
+                stringUtils = get(),
+                envSettings = get(),
+                exchangeRateFactory = get()
             )
-            SendPresenterXSendView(
-                PerCurrencySendPresenter(
-                    originalStrategy = originalStrategy,
-                    xlmStrategy = XlmSendPresenterStrategy(get(),
-                        get(),
-                        get(),
-                        get(),
-                        get(),
-                        get()),
-                    erc20Strategy = Erc20SendStrategy(),
-                    currencyState = get(),
-                    exchangeRates = get(),
-                    stringUtils = get(),
-                    exchangeRateFactory = get()
-                )
+        }
+
+        factory<SendStrategy<SendView>>("BTCStrategy") {
+            BitcoinSendStrategy(
+                walletAccountHelper = get(),
+                payloadDataManager = get(),
+                currencyState = get(),
+                prefs = get(),
+                exchangeRateFactory = get(),
+                stringUtils = get(),
+                sendDataManager = get(),
+                dynamicFeeCache = get(),
+                feeDataManager = get(),
+                privateKeyFactory = get(),
+                environmentSettings = get(),
+                currencyFormatter = get(),
+                exchangeRates = get()
+            )
+        }
+
+        factory<SendStrategy<SendView>>("BCHStrategy") {
+            BitcoinCashSendStrategy(
+                walletAccountHelper = get(),
+                payloadDataManager = get(),
+                prefs = get(),
+                stringUtils = get(),
+                sendDataManager = get(),
+                dynamicFeeCache = get(),
+                feeDataManager = get(),
+                privateKeyFactory = get(),
+                environmentSettings = get(),
+                bchDataManager = get(),
+                currencyFormatter = get(),
+                exchangeRates = get(),
+                environmentConfig = get(),
+                currencyState = get()
+            )
+        }
+
+        factory<SendStrategy<SendView>>("EtherStrategy") {
+            EtherSendStrategy(
+                walletAccountHelper = get(),
+                payloadDataManager = get(),
+                ethDataManager = get(),
+                stringUtils = get(),
+                dynamicFeeCache = get(),
+                feeDataManager = get(),
+                currencyFormatter = get(),
+                exchangeRates = get(),
+                environmentConfig = get(),
+                currencyState = get()
+            )
+        }
+
+        factory<SendStrategy<SendView>>("XLMStrategy") {
+            XlmSendStrategy(
+                currencyState = get(),
+                xlmDataManager = get(),
+                xlmFeesFetcher = get(),
+                xlmTransactionSender = get(),
+                fiatExchangeRates = get(),
+                sendFundsResultLocalizer = get()
+            )
+        }
+
+        factory<SendStrategy<SendView>>("paxStrategy") {
+            paxSendStrategy(
+                walletAccountHelper = get(),
+                payloadDataManager = get(),
+                ethDataManager = get(),
+                paxAccount = get("pax"),
+                stringUtils = get(),
+                dynamicFeeCache = get(),
+                feeDataManager = get(),
+                currencyFormatter = get(),
+                exchangeRates = get(),
+                environmentConfig = get(),
+                currencyState = get()
             )
         }
 
@@ -151,7 +243,51 @@ val applicationModule = applicationContext {
 
         factory { DeepLinkPersistence(get()) }
 
+        factory { ConfirmPaymentPresenter() }
+
         factory { SunRiverCampaignAccountProviderAdapter(get()) as SunriverCampaignHelper.XlmAccountProvider }
+
+        factory {
+            BalancePresenter(
+                exchangeRateDataManager = get(),
+                transactionListDataManager = get(),
+                ethDataManager = get(),
+                paxAccount = get("pax"),
+                swipeToReceiveHelper = get(),
+                payloadDataManager = get(),
+                buyDataManager = get(),
+                stringUtils = get(),
+                prefsUtil = get(),
+                rxBus = get(),
+                currencyState = get(),
+                shapeShiftDataManager = get(),
+                bchDataManager = get(),
+                walletAccountHelper = get(),
+                environmentSettings = get(),
+                exchangeService = get(),
+                coinifyDataManager = get(),
+                fiatExchangeRates = get()
+            )
+        }
+
+        factory {
+            QrCodeDataManager()
+        }
+
+        factory {
+            ReceivePresenter(
+                prefs = get(),
+                qrCodeDataManager = get(),
+                walletAccountHelper = get(),
+                payloadDataManager = get(),
+                ethDataStore = get(),
+                bchDataManager = get(),
+                xlmDataManager = get(),
+                environmentSettings = get(),
+                currencyState = get(),
+                fiatExchangeRates = get()
+            )
+        }
     }
 
     factory { DateUtil(get()) }

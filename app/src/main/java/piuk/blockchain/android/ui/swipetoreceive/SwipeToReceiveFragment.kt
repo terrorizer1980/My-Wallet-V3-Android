@@ -18,11 +18,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
+import com.blockchain.balance.drawableResFilled
+import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_swipe_to_receive.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.websocket.WebSocketService
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -31,25 +32,18 @@ import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.setOnPageChangeListener
-import javax.inject.Inject
 
 @Suppress("MemberVisibilityCanPrivate")
 class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePresenter>(),
     SwipeToReceiveView {
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    @Inject
-    lateinit var swipeToReceivePresenter: SwipeToReceivePresenter
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
+    private val presenter: SwipeToReceivePresenter by inject()
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == WebSocketService.ACTION_INTENT) {
                 // Update UI with new Address + QR
-                presenter?.currencyPosition = presenter?.currencyPosition ?: 0
+                presenter.currencyPosition = presenter.currencyPosition
             }
         }
     }
@@ -77,10 +71,11 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
         val adapter = ImageAdapter(
             context!!,
             listOf(
-                R.drawable.vector_bitcoin,
-                R.drawable.vector_eth,
-                R.drawable.vector_bitcoin_cash,
-                R.drawable.vector_stellar_rocket
+                CryptoCurrency.BTC.drawableResFilled(),
+                CryptoCurrency.ETHER.drawableResFilled(),
+                CryptoCurrency.BCH.drawableResFilled(),
+                CryptoCurrency.XLM.drawableResFilled(),
+                CryptoCurrency.PAX.drawableResFilled()
             )
         )
 
@@ -94,11 +89,11 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
 
                     when (it) {
                         0 -> imageview_left_arrow.invisible()
-                        1, 2 -> listOf(
+                        1, 2, 3 -> listOf(
                             imageview_left_arrow,
                             imageview_right_arrow
                         ).forEach { it.visible() }
-                        3 -> imageview_right_arrow.invisible()
+                        4 -> imageview_right_arrow.invisible()
                     }
                 }
             }
@@ -115,7 +110,9 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
         textview_account.text = accountName
     }
 
-    override fun displayCoinType(requestString: String) {
+    override fun displayCoinType(coinName: String) {
+        val requestString = context?.resources?.getString(R.string.swipe_receive_request, coinName) ?: ""
+
         textview_request_currency.text = requestString
         textview_request_currency.contentDescription = requestString
     }
@@ -150,7 +147,7 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
         }
     }
 
-    override fun createPresenter() = swipeToReceivePresenter
+    override fun createPresenter() = presenter
 
     override fun getMvpView() = this
 
@@ -215,7 +212,7 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
         }
 
         override fun destroyItem(container: ViewGroup, position: Int, any: Any) {
-            container.removeView(any as LinearLayout)
+            container.removeView(any as View)
         }
     }
 }

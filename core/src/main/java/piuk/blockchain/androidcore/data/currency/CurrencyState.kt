@@ -1,5 +1,6 @@
 package piuk.blockchain.androidcore.data.currency
 
+import com.blockchain.annotations.BurnCandidate
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcore.utils.PrefsUtil
 
@@ -7,6 +8,8 @@ import piuk.blockchain.androidcore.utils.PrefsUtil
  * Singleton class to store user's preferred crypto currency state.
  * (ie is Wallet currently showing FIAT, ETH, BTC ot BCH)
  */
+@Deprecated("Remove")
+@BurnCandidate("Global state is bad.")
 class CurrencyState(private val prefs: PrefsUtil) {
 
     enum class DisplayMode {

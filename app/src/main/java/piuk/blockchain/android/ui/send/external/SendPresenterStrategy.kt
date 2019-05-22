@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.send.external
 
-import android.content.Intent
 import android.text.Editable
 import android.widget.EditText
+import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.transactions.Memo
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.data.FeeOptions
@@ -37,9 +37,9 @@ abstract class SendPresenterStrategy<View : piuk.blockchain.androidcoreui.ui.bas
 
     abstract fun clearReceivingObject()
 
-    abstract fun selectSendingAccount(data: Intent?, currency: CryptoCurrency)
+    abstract fun selectSendingAccount(account: JsonSerializableAccount?)
 
-    abstract fun selectReceivingAccount(data: Intent?, currency: CryptoCurrency)
+    abstract fun selectReceivingAccount(account: JsonSerializableAccount?)
 
     abstract fun selectDefaultOrFirstFundedSendingAccount()
 

@@ -133,7 +133,7 @@ private class AccountReferenceAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): AccountReferenceAdapter.AccountReferenceViewHolder {
+    ): AccountReferenceViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.account_chooser_card, parent, false)
         return AccountReferenceViewHolder(view)

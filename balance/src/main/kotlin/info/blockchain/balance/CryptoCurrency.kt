@@ -14,7 +14,9 @@ enum class CryptoCurrency(
         dp = 8,
         userDp = 8,
         requiredConfirmations = 3,
-        featureFlags = CryptoCurrency.PRICE_CHARTING
+        featureFlags =
+            CryptoCurrency.PRICE_CHARTING or
+            CryptoCurrency.MULTI_WALLET
 
     ),
     ETHER(
@@ -23,7 +25,8 @@ enum class CryptoCurrency(
         dp = 18,
         userDp = 8,
         requiredConfirmations = 12,
-        featureFlags = CryptoCurrency.PRICE_CHARTING
+        featureFlags =
+            CryptoCurrency.PRICE_CHARTING
     ),
     BCH(
         symbol = "BCH",
@@ -31,7 +34,9 @@ enum class CryptoCurrency(
         dp = 8,
         userDp = 8,
         requiredConfirmations = 3,
-        featureFlags = CryptoCurrency.PRICE_CHARTING
+        featureFlags =
+            CryptoCurrency.PRICE_CHARTING or
+            CryptoCurrency.MULTI_WALLET
     ),
     XLM(
         symbol = "XLM",
@@ -39,7 +44,8 @@ enum class CryptoCurrency(
         dp = 7,
         userDp = 7,
         requiredConfirmations = 1,
-        featureFlags = CryptoCurrency.PRICE_CHARTING
+        featureFlags =
+            CryptoCurrency.PRICE_CHARTING
     ),
     PAX(
         symbol = "PAX",
@@ -47,7 +53,8 @@ enum class CryptoCurrency(
         dp = 18,
         userDp = 8,
         requiredConfirmations = 3, // Same as ETHER
-        featureFlags = 0L
+        featureFlags =
+            0L
     );
 
     fun hasFeature(feature: Long): Boolean = (0L != (featureFlags and feature))
@@ -55,11 +62,12 @@ enum class CryptoCurrency(
     companion object {
 
         fun fromSymbol(symbol: String?): CryptoCurrency? =
-            CryptoCurrency.values().firstOrNull { it.symbol.equals(symbol, ignoreCase = true) }
+            values().firstOrNull { it.symbol.equals(symbol, ignoreCase = true) }
 
         fun fromSymbolOrThrow(symbol: String?): CryptoCurrency =
             fromSymbol(symbol) ?: throw IllegalArgumentException("Bad currency symbol \"$symbol\"")
 
         const val PRICE_CHARTING = 0x00000001L
+        const val MULTI_WALLET = 0x00000002L
     }
 }

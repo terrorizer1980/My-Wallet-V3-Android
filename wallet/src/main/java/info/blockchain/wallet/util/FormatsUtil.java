@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import org.web3j.crypto.Hash;
 import org.web3j.utils.Numeric;
 
+import javax.annotation.Nonnull;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
 
@@ -89,6 +90,7 @@ public class FormatsUtil {
         return ret;
     }
 
+    @Nonnull
     public static String getBitcoinAmount(final String s) {
         if (s == null) return "0.0000";
 
@@ -109,6 +111,10 @@ public class FormatsUtil {
         return ret;
     }
 
+    /** Use isValidBitcoinAddress(NetworkParameters networkParameters, final String address)
+     * instead.
+     */
+    @Deprecated
     public static boolean isValidBitcoinAddress(final String address) {
         boolean ret;
 
@@ -267,6 +273,37 @@ public class FormatsUtil {
         }
     }
 
+    public static boolean isValidBitcoinAddress(NetworkParameters networkParameters, final String address) {
+        boolean ret;
+
+        if (address == null)
+            return false;
+
+        try {
+            Address.fromBase58(networkParameters, address);
+            ret = true;
+        } catch (AddressFormatException afe) {
+            ret = false;
+        }
+
+        return ret;
+    }
+
+    public static boolean isBitcoinUri(NetworkParameters networkParameters, final String s) {
+        if (s == null) return false;
+
+        boolean ret;
+
+        try {
+            new BitcoinURI(networkParameters, s);
+            ret = true;
+        } catch (BitcoinURIParseException bupe) {
+            ret = false;
+        }
+
+        return ret;
+    }
+
     /**
      * Verify that a String is a valid BECH32 Bitcoin Cash address.
      *
@@ -298,6 +335,8 @@ public class FormatsUtil {
             }
         }
     }
+
+
 
     private static Boolean validateChecksumEthereumAddress(String address) {
         address = address.replace("0x", "");

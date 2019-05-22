@@ -7,6 +7,7 @@ import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
+import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.usdPax
@@ -58,6 +59,7 @@ class DashboardPresenterTest {
     private val buyDataManager: BuyDataManager = mock()
     private val rxBus: RxBus = mock()
     private val swipeToReceiveHelper: SwipeToReceiveHelper = mock()
+    private val fiatCurrencyPreference: FiatCurrencyPreference = mock()
     private val view: DashboardView = mock()
     private val currencyFormatManager: CurrencyFormatManager = mock()
     private val kycTiersQueries: KycTiersQueries = mock {
@@ -90,6 +92,7 @@ class DashboardPresenterTest {
             accessState,
             buyDataManager,
             rxBus,
+            fiatCurrencyPreference,
             swipeToReceiveHelper,
             currencyFormatManager,
             kycTiersQueries,
@@ -855,5 +858,16 @@ class DashboardPresenterTest {
         subject.addSunriverPrompts().test()
         // Assert
         verifyZeroInteractions(view)
+    }
+
+    @Test
+    fun `should propagate the correct fiat and crypto currency to the view`() {
+        // Arrange
+        whenever(fiatCurrencyPreference.fiatCurrencyPreference)
+            .thenReturn("USD")
+        // Act
+        subject.exchange(CryptoCurrency.ETHER)
+        // Assert
+        verify(view).goToExchange(CryptoCurrency.ETHER, "USD")
     }
 }

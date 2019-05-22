@@ -6,11 +6,11 @@ import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.ethereum.Erc20TokenData
 import info.blockchain.wallet.ethereum.EthAccountApi
 import info.blockchain.wallet.ethereum.EthereumWallet
-import info.blockchain.wallet.ethereum.data.EthAddressResponse
+import info.blockchain.wallet.ethereum.data.Erc20AddressResponse
 import info.blockchain.wallet.ethereum.data.EthAddressResponseMap
 import info.blockchain.wallet.ethereum.data.EthLatestBlock
+import info.blockchain.wallet.ethereum.data.EthLatestBlockNumber
 import info.blockchain.wallet.ethereum.data.EthTransaction
-import info.blockchain.wallet.ethereum.data.Erc20AddressResponse
 import info.blockchain.wallet.exceptions.HDWalletException
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
 import info.blockchain.wallet.payload.PayloadManager
@@ -130,10 +130,7 @@ class EthDataManager(
     fun isLastTxPending(): Observable<Boolean> {
         val lastTxHash = ethDataStore.ethWallet?.lastTransactionHash
         // default 1 day
-        val lastTxTimestamp = Math.max(
-            ethDataStore.ethWallet?.lastTransactionTimestamp
-                ?: 0L, 86400L
-        )
+        val lastTxTimestamp = Math.max(ethDataStore.ethWallet?.lastTransactionTimestamp ?: 0L, 86400L)
 
         // No previous transactions
         if (lastTxHash == null || ethDataStore.ethAddressResponse?.getTransactions()?.size ?: 0 == 0)
@@ -185,6 +182,23 @@ class EthDataManager(
         }
 
     /**
+     * Returns a [Number] representing the most recently
+     * mined block.
+     *
+     * @return An [Observable] wrapping a [Number]
+     */
+    fun getLatestBlockNumber(): Observable<EthLatestBlockNumber> =
+        if (environmentSettings.environment == Environment.TESTNET) {
+            // TODO(eth testnet explorer coming soon)
+            Observable.just(EthLatestBlockNumber())
+        } else {
+            rxPinning.call<EthLatestBlockNumber> {
+                ethAccountApi.latestBlockNumber
+                    .applySchedulers()
+            }
+        }
+
+    /**
      * Returns true if a given ETH address is associated with an Ethereum contract, which is
      * currently unsupported. This should be used to validate any proposed destination address for
      * funds.
@@ -225,6 +239,11 @@ class EthDataManager(
         }
     }.applySchedulers()
 
+    fun updateErc20TransactionNotes(hash: String, note: String): Completable = rxPinning.call {
+        getErc20TokenData(CryptoCurrency.PAX).putTxNote(hash, note)
+        return@call save()
+    }.applySchedulers()
+
     /**
      * Fetches EthereumWallet stored in metadata. If metadata entry doesn't exists it will be created.
      *
@@ -234,10 +253,10 @@ class EthDataManager(
     fun initEthereumWallet(defaultLabel: String): Completable =
         rxPinning.call {
             fetchOrCreateEthereumWallet(defaultLabel)
-                .flatMapCompletable {
-                    ethDataStore.ethWallet = it.first
+                .flatMapCompletable { (wallet, needsSave) ->
+                    ethDataStore.ethWallet = wallet
 
-                    if (it.second) {
+                    if (needsSave) {
                         save()
                     } else {
                         Completable.complete()
@@ -265,6 +284,17 @@ class EthDataManager(
         to,
         weiValue
     )
+
+    fun getTransaction(hash: String): Observable<EthTransaction> =
+        if (environmentSettings.environment == Environment.TESTNET) {
+            // TODO(eth testnet explorer coming soon)
+            Observable.just(EthTransaction())
+        } else {
+            rxPinning.call<EthTransaction> {
+                ethAccountApi.getTransaction(hash)
+                    .applySchedulers()
+            }
+        }
 
     fun signEthTransaction(rawTransaction: RawTransaction, ecKey: ECKey): Observable<ByteArray> =
         Observable.fromCallable {
