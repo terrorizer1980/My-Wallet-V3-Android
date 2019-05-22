@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            tools:src="@drawable/vector_bitcoin" />
+            tools:src="@drawable/vector_bitcoin_colored" />
 
         <TextView
             android:id="@+id/account_name"

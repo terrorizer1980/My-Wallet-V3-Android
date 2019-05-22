@@ -18,6 +18,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.blockchain.balance.drawableResFilled
+import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_swipe_to_receive.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
@@ -69,11 +71,11 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
         val adapter = ImageAdapter(
             context!!,
             listOf(
-                R.drawable.vector_bitcoin,
-                R.drawable.vector_eth,
-                R.drawable.vector_bitcoin_cash,
-                R.drawable.vector_stellar_rocket,
-                R.drawable.vector_pax_filled
+                CryptoCurrency.BTC.drawableResFilled(),
+                CryptoCurrency.ETHER.drawableResFilled(),
+                CryptoCurrency.BCH.drawableResFilled(),
+                CryptoCurrency.XLM.drawableResFilled(),
+                CryptoCurrency.PAX.drawableResFilled()
             )
         )
 

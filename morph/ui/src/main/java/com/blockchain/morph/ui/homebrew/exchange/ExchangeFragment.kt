@@ -5,10 +5,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v4.app.Fragment
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.view.ContextThemeWrapper
+import android.support.v4.content.ContextCompat
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -21,8 +19,8 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.TextView
+import com.blockchain.balance.coinIconWhite
 import com.blockchain.balance.colorRes
-import com.blockchain.balance.drawableRes
 import com.blockchain.morph.exchange.mvi.ExchangeIntent
 import com.blockchain.morph.exchange.mvi.ExchangeViewState
 import com.blockchain.morph.exchange.mvi.Fix
@@ -427,15 +425,8 @@ internal class ExchangeFragment : Fragment() {
 
     private fun Button.setCryptoLeftImageIfZero(cryptoValue: CryptoValue) {
         if (cryptoValue.isZero) {
-            VectorDrawableCompat.create(
-                resources,
-                cryptoValue.currency.drawableRes(),
-                ContextThemeWrapper(context, R.style.AppTheme).theme
-            )?.run {
-                DrawableCompat.wrap(this)
-                DrawableCompat.setTint(this, context.getResolvedColor(R.color.white))
-                setCompoundDrawablesWithIntrinsicBounds(this, null, null, null)
-            }
+            val drawable = ContextCompat.getDrawable(this.context, cryptoValue.currency.coinIconWhite())
+            setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
         } else {
             setCompoundDrawables(null, null, null, null)
         }

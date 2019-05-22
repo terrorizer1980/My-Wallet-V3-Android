@@ -68,7 +68,7 @@
     <color name="color_bitcoin_cash_logo">#3EDC89</color>
     <color name="color_ether_logo">#473BCB</color>
     <color name="color_stellar_logo">#07B5E5</color>
-    <color name="color_pax_logo">#203EA7</color>
+    <color name="color_pax_logo">#00522c</color>
 
     <!-- Non-Spendable colours -->
     <color name="non_spendable_button_background">#FFEEEEEE</color>

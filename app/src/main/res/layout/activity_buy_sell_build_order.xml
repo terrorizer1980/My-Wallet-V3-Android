@@ -52,7 +52,7 @@
                 android:tint="@color/color_bitcoin_logo"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/vector_bitcoin"
+                app:srcCompat="@drawable/vector_bitcoin_colored"
                 tools:ignore="RtlHardcoded" />
 
             <!-- TODO: This text is hardcoded - it'll have to be dynamic at some point in the future -->

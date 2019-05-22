@@ -83,7 +83,7 @@
                 android:layout_height="25dp"
                 android:contentDescription="@string/dashboard_see_charts"
                 tools:tint="@color/primary_blue_accent"
-                tools:src="@drawable/vector_bitcoin" />
+                tools:src="@drawable/vector_bitcoin_colored" />
 
             <TextView
                 android:layout_width="wrap_content"

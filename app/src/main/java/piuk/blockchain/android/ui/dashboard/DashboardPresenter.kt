@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.dashboard
 import android.annotation.SuppressLint
 import android.support.annotation.DrawableRes
 import android.support.annotation.VisibleForTesting
-import com.blockchain.balance.drawableRes
+import com.blockchain.balance.drawableResFilled
 import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
@@ -152,7 +152,7 @@ class DashboardPresenter(
                 {
                     handleAssetPriceUpdate(
                         currencies.filter { it.hasFeature(CryptoCurrency.PRICE_CHARTING) }
-                            .map { AssetPriceCardState.Data(getPriceString(it), it, it.drawableRes()) })
+                            .map { AssetPriceCardState.Data(getPriceString(it), it, it.drawableResFilled()) })
                 },
                 {
                     handleAssetPriceUpdate(currencies.map { AssetPriceCardState.Error(it) })

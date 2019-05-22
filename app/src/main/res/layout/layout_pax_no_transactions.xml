@@ -15,7 +15,7 @@
         android:layout_height="45dp"
         android:layout_marginTop="100dp"
         android:layout_gravity="center_horizontal"
-        app:srcCompat="@drawable/vector_pax_filled"/>
+        app:srcCompat="@drawable/vector_pax_colored"/>
 
     <TextView
         android:layout_width="match_parent"
