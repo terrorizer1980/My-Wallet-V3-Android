@@ -872,6 +872,12 @@
         <item>@string/lockbox_title</item>
     </string-array>
 
+    <!--STABLECOIN-->
+    <string name="stablecoin_announcement_new">New</string>
+    <string name="stablecoin_announcement_introducing_title">Our First Stablecoin</string>
+    <string name="stablecoin_announcement_introducing_description">Introducing USD PAX, a safe and stable digital dollar in your wallet</string>
+    <string name="stablecoin_announcement_introducing_link">Exchange for PAX Now</string>
+
     <!-- Complete Your Profile Card -->
     <string name="complete_your_profile_card_title">Complete Your Profile</string>
     <string name="complete_your_profile_card_body">Complete your Blockchain profile today and we\'ll Airdrop XLM directly into your wallet!</string>

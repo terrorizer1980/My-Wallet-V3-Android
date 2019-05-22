@@ -13,6 +13,7 @@ import com.blockchain.accounts.BtcAccountListAdapter
 import com.blockchain.accounts.BtcAsyncAccountListAdapter
 import com.blockchain.accounts.EthAccountListAdapter
 import com.blockchain.accounts.EthAsyncAccountListAdapter
+import com.blockchain.accounts.PaxAccountListAdapter
 import com.blockchain.accounts.PaxAsyncAccountList
 import com.blockchain.balance.AsyncAccountBalanceReporter
 import com.blockchain.balance.AsyncAddressBalanceReporter
@@ -167,6 +168,7 @@ val coreModule = applicationContext {
         factory("BTC") { BtcAccountListAdapter(get()) as AccountList }
         factory("BCH") { BchAccountListAdapter(get()) as AccountList }
         factory("ETH") { EthAccountListAdapter(get()) as AccountList }
+        factory("PAX") { PaxAccountListAdapter(get(), get()) as AccountList }
 
         factory("BTC") { BtcAsyncAccountListAdapter(get()) as AsyncAccountList }
         factory("BCH") { BchAsyncAccountListAdapter(get()) as AsyncAccountList }
@@ -192,7 +194,8 @@ val coreModule = applicationContext {
             AllAccountsImplementation(
                 btcAccountList = get("BTC"),
                 bchAccountList = get("BCH"),
-                etherAccountList = get("ETH")
+                etherAccountList = get("ETH"),
+                paxAccountList = get("PAX")
             ) as AllAccountList
         }
 

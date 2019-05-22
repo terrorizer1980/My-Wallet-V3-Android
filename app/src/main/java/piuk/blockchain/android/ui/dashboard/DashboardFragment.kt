@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.kycui.navhost.models.CampaignType
+import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.LoggableEvent
 import info.blockchain.balance.CryptoCurrency
@@ -44,6 +45,12 @@ import java.util.Locale
 
 class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     DashboardView {
+
+    override fun goToExchange(currency: CryptoCurrency, defCurrency: String) {
+        (activity as?Context)?.let {
+            HomebrewNavHostActivity.start(it, defCurrency, currency)
+        }
+    }
 
     override val shouldShowBuy: Boolean = AndroidUtils.is19orHigher()
 

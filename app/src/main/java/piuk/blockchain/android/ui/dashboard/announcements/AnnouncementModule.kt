@@ -1,22 +1,44 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
+import com.blockchain.announcement.Announcement
+import com.blockchain.announcement.AnnouncementList
 import org.koin.dsl.module.applicationContext
+import piuk.blockchain.android.ui.dashboard.DashboardPresenter
 
 val dashboardAnnouncementsModule = applicationContext {
 
     context("Payload") {
 
-        factory { DashboardAnnouncements(get(), get(), get(), get(), get()) }
+        factory {
+            DashboardAnnouncements(AnnouncementList<DashboardPresenter>().apply {
+                add(get("coinify"))
+                add(get("stellar"))
+                add(get("profile"))
+                add(get("claim"))
+                add(get("stablecoin"))
+                add(get("swap"))
+            })
+        }
 
-        bean { CoinifyKycModalPopupAnnouncement(get(), get(), get("ff_notify_coinify_users_to_kyc")) }
+        bean("coinify") {
+            CoinifyKycModalPopupAnnouncement(get(),
+                get(),
+                get("ff_notify_coinify_users_to_kyc")) as Announcement<DashboardPresenter>
+        }
 
-        factory { StellarModalPopupAnnouncement(get(), get()) }
+        factory("stellar") { StellarModalPopupAnnouncement(get(), get()) as Announcement<DashboardPresenter> }
 
-        factory { CompleteYourProfileCardAnnouncement(get(), get()) }
+        factory("profile") { CompleteYourProfileCardAnnouncement(get(), get()) as Announcement<DashboardPresenter> }
 
-        factory { ClaimYourFreeCryptoCardAnnouncement(get(), get(), get()) }
+        factory("claim") {
+            ClaimYourFreeCryptoCardAnnouncement(get(),
+                get(),
+                get()) as Announcement<DashboardPresenter>
+        }
 
-        factory { SwapAnnouncement(get(), get("merge"), get()) }
+        factory("stablecoin") { StableCoinIntroductionAnnouncement(get(), get()) as Announcement<DashboardPresenter> }
+
+        factory("swap") { SwapAnnouncement(get(), get("merge"), get()) as Announcement<DashboardPresenter> }
     }
 
     factory { DismissRecorder(get()) }

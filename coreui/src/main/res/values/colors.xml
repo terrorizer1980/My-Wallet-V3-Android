@@ -86,6 +86,8 @@
     <color name="xlm_dialog_text_body">#5B5B5B</color>
     <color name="xlm_dialog_background">#FFFFFF</color>
 
+    <!-- Stablecoin announcement colors -->
+    <color name="stablecoin_announcement_text_description">#505050</color>
     <!-- swap announcement card colors -->
     <color name="swap_announcement_card_background">#13153B</color>
     <!-- swap error dialog colors -->

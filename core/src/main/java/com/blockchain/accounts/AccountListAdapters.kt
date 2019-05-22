@@ -23,6 +23,15 @@ internal class BchAccountListAdapter(private val bchPayloadDataManager: BchDataM
         }
 }
 
+internal class PaxAccountListAdapter(private val ethDataManager: EthDataManager, private val stringUtils: StringUtils) :
+    AccountList {
+
+    override fun defaultAccountReference() =
+        AccountReference.Pax(stringUtils.getString(R.string.pax_default_account_label),
+            ethDataManager.getEthWallet()?.account?.address
+                ?: throw Exception("No ether wallet found"), "")
+}
+
 internal class EthAccountListAdapter(private val ethDataManager: EthDataManager) : AccountList {
 
     override fun defaultAccountReference() =

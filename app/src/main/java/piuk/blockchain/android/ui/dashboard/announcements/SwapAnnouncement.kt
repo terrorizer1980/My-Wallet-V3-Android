@@ -13,8 +13,7 @@ class SwapAnnouncement(
     private val tierService: TierService,
     private val dataManager: MorphTradeDataHistoryList,
     dismissRecorder: DismissRecorder
-) :
-    Announcement<DashboardPresenter> {
+) : Announcement<DashboardPresenter> {
 
     private val dismissEntry =
         dismissRecorder["SwapAnnouncementCard_DISMISSED"]

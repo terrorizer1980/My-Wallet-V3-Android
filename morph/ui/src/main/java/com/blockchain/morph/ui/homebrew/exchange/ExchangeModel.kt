@@ -58,6 +58,8 @@ class ExchangeModel(
 
     private val maxSpendableDisposable = CompositeDisposable()
 
+    private var preselectedToCryptoCurrency = CryptoCurrency.ETHER
+
     val quoteService: QuoteService by lazy {
         quoteServiceFactory.createQuoteService()
             .also { initDialog(it) }
@@ -70,6 +72,10 @@ class ExchangeModel(
     val exchangeViewStates: Observable<ExchangeViewState> = exchangeViewModelsSubject
 
     private var accountThatHasCalculatedSpendable = AtomicReference<AccountReference?>()
+
+    fun initWithPreselectedCurrency(cryptoCurrency: CryptoCurrency) {
+        preselectedToCryptoCurrency = cryptoCurrency
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -91,7 +97,7 @@ class ExchangeModel(
                 initial(
                     fiatCurrency,
                     allAccountList[CryptoCurrency.BTC].defaultAccountReference(),
-                    allAccountList[CryptoCurrency.ETHER].defaultAccountReference()
+                    allAccountList[preselectedToCryptoCurrency].defaultAccountReference()
                 )
             )
         )

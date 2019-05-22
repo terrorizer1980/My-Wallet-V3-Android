@@ -40,6 +40,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.blockchain.kyc.models.nabu.Kyc2TierState;
 import com.blockchain.kycui.navhost.KycNavHostActivity;
 import com.blockchain.kycui.navhost.models.CampaignType;
@@ -50,6 +51,8 @@ import com.blockchain.notifications.analytics.LoggableEvent;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.mukesh.countrypicker.fragments.CountryPicker;
 import com.mukesh.countrypicker.models.Country;
+
+import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.util.FormatsUtil;
 import info.blockchain.wallet.util.PasswordUtil;
@@ -867,7 +870,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     @Override
     public void launchHomebrew(String defaultCurrency) {
-        HomebrewNavHostActivity.start(requireContext(), defaultCurrency);
+        HomebrewNavHostActivity.start(requireContext(), defaultCurrency, CryptoCurrency.ETHER);
         requireActivity().finish();
     }
 

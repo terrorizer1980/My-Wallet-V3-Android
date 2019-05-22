@@ -69,10 +69,10 @@ internal class ExchangeFragment : Fragment() {
     companion object {
 
         private const val ARGUMENT_CURRENCY = "ARGUMENT_CURRENCY"
-
-        fun bundleArgs(fiatCurrency: String): Bundle = Bundle().apply {
-            putString(ARGUMENT_CURRENCY, fiatCurrency)
-        }
+        fun bundleArgs(fiatCurrency: String): Bundle =
+            Bundle().apply {
+                putString(ARGUMENT_CURRENCY, fiatCurrency)
+            }
     }
 
     private val compositeDisposable = CompositeDisposable()

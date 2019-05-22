@@ -12,6 +12,7 @@ import piuk.blockchain.android.ui.dashboard.adapter.delegates.ImageLeftAnnouncem
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.ImageRightAnnouncementDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.OnboardingDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.PieChartDelegate
+import piuk.blockchain.android.ui.dashboard.adapter.delegates.StableCoinAnnouncementDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.SunriverAnnouncementDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.SwapAnnouncementDelegate
 /**
@@ -36,6 +37,7 @@ class DashboardDelegateAdapter(
         delegatesManager.addAdapterDelegate(ImageLeftAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(ImageRightAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(SunriverAnnouncementDelegate())
+        delegatesManager.addAdapterDelegate(StableCoinAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(HeaderDelegate())
         delegatesManager.addAdapterDelegate(SwapAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(onboardingDelegate)
