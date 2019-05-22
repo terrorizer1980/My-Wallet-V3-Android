@@ -9,6 +9,7 @@ import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendException
 import info.blockchain.balance.AccountReference
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.exceptions.TransactionHashApiException
 import io.reactivex.Completable
@@ -29,6 +30,7 @@ class ExchangeConfirmationPresenter internal constructor(
     private val payloadDecrypt: PayloadDecrypt
 ) : BasePresenter<ExchangeConfirmationView>() {
 
+    private var showPaxAirdropBottomDialog: Boolean = false
     private var executeTradeSingle: Single<String>? = null
 
     override fun onViewReady() {
@@ -43,7 +45,7 @@ class ExchangeConfirmationPresenter internal constructor(
 
                     // State is latest value of behaviour subject.
                     // NOT the state when confirm displayed
-
+                    showPaxAirdropBottomDialog = state.isPowerPaxTagged
                     if (!payloadDecrypt.isDoubleEncrypted) {
                         executeTrade(state.latestQuote!!, state.fromAccount, state.toAccount)
                     } else {
@@ -99,7 +101,11 @@ class ExchangeConfirmationPresenter internal constructor(
                     view.displayErrorDialog(R.string.execution_error_message)
                 }
             }
-            .doOnSuccess { view.showExchangeCompleteDialog(false) }
+            .doOnSuccess {
+                view.showExchangeCompleteDialog(
+                    showPaxAirdropBottomDialog && sendingAccount.cryptoCurrency == CryptoCurrency.PAX
+                )
+            }
     }
 
     private fun sendFundsForTrade(

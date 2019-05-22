@@ -10,6 +10,7 @@ import com.blockchain.morph.exchange.mvi.ExchangeViewState
 import com.blockchain.morph.exchange.mvi.EnoughFeesLimit
 import com.blockchain.morph.exchange.mvi.FiatExchangeRateIntent
 import com.blockchain.morph.exchange.mvi.Fix
+import com.blockchain.morph.exchange.mvi.IsUserEligiableForFreeEthIntent
 import com.blockchain.morph.exchange.mvi.LockQuoteIntent
 import com.blockchain.morph.exchange.mvi.Quote
 import com.blockchain.morph.exchange.mvi.SetFixIntent
@@ -25,6 +26,7 @@ import com.blockchain.morph.exchange.service.QuoteServiceFactory
 import com.blockchain.morph.exchange.service.TradeLimitService
 import com.blockchain.morph.quote.ExchangeQuoteRequest
 import com.blockchain.nabu.CurrentTier
+import com.blockchain.nabu.EthEligibility
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -47,6 +49,7 @@ class ExchangeModel(
     private val allAccountList: AllAccountList,
     private val tradeLimitService: TradeLimitService,
     private val currentTier: CurrentTier,
+    private val ethEligibility: EthEligibility,
     private val transactionExecutor: TransactionExecutorWithoutFees,
     private val maximumSpendableCalculator: MaximumSpendableCalculator,
     private val currencyPreference: FiatCurrencyPreference
@@ -135,6 +138,11 @@ class ExchangeModel(
             .subscribeBy {
                 inputEventSink.onNext(SetUserTier(it))
             }
+
+        dialogDisposable += ethEligibility.isEligible().subscribeBy {
+            inputEventSink.onNext(IsUserEligiableForFreeEthIntent(it))
+        }
+
         dialogDisposable += exchangeDialog.viewStates.distinctUntilChanged()
             .doOnError { Timber.e(it) }
             .subscribeBy {

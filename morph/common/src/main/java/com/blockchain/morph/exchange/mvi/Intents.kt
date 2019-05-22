@@ -33,6 +33,8 @@ class SetTradeLimits(val min: FiatValue, val max: FiatValue) : ExchangeIntent()
 
 class SetUserTier(val tier: Int) : ExchangeIntent()
 
+class IsUserEligiableForFreeEthIntent(val isEligiable: Boolean) : ExchangeIntent()
+
 class SetTierLimit(val availableOnTier: FiatValue) : ExchangeIntent()
 
 class ApplyMinimumLimit : ExchangeIntent()

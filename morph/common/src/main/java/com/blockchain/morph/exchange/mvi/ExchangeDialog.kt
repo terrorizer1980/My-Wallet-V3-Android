@@ -36,6 +36,7 @@ class ExchangeDialog(intents: Observable<ExchangeIntent>, initial: ExchangeViewM
                 is SetUserTier -> previousState.copy(userTier = intent.tier)
                 is SetTierLimit -> previousState.mapTierLimits(intent)
                 is EnoughFeesLimit -> previousState.setHasEthEnoughFees(intent)
+                is IsUserEligiableForFreeEthIntent -> previousState.setIsPowerPaxTagged(intent)
             }
         }
 
@@ -43,6 +44,10 @@ class ExchangeDialog(intents: Observable<ExchangeIntent>, initial: ExchangeViewM
         viewStates.map {
             it.toViewModel()
         }
+}
+
+private fun ExchangeViewState.setIsPowerPaxTagged(intent: IsUserEligiableForFreeEthIntent): ExchangeViewState {
+    return copy(isPowerPaxTagged = intent.isEligiable)
 }
 
 private fun ExchangeViewState.clearQuote() =
@@ -186,6 +191,7 @@ data class ExchangeViewState(
     val maxSpendable: CryptoValue? = null,
     val decimalCursor: Int = 0,
     val userTier: Int = 0,
+    val isPowerPaxTagged: Boolean = false,
     val hasEnoughEthFees: Boolean = true,
     val quoteLocked: Boolean = false
 ) {

@@ -25,6 +25,7 @@ import com.blockchain.kyc.smsVerificationRemoteConfig
 import com.blockchain.kyc.stableCoinRemoteConfig
 import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kyc.sunriverAirdropRemoteConfig
+import com.blockchain.kycui.address.EligibilityForFreeEthAdapter
 import com.blockchain.kycui.address.CurrentTierAdapter
 import com.blockchain.kycui.address.KycHomeAddressPresenter
 import com.blockchain.kycui.address.Tier2Decision
@@ -55,6 +56,7 @@ import com.blockchain.nabu.Authenticator
 import com.blockchain.nabu.CreateNabuToken
 import com.blockchain.nabu.CurrentTier
 import com.blockchain.nabu.NabuUserSync
+import com.blockchain.nabu.EthEligibility
 import com.blockchain.nabu.StartKyc
 import com.blockchain.nabu.StartKycAirdrop
 import com.blockchain.nabu.StartKycForBuySell
@@ -199,6 +201,10 @@ val kycNabuModule = applicationContext {
 
         factory {
             CurrentTierAdapter(get(), get()) as CurrentTier
+        }
+
+        factory {
+            EligibilityForFreeEthAdapter(nabuToken = get(), nabuDataManager = get()) as EthEligibility
         }
 
         factory {

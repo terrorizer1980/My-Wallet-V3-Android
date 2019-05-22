@@ -130,19 +130,24 @@ class ExchangeConfirmationFragment :
     }
 
     override fun showExchangeCompleteDialog(firstGoldPaxTrade: Boolean) {
+        val title = if (!firstGoldPaxTrade) getString(R.string.morph_success_dlg_text) else
+            getString(R.string.morph_success_for_first_gold_pax_trade_title)
 
-        val dlg = ErrorBottomDialog.newInstance(
+        val description = if (!firstGoldPaxTrade) "" else
+            getString(R.string.morph_success_for_first_gold_pax_trade_description)
+
+        val exchangeStartedDialog = ErrorBottomDialog.newInstance(
             ErrorBottomDialog.Content(
-                title = getString(R.string.morph_success_dlg_text),
-                description = "",
+                title = title,
+                description = description,
                 ctaButtonText = R.string.morph_success_dlg_button,
                 dismissText = 0,
                 icon = R.drawable.ic_swap_in_progress_check
             )
         )
-        dlg.isCancelable = false
-        dlg.onCtaClick = { requireActivity().finish() }
-        dlg.show(fragmentManager, "BottomDialog")
+        exchangeStartedDialog.isCancelable = false
+        exchangeStartedDialog.onCtaClick = { requireActivity().finish() }
+        exchangeStartedDialog.show(fragmentManager, "BottomDialog")
     }
 
     override fun updateFee(cryptoValue: CryptoValue) {

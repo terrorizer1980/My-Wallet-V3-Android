@@ -65,7 +65,9 @@
     <string name="morph_refunded_title">Expired</string>
     <string name="morph_step_number">Step %1$s of 3</string>
     <string name="morph_confirm">Confirm</string>
-    <string name="morph_success_dlg_text">Success! Your exchange has been started!</string>
+    <string name="morph_success_dlg_text">Success! Your exchange has\nbeen started!</string>
+    <string name="morph_success_for_first_gold_pax_trade_title">Your Exchange has been started!</string>
+    <string name="morph_success_for_first_gold_pax_trade_description">Even better, since you need ETH to make USD PAX trades, we just airdropped enough ETH into your  wallet to cover your first 3 transactions\n🙌</string>
     <string name="morph_success_dlg_button">View Order Details</string>
 
     <!-- ORDER DETAIL -->
