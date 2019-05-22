@@ -43,6 +43,8 @@ class SwapErrorBottomDialog : BottomSheetDialogFragment() {
     private lateinit var ctaButton: Button
     private lateinit var dismissButton: Button
 
+    var onCtaClick: () -> Unit = {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         eventLogger.logEvent(LoggableEvent.SwapErrorDialog)
@@ -64,7 +66,7 @@ class SwapErrorBottomDialog : BottomSheetDialogFragment() {
         super.onResume()
         clicksDisposable += ctaButton.throttledClicks()
             .subscribeBy(onNext = {
-                // TODO CTA?
+                onCtaClick()
                 eventLogger.logEvent(LoggableEvent.SwapErrorDialogCtaClicked)
                 dismiss()
             })

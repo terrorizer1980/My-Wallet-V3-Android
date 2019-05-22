@@ -16,9 +16,8 @@ import com.blockchain.morph.exchange.mvi.Quote
 import com.blockchain.morph.ui.R
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeModel
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeViewModelProvider
+import com.blockchain.morph.ui.homebrew.exchange.error.SwapErrorBottomDialog
 import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewHostActivityListener
-import com.blockchain.morph.ui.homebrew.exchange.locked.ExchangeLockedActivity
-import com.blockchain.morph.ui.homebrew.exchange.locked.ExchangeLockedModel
 import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.analytics.LoggableEvent
 import com.blockchain.ui.extensions.sampleThrottledClicks
@@ -45,8 +44,7 @@ import timber.log.Timber
 import java.util.Locale
 
 class ExchangeConfirmationFragment :
-    BaseMvpFragment<ExchangeConfirmationView,
-            ExchangeConfirmationPresenter>(),
+    BaseMvpFragment<ExchangeConfirmationView, ExchangeConfirmationPresenter>(),
     ExchangeConfirmationView {
 
     private val presenter: ExchangeConfirmationPresenter by inject()
@@ -131,9 +129,20 @@ class ExchangeConfirmationFragment :
         }
     }
 
-    override fun continueToExchangeLocked(lockedModel: ExchangeLockedModel) {
-        ExchangeLockedActivity.start(requireContext(), lockedModel)
-        requireActivity().finish()
+    override fun showExchangeCompleteDialog(firstGoldPaxTrade: Boolean) {
+
+        val dlg = SwapErrorBottomDialog.newInstance(
+            SwapErrorBottomDialog.Content(
+                title = getString(R.string.morph_success_dlg_text),
+                description = "",
+                ctaButtonText = R.string.morph_success_dlg_button,
+                dismissText = 0,
+                icon = R.drawable.ic_swap_in_progress_check
+            )
+        )
+        dlg.isCancelable = false
+        dlg.onCtaClick = { requireActivity().finish() }
+        dlg.show(fragmentManager, "BottomDialog")
     }
 
     override fun updateFee(cryptoValue: CryptoValue) {
