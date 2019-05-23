@@ -63,22 +63,21 @@ internal class PerCurrencySendPresenter<View : SendView>(
         return listOf(regular, priority, custom)
     }
 
-    private fun delegate(): SendStrategy<View> =
-        when (selectedCrypto) {
-            CryptoCurrency.BTC -> btcStrategy
-            CryptoCurrency.ETHER -> etherStrategy
-            CryptoCurrency.BCH -> bchStrategy
-            CryptoCurrency.XLM -> xlmStrategy
-            CryptoCurrency.PAX -> paxStrategy
+    private var delegate: SendStrategy<View> = btcStrategy
+        set(value) {
+            field.reset()
+            field = value
+            field.initView(view)
+            field.onViewReady()
         }
 
-    override fun onContinueClicked() = delegate().onContinueClicked()
+    override fun onContinueClicked() = delegate.onContinueClicked()
 
-    override fun onSpendMaxClicked() = delegate().onSpendMaxClicked()
+    override fun onSpendMaxClicked() = delegate.onSpendMaxClicked()
 
     override fun onBroadcastReceived() {
         updateTicker()
-        delegate().onBroadcastReceived()
+        delegate.onBroadcastReceived()
     }
 
     @SuppressLint("CheckResult")
@@ -92,16 +91,25 @@ internal class PerCurrencySendPresenter<View : SendView>(
     }
 
     override fun onResume() {
-        delegate().onResume()
+        delegate.onResume()
     }
 
     override fun onCurrencySelected(currency: CryptoCurrency) {
         if (selectedCrypto == currency) return
 
+        delegate = when (currency) {
+            CryptoCurrency.BTC -> btcStrategy
+            CryptoCurrency.ETHER -> etherStrategy
+            CryptoCurrency.BCH -> bchStrategy
+            CryptoCurrency.XLM -> xlmStrategy
+            CryptoCurrency.PAX -> paxStrategy
+        }
+
         selectedCrypto = currency
         updateTicker()
         view?.setSelectedCurrency(currency)
-        delegate().onCurrencySelected()
+
+        delegate.onCurrencySelected()
     }
 
     override fun handleURIScan(untrimmedscanData: String?) {
@@ -174,19 +182,19 @@ internal class PerCurrencySendPresenter<View : SendView>(
         }
 
         if (address != "") {
-            delegate().processURIScanAddress(address)
+            delegate.processURIScanAddress(address)
         }
     }
 
-    override fun handlePrivxScan(scanData: String?) = delegate().handlePrivxScan(scanData)
+    override fun handlePrivxScan(scanData: String?) = delegate.handlePrivxScan(scanData)
 
-    override fun clearReceivingObject() = delegate().clearReceivingObject()
+    override fun clearReceivingObject() = delegate.clearReceivingObject()
 
     override fun selectSendingAccount(account: JsonSerializableAccount?) =
-        delegate().selectSendingAccount(account)
+        delegate.selectSendingAccount(account)
 
     override fun selectReceivingAccount(account: JsonSerializableAccount?) =
-        delegate().selectReceivingAccount(account)
+        delegate.selectReceivingAccount(account)
 
     override fun updateCryptoTextField(editable: Editable, amountFiat: EditText) {
         val maxLength = 2
@@ -217,25 +225,25 @@ internal class PerCurrencySendPresenter<View : SendView>(
         view.updateFiatAmount(fiatValue, true)
     }
 
-    override fun selectDefaultOrFirstFundedSendingAccount() = delegate().selectDefaultOrFirstFundedSendingAccount()
+    override fun selectDefaultOrFirstFundedSendingAccount() = delegate.selectDefaultOrFirstFundedSendingAccount()
 
-    override fun submitPayment() = delegate().submitPayment()
+    override fun submitPayment() = delegate.submitPayment()
 
-    override fun onCryptoTextChange(cryptoText: String) = delegate().onCryptoTextChange(cryptoText)
+    override fun onCryptoTextChange(cryptoText: String) = delegate.onCryptoTextChange(cryptoText)
 
-    override fun onAddressTextChange(address: String) = delegate().onAddressTextChange(address)
+    override fun onAddressTextChange(address: String) = delegate.onAddressTextChange(address)
 
-    override fun onMemoChange(memo: Memo) = delegate().onMemoChange(memo)
+    override fun onMemoChange(memo: Memo) = delegate.onMemoChange(memo)
 
     override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) =
-        delegate().spendFromWatchOnlyBIP38(pw, scanData)
+        delegate.spendFromWatchOnlyBIP38(pw, scanData)
 
-    override fun onNoSecondPassword() = delegate().onNoSecondPassword()
+    override fun onNoSecondPassword() = delegate.onNoSecondPassword()
 
     override fun onSecondPasswordValidated(validateSecondPassword: String) =
-        delegate().onSecondPasswordValidated(validateSecondPassword)
+        delegate.onSecondPasswordValidated(validateSecondPassword)
 
-    override fun getBitcoinFeeOptions() = delegate().getFeeOptions()
+    override fun getBitcoinFeeOptions() = delegate.getFeeOptions()
 
     override fun onViewReady() {
         updateTicker()
@@ -245,17 +253,6 @@ internal class PerCurrencySendPresenter<View : SendView>(
             selectedCrypto = CryptoCurrency.BTC
             view.hideCurrencyHeader()
         }
-
-        delegate().onViewReady()
-    }
-
-    override fun initView(view: View?) {
-        super.initView(view)
-        xlmStrategy.initView(view)
-        btcStrategy.initView(view)
-        bchStrategy.initView(view)
-        etherStrategy.initView(view)
-        paxStrategy.initView(view)
     }
 
     override fun disableAdvancedFeeWarning() {

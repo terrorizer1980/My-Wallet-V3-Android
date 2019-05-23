@@ -59,7 +59,13 @@ interface SendView : BaseSendView {
 
     fun showMemo()
 
+    fun hideMemo()
+
     fun displayMemo(usersMemo: Memo)
+
+    fun showInfoLink()
+
+    fun hideInfoLink()
 
     // Enable / Disable
     fun enableFeeDropdown()
@@ -118,8 +124,6 @@ interface SendView : BaseSendView {
     fun finishPage()
 
     fun hideCurrencyHeader()
-
-    fun showMinBalanceLearnMore()
 }
 
 internal fun SendConfirmationDetails.toPaymentConfirmationDetails(): PaymentConfirmationDetails {

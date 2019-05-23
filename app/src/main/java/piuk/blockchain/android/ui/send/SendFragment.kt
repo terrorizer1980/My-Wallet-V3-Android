@@ -171,7 +171,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
         max.setOnClickListener { presenter.onSpendMaxClicked() }
 
-        learnMoreMinBalance.setOnClickListener {
+        info_link.setOnClickListener {
             MinBalanceExplanationDialog().show(fragmentManager, "Dialog")
         }
 
@@ -723,6 +723,10 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
+    override fun hideMemo() {
+        memo.gone()
+    }
+
     override fun displayMemo(usersMemo: Memo) {
         lastMemo = usersMemo
     }
@@ -741,8 +745,12 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
-    override fun showMinBalanceLearnMore() {
-        learnMoreMinBalance.visible()
+    override fun showInfoLink() {
+        info_link.visible()
+    }
+
+    override fun hideInfoLink() {
+        info_link.gone()
     }
 
     @SuppressLint("SetTextI18n")

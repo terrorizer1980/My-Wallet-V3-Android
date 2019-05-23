@@ -96,26 +96,24 @@ class EtherSendStrategy(
     }
 
     private fun onEtherChosen() {
-        view.hideFeePriority()
-        view.setFeePrioritySelection(0)
-        view.disableFeeDropdown()
-        view.setCryptoMaxLength(30)
-        resetState()
+        view?.let {
+            reset()
+            it.hideFeePriority()
+            it.setFeePrioritySelection(0)
+            it.disableFeeDropdown()
+            it.setCryptoMaxLength(30)
+        }
     }
 
-    private fun resetState() {
-        compositeDisposable.clear()
+    override fun reset() {
+        super.reset()
         pendingTransaction.clear()
         absoluteSuggestedFee = BigInteger.ZERO
 
-        view?.setSendButtonEnabled(true)
-        view.clearAmount()
-        view.clearFeeAmount()
-        view.hideMaxAvailable()
-        view.updateReceivingAddress("")
-        resetAccountList()
-
-        selectDefaultOrFirstFundedSendingAccount()
+        view?.let {
+            resetAccountList()
+            selectDefaultOrFirstFundedSendingAccount()
+        }
     }
 
     private fun resetAccountList() {

@@ -118,26 +118,25 @@ class BitcoinCashSendStrategy(
     }
 
     private fun onBitcoinCashChosen() {
-        view.hideFeePriority()
-        view.setFeePrioritySelection(0)
-        view.disableFeeDropdown()
-        view.setCryptoMaxLength(17)
-        resetState()
-        calculateSpendableAmounts(spendAll = false, amountToSendText = "0")
-        view.enableInput()
+        view?.let {
+            reset()
+            it.hideFeePriority()
+            it.setFeePrioritySelection(0)
+            it.disableFeeDropdown()
+            it.setCryptoMaxLength(17)
+            calculateSpendableAmounts(spendAll = false, amountToSendText = "0")
+            it.enableInput()
+        }
     }
 
-    private fun resetState() {
-        compositeDisposable.clear()
+    override fun reset() {
+        super.reset()
         pendingTransaction.clear()
-        view?.setSendButtonEnabled(true)
-        absoluteSuggestedFee = BigInteger.ZERO
-        view.clearAmount()
-        view.clearFeeAmount()
-        resetAccountList()
-        selectDefaultOrFirstFundedSendingAccount()
-        view.hideMaxAvailable()
-        clearReceivingAddress()
+        view?.let {
+            absoluteSuggestedFee = BigInteger.ZERO
+            resetAccountList()
+            selectDefaultOrFirstFundedSendingAccount()
+        }
     }
 
     @SuppressLint("CheckResult")

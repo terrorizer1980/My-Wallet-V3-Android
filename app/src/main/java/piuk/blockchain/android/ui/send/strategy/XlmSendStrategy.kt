@@ -109,15 +109,17 @@ class XlmSendStrategy(
     }
 
     private fun xlmSelected() {
-        view.hideFeePriority()
-        view.setFeePrioritySelection(0)
-        view.disableFeeDropdown()
-        view.setCryptoMaxLength(15)
-        view.showMinBalanceLearnMore()
-        view.showMemo()
-        calculateMax()
+        view?.let {
+            it.hideFeePriority()
+            it.setFeePrioritySelection(0)
+            it.disableFeeDropdown()
+            it.setCryptoMaxLength(15)
+            it.showInfoLink()
+            it.showMemo()
 
-        selectDefaultOrFirstFundedSendingAccount()
+            calculateMax()
+            selectDefaultOrFirstFundedSendingAccount()
+        }
     }
 
     @SuppressLint("CheckResult")

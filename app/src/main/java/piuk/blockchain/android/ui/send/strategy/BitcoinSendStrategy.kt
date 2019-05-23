@@ -119,25 +119,24 @@ class BitcoinSendStrategy(
     }
 
     private fun onBitcoinChosen() {
-        view.showFeePriority()
-        view.enableFeeDropdown()
-        view.setCryptoMaxLength(17)
-        resetState()
-        calculateSpendableAmounts(spendAll = false, amountToSendText = "0")
-        view.enableInput()
+        view?.let {
+            reset()
+            it.showFeePriority()
+            it.enableFeeDropdown()
+            it.setCryptoMaxLength(17)
+            calculateSpendableAmounts(spendAll = false, amountToSendText = "0")
+            it.enableInput()
+        }
     }
 
-    private fun resetState() {
-        compositeDisposable.clear()
+    override fun reset() {
+        super.reset()
         pendingTransaction.clear()
-        view?.setSendButtonEnabled(true)
-        absoluteSuggestedFee = BigInteger.ZERO
-        view.clearAmount()
-        view.clearFeeAmount()
-        resetAccountList()
-        selectDefaultOrFirstFundedSendingAccount()
-        view.hideMaxAvailable()
-        clearReceivingAddress()
+        view?.let {
+            absoluteSuggestedFee = BigInteger.ZERO
+            resetAccountList()
+            selectDefaultOrFirstFundedSendingAccount()
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -384,10 +383,6 @@ class BitcoinSendStrategy(
 
     private fun resetAccountList() {
         setReceiveHint(getAddressList().size)
-    }
-
-    private fun clearReceivingAddress() {
-        view.updateReceivingAddress("")
     }
 
     override fun clearReceivingObject() {
