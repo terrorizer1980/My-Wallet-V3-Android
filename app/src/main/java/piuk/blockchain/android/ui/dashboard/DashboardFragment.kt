@@ -15,8 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import org.koin.android.ext.android.inject
@@ -60,7 +60,7 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
 
     private val osUtil: OSUtil by inject()
 
-    private val eventLogger: EventLogger by inject()
+    private val analytics: Analytics by inject()
 
     private val dashboardAdapter by unsafeLazy {
         DashboardDelegateAdapter(
@@ -99,7 +99,7 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        eventLogger.logEvent(LoggableEvent.Dashboard)
+        analytics.logEvent(AnalyticsEvents.Dashboard)
 
         recycler_view?.apply {
             layoutManager = safeLayoutManager

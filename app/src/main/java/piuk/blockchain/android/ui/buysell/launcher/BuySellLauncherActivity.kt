@@ -7,8 +7,8 @@ import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.status.KycStatusActivity
 import com.blockchain.nabu.StartBuySell
 import com.blockchain.nabu.StartKycForBuySell
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
@@ -42,7 +42,7 @@ class BuySellLauncherActivity : BaseMvpActivity<BuySellLauncherView, BuySellLaun
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buysell_launcher)
-        get<EventLogger>().logEvent(LoggableEvent.BuyBitcoin)
+        get<Analytics>().logEvent(AnalyticsEvents.BuyBitcoin)
 
         onViewReady()
     }

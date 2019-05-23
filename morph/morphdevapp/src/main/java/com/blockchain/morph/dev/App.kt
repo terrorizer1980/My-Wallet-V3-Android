@@ -26,8 +26,8 @@ import com.blockchain.network.EnvironmentUrls
 import com.blockchain.network.modules.MoshiBuilderInterceptorList
 import com.blockchain.network.modules.OkHttpInterceptors
 import com.blockchain.network.modules.apiModule
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.Loggable
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.transactions.Memo
@@ -265,11 +265,11 @@ val fakesModule = applicationContext {
     }
 
     bean {
-        object : EventLogger {
-            override fun logEvent(loggable: Loggable) {
-                Timber.d(loggable.eventName)
+        object : Analytics {
+            override fun logEvent(analyticsEvent: AnalyticsEvent) {
+                Timber.d(analyticsEvent.event)
             }
-        } as EventLogger
+        } as Analytics
     }
 
     bean {

@@ -12,7 +12,7 @@ import com.blockchain.lockbox.data.LockboxDataManager;
 import com.blockchain.logging.LastTxUpdater;
 import com.blockchain.network.EnvironmentUrls;
 import com.blockchain.notifications.NotificationTokenManager;
-import com.blockchain.notifications.analytics.EventLogger;
+import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.remoteconfig.RemoteConfig;
 import com.blockchain.remoteconfig.RemoteConfiguration;
 import com.blockchain.sunriver.XlmDataManager;
@@ -41,7 +41,6 @@ import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyState;
 import piuk.blockchain.androidcore.data.erc20.Erc20Account;
-import piuk.blockchain.androidcore.data.erc20.PaxAccount;
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager;
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates;
 import piuk.blockchain.androidcore.data.fees.FeeDataManager;
@@ -306,8 +305,8 @@ public class ApplicationModule extends KoinDaggerModule {
     }
 
     @Provides
-    EventLogger provideEventLogger() {
-        return get(EventLogger.class);
+    Analytics provideEventLogger() {
+        return get(Analytics.class);
     }
 
     @Provides

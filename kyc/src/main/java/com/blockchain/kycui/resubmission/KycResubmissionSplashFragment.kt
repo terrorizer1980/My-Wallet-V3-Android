@@ -9,7 +9,7 @@ import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.navigate
 import com.blockchain.kycui.reentry.KycNavigator
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
 import io.reactivex.disposables.CompositeDisposable
@@ -37,7 +37,7 @@ class KycResubmissionSplashFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logEvent(LoggableEvent.KycResubmission)
+        logEvent(AnalyticsEvents.KycResubmission)
 
         progressListener.setHostTitle(R.string.kyc_resubmission_splash_title)
         progressListener.incrementProgress(KycStep.SplashPage)

@@ -1,6 +1,9 @@
 package com.blockchain.notifications.analytics
 
-enum class LoggableEvent(override val eventName: String) : Loggable {
+enum class AnalyticsEvents(
+    override val event: String,
+    override val params: Map<String, String> = emptyMap()
+) : AnalyticsEvent {
 
     AccountsAndAddresses("accounts_and_addresses"),
     Backup("backup"),
@@ -52,6 +55,7 @@ enum class LoggableEvent(override val eventName: String) : Loggable {
     SwapErrorDialogDismissClicked("swap_error_dialog_dismiss_clicked")
 }
 
-fun kycTierStart(tier: Int): Loggable = object : Loggable {
-    override val eventName: String = "kyc_tier${tier}_start"
+fun kycTierStart(tier: Int): AnalyticsEvent = object : AnalyticsEvent {
+    override val event: String = "kyc_tier${tier}_start"
+    override val params: Map<String, String> = emptyMap()
 }

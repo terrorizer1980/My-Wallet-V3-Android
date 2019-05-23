@@ -2,8 +2,8 @@ package piuk.blockchain.android.kyc.morphmethod
 
 import com.blockchain.koin.modules.MorphMethodType
 import com.blockchain.koin.modules.MorphMethodTypeSelector
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
@@ -18,11 +18,11 @@ class LoggingMorphMethodTypeSelectorSelectorTest {
     @Test
     fun `logs calls`() {
         val inner: MorphMethodTypeSelector = mock()
-        val eventLogger = mock<EventLogger>()
+        val eventLogger = mock<Analytics>()
         val logCalls = inner.logCalls(eventLogger)
-        verify(eventLogger, never()).logEvent(LoggableEvent.Exchange)
+        verify(eventLogger, never()).logEvent(AnalyticsEvents.Exchange)
         logCalls.getMorphMethod()
-        verify(eventLogger).logEvent(LoggableEvent.Exchange)
+        verify(eventLogger).logEvent(AnalyticsEvents.Exchange)
     }
 
     @Test
@@ -31,7 +31,7 @@ class LoggingMorphMethodTypeSelectorSelectorTest {
         val inner: MorphMethodTypeSelector = mock {
             on { getMorphMethod() } `it returns` innerResult
         }
-        val eventLogger = mock<EventLogger>()
+        val eventLogger = mock<Analytics>()
         inner.logCalls(eventLogger).getMorphMethod() `should be` innerResult
     }
 }

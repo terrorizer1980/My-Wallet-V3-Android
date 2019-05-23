@@ -46,8 +46,8 @@ import com.blockchain.kycui.navhost.KycNavHostActivity;
 import com.blockchain.kycui.navhost.models.CampaignType;
 import com.blockchain.kycui.settings.KycStatusPreference;
 import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity;
-import com.blockchain.notifications.analytics.EventLogger;
-import com.blockchain.notifications.analytics.LoggableEvent;
+import com.blockchain.notifications.analytics.Analytics;
+import com.blockchain.notifications.analytics.AnalyticsEvents;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.mukesh.countrypicker.fragments.CountryPicker;
 import com.mukesh.countrypicker.models.Country;
@@ -115,7 +115,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     @Inject
     SettingsPresenter settingsPresenter;
     @Inject
-    EventLogger eventLogger;
+    Analytics analytics;
 
     private int pwStrength = 0;
     private MaterialProgressDialog progressDialog;
@@ -139,7 +139,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         settingsPresenter.initView(this);
         settingsPresenter.onViewReady();
 
-        eventLogger.logEvent(LoggableEvent.Settings);
+        analytics.logEvent(AnalyticsEvents.Settings);
         Logging.INSTANCE.logContentView(new ContentViewEvent()
                 .putContentName(getClass().getSimpleName()));
     }

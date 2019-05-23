@@ -26,7 +26,7 @@ import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.navigate
 import com.blockchain.kycui.profile.models.ProfileModel
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
@@ -106,7 +106,7 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logEvent(LoggableEvent.KycAddress)
+        logEvent(AnalyticsEvents.KycAddress)
         textViewTerms.renderTermsLinks(R.string.kyc_splash_terms_and_conditions_submit)
 
         progressListener.setHostTitle(R.string.kyc_address_title)

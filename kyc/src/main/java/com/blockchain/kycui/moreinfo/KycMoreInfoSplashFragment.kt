@@ -9,7 +9,7 @@ import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.navigate
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -31,7 +31,7 @@ class KycMoreInfoSplashFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logEvent(LoggableEvent.KycMoreInfo)
+        logEvent(AnalyticsEvents.KycMoreInfo)
 
         progressListener.setHostTitle(R.string.kyc_more_info_splash_title)
         progressListener.incrementProgress(KycStep.SplashPage)

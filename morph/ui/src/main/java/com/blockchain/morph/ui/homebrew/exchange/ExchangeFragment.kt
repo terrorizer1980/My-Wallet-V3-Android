@@ -38,7 +38,7 @@ import com.blockchain.morph.ui.logging.AmountErrorType
 import com.blockchain.morph.ui.logging.FixType
 import com.blockchain.morph.ui.logging.FixTypeEvent
 import com.blockchain.nabu.StartKyc
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
 import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
@@ -47,7 +47,6 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.ExchangeRate
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.Money
-import info.blockchain.balance.times
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -122,7 +121,7 @@ internal class ExchangeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activityListener.setToolbarTitle(R.string.morph_new_exchange)
-        logEvent(LoggableEvent.ExchangeCreate)
+        logEvent(AnalyticsEvents.ExchangeCreate)
 
         currency = arguments?.getString(ARGUMENT_CURRENCY) ?: "USD"
 

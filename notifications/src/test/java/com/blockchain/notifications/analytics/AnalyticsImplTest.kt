@@ -5,18 +5,19 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.junit.Test
 
-class AnalyticsTest {
+class AnalyticsImplTest {
 
     @Test
     fun `should log custom event`() {
         val mockFirebase = mock<FirebaseAnalytics>()
-        val event = object : Loggable {
-            override val eventName: String
-                get() = "eventName"
+        val event = object : AnalyticsEvent {
+            override val event: String
+                get() = "name"
+            override val params: Map<String, String> = emptyMap()
         }
 
-        Analytics(mockFirebase).logEvent(event)
+        AnalyticsImpl(mockFirebase).logEvent(event)
 
-        verify(mockFirebase).logEvent(event.eventName, null)
+        verify(mockFirebase).logEvent(event.event, null)
     }
 }

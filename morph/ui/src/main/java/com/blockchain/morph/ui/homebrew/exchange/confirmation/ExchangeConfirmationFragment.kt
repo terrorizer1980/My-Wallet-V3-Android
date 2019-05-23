@@ -17,8 +17,8 @@ import com.blockchain.morph.ui.R
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeModel
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeViewModelProvider
 import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewHostActivityListener
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.extensions.sampleThrottledClicks
 import com.blockchain.ui.password.SecondPasswordHandler
 import info.blockchain.balance.AccountReference
@@ -85,7 +85,7 @@ class ExchangeConfirmationFragment :
         }
 
         activityListener.setToolbarTitle(R.string.confirm_exchange)
-        get<EventLogger>().logEvent(LoggableEvent.ExchangeDetailConfirm)
+        get<Analytics>().logEvent(AnalyticsEvents.ExchangeDetailConfirm)
 
         onViewReady()
     }

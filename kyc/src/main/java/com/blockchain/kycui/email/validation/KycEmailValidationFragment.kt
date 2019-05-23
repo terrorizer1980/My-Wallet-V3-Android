@@ -11,7 +11,7 @@ import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.navigate
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.Observables
@@ -55,7 +55,7 @@ class KycEmailValidationFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logEvent(LoggableEvent.KycEmail)
+        logEvent(AnalyticsEvents.KycEmail)
         progressListener.setHostTitle(R.string.kyc_email_title)
         progressListener.incrementProgress(KycStep.EmailVerifiedPage)
         textViewEmail.text = email

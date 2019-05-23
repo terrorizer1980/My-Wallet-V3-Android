@@ -9,8 +9,8 @@ import com.blockchain.morph.ui.homebrew.exchange.detail.HomebrewTradeDetailActiv
 import com.blockchain.morph.ui.homebrew.exchange.history.adapter.TradeHistoryAdapter
 import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.morph.ui.homebrew.exchange.model.Trade
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import com.blockchain.preferences.FiatCurrencyPreference
@@ -33,7 +33,7 @@ class TradeHistoryActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homebrew_trade_history)
-        get<EventLogger>().logEvent(LoggableEvent.ExchangeHistory)
+        get<Analytics>().logEvent(AnalyticsEvents.ExchangeHistory)
 
         button_new_exchange.setOnClickListener {
             HomebrewNavHostActivity.start(this, fiat.fiatCurrencyPreference)

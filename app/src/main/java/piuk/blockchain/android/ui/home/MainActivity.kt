@@ -38,8 +38,9 @@ import com.blockchain.kycui.navhost.KycNavHostActivity
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.lockbox.ui.LockboxLandingActivity
 import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_SUPPORT_PORTAL
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionGrantedResponse
@@ -108,12 +109,10 @@ class MainActivity
     internal lateinit var mainPresenter: MainPresenter
 
     private val appUtil: AppUtil by inject()
+    private val analytics: Analytics by inject()
 
     @Inject
     internal lateinit var morphActivityLauncher: MorphActivityLauncher
-
-    @Inject
-    internal lateinit var eventLogger: EventLogger
 
     internal lateinit var binding: ActivityMainBinding
 
@@ -399,7 +398,7 @@ class MainActivity
             .setTitle(R.string.unpair_wallet)
             .setMessage(R.string.ask_you_sure_unpair)
             .setPositiveButton(R.string.unpair) { _, _ ->
-                eventLogger.logEvent(LoggableEvent.Logout)
+                analytics.logEvent(AnalyticsEvents.Logout)
                 presenter.unPair()
             }
             .setNegativeButton(android.R.string.cancel, null)
@@ -407,7 +406,7 @@ class MainActivity
     }
 
     private fun onSupportClicked() {
-        eventLogger.logEvent(LoggableEvent.Support)
+        analytics.logEvent(AnalyticsEvents.Support)
         calloutToExternalSupportLinkDlg(this, URL_BLOCKCHAIN_SUPPORT_PORTAL)
     }
 
@@ -427,6 +426,11 @@ class MainActivity
 
     @Thunk
     internal fun requestScan() {
+        analytics.logEvent(object : AnalyticsEvent {
+            override val event = "qr_scan_requested"
+            override val params = mapOf("fragment" to (currentFragment::class.simpleName ?: "unknown"))
+        })
+
         val deniedPermissionListener = SnackbarOnDeniedPermissionListener.Builder
             .with(binding.root, R.string.request_camera_permission)
             .withButton(android.R.string.ok) { v -> requestScan() }

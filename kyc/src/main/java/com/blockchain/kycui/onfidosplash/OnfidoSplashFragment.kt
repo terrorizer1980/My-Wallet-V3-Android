@@ -18,7 +18,7 @@ import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import com.onfido.android.sdk.capture.DocumentType
 import com.onfido.android.sdk.capture.ExitCode
@@ -67,7 +67,7 @@ class OnfidoSplashFragment : BaseFragment<OnfidoSplashView, OnfidoSplashPresente
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logEvent(LoggableEvent.KycVerifyIdentity)
+        logEvent(AnalyticsEvents.KycVerifyIdentity)
 
         progressListener.setHostTitle(R.string.kyc_onfido_splash_title)
         progressListener.incrementProgress(KycStep.VeriffSplashPage)

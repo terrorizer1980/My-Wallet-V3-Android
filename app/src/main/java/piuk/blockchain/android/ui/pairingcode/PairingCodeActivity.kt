@@ -5,8 +5,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import kotlinx.android.synthetic.main.activity_pairing_code.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.get
@@ -34,7 +34,7 @@ class PairingCodeActivity : BaseMvpActivity<PairingCodeView, PairingCodePresente
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pairing_code)
-        get<EventLogger>().logEvent(LoggableEvent.WebLogin)
+        get<Analytics>().logEvent(AnalyticsEvents.WebLogin)
 
         setupToolbar(toolbar_general, R.string.pairing_code_log_in)
 

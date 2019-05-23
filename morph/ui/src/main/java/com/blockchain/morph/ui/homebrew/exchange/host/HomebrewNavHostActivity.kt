@@ -28,7 +28,7 @@ import com.blockchain.morph.ui.logging.WebsocketConnectionFailureEvent
 import com.blockchain.morph.ui.showErrorDialog
 import com.blockchain.morph.ui.showHelpDialog
 import com.blockchain.nabu.StartKyc
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
 import info.blockchain.balance.AccountReference
@@ -108,13 +108,13 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_show_kyc -> {
-                logEvent(LoggableEvent.SwapTiers)
+                logEvent(AnalyticsEvents.SwapTiers)
                 startKyc.startKycActivity(this@HomebrewNavHostActivity)
                 return true
             }
             R.id.action_help -> {
                 showHelpDialog(this, startKyc = {
-                    logEvent(LoggableEvent.SwapTiers)
+                    logEvent(AnalyticsEvents.SwapTiers)
                     startKyc.startKycActivity(this@HomebrewNavHostActivity)
                 })
                 return true

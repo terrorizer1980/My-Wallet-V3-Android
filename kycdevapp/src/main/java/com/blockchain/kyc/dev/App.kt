@@ -17,8 +17,8 @@ import com.blockchain.kycui.address.Tier2Decision
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.nabu.NabuToken
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.Loggable
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.sunriver.SunriverCampaignSignUp
 import info.blockchain.wallet.ApiCode
@@ -261,11 +261,11 @@ val fakesModule = applicationContext {
     }
 
     bean {
-        object : EventLogger {
-            override fun logEvent(loggable: Loggable) {
-                Timber.d("Event log: ${loggable.eventName}")
+        object : Analytics {
+            override fun logEvent(analyticsEvent: AnalyticsEvent) {
+                Timber.d("Event log: ${analyticsEvent.event}")
             }
-        } as EventLogger
+        } as Analytics
     }
 
     bean {

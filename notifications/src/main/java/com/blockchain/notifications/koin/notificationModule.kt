@@ -4,8 +4,8 @@ import android.app.NotificationManager
 import android.content.Context
 import com.blockchain.notifications.NotificationService
 import com.blockchain.notifications.NotificationTokenManager
+import com.blockchain.notifications.analytics.AnalyticsImpl
 import com.blockchain.notifications.analytics.Analytics
-import com.blockchain.notifications.analytics.EventLogger
 import com.blockchain.notifications.links.DynamicLinkHandler
 import com.blockchain.notifications.links.PendingLink
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -32,6 +32,6 @@ val notificationModule = applicationContext {
 
     factory { DynamicLinkHandler(get()) as PendingLink }
 
-    factory { Analytics(get()) }
-        .bind(EventLogger::class)
+    factory { AnalyticsImpl(get()) }
+        .bind(Analytics::class)
 }

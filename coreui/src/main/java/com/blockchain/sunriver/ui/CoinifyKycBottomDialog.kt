@@ -3,8 +3,8 @@ package com.blockchain.sunriver.ui
 import android.content.Intent
 import android.net.Uri
 import com.blockchain.nabu.StartKycAirdrop
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.R
 
@@ -17,28 +17,28 @@ class CoinifyKycBottomDialog : BaseAirdropBottomDialog(
     )
 ) {
 
-    private val eventLogger: EventLogger by inject()
+    private val analytics: Analytics by inject()
 
     private val startKyc: StartKycAirdrop by inject()
 
     override fun onStart() {
         super.onStart()
-        eventLogger.logEvent(LoggableEvent.CoinifyKycBottomDialog)
+        analytics.logEvent(AnalyticsEvents.CoinifyKycBottomDialog)
     }
 
     override fun rocketShipClick() {
-        eventLogger.logEvent(LoggableEvent.CoinifyKycBottomDialogClickedRocket)
+        analytics.logEvent(AnalyticsEvents.CoinifyKycBottomDialogClickedRocket)
         startKycAndDismiss()
     }
 
     override fun ctaButtonClick() {
-        eventLogger.logEvent(LoggableEvent.CoinifyKycBottomDialogClicked)
+        analytics.logEvent(AnalyticsEvents.CoinifyKycBottomDialogClicked)
         startKycAndDismiss()
     }
 
     override fun dismissButtonClick() {
         dismiss()
-        eventLogger.logEvent(LoggableEvent.CoinifyKycBottomDialogLearnMoreClicked)
+        analytics.logEvent(AnalyticsEvents.CoinifyKycBottomDialogLearnMoreClicked)
         context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.coinify_kyc_learn_more_url))))
     }
 

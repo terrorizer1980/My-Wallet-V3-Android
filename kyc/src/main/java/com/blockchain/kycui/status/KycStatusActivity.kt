@@ -9,7 +9,7 @@ import android.support.v7.app.AlertDialog
 import com.blockchain.extensions.px
 import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
@@ -41,7 +41,7 @@ class KycStatusActivity : BaseMvpActivity<KycStatusView, KycStatusPresenter>(), 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_kyc_status)
-        logEvent(LoggableEvent.KycComplete)
+        logEvent(AnalyticsEvents.KycComplete)
 
         val title = when (campaignType) {
             CampaignType.BuySell -> R.string.buy_sell_splash_title

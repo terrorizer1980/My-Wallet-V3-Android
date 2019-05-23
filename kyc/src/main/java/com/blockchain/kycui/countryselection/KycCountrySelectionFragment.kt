@@ -14,7 +14,7 @@ import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.navigate
 import com.blockchain.kycui.search.filterCountries
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.jakewharton.rxbinding2.support.v7.widget.queryTextChanges
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -66,11 +66,11 @@ internal class KycCountrySelectionFragment :
         }
         val texts = when (regionType) {
             RegionType.Country -> {
-                logEvent(LoggableEvent.KycCountry)
+                logEvent(AnalyticsEvents.KycCountry)
                 R.string.kyc_country_selection_title to R.string.kyc_country_selection_message
             }
             RegionType.State -> {
-                logEvent(LoggableEvent.KycStates)
+                logEvent(AnalyticsEvents.KycStates)
                 R.string.kyc_country_selection_state_title to R.string.kyc_country_selection_message_state
             }
         }

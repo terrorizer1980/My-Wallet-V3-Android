@@ -11,7 +11,7 @@ import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.navigate
 import com.blockchain.nabu.StartBuySell
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
 import io.reactivex.disposables.CompositeDisposable
@@ -56,9 +56,9 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
         logEvent(
             when (campaignType) {
                 CampaignType.BuySell,
-                CampaignType.Swap -> LoggableEvent.KycWelcome
-                CampaignType.Sunriver -> LoggableEvent.KycSunriverStart
-                CampaignType.Resubmission -> LoggableEvent.KycResubmission
+                CampaignType.Swap -> AnalyticsEvents.KycWelcome
+                CampaignType.Sunriver -> AnalyticsEvents.KycSunriverStart
+                CampaignType.Resubmission -> AnalyticsEvents.KycResubmission
             }
         )
 

@@ -15,7 +15,7 @@ import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
 import com.blockchain.veriff.VeriffApplicantAndToken
@@ -54,7 +54,7 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logEvent(LoggableEvent.KycVerifyIdentity)
+        logEvent(AnalyticsEvents.KycVerifyIdentity)
 
         progressListener.setHostTitle(R.string.kyc_veriff_splash_title)
         progressListener.incrementProgress(KycStep.VeriffSplashPage)

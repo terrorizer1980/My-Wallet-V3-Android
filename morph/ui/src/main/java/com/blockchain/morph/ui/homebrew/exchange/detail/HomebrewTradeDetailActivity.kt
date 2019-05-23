@@ -20,8 +20,8 @@ import com.blockchain.morph.ui.homebrew.exchange.extensions.toStatusString
 import com.blockchain.morph.ui.homebrew.exchange.model.Trade
 import com.blockchain.morph.ui.showHelpDialog
 import com.blockchain.nabu.StartKyc
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import kotlinx.android.synthetic.main.activity_homebrew_trade_detail.*
 import org.koin.android.ext.android.get
@@ -41,7 +41,7 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homebrew_trade_detail)
-        get<EventLogger>().logEvent(LoggableEvent.ExchangeDetailOverview)
+        get<Analytics>().logEvent(AnalyticsEvents.ExchangeDetailOverview)
 
         val trade = intent.extras.get("EXTRA_TRADE") as Trade
         setupToolbar(R.id.toolbar_general, R.string.order_detail)
@@ -131,13 +131,13 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_show_kyc -> {
-                logEvent(LoggableEvent.SwapTiers)
+                logEvent(AnalyticsEvents.SwapTiers)
                 startKyc.startKycActivity(this@HomebrewTradeDetailActivity)
                 return true
             }
             R.id.action_help -> {
                 showHelpDialog(this, startKyc = {
-                    logEvent(LoggableEvent.SwapTiers)
+                    logEvent(AnalyticsEvents.SwapTiers)
                     startKyc.startKycActivity(this@HomebrewTradeDetailActivity)
                 })
                 return true

@@ -10,8 +10,8 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -34,7 +34,7 @@ class ErrorBottomDialog : BottomSheetDialogFragment() {
         @DrawableRes val icon: Int
     ) : Parcelable
 
-    private val eventLogger: EventLogger by inject()
+    private val analytics: Analytics by inject()
 
     private val clicksDisposable = CompositeDisposable()
 
@@ -44,7 +44,7 @@ class ErrorBottomDialog : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        eventLogger.logEvent(LoggableEvent.SwapErrorDialog)
+        analytics.logEvent(AnalyticsEvents.SwapErrorDialog)
         setStyle(STYLE_NORMAL, R.style.TransparentBottomSheetDialogTheme)
 
         content = arguments?.getParcelable(ARG_CONTENT) ?: throw IllegalStateException("No content provided")
@@ -65,12 +65,12 @@ class ErrorBottomDialog : BottomSheetDialogFragment() {
         clicksDisposable += button_cta.throttledClicks()
             .subscribeBy(onNext = {
                 onCtaClick()
-                eventLogger.logEvent(LoggableEvent.SwapErrorDialogCtaClicked)
+                analytics.logEvent(AnalyticsEvents.SwapErrorDialogCtaClicked)
                 dismiss()
             })
         clicksDisposable += button_dismiss.throttledClicks()
             .subscribeBy(onNext = {
-                eventLogger.logEvent(LoggableEvent.SwapErrorDialogDismissClicked)
+                analytics.logEvent(AnalyticsEvents.SwapErrorDialogDismissClicked)
                 dismiss()
             })
     }
