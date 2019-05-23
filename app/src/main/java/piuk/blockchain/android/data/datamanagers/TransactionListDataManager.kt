@@ -53,7 +53,8 @@ class TransactionListDataManager(
             CryptoCurrency.ETHER -> getEthereumObservable()
             CryptoCurrency.BCH -> fetchBchTransactions(itemAccount, limit, offset)
             CryptoCurrency.XLM -> fetchXlmTransactions()
-            CryptoCurrency.PAX -> getErc20Transactions().onErrorReturn { emptyList() }
+            CryptoCurrency.PAX -> getPaxTransactions().onErrorReturn { emptyList() }
+            CryptoCurrency.PAX -> Observable.just(emptyList())
         }
 
         return observable.doOnNext { insertTransactionList(it.toMutableList()) }
@@ -269,7 +270,7 @@ class TransactionListDataManager(
                     .toObservable()
             }
 
-    private fun getErc20Transactions(): Observable<List<Displayable>> {
+    private fun getPaxTransactions(): Observable<List<Displayable>> {
         val feedTransactions =
             paxAccount.getTransactions().mapList {
                 val feeObservable = ethDataManager.getTransaction(it.transactionHash)

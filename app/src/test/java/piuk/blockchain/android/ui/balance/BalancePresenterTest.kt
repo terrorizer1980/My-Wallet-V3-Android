@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.balance
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.notifications.models.NotificationPayload
+import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.testutils.gbp
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.isNull
@@ -76,6 +77,7 @@ class BalancePresenterTest {
     private val exchangeService: ExchangeService = mock()
     private val coinifyDataManager: CoinifyDataManager = mock()
     private val fiatExchangeRates: FiatExchangeRates = mock()
+    private val fiatCurrencyPreference: FiatCurrencyPreference = mock()
     private val testScheduler: TestScheduler = TestScheduler()
 
     @get:Rule
@@ -106,7 +108,8 @@ class BalancePresenterTest {
             environmentSettings,
             exchangeService,
             coinifyDataManager,
-            fiatExchangeRates
+            fiatExchangeRates,
+            fiatCurrencyPreference
         )
         subject.initView(view)
     }

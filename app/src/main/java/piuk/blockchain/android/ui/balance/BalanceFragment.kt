@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_FAQ
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_balance.*
@@ -303,6 +304,15 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
             CryptoCurrency.PAX -> {
                 pax_no_transactions.visible()
                 non_pax_no_transactions_container.gone()
+                swap_for_pax_now.setOnClickListener {
+                    (activity as? Context)?.let {
+                        HomebrewNavHostActivity.start(
+                            it,
+                            presenter.fiatDefaultCurrency(),
+                            presenter.getCurrentCurrency()
+                        )
+                    }
+                }
             }
             else -> throw IllegalArgumentException(
                 "Cryptocurrency ${presenter.getCurrentCurrency().unit} not supported"

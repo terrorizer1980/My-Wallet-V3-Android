@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.balance
 
 import android.support.annotation.VisibleForTesting
 import com.blockchain.notifications.models.NotificationPayload
+import com.blockchain.preferences.FiatCurrencyPreference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.formatWithUnit
@@ -61,7 +62,8 @@ class BalancePresenter(
     private val environmentSettings: EnvironmentConfig,
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager,
-    private val fiatExchangeRates: FiatExchangeRates
+    private val fiatExchangeRates: FiatExchangeRates,
+    private val fiatCurrencyPreference: FiatCurrencyPreference
 ) : BasePresenter<BalanceView>() {
 
     @VisibleForTesting
@@ -411,5 +413,9 @@ class BalancePresenter(
         prefsUtil.getValue(PrefsUtil.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
 
     internal fun getCurrentCurrency() = currencyState.cryptoCurrency
+
+    fun fiatDefaultCurrency(): String =
+        fiatCurrencyPreference.fiatCurrencyPreference
+
     // endregion
 }

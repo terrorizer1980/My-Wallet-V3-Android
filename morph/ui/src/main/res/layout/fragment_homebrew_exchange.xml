@@ -23,7 +23,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_exchange"
         tools:background="@color/color_bitcoin_logo"
-        tools:drawableStart="@drawable/layer_list_bitcoin"
         tools:text="BTC" />
 
     <Button
@@ -42,7 +41,6 @@
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/textView_receive"
         tools:background="@color/color_ether_logo"
-        tools:drawableStart="@drawable/layer_list_eth"
         tools:text="ETH" />
 
     <TextView

@@ -888,10 +888,11 @@
     <string name="claim_your_free_crypto_card_body">You\'re all set! Tap this card to claim your free XLM.</string>
     <string name="claim_your_free_crypto_card_button">@string/claim_your_xlm</string>
 
-    <!-- PAX coming soon fragment -->
+    <!-- PAX No Transactions Screen -->
     <string name="pax_title">USD PAX</string>
     <string name="pax_no_transactions_message">Your USD PAX transactions will show up here once you make your first transaction.</string>
     <string name="pax_learn_more_link">Learn more about USD PAX</string>
+    <string name="pax_swap_now">Swap For USD PAX Now</string>
 
     <!-- Claim Your Free Crypto Card -->
     <string name="swap_announcement_new">New</string>

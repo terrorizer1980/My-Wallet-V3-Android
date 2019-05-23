@@ -266,7 +266,8 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 exchangeService = get(),
                 coinifyDataManager = get(),
-                fiatExchangeRates = get()
+                fiatExchangeRates = get(),
+                fiatCurrencyPreference = get()
             )
         }
 
