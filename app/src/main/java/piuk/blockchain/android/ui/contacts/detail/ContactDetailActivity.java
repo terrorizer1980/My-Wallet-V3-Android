@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 
 import com.blockchain.annotations.BurnCandidate;
+
 import piuk.blockchain.android.R;
 import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity;
 import piuk.blockchain.android.ui.send.SendFragment;
@@ -18,7 +19,7 @@ import piuk.blockchain.android.ui.transactions.TransactionDetailActivity;
 import static piuk.blockchain.android.ui.balance.BalanceFragment.KEY_TRANSACTION_HASH;
 import static piuk.blockchain.android.ui.contacts.list.ContactsListActivity.KEY_BUNDLE_CONTACT_ID;
 
-@BurnCandidate(why="Contacts historical cruft")
+@BurnCandidate(why = "Contacts historical cruft")
 public class ContactDetailActivity extends BaseAuthActivity implements
         ContactDetailFragment.OnFragmentInteractionListener {
 
@@ -81,17 +82,4 @@ public class ContactDetailActivity extends BaseAuthActivity implements
             super.onBackPressed();
         }
     }
-
-    @Override
-    public void onPaymentInitiated(String uri, String recipientId, String mdid, String fctxId) {
-
-    }
-
-    @Override
-    public void onShowTransactionDetailCalled(String hash) {
-        Bundle bundle = new Bundle();
-        bundle.putString(KEY_TRANSACTION_HASH, hash);
-        TransactionDetailActivity.start(this, bundle);
-    }
-
 }

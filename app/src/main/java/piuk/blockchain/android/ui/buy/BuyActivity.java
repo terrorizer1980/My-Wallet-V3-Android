@@ -167,7 +167,7 @@ public class BuyActivity extends BaseMvpActivity<BuyView, BuyPresenter>
     public void onShowTx(String txHash) {
         Bundle bundle = new Bundle();
         bundle.putString(BalanceFragment.KEY_TRANSACTION_HASH, txHash);
-        TransactionDetailActivity.start(this, bundle);
+        TransactionDetailActivity.Companion.start(this, bundle);
     }
 
     private void activateIfReady() {

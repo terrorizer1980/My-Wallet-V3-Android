@@ -23,6 +23,7 @@
     <string name="done">Done</string>
 
     <string name="SENT">Sent</string>
+    <string name="txn">TXN</string>
     <string name="sending">Sending</string>
     <string name="RECEIVED">Received</string>
     <string name="receiving">Receiving</string>

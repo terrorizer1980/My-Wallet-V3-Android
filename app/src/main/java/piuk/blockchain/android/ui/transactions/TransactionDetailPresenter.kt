@@ -40,10 +40,9 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.Date
-import javax.inject.Inject
 import kotlin.collections.HashMap
 
-class TransactionDetailPresenter @Inject constructor(
+class TransactionDetailPresenter constructor(
     private val transactionHelper: TransactionHelper,
     prefsUtil: PrefsUtil,
     private val payloadDataManager: PayloadDataManager,
@@ -76,25 +75,25 @@ class TransactionDetailPresenter @Inject constructor(
                 CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[displayable.hash]
                 CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(displayable.hash)
                 else -> {
-                    view.hideDescriptionField()
+                    view?.hideDescriptionField()
                     ""
                 }
             }
-            view.setDescription(notes)
+            view?.setDescription(notes)
         }
 
     val transactionHash: TransactionHash
         get() = TransactionHash(displayable.cryptoCurrency, displayable.hash)
 
     override fun onViewReady() {
-        val pageIntent = view.getPageIntent()
+        val pageIntent = view?.getPageIntent()
         if (pageIntent != null && pageIntent.hasExtra(KEY_TRANSACTION_LIST_POSITION)) {
             val transactionPosition = pageIntent.getIntExtra(KEY_TRANSACTION_LIST_POSITION, -1)
             if (transactionPosition != -1) {
                 displayable = transactionListDataManager.getTransactionList()[transactionPosition]
                 updateUiFromTransaction(displayable)
             } else {
-                view.pageFinish()
+                view?.pageFinish()
             }
         } else if (pageIntent != null && pageIntent.hasExtra(KEY_TRANSACTION_HASH)) {
             compositeDisposable +=
@@ -102,10 +101,10 @@ class TransactionDetailPresenter @Inject constructor(
                     .doOnSuccess { displayable = it }
                     .subscribe(
                         { this.updateUiFromTransaction(it) },
-                        { view.pageFinish() })
+                        { view?.pageFinish() })
         } else {
             Timber.e("Transaction hash not found")
-            view.pageFinish()
+            view?.pageFinish()
         }
     }
 
@@ -127,16 +126,18 @@ class TransactionDetailPresenter @Inject constructor(
         compositeDisposable +=
             completable.subscribe(
                 {
-                    view.showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
-                    view.setDescription(description)
+                    view?.showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
+                    view?.setDescription(description)
                 },
-                { view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR) }
+                { view?.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR) }
             )
     }
 
     private fun updateUiFromTransaction(displayable: Displayable) {
         with(displayable) {
-            view.setTransactionType(direction)
+            view?.setTransactionType(direction, displayable.isFeeTransaction)
+            view?.updateFeeFieldVisibility(direction != TransactionSummary.Direction.RECEIVED &&
+                    !displayable.isFeeTransaction)
             setTransactionColor(this)
             setTransactionValue(cryptoCurrency, total)
             setConfirmationStatus(cryptoCurrency, hash, confirmations.toLong())
@@ -157,11 +158,11 @@ class TransactionDetailPresenter @Inject constructor(
                 getTransactionValueString(fiatType, this)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        { value -> view.setTransactionValueFiat(value) },
-                        { view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR) })
+                        { value -> view?.setTransactionValueFiat(value) },
+                        { view?.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR) })
 
-            view.onDataLoaded()
-            view.setIsDoubleSpend(doubleSpend)
+            view?.onDataLoaded()
+            view?.setIsDoubleSpend(doubleSpend)
         }
     }
 
@@ -180,10 +181,11 @@ class TransactionDetailPresenter @Inject constructor(
                             toAddress = it.label
                         }
 
-                        view.setFromAddress(listOf(TransactionDetailModel(fromAddress, "", "")))
-                        view.setToAddresses(listOf(TransactionDetailModel(toAddress, "", "")))
-                    }
-                )
+                        view?.let {
+                            it.setFromAddress(listOf(TransactionDetailModel(fromAddress, "", "")))
+                            it.setToAddresses(listOf(TransactionDetailModel(toAddress, "", "")))
+                        }
+                    })
     }
 
     private fun handleEthToAndFrom(displayable: Displayable) {
@@ -197,8 +199,10 @@ class TransactionDetailPresenter @Inject constructor(
         if (toAddress == ethAddress) {
             toAddress = stringUtils.getString(R.string.eth_default_account_label)
         }
-        view.setFromAddress(listOf(TransactionDetailModel(fromAddress, "", "")))
-        view.setToAddresses(listOf(TransactionDetailModel(toAddress, "", "")))
+        view?.let {
+            it.setFromAddress(listOf(TransactionDetailModel(fromAddress, "", "")))
+            it.setToAddresses(listOf(TransactionDetailModel(toAddress, "", "")))
+        }
     }
 
     private fun handlePaxToAndFrom(displayable: Displayable) {
@@ -212,8 +216,10 @@ class TransactionDetailPresenter @Inject constructor(
         if (toAddress == ethAddress) {
             toAddress = stringUtils.getString(R.string.pax_default_account_label)
         }
-        view.setFromAddress(listOf(TransactionDetailModel(fromAddress, "", "")))
-        view.setToAddresses(listOf(TransactionDetailModel(toAddress, "", "")))
+        view?.let {
+            it.setFromAddress(listOf(TransactionDetailModel(fromAddress, "", "")))
+            it.setToAddresses(listOf(TransactionDetailModel(toAddress, "", "")))
+        }
     }
 
     private fun handleBtcToAndFrom(displayable: Displayable) {
@@ -233,10 +239,10 @@ class TransactionDetailPresenter @Inject constructor(
     ) {
         // From Addresses
         val fromList = getFromList(displayable.cryptoCurrency, inputs)
-        view.setFromAddress(fromList)
+        view?.setFromAddress(fromList)
         // To Addresses
         val recipients = getToList(displayable.cryptoCurrency, outputs)
-        view.setToAddresses(recipients)
+        view?.setToAddresses(recipients)
     }
 
     private fun getFromList(
@@ -321,9 +327,9 @@ class TransactionDetailPresenter @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError {
-                view.setFee("")
+                view?.setFee("")
             }
-            .subscribe { view.setFee(it.formatWithUnit()) }
+            .subscribe { view?.setFee(it.formatWithUnit()) }
             .addTo(compositeDisposable)
     }
 
@@ -335,18 +341,18 @@ class TransactionDetailPresenter @Inject constructor(
             CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(total)
             CryptoCurrency.PAX -> CryptoValue.usdPaxFromMinor(total)
             else -> throw IllegalArgumentException("$currency is not currently supported")
-        }.run { view.setTransactionValue(this.formatWithUnit()) }
+        }.run { view?.setTransactionValue(this.formatWithUnit()) }
     }
 
     @VisibleForTesting
     internal fun setConfirmationStatus(cryptoCurrency: CryptoCurrency, txHash: String, confirmations: Long) {
         if (confirmations >= cryptoCurrency.requiredConfirmations) {
-            view.setStatus(cryptoCurrency, stringUtils.getString(R.string.transaction_detail_confirmed), txHash)
+            view?.setStatus(cryptoCurrency, stringUtils.getString(R.string.transaction_detail_confirmed), txHash)
         } else {
             var pending = stringUtils.getString(R.string.transaction_detail_pending)
             pending =
                 String.format(Locale.getDefault(), pending, confirmations, cryptoCurrency.requiredConfirmations)
-            view.setStatus(cryptoCurrency, pending, txHash)
+            view?.setStatus(cryptoCurrency, pending, txHash)
         }
     }
 
@@ -359,12 +365,12 @@ class TransactionDetailPresenter @Inject constructor(
         val dateText = dateFormat.format(date)
         val timeText = timeFormat.format(date)
 
-        view.setDate("$dateText @ $timeText")
+        view?.setDate("$dateText @ $timeText")
     }
 
     @VisibleForTesting
     internal fun setTransactionColor(transaction: Displayable) {
-        view.setTransactionColour(transaction.formatting().directionColour)
+        view?.setTransactionColour(transaction.formatting().directionColour)
     }
 
     @VisibleForTesting

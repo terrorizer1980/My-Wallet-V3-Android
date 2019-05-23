@@ -225,7 +225,7 @@ class TransactionDetailPresenterTest {
             "Pending (0/3 Confirmations)",
             "txMoved_hash"
         )
-        verify(view).setTransactionType(TransactionSummary.Direction.TRANSFERRED)
+        verify(view).setTransactionType(TransactionSummary.Direction.TRANSFERRED, false)
         verify(view).setTransactionColour(R.color.product_gray_transferred_50)
         verify(view).setDescription(null)
         verify(view).setDate(any())
@@ -236,6 +236,7 @@ class TransactionDetailPresenterTest {
         verify(view).setTransactionValueFiat(any())
         verify(view).onDataLoaded()
         verify(view).setIsDoubleSpend(any())
+        verify(view).updateFeeFieldVisibility(any())
         verifyNoMoreInteractions(view)
     }
 
@@ -281,7 +282,7 @@ class TransactionDetailPresenterTest {
             "Pending (0/3 Confirmations)",
             "txMoved_hash"
         )
-        verify(view).setTransactionType(TransactionSummary.Direction.TRANSFERRED)
+        verify(view).setTransactionType(TransactionSummary.Direction.TRANSFERRED, false)
         verify(view).setTransactionColour(R.color.product_gray_transferred_50)
         verify(view).setDescription(null)
         verify(view).setDate(any())
@@ -292,6 +293,7 @@ class TransactionDetailPresenterTest {
         verify(view).setTransactionValueFiat(any())
         verify(view).onDataLoaded()
         verify(view).setIsDoubleSpend(any())
+        verify(view).updateFeeFieldVisibility(any())
         verifyNoMoreInteractions(view)
     }
 
@@ -335,7 +337,7 @@ class TransactionDetailPresenterTest {
         // Assert
         verify(view).getPageIntent()
         verify(view).setStatus(CryptoCurrency.ETHER, "Pending (0/12 Confirmations)", "hash")
-        verify(view).setTransactionType(TransactionSummary.Direction.SENT)
+        verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
         verify(view).setTransactionColour(R.color.product_red_sent_50)
         verify(view).setDescription(any())
         verify(view).setDate(any())
@@ -345,6 +347,7 @@ class TransactionDetailPresenterTest {
         verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
         verify(view).onDataLoaded()
+        verify(view).updateFeeFieldVisibility(any())
         verify(view).setIsDoubleSpend(any())
         verifyNoMoreInteractions(view)
     }
@@ -383,7 +386,7 @@ class TransactionDetailPresenterTest {
         // Assert
         verify(view).getPageIntent()
         verify(view).setStatus(CryptoCurrency.XLM, "Pending (0/1 Confirmations)", "hash")
-        verify(view).setTransactionType(TransactionSummary.Direction.SENT)
+        verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
         verify(view).setTransactionColour(R.color.product_red_sent_50)
         verify(view).setDescription(any())
         verify(view).setDate(any())
@@ -393,6 +396,7 @@ class TransactionDetailPresenterTest {
         verify(view).hideDescriptionField()
         verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
+        verify(view).updateFeeFieldVisibility(any())
         verify(view).onDataLoaded()
         verify(view).setIsDoubleSpend(any())
         verifyNoMoreInteractions(view)
@@ -433,7 +437,7 @@ class TransactionDetailPresenterTest {
         // Assert
         verify(view).getPageIntent()
         verify(view).setStatus(CryptoCurrency.PAX, "Pending (0/3 Confirmations)", "hash")
-        verify(view).setTransactionType(TransactionSummary.Direction.SENT)
+        verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
         verify(view).setTransactionColour(R.color.product_red_sent_50)
         verify(view).setDescription(any())
         verify(view).setDate(any())
@@ -442,6 +446,7 @@ class TransactionDetailPresenterTest {
         verify(view).setFee("0.00000155 ETH")
         verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
+        verify(view).updateFeeFieldVisibility(any())
         verify(view).onDataLoaded()
         verify(view).setIsDoubleSpend(any())
         verifyNoMoreInteractions(view)
@@ -801,5 +806,118 @@ class TransactionDetailPresenterTest {
         // Assert
         verify(view).setTransactionColour(R.color.product_green_received)
         verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `fee should be hidden if transaction is a fee one`() {
+        // Arrange
+        val displayable: EthDisplayable = mock()
+        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
+        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
+        whenever(displayable.isFeeTransaction).thenReturn(true)
+        whenever(displayable.hash).thenReturn("hash")
+        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
+        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
+        val maps = HashMap<String, BigInteger>()
+        maps[""] = BigInteger.TEN
+        whenever(displayable.inputsMap).thenReturn(maps)
+        whenever(displayable.outputsMap).thenReturn(maps)
+        val mockIntent: Intent = mock()
+        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
+        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("hash")
+        whenever(view.getPageIntent()).thenReturn(mockIntent)
+        whenever(transactionListDataManager.getTxFromHash("hash"))
+            .thenReturn(Single.just(displayable))
+        whenever(stringUtils.getString(R.string.transaction_detail_pending))
+            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
+        whenever(stringUtils.getString(R.string.pax_default_account_label))
+            .thenReturn("My Usd pax Wallet")
+        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
+            .thenReturn("Value when sent: ")
+        whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
+        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+            .thenReturn(Single.just(1000.usd()))
+        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
+
+        // Act
+        subject.onViewReady()
+
+        // Assert
+        verify(view).updateFeeFieldVisibility(false)
+    }
+
+    @Test
+    fun `fee should be hidden if transaction is a receive one`() {
+        // Arrange
+        val displayable: EthDisplayable = mock()
+        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
+        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
+        whenever(displayable.isFeeTransaction).thenReturn(false)
+        whenever(displayable.hash).thenReturn("hash")
+        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
+        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
+        val maps = HashMap<String, BigInteger>()
+        maps[""] = BigInteger.TEN
+        whenever(displayable.inputsMap).thenReturn(maps)
+        whenever(displayable.outputsMap).thenReturn(maps)
+        val mockIntent: Intent = mock()
+        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
+        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("hash")
+        whenever(view.getPageIntent()).thenReturn(mockIntent)
+        whenever(transactionListDataManager.getTxFromHash("hash"))
+            .thenReturn(Single.just(displayable))
+        whenever(stringUtils.getString(R.string.transaction_detail_pending))
+            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
+        whenever(stringUtils.getString(R.string.pax_default_account_label))
+            .thenReturn("My Usd pax Wallet")
+        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
+            .thenReturn("Value when sent: ")
+        whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
+        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+            .thenReturn(Single.just(1000.usd()))
+        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
+
+        // Act
+        subject.onViewReady()
+
+        // Assert
+        verify(view).updateFeeFieldVisibility(false)
+    }
+
+    @Test
+    fun `fee should not be hidden if transaction is a sent one`() {
+        // Arrange
+        val displayable: EthDisplayable = mock()
+        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
+        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
+        whenever(displayable.hash).thenReturn("hash")
+        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
+        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
+        val maps = HashMap<String, BigInteger>()
+        maps[""] = BigInteger.TEN
+        whenever(displayable.inputsMap).thenReturn(maps)
+        whenever(displayable.outputsMap).thenReturn(maps)
+        val mockIntent: Intent = mock()
+        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
+        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("hash")
+        whenever(view.getPageIntent()).thenReturn(mockIntent)
+        whenever(transactionListDataManager.getTxFromHash("hash"))
+            .thenReturn(Single.just(displayable))
+        whenever(stringUtils.getString(R.string.transaction_detail_pending))
+            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
+        whenever(stringUtils.getString(R.string.pax_default_account_label))
+            .thenReturn("My Usd pax Wallet")
+        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
+            .thenReturn("Value when sent: ")
+        whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
+        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+            .thenReturn(Single.just(1000.usd()))
+        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
+
+        // Act
+        subject.onViewReady()
+
+        // Assert
+        verify(view).updateFeeFieldVisibility(true)
     }
 }

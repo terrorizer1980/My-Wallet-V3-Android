@@ -88,8 +88,6 @@ public interface PresenterComponent {
 
     void inject(@NotNull ConfirmFundsTransferDialogFragment confirmFundsTransferDialogFragment);
 
-    void inject(@NotNull TransactionDetailActivity transactionDetailActivity);
-
     void inject(@NotNull PasswordRequiredActivity passwordRequiredActivity);
 
     void inject(@NotNull ManualPairingActivity manualPairingActivity);

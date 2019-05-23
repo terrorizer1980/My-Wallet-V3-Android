@@ -337,7 +337,7 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
     override fun onTransactionClicked(correctedPosition: Int, absolutePosition: Int) {
         val bundle = Bundle()
         bundle.putInt(KEY_TRANSACTION_LIST_POSITION, correctedPosition)
-        TransactionDetailActivity.start(activity, bundle)
+        TransactionDetailActivity.start(activity as Context, bundle)
     }
 
     /*

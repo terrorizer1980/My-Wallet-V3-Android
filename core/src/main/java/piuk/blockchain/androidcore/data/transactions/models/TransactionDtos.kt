@@ -22,6 +22,7 @@ abstract class Displayable {
     open val confirmations = 0
     open val watchOnly: Boolean = false
     open val doubleSpend: Boolean = false
+    open val isFeeTransaction = false
     open val isPending: Boolean = false
     open var totalDisplayableCrypto: String? = null
     open var totalDisplayableFiat: String? = null
@@ -57,6 +58,7 @@ abstract class Displayable {
                 this.confirmations == that.confirmations &&
                 this.watchOnly == that.watchOnly &&
                 this.doubleSpend == that.doubleSpend &&
+                this.isFeeTransaction == that.isFeeTransaction &&
                 this.isPending == that.isPending &&
                 this.totalDisplayableCrypto == that.totalDisplayableCrypto &&
                 this.totalDisplayableFiat == that.totalDisplayableFiat &&
@@ -73,6 +75,7 @@ abstract class Displayable {
         result = 31 * result + inputsMap.hashCode()
         result = 31 * result + outputsMap.hashCode()
         result = 31 * result + confirmations.hashCode()
+        result = 31 * result + isFeeTransaction.hashCode()
         result = 31 * result + watchOnly.hashCode()
         result = 31 * result + doubleSpend.hashCode()
         result = 31 * result + (totalDisplayableCrypto?.hashCode() ?: 0)
@@ -85,6 +88,7 @@ abstract class Displayable {
 class EthDisplayable(
     private val combinedEthModel: CombinedEthModel,
     private val ethTransaction: EthTransaction,
+    override val isFeeTransaction: Boolean,
     private val blockHeight: Long
 ) : Displayable() {
 

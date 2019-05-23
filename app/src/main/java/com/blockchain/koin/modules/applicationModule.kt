@@ -36,6 +36,8 @@ import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.send.strategy.paxSendStrategy
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
+import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
+import piuk.blockchain.android.ui.transactions.TransactionHelper
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
 import piuk.blockchain.android.util.StringUtils
@@ -139,6 +141,21 @@ val applicationModule = applicationContext {
             } else {
                 get("spendable")
             }
+        }
+
+        factory {
+            TransactionDetailPresenter(
+                transactionHelper = get(),
+                prefsUtil = get(),
+                payloadDataManager = get(),
+                stringUtils = get(),
+                transactionListDataManager = get(),
+                exchangeRateDataManager = get(),
+                bchDataManager = get(),
+                ethDataManager = get(),
+                environmentSettings = get(),
+                xlmDataManager = get()
+            )
         }
 
         factory<SendPresenter<SendView>> {
@@ -289,6 +306,8 @@ val applicationModule = applicationContext {
                 fiatExchangeRates = get()
             )
         }
+
+        factory { TransactionHelper(get(), get()) }
     }
 
     factory { DateUtil(get()) }

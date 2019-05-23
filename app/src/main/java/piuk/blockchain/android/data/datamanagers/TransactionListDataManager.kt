@@ -261,9 +261,12 @@ class TransactionListDataManager(
             .flatMap { latestBlock ->
                 ethDataManager.getEthTransactions()
                     .map {
+                        val ethFeeForPaxTransaction =
+                            it.to == ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress
                         EthDisplayable(
                             ethDataManager.getEthResponseModel()!!,
                             it,
+                            ethFeeForPaxTransaction,
                             latestBlock.blockHeight
                         )
                     }.toList()

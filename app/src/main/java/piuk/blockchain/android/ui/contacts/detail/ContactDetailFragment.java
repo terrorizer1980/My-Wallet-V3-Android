@@ -42,8 +42,10 @@ public class ContactDetailFragment extends BaseFragment<ContactDetailView, Conta
 
     private static final String ARGUMENT_CONTACT_ID = "contact_id";
 
-    @Inject ContactDetailPresenter contactDetailPresenter;
-    @Thunk TxFeedAdapter balanceAdapter;
+    @Inject
+    ContactDetailPresenter contactDetailPresenter;
+    @Thunk
+    TxFeedAdapter balanceAdapter;
     private FragmentContactDetailBinding binding;
     private MaterialProgressDialog progressDialog;
     private OnFragmentInteractionListener listener;
@@ -323,7 +325,6 @@ public class ContactDetailFragment extends BaseFragment<ContactDetailView, Conta
 
     @Override
     public void showTransactionDetail(String txHash) {
-        if (listener != null) listener.onShowTransactionDetailCalled(txHash);
     }
 
     // FIXME: 03/08/2017 This is currently broken because of onResume issues on MainActivity, presumably
@@ -331,9 +332,6 @@ public class ContactDetailFragment extends BaseFragment<ContactDetailView, Conta
     // TODO: 03/08/2017 Fix me before an actual release
     @Override
     public void initiatePayment(String uri, String recipientId, String mdid, String fctxId) {
-        if (listener != null) {
-            listener.onPaymentInitiated(uri, recipientId, mdid, fctxId);
-        }
     }
 
     @Override
@@ -374,12 +372,6 @@ public class ContactDetailFragment extends BaseFragment<ContactDetailView, Conta
     }
 
     interface OnFragmentInteractionListener {
-
         void onFinishPageCalled();
-
-        void onPaymentInitiated(String uri, String recipientId, String mdid, String fctxId);
-
-        void onShowTransactionDetailCalled(String hash);
-
     }
 }

@@ -96,7 +96,7 @@ class DisplayableDelegate<in T>(
         internal var note: TextView = itemView.tx_note
     }
 
-    private fun DisplayableFormatting.applyTransactionFormatting(viewHolder: DisplayableDelegate.TxViewHolder) {
+    private fun DisplayableFormatting.applyTransactionFormatting(viewHolder: TxViewHolder) {
         viewHolder.direction.setText(text)
         viewHolder.result.setBackgroundResource(valueBackground)
         viewHolder.direction.setTextColor(

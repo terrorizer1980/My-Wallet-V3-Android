@@ -3,9 +3,11 @@ package piuk.blockchain.android.data.datamanagers
 import com.blockchain.sunriver.HorizonKeyPair
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.models.XlmTransaction
+import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
+import info.blockchain.wallet.ethereum.Erc20TokenData
 import info.blockchain.wallet.ethereum.data.EthLatestBlock
 import info.blockchain.wallet.ethereum.data.EthLatestBlockNumber
 import info.blockchain.wallet.ethereum.data.EthTransaction
@@ -15,6 +17,7 @@ import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Observable
 import io.reactivex.Single
+import junit.framework.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -199,6 +202,7 @@ class TransactionListDataManagerTest : RxTest() {
         `when`(ethDataManager.getLatestBlock()).thenReturn(Observable.just(latestBlock))
         `when`(ethDataManager.getEthTransactions()).thenReturn(Observable.just(transaction))
         `when`<CombinedEthModel>(ethDataManager.getEthResponseModel()).thenReturn(ethModel)
+        `when`(ethDataManager.getErc20TokenData(CryptoCurrency.PAX)).thenReturn(Erc20TokenData.createPaxTokenData())
         `when`(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         val itemAccount = ItemAccount()
         itemAccount.type = ItemAccount.TYPE.SINGLE_ACCOUNT
@@ -209,6 +213,7 @@ class TransactionListDataManagerTest : RxTest() {
         verify(ethDataManager).getLatestBlock()
         verify(ethDataManager).getEthTransactions()
         verify(ethDataManager).getEthResponseModel()
+        verify(ethDataManager).getErc20TokenData(CryptoCurrency.PAX)
         testObserver.assertComplete()
         testObserver.assertNoErrors()
     }
@@ -465,6 +470,7 @@ class TransactionListDataManagerTest : RxTest() {
         assertEquals("hash", displayable.hash)
         assertEquals(TransactionSummary.Direction.RECEIVED, displayable.direction)
         assertEquals(1, displayable.confirmations.toLong())
+        assertFalse(displayable.isFeeTransaction)
         assertEquals(output, displayable.total)
         assertEquals(mapOf("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4" to BigInteger.ZERO),
             displayable.inputsMap)
@@ -519,6 +525,7 @@ class TransactionListDataManagerTest : RxTest() {
                     it[0] is Erc20Displayable &&
                     it[0].cryptoCurrency == CryptoCurrency.PAX &&
                     !it[0].doubleSpend &&
+                    !it[0].isFeeTransaction &&
                     it[0].confirmations == 3 &&
                     it[0].timeStamp == 1557334297L &&
                     it[0].direction == TransactionSummary.Direction.SENT &&
@@ -528,6 +535,68 @@ class TransactionListDataManagerTest : RxTest() {
                     it[0].inputsMap["0x4058a004dd718babab47e14dd0d744742e5b9903"] == 10000.toBigInteger() &&
                     it[0].outputsMap["0x2ca28ffadd20474ffe2705580279a1e67cd10a29"] == 10000.toBigInteger()
         }
+    }
+
+    @Test
+    fun getEthTransactionsListWithOneErc20FeeTransactionInTheList() {
+        // Arrange
+        val ethTransaction = EthTransaction().apply {
+            to = "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
+        }
+
+        whenever(ethDataManager.getLatestBlock()).thenReturn(Observable.just(EthLatestBlock()))
+        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX)).thenReturn(Erc20TokenData.createPaxTokenData())
+        whenever(ethDataManager.getEthResponseModel()).thenReturn(mock())
+        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
+        whenever(ethDataManager.getEthTransactions()).thenReturn(Observable.just(ethTransaction))
+
+        val testObserver = subject.fetchTransactions(ItemAccount(
+            "ETH",
+            "1.0 ETH",
+            null,
+            1L, null,
+            "AccountID"
+        ), 50, 0).test()
+        verify(ethDataManager).getEthTransactions()
+        testObserver.assertValueCount(1)
+        testObserver.assertComplete()
+        testObserver.assertNoErrors()
+        testObserver.assertValue {
+            it.size == 1 &&
+                    it[0].isFeeTransaction
+        }
+        verify(ethDataManager).getErc20TokenData(CryptoCurrency.PAX)
+    }
+
+    @Test
+    fun getEthTransactionsListWithNoErc20FeeTransactionInTheList() {
+        // Arrange
+        val ethTransaction = EthTransaction().apply {
+            to = "0x8E870D234660D95d5be530380D0eC0bd388289E1"
+        }
+
+        whenever(ethDataManager.getLatestBlock()).thenReturn(Observable.just(EthLatestBlock()))
+        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX)).thenReturn(Erc20TokenData.createPaxTokenData())
+        whenever(ethDataManager.getEthResponseModel()).thenReturn(mock())
+        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
+        whenever(ethDataManager.getEthTransactions()).thenReturn(Observable.just(ethTransaction))
+
+        val testObserver = subject.fetchTransactions(ItemAccount(
+            "ETH",
+            "1.0 ETH",
+            null,
+            1L, null,
+            "AccountID"
+        ), 50, 0).test()
+        verify(ethDataManager).getEthTransactions()
+        testObserver.assertValueCount(1)
+        testObserver.assertComplete()
+        testObserver.assertNoErrors()
+        testObserver.assertValue {
+            it.size == 1 &&
+                    !it[0].isFeeTransaction
+        }
+        verify(ethDataManager).getErc20TokenData(CryptoCurrency.PAX)
     }
 
     @Test

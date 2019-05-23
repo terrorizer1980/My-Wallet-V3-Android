@@ -14,7 +14,9 @@ interface TransactionDetailView : View {
 
     fun pageFinish()
 
-    fun setTransactionType(type: TransactionSummary.Direction)
+    fun setTransactionType(type: TransactionSummary.Direction, isFeeTransaction: Boolean)
+
+    fun updateFeeFieldVisibility(isVisible: Boolean)
 
     fun setTransactionValue(value: String?)
 
