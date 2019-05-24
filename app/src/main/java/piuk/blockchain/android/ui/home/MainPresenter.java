@@ -409,7 +409,9 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private Completable ethCompletable() {
         return ethDataManager.initEthereumWallet(
-                stringUtils.getString(R.string.eth_default_account_label))
+                stringUtils.getString(R.string.eth_default_account_label),
+                stringUtils.getString(R.string.pax_default_account_label)
+                )
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
                 .doOnError(throwable -> {
                     Logging.INSTANCE.logException(throwable);

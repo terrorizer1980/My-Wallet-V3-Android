@@ -17,10 +17,10 @@ import java.util.HashMap;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect(fieldVisibility = Visibility.NONE,
-    getterVisibility = Visibility.NONE,
-    setterVisibility = Visibility.NONE,
-    creatorVisibility = Visibility.NONE,
-    isGetterVisibility = Visibility.NONE)
+        getterVisibility = Visibility.NONE,
+        setterVisibility = Visibility.NONE,
+        creatorVisibility = Visibility.NONE,
+        isGetterVisibility = Visibility.NONE)
 public class EthereumWallet {
 
     public static final int METADATA_TYPE_EXTERNAL = 5;
@@ -36,10 +36,11 @@ public class EthereumWallet {
     /**
      * Creates new Ethereum wallet and derives account from provided wallet seed.
      *
-     * @param walletMasterKey DeterministicKey of root node
+     * @param walletMasterKey    DeterministicKey of root node
      * @param defaultAccountName The desired default account name
+     * @param defaultPaxLabel    The desired default account name for PAX
      */
-    public EthereumWallet(DeterministicKey walletMasterKey, String defaultAccountName) {
+    public EthereumWallet(DeterministicKey walletMasterKey, String defaultAccountName, String defaultPaxLabel) {
 
         ArrayList<EthereumAccount> accounts = new ArrayList<>();
         accounts.add(EthereumAccount.deriveAccount(walletMasterKey, ACCOUNT_INDEX, defaultAccountName));
@@ -50,14 +51,13 @@ public class EthereumWallet {
         this.walletData.setTxNotes(new HashMap<String, String>());
         this.walletData.setAccounts(accounts);
 
-        updateErc20Tokens();
+        updateErc20Tokens(defaultPaxLabel);
     }
 
     /**
      * Loads existing Ethereum wallet from derived Ethereum metadata node.
      *
      * @return Existing Ethereum wallet or Null if no existing Ethereum wallet found.
-     * @throws IOException
      */
     public static EthereumWallet load(String walletJson) throws IOException {
 
@@ -83,11 +83,11 @@ public class EthereumWallet {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
-            .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-            .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-            .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-            .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE)
-            .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
 
         return mapper.readValue(json, EthereumWallet.class);
     }
@@ -98,7 +98,6 @@ public class EthereumWallet {
 
     /**
      * Set flag to indicate that user has acknowledged their ether wallet.
-     * @param hasSeen
      */
     public void setHasSeen(boolean hasSeen) {
         walletData.setHasSeen(hasSeen);
@@ -109,7 +108,7 @@ public class EthereumWallet {
      */
     public EthereumAccount getAccount() {
 
-        if(walletData.getAccounts().isEmpty()){
+        if (walletData.getAccounts().isEmpty()) {
             return null;
         }
 
@@ -150,7 +149,7 @@ public class EthereumWallet {
         return walletData.getErc20Tokens().get(tokenName);
     }
 
-    public boolean updateErc20Tokens() {
+    public boolean updateErc20Tokens(String defaultPaxLabel) {
         boolean wasUpdated = false;
         if (walletData.getErc20Tokens() == null) {
             walletData.setErc20Tokens(new HashMap<String, Erc20TokenData>());
@@ -158,8 +157,11 @@ public class EthereumWallet {
         }
 
         HashMap<String, Erc20TokenData> map = walletData.getErc20Tokens();
-        if (map.isEmpty()) {
-            map.put(Erc20TokenData.PAX_CONTRACT_NAME, Erc20TokenData.Companion.createPaxTokenData());
+        if (!map.containsKey(Erc20TokenData.PAX_CONTRACT_NAME) || !map.get(Erc20TokenData.PAX_CONTRACT_NAME).hasLabelAndAddressStored()) {
+            map.put(
+                    Erc20TokenData.PAX_CONTRACT_NAME,
+                    Erc20TokenData.Companion.createPaxTokenData(defaultPaxLabel)
+            );
             wasUpdated = true;
         }
 

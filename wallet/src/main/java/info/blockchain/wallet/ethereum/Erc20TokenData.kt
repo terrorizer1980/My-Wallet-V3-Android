@@ -18,6 +18,9 @@ import java.util.HashMap
 
 class Erc20TokenData {
 
+    @JsonProperty("label")
+    var label: String = ""
+
     @JsonProperty("contract")
     var contractAddress: String = ""
         private set
@@ -40,10 +43,16 @@ class Erc20TokenData {
         txNotes.clear()
     }
 
+    fun hasLabelAndAddressStored(): Boolean =
+        contractAddress.isNotBlank() && label.isNotBlank()
+
     companion object {
         const val PAX_CONTRACT_NAME = "pax"
         private const val PAX_CONTRACT_ADDRESS = "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
 
-        fun createPaxTokenData() = Erc20TokenData().apply { contractAddress = PAX_CONTRACT_ADDRESS }
+        fun createPaxTokenData(label: String) = Erc20TokenData().apply {
+            contractAddress = PAX_CONTRACT_ADDRESS
+            this.label = label
+        }
     }
 }

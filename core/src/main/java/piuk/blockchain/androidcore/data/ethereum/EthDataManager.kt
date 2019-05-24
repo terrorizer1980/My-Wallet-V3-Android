@@ -248,11 +248,12 @@ class EthDataManager(
      * Fetches EthereumWallet stored in metadata. If metadata entry doesn't exists it will be created.
      *
      * @param defaultLabel The ETH address default label to be used if metadata entry doesn't exist
+     * @param defaultPaxLabel The default label for PAX
      * @return An [Completable]
      */
-    fun initEthereumWallet(defaultLabel: String): Completable =
+    fun initEthereumWallet(defaultLabel: String, defaultPaxLabel: String): Completable =
         rxPinning.call {
-            fetchOrCreateEthereumWallet(defaultLabel)
+            fetchOrCreateEthereumWallet(defaultLabel, defaultPaxLabel)
                 .flatMapCompletable { (wallet, needsSave) ->
                     ethDataStore.ethWallet = wallet
 
@@ -332,7 +333,7 @@ class EthDataManager(
     }
 
     @Throws(Exception::class)
-    private fun fetchOrCreateEthereumWallet(defaultLabel: String) =
+    private fun fetchOrCreateEthereumWallet(defaultLabel: String, defaultPaxLabel: String) =
         metadataManager.fetchMetadata(EthereumWallet.METADATA_TYPE_EXTERNAL)
             .map { optional ->
 
@@ -344,7 +345,7 @@ class EthDataManager(
                 if (ethWallet == null || ethWallet.account == null || !ethWallet.account.isCorrect) {
                     try {
                         val masterKey = payloadManager.payload.hdWallets[0].masterKey
-                        ethWallet = EthereumWallet(masterKey, defaultLabel)
+                        ethWallet = EthereumWallet(masterKey, defaultLabel, defaultPaxLabel)
                         needsSave = true
                     } catch (e: HDWalletException) {
                         // Wallet private key unavailable. First decrypt with second password.
@@ -352,7 +353,7 @@ class EthDataManager(
                     }
                 }
                 // AND-2011: Add erc20 token data if not present
-                if (ethWallet.updateErc20Tokens()) {
+                if (ethWallet.updateErc20Tokens(defaultPaxLabel)) {
                     needsSave = true
                 }
 
