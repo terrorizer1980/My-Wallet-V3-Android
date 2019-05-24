@@ -139,6 +139,7 @@ class KycNavHostPresenterTest {
     fun `register for sunriver campaign if campaign type is sunriver but not registered yet`() {
         // Arrange
         whenever(view.campaignType).thenReturn(CampaignType.Sunriver)
+        whenever(sunriverSignUpCampaign.registerSunRiverCampaign()).thenReturn(Completable.complete())
         whenever(
             nabuToken.fetchNabuToken()
         ).thenReturn(Single.just(validOfflineToken))

@@ -202,7 +202,7 @@ class TransactionListDataManagerTest : RxTest() {
         `when`(ethDataManager.getLatestBlock()).thenReturn(Observable.just(latestBlock))
         `when`(ethDataManager.getEthTransactions()).thenReturn(Observable.just(transaction))
         `when`<CombinedEthModel>(ethDataManager.getEthResponseModel()).thenReturn(ethModel)
-        `when`(ethDataManager.getErc20TokenData(CryptoCurrency.PAX)).thenReturn(Erc20TokenData.createPaxTokenData())
+        `when`(ethDataManager.getErc20TokenData(CryptoCurrency.PAX)).thenReturn(Erc20TokenData.createPaxTokenData(""))
         `when`(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         val itemAccount = ItemAccount()
         itemAccount.type = ItemAccount.TYPE.SINGLE_ACCOUNT
@@ -545,7 +545,7 @@ class TransactionListDataManagerTest : RxTest() {
         }
 
         whenever(ethDataManager.getLatestBlock()).thenReturn(Observable.just(EthLatestBlock()))
-        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX)).thenReturn(Erc20TokenData.createPaxTokenData())
+        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX)).thenReturn(Erc20TokenData.createPaxTokenData(""))
         whenever(ethDataManager.getEthResponseModel()).thenReturn(mock())
         whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         whenever(ethDataManager.getEthTransactions()).thenReturn(Observable.just(ethTransaction))
@@ -576,7 +576,7 @@ class TransactionListDataManagerTest : RxTest() {
         }
 
         whenever(ethDataManager.getLatestBlock()).thenReturn(Observable.just(EthLatestBlock()))
-        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX)).thenReturn(Erc20TokenData.createPaxTokenData())
+        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX)).thenReturn(Erc20TokenData.createPaxTokenData(""))
         whenever(ethDataManager.getEthResponseModel()).thenReturn(mock())
         whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         whenever(ethDataManager.getEthTransactions()).thenReturn(Observable.just(ethTransaction))
