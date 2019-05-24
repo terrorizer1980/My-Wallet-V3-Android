@@ -264,8 +264,7 @@ class paxSendStrategy(
         }
     }
 
-    override fun clearReceivingObject() { /* no-op : no transfers in ETH/PAX */
-    }
+    override fun clearReceivingObject() { /* no-op : no transfers in ETH/PAX */ }
 
     override fun selectSendingAccount(account: JsonSerializableAccount?) {
         throw IllegalArgumentException("Multiple accounts not supported for PAX")

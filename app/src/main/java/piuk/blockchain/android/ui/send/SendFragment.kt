@@ -171,9 +171,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
         max.setOnClickListener { presenter.onSpendMaxClicked() }
 
-        info_link.setOnClickListener {
-            MinBalanceExplanationDialog().show(fragmentManager, "Dialog")
-        }
+        info_link.setOnClickListener { MinBalanceExplanationDialog().show(fragmentManager, "Dialog") }
 
         amountContainer.currencyFiat.text = currencyState.fiatUnit
 
@@ -684,8 +682,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     @FeeType.FeePriorityDef
     override fun getFeePriority(): Int {
-        val position = spinnerPriority.selectedItemPosition
-        return when (position) {
+        return when (spinnerPriority.selectedItemPosition) {
             1 -> FeeType.FEE_OPTION_PRIORITY
             2 -> FeeType.FEE_OPTION_CUSTOM
             else -> FeeType.FEE_OPTION_REGULAR
@@ -694,7 +691,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     override fun getCustomFeeValue(): Long {
         val amount = edittextCustomFee.text.toString()
-        return if (!amount.isEmpty()) amount.toLong() else 0
+        return amount.toLongOrNull() ?: 0
     }
 
     override fun showMaxAvailable() {

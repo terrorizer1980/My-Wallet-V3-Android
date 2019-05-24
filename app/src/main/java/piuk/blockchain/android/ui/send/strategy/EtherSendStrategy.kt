@@ -425,7 +425,7 @@ class EtherSendStrategy(
     override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) { }
 
     private fun isValidAmount(bAmount: BigInteger?): Boolean {
-        return (bAmount != null && bAmount >= BigInteger.ZERO)
+        return (bAmount != null && bAmount > BigInteger.ZERO)
     }
 
     private fun validateTransaction(): Observable<Pair<Boolean, Int>> {

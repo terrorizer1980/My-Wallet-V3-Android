@@ -114,11 +114,11 @@ class ErrorBottomDialog : BottomSheetDialogFragment() {
         private const val ARG_CONTENT = "arg_content"
 
         fun newInstance(content: Content): ErrorBottomDialog {
-            val errorDialog = ErrorBottomDialog()
-            errorDialog.arguments = Bundle().apply {
-                putParcelable(ARG_CONTENT, content)
+            return ErrorBottomDialog().apply {
+                arguments = Bundle().apply {
+                    putParcelable(ARG_CONTENT, content)
+                }
             }
-            return errorDialog
         }
     }
 }
