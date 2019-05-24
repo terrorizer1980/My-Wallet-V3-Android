@@ -103,7 +103,7 @@ class ExchangeConfirmationPresenter internal constructor(
             }
             .doOnSuccess {
                 view.showExchangeCompleteDialog(
-                    showPaxAirdropBottomDialog && sendingAccount.cryptoCurrency == CryptoCurrency.PAX
+                    showPaxAirdropBottomDialog && receivingAccount.cryptoCurrency == CryptoCurrency.PAX
                 )
             }
     }
