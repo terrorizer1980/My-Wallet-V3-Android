@@ -81,7 +81,7 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
         }
 
         if (campaignType == CampaignType.Sunriver) {
-            imageView.setImageResource(R.drawable.vector_stellar_rocket)
+            imageView.setImageResource(R.drawable.vector_xlm_colored)
             textViewMessage.setText(R.string.sunriver_splash_message)
         } else if (campaignType == CampaignType.BuySell) {
             textViewMessage.setText(R.string.buy_sell_splash_message)

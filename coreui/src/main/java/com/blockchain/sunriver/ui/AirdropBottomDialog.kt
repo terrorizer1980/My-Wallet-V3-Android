@@ -28,7 +28,7 @@ class AirdropBottomDialog : BaseAirdropBottomDialog(
         startKycAndDismiss()
     }
 
-    override fun rocketShipClick() {
+    override fun xlmLogoClick() {
         analytics.logEvent(AnalyticsEvents.SunRiverBottomDialogClicked)
         analytics.logEvent(AnalyticsEvents.SunRiverBottomDialogClickedRocket)
         startKycAndDismiss()

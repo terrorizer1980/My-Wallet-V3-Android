@@ -65,7 +65,7 @@ data class SunriverCard(
     @StringRes override val title: Int,
     @StringRes override val description: Int,
     @StringRes override val link: Int? = null,
-    @DrawableRes override val image: Int = R.drawable.vector_stellar_rocket,
+    @DrawableRes override val image: Int = R.drawable.vector_xlm_colored,
     override val closeFunction: () -> Unit,
     override val linkFunction: () -> Unit,
     override val prefsKey: String,

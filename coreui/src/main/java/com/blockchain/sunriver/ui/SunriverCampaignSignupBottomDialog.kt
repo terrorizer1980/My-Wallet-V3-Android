@@ -38,7 +38,7 @@ class SunriverCampaignSignupBottomDialog : BaseAirdropBottomDialog(
             }
     }
 
-    override fun rocketShipClick() {
+    override fun xlmLogoClick() {
         analytics.logEvent(AnalyticsEvents.SunRiverBottomCampaignDialogClickedRocket)
     }
 

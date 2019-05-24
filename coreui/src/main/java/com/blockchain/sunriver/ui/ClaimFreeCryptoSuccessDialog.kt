@@ -20,7 +20,7 @@ class ClaimFreeCryptoSuccessDialog : BaseAirdropBottomDialog(
         analytics.logEvent(AnalyticsEvents.ClaimFreeCryptoSuccessDialog)
     }
 
-    override fun rocketShipClick() {
+    override fun xlmLogoClick() {
         analytics.logEvent(AnalyticsEvents.ClaimFreeCryptoSuccessDialogClickedRocket)
         dismiss()
     }

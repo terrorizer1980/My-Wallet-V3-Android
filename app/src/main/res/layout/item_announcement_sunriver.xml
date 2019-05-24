@@ -59,7 +59,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginRight="32dp"
             android:layout_marginBottom="16dp"
-            app:srcCompat="@drawable/vector_stellar_rocket" />
+            app:srcCompat="@drawable/vector_xlm_colored" />
 
         <TextView
             android:id="@+id/text_view_sunriver_announcement_secondary_message"
