@@ -36,6 +36,9 @@ class SwapAnnouncementDelegate<in T> : AdapterDelegate<T> {
 
         fun bind(swapAnnouncementCard: SwapAnnouncementCard) {
             binding.swapCard = swapAnnouncementCard
+            binding.textViewSwapAnnouncementLink.setOnClickListener {
+                swapAnnouncementCard.linkFunction()
+            }
             binding.executePendingBindings()
         }
     }

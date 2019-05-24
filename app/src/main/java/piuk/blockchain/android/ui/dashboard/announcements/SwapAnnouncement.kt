@@ -50,7 +50,11 @@ class SwapAnnouncement(
                 dismissEntry.isDismissed = true
                 dashboardPresenter.dismissSwapAnnouncementCard()
             },
-            linkFunction = {},
+            linkFunction = {
+                dashboardPresenter.exchange()
+                dismissEntry.isDismissed = true
+                dashboardPresenter.dismissSwapAnnouncementCard()
+            },
             isNew = true
         ))
     }

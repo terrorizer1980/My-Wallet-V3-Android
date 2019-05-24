@@ -235,11 +235,11 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
         fun start(
             context: Context,
             defaultCurrency: String,
-            preselectedDefaultCurrency: CryptoCurrency = CryptoCurrency.ETHER
+            preselectedDefaultCurrency: CryptoCurrency? = null
         ) {
             Intent(context, HomebrewNavHostActivity::class.java).apply {
                 putExtra(EXTRA_DEFAULT_CURRENCY, defaultCurrency)
-                putExtra(EXTRA_PRESELECTED_TO_CURRENCY, preselectedDefaultCurrency)
+                putExtra(EXTRA_PRESELECTED_TO_CURRENCY, preselectedDefaultCurrency ?: CryptoCurrency.ETHER)
             }.run { context.startActivity(this) }
         }
     }

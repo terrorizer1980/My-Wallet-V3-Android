@@ -38,5 +38,5 @@ interface DashboardView : View {
 
     fun showBottomSheetDialog(bottomSheetDialogFragment: BottomSheetDialogFragment)
 
-    fun goToExchange(currency: CryptoCurrency, defCurrency: String)
+    fun goToExchange(currency: CryptoCurrency?, defCurrency: String)
 }

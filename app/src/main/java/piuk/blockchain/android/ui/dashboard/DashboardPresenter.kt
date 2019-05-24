@@ -588,7 +588,7 @@ class DashboardPresenter(
         view.showBottomSheetDialog(ClaimFreeCryptoSuccessDialog())
     }
 
-    fun exchange(currency: CryptoCurrency) {
+    fun exchange(currency: CryptoCurrency? = null) {
         view.goToExchange(currency, fiatCurrencyPreference.fiatCurrencyPreference)
     }
 
