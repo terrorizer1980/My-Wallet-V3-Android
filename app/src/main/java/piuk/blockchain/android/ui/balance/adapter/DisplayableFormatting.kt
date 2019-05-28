@@ -11,7 +11,7 @@ internal fun Displayable.formatting() =
     when (direction) {
         TransactionSummary.Direction.TRANSFERRED -> transferredFormatting(this)
         TransactionSummary.Direction.RECEIVED -> receivedFormatting(this)
-        TransactionSummary.Direction.SENT -> if (!isFeeTransaction) sendFormatting(this) else txnFormatting(this)
+        TransactionSummary.Direction.SENT -> if (!isFeeTransaction) sendFormatting(this) else paxFeeFormatting(this)
     }
 
 internal class DisplayableFormatting(
@@ -70,9 +70,9 @@ private fun sendFormatting(tx: Displayable) =
         )
     )
 
-private fun txnFormatting(tx: Displayable) =
+private fun paxFeeFormatting(tx: Displayable) =
     DisplayableFormatting(
-        text = R.string.txn,
+        text = R.string.pax_fee,
         valueBackground = getColorForConfirmations(
             tx,
             R.drawable.rounded_view_red_50,

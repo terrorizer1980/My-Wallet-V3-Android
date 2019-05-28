@@ -261,7 +261,8 @@ class TransactionListDataManager(
                 ethDataManager.getEthTransactions()
                     .map {
                         val ethFeeForPaxTransaction =
-                            it.to == ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress
+                            it.to.equals(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
+                                ignoreCase = true)
                         EthDisplayable(
                             ethDataManager.getEthResponseModel()!!,
                             it,
