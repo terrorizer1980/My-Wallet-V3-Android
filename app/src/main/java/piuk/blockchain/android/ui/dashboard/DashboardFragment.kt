@@ -46,6 +46,10 @@ import java.util.Locale
 class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     DashboardView {
 
+    override fun startKycFlowWithNavigator(campaignType: CampaignType) {
+        navigator().gotoKyc(campaignType)
+    }
+
     override fun goToExchange(currency: CryptoCurrency?, defCurrency: String) {
         (activity as?Context)?.let {
             HomebrewNavHostActivity.start(it, defCurrency, currency)

@@ -892,6 +892,7 @@ class DashboardPresenterTest {
         subject.exchangeRequested(CryptoCurrency.ETHER)
         // Assert
         verify(view).goToExchange(CryptoCurrency.ETHER, "USD")
+        verify(view, never()).startKycFlowWithNavigator(CampaignType.Swap)
     }
 
     @Test
@@ -904,7 +905,7 @@ class DashboardPresenterTest {
         subject.exchangeRequested(CryptoCurrency.ETHER)
         // Assert
         verify(view, never()).goToExchange(any(), any())
-        verify(view).startKycFlow(CampaignType.Swap)
+        verify(view).startKycFlowWithNavigator(CampaignType.Swap)
     }
 
     private fun mockDependencies() {

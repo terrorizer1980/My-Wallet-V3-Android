@@ -139,7 +139,7 @@ class DashboardPresenter(
             if (tier > 0) {
                 view.goToExchange(currency, fiatCurrencyPreference.fiatCurrencyPreference)
             } else {
-                view.startKycFlow(CampaignType.Swap)
+                view.startKycFlowWithNavigator(CampaignType.Swap)
             }
         }
     }

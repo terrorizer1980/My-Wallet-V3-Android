@@ -34,6 +34,8 @@ interface DashboardView : View {
 
     fun startKycFlow(campaignType: CampaignType)
 
+    fun startKycFlowWithNavigator(campaignType: CampaignType)
+
     fun launchWaitlist()
 
     fun showBottomSheetDialog(bottomSheetDialogFragment: BottomSheetDialogFragment)
