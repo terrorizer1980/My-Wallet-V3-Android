@@ -4,9 +4,11 @@ import com.blockchain.android.testutils.rxInit
 import com.blockchain.announcement.AnnouncementList
 import com.blockchain.balance.TotalBalance
 import com.blockchain.kyc.status.KycTiersQueries
+import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
+import com.blockchain.nabu.CurrentTier
 import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.bitcoin
@@ -18,6 +20,7 @@ import com.nhaarman.mockito_kotlin.anyOrNull
 import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.verifyZeroInteractions
@@ -50,6 +53,7 @@ class DashboardPresenterTest {
 
     private lateinit var subject: DashboardPresenter
     private val prefsUtil: PrefsUtil = mock()
+    private val currentTier: CurrentTier = mock()
     private val exchangeRateFactory: ExchangeRateDataManager = mock()
     private val bchDataManager: BchDataManager = mock()
     private val payloadDataManager: PayloadDataManager = mock()
@@ -97,15 +101,18 @@ class DashboardPresenterTest {
             currencyFormatManager,
             kycTiersQueries,
             lockboxDataManager,
+            currentTier,
             sunriverCampaignHelper,
             mock {
                 on { this.announcementList } `it returns` AnnouncementList()
             }
+
         )
 
         subject.initView(view)
 
         whenever(view.locale).thenReturn(Locale.US)
+        whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(1))
         whenever(bchDataManager.getWalletTransactions(50, 0))
             .thenReturn(Observable.just(emptyList()))
     }
@@ -863,11 +870,109 @@ class DashboardPresenterTest {
     @Test
     fun `should propagate the correct fiat and crypto currency to the view`() {
         // Arrange
+        mockDependencies()
         whenever(fiatCurrencyPreference.fiatCurrencyPreference)
             .thenReturn("USD")
         // Act
-        subject.exchange(CryptoCurrency.ETHER)
+        subject.onViewReady()
+        subject.exchangeRequested(CryptoCurrency.ETHER)
         // Assert
         verify(view).goToExchange(CryptoCurrency.ETHER, "USD")
+    }
+
+    @Test
+    fun `should go to swap if tier is higher or equal to 1`() {
+        // Arrange
+        mockDependencies()
+        whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(1))
+        whenever(fiatCurrencyPreference.fiatCurrencyPreference)
+            .thenReturn("USD")
+        // Act
+        subject.onViewReady()
+        subject.exchangeRequested(CryptoCurrency.ETHER)
+        // Assert
+        verify(view).goToExchange(CryptoCurrency.ETHER, "USD")
+    }
+
+    @Test
+    fun `should go to kyc if tier is zero`() {
+        // Arrange
+        mockDependencies()
+        whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(0))
+        // Act
+        subject.onViewReady()
+        subject.exchangeRequested(CryptoCurrency.ETHER)
+        // Assert
+        verify(view, never()).goToExchange(any(), any())
+        verify(view).startKycFlow(CampaignType.Swap)
+    }
+
+    private fun mockDependencies() {
+        whenever(stringUtils.getString(any())).thenReturn("")
+
+        // updatePrices()
+        whenever(exchangeRateFactory.updateTickers()).thenReturn(Completable.complete())
+        whenever(currencyFormatManager.getFormattedFiatValueWithSymbol(any())).thenReturn("$2.00")
+        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
+            .thenReturn("USD")
+        whenever(exchangeRateFactory.getLastPrice(eq(CryptoCurrency.BTC), any()))
+            .thenReturn(5000.00)
+        whenever(exchangeRateFactory.getLastPrice(eq(CryptoCurrency.ETHER), any()))
+            .thenReturn(4000.00)
+        whenever(exchangeRateFactory.getLastPrice(eq(CryptoCurrency.BCH), any()))
+            .thenReturn(3000.00)
+
+        // getOnboardingStatusObservable()
+        val metadataObservable = Observable.just(MetadataEvent.SETUP_COMPLETE)
+        whenever(rxBus.register(MetadataEvent::class.java)).thenReturn(metadataObservable)
+        whenever(prefsUtil.getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false))
+            .thenReturn(true)
+        whenever(accessState.isNewlyCreated).thenReturn(false)
+
+        // doOnSuccess { updateAllBalances() }
+        whenever(payloadDataManager.updateAllBalances()).thenReturn(Completable.complete())
+        whenever(payloadDataManager.updateAllTransactions()).thenReturn(Completable.complete())
+        givenBalance(210.bitcoin())
+        givenBalance(200.bitcoinCash())
+        givenBalance(220.ether())
+        givenBalance(100.lumens())
+        givenBalance(50.usdPax())
+        whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BTC, "USD")).thenReturn(2.0)
+        whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.ETHER, "USD")).thenReturn(2.0)
+        whenever(exchangeRateFactory.getLastPrice(CryptoCurrency.BCH, "USD")).thenReturn(2.0)
+        // PieChartsState
+        whenever(currencyFormatManager.getFiatSymbol(any(), any())).thenReturn("$")
+        whenever(currencyFormatManager.getFormattedFiatValueFromBtcValueWithSymbol(any(), any()))
+            .thenReturn("$2.00")
+        whenever(currencyFormatManager.getFormattedFiatValueFromEthValueWithSymbol(any(), any()))
+            .thenReturn("$2.00")
+        whenever(currencyFormatManager.getFormattedFiatValueFromBchValueWithSymbol(any(), any()))
+            .thenReturn("$2.00")
+
+        whenever(currencyFormatManager.getFormattedValueWithUnit(any()))
+            .thenReturn("$2.00")
+        whenever(currencyFormatManager.getFormattedEthShortValueWithUnit(any(), any()))
+            .thenReturn("$2.00")
+
+        // storeSwipeToReceiveAddresses()
+        whenever(bchDataManager.getWalletTransactions(any(), any()))
+            .thenReturn(Observable.empty())
+
+        // checkLatestAnnouncements()
+        // No Native Buy/Sell announcement
+        whenever(prefsUtil.getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false))
+            .thenReturn(false)
+        whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(true))
+        whenever(prefsUtil.getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false))
+            .thenReturn(false)
+        // KYC already dismissed
+        whenever(prefsUtil.getValue(DashboardPresenter.KYC_INCOMPLETE_DISMISSED, false))
+            .thenReturn(false)
+        whenever(kycTiersQueries.isKycInProgress()).thenReturn(Single.just(true))
+        // No Lockbox, not available
+        whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
+        whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
+        // Ignore Sunriver
+        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
     }
 }

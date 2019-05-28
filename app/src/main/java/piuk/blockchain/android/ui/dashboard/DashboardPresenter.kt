@@ -9,6 +9,7 @@ import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
+import com.blockchain.nabu.CurrentTier
 import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.sunriver.ui.ClaimFreeCryptoSuccessDialog
 import info.blockchain.balance.CryptoCurrency
@@ -23,8 +24,10 @@ import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.balance.AnnouncementData
 import piuk.blockchain.android.ui.balance.ImageLeftAnnouncementCard
@@ -71,11 +74,13 @@ class DashboardPresenter(
     private val currencyFormatManager: CurrencyFormatManager,
     private val kycTiersQueries: KycTiersQueries,
     private val lockboxDataManager: LockboxDataManager,
+    private val currentTier: CurrentTier,
     private val sunriverCampaignHelper: SunriverCampaignHelper,
     private val dashboardAnnouncements: DashboardAnnouncements
 ) : BasePresenter<DashboardView>() {
 
     private val currencies = DashboardConfig.currencies
+    private val exchangeRequested = PublishSubject.create<CryptoCurrency>()
 
     private val displayList by unsafeLazy {
         (listOf(
@@ -128,6 +133,21 @@ class DashboardPresenter(
                 { /* No-op */ },
                 { Timber.e(it) }
             )
+        compositeDisposable += exchangeRequested.switchMap { currency ->
+            currentTier.usersCurrentTier().toObservable().zipWith(Observable.just(currency))
+        }.subscribe { (tier, currency) ->
+            if (tier > 0) {
+                view.goToExchange(currency, fiatCurrencyPreference.fiatCurrencyPreference)
+            } else {
+                view.startKycFlow(CampaignType.Swap)
+            }
+        }
+    }
+
+    fun exchangeRequested(cryptoCurrency: CryptoCurrency? = null) {
+        cryptoCurrency?.let {
+            exchangeRequested.onNext(cryptoCurrency)
+        } ?: exchangeRequested.onNext(CryptoCurrency.ETHER)
     }
 
     fun updateBalances() {
@@ -586,10 +606,6 @@ class DashboardPresenter(
 
     private fun showSignUpToSunRiverCampaignSuccessDialog() {
         view.showBottomSheetDialog(ClaimFreeCryptoSuccessDialog())
-    }
-
-    fun exchange(currency: CryptoCurrency? = null) {
-        view.goToExchange(currency, fiatCurrencyPreference.fiatCurrencyPreference)
     }
 
     companion object {

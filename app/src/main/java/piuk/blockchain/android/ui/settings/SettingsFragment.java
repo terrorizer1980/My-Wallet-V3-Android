@@ -869,12 +869,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
     }
 
     @Override
-    public void launchHomebrew(String defaultCurrency) {
-        HomebrewNavHostActivity.start(requireContext(), defaultCurrency, CryptoCurrency.ETHER);
-        requireActivity().finish();
-    }
-
-    @Override
     public void launchKycFlow() {
         KycNavHostActivity.start(requireContext(), CampaignType.Swap);
         requireActivity().finish();

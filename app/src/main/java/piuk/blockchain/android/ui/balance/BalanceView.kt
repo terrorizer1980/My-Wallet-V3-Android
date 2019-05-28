@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.balance
 
+import com.blockchain.kycui.navhost.models.CampaignType
 import piuk.blockchain.android.ui.account.ItemAccount
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.ui.base.UiState
@@ -34,6 +35,10 @@ interface BalanceView : View {
     fun generateLauncherShortcuts()
 
     fun shouldShowBuy(): Boolean
+
+    fun startKyc(campaignType: CampaignType)
+
+    fun swap()
 
     fun setDropdownVisibility(visible: Boolean)
 

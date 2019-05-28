@@ -651,8 +651,8 @@ class MainActivity
         editText.setHint(R.string.password)
         editText.inputType =
             InputType.TYPE_CLASS_TEXT or
-                InputType.TYPE_TEXT_VARIATION_PASSWORD or
-                InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+                    InputType.TYPE_TEXT_VARIATION_PASSWORD or
+                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
 
         val frameLayout = ViewUtils.getAlertDialogPaddedView(this, editText)
 
@@ -762,6 +762,18 @@ class MainActivity
     private fun startDashboardFragment() {
         val fragment = DashboardFragment.newInstance()
         replaceContentFragment(fragment)
+    }
+
+    override fun swap(defCurrency: String, cryptoCurrency: CryptoCurrency?) {
+        HomebrewNavHostActivity.start(
+            (activity as? Context) ?: return,
+            defCurrency,
+            cryptoCurrency
+        )
+    }
+
+    override fun gotoKyc(campaignType: CampaignType) {
+        KycNavHostActivity.start((activity as? Context) ?: return, CampaignType.Swap)
     }
 
     override fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency) {

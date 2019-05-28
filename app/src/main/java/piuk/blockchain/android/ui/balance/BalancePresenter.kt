@@ -1,6 +1,8 @@
 package piuk.blockchain.android.ui.balance
 
 import android.support.annotation.VisibleForTesting
+import com.blockchain.kycui.navhost.models.CampaignType
+import com.blockchain.nabu.CurrentTier
 import com.blockchain.notifications.models.NotificationPayload
 import com.blockchain.preferences.FiatCurrencyPreference
 import info.blockchain.balance.CryptoCurrency
@@ -16,6 +18,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -63,13 +66,15 @@ class BalancePresenter(
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager,
     private val fiatExchangeRates: FiatExchangeRates,
-    private val fiatCurrencyPreference: FiatCurrencyPreference
+    private val fiatCurrencyPreference: FiatCurrencyPreference,
+    private val currentTier: CurrentTier
 ) : BasePresenter<BalanceView>() {
 
     @VisibleForTesting
     var notificationObservable: Observable<NotificationPayload>? = null
     @VisibleForTesting
     var authEventObservable: Observable<AuthEvent>? = null
+    val exchangePaxRequested = PublishSubject.create<Unit>()
 
     private var shortcutsGenerated = false
     private val tokenSingle: Single<String>
@@ -88,6 +93,16 @@ class BalancePresenter(
         if (environmentSettings.environment == Environment.TESTNET) {
             currencyState.cryptoCurrency = CryptoCurrency.BTC
             view.disableCurrencyHeader()
+        }
+
+        compositeDisposable += exchangePaxRequested.switchMap {
+            currentTier.usersCurrentTier().toObservable()
+        }.subscribe {
+            if (it > 0) {
+                view.swap()
+            } else {
+                view.startKyc(CampaignType.Swap)
+            }
         }
     }
 
@@ -417,5 +432,7 @@ class BalancePresenter(
     fun fiatDefaultCurrency(): String =
         fiatCurrencyPreference.fiatCurrencyPreference
 
+    fun tierLever(): Observable<Int> =
+        currentTier.usersCurrentTier().toObservable()
     // endregion
 }

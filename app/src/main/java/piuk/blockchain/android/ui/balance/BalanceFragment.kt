@@ -15,7 +15,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
+import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_FAQ
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_balance.*
@@ -49,6 +49,13 @@ import piuk.blockchain.androidcoreui.utils.helperfunctions.onItemSelectedListene
 class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
     BalanceView,
     TxFeedClickListener {
+    override fun startKyc(campaignType: CampaignType) {
+        navigator().gotoKyc(campaignType)
+    }
+
+    override fun swap() {
+        navigator().swap(presenter.fiatDefaultCurrency(), presenter.getCurrentCurrency())
+    }
 
     private var accountsAdapter: AccountsAdapter? = null
     private var txFeedAdapter: TxFeedAdapter? = null
@@ -306,11 +313,7 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
                 non_pax_no_transactions_container.gone()
                 swap_for_pax_now.setOnClickListener {
                     (activity as? Context)?.let {
-                        HomebrewNavHostActivity.start(
-                            it,
-                            presenter.fiatDefaultCurrency(),
-                            presenter.getCurrentCurrency()
-                        )
+                        presenter?.exchangePaxRequested?.onNext(Unit)
                     }
                 }
             }

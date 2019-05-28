@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.home
 
+import com.blockchain.kycui.navhost.models.CampaignType
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -21,6 +22,8 @@ interface HomeNavigator {
     fun hideNavigation()
 
     fun gotoDashboard()
+    fun swap(defCurrency: String, cryptoCurrency: CryptoCurrency? = null)
+    fun gotoKyc(campaignType: CampaignType)
     fun gotoSendFor(cryptoCurrency: CryptoCurrency)
     fun gotoReceiveFor(cryptoCurrency: CryptoCurrency)
     fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency)

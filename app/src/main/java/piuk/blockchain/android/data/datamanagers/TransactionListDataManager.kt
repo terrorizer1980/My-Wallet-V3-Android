@@ -54,7 +54,6 @@ class TransactionListDataManager(
             CryptoCurrency.BCH -> fetchBchTransactions(itemAccount, limit, offset)
             CryptoCurrency.XLM -> fetchXlmTransactions()
             CryptoCurrency.PAX -> getPaxTransactions().onErrorReturn { emptyList() }
-            CryptoCurrency.PAX -> Observable.just(emptyList())
         }
 
         return observable.doOnNext { insertTransactionList(it.toMutableList()) }

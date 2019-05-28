@@ -34,7 +34,7 @@ class StableCoinIntroductionAnnouncement(
                     dashboardPresenter.dismissStableCoinIntroduction()
                 },
                 linkFunction = {
-                    dashboardPresenter.exchange(CryptoCurrency.PAX)
+                    dashboardPresenter.exchangeRequested(CryptoCurrency.PAX)
                 }
             )
         )
