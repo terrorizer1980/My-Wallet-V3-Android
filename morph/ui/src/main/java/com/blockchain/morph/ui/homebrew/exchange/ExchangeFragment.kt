@@ -181,22 +181,19 @@ internal class ExchangeFragment : Fragment() {
             .subscribeBy {
                 when (it.fix) {
                     Fix.BASE_FIAT -> displayFiatLarge(it.fromFiat, it.fromCrypto, it.decimalCursor)
-                    Fix.BASE_CRYPTO -> displayCryptoLarge(it.fromCrypto,
-                        it.fromFiat,
-                        it.decimalCursor)
+                    Fix.BASE_CRYPTO -> displayCryptoLarge(it.fromCrypto, it.fromFiat, it.decimalCursor)
                     Fix.COUNTER_FIAT -> displayFiatLarge(it.toFiat, it.toCrypto, it.decimalCursor)
-                    Fix.COUNTER_CRYPTO -> displayCryptoLarge(it.toCrypto,
-                        it.toFiat,
-                        it.decimalCursor)
+                    Fix.COUNTER_CRYPTO -> displayCryptoLarge(it.toCrypto, it.toFiat, it.decimalCursor)
                 }
 
                 inputTypeRelay.onNext(it.fix)
 
                 selectSendAccountButton.setButtonGraphicsAndTextFromCryptoValue(it.fromCrypto)
                 selectReceiveAccountButton.setButtonGraphicsAndTextFromCryptoValue(it.toCrypto)
-                keyboard.setValue(it.lastUserValue.userDecimalPlaces,
-                    it.lastUserValue.toBigDecimal())
+
+                keyboard.setValue(it.lastUserValue.userDecimalPlaces, it.lastUserValue.toBigDecimal())
                 exchangeButton.isEnabled = it.isValid()
+
                 updateUserFeedBack(it)
                 updateExchangeRate(it)
                 updateBalance(it)
@@ -337,7 +334,7 @@ internal class ExchangeFragment : Fragment() {
                 ExchangeMenuState.ErrorType.TIER
             )
             QuoteValidity.OverUserBalance -> {
-                val maxSpendableFiat = maxSpenableFiatBalance()
+                val maxSpendableFiat = maxSpendableFiatBalance()
                 ExchangeMenuState.ExchangeMenuError(
                     fromCrypto.currency,
                     userTier,
@@ -376,6 +373,7 @@ internal class ExchangeFragment : Fragment() {
         latestQuote?.baseToFiatRate?.let { baseToFiatRate ->
             val fiatSpendable = ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate)
                 .applyRate(spendable)
+
             fiatSpendable?.let {
                 val fiatString = SpannableString(it.toStringWithSymbol())
                 fiatString.setSpan(
@@ -392,14 +390,17 @@ internal class ExchangeFragment : Fragment() {
         return spendableString
     }
 
-    private fun ExchangeViewState.maxSpenableFiatBalance(): CharSequence {
+    private fun ExchangeViewState.maxSpendableFiatBalance(): CharSequence {
         val cryptoCurrency = fromCrypto.currency
         val fiatCode = fromFiat.currencyCode
         val spendable = maxSpendable ?: CryptoValue.zero(cryptoCurrency)
-        return latestQuote?.baseToFiatRate?.let { baseToFiatRate ->
+
+        val fiat = latestQuote?.baseToFiatRate?.let { baseToFiatRate ->
             ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate)
-                .applyRate(spendable)?.toStringWithSymbol() ?: ""
-        } ?: ""
+                .applyRate(spendable)
+        } ?: FiatValue.zero(fiatCode)
+
+        return fiat.toStringWithSymbol()
     }
 
     private fun ExchangeViewState.formatBase(): String =

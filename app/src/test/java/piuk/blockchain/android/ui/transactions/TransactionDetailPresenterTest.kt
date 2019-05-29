@@ -443,7 +443,7 @@ class TransactionDetailPresenterTest {
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
         verify(view).setFromAddress(any())
-        verify(view).setFee("0.00000155 ETH")
+        verify(view).setFee("0.00000154 ETH")
         verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
         verify(view).updateFeeFieldVisibility(any())
