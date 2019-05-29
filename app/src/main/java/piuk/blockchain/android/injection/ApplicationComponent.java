@@ -4,7 +4,6 @@ import dagger.Component;
 import info.blockchain.wallet.util.PrivateKeyFactory;
 import piuk.blockchain.android.BlockchainApplication;
 import com.blockchain.notifications.InstanceIdService;
-import piuk.blockchain.androidcore.data.contacts.ContactsDataManager;
 
 import javax.inject.Singleton;
 
@@ -32,6 +31,4 @@ public interface ApplicationComponent {
     void inject(InstanceIdService instanceIdService);
 
     void inject(BlockchainApplication blockchainApplication);
-
-    void inject(ContactsDataManager contactsDataManager);
 }
