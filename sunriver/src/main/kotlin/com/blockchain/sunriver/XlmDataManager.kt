@@ -20,7 +20,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Maybe
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 
 class XlmDataManager internal constructor(
@@ -29,20 +29,26 @@ class XlmDataManager internal constructor(
     private val xlmSecretAccess: XlmSecretAccess,
     private val memoMapper: MemoMapper,
     private val xlmFeesFetcher: XlmFeesFetcher,
-    private val xlmTimeoutFetcher: XlmTransactionTimeoutFetcher
+    private val xlmTimeoutFetcher: XlmTransactionTimeoutFetcher,
+    xlmHorizonUrlFetcher: XlmHorizonUrlFetcher,
+    xlmHorizonDefUrl: String
 ) : TransactionSender,
     DefaultAccountDataManager,
     AsyncAddressBalanceReporter,
     AsyncAccountBalanceReporter {
 
+    private val xlmProxyUrl = xlmHorizonUrlFetcher.xlmHorizonUrl(xlmHorizonDefUrl).doOnSuccess {
+        horizonProxy.update(it)
+    }.cache()
+
     override fun sendFunds(
         sendDetails: SendDetails
     ): Single<SendFundsResult> =
         Single.defer {
-            Single.zip(
+            Singles.zip(
                 xlmSecretAccess.getPrivate(HorizonKeyPair.Public(sendDetails.fromXlm.accountId)).toSingle(),
                 xlmTimeoutFetcher.transactionTimeout(),
-                BiFunction { private: HorizonKeyPair.Private, timeout: Long -> private to timeout }
+                xlmProxyUrl
             ).map {
                 horizonProxy.sendTransaction(
                     it.first.toKeyPair(),
@@ -65,7 +71,7 @@ class XlmDataManager internal constructor(
                 sendDetails.value,
                 memoMapper.mapMemo(sendDetails.memo),
                 sendDetails.fee
-            ).mapToSendFundsResult(sendDetails).just()
+            ).mapToSendFundsResult(sendDetails).just().ensureUrlUpdated()
         }
 
     private fun <T> T.just(): Single<T> = Single.just(this)
@@ -74,7 +80,7 @@ class XlmDataManager internal constructor(
     private val maybeWallet = Maybe.defer { metaDataInitializer.initWalletMaybe }
 
     override fun getBalance(address: String): Single<CryptoValue> =
-        Single.fromCallable { horizonProxy.getBalance(address) }
+        Single.fromCallable { horizonProxy.getBalance(address) }.ensureUrlUpdated()
             .subscribeOn(Schedulers.io())
 
     fun getBalance(accountReference: AccountReference.Xlm): Single<CryptoValue> =
@@ -88,7 +94,7 @@ class XlmDataManager internal constructor(
     }
 
     private fun getBalanceAndMin(accountReference: AccountReference.Xlm): Single<BalanceAndMin> =
-        Single.fromCallable { horizonProxy.getBalanceAndMin(accountReference.accountId) }
+        Single.fromCallable { horizonProxy.getBalanceAndMin(accountReference.accountId) }.ensureUrlUpdated()
             .subscribeOn(Schedulers.io())
 
     fun getBalance(): Single<CryptoValue> =
@@ -134,13 +140,13 @@ class XlmDataManager internal constructor(
         Single.fromCallable {
             horizonProxy.getTransactionList(accountReference.accountId)
                 .map(accountReference.accountId, horizonProxy)
-        }.subscribeOn(Schedulers.io())
+        }.ensureUrlUpdated().subscribeOn(Schedulers.io())
 
     /**
      * See also [getOperationFee]
      */
     fun getTransactionFee(hash: String): Single<CryptoValue> =
-        Single.fromCallable { horizonProxy.getTransaction(hash) }
+        Single.fromCallable { horizonProxy.getTransaction(hash) }.ensureUrlUpdated()
             .map { CryptoValue.lumensFromStroop(it.feePaid.toBigInteger()) }
             .subscribeOn(Schedulers.io())
 
@@ -160,6 +166,11 @@ class XlmDataManager internal constructor(
 
     private fun maybeDefaultXlmAccount() =
         maybeWallet.map(XlmMetaData::default)
+
+    private fun <T> Single<T>.ensureUrlUpdated(): Single<T> =
+        xlmProxyUrl.flatMap {
+            this
+        }
 }
 
 internal fun HorizonProxy.SendResult.mapToSendFundsResult(sendDetails: SendDetails): SendFundsResult =

@@ -477,10 +477,10 @@ class XlmDataManagerTransactionListTest {
     fun `get operation fee`() {
         givenXlmDataManager(
             givenTransaction("HASH_X" to
-                mock {
-                    on { feePaid } `it returns` 4 * 125
-                    on { operationCount } `it returns` 4
-                }
+                    mock {
+                        on { feePaid } `it returns` 4 * 125
+                        on { operationCount } `it returns` 4
+                    }
             )
         ).getOperationFee("HASH_X")
             .testSingle() `should equal` 125.stroops()
@@ -512,18 +512,18 @@ class XlmDataManagerTransactionListTest {
             on { startingBalance } `it returns` "10000"
             on { transactionHash } `it returns` "transactionHash"
             on { account } `it returns`
-                KeyPair.fromAccountId("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
+                    KeyPair.fromAccountId("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
             on { funder } `it returns`
-                KeyPair.fromAccountId("GAIH3ULLFQ4DGSECF2AR555KZ4KNDGEKN4AFI4SU2M7B43MGK3QJZNSR")
+                    KeyPair.fromAccountId("GAIH3ULLFQ4DGSECF2AR555KZ4KNDGEKN4AFI4SU2M7B43MGK3QJZNSR")
         }
         val mockPayment: PaymentOperationResponse = mock {
             on { createdAt } `it returns` "createdAt"
             on { amount } `it returns` "100"
             on { transactionHash } `it returns` "transactionHash"
             on { to } `it returns`
-                KeyPair.fromAccountId("GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
+                    KeyPair.fromAccountId("GBAHSNSG37BOGBS4GXUPMHZWJQ22WIOJQYORRBHTABMMU6SGSKDEAOPT")
             on { from } `it returns`
-                KeyPair.fromAccountId("GC24LNYWXIYYB6OGCMAZZ5RX6WPI2F74ZV7HNBV4ADALLXJRT7ZTLHP2")
+                    KeyPair.fromAccountId("GC24LNYWXIYYB6OGCMAZZ5RX6WPI2F74ZV7HNBV4ADALLXJRT7ZTLHP2")
             on { type } `it returns` "payment"
         }
 
@@ -607,7 +607,7 @@ class XlmDataManagerSendTransactionTest {
             ),
             givenPrivateForPublic(
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
-                    "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
+                        "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
             ),
             feesFetcher = givenXlmFees(256.stroops())
         ).sendFunds(
@@ -622,7 +622,7 @@ class XlmDataManagerSendTransactionTest {
             .assertNoErrors()
             .assertComplete()
             .values().single().hash `should equal` "7F80FF"
-        horizonProxy.verifyJustTheOneSendAttempt()
+        horizonProxy.verifyJustTheOneSendAttemptAndUpdate()
     }
 
     @Test
@@ -656,20 +656,20 @@ class XlmDataManagerSendTransactionTest {
             ),
             givenPrivateForPublic(
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
-                    "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
+                        "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
             )
         ).sendFunds(
             sendDetails
         ).test()
             .assertComplete()
             .values().single() `should equal`
-            SendFundsResult(
-                sendDetails = sendDetails,
-                errorCode = 1,
-                confirmationDetails = null,
-                hash = null
-            )
-        horizonProxy.verifyJustTheOneSendAttempt()
+                SendFundsResult(
+                    sendDetails = sendDetails,
+                    errorCode = 1,
+                    confirmationDetails = null,
+                    hash = null
+                )
+        horizonProxy.verifyJustTheOneSendAttemptAndUpdate()
     }
 
     @Test
@@ -703,20 +703,20 @@ class XlmDataManagerSendTransactionTest {
             ),
             givenPrivateForPublic(
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
-                    "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
+                        "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
             )
         ).dryRunSendFunds(
             sendDetails
         ).test()
             .assertComplete()
             .values().single() `should equal`
-            SendFundsResult(
-                sendDetails = sendDetails,
-                errorCode = 1,
-                confirmationDetails = null,
-                hash = null
-            )
-        horizonProxy.verifyJustTheOneDryRunNoSends()
+                SendFundsResult(
+                    sendDetails = sendDetails,
+                    errorCode = 1,
+                    confirmationDetails = null,
+                    hash = null
+                )
+        horizonProxy.verifyJustTheOneDryRunNoSendsAndUpdate()
     }
 
     @Test
@@ -751,20 +751,20 @@ class XlmDataManagerSendTransactionTest {
             ),
             givenPrivateForPublic(
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
-                    "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
+                        "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
             )
         ).dryRunSendFunds(
             sendDetails
         ).test()
             .assertComplete()
             .values().single() `should equal`
-            SendFundsResult(
-                sendDetails = sendDetails,
-                errorCode = 5,
-                confirmationDetails = null,
-                hash = null
-            )
-        horizonProxy.verifyJustTheOneDryRunNoSends()
+                SendFundsResult(
+                    sendDetails = sendDetails,
+                    errorCode = 5,
+                    confirmationDetails = null,
+                    hash = null
+                )
+        horizonProxy.verifyJustTheOneDryRunNoSendsAndUpdate()
     }
 
     @Test
@@ -820,9 +820,9 @@ class XlmDataManagerSendTransactionTest {
             ),
             givenPrivateForPublic(
                 "GBVO27UV2OXJFLFNXHMXOR5WRPKETM64XAQHUEKQ67W5LQDPZCDSTUTF" to
-                    "SBGS72YDKMO7K6YBDGXSD2U7BGFK3LRDCR36KNNXVL7N7L2OSEQSWO25",
+                        "SBGS72YDKMO7K6YBDGXSD2U7BGFK3LRDCR36KNNXVL7N7L2OSEQSWO25",
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
-                    "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
+                        "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
             ),
             feesFetcher = givenXlmFees(256.stroops())
         ).sendFunds(
@@ -831,16 +831,16 @@ class XlmDataManagerSendTransactionTest {
             .assertNoErrors()
             .assertComplete()
             .values().single() `should equal`
-            SendFundsResult(
-                sendDetails = sendDetails,
-                errorCode = 0,
-                hash = "00010203FF",
-                confirmationDetails = SendConfirmationDetails(
+                SendFundsResult(
                     sendDetails = sendDetails,
-                    fees = 101.stroops()
+                    errorCode = 0,
+                    hash = "00010203FF",
+                    confirmationDetails = SendConfirmationDetails(
+                        sendDetails = sendDetails,
+                        fees = 101.stroops()
+                    )
                 )
-            )
-        horizonProxy.verifyJustTheOneSendAttempt()
+        horizonProxy.verifyJustTheOneSendAttemptAndUpdate()
     }
 
     @Test
@@ -901,16 +901,16 @@ class XlmDataManagerSendTransactionTest {
             .assertNoErrors()
             .assertComplete()
             .values().single() `should equal`
-            SendFundsResult(
-                sendDetails = sendDetails,
-                errorCode = 0,
-                hash = "00010203FF",
-                confirmationDetails = SendConfirmationDetails(
+                SendFundsResult(
                     sendDetails = sendDetails,
-                    fees = 1000.stroops()
+                    errorCode = 0,
+                    hash = "00010203FF",
+                    confirmationDetails = SendConfirmationDetails(
+                        sendDetails = sendDetails,
+                        fees = 1000.stroops()
+                    )
                 )
-            )
-        horizonProxy.verifyJustTheOneDryRunNoSends()
+        horizonProxy.verifyJustTheOneDryRunNoSendsAndUpdate()
     }
 
     @Test
@@ -928,7 +928,7 @@ class XlmDataManagerSendTransactionTest {
             mock(),
             givenPrivateForPublic(
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
-                    "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
+                        "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
             )
         ).sendFunds(
             SendDetails(
@@ -944,7 +944,7 @@ class XlmDataManagerSendTransactionTest {
                 errorCode `should equal` 5
                 success `should be` false
             }
-        horizonProxy.verifyJustTheOneSendAttempt()
+        horizonProxy.verifyJustTheOneSendAttemptAndUpdate()
     }
 
     @Test
@@ -999,7 +999,7 @@ class XlmDataManagerSendWithMemoTest {
             mock(),
             givenPrivateForPublic(
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
-                    "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
+                        "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
             ),
             memoMapper
         ).sendFunds(
@@ -1018,7 +1018,7 @@ class XlmDataManagerSendWithMemoTest {
                 success `should be` true
                 transaction.memo `should be` memoText
             }
-        horizonProxy.verifyJustTheOneSendAttempt()
+        horizonProxy.verifyJustTheOneSendAttemptAndUpdate()
     }
 
     @Test
@@ -1046,7 +1046,7 @@ class XlmDataManagerSendWithMemoTest {
             mock(),
             givenPrivateForPublic(
                 "GB5INYM5XFJHAIQYXUQMGMQEM5KWBM4OYVLTWQI5JSQBRQKFYH3M3XWR" to
-                    "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
+                        "SCIB3NRLJR6BPQRF3WCSPBICSZIXNLGHKWDZZ32OA6TFOJJKWGNHOHIA"
             ),
             memoMapper
         ).dryRunSendFunds(
@@ -1065,17 +1065,19 @@ class XlmDataManagerSendWithMemoTest {
                 success `should be` true
                 transaction.memo `should be` memoId
             }
-        horizonProxy.verifyJustTheOneDryRunNoSends()
+        horizonProxy.verifyJustTheOneDryRunNoSendsAndUpdate()
     }
 }
 
-private fun HorizonProxy.verifyJustTheOneSendAttempt() {
+private fun HorizonProxy.verifyJustTheOneSendAttemptAndUpdate() {
     verify(this).sendTransaction(any(), any(), any(), any(), any(), any())
+    verify(this).update(any())
     verifyNoMoreInteractions(this)
 }
 
-private fun HorizonProxy.verifyJustTheOneDryRunNoSends() {
+private fun HorizonProxy.verifyJustTheOneDryRunNoSendsAndUpdate() {
     verify(this).dryRunTransaction(any(), any(), any(), any(), any(), any())
+    verify(this).update(any())
     verifyNoMoreInteractions(this)
 }
 
@@ -1173,14 +1175,21 @@ private fun givenXlmDataManager(
     feesFetcher: XlmFeesFetcher = givenXlmFees(999.stroops()),
     timeoutFetcher: XlmTransactionTimeoutFetcher = givenTimeoutFetcher(10)
 ): XlmDataManager =
+
     XlmDataManager(
         horizonProxy,
         metaDataInitializer,
         secretAccess,
         memoMapper,
         feesFetcher,
-        timeoutFetcher
-    )
+        timeoutFetcher,
+        urlFetcher(),
+        "")
+
+fun urlFetcher(): XlmHorizonUrlFetcher =
+    mock {
+        on { xlmHorizonUrl(any()) } `it returns` Single.just("")
+    }
 
 private fun givenTimeoutFetcher(timeout: Long): XlmTransactionTimeoutFetcher =
     mock {

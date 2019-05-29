@@ -59,21 +59,6 @@ class HorizonProxyTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun `get xlm fees`() {
-        server.expect().get().withPath("/operation_fee_stats")
-            .andReturn(
-                200,
-                getStringFromResource("fees/fee_stats.json")
-            )
-            .once()
-
-        val proxy = get<HorizonProxy>()
-
-        val fees = proxy.fees()
-        fees `should equal` 100.stroops()
-    }
-
-    @Test
     fun `get xlm balance`() {
         server.expect().get().withPath("/accounts/GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
             .andReturn(
@@ -82,7 +67,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             )
             .once()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val balance =
             proxy.getBalance("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
@@ -99,7 +86,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             )
             .once()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         proxy.getBalanceAndMin("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4").apply {
             balance `should equal` 109969.99997.lumens()
@@ -116,7 +105,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             )
             .once()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         proxy.getBalanceAndMin("GC3OI356MOU4VUR4SMTSALQBI6HFCGKSSBWO5EMZABMN5AF3L3K6B6BK").apply {
             balance `should equal` 100.lumens()
@@ -133,7 +124,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             )
             .once()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val balance =
             proxy.getBalance("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
@@ -150,7 +143,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             )
             .once()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         proxy.getBalanceAndMin("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
             .apply {
@@ -168,7 +163,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             )
             .once()
 
-        val proxy = get<HorizonProxy>();
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        };
 
         {
             proxy.getBalance("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
@@ -185,7 +182,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         )
             .once()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val transactions =
             proxy.getTransactionList("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
@@ -206,7 +205,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         )
             .once()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val transactions =
             proxy.getTransactionList("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
@@ -224,7 +225,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         )
             .once()
 
-        val proxy = get<HorizonProxy>();
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        };
 
         {
             proxy.getTransactionList("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
@@ -240,7 +243,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             )
             .once()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val transaction =
             proxy.getTransaction("2dcb356e88d0c778a0c5ed8d33543f167994744ed0019b96553c310449133aba")
@@ -252,7 +257,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
     fun `accountExists - get account existence`() {
         server.givenAccountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         proxy.accountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4") `should be` true
     }
@@ -261,7 +268,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
     fun `accountExists - get account non-existence`() {
         server.givenAccountDoesNotExist("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         proxy.accountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4") `should be` false
     }
@@ -275,7 +284,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             )
             .once()
 
-        val proxy = get<HorizonProxy>();
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        };
 
         {
             proxy.accountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
@@ -284,14 +295,14 @@ class HorizonProxyTest : AutoCloseKoinTest() {
 
     @Test
     fun `Uses test net if url contains the word test`() {
-        HorizonProxy("test_net")
+        HorizonProxy().apply { update("test_net") }
 
         Network.current().networkPassphrase `should equal` "Test SDF Network ; September 2015"
     }
 
     @Test
     fun `Uses the public network if url does not contains the word test`() {
-        HorizonProxy("te_st_net")
+        HorizonProxy().apply { update("te_st_net") }
 
         Network.current().networkPassphrase `should equal` "Public Global Stellar Network ; September 2015"
     }
@@ -303,7 +314,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
 
         server.givenPostWillBeSuccessful()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
         source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
@@ -337,7 +350,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
 
         server.givenPostWillBeSuccessful()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
         source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
@@ -586,7 +601,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             destinationAccountExists = destinationAccountExists
         )
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         proxy.sendTransaction(
             sourceAccount,
@@ -623,7 +640,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             destinationAccountExists = destinationAccountExists
         )
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         proxy.dryRunTransaction(
             sourceAccount,
@@ -660,7 +679,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
 
         server.givenPostWillBeSuccessful()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         proxy.sendTransaction(
             sourceAccount,
@@ -691,7 +712,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             destinationAccountExists = destinationAccountExists
         )
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         proxy.dryRunTransaction(
             sourceAccount,
@@ -718,7 +741,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
             )
             .once()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         proxy.sendTransaction(
             KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I"),
@@ -736,7 +761,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         server.givenAccountDoesNotExist("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
         server.givenPostWillBeSuccessful()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
         source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
@@ -769,7 +796,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         server.givenAccountExists("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
         server.givenPostWillBeSuccessful()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
         source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
@@ -794,7 +823,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         server.givenAccountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
         server.givenAccountDoesNotExist("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
         source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
@@ -819,7 +850,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         server.givenAccountExists("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
         server.givenPostWillBeSuccessful()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
         source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
@@ -845,7 +878,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         server.givenAccountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
         server.givenAccountDoesNotExist("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
         source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
@@ -870,7 +905,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         server.givenAccountExists("GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4")
         server.givenAccountExists("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
         source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"
@@ -891,7 +928,9 @@ class HorizonProxyTest : AutoCloseKoinTest() {
         server.givenAccountExists("GCO724H2FOHPBFF4OQ6IB5GB3CVE4W3UGDY4RIHHG6UPQ2YZSSCINMAI")
         server.givenPostWillBeSuccessful()
 
-        val proxy = get<HorizonProxy>()
+        val proxy = get<HorizonProxy>().apply {
+            update(server.url(""))
+        }
 
         val source = KeyPair.fromSecretSeed("SAD6LOTFMPIGAPOF2SPQSYD4OIGIE5XVVX3FW3K7QVFUTRSUUHMZQ76I")
         source.accountId `should equal` "GC7GSOOQCBBWNUOB6DIWNVM7537UKQ353H6LCU3DB54NUTVFR2T6OHF4"

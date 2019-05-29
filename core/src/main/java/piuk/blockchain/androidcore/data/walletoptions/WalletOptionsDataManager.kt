@@ -1,5 +1,5 @@
 package piuk.blockchain.androidcore.data.walletoptions
-
+import com.blockchain.sunriver.XlmHorizonUrlFetcher
 import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
 import info.blockchain.wallet.api.data.WalletOptions
 import io.reactivex.Observable
@@ -15,7 +15,11 @@ class WalletOptionsDataManager(
     private val walletOptionsState: WalletOptionsState,
     private val settingsDataManager: SettingsDataManager,
     private val explorerUrl: String
-) : XlmTransactionTimeoutFetcher {
+) : XlmTransactionTimeoutFetcher, XlmHorizonUrlFetcher {
+
+    override fun xlmHorizonUrl(def: String): Single<String> =
+        walletOptionsState.walletOptionsSource
+            .map { it.stellarhorizonUrl }.first(def)
 
     private val walletOptionsService by unsafeLazy {
         authService.getWalletOptions()
@@ -71,7 +75,7 @@ class WalletOptionsDataManager(
         initWalletOptionsReplaySubjects()
 
         return walletOptionsState.walletOptionsSource.map { options ->
-            var result = ""
+            var result: String
 
             options.mobileInfo.apply {
                 result = getLocalisedMessage(locale, this)
@@ -95,7 +99,7 @@ class WalletOptionsDataManager(
         initWalletOptionsReplaySubjects()
 
         return walletOptionsState.walletOptionsSource.map {
-            val androidUpgradeMap = it.androidUpgrade ?: mapOf()
+            val androidUpgradeMap = it.androidUpgrade
             var forceUpgrade = false
             val minSdk = androidUpgradeMap["minSdk"] ?: 0
             val minVersionCode = androidUpgradeMap["minVersionCode"] ?: 0
