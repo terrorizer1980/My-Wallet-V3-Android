@@ -1,5 +1,7 @@
 package com.blockchain.koin
 
+import com.blockchain.datamanagers.BalanceCalculator
+import com.blockchain.datamanagers.BalanceCalculatorImpl
 import com.blockchain.morph.trade.MergingMorphTradeDataManager
 import com.blockchain.morph.trade.MorphTradeDataHistoryList
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeModel
@@ -25,9 +27,20 @@ val morphUiModule = applicationContext {
 
         factory { TradeHistoryPresenter(get("merge"), get()) }
 
+        factory { BalanceCalculatorImpl(get()) }.bind(BalanceCalculator::class)
+
         context("Quotes") {
 
-            factory { ExchangeModel(get(), get(), get(), get(), get("Priority"), get()) }
+            factory {
+                ExchangeModel(quoteServiceFactory = get(),
+                    allAccountList = get(),
+                    tradeLimitService = get(),
+                    currentTier = get(),
+                    transactionExecutor = get("Priority"),
+                    maximumSpendableCalculator = get("Priority"),
+                    currencyPreference = get(),
+                    ethEligibility = get())
+            }
         }
     }
 

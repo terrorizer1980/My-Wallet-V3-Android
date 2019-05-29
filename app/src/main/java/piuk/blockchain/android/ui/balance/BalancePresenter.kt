@@ -1,7 +1,10 @@
 package piuk.blockchain.android.ui.balance
 
 import android.support.annotation.VisibleForTesting
+import com.blockchain.kycui.navhost.models.CampaignType
+import com.blockchain.nabu.CurrentTier
 import com.blockchain.notifications.models.NotificationPayload
+import com.blockchain.preferences.FiatCurrencyPreference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.formatWithUnit
@@ -15,6 +18,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -30,6 +34,7 @@ import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
@@ -41,12 +46,12 @@ import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import timber.log.Timber
-import javax.inject.Inject
 
-class BalancePresenter @Inject constructor(
+class BalancePresenter(
     private val exchangeRateDataManager: ExchangeRateDataManager,
     private val transactionListDataManager: TransactionListDataManager,
     private val ethDataManager: EthDataManager,
+    private val paxAccount: Erc20Account,
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     internal val payloadDataManager: PayloadDataManager,
     private val buyDataManager: BuyDataManager,
@@ -60,13 +65,16 @@ class BalancePresenter @Inject constructor(
     private val environmentSettings: EnvironmentConfig,
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager,
-    private val fiatExchangeRates: FiatExchangeRates
+    private val fiatExchangeRates: FiatExchangeRates,
+    private val fiatCurrencyPreference: FiatCurrencyPreference,
+    private val currentTier: CurrentTier
 ) : BasePresenter<BalanceView>() {
 
     @VisibleForTesting
     var notificationObservable: Observable<NotificationPayload>? = null
     @VisibleForTesting
     var authEventObservable: Observable<AuthEvent>? = null
+    val exchangePaxRequested = PublishSubject.create<Unit>()
 
     private var shortcutsGenerated = false
     private val tokenSingle: Single<String>
@@ -85,6 +93,16 @@ class BalancePresenter @Inject constructor(
         if (environmentSettings.environment == Environment.TESTNET) {
             currencyState.cryptoCurrency = CryptoCurrency.BTC
             view.disableCurrencyHeader()
+        }
+
+        compositeDisposable += exchangePaxRequested.switchMap {
+            currentTier.usersCurrentTier().toObservable()
+        }.subscribe {
+            if (it > 0) {
+                view.swap()
+            } else {
+                view.startKyc(CampaignType.Swap)
+            }
         }
     }
 
@@ -126,7 +144,7 @@ class BalancePresenter @Inject constructor(
         )
         .andThen(getAccounts().map { it.size > 1 })
 
-    internal fun onRefreshRequested() {
+    internal fun requestRefresh() {
         compositeDisposable +=
             getCurrentAccount()
                 .flatMap { refreshAll(it) }
@@ -169,6 +187,7 @@ class BalancePresenter @Inject constructor(
             CryptoCurrency.ETHER -> ethDataManager.fetchEthAddressCompletable()
             CryptoCurrency.BCH -> bchDataManager.updateAllBalances()
             CryptoCurrency.XLM -> Completable.complete()
+            CryptoCurrency.PAX -> paxAccount.fetchAddressCompletable()
         }
 
     /**
@@ -225,7 +244,7 @@ class BalancePresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess {
                     view.setDropdownVisibility(it.size > 1)
-                    refreshBalanceHeader(it.first())
+                    refreshViewHeaders(it.first())
                 }
                 .flatMapCompletable { updateTransactionsListCompletable(it.first()) }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -270,7 +289,7 @@ class BalancePresenter @Inject constructor(
                     updateTransactionsListCompletable(it)
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnComplete {
-                            refreshBalanceHeader(it)
+                            refreshViewHeaders(it)
                             refreshAccountDataSet()
                         }
                 }
@@ -289,7 +308,7 @@ class BalancePresenter @Inject constructor(
         compositeDisposable +=
             getCurrentAccount()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy { refreshBalanceHeader(it) }
+                .subscribeBy { refreshViewHeaders(it) }
 
         // Update tx list balances
         view.updateTransactionValueType(showCrypto)
@@ -305,7 +324,7 @@ class BalancePresenter @Inject constructor(
     // endregion
 
     // region Update UI
-    internal fun refreshBalanceHeader(account: ItemAccount) {
+    internal fun refreshViewHeaders(account: ItemAccount) {
         view.updateSelectedCurrency(currencyState.cryptoCurrency)
         view.updateBalanceHeader(account.displayBalance ?: "")
     }
@@ -409,5 +428,11 @@ class BalancePresenter @Inject constructor(
         prefsUtil.getValue(PrefsUtil.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
 
     internal fun getCurrentCurrency() = currencyState.cryptoCurrency
+
+    fun fiatDefaultCurrency(): String =
+        fiatCurrencyPreference.fiatCurrencyPreference
+
+    fun tierLever(): Observable<Int> =
+        currentTier.usersCurrentTier().toObservable()
     // endregion
 }

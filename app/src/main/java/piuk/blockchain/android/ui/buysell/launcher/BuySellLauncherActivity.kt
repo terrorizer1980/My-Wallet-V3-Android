@@ -3,18 +3,27 @@ package piuk.blockchain.android.ui.buysell.launcher
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.kycui.navhost.models.CampaignType
+import com.blockchain.kycui.status.KycStatusActivity
+import com.blockchain.nabu.StartBuySell
+import com.blockchain.nabu.StartKycForBuySell
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.injection.Injector
-import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifySignUpActivity
 import piuk.blockchain.android.ui.buysell.overview.CoinifyOverviewActivity
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.toast
-import javax.inject.Inject
+
+internal class BuySellStarter : StartBuySell {
+    override fun startBuySellActivity(context: Any) {
+        BuySellLauncherActivity.start(context as Context)
+    }
+}
 
 /**
  * This activity checks the user's current buy sell account status and redirects to specified signup or overview components.
@@ -22,9 +31,9 @@ import javax.inject.Inject
 class BuySellLauncherActivity : BaseMvpActivity<BuySellLauncherView, BuySellLauncherPresenter>(),
     BuySellLauncherView {
 
-    @Inject
-    lateinit var presenter: BuySellLauncherPresenter
     private var progressDialog: MaterialProgressDialog? = null
+    private val startBuySellKyc: StartKycForBuySell by inject()
+    private val presenter: BuySellLauncherPresenter by inject()
 
     init {
         Injector.getInstance().presenterComponent.inject(this)
@@ -33,18 +42,28 @@ class BuySellLauncherActivity : BaseMvpActivity<BuySellLauncherView, BuySellLaun
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buysell_launcher)
-        get<EventLogger>().logEvent(LoggableEvent.BuyBitcoin)
+        get<Analytics>().logEvent(AnalyticsEvents.BuyBitcoin)
 
         onViewReady()
     }
 
+    override fun onStartCoinifyOptIn() {
+        startBuySellKyc.startKycActivity(this)
+        finishPage()
+    }
+
     override fun onStartCoinifySignUp() {
-        CoinifySignUpActivity.start(this, false)
+        startBuySellKyc.startKycActivity(this)
         finishPage()
     }
 
     override fun onStartCoinifyOverview() {
         CoinifyOverviewActivity.start(this)
+        finishPage()
+    }
+
+    override fun showPendingVerificationView() {
+        KycStatusActivity.start(this, CampaignType.BuySell)
         finishPage()
     }
 

@@ -3,12 +3,17 @@ package com.blockchain.morph.ui.homebrew.exchange
 import android.arch.lifecycle.ViewModel
 import com.blockchain.accounts.AllAccountList
 import com.blockchain.datamanagers.MaximumSpendableCalculator
+import com.blockchain.datamanagers.TransactionExecutorWithoutFees
 import com.blockchain.morph.exchange.mvi.ExchangeDialog
 import com.blockchain.morph.exchange.mvi.ExchangeIntent
 import com.blockchain.morph.exchange.mvi.ExchangeViewState
+import com.blockchain.morph.exchange.mvi.EnoughFeesLimit
 import com.blockchain.morph.exchange.mvi.FiatExchangeRateIntent
 import com.blockchain.morph.exchange.mvi.Fix
+import com.blockchain.morph.exchange.mvi.IsUserEligiableForFreeEthIntent
+import com.blockchain.morph.exchange.mvi.LockQuoteIntent
 import com.blockchain.morph.exchange.mvi.Quote
+import com.blockchain.morph.exchange.mvi.SetFixIntent
 import com.blockchain.morph.exchange.mvi.SetTierLimit
 import com.blockchain.morph.exchange.mvi.SetTradeLimits
 import com.blockchain.morph.exchange.mvi.SetUserTier
@@ -21,6 +26,7 @@ import com.blockchain.morph.exchange.service.QuoteServiceFactory
 import com.blockchain.morph.exchange.service.TradeLimitService
 import com.blockchain.morph.quote.ExchangeQuoteRequest
 import com.blockchain.nabu.CurrentTier
+import com.blockchain.nabu.EthEligibility
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -33,6 +39,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import com.blockchain.preferences.FiatCurrencyPreference
+import io.reactivex.rxkotlin.withLatestFrom
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -42,6 +49,8 @@ class ExchangeModel(
     private val allAccountList: AllAccountList,
     private val tradeLimitService: TradeLimitService,
     private val currentTier: CurrentTier,
+    private val ethEligibility: EthEligibility,
+    private val transactionExecutor: TransactionExecutorWithoutFees,
     private val maximumSpendableCalculator: MaximumSpendableCalculator,
     private val currencyPreference: FiatCurrencyPreference
 ) : ViewModel() {
@@ -51,6 +60,8 @@ class ExchangeModel(
     private val dialogDisposable = CompositeDisposable()
 
     private val maxSpendableDisposable = CompositeDisposable()
+
+    private var preselectedToCryptoCurrency = CryptoCurrency.ETHER
 
     val quoteService: QuoteService by lazy {
         quoteServiceFactory.createQuoteService()
@@ -64,6 +75,10 @@ class ExchangeModel(
     val exchangeViewStates: Observable<ExchangeViewState> = exchangeViewModelsSubject
 
     private var accountThatHasCalculatedSpendable = AtomicReference<AccountReference?>()
+
+    fun initWithPreselectedCurrency(cryptoCurrency: CryptoCurrency) {
+        preselectedToCryptoCurrency = cryptoCurrency
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -85,7 +100,7 @@ class ExchangeModel(
                 initial(
                     fiatCurrency,
                     allAccountList[CryptoCurrency.BTC].defaultAccountReference(),
-                    allAccountList[CryptoCurrency.ETHER].defaultAccountReference()
+                    allAccountList[preselectedToCryptoCurrency].defaultAccountReference()
                 )
             )
         )
@@ -123,6 +138,11 @@ class ExchangeModel(
             .subscribeBy {
                 inputEventSink.onNext(SetUserTier(it))
             }
+
+        dialogDisposable += ethEligibility.isEligible().subscribeBy {
+            inputEventSink.onNext(IsUserEligiableForFreeEthIntent(it))
+        }
+
         dialogDisposable += exchangeDialog.viewStates.distinctUntilChanged()
             .doOnError { Timber.e(it) }
             .subscribeBy {
@@ -134,6 +154,17 @@ class ExchangeModel(
 
                 updateMaxSpendable(it.fromAccount)
             }
+
+        val currency = exchangeViewStates.map { it.fromCrypto.currency }.distinctUntilChanged()
+
+        dialogDisposable += currency.withLatestFrom(exchangeViewStates.map {
+            it.fromCrypto to it.fromAccount
+        }).flatMapSingle { (_, cryptoAccountPair) ->
+            transactionExecutor.hasEnoughEthFeesForTheTransaction(cryptoAccountPair.first, cryptoAccountPair.second)
+        }.subscribeBy {
+            inputEventSink.onNext(EnoughFeesLimit(it))
+        }
+
         dialogDisposable += exchangeViewStates.allQuoteClearingConditions()
             .subscribeBy {
                 inputEventSink.onNext(it)
@@ -153,6 +184,22 @@ class ExchangeModel(
 
     private fun newViewModel(exchangeViewModel: ExchangeViewState) {
         exchangeViewModelsSubject.onNext(exchangeViewModel)
+    }
+
+    fun lockQuote() {
+        inputEventSink.onNext(LockQuoteIntent(true))
+    }
+
+    fun unlockQuote() {
+        inputEventSink.onNext(LockQuoteIntent(false))
+    }
+
+    fun fixAsFiat() {
+        inputEventSink.onNext(SetFixIntent(Fix.BASE_FIAT))
+    }
+
+    fun fixAsCrypto() {
+        inputEventSink.onNext(SetFixIntent(Fix.BASE_CRYPTO))
     }
 }
 
@@ -192,4 +239,26 @@ interface ExchangeViewModelProvider {
 interface ExchangeLimitState {
 
     fun setOverTierLimit(overLimit: Boolean)
+}
+
+interface ExchangeMenuState {
+    sealed class ExchangeMenu {
+        data class Error(val error: ExchangeMenuError) : ExchangeMenu()
+
+        object Help : ExchangeMenu()
+    }
+
+    data class ExchangeMenuError(
+        val fromCrypto: CryptoCurrency,
+        val tier: Int,
+        val title: CharSequence,
+        val message: CharSequence,
+        val errorType: ErrorType
+    )
+
+    enum class ErrorType {
+        TRADE, TIER, BALANCE
+    }
+
+    fun setMenuState(state: ExchangeMenu)
 }

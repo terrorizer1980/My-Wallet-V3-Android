@@ -206,7 +206,7 @@
         app:destination="@id/email_verification"
         app:popUpTo="@+id/kycTierSplashFragment" />
     <action
-        android:id="@+id/action_displayAirDropSplash"
+        android:id="@+id/action_displayKycSplash"
         app:destination="@id/kycSplashFragment" />
     <action
         android:id="@+id/action_startCountrySelection"

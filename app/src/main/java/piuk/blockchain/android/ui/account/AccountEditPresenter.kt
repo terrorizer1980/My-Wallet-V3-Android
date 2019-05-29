@@ -55,7 +55,6 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.math.BigInteger
 import java.util.ArrayList
-import java.util.Locale
 import javax.inject.Inject
 
 // TODO: This page is pretty nasty and could do with a proper refactor
@@ -76,16 +75,17 @@ class AccountEditPresenter @Inject internal constructor(
     // Visible for data binding
     internal lateinit var accountModel: AccountEditModel
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var legacyAddress: LegacyAddress? = null
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var account: Account? = null
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var bchAccount: GenericMetadataAccount? = null
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var secondPassword: String? = null
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal var pendingTransaction: PendingTransaction? = null
+
     private var accountIndex: Int = 0
     private val cryptoCurrency: CryptoCurrency by unsafeLazy {
         view.activityIntent.getSerializableExtra(EXTRA_CRYPTOCURRENCY) as CryptoCurrency
@@ -278,19 +278,17 @@ class AccountEditPresenter @Inject internal constructor(
         }
     }
 
+    @SuppressLint("CheckResult")
     internal fun onClickTransferFunds() {
-        view.showProgressDialog(R.string.please_wait)
-
         getPendingTransactionForLegacyAddress(cryptoCurrency, legacyAddress)
             .addToCompositeDisposable(this)
+            .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
             .doAfterTerminate { view.dismissProgressDialog() }
             .doOnError { Timber.e(it) }
             .doOnNext { pendingTransaction = it }
             .subscribe(
                 { pendingTransaction ->
-                    if (pendingTransaction != null &&
-                        pendingTransaction.bigIntAmount.compareTo(BigInteger.ZERO) == 1
-                    ) {
+                    if (pendingTransaction != null && pendingTransaction.bigIntAmount.compareTo(BigInteger.ZERO) == 1) {
                         val details = getTransactionDetailsForDisplay(pendingTransaction)
                         view.showPaymentDetails(details)
                     } else {
@@ -298,24 +296,22 @@ class AccountEditPresenter @Inject internal constructor(
                     }
                 },
                 {
-                    view.showToast(
-                        R.string.insufficient_funds,
-                        ToastCustom.TYPE_ERROR
-                    )
+                    view.showToast(R.string.insufficient_funds, ToastCustom.TYPE_ERROR)
                 }
             )
     }
 
     internal fun transferFundsClickable(): Boolean = accountModel.transferFundsClickable
 
-    private fun getTransactionDetailsForDisplay(pendingTransaction: PendingTransaction?): PaymentConfirmationDetails {
+    private fun getTransactionDetailsForDisplay(pendingTransaction: PendingTransaction): PaymentConfirmationDetails {
         val details = PaymentConfirmationDetails()
-        details.fromLabel = pendingTransaction!!.sendingObject.label
+        details.fromLabel = pendingTransaction.sendingObject?.label ?: ""
+
         if (pendingTransaction.receivingObject != null &&
-            pendingTransaction.receivingObject.label != null &&
-            !pendingTransaction.receivingObject.label!!.isEmpty()
+            pendingTransaction.receivingObject?.label != null &&
+            !pendingTransaction.receivingObject?.label.isNullOrEmpty()
         ) {
-            details.toLabel = pendingTransaction.receivingObject.label
+            details.toLabel = pendingTransaction.receivingObject?.label ?: ""
         } else {
             details.toLabel = pendingTransaction.receivingAddress
         }
@@ -342,12 +338,11 @@ class AccountEditPresenter @Inject internal constructor(
             )
 
             val totalFiat = pendingTransaction.bigIntAmount.add(pendingTransaction.bigIntFee)
-            fiatTotal =
-                currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(totalFiat.toBigDecimal())
+            fiatTotal = currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(totalFiat.toBigDecimal())
 
-            fiatSymbol = currencyFormatManager.getFiatSymbol(fiatUnit, Locale.getDefault())
+            fiatSymbol = currencyFormatManager.getFiatSymbol(fiatUnit)
             isLargeTransaction = isLargeTransaction(pendingTransaction)
-            hasConsumedAmounts = pendingTransaction.unspentOutputBundle.consumedAmount
+            hasConsumedAmounts = pendingTransaction.unspentOutputBundle!!.consumedAmount
                 .compareTo(BigInteger.ZERO) == 1
         }
         return details
@@ -355,7 +350,7 @@ class AccountEditPresenter @Inject internal constructor(
 
     private fun isLargeTransaction(pendingTransaction: PendingTransaction): Boolean {
         val txSize = sendDataManager.estimateSize(
-            pendingTransaction.unspentOutputBundle.spendableOutputs.size,
+            pendingTransaction.unspentOutputBundle!!.spendableOutputs.size,
             2
         ) // assume change
         val relativeFee =
@@ -366,10 +361,11 @@ class AccountEditPresenter @Inject internal constructor(
             relativeFee > SendModel.LARGE_TX_PERCENTAGE)
     }
 
+    @SuppressLint("CheckResult")
     internal fun submitPayment() {
         view.showProgressDialog(R.string.please_wait)
 
-        val legacyAddress = pendingTransaction!!.sendingObject.accountObject as LegacyAddress?
+        val legacyAddress = pendingTransaction!!.sendingObject!!.accountObject as LegacyAddress?
         val changeAddress = legacyAddress!!.address
 
         val keys = ArrayList<ECKey>()
@@ -383,8 +379,9 @@ class AccountEditPresenter @Inject internal constructor(
             view.showToast(R.string.transaction_failed, ToastCustom.TYPE_ERROR)
             return
         }
+
         sendDataManager.submitBtcPayment(
-            pendingTransaction!!.unspentOutputBundle,
+            pendingTransaction!!.unspentOutputBundle!!,
             keys,
             pendingTransaction!!.receivingAddress,
             changeAddress,
@@ -404,14 +401,14 @@ class AccountEditPresenter @Inject internal constructor(
                     val spentAmount =
                         pendingTransaction!!.bigIntAmount.toLong() + pendingTransaction!!.bigIntFee.toLong()
 
-                    if (pendingTransaction!!.sendingObject.accountObject is Account) {
+                    if (pendingTransaction!!.sendingObject!!.accountObject is Account) {
                         payloadDataManager.subtractAmountFromAddressBalance(
-                            (pendingTransaction!!.sendingObject.accountObject as Account).xpub,
+                            (pendingTransaction!!.sendingObject!!.accountObject as Account).xpub,
                             spentAmount
                         )
                     } else {
                         payloadDataManager.subtractAmountFromAddressBalance(
-                            (pendingTransaction!!.sendingObject.accountObject as LegacyAddress).address,
+                            (pendingTransaction!!.senderAsLegacyAddress).address,
                             spentAmount
                         )
                     }
@@ -614,8 +611,7 @@ class AccountEditPresenter @Inject internal constructor(
         }
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @Throws(Exception::class)
     internal fun importAddressPrivateKey(
         key: ECKey,
@@ -660,8 +656,7 @@ class AccountEditPresenter @Inject internal constructor(
         }
     }
 
-    @SuppressLint("VisibleForTests")
-    @Suppress("MemberVisibilityCanBePrivate")
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @Throws(Exception::class)
     internal fun importUnmatchedPrivateKey(key: ECKey) {
         if (payloadDataManager.wallet!!.legacyAddressStringList.contains(
@@ -781,7 +776,7 @@ class AccountEditPresenter @Inject internal constructor(
             )
     }
 
-    @SuppressLint("VisibleForTests")
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     private fun importNonBIP38Address(format: String, data: String) {
         view.showProgressDialog(R.string.please_wait)
 
@@ -806,7 +801,7 @@ class AccountEditPresenter @Inject internal constructor(
         view.dismissProgressDialog()
     }
 
-    @SuppressLint("VisibleForTests")
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun importBIP38Address(data: String, pw: String) {
         view.showProgressDialog(R.string.please_wait)
 
@@ -886,31 +881,31 @@ class AccountEditPresenter @Inject internal constructor(
 
                 // To default account
                 val defaultAccount = payloadDataManager.defaultAccount
-                pendingTransaction.sendingObject = ItemAccount(
-                    label,
-                    sweepAmount.toString(),
-                    "",
-                    sweepAmount.toLong(),
-                    legacyAddress,
-                    legacyAddress.address
-                )
-                pendingTransaction.receivingObject = ItemAccount(
-                    defaultAccount.label,
-                    "",
-                    "",
-                    sweepAmount.toLong(),
-                    defaultAccount,
-                    null
-                )
-                pendingTransaction.unspentOutputBundle = sendDataManager.getSpendableCoins(
-                    unspentOutputs,
-                    CryptoValue(cryptoCurrency, sweepAmount),
-                    suggestedFeePerKb
-                )
-                pendingTransaction.bigIntAmount = sweepAmount
-                pendingTransaction.bigIntFee =
-                    pendingTransaction.unspentOutputBundle.absoluteFee
-
+                pendingTransaction.apply {
+                    sendingObject = ItemAccount(
+                        label,
+                        sweepAmount.toString(),
+                        "",
+                        sweepAmount.toLong(),
+                        legacyAddress,
+                        legacyAddress.address
+                    )
+                    receivingObject = ItemAccount(
+                        defaultAccount.label,
+                        "",
+                        "",
+                        sweepAmount.toLong(),
+                        defaultAccount,
+                        null
+                    )
+                    unspentOutputBundle = sendDataManager.getSpendableCoins(
+                        unspentOutputs,
+                        CryptoValue(cryptoCurrency, sweepAmount),
+                        suggestedFeePerKb
+                    )
+                    bigIntAmount = sweepAmount
+                    bigIntFee = unspentOutputBundle!!.absoluteFee
+                }
                 payloadDataManager.getNextReceiveAddress(defaultAccount)
             }
             .doOnNext { pendingTransaction.receivingAddress = it }

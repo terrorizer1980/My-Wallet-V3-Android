@@ -1,7 +1,10 @@
 package piuk.blockchain.android.ui.balance
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.kycui.navhost.models.CampaignType
+import com.blockchain.nabu.CurrentTier
 import com.blockchain.notifications.models.NotificationPayload
+import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.testutils.gbp
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.isNull
@@ -39,6 +42,7 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
@@ -59,7 +63,9 @@ class BalancePresenterTest {
     private val exchangeRateFactory: ExchangeRateDataManager = mock()
     private val transactionListDataManager: TransactionListDataManager = mock()
     private val swipeToReceiveHelper: SwipeToReceiveHelper = mock()
+    private val paxAccount: Erc20Account = mock()
     private val payloadDataManager: PayloadDataManager = mock()
+    private val currentTier: CurrentTier = mock()
     private val buyDataManager: BuyDataManager = mock()
     private val stringUtils: StringUtils = mock()
     private val prefsUtil: PrefsUtil = mock()
@@ -74,6 +80,7 @@ class BalancePresenterTest {
     private val exchangeService: ExchangeService = mock()
     private val coinifyDataManager: CoinifyDataManager = mock()
     private val fiatExchangeRates: FiatExchangeRates = mock()
+    private val fiatCurrencyPreference: FiatCurrencyPreference = mock()
     private val testScheduler: TestScheduler = TestScheduler()
 
     @get:Rule
@@ -90,6 +97,7 @@ class BalancePresenterTest {
             exchangeRateFactory,
             transactionListDataManager,
             ethDataManager,
+            paxAccount,
             swipeToReceiveHelper,
             payloadDataManager,
             buyDataManager,
@@ -103,7 +111,9 @@ class BalancePresenterTest {
             environmentSettings,
             exchangeService,
             coinifyDataManager,
-            fiatExchangeRates
+            fiatExchangeRates,
+            fiatCurrencyPreference,
+            currentTier
         )
         subject.initView(view)
     }
@@ -161,7 +171,7 @@ class BalancePresenterTest {
     }
 
     @Test
-    fun `onRefreshRequested`() {
+    fun requestRefresh() {
         // Arrange
 
         // getCurrentAccount()
@@ -183,7 +193,7 @@ class BalancePresenterTest {
         whenever(swipeToReceiveHelper.storeAll())
             .thenReturn(Completable.complete())
         // Act
-        subject.onRefreshRequested()
+        subject.requestRefresh()
 
         // Assert
         verify(view).setUiState(UiState.LOADING)
@@ -324,11 +334,45 @@ class BalancePresenterTest {
         val value = "0.052 BTC"
         whenever(account.displayBalance).thenReturn(value)
         // Act
-        subject.refreshBalanceHeader(account)
+        subject.refreshViewHeaders(account)
         // Assert
         verify(view).updateSelectedCurrency(CryptoCurrency.BTC)
         verify(view).updateBalanceHeader(value)
         verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `should go to swap if tier is higher or equal to 1`() {
+        // Arrange
+        mockDependencies()
+        whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(1))
+        // Act
+        subject.onViewReady()
+        subject.exchangePaxRequested.onNext(Unit)
+        // Assert
+        verify(view).swap()
+    }
+
+    @Test
+    fun `should go to kyc if tier is 0`() {
+        // Arrange
+        mockDependencies()
+        whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(0))
+        // Act
+        subject.onViewReady()
+        subject.exchangePaxRequested.onNext(Unit)
+        // Assert
+        verify(view).startKyc(CampaignType.Swap)
+    }
+
+    private fun mockDependencies() {
+        whenever(environmentSettings.environment).thenReturn(Environment.PRODUCTION)
+        val account: ItemAccount = mock()
+        whenever(walletAccountHelper.getAccountItemsForOverview()).thenReturn(Single.just(mutableListOf(account)))
+        whenever(currencyState.isDisplayingCryptoCurrency).thenReturn(true)
+
+        whenever(rxBus.register(NotificationPayload::class.java)).thenReturn(Observable.empty())
+        whenever(rxBus.register(AuthEvent::class.java)).thenReturn(Observable.empty())
     }
 
     @Test

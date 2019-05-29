@@ -41,7 +41,7 @@ internal class HorizonProxy(url: String) {
     fun fees(): CryptoValue? = try {
         val lastLedgerBaseFee = server.operationFeeStats()
             .execute()
-            .lastLedgerBaseFee
+            .min
         CryptoValue.lumensFromStroop(lastLedgerBaseFee.toBigInteger())
     } catch (e: ErrorResponse) {
         null
@@ -98,26 +98,38 @@ internal class HorizonProxy(url: String) {
     fun sendTransaction(
         source: KeyPair,
         destinationAccountId: String,
-        amount: CryptoValue
+        amount: CryptoValue,
+        timeout: Long
     ): SendResult =
-        sendTransaction(source, destinationAccountId, amount, Memo.none())
+        sendTransaction(source, destinationAccountId, amount, Memo.none(), timeout)
 
     fun sendTransaction(
         source: KeyPair,
         destinationAccountId: String,
         amount: CryptoValue,
         memo: Memo,
+        timeout: Long,
         perOperationFee: CryptoValue? = null
     ): SendResult {
-        val result = dryRunTransaction(source, destinationAccountId, amount, memo, perOperationFee)
+        val result = dryRunTransaction(source, destinationAccountId, amount, memo, perOperationFee, timeout)
         if (!result.success || result.transaction == null) {
             return result
         }
         result.transaction.sign(source)
-        return SendResult(
-            server.submitTransaction(result.transaction).isSuccess,
-            result.transaction
-        )
+        val submitTransactionResponse = server.submitTransaction(result.transaction)
+        return if (submitTransactionResponse.isSuccess) {
+            SendResult(
+                true,
+                result.transaction
+            )
+        } else {
+            val extras = submitTransactionResponse.extras
+            SendResult(
+                false,
+                result.transaction,
+                failureExtra = extras.resultCodes.transactionResultCode
+            )
+        }
     }
 
     fun dryRunTransaction(
@@ -125,7 +137,8 @@ internal class HorizonProxy(url: String) {
         destinationAccountId: String,
         amount: CryptoValue,
         memo: Memo,
-        perOperationFee: CryptoValue? = null
+        perOperationFee: CryptoValue? = null,
+        timeout: Long = XLM_DEFAULT_TIMEOUT_SECS
     ): SendResult {
         if (amount.currency != CryptoCurrency.XLM) throw IllegalArgumentException()
         if (perOperationFee != null && perOperationFee.currency != CryptoCurrency.XLM) throw IllegalArgumentException()
@@ -161,6 +174,7 @@ internal class HorizonProxy(url: String) {
                 destinationAccountExists,
                 amount.toBigDecimal(),
                 memo,
+                timeout,
                 perOperationFee
             )
         val fee = CryptoValue.lumensFromStroop(transaction.fee.toBigInteger())
@@ -189,7 +203,8 @@ internal class HorizonProxy(url: String) {
         val success: Boolean,
         val transaction: Transaction? = null,
         val failureReason: FailureReason = FailureReason.Unknown,
-        val failureValue: CryptoValue? = null
+        val failureValue: CryptoValue? = null,
+        val failureExtra: String? = null
     )
 
     enum class FailureReason(val errorCode: Int) {
@@ -225,10 +240,11 @@ internal class HorizonProxy(url: String) {
         destinationAccountExists: Boolean,
         amount: BigDecimal,
         memo: Memo,
+        timeout: Long,
         perOperationFee: CryptoValue? = null
     ): Transaction =
         Transaction.Builder(source)
-            .setTimeout(Transaction.Builder.TIMEOUT_INFINITE)
+            .setTimeout(timeout)
             .addOperation(buildTransactionOperation(destination, destinationAccountExists, amount.toPlainString()))
             .setOperationFee((perOperationFee ?: basePerOperationFee).amount.toInt())
             .addMemo(memo)
@@ -251,6 +267,10 @@ internal class HorizonProxy(url: String) {
                 amount
             ).build()
         }
+
+    companion object {
+        const val XLM_DEFAULT_TIMEOUT_SECS: Long = 10
+    }
 }
 
 private val AccountResponse?.balance: CryptoValue

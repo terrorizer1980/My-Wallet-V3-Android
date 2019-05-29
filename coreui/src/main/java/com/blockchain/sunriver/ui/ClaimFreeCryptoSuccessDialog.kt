@@ -1,7 +1,7 @@
 package com.blockchain.sunriver.ui
 
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.R
 
@@ -13,20 +13,20 @@ class ClaimFreeCryptoSuccessDialog : BaseAirdropBottomDialog(
     )
 ) {
 
-    private val eventLogger: EventLogger by inject()
+    private val analytics: Analytics by inject()
 
     override fun onStart() {
         super.onStart()
-        eventLogger.logEvent(LoggableEvent.ClaimFreeCryptoSuccessDialog)
+        analytics.logEvent(AnalyticsEvents.ClaimFreeCryptoSuccessDialog)
     }
 
-    override fun rocketShipClick() {
-        eventLogger.logEvent(LoggableEvent.ClaimFreeCryptoSuccessDialogClickedRocket)
+    override fun xlmLogoClick() {
+        analytics.logEvent(AnalyticsEvents.ClaimFreeCryptoSuccessDialogClickedRocket)
         dismiss()
     }
 
     override fun ctaButtonClick() {
-        eventLogger.logEvent(LoggableEvent.ClaimFreeCryptoSuccessDialogClicked)
+        analytics.logEvent(AnalyticsEvents.ClaimFreeCryptoSuccessDialogClicked)
         dismiss()
     }
 }

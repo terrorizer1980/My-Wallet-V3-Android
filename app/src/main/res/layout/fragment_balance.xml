@@ -117,5 +117,6 @@
             </LinearLayout>
 
         </android.support.v4.widget.SwipeRefreshLayout>
+
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

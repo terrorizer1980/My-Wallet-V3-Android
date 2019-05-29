@@ -22,7 +22,7 @@ import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.navigate
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.kycTierStart
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
@@ -58,9 +58,10 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logEvent(LoggableEvent.KycTiers)
+        logEvent(AnalyticsEvents.KycTiers)
 
         val title = when (progressListener.campaignType) {
+            CampaignType.BuySell -> R.string.buy_sell_splash_title
             CampaignType.Swap -> R.string.kyc_splash_title
             CampaignType.Sunriver, CampaignType.Resubmission -> R.string.sunriver_splash_title
         }
@@ -94,9 +95,9 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
     ) {
         val pendingOrApproved = listOf(KycTierState.Pending, KycTierState.Verified)
         when {
-            state2 in pendingOrApproved -> logEvent(LoggableEvent.KycTier2Complete)
-            state1 in pendingOrApproved -> logEvent(LoggableEvent.KycTier1Complete)
-            state1 == KycTierState.None -> logEvent(LoggableEvent.KycTiersLocked)
+            state2 in pendingOrApproved -> logEvent(AnalyticsEvents.KycTier2Complete)
+            state1 in pendingOrApproved -> logEvent(AnalyticsEvents.KycTier1Complete)
+            state1 == KycTierState.None -> logEvent(AnalyticsEvents.KycTiersLocked)
         }
     }
 

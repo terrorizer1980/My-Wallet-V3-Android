@@ -6,17 +6,21 @@ import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kycui.countryselection.models.CountrySelectionState
 import com.blockchain.kycui.countryselection.util.CountryDisplayModel
 import com.blockchain.kycui.countryselection.util.toDisplayList
+import com.blockchain.kycui.navhost.models.CampaignType
+import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.androidbuysell.services.BuyConditions
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.kyc.R
 import timber.log.Timber
 
 internal class KycCountrySelectionPresenter(
-    private val nabuDataManager: NabuDataManager
+    private val nabuDataManager: NabuDataManager,
+    private val buyConditions: BuyConditions
 ) : BasePresenter<KycCountrySelectionView>() {
 
     private val usCountryCode = "US"
@@ -49,9 +53,21 @@ internal class KycCountrySelectionPresenter(
                 .subscribeBy(onError = { Timber.e(it) })
     }
 
-    internal fun onRegionSelected(countryDisplayModel: CountryDisplayModel) {
+    internal fun onRegionSelected(
+        countryDisplayModel: CountryDisplayModel,
+        campaignType: CampaignType = CampaignType.Swap
+    ) {
         compositeDisposable +=
             getRegionList()
+                .flatMapMaybe { regions ->
+                    if (campaignType == CampaignType.BuySell && !countryDisplayModel.isState) {
+                        buyConditions.buySellCountries()
+                            .filter { it.contains(countryDisplayModel.countryCode) }
+                            .map { regions }
+                    } else {
+                        Maybe.just(regions)
+                    }
+                }
                 .filter {
                     it.isKycAllowed(countryDisplayModel.regionCode) &&
                         !countryDisplayModel.requiresStateSelection()

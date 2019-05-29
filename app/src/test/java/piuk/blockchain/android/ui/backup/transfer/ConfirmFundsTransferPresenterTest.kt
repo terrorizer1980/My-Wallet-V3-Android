@@ -149,7 +149,7 @@ class ConfirmFundsTransferPresenterTest {
         whenever(view.getIfArchiveChecked()).thenReturn(true)
         val transaction = PendingTransaction()
         transaction.sendingObject = ItemAccount()
-        transaction.sendingObject.accountObject = LegacyAddress()
+        transaction.sendingObject!!.accountObject = LegacyAddress()
         subject.pendingTransactions = mutableListOf(transaction)
         whenever(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.complete())
         // Act
@@ -230,7 +230,7 @@ class ConfirmFundsTransferPresenterTest {
         // Arrange
         val transaction = PendingTransaction()
         transaction.sendingObject = ItemAccount()
-        transaction.sendingObject.accountObject = LegacyAddress()
+        transaction.sendingObject!!.accountObject = LegacyAddress()
         subject.pendingTransactions = mutableListOf(transaction)
         whenever(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.complete())
         // Act
@@ -248,7 +248,7 @@ class ConfirmFundsTransferPresenterTest {
         // Arrange
         val transaction = PendingTransaction()
         transaction.sendingObject = ItemAccount()
-        transaction.sendingObject.accountObject = LegacyAddress()
+        transaction.sendingObject!!.accountObject = LegacyAddress()
         subject.pendingTransactions = mutableListOf(transaction)
         whenever(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.error(Throwable()))
         // Act

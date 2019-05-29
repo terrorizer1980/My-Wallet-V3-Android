@@ -76,8 +76,7 @@ class NumericKeyboard @JvmOverloads constructor(
             if (hasFocus) {
                 val view1 = (context as Activity).currentFocus
                 if (view1 != null) {
-                    val inputManager =
-                        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    val inputManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputManager.hideSoftInputFromWindow(
                         view1.windowToken,
                         InputMethodManager.HIDE_NOT_ALWAYS

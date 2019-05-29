@@ -4,6 +4,7 @@ import com.blockchain.account.BalanceAndMin
 import com.blockchain.account.DefaultAccountDataManager
 import com.blockchain.balance.AsyncAccountBalanceReporter
 import com.blockchain.balance.AsyncAddressBalanceReporter
+import com.blockchain.fees.FeeType
 import com.blockchain.sunriver.datamanager.XlmAccount
 import com.blockchain.sunriver.datamanager.XlmMetaData
 import com.blockchain.sunriver.datamanager.XlmMetaDataInitializer
@@ -19,6 +20,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 
 class XlmDataManager internal constructor(
@@ -26,7 +28,8 @@ class XlmDataManager internal constructor(
     metaDataInitializer: XlmMetaDataInitializer,
     private val xlmSecretAccess: XlmSecretAccess,
     private val memoMapper: MemoMapper,
-    private val xlmFees: XlmFees
+    private val xlmFeesFetcher: XlmFeesFetcher,
+    private val xlmTimeoutFetcher: XlmTransactionTimeoutFetcher
 ) : TransactionSender,
     DefaultAccountDataManager,
     AsyncAddressBalanceReporter,
@@ -36,39 +39,36 @@ class XlmDataManager internal constructor(
         sendDetails: SendDetails
     ): Single<SendFundsResult> =
         Single.defer {
-            xlmFees.perOperationFee
-                .flatMap { fee ->
-                    xlmSecretAccess.getPrivate(HorizonKeyPair.Public(sendDetails.fromXlm.accountId))
-                        .map { private ->
-                            horizonProxy.sendTransaction(
-                                private.toKeyPair(),
-                                sendDetails.toAddress,
-                                sendDetails.value,
-                                memoMapper.mapMemo(sendDetails.memo),
-                                fee
-                            )
-                        }
-                        .map { it.mapToSendFundsResult(sendDetails) }
-                        .toSingle()
-                }
+            Single.zip(
+                xlmSecretAccess.getPrivate(HorizonKeyPair.Public(sendDetails.fromXlm.accountId)).toSingle(),
+                xlmTimeoutFetcher.transactionTimeout(),
+                BiFunction { private: HorizonKeyPair.Private, timeout: Long -> private to timeout }
+            ).map {
+                horizonProxy.sendTransaction(
+                    it.first.toKeyPair(),
+                    sendDetails.toAddress,
+                    sendDetails.value,
+                    memoMapper.mapMemo(sendDetails.memo),
+                    it.second,
+                    sendDetails.fee
+                )
+            }.map { it.mapToSendFundsResult(sendDetails) }
         }
 
     override fun dryRunSendFunds(
         sendDetails: SendDetails
     ): Single<SendFundsResult> =
         Single.defer {
-            xlmFees.perOperationFee
-                .map { fee ->
-                    horizonProxy.dryRunTransaction(
-                        HorizonKeyPair.Public(sendDetails.fromXlm.accountId).toKeyPair(),
-                        sendDetails.toAddress,
-                        sendDetails.value,
-                        memoMapper.mapMemo(sendDetails.memo),
-                        fee
-                    ).mapToSendFundsResult(sendDetails)
-                }
-                .subscribeOn(Schedulers.io())
+            horizonProxy.dryRunTransaction(
+                HorizonKeyPair.Public(sendDetails.fromXlm.accountId).toKeyPair(),
+                sendDetails.toAddress,
+                sendDetails.value,
+                memoMapper.mapMemo(sendDetails.memo),
+                sendDetails.fee
+            ).mapToSendFundsResult(sendDetails).just()
         }
+
+    private fun <T> T.just(): Single<T> = Single.just(this)
 
     private val wallet = Single.defer { metaDataInitializer.initWalletMaybePrompt.toSingle() }
     private val maybeWallet = Maybe.defer { metaDataInitializer.initWalletMaybe }
@@ -97,16 +97,14 @@ class XlmDataManager internal constructor(
             Maybe.just(CryptoValue.ZeroXlm)
         ).firstOrError()
 
-    fun fees(): Single<CryptoValue> = xlmFees.perOperationFee
-
     /**
      * Balance - minimum - fees
      */
-    override fun getMaxSpendableAfterFees(): Single<CryptoValue> =
+    override fun getMaxSpendableAfterFees(feeType: FeeType): Single<CryptoValue> =
         Maybe.concat(
             maybeDefaultAccount()
                 .flatMapSingle { accountRef ->
-                    fees().map { accountRef to it }
+                    xlmFeesFetcher.operationFee(feeType).map { accountRef to it }
                 }
                 .flatMap { (accountRef, fee) ->
                     getBalanceAndMin(accountRef).map { it.balance - it.minimumBalance - fee }
@@ -134,7 +132,8 @@ class XlmDataManager internal constructor(
 
     fun getTransactionList(accountReference: AccountReference.Xlm): Single<List<XlmTransaction>> =
         Single.fromCallable {
-            horizonProxy.getTransactionList(accountReference.accountId).map(accountReference.accountId)
+            horizonProxy.getTransactionList(accountReference.accountId)
+                .map(accountReference.accountId, horizonProxy)
         }.subscribeOn(Schedulers.io())
 
     /**
@@ -180,7 +179,8 @@ internal fun HorizonProxy.SendResult.mapToSendFundsResult(sendDetails: SendDetai
             errorCode = failureReason.errorCode,
             errorValue = failureValue,
             confirmationDetails = null,
-            hash = null
+            hash = null,
+            errorExtra = failureExtra
         )
     }
 

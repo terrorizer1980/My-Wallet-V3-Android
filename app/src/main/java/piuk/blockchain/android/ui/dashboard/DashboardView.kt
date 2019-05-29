@@ -3,6 +3,7 @@ package piuk.blockchain.android.ui.dashboard
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetDialogFragment
 import com.blockchain.kycui.navhost.models.CampaignType
+import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.util.Locale
@@ -33,7 +34,11 @@ interface DashboardView : View {
 
     fun startKycFlow(campaignType: CampaignType)
 
+    fun startKycFlowWithNavigator(campaignType: CampaignType)
+
     fun launchWaitlist()
 
     fun showBottomSheetDialog(bottomSheetDialogFragment: BottomSheetDialogFragment)
+
+    fun goToExchange(currency: CryptoCurrency?, defCurrency: String)
 }

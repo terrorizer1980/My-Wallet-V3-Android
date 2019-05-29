@@ -13,7 +13,7 @@ import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.navigate
 import com.blockchain.kycui.profile.models.ProfileModel
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import com.jakewharton.rxbinding2.widget.afterTextChangeEvents
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
@@ -64,7 +64,7 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        logEvent(LoggableEvent.KycProfile)
+        logEvent(AnalyticsEvents.KycProfile)
 
         progressListener.setHostTitle(R.string.kyc_profile_title)
         progressListener.incrementProgress(KycStep.ProfilePage)
@@ -94,7 +94,7 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
             buttonNext
                 .throttledClicks()
                 .subscribeBy(
-                    onNext = { presenter.onContinueClicked() },
+                    onNext = { presenter.onContinueClicked(progressListener.campaignType) },
                     onError = { Timber.e(it) }
                 )
 
@@ -111,7 +111,7 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
         navigate(KycProfileFragmentDirections.ActionKycProfileFragmentToKycHomeAddressFragment(profileModel))
     }
 
-    override fun showErrorToast(message: Int) {
+    override fun showErrorToast(message: String) {
         toast(message, ToastCustom.TYPE_ERROR)
     }
 

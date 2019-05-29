@@ -15,7 +15,8 @@ class AllAccountsImplementationTest {
         val allAccountList: AllAccountList = AllAccountsImplementation(
             btcAccountList = btcAccountList,
             bchAccountList = mock(),
-            etherAccountList = mock()
+            etherAccountList = mock(),
+            paxAccountList = mock()
         )
         allAccountList[CryptoCurrency.BTC] `should be` btcAccountList
     }
@@ -26,7 +27,8 @@ class AllAccountsImplementationTest {
         val allAccountList: AllAccountList = AllAccountsImplementation(
             btcAccountList = mock(),
             bchAccountList = bchAccountList,
-            etherAccountList = mock()
+            etherAccountList = mock(),
+            paxAccountList = mock()
         )
         allAccountList[CryptoCurrency.BCH] `should be` bchAccountList
     }
@@ -37,9 +39,22 @@ class AllAccountsImplementationTest {
         val allAccountList: AllAccountList = AllAccountsImplementation(
             btcAccountList = mock(),
             bchAccountList = mock(),
-            etherAccountList = ethAccountList
+            etherAccountList = ethAccountList,
+            paxAccountList = mock()
         )
         allAccountList[CryptoCurrency.ETHER] `should be` ethAccountList
+    }
+
+    @Test
+    fun `can get PAX`() {
+        val paxAccountList = mock<AccountList>()
+        val allAccountList: AllAccountList = AllAccountsImplementation(
+            btcAccountList = mock(),
+            bchAccountList = mock(),
+            etherAccountList = mock(),
+            paxAccountList = paxAccountList
+        )
+        allAccountList[CryptoCurrency.PAX] `should be` paxAccountList
     }
 
     @Test
@@ -47,11 +62,12 @@ class AllAccountsImplementationTest {
         val allAccountList: AllAccountList = AllAccountsImplementation(
             btcAccountList = mock(),
             bchAccountList = mock(),
-            etherAccountList = mock()
+            etherAccountList = mock(),
+            paxAccountList = mock()
         );
         {
             allAccountList[CryptoCurrency.XLM]
         } `should throw the Exception`
-            IllegalArgumentException::class `with message` "XLM default account access requires RX"
+                IllegalArgumentException::class `with message` "XLM default account access requires RX"
     }
 }

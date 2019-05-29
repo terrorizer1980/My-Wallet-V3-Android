@@ -1,9 +1,9 @@
 package com.blockchain.kycui.status
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.getBlankNabuUser
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.models.nabu.KycState
+import com.blockchain.kycui.settings.KycStatusHelper
 import com.blockchain.nabu.NabuToken
 import com.blockchain.notifications.NotificationTokenManager
 import com.blockchain.validOfflineToken
@@ -21,7 +21,7 @@ class KycStatusPresenterTest {
 
     private lateinit var subject: KycStatusPresenter
     private val view: KycStatusView = mock()
-    private val nabuDataManager: NabuDataManager = mock()
+    private val kycStatusHelper: KycStatusHelper = mock()
     private val nabuToken: NabuToken = mock()
     private val notificationTokenManager: NotificationTokenManager = mock()
 
@@ -36,7 +36,7 @@ class KycStatusPresenterTest {
     fun setUp() {
         subject = KycStatusPresenter(
             nabuToken,
-            nabuDataManager,
+            kycStatusHelper,
             notificationTokenManager
         )
         subject.initView(view)
@@ -45,9 +45,8 @@ class KycStatusPresenterTest {
     @Test
     fun `onViewReady exception thrown, finish page`() {
         // Arrange
-        whenever(
-            nabuToken.fetchNabuToken()
-        ).thenReturn(Single.error { Throwable() })
+        whenever(kycStatusHelper.getKyc2TierStatus())
+            .thenReturn(Single.error { Throwable() })
         // Act
         subject.onViewReady()
         // Assert
@@ -59,13 +58,12 @@ class KycStatusPresenterTest {
     @Test
     fun `onViewReady user loaded`() {
         // Arrange
-        val kycState = KycState.UnderReview
-        val user = getBlankNabuUser(kycState)
+        val kycState = KycState.Pending
         whenever(
             nabuToken.fetchNabuToken()
         ).thenReturn(Single.just(validOfflineToken))
-        whenever(nabuDataManager.getUser(validOfflineToken))
-            .thenReturn(Single.just(user))
+        whenever(kycStatusHelper.getKyc2TierStatus())
+            .thenReturn(Single.just(Kyc2TierState.Tier2InReview))
         // Act
         subject.onViewReady()
         // Assert

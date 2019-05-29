@@ -38,13 +38,21 @@ allprojects {
         resolutionStrategy.force Libraries.findbugs
         resolutionStrategy.force Libraries.jacksonCore
         resolutionStrategy.force Libraries.okIo
+        resolutionStrategy.force Libraries.kotlinReflect
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-    doLast {
-        subprojects.forEach { delete it.buildDir }
+subprojects {
+    // Increase the error output of the compiler, to prevent a flood of databinder errors
+    // masking any dagger - and, indeed, other - annotation processor failures.
+    afterEvaluate {
+        if (project.plugins.hasPlugin("kotlin-kapt")) {
+            kapt {
+                javacOptions {
+                    option("-Xmaxerrs", 500)
+                }
+            }
+        }
     }
 }
 

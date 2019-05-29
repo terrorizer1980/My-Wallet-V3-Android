@@ -165,6 +165,7 @@ class ChartsDataManager @Inject constructor(private val historicPriceApi: PriceA
             CryptoCurrency.ETHER -> FIRST_ETH_ENTRY_TIME
             CryptoCurrency.BCH -> FIRST_BCH_ENTRY_TIME
             CryptoCurrency.XLM -> FIRST_XLM_ENTRY_TIME
+            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
     }
 }

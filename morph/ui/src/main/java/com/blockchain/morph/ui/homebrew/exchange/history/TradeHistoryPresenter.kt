@@ -1,5 +1,6 @@
 package com.blockchain.morph.ui.homebrew.exchange.history
 
+import android.support.annotation.VisibleForTesting
 import com.blockchain.morph.trade.MorphTrade
 import com.blockchain.morph.trade.MorphTradeDataHistoryList
 import com.blockchain.morph.ui.homebrew.exchange.model.Trade
@@ -17,7 +18,15 @@ class TradeHistoryPresenter(
     private val dateUtil: DateUtil
 ) : BasePresenter<TradeHistoryView>() {
 
-    override fun onViewReady() {
+    override fun onViewReady() { }
+
+    override fun onViewResumed() {
+        super.onViewResumed()
+        getTradeHistory()
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun getTradeHistory() {
         compositeDisposable +=
             dataManager.getTrades()
                 .subscribeOn(Schedulers.io())

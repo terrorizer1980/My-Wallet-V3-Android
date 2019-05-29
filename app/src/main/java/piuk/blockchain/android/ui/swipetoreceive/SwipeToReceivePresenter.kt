@@ -5,19 +5,15 @@ import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.base.UiState
-import javax.inject.Inject
 import kotlin.properties.Delegates
 
-class SwipeToReceivePresenter @Inject constructor(
-    private val dataManager: QrCodeDataManager,
-    private val swipeToReceiveHelper: SwipeToReceiveHelper,
-    private val stringUtils: StringUtils
+class SwipeToReceivePresenter(
+    private val qrGenerator: QrCodeDataManager,
+    private val swipeToReceiveHelper: SwipeToReceiveHelper
 ) : BasePresenter<SwipeToReceiveView>() {
 
     internal var currencyPosition by Delegates.observable(0) { _, _, new ->
@@ -30,14 +26,22 @@ class SwipeToReceivePresenter @Inject constructor(
     private val bitcoinAddress: Single<String>
         get() = swipeToReceiveHelper.getNextAvailableBitcoinAddressSingle()
             .subscribeOn(Schedulers.computation())
+
     private val ethereumAddress: Single<String>
         get() = swipeToReceiveHelper.getEthReceiveAddressSingle()
             .subscribeOn(Schedulers.computation())
+
     private val bitcoinCashAddress: Single<String>
         get() = swipeToReceiveHelper.getNextAvailableBitcoinCashAddressSingle()
             .subscribeOn(Schedulers.computation())
+
     private val xlmAddress: Single<String>
         get() = swipeToReceiveHelper.getXlmReceiveAddressSingle()
+            .subscribeOn(Schedulers.computation())
+
+    // Pax (and other erc20 tokens) use the same address as ETH, so:
+    private val paxAddress: Single<String>
+        get() = swipeToReceiveHelper.getEthReceiveAddressSingle()
             .subscribeOn(Schedulers.computation())
 
     override fun onViewReady() {
@@ -51,12 +55,7 @@ class SwipeToReceivePresenter @Inject constructor(
     )
 
     private fun onCurrencySelected(cryptoCurrency: CryptoCurrency) {
-        view.displayCoinType(
-            stringUtils.getFormattedString(
-                R.string.swipe_receive_request,
-                cryptoCurrency.unit
-            )
-        )
+        view.displayCoinType(cryptoCurrency.unit)
         view.setUiState(UiState.LOADING)
 
         val accountDetails = getAccountDetailsFor(cryptoCurrency)
@@ -78,7 +77,7 @@ class SwipeToReceivePresenter @Inject constructor(
                             .stripXlmUri()
                     )
                 }
-                .flatMapObservable { dataManager.generateQrCode(it, DIMENSION_QR_CODE) }
+                .flatMapObservable { qrGenerator.generateQrCode(it, DIMENSION_QR_CODE) }
                 .addToCompositeDisposable(this)
                 .subscribe(
                     {
@@ -117,6 +116,10 @@ class SwipeToReceivePresenter @Inject constructor(
                 nextAddress = xlmAddress,
                 hasAddresses = !swipeToReceiveHelper.getXlmReceiveAddress().isNullOrEmpty()
             )
+            CryptoCurrency.PAX -> AccountDetails(
+                accountName = swipeToReceiveHelper.getPaxAccountName(),
+                nextAddress = paxAddress,
+                hasAddresses = !swipeToReceiveHelper.getPaxReceiveAddress().isNullOrEmpty())
         }
 
     companion object {

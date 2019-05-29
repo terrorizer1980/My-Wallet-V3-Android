@@ -20,6 +20,7 @@ class EnvironmentSettings : EnvironmentConfig {
             CryptoCurrency.ETHER -> BuildConfig.ETHEREUM_WEBSOCKET_URL
             CryptoCurrency.BCH -> BuildConfig.BITCOIN_CASH_WEBSOCKET_URL
             CryptoCurrency.XLM -> BuildConfig.BITCOIN_CASH_WEBSOCKET_URL
+            CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
 
     override fun shouldShowDebugMenu(): Boolean = BuildConfig.DEBUG

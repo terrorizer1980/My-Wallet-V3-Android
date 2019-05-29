@@ -18,6 +18,7 @@ class ExchangeDialog(intents: Observable<ExchangeIntent>, initial: ExchangeViewM
     val viewStates: Observable<ExchangeViewState> =
         intents.scan(initial.toInternalState()) { previousState, intent ->
             when (intent) {
+                is LockQuoteIntent -> previousState.mapLock(intent)
                 is SimpleFieldUpdateIntent -> previousState.map(intent)
                 is SwapIntent -> previousState.mapSwap()
                 is QuoteIntent -> previousState.mapQuote(intent)
@@ -34,6 +35,8 @@ class ExchangeDialog(intents: Observable<ExchangeIntent>, initial: ExchangeViewM
                 is ClearQuoteIntent -> previousState.clearQuote()
                 is SetUserTier -> previousState.copy(userTier = intent.tier)
                 is SetTierLimit -> previousState.mapTierLimits(intent)
+                is EnoughFeesLimit -> previousState.setHasEthEnoughFees(intent)
+                is IsUserEligiableForFreeEthIntent -> previousState.setIsPowerPaxTagged(intent)
             }
         }
 
@@ -41,6 +44,10 @@ class ExchangeDialog(intents: Observable<ExchangeIntent>, initial: ExchangeViewM
         viewStates.map {
             it.toViewModel()
         }
+}
+
+private fun ExchangeViewState.setIsPowerPaxTagged(intent: IsUserEligiableForFreeEthIntent): ExchangeViewState {
+    return copy(isPowerPaxTagged = intent.isEligiable)
 }
 
 private fun ExchangeViewState.clearQuote() =
@@ -64,6 +71,10 @@ private fun ExchangeViewState.setFiatRate(c2fRate: ExchangeRate.CryptoToFiat): E
         return this
     }
     return copy(c2fRate = c2fRate)
+}
+
+private fun ExchangeViewState.setHasEthEnoughFees(intent: EnoughFeesLimit): ExchangeViewState {
+    return copy(hasEnoughEthFees = intent.hasEnoughForFess)
 }
 
 private fun ExchangeViewState.applyLimit(tradeLimit: Money?) =
@@ -113,6 +124,10 @@ internal fun ExchangeViewModel.toInternalState(): ExchangeViewState {
     )
 }
 
+private fun ExchangeViewState.mapLock(intent: LockQuoteIntent): ExchangeViewState {
+    return copy(quoteLocked = intent.lockQuote)
+}
+
 private fun ExchangeViewState.resetToZero(): ExchangeViewState {
     return copy(
         fromFiat = fromFiat.toZero(),
@@ -153,6 +168,7 @@ enum class QuoteValidity {
     NoQuote,
     MissMatch,
     UnderMinTrade,
+    NotEnoughFees,
     OverMaxTrade,
     OverTierLimit,
     OverUserBalance
@@ -174,7 +190,10 @@ data class ExchangeViewState(
     val c2fRate: ExchangeRate.CryptoToFiat? = null,
     val maxSpendable: CryptoValue? = null,
     val decimalCursor: Int = 0,
-    val userTier: Int = 0
+    val userTier: Int = 0,
+    val isPowerPaxTagged: Boolean = false,
+    val hasEnoughEthFees: Boolean = true,
+    val quoteLocked: Boolean = false
 ) {
     private val maxTradeOrTierLimit: FiatValue?
         get() {
@@ -223,6 +242,7 @@ data class ExchangeViewState(
         if (exceedsTheFiatLimit(latestQuote, maxTradeLimit)) return QuoteValidity.OverMaxTrade
         if (exceedsTheFiatLimit(latestQuote, maxTierLimit)) return QuoteValidity.OverTierLimit
         if (underTheFiatLimit(latestQuote, minTradeLimit)) return QuoteValidity.UnderMinTrade
+        if (!hasEnoughEthFees) return QuoteValidity.NotEnoughFees
         return QuoteValidity.Valid
     }
 
@@ -238,7 +258,7 @@ data class ExchangeViewState(
 
     private fun quoteMatchesFixAndValue(latestQuote: Quote) =
         latestQuote.fix == fix &&
-            latestQuote.fixValue == fixedMoneyValue
+                latestQuote.fixValue == fixedMoneyValue
 
     private fun enoughFundsIfKnown(latestQuote: Quote): Boolean {
         if (maxSpendable == null) return true
@@ -323,7 +343,8 @@ private fun ExchangeViewState.resetToZeroKeepingUserFiat() =
         )
 
 private fun ExchangeViewState.mapQuote(intent: QuoteIntent) =
-    if (intent.quote.fix == fix &&
+    if (!quoteLocked &&
+        intent.quote.fix == fix &&
         intent.quote.fixValue == lastUserValue &&
         fromCurrencyMatch(intent) &&
         toCurrencyMatch(intent)
@@ -334,8 +355,7 @@ private fun ExchangeViewState.mapQuote(intent: QuoteIntent) =
             toCrypto = intent.quote.to.cryptoValue,
             toFiat = intent.quote.to.fiatValue,
             latestQuote = intent.quote,
-            upToDate = true
-        )
+            upToDate = true)
     } else {
         this
     }
@@ -352,7 +372,7 @@ private fun currencyMatch(
     vmFiatValue: FiatValue
 ) =
     quote.fiatValue.currencyCode == vmFiatValue.currencyCode &&
-        quote.cryptoValue.currency == vmValue.currency
+            quote.cryptoValue.currency == vmValue.currency
 
 private fun mode(
     fieldEntered: Fix,

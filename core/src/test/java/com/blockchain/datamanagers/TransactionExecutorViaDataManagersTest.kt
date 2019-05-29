@@ -4,8 +4,8 @@ import com.blockchain.account.DefaultAccountDataManager
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.datamanagers.fees.BitcoinLikeFees
 import com.blockchain.datamanagers.fees.EthereumFees
-import com.blockchain.datamanagers.fees.FeeType
 import com.blockchain.datamanagers.fees.XlmFees
+import com.blockchain.fees.FeeType
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.ether
@@ -40,6 +40,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.web3j.crypto.RawTransaction
+import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.exceptions.TransactionInProgressException
@@ -53,6 +54,7 @@ class TransactionExecutorViaDataManagersTest {
     private lateinit var subject: TransactionExecutor
     private val payloadDataManager: PayloadDataManager = mock()
     private val ethDataManager: EthDataManager = mock()
+    private val erc20Account: Erc20Account = mock()
     private val sendDataManager: SendDataManager = mock()
     private val defaultAccountDataManager: DefaultAccountDataManager = mock()
     private val ethereumAccountWrapper: EthereumAccountWrapper = mock()
@@ -72,6 +74,7 @@ class TransactionExecutorViaDataManagersTest {
         subject = TransactionExecutorViaDataManagers(
             payloadDataManager,
             ethDataManager,
+            erc20Account,
             sendDataManager,
             addressResolver,
             accountLookup,
@@ -421,6 +424,7 @@ class TransactionExecutorViaDataManagersTest {
             from = accountReference,
             value = amount,
             toAddress = destination,
+            fee = 100.stroops(),
             memo = memo
         )
         whenever(
@@ -438,8 +442,13 @@ class TransactionExecutorViaDataManagersTest {
         whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)) `it throws` IllegalArgumentException()
         // Act
         val testObserver =
-            subject.executeTransaction(amount, destination, accountReference, XlmFees(100.stroops()), memo = memo)
-                .test()
+            subject.executeTransaction(
+                amount,
+                destination,
+                accountReference,
+                XlmFees(100.stroops(), 100.stroops()),
+                memo = memo
+            ).test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertValue(txHash)
@@ -452,13 +461,20 @@ class TransactionExecutorViaDataManagersTest {
         val destination = "DESTINATION"
         val accountReference = AccountReference.Xlm("", "")
         val txHash = "TX_HASH"
-        val sendDetails = SendDetails(from = accountReference, value = amount, toAddress = destination)
+        val sendDetails = SendDetails(
+            from = accountReference,
+            value = amount,
+            toAddress = destination,
+            fee = 100.stroops()
+        )
         whenever(
             xlmSender.sendFunds(sendDetails)
         ).thenReturn(
             Single.just(
                 SendFundsResult(
-                    errorCode = 100, confirmationDetails = null, hash = txHash,
+                    errorCode = 100,
+                    confirmationDetails = null,
+                    hash = txHash,
                     sendDetails = sendDetails
                 )
             )
@@ -466,7 +482,7 @@ class TransactionExecutorViaDataManagersTest {
         whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)) `it throws` IllegalArgumentException()
         // Act
         val testObserver =
-            subject.executeTransaction(amount, destination, accountReference, XlmFees(100.stroops()))
+            subject.executeTransaction(amount, destination, accountReference, XlmFees(100.stroops(), 1.stroops()))
                 .test()
         // Assert
         testObserver.assertNotComplete().assertError(SendException::class.java)
@@ -510,6 +526,23 @@ class TransactionExecutorViaDataManagersTest {
         // Assert
         testObserver.assertComplete()
         testObserver.assertValue(CryptoValue.bitcoinFromSatoshis(10))
+    }
+
+    @Test
+    fun `get maximum spendable PAX`() {
+        // Arrange
+        val account = AccountReference.Pax("", "", "")
+
+        whenever(
+            erc20Account.getBalance()
+        ).thenReturn(Single.just(100.toBigInteger()))
+        // Act
+        val testObserver =
+            subject.getMaximumSpendable(account, mock())
+                .test()
+        // Assert
+        testObserver.assertComplete()
+        testObserver.assertValue(CryptoValue(CryptoCurrency.PAX, 100.toBigInteger()))
     }
 
     @Test
@@ -610,7 +643,7 @@ class TransactionExecutorViaDataManagersTest {
         testObserver.assertValue(
             CryptoValue.etherFromWei(
                 1_000_000_000_000_000_000L.toBigInteger() -
-                    ethereumNetworkFee.absoluteRegularFeeInWei.amount
+                        ethereumNetworkFee.absoluteRegularFeeInWei.amount
             )
         )
     }
@@ -619,10 +652,10 @@ class TransactionExecutorViaDataManagersTest {
     fun `get maximum spendable XLM`() {
         // Arrange
         val account = AccountReference.Xlm("", "")
-        whenever(defaultAccountDataManager.getMaxSpendableAfterFees())
+        whenever(defaultAccountDataManager.getMaxSpendableAfterFees(FeeType.Regular))
             .thenReturn(Single.just(150.lumens()))
         // Act
-        val testObserver = subject.getMaximumSpendable(account, XlmFees(99.stroops()))
+        val testObserver = subject.getMaximumSpendable(account, XlmFees(99.stroops(), 99.stroops()))
             .test()
         // Assert
         testObserver.assertComplete()
@@ -763,7 +796,7 @@ class TransactionExecutorViaDataManagersTest {
         val amount = 150.stroops()
         val account = AccountReference.Xlm("", "")
         // Act
-        val testObserver = subject.getFeeForTransaction(amount, account, XlmFees(200.stroops()))
+        val testObserver = subject.getFeeForTransaction(amount, account, XlmFees(200.stroops(), 250.stroops()))
             .test()
         // Assert
         testObserver.assertComplete()

@@ -40,32 +40,38 @@ data class CryptoValue(
         val ZeroBch = bitcoinCashFromSatoshis(0L)
         val ZeroEth = CryptoValue(CryptoCurrency.ETHER, BigInteger.ZERO)
         val ZeroXlm = CryptoValue(CryptoCurrency.XLM, BigInteger.ZERO)
+        val ZeroPax = CryptoValue(CryptoCurrency.PAX, BigInteger.ZERO)
 
         fun zero(cryptoCurrency: CryptoCurrency) = when (cryptoCurrency) {
             CryptoCurrency.BTC -> ZeroBtc
             CryptoCurrency.BCH -> ZeroBch
             CryptoCurrency.ETHER -> ZeroEth
             CryptoCurrency.XLM -> ZeroXlm
+            CryptoCurrency.PAX -> ZeroPax
         }
 
         fun bitcoinFromSatoshis(satoshi: Long) = CryptoValue(CryptoCurrency.BTC, satoshi.toBigInteger())
         fun bitcoinFromSatoshis(satoshi: BigInteger) = CryptoValue(CryptoCurrency.BTC, satoshi)
-        fun bitcoinCashFromSatoshis(satoshi: Long) = CryptoValue(CryptoCurrency.BCH, satoshi.toBigInteger())
-        fun bitcoinCashFromSatoshis(satoshi: BigInteger) = CryptoValue(CryptoCurrency.BCH, satoshi)
-
-        fun etherFromWei(wei: BigInteger) = CryptoValue(CryptoCurrency.ETHER, wei)
 
         fun bitcoinFromMajor(bitcoin: Int) = bitcoinFromMajor(bitcoin.toBigDecimal())
         fun bitcoinFromMajor(bitcoin: BigDecimal) = fromMajor(CryptoCurrency.BTC, bitcoin)
 
+        fun bitcoinCashFromSatoshis(satoshi: Long) = CryptoValue(CryptoCurrency.BCH, satoshi.toBigInteger())
+        fun bitcoinCashFromSatoshis(satoshi: BigInteger) = CryptoValue(CryptoCurrency.BCH, satoshi)
+
         fun bitcoinCashFromMajor(bitcoinCash: Int) = bitcoinCashFromMajor(bitcoinCash.toBigDecimal())
         fun bitcoinCashFromMajor(bitcoinCash: BigDecimal) = fromMajor(CryptoCurrency.BCH, bitcoinCash)
+
+        fun etherFromWei(wei: BigInteger) = CryptoValue(CryptoCurrency.ETHER, wei)
 
         fun etherFromMajor(ether: Long) = etherFromMajor(ether.toBigDecimal())
         fun etherFromMajor(ether: BigDecimal) = fromMajor(CryptoCurrency.ETHER, ether)
 
         fun lumensFromMajor(lumens: BigDecimal) = fromMajor(CryptoCurrency.XLM, lumens)
         fun lumensFromStroop(stroop: BigInteger) = CryptoValue(CryptoCurrency.XLM, stroop)
+
+        fun usdPaxFromMajor(usdPax: BigDecimal) = fromMajor(CryptoCurrency.PAX, usdPax)
+        fun usdPaxFromMinor(value: BigInteger) = CryptoValue(CryptoCurrency.PAX, value)
 
         fun fromMajor(
             currency: CryptoCurrency,

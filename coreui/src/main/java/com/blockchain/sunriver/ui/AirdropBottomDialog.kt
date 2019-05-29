@@ -1,8 +1,8 @@
 package com.blockchain.sunriver.ui
 
-import com.blockchain.nabu.StartKyc
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.nabu.StartKycAirdrop
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.R
 
@@ -14,23 +14,23 @@ class AirdropBottomDialog : BaseAirdropBottomDialog(
     )
 ) {
 
-    private val eventLogger: EventLogger by inject()
+    private val analytics: Analytics by inject()
 
-    private val startKyc: StartKyc by inject()
+    private val startKyc: StartKycAirdrop by inject()
 
     override fun onStart() {
         super.onStart()
-        eventLogger.logEvent(LoggableEvent.SunRiverBottomDialog)
+        analytics.logEvent(AnalyticsEvents.SunRiverBottomDialog)
     }
 
     override fun ctaButtonClick() {
-        eventLogger.logEvent(LoggableEvent.SunRiverBottomDialogClicked)
+        analytics.logEvent(AnalyticsEvents.SunRiverBottomDialogClicked)
         startKycAndDismiss()
     }
 
-    override fun rocketShipClick() {
-        eventLogger.logEvent(LoggableEvent.SunRiverBottomDialogClicked)
-        eventLogger.logEvent(LoggableEvent.SunRiverBottomDialogClickedRocket)
+    override fun xlmLogoClick() {
+        analytics.logEvent(AnalyticsEvents.SunRiverBottomDialogClicked)
+        analytics.logEvent(AnalyticsEvents.SunRiverBottomDialogClickedRocket)
         startKycAndDismiss()
     }
 

@@ -389,7 +389,7 @@ public class PinEntryFragment extends BaseFragment<PinEntryView, PinEntryPresent
 
     @Override
     public void showToast(@StringRes int message, @ToastCustom.ToastType String toastType) {
-        ToastCustom.makeText(getContext(), getString(message), ToastCustom.LENGTH_SHORT, toastType);
+        ToastCustom.makeText(getContext(), getString(message), ToastCustom.LENGTH_LONG, toastType);
     }
 
     @Override

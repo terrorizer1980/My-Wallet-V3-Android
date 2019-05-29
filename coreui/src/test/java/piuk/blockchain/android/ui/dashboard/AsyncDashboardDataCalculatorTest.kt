@@ -6,6 +6,7 @@ import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.ether
 import com.blockchain.testutils.gbp
 import com.blockchain.testutils.lumens
+import com.blockchain.testutils.usdPax
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -50,6 +51,11 @@ class AsyncDashboardDataCalculatorTest {
                 spendable = 98.lumens(),
                 watchOnly = 6.lumens(),
                 coldStorage = 2.lumens()
+            ),
+            usdPax = TotalBalance.Balance(
+                spendable = 72.usdPax(),
+                watchOnly = 10.usdPax(),
+                coldStorage = 5.usdPax()
             )
         )
         val balanceFilter = PublishSubject.create<BalanceFilter>()
@@ -71,7 +77,11 @@ class AsyncDashboardDataCalculatorTest {
                     100.lumens() to 600.gbp(),
                     98.lumens() to 580.gbp(),
                     6.lumens() to 70.gbp(),
-                    2.lumens() to 5.gbp()
+                    2.lumens() to 5.gbp(),
+                    77.usdPax() to 500.gbp(),
+                    72.usdPax() to 400.gbp(),
+                    10.usdPax() to 300.gbp(),
+                    5.usdPax() to 100.gbp()
                 )
             ),
             balanceUpdater,
@@ -83,67 +93,80 @@ class AsyncDashboardDataCalculatorTest {
         balanceFilter.onNext(BalanceFilter.Wallet)
         balanceFilter.onNext(BalanceFilter.ColdStorage)
         test.values() `should equal`
-            listOf(
-                PieChartsState.Data(
-                    bitcoin = PieChartsState.Coin(
-                        displayable = dataPoint(100.gbp(), 25.bitcoin()),
-                        watchOnly = dataPoint(200.gbp(), 15.bitcoin())
+                listOf(
+                    PieChartsState.Data(
+                        bitcoin = PieChartsState.Coin(
+                            displayable = dataPoint(100.gbp(), 25.bitcoin()),
+                            watchOnly = dataPoint(200.gbp(), 15.bitcoin())
+                        ),
+                        bitcoinCash = PieChartsState.Coin(
+                            displayable = dataPoint(300.gbp(), 30.bitcoinCash()),
+                            watchOnly = dataPoint(400.gbp(), 5.bitcoinCash())
+                        ),
+                        ether = PieChartsState.Coin(
+                            displayable = dataPoint(500.gbp(), 20.ether()),
+                            watchOnly = dataPoint(50.gbp(), 5.ether())
+                        ),
+                        lumen = PieChartsState.Coin(
+                            displayable = dataPoint(600.gbp(), 100.lumens()),
+                            watchOnly = dataPoint(70.gbp(), 6.lumens())
+                        ),
+                        usdPax = PieChartsState.Coin(
+                            displayable = dataPoint(500.gbp(), 77.usdPax()),
+                            watchOnly = dataPoint(300.gbp(), 10.usdPax())
+                        )
                     ),
-                    bitcoinCash = PieChartsState.Coin(
-                        displayable = dataPoint(300.gbp(), 30.bitcoinCash()),
-                        watchOnly = dataPoint(400.gbp(), 5.bitcoinCash())
+                    PieChartsState.Data(
+                        bitcoin = PieChartsState.Coin(
+                            displayable = dataPoint(75.gbp(), 20.bitcoin()),
+                            watchOnly = dataPoint(200.gbp(), 15.bitcoin())
+                        ),
+                        bitcoinCash = PieChartsState.Coin(
+                            displayable = dataPoint(290.gbp(), 29.bitcoinCash()),
+                            watchOnly = dataPoint(400.gbp(), 5.bitcoinCash())
+                        ),
+                        ether = PieChartsState.Coin(
+                            displayable = dataPoint(490.gbp(), 19.ether()),
+                            watchOnly = dataPoint(50.gbp(), 5.ether())
+                        ),
+                        lumen = PieChartsState.Coin(
+                            displayable = dataPoint(580.gbp(), 98.lumens()),
+                            watchOnly = dataPoint(70.gbp(), 6.lumens())
+                        ),
+                        usdPax = PieChartsState.Coin(
+                            displayable = dataPoint(400.gbp(), 72.usdPax()),
+                            watchOnly = dataPoint(300.gbp(), 10.usdPax())
+                        )
                     ),
-                    ether = PieChartsState.Coin(
-                        displayable = dataPoint(500.gbp(), 20.ether()),
-                        watchOnly = dataPoint(50.gbp(), 5.ether())
-                    ),
-                    lumen = PieChartsState.Coin(
-                        displayable = dataPoint(600.gbp(), 100.lumens()),
-                        watchOnly = dataPoint(70.gbp(), 6.lumens())
-                    )
-                ),
-                PieChartsState.Data(
-                    bitcoin = PieChartsState.Coin(
-                        displayable = dataPoint(75.gbp(), 20.bitcoin()),
-                        watchOnly = dataPoint(200.gbp(), 15.bitcoin())
-                    ),
-                    bitcoinCash = PieChartsState.Coin(
-                        displayable = dataPoint(290.gbp(), 29.bitcoinCash()),
-                        watchOnly = dataPoint(400.gbp(), 5.bitcoinCash())
-                    ),
-                    ether = PieChartsState.Coin(
-                        displayable = dataPoint(490.gbp(), 19.ether()),
-                        watchOnly = dataPoint(50.gbp(), 5.ether())
-                    ),
-                    lumen = PieChartsState.Coin(
-                        displayable = dataPoint(580.gbp(), 98.lumens()),
-                        watchOnly = dataPoint(70.gbp(), 6.lumens())
-                    )
-                ),
-                PieChartsState.Data(
-                    bitcoin = PieChartsState.Coin(
-                        displayable = dataPoint(20.gbp(), 5.bitcoin()),
-                        watchOnly = dataPoint(200.gbp(), 15.bitcoin())
-                    ),
-                    bitcoinCash = PieChartsState.Coin(
-                        displayable = dataPoint(1.gbp(), 1.bitcoinCash()),
-                        watchOnly = dataPoint(400.gbp(), 5.bitcoinCash())
-                    ),
-                    ether = PieChartsState.Coin(
-                        displayable = dataPoint(3.gbp(), 1.ether()),
-                        watchOnly = dataPoint(50.gbp(), 5.ether())
-                    ),
-                    lumen = PieChartsState.Coin(
-                        displayable = dataPoint(5.gbp(), 2.lumens()),
-                        watchOnly = dataPoint(70.gbp(), 6.lumens())
+                    PieChartsState.Data(
+                        bitcoin = PieChartsState.Coin(
+                            displayable = dataPoint(20.gbp(), 5.bitcoin()),
+                            watchOnly = dataPoint(200.gbp(), 15.bitcoin())
+                        ),
+                        bitcoinCash = PieChartsState.Coin(
+                            displayable = dataPoint(1.gbp(), 1.bitcoinCash()),
+                            watchOnly = dataPoint(400.gbp(), 5.bitcoinCash())
+                        ),
+                        ether = PieChartsState.Coin(
+                            displayable = dataPoint(3.gbp(), 1.ether()),
+                            watchOnly = dataPoint(50.gbp(), 5.ether())
+                        ),
+                        lumen = PieChartsState.Coin(
+                            displayable = dataPoint(5.gbp(), 2.lumens()),
+                            watchOnly = dataPoint(70.gbp(), 6.lumens())
+                        ),
+                        usdPax = PieChartsState.Coin(
+                            displayable = dataPoint(100.gbp(), 5.usdPax()),
+                            watchOnly = dataPoint(300.gbp(), 10.usdPax())
+                        )
                     )
                 )
-            )
         verify(balanceUpdater).updateBalances()
         verify(mockBalances).totalBalance(CryptoCurrency.BTC)
         verify(mockBalances).totalBalance(CryptoCurrency.BCH)
         verify(mockBalances).totalBalance(CryptoCurrency.ETHER)
         verify(mockBalances).totalBalance(CryptoCurrency.XLM)
+        verify(mockBalances).totalBalance(CryptoCurrency.PAX)
     }
 
     private fun dataPoint(fiat: FiatValue, cryptoValue: CryptoValue) =
@@ -153,7 +176,8 @@ class AsyncDashboardDataCalculatorTest {
         bitcoin: TotalBalance.Balance,
         bitcoinCash: TotalBalance.Balance,
         ether: TotalBalance.Balance,
-        lumens: TotalBalance.Balance
+        lumens: TotalBalance.Balance,
+        usdPax: TotalBalance.Balance
     ): TotalBalance =
         mock {
             on {
@@ -168,11 +192,15 @@ class AsyncDashboardDataCalculatorTest {
             on {
                 totalBalance(CryptoCurrency.XLM)
             } `it returns` Single.just(lumens)
+            on {
+                totalBalance(CryptoCurrency.PAX)
+            } `it returns` Single.just(usdPax)
         }
 
     private fun mockExchangeRates(param: Map<CryptoValue, FiatValue>): FiatExchangeRates {
         val fiatExchangeRates = mock<FiatExchangeRates>()
-        whenever(fiatExchangeRates.getFiat(any())) `it returns` FiatValue.fromMajor("USD", BigDecimal.ZERO)
+        whenever(fiatExchangeRates.getFiat(any())) `it returns` FiatValue.fromMajor("USD",
+            BigDecimal.ZERO)
         param.forEach { crypto, fiat ->
             whenever(fiatExchangeRates.getFiat(crypto)) `it returns` fiat
         }

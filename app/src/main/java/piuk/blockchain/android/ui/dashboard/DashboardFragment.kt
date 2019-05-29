@@ -14,8 +14,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import org.koin.android.ext.android.inject
@@ -25,17 +26,16 @@ import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.charts.ChartsActivity
 import piuk.blockchain.android.ui.customviews.BottomSpacerDecoration
 import piuk.blockchain.android.ui.dashboard.adapter.DashboardDelegateAdapter
+import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity
-import piuk.blockchain.android.ui.home.MainActivity.ACCOUNT_EDIT
-import piuk.blockchain.android.ui.home.MainActivity.ACTION_EXCHANGE_KYC
-import piuk.blockchain.android.ui.home.MainActivity.ACTION_RECEIVE_BCH
-import piuk.blockchain.android.ui.home.MainActivity.ACTION_RESUBMIT_KYC
-import piuk.blockchain.android.ui.home.MainActivity.ACTION_SUNRIVER_KYC
-import piuk.blockchain.android.ui.home.MainActivity.CONTACTS_EDIT
-import piuk.blockchain.android.ui.home.MainActivity.SETTINGS_EDIT
+import piuk.blockchain.android.ui.home.MainActivity.Companion.ACCOUNT_EDIT
+import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_EXCHANGE_KYC
+import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_RESUBMIT_KYC
+import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_SUNRIVER_KYC
+import piuk.blockchain.android.ui.home.MainActivity.Companion.SETTINGS_EDIT
+import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_BUY_SELL_KYC
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -43,7 +43,18 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import java.util.Locale
 
-class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), DashboardView {
+class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
+    DashboardView {
+
+    override fun startKycFlowWithNavigator(campaignType: CampaignType) {
+        navigator().gotoKyc(campaignType)
+    }
+
+    override fun goToExchange(currency: CryptoCurrency?, defCurrency: String) {
+        (activity as?Context)?.let {
+            HomebrewNavHostActivity.start(it, defCurrency, currency)
+        }
+    }
 
     override val shouldShowBuy: Boolean = AndroidUtils.is19orHigher()
 
@@ -53,16 +64,21 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
 
     private val osUtil: OSUtil by inject()
 
-    private val eventLogger: EventLogger by inject()
+    private val analytics: Analytics by inject()
 
     private val dashboardAdapter by unsafeLazy {
         DashboardDelegateAdapter(
             context!!,
             { ChartsActivity.start(context!!, it) },
-            { startBalance(it) },
+            { showTransactionsFor(it) },
             { presenter.setBalanceFilter(it) }
         )
     }
+
+    private fun showTransactionsFor(cryptoCurrency: CryptoCurrency) {
+        navigator().gotoTransactionsFor(cryptoCurrency)
+    }
+
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == BalanceFragment.ACTION_INTENT && activity != null) {
@@ -71,9 +87,11 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
             }
         }
     }
+
     private val spacerDecoration: BottomSpacerDecoration by unsafeLazy {
         BottomSpacerDecoration(ViewUtils.convertDpToPixel(56f, context).toInt())
     }
+
     private val safeLayoutManager by unsafeLazy { SafeLayoutManager(context!!) }
 
     override fun onCreateView(
@@ -85,7 +103,7 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        eventLogger.logEvent(LoggableEvent.Dashboard)
+        analytics.logEvent(AnalyticsEvents.Dashboard)
 
         recycler_view?.apply {
             layoutManager = safeLayoutManager
@@ -98,9 +116,9 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
     override fun onResume() {
         super.onResume()
         setupToolbar()
-        if (activity is MainActivity) {
-            (activity as MainActivity).bottomNavigationView.restoreBottomNavigation()
-        }
+
+        navigator().showNavigation()
+
         LocalBroadcastManager.getInstance(context!!)
             .registerReceiver(receiver, IntentFilter(BalanceFragment.ACTION_INTENT))
 
@@ -117,7 +135,7 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == SETTINGS_EDIT || requestCode == CONTACTS_EDIT || requestCode == ACCOUNT_EDIT) {
+        if (requestCode == SETTINGS_EDIT || requestCode == ACCOUNT_EDIT) {
             presenter.updateBalances()
         }
     }
@@ -155,15 +173,16 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
     }
 
     override fun startBitcoinCashReceive() {
-        broadcastIntent(ACTION_RECEIVE_BCH)
+        navigator().gotoReceiveFor(CryptoCurrency.BCH)
     }
 
     override fun startKycFlow(campaignType: CampaignType) {
         broadcastIntent(
-            when (campaignType) {
+            action = when (campaignType) {
                 CampaignType.Swap -> ACTION_EXCHANGE_KYC
                 CampaignType.Sunriver -> ACTION_SUNRIVER_KYC
                 CampaignType.Resubmission -> ACTION_RESUBMIT_KYC
+                CampaignType.BuySell -> ACTION_BUY_SELL_KYC
             }
         )
     }
@@ -196,17 +215,6 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
 
     override fun getMvpView() = this
 
-    private fun startBalance(cryptoCurrency: CryptoCurrency) {
-        val action = when (cryptoCurrency) {
-            CryptoCurrency.BTC -> MainActivity.ACTION_BTC_BALANCE
-            CryptoCurrency.ETHER -> MainActivity.ACTION_ETH_BALANCE
-            CryptoCurrency.BCH -> MainActivity.ACTION_BCH_BALANCE
-            CryptoCurrency.XLM -> MainActivity.ACTION_XLM_BALANCE
-        }
-
-        broadcastIntent(action)
-    }
-
     private fun broadcastIntent(action: String) {
         activity?.run {
             LocalBroadcastManager.getInstance(this)
@@ -226,11 +234,11 @@ class DashboardFragment : BaseFragment<DashboardView, DashboardPresenter>(), Das
 
     private fun setupToolbar() {
         (activity as AppCompatActivity).supportActionBar?.let {
-            (activity as ToolBarActivity).setupToolbar(
-                it, R.string.dashboard_title
-            )
+            (activity as ToolBarActivity).setupToolbar(it, R.string.dashboard_title)
         }
     }
+
+    override fun onBackPressed() = false
 
     companion object {
 

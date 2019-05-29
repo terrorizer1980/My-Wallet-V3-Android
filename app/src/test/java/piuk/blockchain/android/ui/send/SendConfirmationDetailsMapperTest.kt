@@ -24,7 +24,8 @@ class SendConfirmationDetailsMapperTest {
             SendDetails(
                 from = AccountReference.Xlm("My account", ""),
                 toAddress = "Some Address",
-                value = 100.1.lumens()
+                value = 100.1.lumens(),
+                fee = 1.stroops()
             ),
             fees = 99.stroops(),
             fiatAmount = 1234.45.usd(),

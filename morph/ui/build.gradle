@@ -46,6 +46,7 @@ dependencies {
     api project(':morph:common')
     implementation project(':balance')
     implementation project(':notifications')
+    implementation project(':common:interface')
 
     implementation Libraries.kotlin
 

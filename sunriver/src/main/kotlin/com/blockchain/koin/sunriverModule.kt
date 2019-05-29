@@ -8,8 +8,6 @@ import com.blockchain.balance.AsyncAddressBalanceReporter
 import com.blockchain.sunriver.HorizonProxy
 import com.blockchain.sunriver.MemoMapper
 import com.blockchain.sunriver.XlmDataManager
-import com.blockchain.sunriver.XlmFees
-import com.blockchain.sunriver.XlmFeesService
 import com.blockchain.sunriver.XlmSecretAccess
 import com.blockchain.sunriver.datamanager.XlmMetaDataInitializer
 import com.blockchain.transactions.logMemoType
@@ -22,7 +20,7 @@ val sunriverModule = applicationContext {
 
         factory { XlmSecretAccess(get()) }
 
-        factory { XlmDataManager(get(), get(), get(), get(), get()) }
+        factory { XlmDataManager(get(), get(), get(), get(), get(), get()) }
             .bind(DefaultAccountDataManager::class)
             .bind(AsyncAddressBalanceReporter::class)
 
@@ -35,8 +33,6 @@ val sunriverModule = applicationContext {
         bean { XlmMetaDataInitializer(get(), get(), get(), get()) }
 
         factory("XLM") { XlmAsyncAccountListAdapter(get()) as AsyncAccountList }
-
-        bean { XlmFeesService(get()) as XlmFees }
     }
 
     factory { MemoMapper() }

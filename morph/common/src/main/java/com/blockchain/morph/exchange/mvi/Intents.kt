@@ -11,7 +11,7 @@ import java.math.BigDecimal
  */
 sealed class ExchangeIntent
 
-class SimpleFieldUpdateIntent(val userValue: BigDecimal, val decimalCursor: Int = 0) : ExchangeIntent()
+data class SimpleFieldUpdateIntent(val userValue: BigDecimal, val decimalCursor: Int = 0) : ExchangeIntent()
 
 class SwapIntent : ExchangeIntent()
 
@@ -33,9 +33,13 @@ class SetTradeLimits(val min: FiatValue, val max: FiatValue) : ExchangeIntent()
 
 class SetUserTier(val tier: Int) : ExchangeIntent()
 
+class IsUserEligiableForFreeEthIntent(val isEligiable: Boolean) : ExchangeIntent()
+
 class SetTierLimit(val availableOnTier: FiatValue) : ExchangeIntent()
 
 class ApplyMinimumLimit : ExchangeIntent()
+
+class EnoughFeesLimit(val hasEnoughForFess: Boolean) : ExchangeIntent()
 
 class ApplyMaximumLimit : ExchangeIntent()
 
@@ -44,3 +48,5 @@ class FiatExchangeRateIntent(val c2fRate: ExchangeRate.CryptoToFiat) : ExchangeI
 class SpendableValueIntent(val cryptoValue: CryptoValue) : ExchangeIntent()
 
 object ClearQuoteIntent : ExchangeIntent()
+
+class LockQuoteIntent(val lockQuote: Boolean) : ExchangeIntent()

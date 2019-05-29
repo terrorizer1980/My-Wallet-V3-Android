@@ -79,20 +79,26 @@ public class TransferFundsDataManager {
                     if (unspentOutputs.getNotice() == null && sweepAmount.compareTo(Payment.DUST) > 0) {
 
                         PendingTransaction pendingSpend = new PendingTransaction();
-                        pendingSpend.unspentOutputBundle = sendDataManager
-                                .getSpendableCoins(unspentOutputs, CryptoValue.Companion.bitcoinCashFromSatoshis(sweepAmount), suggestedFeePerKb);
-                        pendingSpend.sendingObject = new ItemAccount(
+                        pendingSpend.setUnspentOutputBundle(
+                                sendDataManager.getSpendableCoins(
+                                        unspentOutputs,
+                                        CryptoValue.Companion.bitcoinCashFromSatoshis(sweepAmount),
+                                        suggestedFeePerKb)
+                        );
+
+                        pendingSpend.setSendingObject(new ItemAccount(
                                 legacyAddress.getLabel(),
                                 "",
                                 "",
                                 null,
                                 legacyAddress,
-                                legacyAddress.getAddress());
-                        pendingSpend.bigIntFee = pendingSpend.unspentOutputBundle.getAbsoluteFee();
-                        pendingSpend.bigIntAmount = sweepAmount;
-                        pendingSpend.addressToReceiveIndex = addressToReceiveIndex;
-                        totalToSend += pendingSpend.bigIntAmount.longValue();
-                        totalFee += pendingSpend.bigIntFee.longValue();
+                                legacyAddress.getAddress())
+                        );
+                        pendingSpend.setBigIntFee(pendingSpend.getUnspentOutputBundle().getAbsoluteFee());
+                        pendingSpend.setBigIntAmount(sweepAmount);
+                        pendingSpend.setAddressToReceiveIndex(addressToReceiveIndex);
+                        totalToSend += pendingSpend.getBigIntAmount().longValue();
+                        totalFee += pendingSpend.getBigIntFee().longValue();
                         pendingTransactionList.add(pendingSpend);
                     }
                 }
@@ -134,22 +140,22 @@ public class TransferFundsDataManager {
                 PendingTransaction pendingTransaction = pendingTransactions.get(i);
 
                 final int finalI = i;
-                LegacyAddress legacyAddress = ((LegacyAddress) pendingTransaction.sendingObject.getAccountObject());
+                LegacyAddress legacyAddress = ((LegacyAddress) pendingTransaction.getSendingObject().getAccountObject());
                 String changeAddress = legacyAddress.getAddress();
                 String receivingAddress =
-                        payloadDataManager.getNextReceiveAddress(pendingTransaction.addressToReceiveIndex)
+                        payloadDataManager.getNextReceiveAddress(pendingTransaction.getAddressToReceiveIndex())
                                 .blockingFirst();
 
                 List<ECKey> keys = new ArrayList<>();
                 keys.add(payloadDataManager.getAddressECKey(legacyAddress, secondPassword));
 
                 sendDataManager.submitBtcPayment(
-                        pendingTransaction.unspentOutputBundle,
+                        pendingTransaction.getUnspentOutputBundle(),
                         keys,
                         receivingAddress,
                         changeAddress,
-                        pendingTransaction.bigIntFee,
-                        pendingTransaction.bigIntAmount)
+                        pendingTransaction.getBigIntFee(),
+                        pendingTransaction.getBigIntAmount())
                         .blockingSubscribe(s -> {
                             if (!subscriber.isDisposed()) {
                                 subscriber.onNext(s);
@@ -159,11 +165,11 @@ public class TransferFundsDataManager {
                                     .getHdWallets()
                                     .get(0)
                                     .getAccounts()
-                                    .get(pendingTransaction.addressToReceiveIndex);
+                                    .get(pendingTransaction.getAddressToReceiveIndex());
                             payloadDataManager.incrementReceiveAddress(account);
 
                             // Update Balances temporarily rather than wait for sync
-                            long spentAmount = (pendingTransaction.bigIntAmount.longValue() + pendingTransaction.bigIntFee.longValue());
+                            long spentAmount = (pendingTransaction.getBigIntAmount().longValue() + pendingTransaction.getBigIntFee().longValue());
                             payloadDataManager.subtractAmountFromAddressBalance(legacyAddress.getAddress(), spentAmount);
 
                             if (finalI == pendingTransactions.size() - 1) {

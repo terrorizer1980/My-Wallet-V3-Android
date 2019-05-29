@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.home;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Pair;
 
@@ -29,6 +30,7 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.Unit;
 import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.data.cache.DynamicFeeCache;
@@ -49,6 +51,7 @@ import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.currency.CurrencyState;
+import piuk.blockchain.androidcore.data.erc20.Erc20Account;
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager;
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager;
 import piuk.blockchain.androidcore.data.fees.FeeDataManager;
@@ -58,7 +61,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
 import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager;
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AppUtil;
@@ -68,7 +71,7 @@ import timber.log.Timber;
 
 public class MainPresenter extends BasePresenter<MainView> {
 
-    private PrefsUtil prefs;
+    private PersistentPrefs prefs;
     private AppUtil appUtil;
     private AccessState accessState;
     private PayloadManagerWiper payloadManagerWiper;
@@ -82,6 +85,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private FeeDataManager feeDataManager;
     private PromptManager promptManager;
     private EthDataManager ethDataManager;
+    private Erc20Account paxAccount;
     private BchDataManager bchDataManager;
     private CurrencyState currencyState;
     private WalletOptionsDataManager walletOptionsDataManager;
@@ -99,7 +103,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private XlmDataManager xlmDataManager;
 
     @Inject
-    MainPresenter(PrefsUtil prefs,
+    MainPresenter(PersistentPrefs prefs,
                   AppUtil appUtil,
                   AccessState accessState,
                   PayloadManagerWiper payloadManagerWiper,
@@ -127,7 +131,8 @@ public class MainPresenter extends BasePresenter<MainView> {
                   LockboxDataManager lockboxDataManager,
                   DeepLinkProcessor deepLinkProcessor,
                   SunriverCampaignHelper sunriverCampaignHelper,
-                  XlmDataManager xlmDataManager) {
+                  XlmDataManager xlmDataManager,
+                  Erc20Account paxAccount) {
 
         this.prefs = prefs;
         this.appUtil = appUtil;
@@ -158,16 +163,18 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.deepLinkProcessor = deepLinkProcessor;
         this.sunriverCampaignHelper = sunriverCampaignHelper;
         this.xlmDataManager = xlmDataManager;
+        this.paxAccount = paxAccount;
     }
 
-    private void initPrompts(Context context) {
+    @SuppressLint("CheckResult")
+    private void initPrompts() {
         settingsDataManager.getSettings()
-                .flatMap(settings -> promptManager.getCustomPrompts(context, settings))
+                .flatMap(settings -> promptManager.getCustomPrompts(settings))
                 .compose(RxUtil.addObservableToCompositeDisposable(this))
                 .flatMap(Observable::fromIterable)
                 .firstOrError()
                 .subscribe(
-                        getView()::showCustomPrompt,
+                        factory -> getView().showCustomPrompt(factory),
                         throwable -> {
                             if (!(throwable instanceof NoSuchElementException)) {
                                 Timber.e(throwable);
@@ -194,6 +201,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         }
     }
 
+    @SuppressLint("CheckResult")
     private void checkLockboxAvailability() {
         lockboxDataManager.isLockboxAvailable()
                 .compose(RxUtil.addSingleToCompositeDisposable(this))
@@ -206,11 +214,11 @@ public class MainPresenter extends BasePresenter<MainView> {
      * available addresses.
      */
     private void doPushNotifications() {
-        if (!prefs.has(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED)) {
-            prefs.setValue(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED, true);
+        if (!prefs.has(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED)) {
+            prefs.setValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true);
         }
 
-        if (prefs.getValue(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED, true)) {
+        if (prefs.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true)) {
             payloadDataManager.syncPayloadAndPublicKeys()
                     .compose(RxUtil.addCompletableToCompositeDisposable(this))
                     .subscribe(() -> {
@@ -226,6 +234,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         }
     }
 
+    @SuppressLint("CheckResult")
     private void checkKycStatus() {
         kycStatusHelper.shouldDisplayKyc()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -251,17 +260,21 @@ public class MainPresenter extends BasePresenter<MainView> {
     // Could be used in the future
     @SuppressWarnings("unused")
     private SecurityPromptDialog getWarningPrompt(String message) {
-        SecurityPromptDialog prompt = SecurityPromptDialog.newInstance(
+        SecurityPromptDialog prompt = SecurityPromptDialog.Companion.newInstance(
                 R.string.warning,
                 message,
                 R.drawable.vector_warning,
                 R.string.ok_cap,
                 false,
                 false);
-        prompt.setPositiveButtonListener(view -> prompt.dismiss());
+        prompt.setPositiveButtonListener(() -> {
+            prompt.dismiss();
+            return Unit.INSTANCE;
+        });
         return prompt;
     }
 
+    @SuppressLint("CheckResult")
     void initMetadataElements() {
         metadataManager.attemptMetadataSetup()
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
@@ -274,18 +287,18 @@ public class MainPresenter extends BasePresenter<MainView> {
                 .doAfterTerminate(() -> {
                             getView().hideProgressDialog();
 
-                            initPrompts(getView().getActivityContext());
+                            initPrompts();
 
-                            if (!prefs.getValue(PrefsUtil.KEY_SCHEME_URL, "").isEmpty()) {
-                                String strUri = prefs.getValue(PrefsUtil.KEY_SCHEME_URL, "");
-                                prefs.removeValue(PrefsUtil.KEY_SCHEME_URL);
+                            if (!prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "").isEmpty()) {
+                                String strUri = prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "");
+                                prefs.removeValue(PersistentPrefs.KEY_SCHEME_URL);
                                 getView().onScanInput(strUri);
                             }
                         }
                 )
                 .subscribe(() -> {
                     checkKycStatus();
-                    if (getView().isBuySellPermitted()) {
+                    if (AppUtil.Companion.isBuySellPermitted()) {
                         initBuyService();
                     } else {
                         getView().setBuySellEnabled(false, false);
@@ -312,7 +325,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private void checkForPendingLinks() {
         getCompositeDisposable().add(
                 deepLinkProcessor
-                        .getLink(getView().getIntent())
+                        .getLink(getView().getStartIntent())
                         .subscribe(
                                 linkState -> {
                                     if (linkState instanceof LinkState.SunriverDeepLink) {
@@ -396,7 +409,9 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private Completable ethCompletable() {
         return ethDataManager.initEthereumWallet(
-                stringUtils.getString(R.string.eth_default_account_label))
+                stringUtils.getString(R.string.eth_default_account_label),
+                stringUtils.getString(R.string.pax_default_account_label)
+                )
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
                 .doOnError(throwable -> {
                     Logging.INSTANCE.logException(throwable);
@@ -458,6 +473,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         accessState.setPIN(null);
         buyDataManager.wipe();
         ethDataManager.clearEthAccountDetails();
+        paxAccount.clear();
         bchDataManager.clearBchAccountDetails();
         DashboardPresenter.onLogout();
     }
@@ -504,7 +520,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                             if (isEnabled && !isCoinifyAllowed) {
                                 buyDataManager.watchPendingTrades()
                                         .compose(RxUtil.applySchedulersToObservable())
-                                        .subscribe(getView()::onTradeCompleted, Throwable::printStackTrace);
+                                        .subscribe(getView()::showTradeCompleteMsg, Throwable::printStackTrace);
 
                                 buyDataManager.getWebViewLoginDetails()
                                         .subscribe(getView()::setWebViewLoginDetails, Throwable::printStackTrace);
@@ -525,15 +541,15 @@ public class MainPresenter extends BasePresenter<MainView> {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                txHash -> getView().onTradeCompleted(txHash),
+                                txHash -> getView().showTradeCompleteMsg(txHash),
                                 Timber::e)
         );
     }
 
     private void dismissAnnouncementIfOnboardingCompleted() {
-        if (prefs.getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false)
-                && prefs.getValue(PrefsUtil.KEY_LATEST_ANNOUNCEMENT_SEEN, false)) {
-            prefs.setValue(PrefsUtil.KEY_LATEST_ANNOUNCEMENT_DISMISSED, true);
+        if (prefs.getValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, false)
+                && prefs.getValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_SEEN, false)) {
+            prefs.setValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_DISMISSED, true);
         }
     }
 
@@ -552,6 +568,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         currencyState.setCryptoCurrency(cryptoCurrency);
     }
 
+    @SuppressLint("CheckResult")
     void routeToBuySell() {
         buyDataManager.isCoinifyAllowed()
                 .compose(RxUtil.addObservableToCompositeDisposable(this))

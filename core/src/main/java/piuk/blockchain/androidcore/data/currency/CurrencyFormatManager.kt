@@ -92,7 +92,12 @@ class CurrencyFormatManager(
      * @param locale The current device [Locale]
      * @return The correct currency symbol (eg. "$")
      */
+    @Deprecated("locale is injected in formatter, not needed",
+        replaceWith = ReplaceWith("getFiatSymbol(currencyCode)"))
     fun getFiatSymbol(currencyCode: String, locale: Locale): String =
+        currencyFormatUtil.getFiatSymbol(currencyCode, locale)
+
+    fun getFiatSymbol(currencyCode: String): String =
         currencyFormatUtil.getFiatSymbol(currencyCode, locale)
 
     private fun getFiatValueFromSelectedCoin(
@@ -112,6 +117,7 @@ class CurrencyFormatManager(
                 CryptoCurrency.ETHER ->
                     throw IllegalArgumentException("${currencyState.cryptoCurrency} denomination not supported.")
                 CryptoCurrency.XLM -> throw IllegalArgumentException("XLM formatting should be done via CryptoValue.")
+                CryptoCurrency.PAX -> throw IllegalArgumentException("PAX formatting should be done via CryptoValue.")
             }
         }
     }
@@ -155,6 +161,8 @@ class CurrencyFormatManager(
         return exchangeRateDataManager.getFiatFromEth(sanitizedDenomination, fiatUnit)
     }
 
+    // Uses the global currencyState.cryptoCurrency internally, which breaks when working
+    // with multiple currencies - ie pax and eth fees.
     fun getFormattedFiatValueFromSelectedCoinValue(
         coinValue: BigDecimal,
         convertEthDenomination: ETHDenomination? = null,
@@ -166,6 +174,15 @@ class CurrencyFormatManager(
             convertEthDenomination,
             convertBtcDenomination
         )
+        return currencyFormatUtil.formatFiat(FiatValue.fromMajor(fiatUnit, fiatBalance))
+    }
+
+    fun getFormattedFiatValueFromEthValue(
+        coinValue: BigDecimal,
+        convertEthDenomination: ETHDenomination? = null
+    ): String {
+        val fiatUnit = fiatCountryCode
+        val fiatBalance = getFiatValueFromEth(coinValue, convertEthDenomination)
         return currencyFormatUtil.formatFiat(FiatValue.fromMajor(fiatUnit, fiatBalance))
     }
 

@@ -188,7 +188,8 @@ class PieChartDelegate<in T>(
     private fun displayLockboxDisclaimer(show: Boolean) {
         viewHolder?.lockBoxDisclaimer?.apply {
             val lockboxName = context.getString(R.string.lockbox_title)
-            val lockboxString = context.getString(R.string.dashboard_lockbox_disclaimer, lockboxName)
+            val lockboxString =
+                context.getString(R.string.dashboard_lockbox_disclaimer, lockboxName)
             SpannableString(lockboxString).apply {
                 setSpan(
                     ForegroundColorSpan(context.getResolvedColor(R.color.primary_blue_accent)),
@@ -271,11 +272,12 @@ class PieChartDelegate<in T>(
 
         // Bitcoin
         internal var bitcoinButton: LinearLayout = itemView.linear_layout_bitcoin
-        internal var bitcoinNonSpendableValue: TextView = itemView.textview_bitcoin_non_spendable_toggle.apply {
-            setOnClickListener {
-                displayNonSpendableAsFiat = !displayNonSpendableAsFiat
+        internal var bitcoinNonSpendableValue: TextView =
+            itemView.textview_bitcoin_non_spendable_toggle.apply {
+                setOnClickListener {
+                    displayNonSpendableAsFiat = !displayNonSpendableAsFiat
+                }
             }
-        }
         internal var bitcoinNonSpendablePane: View = itemView.non_spendable_pane
         // Ether
         internal var etherButton: LinearLayout = itemView.linear_layout_ether
@@ -283,6 +285,8 @@ class PieChartDelegate<in T>(
         internal var bitcoinCashButton: LinearLayout = itemView.linear_layout_bitcoin_cash
         // lumens
         internal var lumensButton: LinearLayout = itemView.linear_layout_lumens
+        // usdPax
+        internal var usdPaxButton: LinearLayout = itemView.linear_layout_usd_pax
 
         internal fun valueTextView(cryptoCurrency: CryptoCurrency) =
             when (cryptoCurrency) {
@@ -290,6 +294,7 @@ class PieChartDelegate<in T>(
                 CryptoCurrency.ETHER -> itemView.textview_value_ether
                 CryptoCurrency.BCH -> itemView.textview_value_bitcoin_cash
                 CryptoCurrency.XLM -> itemView.textview_value_lumens
+                CryptoCurrency.PAX -> itemView.textview_value_usd_pax
             }
 
         internal fun amountTextView(cryptoCurrency: CryptoCurrency) =
@@ -298,6 +303,7 @@ class PieChartDelegate<in T>(
                 CryptoCurrency.ETHER -> itemView.textview_amount_ether
                 CryptoCurrency.BCH -> itemView.textview_amount_bitcoin_cash
                 CryptoCurrency.XLM -> itemView.textview_amount_lumens
+                CryptoCurrency.PAX -> itemView.textview_amount_usd_pax
             }
 
         // Lockbox
@@ -312,6 +318,7 @@ class PieChartDelegate<in T>(
             etherButton.setOnClickListener { coinSelector.invoke(CryptoCurrency.ETHER) }
             bitcoinCashButton.setOnClickListener { coinSelector.invoke(CryptoCurrency.BCH) }
             lumensButton.setOnClickListener { coinSelector.invoke(CryptoCurrency.XLM) }
+            usdPaxButton.setOnClickListener { coinSelector.invoke(CryptoCurrency.PAX) }
             lockBoxDisclaimer.setOnClickListener { LockboxLandingActivity.start(context) }
             balanceSpinner.addOptions()
         }
@@ -328,7 +335,12 @@ class PieChartDelegate<in T>(
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
 
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
                     when (position) {
                         0 -> balanceModeSelector(BalanceFilter.Total)
                         1 -> balanceModeSelector(BalanceFilter.Wallet)
@@ -347,4 +359,5 @@ private fun CryptoCurrency.label() =
         CryptoCurrency.ETHER -> R.string.ether
         CryptoCurrency.BCH -> R.string.bitcoin_cash
         CryptoCurrency.XLM -> R.string.lumens
+        CryptoCurrency.PAX -> R.string.usd_pax
     }

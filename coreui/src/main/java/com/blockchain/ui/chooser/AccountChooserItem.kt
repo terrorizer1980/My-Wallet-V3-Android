@@ -7,11 +7,6 @@ sealed class AccountChooserItem(val label: String) {
         label: String
     ) : AccountChooserItem(label)
 
-    class Contact(
-        label: String,
-        val accountObject: JsonSerializableAccount?
-    ) : AccountChooserItem(label)
-
     class AccountSummary(
         label: String,
         val displayBalance: String,

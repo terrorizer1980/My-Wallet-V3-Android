@@ -14,5 +14,5 @@ interface SwipeToReceiveView : View {
 
     fun setUiState(@UiState.UiStateDef uiState: Int)
 
-    fun displayCoinType(requestString: String)
+    fun displayCoinType(coinName: String)
 }

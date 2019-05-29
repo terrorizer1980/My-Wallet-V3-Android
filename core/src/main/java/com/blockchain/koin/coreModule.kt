@@ -13,6 +13,8 @@ import com.blockchain.accounts.BtcAccountListAdapter
 import com.blockchain.accounts.BtcAsyncAccountListAdapter
 import com.blockchain.accounts.EthAccountListAdapter
 import com.blockchain.accounts.EthAsyncAccountListAdapter
+import com.blockchain.accounts.PaxAccountListAdapter
+import com.blockchain.accounts.PaxAsyncAccountList
 import com.blockchain.balance.AsyncAccountBalanceReporter
 import com.blockchain.balance.AsyncAddressBalanceReporter
 import com.blockchain.balance.BchBalanceAdapter
@@ -27,7 +29,7 @@ import com.blockchain.datamanagers.SelfFeeCalculatingTransactionExecutor
 import com.blockchain.datamanagers.TransactionExecutor
 import com.blockchain.datamanagers.TransactionExecutorViaDataManagers
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees
-import com.blockchain.datamanagers.fees.FeeType
+import com.blockchain.fees.FeeType
 import com.blockchain.logging.LastTxUpdateDateOnSettingsService
 import com.blockchain.logging.LastTxUpdater
 import com.blockchain.logging.NullLogger
@@ -35,6 +37,7 @@ import com.blockchain.logging.TimberLogger
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.preferences.FiatCurrencyPreference
+import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
 import com.blockchain.wallet.DefaultLabels
 import com.blockchain.wallet.ResourceDefaultLabels
 import com.blockchain.wallet.SeedAccess
@@ -56,6 +59,7 @@ import piuk.blockchain.androidcore.data.contacts.datastore.PendingTransactionLis
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatUtil
 import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.erc20.datastores.Erc20DataStore
 import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
@@ -88,6 +92,7 @@ import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
 import piuk.blockchain.androidcore.utils.AESUtilWrapper
 import piuk.blockchain.androidcore.utils.MetadataUtils
 import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.SharedPreferencesFiatCurrencyPreference
 
 val coreModule = applicationContext {
@@ -129,6 +134,7 @@ val coreModule = applicationContext {
                 get(),
                 get(),
                 get(),
+                get(),
                 get()
             ) as TransactionExecutor
         }
@@ -137,12 +143,14 @@ val coreModule = applicationContext {
             SelfFeeCalculatingTransactionExecutor(
                 get(),
                 get(),
+                get(),
                 FeeType.Regular
             ) as TransactionExecutorWithoutFees
         }
 
         factory("Priority") {
             SelfFeeCalculatingTransactionExecutor(
+                get(),
                 get(),
                 get(),
                 FeeType.Priority
@@ -160,10 +168,12 @@ val coreModule = applicationContext {
         factory("BTC") { BtcAccountListAdapter(get()) as AccountList }
         factory("BCH") { BchAccountListAdapter(get()) as AccountList }
         factory("ETH") { EthAccountListAdapter(get()) as AccountList }
+        factory("PAX") { PaxAccountListAdapter(get(), get()) as AccountList }
 
         factory("BTC") { BtcAsyncAccountListAdapter(get()) as AsyncAccountList }
         factory("BCH") { BchAsyncAccountListAdapter(get()) as AsyncAccountList }
         factory("ETH") { EthAsyncAccountListAdapter(EthAccountListAdapter(get())) as AsyncAccountList }
+        factory("PAX") { PaxAsyncAccountList(ethDataManager = get(), stringUtils = get()) as AsyncAccountList }
 
         factory("BTC") { BtcBalanceAdapter(get()) }
             .bind(AsyncAddressBalanceReporter::class)
@@ -177,14 +187,15 @@ val coreModule = applicationContext {
 
         factory("all") {
             get<AsyncAccountBalanceReporter>("BTC") +
-                get("BCH") + get("ETH") + get("XLM")
+                    get("BCH") + get("ETH") + get("XLM")
         }
 
         factory {
             AllAccountsImplementation(
                 btcAccountList = get("BTC"),
                 bchAccountList = get("BCH"),
-                etherAccountList = get("ETH")
+                etherAccountList = get("ETH"),
+                paxAccountList = get("PAX")
             ) as AllAccountList
         }
 
@@ -194,12 +205,15 @@ val coreModule = applicationContext {
                     get("BTC"),
                     get("ETH"),
                     get("BCH"),
-                    get("XLM")
+                    get("XLM"),
+                    get("PAX")
                 )
             ) as AsyncAllAccountList
         }
 
         bean { EthDataStore() }
+
+        bean { Erc20DataStore() }
 
         bean { BchDataStore() }
 
@@ -224,6 +238,7 @@ val coreModule = applicationContext {
         factory { ContactsDataManager(get(), get(), get(), get()) }
 
         factory { WalletOptionsDataManager(get(), get(), get(), get("explorer-url")) }
+            .bind(XlmTransactionTimeoutFetcher::class)
 
         factory { ExchangeRateDataManager(get(), get()) }
 
@@ -234,7 +249,7 @@ val coreModule = applicationContext {
          */
         factory { get<ExchangeRateDataManager>().ratesFor(get<FiatCurrencyPreference>()) }
 
-        factory { FeeDataManager(get(), get(), get(), get()) }
+        factory { FeeDataManager(get(), get(), get()) }
 
         bean { TransactionListStore() }
 
@@ -258,6 +273,8 @@ val coreModule = applicationContext {
     factory { ExchangeRateService(get()) }
 
     bean { PrefsUtil(get()) }
+
+    bean { PrefsUtil(get()) as PersistentPrefs }
 
     bean { SharedPreferencesFiatCurrencyPreference(get()) as FiatCurrencyPreference }
 

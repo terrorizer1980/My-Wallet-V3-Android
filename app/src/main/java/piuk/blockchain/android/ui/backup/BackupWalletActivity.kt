@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.wallet.payload.PayloadManager
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.get
@@ -23,7 +23,7 @@ class BackupWalletActivity : BaseAuthActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_backup_wallet)
-        get<EventLogger>().logEvent(LoggableEvent.Backup)
+        get<Analytics>().logEvent(AnalyticsEvents.Backup)
 
         setupToolbar(toolbar_general, R.string.backup_wallet)
 

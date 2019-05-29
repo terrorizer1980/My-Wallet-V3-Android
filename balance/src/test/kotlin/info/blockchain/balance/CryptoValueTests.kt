@@ -39,6 +39,11 @@ class CryptoValueTests {
     }
 
     @Test
+    fun `zero pax function`() {
+        CryptoValue.zero(CryptoCurrency.PAX) `should be` CryptoValue.ZeroPax
+    }
+
+    @Test
     fun `toBigDecimal BTC`() {
         CryptoValue.bitcoinFromSatoshis(12345678901L).toBigDecimal() `should equal` BigDecimal("123.45678901")
     }

@@ -19,6 +19,7 @@ class ExchangeRateDataStore(
     private var ethTickerData: Map<String, PriceDatum>? = null
     private var bchTickerData: Map<String, PriceDatum>? = null
     private var xlmTickerData: Map<String, PriceDatum>? = null
+    private var paxTickerData: Map<String, PriceDatum>? = null
 
     fun updateExchangeRates(): Completable = Single.merge(
         exchangeRateService.getExchangeRateMap(CryptoCurrency.BTC)
@@ -29,7 +30,8 @@ class ExchangeRateDataStore(
             .doOnSuccess { ethTickerData = it.toMap() },
         exchangeRateService.getExchangeRateMap(CryptoCurrency.XLM)
             .doOnSuccess { xlmTickerData = it.toMap() }
-    ).ignoreElements()
+    ).mergeWith(exchangeRateService.getExchangeRateMap(CryptoCurrency.PAX)
+        .doOnSuccess { paxTickerData = it.toMap() }).ignoreElements()
 
     fun getCurrencyLabels(): Array<String> = btcTickerData!!.keys.toTypedArray()
 
@@ -66,9 +68,14 @@ class ExchangeRateDataStore(
             CryptoCurrency.ETHER -> ethTickerData
             CryptoCurrency.BCH -> bchTickerData
             CryptoCurrency.XLM -> xlmTickerData
+            CryptoCurrency.PAX -> paxTickerData
         }
 
-    fun getHistoricPrice(cryptoCurrency: CryptoCurrency, fiat: String, timeInSeconds: Long): Single<BigDecimal> =
+    fun getHistoricPrice(
+        cryptoCurrency: CryptoCurrency,
+        fiat: String,
+        timeInSeconds: Long
+    ): Single<BigDecimal> =
         exchangeRateService.getHistoricPrice(cryptoCurrency, fiat, timeInSeconds)
             .map { it.toBigDecimal() }
 }

@@ -1,5 +1,7 @@
 package piuk.blockchain.androidcore.data.walletoptions
 
+import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
+import info.blockchain.wallet.api.data.WalletOptions
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -13,7 +15,7 @@ class WalletOptionsDataManager(
     private val walletOptionsState: WalletOptionsState,
     private val settingsDataManager: SettingsDataManager,
     private val explorerUrl: String
-) {
+) : XlmTransactionTimeoutFetcher {
 
     private val walletOptionsService by unsafeLazy {
         authService.getWalletOptions()
@@ -47,10 +49,6 @@ class WalletOptionsDataManager(
 
     fun getCoinifyPartnerId(): Observable<Int> =
         walletOptionsState.walletOptionsSource.map { it.partners.coinify.partnerId }
-
-    fun getBchFee(): Single<Int> = walletOptionsService
-        .map { it.bchFeePerByte }
-        .singleOrError()
 
     fun getBuyWebviewWalletLink(): String {
         initWalletOptionsReplaySubjects()
@@ -137,4 +135,9 @@ class WalletOptionsDataManager(
         return walletOptionsState.walletOptionsSource
             .map { return@map it.ethereum.lastTxFuse }
     }
+
+    override fun transactionTimeout(): Single<Long> =
+        walletOptionsState.walletOptionsSource
+            .map { it.xlmTransactionTimeout }
+            .first(WalletOptions.XLM_DEFAULT_TIMEOUT_SECS)
 }

@@ -1,13 +1,16 @@
 package piuk.blockchain.android.ui.dashboard
 
+import android.annotation.SuppressLint
 import android.support.annotation.DrawableRes
 import android.support.annotation.VisibleForTesting
-import com.blockchain.balance.drawableRes
+import com.blockchain.balance.drawableResFilled
 import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
+import com.blockchain.nabu.CurrentTier
+import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.sunriver.ui.ClaimFreeCryptoSuccessDialog
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
@@ -21,15 +24,19 @@ import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.balance.AnnouncementData
 import piuk.blockchain.android.ui.balance.ImageLeftAnnouncementCard
 import piuk.blockchain.android.ui.balance.ImageRightAnnouncementCard
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
+import piuk.blockchain.android.ui.dashboard.adapter.delegates.StableCoinAnnouncementCard
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.SunriverCard
+import piuk.blockchain.android.ui.dashboard.adapter.delegates.SwapAnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.DashboardAnnouncements
 import piuk.blockchain.android.ui.dashboard.models.OnboardingModel
 import piuk.blockchain.android.ui.home.MainActivity
@@ -62,15 +69,18 @@ class DashboardPresenter(
     private val accessState: AccessState,
     private val buyDataManager: BuyDataManager,
     private val rxBus: RxBus,
+    private val fiatCurrencyPreference: FiatCurrencyPreference,
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     private val currencyFormatManager: CurrencyFormatManager,
     private val kycTiersQueries: KycTiersQueries,
     private val lockboxDataManager: LockboxDataManager,
+    private val currentTier: CurrentTier,
     private val sunriverCampaignHelper: SunriverCampaignHelper,
     private val dashboardAnnouncements: DashboardAnnouncements
 ) : BasePresenter<DashboardView>() {
 
     private val currencies = DashboardConfig.currencies
+    private val exchangeRequested = PublishSubject.create<CryptoCurrency>()
 
     private val displayList by unsafeLazy {
         (listOf(
@@ -113,17 +123,31 @@ class DashboardPresenter(
         compositeDisposable += balanceUpdateDisposable
 
         // Triggers various updates to the page once all metadata is loaded
-        observable.flatMap { getOnboardingStatusObservable() }
+        compositeDisposable += observable.flatMap { getOnboardingStatusObservable() }
             // Clears subscription after single event
             .firstOrError()
             .doOnSuccess { updateAllBalances() }
             .doOnSuccess { checkLatestAnnouncements() }
             .flatMapCompletable { swipeToReceiveHelper.storeEthAddress() }
-            .addToCompositeDisposable(this)
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
             )
+        compositeDisposable += exchangeRequested.switchMap { currency ->
+            currentTier.usersCurrentTier().toObservable().zipWith(Observable.just(currency))
+        }.subscribe { (tier, currency) ->
+            if (tier > 0) {
+                view.goToExchange(currency, fiatCurrencyPreference.fiatCurrencyPreference)
+            } else {
+                view.startKycFlowWithNavigator(CampaignType.Swap)
+            }
+        }
+    }
+
+    fun exchangeRequested(cryptoCurrency: CryptoCurrency? = null) {
+        cryptoCurrency?.let {
+            exchangeRequested.onNext(cryptoCurrency)
+        } ?: exchangeRequested.onNext(CryptoCurrency.ETHER)
     }
 
     fun updateBalances() {
@@ -141,6 +165,7 @@ class DashboardPresenter(
         super.onViewDestroyed()
     }
 
+    @SuppressLint("CheckResult")
     private fun updatePrices() {
         exchangeRateFactory.updateTickers()
             .observeOn(AndroidSchedulers.mainThread())
@@ -149,20 +174,11 @@ class DashboardPresenter(
             .subscribe(
                 {
                     handleAssetPriceUpdate(
-                        currencies.map {
-                            AssetPriceCardState.Data(
-                                getPriceString(it),
-                                it,
-                                it.drawableRes()
-                            )
-                        })
+                        currencies.filter { it.hasFeature(CryptoCurrency.PRICE_CHARTING) }
+                            .map { AssetPriceCardState.Data(getPriceString(it), it, it.drawableResFilled()) })
                 },
                 {
-                    handleAssetPriceUpdate(
-                        currencies.map {
-                            AssetPriceCardState.Error(it)
-                        }
-                    )
+                    handleAssetPriceUpdate(currencies.map { AssetPriceCardState.Error(it) })
                 }
             )
     }
@@ -197,7 +213,8 @@ class DashboardPresenter(
                             hasBtcBalance = !it.bitcoin.displayable.isZero,
                             hasBchBalance = !it.bitcoinCash.displayable.isZero,
                             hasEthBalance = !it.ether.displayable.isZero,
-                            hasXlmBalance = !it.lumen.displayable.isZero
+                            hasXlmBalance = !it.lumen.displayable.isZero,
+                            hasPaxBalance = !it.usdPax.displayable.isZero
                         )
                     )
                     cachedData = it
@@ -229,6 +246,29 @@ class DashboardPresenter(
         }
     }
 
+    internal fun showStableCoinIntroduction(
+        index: Int,
+        stableCoinAnnouncementCard: StableCoinAnnouncementCard
+    ) {
+        displayList.add(index, stableCoinAnnouncementCard)
+        with(view) {
+            notifyItemAdded(displayList, index)
+            scrollToTop()
+        }
+    }
+
+    internal fun dismissStableCoinIntroduction() {
+        displayList.filterIsInstance<StableCoinAnnouncementCard>()
+            .forEach {
+                val originalIndex = displayList.indexOf(it)
+                displayList.remove(it)
+                with(view) {
+                    notifyItemRemoved(displayList, originalIndex)
+                    scrollToTop()
+                }
+            }
+    }
+
     internal fun dismissAnnouncement(prefKey: String) {
         displayList.filterIsInstance<AnnouncementData>()
             .forEachIndexed { index, any ->
@@ -238,6 +278,27 @@ class DashboardPresenter(
                         notifyItemRemoved(displayList, index)
                         scrollToTop()
                     }
+                }
+            }
+    }
+
+    internal fun showSwapAnnouncement(swapAnnouncementCard: SwapAnnouncementCard) {
+        val index = 0
+        displayList.add(index, swapAnnouncementCard)
+        with(view) {
+            notifyItemAdded(displayList, index)
+            scrollToTop()
+        }
+    }
+
+    internal fun dismissSwapAnnouncementCard() {
+        displayList.filterIsInstance<SwapAnnouncementCard>()
+            .forEach {
+                val originalIndex = displayList.indexOf(it)
+                displayList.remove(it)
+                with(view) {
+                    notifyItemRemoved(displayList, originalIndex)
+                    scrollToTop()
                 }
             }
     }
@@ -255,20 +316,17 @@ class DashboardPresenter(
     }
 
     private fun checkLatestAnnouncements() {
-        // If user hasn't completed onboarding, ignore announcements
-        if (isOnboardingComplete()) {
-            displayList.removeAll { it is AnnouncementData }
-            // TODO: AND-1691 This is disabled temporarily for now until onboarding/announcements have been rethought.
+        displayList.removeAll { it is AnnouncementData }
+        // TODO: AND-1691 This is disabled temporarily for now until onboarding/announcements have been rethought.
 //            checkNativeBuySellAnnouncement()
-            compositeDisposable +=
-                checkKycResubmissionPrompt()
-                    .switchIfEmpty(checkDashboardAnnouncements())
-                    .switchIfEmpty(checkKycPrompt())
-                    .switchIfEmpty(addSunriverPrompts())
-                    .subscribeBy(
-                        onError = Timber::e
-                    )
-        }
+        compositeDisposable +=
+            checkKycResubmissionPrompt()
+                .switchIfEmpty(checkDashboardAnnouncements())
+                .switchIfEmpty(checkKycPrompt())
+                .switchIfEmpty(addSunriverPrompts())
+                .subscribeBy(
+                    onError = Timber::e
+                )
     }
 
     private fun checkDashboardAnnouncements(): Maybe<Unit> =
@@ -481,7 +539,7 @@ class DashboardPresenter(
     }
 
     private fun isOnboardingComplete() =
-    // If wallet isn't newly created, don't show onboarding
+        // If wallet isn't newly created, don't show onboarding
         prefsUtil.getValue(
             PrefsUtil.KEY_ONBOARDING_COMPLETE,
             false

@@ -1,7 +1,6 @@
 package piuk.blockchain.android.ui.send
 
 import android.support.annotation.ColorRes
-import android.support.annotation.Nullable
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import com.blockchain.transactions.Memo
@@ -12,19 +11,19 @@ import info.blockchain.balance.FiatValue
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import piuk.blockchain.android.ui.send.external.BaseSendView
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
-import java.util.Locale
 
 interface SendView : BaseSendView {
 
-    val locale: Locale
+    fun setSelectedCurrency(cryptoCurrency: CryptoCurrency)
+
+    fun updateReceivingHintAndAccountDropDowns(currency: CryptoCurrency, listSize: Int)
 
     // Update field
     fun updateSendingAddress(label: String)
 
-    fun updateCryptoAmount(cryptoValue: CryptoValue)
+    fun updateCryptoAmount(cryptoValue: CryptoValue, silent: Boolean = false)
 
-    fun updateFiatAmount(fiatValue: FiatValue)
+    fun updateFiatAmount(fiatValue: FiatValue, silent: Boolean = false)
 
     fun updateWarning(message: String)
 
@@ -36,9 +35,11 @@ interface SendView : BaseSendView {
 
     fun updateReceivingAddress(address: String)
 
-    fun updateFeeAmount(fee: String)
+    fun updateFeeAmount(feeCrypto: CryptoValue, feeFiat: FiatValue)
 
-    fun updateFeeAmount(fee: CryptoValue, fiatExchangeRates: FiatExchangeRates)
+    fun clearFeeAmount()
+
+    fun clearAmount()
 
     // Set property
     fun setCryptoMaxLength(length: Int)
@@ -58,7 +59,13 @@ interface SendView : BaseSendView {
 
     fun showMemo()
 
-    fun displayMemo(memo: Memo)
+    fun hideMemo()
+
+    fun displayMemo(usersMemo: Memo)
+
+    fun showInfoLink()
+
+    fun hideInfoLink()
 
     // Enable / Disable
     fun enableFeeDropdown()
@@ -83,15 +90,13 @@ interface SendView : BaseSendView {
     // Prompts
     fun showSnackbar(@StringRes message: Int, duration: Int)
 
-    fun showSnackbar(message: String, @Nullable extraInfo: String?, duration: Int)
+    fun showSnackbar(message: String, extraInfo: String?, duration: Int)
 
     fun showEthContractSnackbar()
 
     fun showBIP38PassphrasePrompt(scanData: String)
 
     fun showWatchOnlyWarning(address: String)
-
-    fun showProgressDialog(@StringRes title: Int)
 
     fun showSpendFromWatchOnlyWarning(address: String)
 
@@ -112,17 +117,13 @@ interface SendView : BaseSendView {
 
     fun showTransactionFailed() = showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
 
-    fun showTransactionFailed(message: String) = showSnackbar(message, null, Snackbar.LENGTH_LONG)
-
-    fun dismissProgressDialog()
+    fun showInsufficientGasDlg()
 
     fun dismissConfirmationDialog()
 
     fun finishPage()
 
     fun hideCurrencyHeader()
-
-    fun showMinBalanceLearnMore()
 }
 
 internal fun SendConfirmationDetails.toPaymentConfirmationDetails(): PaymentConfirmationDetails {

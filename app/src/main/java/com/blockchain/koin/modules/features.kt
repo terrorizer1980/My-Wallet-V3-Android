@@ -1,20 +1,15 @@
 package com.blockchain.koin.modules
 
-import com.blockchain.features.FeatureNames
 import piuk.blockchain.android.BuildConfig
 
-val features = mapOf(
-    FeatureNames.CONTACTS to BuildConfig.CONTACTS_ENABLED
-)
-
-val appProperties = listOf(
+val appProperties = mapOf(
     "app-version" to BuildConfig.VERSION_NAME
 )
 
-val keys = listOf(
+val keys = mapOf(
     "api-code" to "25a6ad13-1633-4dfb-b6ee-9b91cdf0b5c3"
 )
 
-val urls = listOf(
+val urls = mapOf(
     "HorizonURL" to BuildConfig.HORIZON_URL
 )

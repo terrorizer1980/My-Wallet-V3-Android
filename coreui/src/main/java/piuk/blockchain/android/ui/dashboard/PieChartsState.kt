@@ -29,6 +29,7 @@ sealed class PieChartsState {
         val ether: Coin,
         val bitcoinCash: Coin,
         val lumen: Coin,
+        val usdPax: Coin,
         val hasLockbox: Boolean = false
     ) : PieChartsState() {
 
@@ -38,17 +39,21 @@ sealed class PieChartsState {
                 CryptoCurrency.ETHER -> ether
                 CryptoCurrency.BCH -> bitcoinCash
                 CryptoCurrency.XLM -> lumen
+                CryptoCurrency.PAX -> usdPax
             }
 
         private val totalValue =
             bitcoin.displayable.fiatValue +
-                bitcoinCash.displayable.fiatValue +
-                ether.displayable.fiatValue +
-                lumen.displayable.fiatValue
+                    bitcoinCash.displayable.fiatValue +
+                    ether.displayable.fiatValue +
+                    lumen.displayable.fiatValue +
+                    usdPax.displayable.fiatValue
 
-        val totalValueString = totalValue.toStringWithSymbol(Locale.getDefault())
+        val totalValueString =
+            totalValue.toStringWithSymbol(Locale.getDefault())
 
-        val isZero = bitcoin.isZero && bitcoinCash.isZero && ether.isZero && lumen.isZero
+        val isZero =
+            bitcoin.isZero && bitcoinCash.isZero && ether.isZero && lumen.isZero && usdPax.isZero
     }
 
     object Loading : PieChartsState()

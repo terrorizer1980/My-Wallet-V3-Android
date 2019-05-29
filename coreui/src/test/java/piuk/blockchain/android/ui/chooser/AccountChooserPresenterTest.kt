@@ -12,8 +12,6 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.wallet.contacts.data.Contact
-import io.reactivex.Observable
 import io.reactivex.Single
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.mock
@@ -21,7 +19,6 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.androidcore.data.contacts.ContactsDataManager
 
 class AccountChooserPresenterTest {
 
@@ -31,64 +28,14 @@ class AccountChooserPresenterTest {
     private val stringUtils: StringUtils = mock {
         on { getString(any()) } `it returns` ""
     }
-    private val contactsDataManager: ContactsDataManager = mock()
 
     @Before
     fun setUp() {
         subject = AccountChooserPresenter(
             walletAccountHelper,
-            stringUtils,
-            contactsDataManager
+            stringUtils
         )
         subject.initView(activity)
-    }
-
-    @Test
-    fun `onViewReady mode contacts`() {
-        // Arrange
-        whenever(activity.accountMode).thenReturn(AccountMode.ContactsOnly)
-        whenever(activity.isContactsEnabled).thenReturn(true)
-        val contact0 = Contact().apply {
-            name = "Contact 1"
-            mdid = "mdid"
-        }
-        val contact1 = Contact().apply {
-            name = "Contact 2"
-            mdid = "mdid"
-        }
-        val contact2 = Contact().apply {
-            name = "Contact 3"
-        }
-        val contact3 = Contact().apply {
-            mdid = "mdid"
-        }
-        whenever(contactsDataManager.getContactList())
-            .thenReturn(Observable.just(contact0, contact1, contact2, contact3))
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(contactsDataManager).getContactList()
-        val captor = argumentCaptor<List<AccountChooserItem>>()
-        verify(activity).updateUi(captor.capture())
-        // Value is 3 as only 2 confirmed contacts with names plus header
-        captor.firstValue.size shouldEqual 3
-    }
-
-    @Test
-    fun `onViewReady mode contacts no confirmed contacts`() {
-        // Arrange
-        whenever(activity.accountMode).thenReturn(AccountMode.ContactsOnly)
-        whenever(activity.isContactsEnabled).thenReturn(true)
-        val contact0 = Contact()
-        val contact1 = Contact()
-        val contact2 = Contact()
-        whenever(contactsDataManager.getContactList())
-            .thenReturn(Observable.just(contact0, contact1, contact2))
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(contactsDataManager).getContactList()
-        verify(activity).showNoContacts()
     }
 
     @Test
@@ -202,6 +149,6 @@ class AccountChooserPresenterTest {
         captor.firstValue.size shouldEqual 8
     }
 
-    private fun getItemAccount0() = AccountChooserItem.Contact("", null)
-    private fun getItemAccount01() = AccountChooserItem.Contact("", null)
+    private fun getItemAccount0() = AccountChooserItem.Header("")
+    private fun getItemAccount01() = AccountChooserItem.Header("")
 }

@@ -40,16 +40,19 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.blockchain.kyc.models.nabu.Kyc2TierState;
 import com.blockchain.kycui.navhost.KycNavHostActivity;
 import com.blockchain.kycui.navhost.models.CampaignType;
 import com.blockchain.kycui.settings.KycStatusPreference;
 import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity;
-import com.blockchain.notifications.analytics.EventLogger;
-import com.blockchain.notifications.analytics.LoggableEvent;
+import com.blockchain.notifications.analytics.Analytics;
+import com.blockchain.notifications.analytics.AnalyticsEvents;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.mukesh.countrypicker.fragments.CountryPicker;
 import com.mukesh.countrypicker.models.Country;
+
+import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.util.FormatsUtil;
 import info.blockchain.wallet.util.PasswordUtil;
@@ -112,7 +115,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     @Inject
     SettingsPresenter settingsPresenter;
     @Inject
-    EventLogger eventLogger;
+    Analytics analytics;
 
     private int pwStrength = 0;
     private MaterialProgressDialog progressDialog;
@@ -136,7 +139,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         settingsPresenter.initView(this);
         settingsPresenter.onViewReady();
 
-        eventLogger.logEvent(LoggableEvent.Settings);
+        analytics.logEvent(AnalyticsEvents.Settings);
         Logging.INSTANCE.logContentView(new ContentViewEvent()
                 .putContentName(getClass().getSimpleName()));
     }
@@ -863,12 +866,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             passStrengthBar.setProgressDrawable(ContextCompat.getDrawable(getActivity(), strengthColors[pwStrengthLevel]));
             passStrengthVerdict.setText(getResources().getString(strengthVerdicts[pwStrengthLevel]));
         }
-    }
-
-    @Override
-    public void launchHomebrew(String defaultCurrency) {
-        HomebrewNavHostActivity.start(requireContext(), defaultCurrency);
-        requireActivity().finish();
     }
 
     @Override

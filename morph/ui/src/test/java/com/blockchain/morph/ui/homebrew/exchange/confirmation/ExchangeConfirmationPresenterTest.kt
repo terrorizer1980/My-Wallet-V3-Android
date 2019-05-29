@@ -30,7 +30,6 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.withMajorValue
 import info.blockchain.wallet.exceptions.TransactionHashApiException
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import org.amshove.kluent.`it returns`
@@ -69,14 +68,24 @@ class ExchangeConfirmationPresenterTest {
     }
 
     @Test
-    fun `on view ready double encrypted`() {
+    fun `on confirmed clicked double encrypted`() {
         // Arrange
+        val fromAccount = AccountReference.BitcoinLike(CryptoCurrency.BTC, "", "")
+        val toAccount = AccountReference.Ethereum("", "")
+        val (exchangeViewSubject, quote, _) = givenTradeExpected(fromAccount, toAccount)
         whenever(payloadDecrypt.isDoubleEncrypted).thenReturn(true)
-        whenever(view.exchangeViewState).thenReturn(Observable.empty())
         // Act
         subject.onViewReady()
+        exchangeViewSubject.onNext(mock {
+            on { latestQuote } `it returns` quote
+            on { this.fromAccount } `it returns` fromAccount
+            on { this.toAccount } `it returns` toAccount
+        })
         // Assert
         verify(view).showSecondPasswordDialog()
+        verify(transactionExecutor, never()).executeTransaction(any(), any(), any(), any())
+        verify(tradeExecutionService, never()).executeTrade(any(), any(), any())
+        verify(view, never()).showExchangeCompleteDialog(any())
     }
 
     @Test
@@ -139,14 +148,15 @@ class ExchangeConfirmationPresenterTest {
         verifyNoMoreInteractions(transactionExecutor)
         verify(tradeExecutionService).executeTrade(any(), any(), any())
         verifyNoMoreInteractions(tradeExecutionService)
-        verify(view).continueToExchangeLocked(any())
+        verify(view).showExchangeCompleteDialog(any())
     }
 
     @Test
     fun `a push tx error trade`() {
         val fromAccount = AccountReference.BitcoinLike(CryptoCurrency.BTC, "", "")
         val toAccount = AccountReference.Ethereum("", "")
-        val (exchangeViewSubject, quote, tradeTransaction) = givenTradeExpected(fromAccount, toAccount)
+        val (exchangeViewSubject, quote, tradeTransaction) = givenTradeExpected(fromAccount,
+            toAccount)
         whenever(
             transactionExecutor.executeTransaction(
                 1.bitcoin(),
@@ -154,7 +164,8 @@ class ExchangeConfirmationPresenterTest {
                 fromAccount,
                 Memo("MEMO_BODY", "text")
             )
-        ).thenReturn(Single.error<String>(TransactionHashApiException("The transaction failed", "TX_HASH")))
+        ).thenReturn(Single.error<String>(TransactionHashApiException("The transaction failed",
+            "TX_HASH")))
         whenever(tradeExecutionService.putTradeFailureReason(any(), any(), any()))
             .thenReturn(Completable.complete())
         subject.onViewReady()
@@ -168,9 +179,11 @@ class ExchangeConfirmationPresenterTest {
         verify(transactionExecutor).executeTransaction(any(), any(), any(), any())
         verifyNoMoreInteractions(transactionExecutor)
         verify(tradeExecutionService).executeTrade(any(), any(), any())
-        verify(tradeExecutionService).putTradeFailureReason(tradeTransaction, "TX_HASH", "The transaction failed")
+        verify(tradeExecutionService).putTradeFailureReason(tradeTransaction,
+            "TX_HASH",
+            "The transaction failed")
         verifyNoMoreInteractions(tradeExecutionService)
-        verify(view, never()).continueToExchangeLocked(any())
+        verify(view, never()).showExchangeCompleteDialog(any())
     }
 
     @Test
@@ -195,6 +208,7 @@ class ExchangeConfirmationPresenterTest {
                             fromAccount,
                             1.lumens(),
                             "SERVER_DEPOSIT_ADDRESS",
+                            1.lumens(),
                             memo
                         ),
                         99,
@@ -218,9 +232,13 @@ class ExchangeConfirmationPresenterTest {
         verify(transactionExecutor).executeTransaction(any(), any(), any(), any())
         verifyNoMoreInteractions(transactionExecutor)
         verify(tradeExecutionService).executeTrade(any(), any(), any())
-        verify(tradeExecutionService).putTradeFailureReason(tradeTransaction, "TX_HASH", "SendException 99")
+        verify(tradeExecutionService).putTradeFailureReason(
+            tradeTransaction,
+            "TX_HASH",
+            "SendException - code: 99, extra: 'null'"
+        )
         verifyNoMoreInteractions(tradeExecutionService)
-        verify(view, never()).continueToExchangeLocked(any())
+        verify(view, never()).showExchangeCompleteDialog(any())
     }
 
     private fun givenTradeExpected(

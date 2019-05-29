@@ -340,9 +340,9 @@ private fun CryptoCurrency.getDecimalPlaces(): Int =
         CryptoCurrency.ETHER,
         CryptoCurrency.BCH -> 2
         CryptoCurrency.XLM -> 4
+        CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
     }
 
 interface TimeSpanUpdateListener {
-
     fun onTimeSpanUpdated(timeSpan: TimeSpan)
 }

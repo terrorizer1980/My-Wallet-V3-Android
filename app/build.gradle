@@ -30,6 +30,7 @@ android {
         // Flag to hide or show the Contacts feature
         buildConfigBoolean "CONTACTS_ENABLED", false
         buildConfigBoolean "SHOW_LOCKBOX_BALANCE", false
+        buildConfigBoolean "LOG_KOIN_STARTUP", false
         buildConfigString "SHAPE_SHIFT_API_KEY", buildProperties.secrets['shapeShiftApiKey']
         manifestPlaceholders = [FABRIC_API_KEY: buildProperties.secrets['fabricApiKey'].string]
         resConfigs 'en',

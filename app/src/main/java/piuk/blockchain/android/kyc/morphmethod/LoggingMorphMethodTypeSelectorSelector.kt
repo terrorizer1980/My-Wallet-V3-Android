@@ -2,20 +2,20 @@ package piuk.blockchain.android.kyc.morphmethod
 
 import com.blockchain.koin.modules.MorphMethodType
 import com.blockchain.koin.modules.MorphMethodTypeSelector
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import io.reactivex.Single
 
-fun MorphMethodTypeSelector.logCalls(eventLogger: EventLogger): MorphMethodTypeSelector =
-    LoggingMorphMethodTypeSelectorSelector(this, eventLogger)
+fun MorphMethodTypeSelector.logCalls(analytics: Analytics): MorphMethodTypeSelector =
+    LoggingMorphMethodTypeSelectorSelector(this, analytics)
 
 private class LoggingMorphMethodTypeSelectorSelector(
     private val inner: MorphMethodTypeSelector,
-    private val eventLogger: EventLogger
+    private val analytics: Analytics
 ) : MorphMethodTypeSelector {
 
     override fun getMorphMethod(): Single<MorphMethodType> {
-        eventLogger.logEvent(LoggableEvent.Exchange)
+        analytics.logEvent(AnalyticsEvents.Exchange)
         return inner.getMorphMethod()
     }
 }

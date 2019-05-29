@@ -61,7 +61,5 @@ interface SettingsView extends View {
 
     void showWarningDialog(@StringRes int message);
 
-    void launchHomebrew(String defaultCurrency);
-
     void launchKycFlow();
 }

@@ -38,7 +38,8 @@ class AsyncDashboardDataCalculator(
                 bitcoin = it.coin(CryptoCurrency.BTC),
                 bitcoinCash = it.coin(CryptoCurrency.BCH),
                 ether = it.coin(CryptoCurrency.ETHER),
-                lumen = it.coin(CryptoCurrency.XLM)
+                lumen = it.coin(CryptoCurrency.XLM),
+                usdPax = it.coin(CryptoCurrency.PAX)
             )
         }
 
@@ -59,8 +60,8 @@ class AsyncDashboardDataCalculator(
             BalanceFilter.ColdStorage -> copy(spendable = spendable.toZero())
         }
 
-    private fun Map<CryptoCurrency, PieChartsState.Coin>.coin(btc: CryptoCurrency) =
-        this[btc] ?: zeroCoin(btc, fiatExchangeRates)
+    private fun Map<CryptoCurrency, PieChartsState.Coin>.coin(currency: CryptoCurrency) =
+        this[currency] ?: zeroCoin(currency, fiatExchangeRates)
 }
 
 fun zeroCoin(currency: CryptoCurrency, fiatExchangeRates: FiatExchangeRates) =

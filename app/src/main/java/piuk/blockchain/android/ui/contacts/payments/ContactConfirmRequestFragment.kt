@@ -88,7 +88,7 @@ class ContactConfirmRequestFragment :
     }
 
     override fun finishPage() {
-        listener?.onPageFinished()
+        listener?.onContactConfirmPageFinished()
     }
 
     override fun showProgressDialog() {
@@ -118,7 +118,7 @@ class ContactConfirmRequestFragment :
         contactName: String,
         btcAmount: String
     ) {
-        listener?.onRequestSuccessful(paymentRequestType, contactName, btcAmount)
+        listener?.onContactConfirmRequestSuccessful(paymentRequestType, contactName, btcAmount)
     }
 
     override fun createPresenter() = paymentRequestPresenter
@@ -153,9 +153,9 @@ class ContactConfirmRequestFragment :
 
     interface FragmentInteractionListener {
 
-        fun onPageFinished()
+        fun onContactConfirmPageFinished()
 
-        fun onRequestSuccessful(
+        fun onContactConfirmRequestSuccessful(
             paymentRequestType: PaymentRequestType,
             contactName: String,
             btcAmount: String

@@ -1,17 +1,15 @@
 package piuk.blockchain.androidcore.data.fees;
 
+import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.api.Environment;
 import info.blockchain.wallet.api.FeeApi;
-import info.blockchain.wallet.api.data.FeeLimits;
 import info.blockchain.wallet.api.data.FeeOptions;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-import org.web3j.tx.Transfer;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
 import piuk.blockchain.androidcore.data.rxjava.RxPinning;
-import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
 
 public class FeeDataManager {
 
@@ -19,12 +17,8 @@ public class FeeDataManager {
     private FeeApi feeApi;
     private EnvironmentConfig environmentSettings;
 
-    //Bitcoin cash fees are temporarily fetched from wallet-options until an endpoint can be provided
-    private WalletOptionsDataManager walletOptionsDataManager;
-
-    public FeeDataManager(FeeApi feeApi, WalletOptionsDataManager walletOptionsDataManager, EnvironmentConfig environmentSettings, RxBus rxBus) {
+    public FeeDataManager(FeeApi feeApi, EnvironmentConfig environmentSettings, RxBus rxBus) {
         this.feeApi = feeApi;
-        this.walletOptionsDataManager = walletOptionsDataManager;
         this.environmentSettings = environmentSettings;
         rxPinning = new RxPinning(rxBus);
     }
@@ -37,10 +31,10 @@ public class FeeDataManager {
      */
     public Observable<FeeOptions> getBtcFeeOptions() {
         if (environmentSettings.getEnvironment().equals(Environment.TESTNET)) {
-            return Observable.just(createTestnetFeeOptions());
+            return Observable.just(FeeOptions.Companion.testnetFeeOptions());
         } else {
             return rxPinning.call(() -> feeApi.getBtcFeeOptions())
-                    .onErrorReturnItem(FeeOptions.defaultForBtc())
+                    .onErrorReturnItem(FeeOptions.Companion.defaultFee(CryptoCurrency.BTC))
                     .observeOn(AndroidSchedulers.mainThread());
         }
     }
@@ -54,10 +48,10 @@ public class FeeDataManager {
     public Observable<FeeOptions> getEthFeeOptions() {
         if (environmentSettings.getEnvironment().equals(Environment.TESTNET)) {
             //No Test environment for Eth
-            return Observable.just(createTestnetFeeOptions());
+            return Observable.just(FeeOptions.Companion.testnetFeeOptions());
         } else {
             return rxPinning.call(() -> feeApi.getEthFeeOptions())
-                    .onErrorReturnItem(FeeOptions.defaultForEth())
+                    .onErrorReturnItem(FeeOptions.Companion.defaultFee(CryptoCurrency.ETHER))
                     .observeOn(AndroidSchedulers.mainThread());
         }
     }
@@ -69,23 +63,15 @@ public class FeeDataManager {
      * @return An {@link Observable} wrapping a {@link FeeOptions} object
      */
     public Observable<FeeOptions> getBchFeeOptions() {
-        return walletOptionsDataManager.getBchFee()
-                .map(fee -> {
-                    FeeOptions feeOptions = new FeeOptions();
-                    feeOptions.setRegularFee(fee);
-                    feeOptions.setPriorityFee(fee);
-                    return feeOptions;
-                })
-                .onErrorReturnItem(FeeOptions.defaultForBch())
-                .toObservable();
+        return feeApi.getBchFeeOptions()
+                .onErrorReturnItem(FeeOptions.Companion.defaultFee(CryptoCurrency.BCH));
     }
 
-    private FeeOptions createTestnetFeeOptions() {
-        FeeOptions feeOptions = new FeeOptions();
-        feeOptions.setRegularFee(1_000L);
-        feeOptions.setPriorityFee(10_000L);
-        feeOptions.setLimits(new FeeLimits(23, 23));
-        feeOptions.setGasLimit(Transfer.GAS_LIMIT.longValue());
-        return feeOptions;
+    /**
+     * Returns a {@link FeeOptions} object for XLM fees.
+     */
+    public Observable<FeeOptions> getXlmFeeOptions() {
+        return feeApi.getXlmFeeOptions()
+                .onErrorReturnItem(FeeOptions.Companion.defaultFee(CryptoCurrency.XLM));
     }
 }

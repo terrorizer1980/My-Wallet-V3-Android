@@ -15,6 +15,9 @@ import org.web3j.utils.Numeric;
 import java.math.BigInteger;
 import java.util.LinkedList;
 
+import static com.blockchain.testutils.GetStringFromResourceKt.getStringFromResource;
+
+
 public class EthereumWalletTest extends MockedResponseTest {
 
     EthereumWallet subject;
@@ -53,7 +56,7 @@ public class EthereumWalletTest extends MockedResponseTest {
         mockInterceptor.setResponseList(responseList);
 
         //Act
-        subject = new EthereumWallet(wallet.getMasterKey(), "My Ether Wallet");
+        subject = new EthereumWallet(wallet.getMasterKey(), "My Ether Wallet", "My USD PAX Wallet");
 
         //Assert
         Assert.assertFalse(subject.hasSeen());
@@ -79,7 +82,7 @@ public class EthereumWalletTest extends MockedResponseTest {
         mockInterceptor.setResponseList(responseList);
 
         //Act
-        subject = new EthereumWallet(wallet.getMasterKey(), "My Ether Wallet");
+        subject = new EthereumWallet(wallet.getMasterKey(), "My Ether Wallet", "My USD PAX Wallet");
 
         //Assert
         Assert.assertFalse(subject.hasSeen());
@@ -105,7 +108,7 @@ public class EthereumWalletTest extends MockedResponseTest {
         mockInterceptor.setResponseList(responseList);
 
         //Act
-        subject = new EthereumWallet(wallet.getMasterKey(), "My Ether Wallet");
+        subject = new EthereumWallet(wallet.getMasterKey(), "My Ether Wallet", "My USD PAX Wallet");
 
         //Assert
         Assert.assertFalse(subject.hasSeen());
@@ -124,7 +127,7 @@ public class EthereumWalletTest extends MockedResponseTest {
         //Arrange
         HDWallet wallet = getWallet3();
 
-        EthereumWallet eth = new EthereumWallet(wallet.getMasterKey(), "label");
+        EthereumWallet eth = new EthereumWallet(wallet.getMasterKey(), "label", "My USD PAX Wallet");
         eth.setHasSeen(true);
 
         //Act
@@ -148,6 +151,53 @@ public class EthereumWalletTest extends MockedResponseTest {
     }
 
     @Test
+    public void paxErc20Created() throws Exception {
+        //Arrange
+        HDWallet wallet = getWallet3();
+
+        //Act
+        subject = new EthereumWallet(wallet.getMasterKey(), "My Ether Wallet", "My USD PAX Wallet");
+
+        //Assert
+        Erc20TokenData tokenData = subject.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME);
+        Assert.assertNotNull(tokenData);
+    }
+
+    @Test
+    public void paxErc20UpdateWallet() throws Exception {
+        //Arrange
+        String json = getStringFromResource(this, "eth_wallet_no_pax.json");
+        subject = EthereumWallet.fromJson(json);
+
+        //Act
+        boolean wasUpdated = subject.updateErc20Tokens("My USD PAX Wallet");
+
+        //Assert
+        Assert.assertTrue(wasUpdated);
+        Erc20TokenData tokenData = subject.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME);
+        Assert.assertNotNull(tokenData);
+    }
+
+    @Test
+    public void load_with_erc20_txNote() throws Exception {
+
+        //Arrange
+        HDWallet wallet = getWallet3();
+
+        EthereumWallet eth = new EthereumWallet(wallet.getMasterKey(), "label", "My USD PAX Wallet");
+        eth.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME)
+           .putTxNote("one", "two");
+
+        //Act
+        subject = EthereumWallet.load(eth.toJson());
+
+        //Assert
+        Erc20TokenData tokenData = subject.getErc20TokenData(Erc20TokenData.PAX_CONTRACT_NAME);
+        Assert.assertEquals(tokenData.getTxNotes().size(), 1);
+        Assert.assertEquals(eth.toJson(), subject.toJson());
+    }
+
+    @Test
     public void signTransaction() throws Exception {
         HDWallet wallet = getWallet1();
 
@@ -158,7 +208,7 @@ public class EthereumWalletTest extends MockedResponseTest {
         responseList.add(Pair.of(404, "{\"message\":\"Not Found\"}"));
         mockInterceptor.setResponseList(responseList);
 
-        subject = new EthereumWallet(wallet.getMasterKey(), "My Ether Wallet");
+        subject = new EthereumWallet(wallet.getMasterKey(), "My Ether Wallet", "My USD PAX Wallet");
         RawTransaction tx = createEtherTransaction();
 
         //Act

@@ -10,6 +10,7 @@ object DashboardConfig {
         CryptoCurrency.BTC,
         CryptoCurrency.ETHER,
         CryptoCurrency.BCH,
-        CryptoCurrency.XLM
+        CryptoCurrency.XLM,
+        CryptoCurrency.PAX
     )
 }

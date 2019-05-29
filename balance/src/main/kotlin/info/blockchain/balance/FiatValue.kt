@@ -92,6 +92,8 @@ data class FiatValue private constructor(
                 major.tryParseBigDecimal(locale) ?: BigDecimal.ZERO
             )
 
+        fun zero(currencyCode: String) = FiatValue(currencyCode, BigDecimal.ZERO)
+
         private fun maxDecimalPlaces(currencyCode: String) = Currency.getInstance(currencyCode).defaultFractionDigits
     }
 }

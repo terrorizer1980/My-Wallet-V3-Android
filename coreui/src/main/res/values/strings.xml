@@ -21,6 +21,7 @@
     <string name="ethereum" translatable="false">Ethereum</string>
     <string name="bitcoin_cash" translatable="false">Bitcoin Cash</string>
     <string name="lumens" translatable="false">Stellar</string>
+    <string name="usd_pax" translatable="false">USD PAX</string>
 
     <string name="contacts_no_confirmed_contacts_found">No confirmed contacts found!</string>
 
@@ -39,6 +40,7 @@
     <string name="transaction_failed">Transaction failed</string>
     <string name="insufficient_funds">Insufficient funds</string>
     <string name="insufficient_funds_with_max">Insufficient funds, the most you can send is %1$s</string>
+    <string name="insufficient_eth_for_fees">Not enough ETH for transaction fees</string>
 
     <string name="not_enough_funds_with_currency">Not enough %1$s</string>
 
@@ -80,13 +82,12 @@
 
     <string name="claim_your_free_crypto">Claim Your Free Crypto</string>
     <string name="claim_your_xlm">Claim Your XLM</string>
-    <string name="claim_your_free_crypto_body">Tap the button to automatically receive your $25 of free Stellar (XLM) once Gold level is unlocked.</string>
+    <string name="claim_your_free_crypto_body">Tap the button to automatically receive your free Stellar (XLM) once Gold level is unlocked.</string>
     <string name="claim_your_free_crypto_cta">@string/claim_your_xlm</string>
     <string name="claim_your_free_crypto_dismiss">@string/maybe_later</string>
 
     <string name="more_info_needed">More Info Needed</string>
-    <string name="coinify_kyc_body">To keep using Buy &amp; Sell, you’ll need you to update your profile. We’ll Airdrop $25 of XLM as
-a thank you when you do!</string>
+    <string name="coinify_kyc_body">To keep using Buy &amp; Sell, you’ll need you to update your profile. We’ll Airdrop at least $25 of XLM as a thank you when you do!</string>
     <string name="coinify_kyc_cta">Update Now</string>
     <string name="coinify_kyc_dismiss">Learn More</string>
     <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
@@ -100,5 +101,9 @@ a thank you when you do!</string>
     <string name="help">Help</string>
     <string name="need_some_help">Need some help?</string>
     <string name="contact_support">Contact Support</string>
+
+    <!--More eth needed-->
+    <string name="pax_need_more_eth_error_body">You\'ll need ETH to send your ERC20 Token, USD PAX. <annotation link="pax_faq">Learn more.</annotation></string>
+    <string name="pax_need_more_eth_error_title">More ETH Needed</string>
 
 </resources>

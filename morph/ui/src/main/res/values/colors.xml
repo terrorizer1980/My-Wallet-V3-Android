@@ -7,4 +7,5 @@
     <color name="in_progress">#FFFF9B22</color>
     <color name="nabu_divider_grey">#FFDDDDDD</color>
     <color name="help_text_black">#FF5B5B5B</color>
+    <color name="keyboard_guideline_gray">#FFDFE3EB</color>
 </resources>

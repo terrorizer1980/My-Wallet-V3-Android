@@ -41,7 +41,7 @@ internal class ClaimYourFreeCryptoCardAnnouncement(
                 title = R.string.claim_your_free_crypto_card_title,
                 description = R.string.claim_your_free_crypto_card_body,
                 link = R.string.claim_your_free_crypto_card_button,
-                image = R.drawable.vector_stellar_rocket_color,
+                image = R.drawable.vector_xlm_colored,
                 closeFunction = {
                     dismissEntry.isDismissed = true
                     context.dismissAnnouncement(dismissEntry.prefsKey)

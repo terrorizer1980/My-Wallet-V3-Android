@@ -81,6 +81,7 @@ class TransactionSenderLoggerTest {
         SendDetails(
             from = AccountReference.Xlm("", "GABC"),
             toAddress = "GDEF",
-            value = 100.lumens()
+            value = 100.lumens(),
+            fee = 100.lumens()
         )
 }

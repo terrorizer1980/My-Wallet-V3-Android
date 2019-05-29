@@ -47,6 +47,11 @@ internal class AddressResolver(
                 val receivingAddress = (reference as AccountReference.Xlm).accountId
                 Single.just(AddressPair(receivingAddress, receivingAddress))
             }
+            CryptoCurrency.PAX -> {
+                val account = accountLookup.getAccountFromAddressOrXPub(reference) as EthereumAccount
+                val address = account.checksumAddress
+                Single.just(AddressPair(address, address))
+            }
         }
 
     private fun getReceiveAddress(account: Account): Single<String> =

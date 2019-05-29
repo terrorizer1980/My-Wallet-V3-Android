@@ -1,60 +1,131 @@
 package piuk.blockchain.android.ui.send.external
 
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
 import org.amshove.kluent.`it returns`
+import org.amshove.kluent.any
 import org.amshove.kluent.mock
+import org.bitcoinj.params.BitcoinCashMainNetParams
+import org.bitcoinj.params.BitcoinMainNetParams
 import org.junit.Test
 import piuk.blockchain.android.ui.send.SendView
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.ui.send.strategy.SendStrategy
+import piuk.blockchain.androidcore.data.api.EnvironmentConfig
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
 class PerCurrencySendPresenterTest {
 
     @Test
     fun `handles xlm address scan, delegates to xlm strategy`() {
         val view: SendView = mock()
-        val xlmStrategy: SendPresenter<SendView> = mock()
-        val currencyState = mock<CurrencyState> {
-            on { cryptoCurrency } `it returns` CryptoCurrency.XLM
+        val xlmStrategy: SendStrategy<SendView> = mock()
+
+        val exchangeRateFactory = mock<ExchangeRateDataManager> {
+            on { updateTickers() } `it returns` Completable.complete()
         }
+
         PerCurrencySendPresenter(
-            mock(),
-            xlmStrategy,
-            currencyState,
-            mock(),
-            mock(),
-            mock {
-                on { updateTickers() } `it returns` Completable.complete()
-            }
+            btcStrategy = mock(),
+            bchStrategy = mock(),
+            etherStrategy = mock(),
+            xlmStrategy = xlmStrategy,
+            paxStrategy = mock(),
+            prefs = mock(),
+            exchangeRates = mock(),
+            stringUtils = mock(),
+            envSettings = mock(),
+            exchangeRateFactory = exchangeRateFactory
         ).apply {
             initView(view)
             handleURIScan("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4")
         }
-        verify(currencyState).cryptoCurrency = CryptoCurrency.XLM
-        verify(xlmStrategy).handleURIScan("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4")
-        verify(xlmStrategy).onCurrencySelected(CryptoCurrency.XLM)
+
+        verify(xlmStrategy).processURIScanAddress("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4")
+        verify(xlmStrategy).onCurrencySelected()
         verify(view).setSelectedCurrency(CryptoCurrency.XLM)
     }
 
     @Test
-    fun `handles btc address scan, delegates to original strategy`() {
+    fun `handles btc address scan, delegates to btc strategy`() {
         val view: SendView = mock()
-        val originalStrategy: SendPresenter<SendView> = mock()
+        val btcStrategy: SendStrategy<SendView> = mock()
+        val exchangeRateFactory = mock<ExchangeRateDataManager> {
+            on { updateTickers() } `it returns` Completable.complete()
+        }
+        val envSettings = mock<EnvironmentConfig> {
+            on { bitcoinCashNetworkParameters } `it returns` BitcoinCashMainNetParams()
+            on { bitcoinNetworkParameters } `it returns` BitcoinMainNetParams()
+        }
+
         PerCurrencySendPresenter(
-            originalStrategy,
-            mock(),
-            mock(),
-            mock(),
-            mock(),
-            mock {
-                on { updateTickers() } `it returns` Completable.complete()
-            }
+            btcStrategy = btcStrategy,
+            bchStrategy = mock(),
+            etherStrategy = mock(),
+            xlmStrategy = mock(),
+            paxStrategy = mock(),
+            prefs = mock(),
+            exchangeRates = mock(),
+            stringUtils = mock(),
+            envSettings = envSettings,
+            exchangeRateFactory = exchangeRateFactory
+
         ).apply {
             initView(view)
             handleURIScan("1FBPzxps6kGyk2exqLvz7cRMi2odtLEVQ")
         }
-        verify(originalStrategy).handleURIScan("1FBPzxps6kGyk2exqLvz7cRMi2odtLEVQ")
+
+        verify(btcStrategy).processURIScanAddress("1FBPzxps6kGyk2exqLvz7cRMi2odtLEVQ")
+        // BTC is the default, so shouldn't get called again
+        verify(btcStrategy, never()).onCurrencySelected()
+        verify(view, never()).setSelectedCurrency(CryptoCurrency.BTC)
+    }
+
+    @Test
+    fun `handles broken address scan, doesn't delegate, defaults to BTC`() {
+        val view: SendView = mock()
+        val btcStrategy: SendStrategy<SendView> = mock()
+        val bchStrategy: SendStrategy<SendView> = mock()
+        val etherStrategy: SendStrategy<SendView> = mock()
+        val xlmStrategy: SendStrategy<SendView> = mock()
+        val erc20Strategy: SendStrategy<SendView> = mock()
+
+        val exchangeRateFactory = mock<ExchangeRateDataManager> {
+            on { updateTickers() } `it returns` Completable.complete()
+        }
+
+        val envSettings = mock<EnvironmentConfig> {
+            on { bitcoinCashNetworkParameters } `it returns` BitcoinCashMainNetParams()
+            on { bitcoinNetworkParameters } `it returns` BitcoinMainNetParams()
+        }
+
+        PerCurrencySendPresenter(
+            btcStrategy = btcStrategy,
+            bchStrategy = bchStrategy,
+            etherStrategy = etherStrategy,
+            xlmStrategy = xlmStrategy,
+            paxStrategy = mock(),
+            prefs = mock(),
+            exchangeRates = mock(),
+            stringUtils = mock(),
+            envSettings = envSettings,
+            exchangeRateFactory = exchangeRateFactory
+
+        ).apply {
+            initView(view)
+            handleURIScan("nope_nope_nope")
+        }
+
+        verify(btcStrategy, never()).processURIScanAddress(any())
+        verify(bchStrategy, never()).processURIScanAddress(any())
+        verify(etherStrategy, never()).processURIScanAddress(any())
+        verify(xlmStrategy, never()).processURIScanAddress(any())
+        verify(erc20Strategy, never()).processURIScanAddress(any())
+
+        // BTC is the default, so shouldn't get called again
+        verify(btcStrategy, never()).onCurrencySelected()
+        verify(view, never()).setSelectedCurrency(CryptoCurrency.BTC)
     }
 }

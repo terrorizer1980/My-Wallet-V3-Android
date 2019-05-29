@@ -2,6 +2,7 @@ package piuk.blockchain.androidcoreui.utils.helperfunctions
 
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
+import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 
@@ -65,6 +66,7 @@ class OnPageChangeListener : ViewPager.OnPageChangeListener {
  * having to implement all methods and returns the only thing we're interested in, which in this
  * case is the actual position.
  */
+@Suppress("unused")
 fun TabLayout.setOnTabSelectedListener(function: (position: Int) -> Unit) {
     addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
         override fun onTabReselected(p0: TabLayout.Tab?) {
@@ -80,4 +82,15 @@ fun TabLayout.setOnTabSelectedListener(function: (position: Int) -> Unit) {
             function(selectedTabPosition)
         }
     })
+}
+
+@Suppress("unused")
+abstract class AfterTextChangedWatcher : TextWatcher {
+    final override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+        // No-op
+    }
+
+    final override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+        // No-op
+    }
 }

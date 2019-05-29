@@ -2,7 +2,6 @@ package piuk.blockchain.android.ui.account
 
 import com.blockchain.serialization.JsonSerializableAccount
 
-@Suppress("LeakingThis")
 class ItemAccount {
 
     enum class TYPE {

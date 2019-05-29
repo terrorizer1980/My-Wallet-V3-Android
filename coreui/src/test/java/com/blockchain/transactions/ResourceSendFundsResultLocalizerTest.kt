@@ -2,6 +2,7 @@ package com.blockchain.transactions
 
 import android.content.res.Resources
 import com.blockchain.testutils.lumens
+import com.blockchain.testutils.stroops
 import com.nhaarman.mockito_kotlin.mock
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
@@ -57,7 +58,8 @@ class ResourceSendFundsResultLocalizerTest {
                     sendDetails = SendDetails(
                         from = AccountReference.Xlm("", ""),
                         toAddress = "",
-                        value = mock()
+                        value = mock(),
+                        fee = 1.stroops()
                     ),
                     errorCode = 0,
                     errorValue = 1.lumens(),
@@ -75,7 +77,8 @@ class ResourceSendFundsResultLocalizerTest {
                     sendDetails = SendDetails(
                         from = AccountReference.Xlm("", ""),
                         toAddress = "",
-                        value = mock()
+                        value = mock(),
+                        fee = 1.stroops()
                     ),
                     errorCode = 1,
                     errorValue = 1.lumens(),
@@ -93,7 +96,8 @@ class ResourceSendFundsResultLocalizerTest {
                     sendDetails = SendDetails(
                         from = AccountReference.Xlm("", ""),
                         toAddress = "",
-                        value = mock()
+                        value = mock(),
+                        fee = 1.stroops()
                     ),
                     errorCode = 2,
                     errorValue = 1.5.lumens(),
@@ -111,7 +115,8 @@ class ResourceSendFundsResultLocalizerTest {
                     sendDetails = SendDetails(
                         from = AccountReference.Xlm("", ""),
                         toAddress = "",
-                        value = mock()
+                        value = mock(),
+                        fee = 1.stroops()
                     ),
                     errorCode = 3,
                     errorValue = 1.lumens(),
@@ -129,7 +134,8 @@ class ResourceSendFundsResultLocalizerTest {
                     sendDetails = SendDetails(
                         from = AccountReference.Xlm("", ""),
                         toAddress = "",
-                        value = mock()
+                        value = mock(),
+                        fee = 1.stroops()
                     ),
                     errorCode = 4,
                     confirmationDetails = null,
@@ -146,7 +152,8 @@ class ResourceSendFundsResultLocalizerTest {
                     sendDetails = SendDetails(
                         from = AccountReference.Xlm("", ""),
                         toAddress = "",
-                        value = mock()
+                        value = mock(),
+                        fee = 1.stroops()
                     ),
                     errorCode = 5,
                     confirmationDetails = null,
@@ -163,7 +170,8 @@ class ResourceSendFundsResultLocalizerTest {
                     sendDetails = SendDetails(
                         from = AccountReference.Xlm("", ""),
                         toAddress = "",
-                        value = mock()
+                        value = mock(),
+                        fee = 1.stroops()
                     ),
                     errorCode = 4,
                     errorValue = 500.lumens(),
@@ -181,7 +189,8 @@ class ResourceSendFundsResultLocalizerTest {
                     sendDetails = SendDetails(
                         from = AccountReference.Ethereum("", ""),
                         toAddress = "",
-                        value = mock()
+                        value = mock(),
+                        fee = 1.stroops()
                     ),
                     errorCode = 4,
                     confirmationDetails = null,

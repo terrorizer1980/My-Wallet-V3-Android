@@ -159,16 +159,4 @@ class WalletOptionsDataManagerTest {
         // Assert
         assertEquals("https://blockchain.info/wallet/#/intermediate", result)
     }
-
-    @Test
-    fun `get BCH fee`() {
-        // Arrange
-        val mockOptions: WalletOptions = mock()
-        whenever(mockOptions.bchFeePerByte).thenReturn(5)
-        whenever(authService.getWalletOptions()).thenReturn(Observable.just(mockOptions))
-        // Act
-        subject.getBchFee()
-            .test()
-            .assertValue(5)
-    }
 }

@@ -3,12 +3,12 @@ package com.blockchain.morph.ui.homebrew.exchange.confirmation
 import android.content.Context
 import android.os.Bundle
 import android.support.annotation.StringRes
+import android.support.annotation.UiThread
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
+import com.blockchain.annotations.CommonCode
 import com.blockchain.balance.colorRes
 import com.blockchain.koin.injectActivity
 import com.blockchain.morph.exchange.mvi.ExchangeViewState
@@ -17,10 +17,8 @@ import com.blockchain.morph.ui.R
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeModel
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeViewModelProvider
 import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewHostActivityListener
-import com.blockchain.morph.ui.homebrew.exchange.locked.ExchangeLockedActivity
-import com.blockchain.morph.ui.homebrew.exchange.locked.ExchangeLockedModel
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.extensions.sampleThrottledClicks
 import com.blockchain.ui.password.SecondPasswordHandler
 import info.blockchain.balance.AccountReference
@@ -32,11 +30,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import kotlinx.android.synthetic.main.fragment_homebrew_trade_confirmation.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpFragment
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -51,21 +51,13 @@ class ExchangeConfirmationFragment :
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
     private val activityListener: HomebrewHostActivityListener by ParentActivityDelegate(this)
 
-    private lateinit var sendButton: Button
-    private lateinit var fromButton: Button
-    private lateinit var toButton: Button
-    private lateinit var valueTextView: TextView
-    private lateinit var feesTextView: TextView
-    private lateinit var receiveTextView: TextView
-    private lateinit var sendToTextView: TextView
-
     private var progressDialog: MaterialProgressDialog? = null
 
     override val locale: Locale = Locale.getDefault()
     override val exchangeViewState: Observable<ExchangeViewState> by unsafeLazy {
         exchangeModel.exchangeViewStates
             .observeOn(AndroidSchedulers.mainThread())
-            .sampleThrottledClicks(sendButton)
+            .sampleThrottledClicks(confirm_button)
     }
 
     override fun onCreateView(
@@ -86,16 +78,14 @@ class ExchangeConfirmationFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sendButton = view.findViewById(R.id.button_send_now)
-        fromButton = view.findViewById(R.id.select_from_account_button)
-        toButton = view.findViewById(R.id.select_to_account_button)
-        valueTextView = view.findViewById(R.id.value_textView)
-        feesTextView = view.findViewById(R.id.fees_textView)
-        receiveTextView = view.findViewById(R.id.receive_textView)
-        sendToTextView = view.findViewById(R.id.send_to_textView)
+
+        progressDialog = MaterialProgressDialog(activity).apply {
+            setMessage(piuk.blockchain.androidcoreui.R.string.please_wait)
+            setCancelable(false)
+        }
 
         activityListener.setToolbarTitle(R.string.confirm_exchange)
-        get<EventLogger>().logEvent(LoggableEvent.ExchangeDetailConfirm)
+        get<Analytics>().logEvent(AnalyticsEvents.ExchangeDetailConfirm)
 
         onViewReady()
     }
@@ -126,24 +116,42 @@ class ExchangeConfirmationFragment :
 
     private fun renderUi(viewModel: ExchangeConfirmationViewModel) {
         with(viewModel) {
-            fromButton.setBackgroundResource(sending.currency.colorRes())
-            fromButton.text = sending.formatWithUnit(locale)
-            toButton.setBackgroundResource(receiving.currency.colorRes())
+            from_amount.setBackgroundResource(sending.currency.colorRes())
+            from_amount.text = sending.formatWithUnit(locale)
+
             val receivingCryptoValue = receiving.formatWithUnit(locale)
-            toButton.text = receivingCryptoValue
-            receiveTextView.text = receivingCryptoValue
-            valueTextView.text = value.toStringWithSymbol(locale)
-            sendToTextView.text = viewModel.toAccount.label
+            to_amount.setBackgroundResource(receiving.currency.colorRes())
+            to_amount.text = receivingCryptoValue
+
+            receive_amount.text = receivingCryptoValue
+            fiat_value.text = value.toStringWithSymbol(locale)
+            send_to_wallet.text = viewModel.toAccount.label
         }
     }
 
-    override fun continueToExchangeLocked(lockedModel: ExchangeLockedModel) {
-        ExchangeLockedActivity.start(requireContext(), lockedModel)
-        requireActivity().finish()
+    override fun showExchangeCompleteDialog(firstGoldPaxTrade: Boolean) {
+        val title = if (!firstGoldPaxTrade) getString(R.string.morph_success_dlg_text) else
+            getString(R.string.morph_success_for_first_gold_pax_trade_title)
+
+        val description = if (!firstGoldPaxTrade) "" else
+            getString(R.string.morph_success_for_first_gold_pax_trade_description)
+
+        val exchangeStartedDialog = ErrorBottomDialog.newInstance(
+            ErrorBottomDialog.Content(
+                title = title,
+                description = description,
+                ctaButtonText = R.string.morph_success_dlg_button,
+                dismissText = 0,
+                icon = R.drawable.ic_swap_in_progress_check
+            )
+        )
+        exchangeStartedDialog.isCancelable = false
+        exchangeStartedDialog.onCtaClick = { requireActivity().finish() }
+        exchangeStartedDialog.show(fragmentManager, "BottomDialog")
     }
 
     override fun updateFee(cryptoValue: CryptoValue) {
-        feesTextView.text = cryptoValue.formatWithUnit()
+        fees_value.text = cryptoValue.formatWithUnit()
     }
 
     override fun showSecondPasswordDialog() {
@@ -156,19 +164,25 @@ class ExchangeConfirmationFragment :
         })
     }
 
+    @UiThread
+    @CommonCode("Move to base")
     override fun showProgressDialog() {
-        progressDialog = MaterialProgressDialog(activity).apply {
-            setMessage(R.string.please_wait)
-            setCancelable(false)
-            show()
-        }
+        if (progressDialog?.isShowing == true) return
+        progressDialog?.show()
     }
 
+    @UiThread
+    @CommonCode("Move to base")
     override fun dismissProgressDialog() {
         progressDialog?.apply { dismiss() }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
         progressDialog = null
     }
 
+    @CommonCode("Move to base")
     override fun displayErrorDialog(@StringRes message: Int) {
         AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
             .setTitle(R.string.execution_error_title)

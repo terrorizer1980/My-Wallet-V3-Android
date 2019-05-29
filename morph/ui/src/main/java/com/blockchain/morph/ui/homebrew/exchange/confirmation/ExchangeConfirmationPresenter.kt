@@ -5,13 +5,12 @@ import com.blockchain.morph.exchange.mvi.Quote
 import com.blockchain.morph.exchange.service.TradeExecutionService
 import com.blockchain.morph.exchange.service.TradeTransaction
 import com.blockchain.morph.ui.R
-import com.blockchain.morph.ui.homebrew.exchange.locked.ExchangeLockedModel
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendException
 import info.blockchain.balance.AccountReference
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.formatWithUnit
 import info.blockchain.wallet.exceptions.TransactionHashApiException
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -31,19 +30,30 @@ class ExchangeConfirmationPresenter internal constructor(
     private val payloadDecrypt: PayloadDecrypt
 ) : BasePresenter<ExchangeConfirmationView>() {
 
+    private var showPaxAirdropBottomDialog: Boolean = false
+    private var executeTradeSingle: Single<String>? = null
+
     override fun onViewReady() {
         // Ensure user hasn't got a double encrypted wallet
-        if (payloadDecrypt.isDoubleEncrypted) {
-            view.showSecondPasswordDialog()
-        } else {
-            subscribeToViewState()
-        }
+        subscribeToViewState()
     }
 
     private fun subscribeToViewState() {
         compositeDisposable +=
             view.exchangeViewState
-                .flatMapSingle { executeTrade(it.latestQuote!!, it.fromAccount, it.toAccount) }
+                .flatMapSingle { state ->
+
+                    // State is latest value of behaviour subject.
+                    // NOT the state when confirm displayed
+                    showPaxAirdropBottomDialog = state.isPowerPaxTagged
+                    if (!payloadDecrypt.isDoubleEncrypted) {
+                        executeTrade(state.latestQuote!!, state.fromAccount, state.toAccount)
+                    } else {
+                        view.showSecondPasswordDialog()
+                        executeTradeSingle = executeTrade(state.latestQuote!!, state.fromAccount, state.toAccount)
+                        Single.never()
+                    }
+                }
                 .retry()
                 .subscribeBy(onError = { Timber.e(it) })
     }
@@ -53,20 +63,14 @@ class ExchangeConfirmationPresenter internal constructor(
         sendingAccount: AccountReference
     ) {
         compositeDisposable +=
-            transactionExecutor.getFeeForTransaction(
-                amount,
-                sendingAccount
-            )
+            transactionExecutor.getFeeForTransaction(amount, sendingAccount)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onSuccess = { view.updateFee(it) },
                     onError = {
                         Timber.e(it)
-                        view.showToast(
-                            R.string.homebrew_confirmation_error_fetching_fee,
-                            ToastCustom.TYPE_ERROR
-                        )
+                        view.showToast(R.string.homebrew_confirmation_error_fetching_fee, ToastCustom.TYPE_ERROR)
                     }
                 )
     }
@@ -75,7 +79,7 @@ class ExchangeConfirmationPresenter internal constructor(
         quote: Quote,
         sendingAccount: AccountReference,
         receivingAccount: AccountReference
-    ): Single<ExchangeLockedModel> {
+    ): Single<String> {
         return deriveAddressPair(sendingAccount, receivingAccount)
             .subscribeOn(Schedulers.io())
             .flatMap { (destination, refund) ->
@@ -84,18 +88,6 @@ class ExchangeConfirmationPresenter internal constructor(
                     .flatMap { transaction ->
                         sendFundsForTrade(transaction, sendingAccount)
                             .subscribeOn(Schedulers.io())
-                            .map {
-                                ExchangeLockedModel(
-                                    orderId = transaction.id,
-                                    value = transaction.fiatValue.toStringWithSymbol(view.locale),
-                                    fees = transaction.fee.formatWithUnit(),
-                                    sending = transaction.deposit.formatWithUnit(),
-                                    sendingCurrency = transaction.deposit.currency,
-                                    receiving = transaction.withdrawal.formatWithUnit(),
-                                    receivingCurrency = transaction.withdrawal.currency,
-                                    accountName = receivingAccount.label
-                                )
-                            }
                     }
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -109,7 +101,11 @@ class ExchangeConfirmationPresenter internal constructor(
                     view.displayErrorDialog(R.string.execution_error_message)
                 }
             }
-            .doOnSuccess { view.continueToExchangeLocked(it) }
+            .doOnSuccess {
+                view.showExchangeCompleteDialog(
+                    showPaxAirdropBottomDialog && receivingAccount.cryptoCurrency == CryptoCurrency.PAX
+                )
+            }
     }
 
     private fun sendFundsForTrade(
@@ -154,10 +150,11 @@ class ExchangeConfirmationPresenter internal constructor(
                 .andThen(decryptBch())
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
+                .andThen(executeTradeSingle?.ignoreElement())
                 .doOnSubscribe { view.showProgressDialog() }
                 .doOnTerminate { view.dismissProgressDialog() }
                 .doOnError { Timber.e(it) }
-                .subscribeBy(onComplete = { subscribeToViewState() })
+                .subscribe()
     }
 
     private fun decryptPayload(validatedSecondPassword: String): Completable =

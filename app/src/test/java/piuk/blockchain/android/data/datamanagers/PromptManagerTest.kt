@@ -39,7 +39,7 @@ class PromptManagerTest : RxTest() {
         // Arrange
         val context: Context = mock()
         // Act
-        val testObserver = subject.getCustomPrompts(context, mockSettings).test()
+        val testObserver = subject.getCustomPrompts(mockSettings).test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()

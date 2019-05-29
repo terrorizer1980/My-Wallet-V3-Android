@@ -1,58 +1,62 @@
 package piuk.blockchain.android.ui.buysell.launcher
 
-import io.reactivex.Maybe
+import com.blockchain.kyc.models.nabu.Kyc2TierState
+import com.blockchain.kycui.settings.KycStatusHelper
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Singles
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
-import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
-import piuk.blockchain.androidbuysell.models.ExchangeData
-import piuk.blockchain.androidbuysell.models.coinify.KycResponse
-import piuk.blockchain.androidbuysell.models.coinify.ReviewState
+import piuk.blockchain.androidbuysell.models.CoinifyData
 import piuk.blockchain.androidbuysell.services.ExchangeService
-import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
-import javax.inject.Inject
 
-class BuySellLauncherPresenter @Inject constructor(
-    private val exchangeService: ExchangeService,
-    private val coinifyDataManager: CoinifyDataManager
+class BuySellLauncherPresenter constructor(
+    private val kycStatusHelper: KycStatusHelper,
+    private val exchangeService: ExchangeService
 ) : BasePresenter<BuySellLauncherView>() {
 
     override fun onViewReady() {
-        exchangeService.getExchangeMetaData()
-            .addToCompositeDisposable(this)
-            .applySchedulers()
+        compositeDisposable +=
+            Singles.zip(
+                exchangeService.getCoinifyData()
+                    .switchIfEmpty(Single.just(CoinifyData(0, ""))),
+                kycStatusHelper.getKyc2TierStatus()
+            ).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view.displayProgressDialog() }
-            .flatMapMaybe {
-                if (it.hasCoinifyAccount()) {
-                    coinifyDataManager.getKycReviews(it.coinify!!.token!!).toMaybe()
-                        .doOnSuccess {
-                            if (it.canContinueToOverview()) {
-                                view.onStartCoinifyOverview()
-                            } else {
-                                view.onStartCoinifySignUp()
-                            }
-                        }
-                } else {
-                    view.onStartCoinifySignUp()
-                    Maybe.empty()
-                }
-            }
-            .doOnTerminate { view.dismissProgressDialog() }
+            .doAfterTerminate { view.dismissProgressDialog() }
+            .doOnError(Timber::e)
             .subscribeBy(
-                onComplete = { /* No-op */ },
                 onError = {
-                    Timber.e(it)
                     view.showErrorToast(R.string.buy_sell_launcher_error)
                     view.finishPage()
+                },
+                onSuccess = {
+                    val coinifyData = it.first
+                    val tierState = it.second
+                    when (tierState) {
+                        Kyc2TierState.Tier2Approved -> {
+                            if (coinifyData.user != 0) {
+                                view.onStartCoinifyOverview()
+                            } else {
+                                view.onStartCoinifyOptIn()
+                            }
+                        }
+                        Kyc2TierState.Tier1InReview,
+                        Kyc2TierState.Tier1Failed,
+                        Kyc2TierState.Tier1Approved -> {
+                            view.onStartCoinifyOptIn()
+                        }
+                        Kyc2TierState.Hidden,
+                        Kyc2TierState.Locked -> view.onStartCoinifySignUp()
+                        Kyc2TierState.Tier2InReview,
+                        Kyc2TierState.Tier2Failed -> view.showPendingVerificationView()
+                    }
                 }
             )
-    }
-
-    private fun ExchangeData.hasCoinifyAccount(): Boolean = coinify?.token != null
-
-    private fun List<KycResponse>.canContinueToOverview(): Boolean = this.any {
-        it.state == ReviewState.Reviewing || it.state == ReviewState.Completed
     }
 }

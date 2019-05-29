@@ -167,12 +167,12 @@ public class BuyActivity extends BaseMvpActivity<BuyView, BuyPresenter>
     public void onShowTx(String txHash) {
         Bundle bundle = new Bundle();
         bundle.putString(BalanceFragment.KEY_TRANSACTION_HASH, txHash);
-        TransactionDetailActivity.start(this, bundle);
+        TransactionDetailActivity.Companion.start(this, bundle);
     }
 
     private void activateIfReady() {
         if (isReady()) {
-            setUiState(CONTENT);
+            setUiState(UiState.CONTENT);
         }
     }
 
@@ -243,20 +243,20 @@ public class BuyActivity extends BaseMvpActivity<BuyView, BuyPresenter>
     @Override
     public void setUiState(@UiState.UiStateDef int uiState) {
         switch (uiState) {
-            case LOADING:
+            case UiState.LOADING:
                 showProgressDialog();
                 break;
-            case CONTENT:
+            case UiState.CONTENT:
                 frontendJavascriptManager.activateMobileBuyFromJson(
                         webViewLoginDetails,
                         getPresenter().isNewlyCreated());
                 dismissProgressDialog();
                 break;
-            case FAILURE:
+            case UiState.FAILURE:
                 showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR);
                 finish();
                 break;
-            case EMPTY:
+            case UiState.EMPTY:
                 //no state
                 dismissProgressDialog();
                 break;

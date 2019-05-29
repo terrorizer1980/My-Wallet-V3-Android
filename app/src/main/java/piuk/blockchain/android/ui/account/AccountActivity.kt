@@ -22,8 +22,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.CheckBox
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.password.SecondPasswordHandler
 import com.google.zxing.BarcodeFormat
 import com.karumi.dexter.Dexter
@@ -93,7 +93,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_accounts)
         setupToolbar(toolbar_general, R.string.drawer_addresses)
-        get<EventLogger>().logEvent(LoggableEvent.AccountsAndAddresses)
+        get<Analytics>().logEvent(AnalyticsEvents.AccountsAndAddresses)
 
         with(currency_header) {
             CryptoCurrency.values().forEach {
@@ -109,7 +109,6 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             setHasFixedSize(true)
             adapter = accountsAdapter
         }
-
         onViewReady()
     }
 
@@ -119,6 +118,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             CryptoCurrency.BCH -> true
             CryptoCurrency.ETHER -> false
             CryptoCurrency.XLM -> false
+            CryptoCurrency.PAX -> false
         }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

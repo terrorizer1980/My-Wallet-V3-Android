@@ -1,7 +1,7 @@
 package com.blockchain.sunriver.ui
 
-import com.blockchain.notifications.analytics.EventLogger
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.sunriver.SunriverCampaignSignUp
 import io.reactivex.Single
 import io.reactivex.rxkotlin.plusAssign
@@ -18,17 +18,17 @@ class SunriverCampaignSignupBottomDialog : BaseAirdropBottomDialog(
         dismissText = R.string.claim_your_free_crypto_dismiss
     )
 ) {
-    private val eventLogger: EventLogger by inject()
+    private val analytics: Analytics by inject()
 
     private val sunriverCampaignSignUp: SunriverCampaignSignUp by inject()
 
     override fun onStart() {
         super.onStart()
-        eventLogger.logEvent(LoggableEvent.SunRiverBottomCampaignDialog)
+        analytics.logEvent(AnalyticsEvents.SunRiverBottomCampaignDialog)
     }
 
     override fun ctaButtonClick() {
-        eventLogger.logEvent(LoggableEvent.SunRiverBottomCampaignDialogClicked)
+        analytics.logEvent(AnalyticsEvents.SunRiverBottomCampaignDialogClicked)
 
         compositeDisposable += sunriverCampaignSignUp
             .registerSunRiverCampaign()
@@ -38,12 +38,12 @@ class SunriverCampaignSignupBottomDialog : BaseAirdropBottomDialog(
             }
     }
 
-    override fun rocketShipClick() {
-        eventLogger.logEvent(LoggableEvent.SunRiverBottomCampaignDialogClickedRocket)
+    override fun xlmLogoClick() {
+        analytics.logEvent(AnalyticsEvents.SunRiverBottomCampaignDialogClickedRocket)
     }
 
     override fun dismissButtonClick() {
-        eventLogger.logEvent(LoggableEvent.SunRiverBottomCampaignDialogDismissClicked)
+        analytics.logEvent(AnalyticsEvents.SunRiverBottomCampaignDialogDismissClicked)
         super.dismissButtonClick()
     }
 

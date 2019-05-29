@@ -17,6 +17,7 @@ import piuk.blockchain.androidbuysell.services.ExchangeService;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
+import timber.log.Timber;
 
 public class BuyDataManager {
 
@@ -39,8 +40,7 @@ public class BuyDataManager {
     }
 
     /**
-     * ReplaySubjects will re-emit items it observed.
-     * It is safe to assumed that walletOptions and
+     * ReplaySubjects will re-emit items it observed. It is safe to assumed that walletOptions and
      * the user's country code won't change during an active session.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")

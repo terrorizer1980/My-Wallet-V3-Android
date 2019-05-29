@@ -10,26 +10,32 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import com.blockchain.accounts.AsyncAllAccountList
 import com.blockchain.morph.exchange.mvi.ChangeCryptoFromAccount
 import com.blockchain.morph.exchange.mvi.ChangeCryptoToAccount
+import com.blockchain.morph.exchange.mvi.SimpleFieldUpdateIntent
 import com.blockchain.morph.exchange.service.QuoteService
 import com.blockchain.morph.ui.R
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeFragment
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeLimitState
+import com.blockchain.morph.ui.homebrew.exchange.ExchangeMenuState
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeModel
 import com.blockchain.morph.ui.homebrew.exchange.ExchangeViewModelProvider
 import com.blockchain.morph.ui.homebrew.exchange.REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT
 import com.blockchain.morph.ui.homebrew.exchange.REQUEST_CODE_CHOOSE_SENDING_ACCOUNT
 import com.blockchain.morph.ui.homebrew.exchange.confirmation.ExchangeConfirmationFragment
 import com.blockchain.morph.ui.logging.WebsocketConnectionFailureEvent
+import com.blockchain.morph.ui.showErrorDialog
 import com.blockchain.morph.ui.showHelpDialog
 import com.blockchain.nabu.StartKyc
-import com.blockchain.notifications.analytics.LoggableEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
 import info.blockchain.balance.AccountReference
+import info.blockchain.balance.CryptoCurrency
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
@@ -41,6 +47,7 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     HomebrewHostActivityListener,
     ExchangeViewModelProvider,
     ExchangeLimitState,
+    ExchangeMenuState,
     AccountChooserBottomDialog.Callback {
 
     private val toolbar by unsafeLazy { findViewById<Toolbar>(R.id.toolbar_general) }
@@ -51,15 +58,26 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
 
     private val defaultCurrency by unsafeLazy { intent.getStringExtra(EXTRA_DEFAULT_CURRENCY) }
 
+    private val preselectedToCurrency by lazy {
+        (intent.getSerializableExtra(EXTRA_PRESELECTED_TO_CURRENCY)as?CryptoCurrency) ?: CryptoCurrency.ETHER
+    }
+
     override val exchangeViewModel: ExchangeModel by viewModel()
 
     private val startKyc: StartKyc by inject()
+    private val allAccountList: AsyncAllAccountList by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homebrew_host)
 
         val args = ExchangeFragment.bundleArgs(defaultCurrency)
+        compositeDisposable += allAccountList.allAccounts().map { accounts ->
+            accounts.first { it.cryptoCurrency == preselectedToCurrency }
+        }.subscribeBy {
+            exchangeViewModel.initWithPreselectedCurrency(it.cryptoCurrency)
+        }
+
         navController.navigate(R.id.exchangeFragment, args)
     }
 
@@ -90,15 +108,28 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.action_show_kyc -> {
-                logEvent(LoggableEvent.SwapTiers)
+                logEvent(AnalyticsEvents.SwapTiers)
                 startKyc.startKycActivity(this@HomebrewNavHostActivity)
                 return true
             }
             R.id.action_help -> {
                 showHelpDialog(this, startKyc = {
-                    logEvent(LoggableEvent.SwapTiers)
+                    logEvent(AnalyticsEvents.SwapTiers)
                     startKyc.startKycActivity(this@HomebrewNavHostActivity)
                 })
+                return true
+            }
+            R.id.action_error -> {
+                menuState?.let {
+                    when (it) {
+                        is ExchangeMenuState.ExchangeMenu.Error -> {
+                            showErrorDialog(supportFragmentManager, it.error)
+                        }
+                        is ExchangeMenuState.ExchangeMenu.Help -> {
+                            // Invalid menu state
+                        }
+                    }
+                }
                 return true
             }
         }
@@ -106,10 +137,21 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     }
 
     private var showKycItem: MenuItem? = null
+    private var errorItem: MenuItem? = null
+    private var helpItem: MenuItem? = null
+    private var menuState: ExchangeMenuState.ExchangeMenu? = null
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         showKycItem = menu?.findItem(R.id.action_show_kyc)
+        errorItem = menu?.findItem(R.id.action_error)
+        helpItem = menu?.findItem(R.id.action_help)
         return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun setMenuState(state: ExchangeMenuState.ExchangeMenu) {
+        menuState = state
+        errorItem?.isVisible = (state is ExchangeMenuState.ExchangeMenu.Error)
+        helpItem?.isVisible = (state is ExchangeMenuState.ExchangeMenu.Help)
     }
 
     override fun setOverTierLimit(overLimit: Boolean) {
@@ -168,10 +210,16 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
                 exchangeViewModel.inputEventSink.onNext(
                     ChangeCryptoFromAccount(accountReference)
                 )
+                exchangeViewModel.inputEventSink.onNext(
+                    SimpleFieldUpdateIntent(0.toBigDecimal())
+                )
             }
             REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT -> {
                 exchangeViewModel.inputEventSink.onNext(
                     ChangeCryptoToAccount(accountReference)
+                )
+                exchangeViewModel.inputEventSink.onNext(
+                    SimpleFieldUpdateIntent(0.toBigDecimal())
                 )
             }
             else -> throw IllegalArgumentException("Unknown request code $requestCode")
@@ -179,22 +227,25 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     }
 
     companion object {
-
-        private const val EXTRA_DEFAULT_CURRENCY =
-            "com.blockchain.morph.ui.homebrew.exchange.EXTRA_DEFAULT_CURRENCY"
+        private const val EXTRA_DEFAULT_CURRENCY = "com.blockchain.morph.ui.homebrew.exchange.EXTRA_DEFAULT_CURRENCY"
+        private const val EXTRA_PRESELECTED_TO_CURRENCY =
+            "com.blockchain.morph.ui.homebrew.exchange.EXTRA_PRESELECTED_TO_CURRENCY"
 
         @JvmStatic
-        fun start(context: Context, defaultCurrency: String) {
+        fun start(
+            context: Context,
+            defaultCurrency: String,
+            preselectedDefaultCurrency: CryptoCurrency? = null
+        ) {
             Intent(context, HomebrewNavHostActivity::class.java).apply {
                 putExtra(EXTRA_DEFAULT_CURRENCY, defaultCurrency)
+                putExtra(EXTRA_PRESELECTED_TO_CURRENCY, preselectedDefaultCurrency ?: CryptoCurrency.ETHER)
             }.run { context.startActivity(this) }
         }
     }
 }
 
 internal interface HomebrewHostActivityListener {
-
     fun setToolbarTitle(@StringRes title: Int)
-
     fun launchConfirmation()
 }

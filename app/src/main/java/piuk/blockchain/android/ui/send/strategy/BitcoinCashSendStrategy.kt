@@ -1,0 +1,906 @@
+package piuk.blockchain.android.ui.send.strategy
+
+import android.annotation.SuppressLint
+import android.support.design.widget.Snackbar
+import com.blockchain.serialization.JsonSerializableAccount
+import info.blockchain.api.data.UnspentOutputs
+import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
+import info.blockchain.wallet.api.data.FeeOptions
+import info.blockchain.wallet.coin.GenericMetadataAccount
+import info.blockchain.wallet.exceptions.HDWalletException
+import info.blockchain.wallet.payload.data.LegacyAddress
+import info.blockchain.wallet.payment.Payment
+import info.blockchain.wallet.util.FormatsUtil
+import info.blockchain.wallet.util.PrivateKeyFactory
+import info.blockchain.wallet.util.Tools
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.subjects.PublishSubject
+import org.apache.commons.lang3.tuple.Pair
+import org.bitcoinj.core.Address
+import org.bitcoinj.core.ECKey
+import piuk.blockchain.android.R
+import piuk.blockchain.android.data.cache.DynamicFeeCache
+import piuk.blockchain.android.ui.account.ItemAccount
+import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
+import piuk.blockchain.android.ui.receive.WalletAccountHelper
+import piuk.blockchain.android.ui.send.PendingTransaction
+import piuk.blockchain.android.ui.send.SendView
+import piuk.blockchain.android.ui.send.FeeType
+import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.android.util.extensions.addToCompositeDisposable
+import piuk.blockchain.androidcore.data.api.EnvironmentConfig
+import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
+import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
+import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
+import piuk.blockchain.androidcore.data.fees.FeeDataManager
+import piuk.blockchain.androidcore.data.payload.PayloadDataManager
+import piuk.blockchain.androidcore.data.payments.SendDataManager
+import piuk.blockchain.androidcore.utils.PersistentPrefs
+import piuk.blockchain.androidcore.utils.extensions.applySchedulers
+import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import timber.log.Timber
+import java.io.UnsupportedEncodingException
+import java.math.BigInteger
+import java.util.HashMap
+import java.util.concurrent.TimeUnit
+
+class BitcoinCashSendStrategy(
+    private val walletAccountHelper: WalletAccountHelper,
+    private val payloadDataManager: PayloadDataManager,
+    private val stringUtils: StringUtils,
+    private val sendDataManager: SendDataManager,
+    private val dynamicFeeCache: DynamicFeeCache,
+    private val feeDataManager: FeeDataManager,
+    private val privateKeyFactory: PrivateKeyFactory,
+    private val environmentSettings: EnvironmentConfig,
+    private val bchDataManager: BchDataManager,
+    private val currencyFormatter: CurrencyFormatManager,
+    private val exchangeRates: FiatExchangeRates,
+    private val prefs: PersistentPrefs,
+    currencyState: CurrencyState,
+    environmentConfig: EnvironmentConfig
+) : SendStrategy<SendView>(currencyState) {
+
+    override fun onCurrencySelected() {
+        currencyState.cryptoCurrency = CryptoCurrency.BCH
+        onBitcoinCashChosen()
+    }
+
+    override fun selectSendingAccount(account: JsonSerializableAccount?) {
+        when (account) {
+            null -> selectDefaultOrFirstFundedSendingAccount()
+            is LegacyAddress -> onSendingBchLegacyAddressSelected(account)
+            is GenericMetadataAccount -> onSendingBchAccountSelected(account)
+            else ->
+                throw IllegalArgumentException("No method for handling ${account.javaClass.simpleName} available")
+        }
+    }
+
+    override fun selectReceivingAccount(account: JsonSerializableAccount?) {
+        when (account) {
+            is LegacyAddress -> onReceivingBchLegacyAddressSelected(account)
+            is GenericMetadataAccount -> onReceivingBchAccountSelected(account)
+            else ->
+                throw IllegalArgumentException("No method for handling ${account?.javaClass?.simpleName} available")
+        }
+    }
+
+    private val pendingTransaction by unsafeLazy { PendingTransaction() }
+    private val unspentApiResponsesBch by unsafeLazy { HashMap<String, UnspentOutputs>() }
+    private val networkParameters = environmentConfig.bitcoinNetworkParameters
+
+    private var feeOptions: FeeOptions? = null
+    private var textChangeSubject = PublishSubject.create<String>()
+    private var absoluteSuggestedFee = BigInteger.ZERO
+    private var maxAvailable = BigInteger.ZERO
+    private var verifiedSecondPassword: String? = null
+
+    /**
+     * External changes.
+     * Possible currency change, Account/address archive, Balance change
+     */
+    override fun onBroadcastReceived() {
+        resetAccountList()
+    }
+
+    override fun onViewReady() {
+        resetAccountList()
+        setupTextChangeSubject()
+    }
+
+    override fun onResume() {
+        onBitcoinCashChosen()
+    }
+
+    private fun onBitcoinCashChosen() {
+        view?.let {
+            reset()
+            it.hideFeePriority()
+            it.setFeePrioritySelection(0)
+            it.disableFeeDropdown()
+            it.setCryptoMaxLength(17)
+            calculateSpendableAmounts(spendAll = false, amountToSendText = "0")
+            it.enableInput()
+        }
+    }
+
+    override fun reset() {
+        super.reset()
+        pendingTransaction.clear()
+        view?.let {
+            absoluteSuggestedFee = BigInteger.ZERO
+            resetAccountList()
+            selectDefaultOrFirstFundedSendingAccount()
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    override fun onContinueClicked() {
+        view?.showProgressDialog(R.string.app_name)
+
+        checkManualAddressInput()
+
+        isValidBitcoincashAddress()
+            .map {
+                if (!it) {
+                    // Warn user if address is in base58 format since this might be a btc address
+                    pendingTransaction.warningText = stringUtils.getString(R.string.bch_address_warning)
+                    pendingTransaction.warningSubText = stringUtils.getString(R.string.bch_address_warning_subtext)
+                }
+            }
+            .flatMap { Observable.just(validateBitcoinCashTransaction()) }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doAfterTerminate { view?.dismissProgressDialog() }
+            .addToCompositeDisposable(this)
+            .subscribe(
+                { (validated, errorMessage) ->
+                    if (validated) {
+                        if (pendingTransaction.isWatchOnly) {
+                            // returns to spendFromWatchOnly*BIP38 -> showPaymentReview()
+                            val address = pendingTransaction.senderAsLegacyAddress
+                            view.showSpendFromWatchOnlyWarning((address).address)
+                        } else if (pendingTransaction.isWatchOnly && verifiedSecondPassword != null) {
+                            // Second password already verified
+                            showPaymentReview()
+                        } else {
+                            // Checks if second pw needed then -> onNoSecondPassword()
+                            view.showSecondPasswordDialog()
+                        }
+                    } else {
+                        view.showSnackbar(errorMessage, Snackbar.LENGTH_LONG)
+                    }
+                },
+                { Timber.e(it) }
+            )
+    }
+
+    /**
+     * Executes transaction
+     */
+    override fun submitPayment() {
+        submitTransaction()
+    }
+
+    @SuppressLint("CheckResult")
+    private fun submitTransaction() {
+        view.showProgressDialog(R.string.app_name)
+
+        pendingTransaction.receivingAddress =
+            getFullBitcoinCashAddressFormat(pendingTransaction.receivingAddress)
+
+        getBchChangeAddress()!!
+            .addToCompositeDisposable(this)
+            .doOnError {
+                view.dismissProgressDialog()
+                view.dismissConfirmationDialog()
+                view.showTransactionFailed()
+            }
+            .map { pendingTransaction.changeAddress = it }
+            .flatMap { getBchKeys() }
+            .flatMap {
+                sendDataManager.submitBchPayment(
+                    pendingTransaction.unspentOutputBundle!!,
+                    it,
+                    pendingTransaction.receivingAddress,
+                    pendingTransaction.changeAddress,
+                    pendingTransaction.bigIntFee,
+                    pendingTransaction.bigIntAmount
+                )
+            }
+            .subscribe(
+                { hash ->
+                    logPaymentSentEvent(true, CryptoCurrency.BCH, pendingTransaction.bigIntAmount)
+
+                    clearBchUnspentResponseCache()
+                    view.dismissProgressDialog()
+                    view.dismissConfirmationDialog()
+                    incrementBchReceiveAddress()
+                    handleSuccessfulPayment(hash, CryptoCurrency.BCH)
+                },
+                {
+                    Timber.e(it)
+                    view.dismissProgressDialog()
+                    view.dismissConfirmationDialog()
+                    view.showSnackbar(
+                        stringUtils.getString(R.string.transaction_failed),
+                        it.message,
+                        Snackbar.LENGTH_INDEFINITE)
+
+                    logPaymentSentEvent(false, CryptoCurrency.BCH, pendingTransaction.bigIntAmount)
+                }
+            )
+    }
+
+    private fun getBchKeys(): Observable<List<ECKey>> {
+        return if (pendingTransaction.isHD(CryptoCurrency.BCH)) {
+            // TODO(accountObject should rather contain keys for signing, not metadata)
+            val account = pendingTransaction.sendingObject!!.accountObject as GenericMetadataAccount
+
+            if (payloadDataManager.isDoubleEncrypted) {
+                payloadDataManager.decryptHDWallet(networkParameters, verifiedSecondPassword)
+                bchDataManager.decryptWatchOnlyWallet(payloadDataManager.mnemonic)
+            }
+
+            val hdAccountList = bchDataManager.getAccountList()
+            val acc = hdAccountList.find {
+                it.node.serializePubB58(environmentSettings.bitcoinCashNetworkParameters) == account.xpub
+            } ?: throw HDWalletException("No matching private key found for ${account.xpub}")
+
+            Observable.just(bchDataManager.getHDKeysForSigning(
+                    acc,
+                    pendingTransaction.unspentOutputBundle!!.spendableOutputs
+                )
+            )
+        } else {
+            val legacyAddress = pendingTransaction.senderAsLegacyAddress
+
+            if (legacyAddress.tag == PendingTransaction.WATCH_ONLY_SPEND_TAG) {
+                val ecKey = Tools.getECKeyFromKeyAndAddress(legacyAddress.privateKey, legacyAddress.address)
+                Observable.just(listOf(ecKey))
+            } else {
+                Observable.just(listOf(payloadDataManager.getAddressECKey(legacyAddress, verifiedSecondPassword)!!))
+            }
+        }
+    }
+
+    private fun getBchChangeAddress(): Observable<String>? {
+        return if (pendingTransaction.isHD(CryptoCurrency.BCH)) {
+            val account = pendingTransaction.sendingObject!!.accountObject as GenericMetadataAccount
+            val position = bchDataManager.getAccountMetadataList().indexOfFirst { it.xpub == account.xpub }
+            bchDataManager.getNextChangeCashAddress(position)
+        } else {
+            val legacyAddress = pendingTransaction.senderAsLegacyAddress
+            Observable.just(
+                Address.fromBase58(
+                    environmentSettings.bitcoinCashNetworkParameters,
+                    legacyAddress.address
+                ).toCashAddress()
+            )
+        }
+    }
+
+    private fun clearBchUnspentResponseCache() {
+        if (pendingTransaction.isHD(CryptoCurrency.BCH)) {
+            val account = pendingTransaction.sendingObject!!.accountObject as GenericMetadataAccount
+            unspentApiResponsesBch.remove(account.xpub)
+        } else {
+            val legacyAddress = pendingTransaction.senderAsLegacyAddress
+            unspentApiResponsesBch.remove(legacyAddress.address)
+        }
+    }
+
+    private fun incrementBchReceiveAddress() {
+        if (pendingTransaction.isHD(CryptoCurrency.BCH)) {
+            val account = pendingTransaction.sendingObject!!.accountObject as GenericMetadataAccount
+            bchDataManager.incrementNextChangeAddress(account.xpub)
+            bchDataManager.incrementNextReceiveAddress(account.xpub)
+            updateInternalBchBalances()
+        }
+    }
+
+    private fun handleSuccessfulPayment(hash: String, cryptoCurrency: CryptoCurrency): String {
+        view?.showTransactionSuccess(cryptoCurrency)
+
+        pendingTransaction.clear()
+        unspentApiResponsesBch.clear()
+
+        return hash
+    }
+
+    /**
+     * Update balance immediately after spend - until refresh from server
+     */
+    private fun updateInternalBchBalances() {
+        try {
+            val totalSent = pendingTransaction.bigIntAmount.add(pendingTransaction.bigIntFee)
+            if (pendingTransaction.isHD(CryptoCurrency.BCH)) {
+                val account =
+                    pendingTransaction.sendingObject!!.accountObject as GenericMetadataAccount
+                bchDataManager.subtractAmountFromAddressBalance(account.xpub, totalSent)
+            } else {
+                val address = pendingTransaction.senderAsLegacyAddress
+                bchDataManager.subtractAmountFromAddressBalance(address.address, totalSent)
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    override fun onNoSecondPassword() {
+        showPaymentReview()
+    }
+
+    override fun onSecondPasswordValidated(secondPassword: String) {
+        verifiedSecondPassword = secondPassword
+        showPaymentReview()
+    }
+
+    private fun showPaymentReview() {
+        view.showPaymentDetails(getConfirmationDetails(), null, null, false)
+    }
+
+    private fun checkManualAddressInput() {
+        val address = view.getReceivingAddress()
+        address?.let {
+            // Only if valid address so we don't override with a label
+            if (FormatsUtil.isValidBitcoinCashAddress(
+                environmentSettings.bitcoinCashNetworkParameters,
+                address
+            ) ||
+                FormatsUtil.isValidBitcoinAddress(address)
+            )
+            pendingTransaction.receivingAddress = address
+        }
+    }
+
+    private fun getFullBitcoinCashAddressFormat(cashAddress: String): String {
+        return if (!cashAddress.startsWith(environmentSettings.bitcoinCashNetworkParameters.bech32AddressPrefix) &&
+            FormatsUtil.isValidBitcoinCashAddress(
+                environmentSettings.bitcoinCashNetworkParameters,
+                cashAddress
+            )
+        ) {
+            environmentSettings.bitcoinCashNetworkParameters.bech32AddressPrefix +
+                environmentSettings.bitcoinCashNetworkParameters.bech32AddressSeparator.toChar() +
+                cashAddress
+        } else {
+            cashAddress
+        }
+    }
+
+    private fun getConfirmationDetails(): PaymentConfirmationDetails {
+        val pending = pendingTransaction
+
+        return PaymentConfirmationDetails().apply {
+            fromLabel = pending.sendingObject!!.label ?: ""
+            toLabel = pending.displayableReceivingLabel!!.removeBchUri()
+
+            cryptoUnit = CryptoCurrency.BCH.symbol
+            fiatUnit = exchangeRates.fiatUnit
+            fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode)
+
+            // -----
+            val separator = getDefaultDecimalSeparator()
+            cryptoTotal = currencyFormatter.getTextFromSatoshis(pending.total, separator)
+            cryptoAmount = currencyFormatter.getTextFromSatoshis(pending.bigIntAmount, separator)
+            cryptoFee = currencyFormatter.getTextFromSatoshis(pending.bigIntFee, separator)
+            fiatFee = currencyFormatter.getFormattedFiatValueFromSelectedCoinValue(pending.bigIntFee.toBigDecimal())
+            fiatAmount =
+                currencyFormatter.getFormattedFiatValueFromSelectedCoinValue(pending.bigIntAmount.toBigDecimal())
+            fiatTotal = currencyFormatter.getFormattedFiatValueFromSelectedCoinValue(pending.total.toBigDecimal())
+
+            warningText = pending.warningText
+            warningSubtext = pending.warningSubText
+        }
+    }
+
+    override fun processURIScanAddress(address: String) {
+        pendingTransaction.receivingObject = null
+        pendingTransaction.receivingAddress = address
+        view.updateReceivingAddress(address)
+    }
+
+    private fun resetAccountList() {
+        setReceiveHint(getAddressList().size)
+    }
+
+    private fun clearReceivingAddress() {
+        view.updateReceivingAddress("")
+    }
+
+    override fun clearReceivingObject() {
+        pendingTransaction.receivingObject = null
+    }
+
+    private fun clearCryptoAmount() {
+        view.updateCryptoAmount(CryptoValue.zero(CryptoCurrency.BCH))
+    }
+
+    private fun getAddressList(): List<ItemAccount> = walletAccountHelper.getAccountItems(CryptoCurrency.BCH)
+
+    private fun setReceiveHint(accountsCount: Int) {
+        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BCH, accountsCount)
+    }
+
+    override fun selectDefaultOrFirstFundedSendingAccount() {
+        val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount()
+        view.updateSendingAddress(accountItem.label ?: accountItem.address!!)
+        pendingTransaction.sendingObject = accountItem
+    }
+
+    /**
+     * Get cached dynamic fee from new Fee options endpoint
+     */
+    @SuppressLint("CheckResult")
+    private fun getSuggestedFee() {
+        val observable =
+            feeDataManager.bchFeeOptions
+                .doOnSubscribe { feeOptions = dynamicFeeCache.bchFeeOptions!! }
+                .doOnNext { dynamicFeeCache.bchFeeOptions = it }
+
+        observable.addToCompositeDisposable(this)
+            .subscribe(
+                { /* No-op */ },
+                {
+                    Timber.e(it)
+                    view.showSnackbar(R.string.confirm_payment_fee_sync_error, Snackbar.LENGTH_LONG)
+                    view.finishPage()
+                }
+            )
+    }
+
+    override fun getFeeOptions(): FeeOptions? = dynamicFeeCache.btcFeeOptions
+
+    private fun getFeePerKbFromPriority(@FeeType.FeePriorityDef feePriorityTemp: Int): BigInteger {
+        getSuggestedFee()
+
+        if (feeOptions == null) {
+            // This is a stopgap in case of failure to prevent crashes.
+            return BigInteger.ZERO
+        }
+
+        return when (feePriorityTemp) {
+            FeeType.FEE_OPTION_CUSTOM -> BigInteger.valueOf(view.getCustomFeeValue() * 1000)
+            FeeType.FEE_OPTION_PRIORITY -> BigInteger.valueOf(feeOptions!!.priorityFee * 1000)
+            FeeType.FEE_OPTION_REGULAR -> BigInteger.valueOf(feeOptions!!.regularFee * 1000)
+            else -> BigInteger.valueOf(feeOptions!!.regularFee * 1000)
+        }
+    }
+
+    /**
+     * Retrieves unspent api data in memory. If not in memory yet, it will be retrieved and added.
+     */
+    private fun getUnspentApiResponse(address: String): Observable<UnspentOutputs> {
+        return if (bchDataManager.getAddressBalance(address).toLong() > 0) {
+            return if (unspentApiResponsesBch.containsKey(address)) {
+                Observable.just(unspentApiResponsesBch[address])
+            } else {
+                sendDataManager.getUnspentBchOutputs(address)
+            }
+        } else {
+            Observable.error(Throwable("No funds - skipping call to unspent API"))
+        }
+    }
+
+    @Throws(UnsupportedEncodingException::class)
+    private fun getSuggestedAbsoluteFee(
+        coins: UnspentOutputs,
+        amountToSend: CryptoValue,
+        feePerKb: BigInteger
+    ): BigInteger {
+        val spendableCoins = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb)
+        return spendableCoins.absoluteFee
+    }
+
+    /**
+     * Update absolute fee with smallest denomination of crypto currency (satoshi, wei, etc)
+     */
+    private fun updateFee(fee: BigInteger) {
+        absoluteSuggestedFee = fee
+
+        val cryptoValue = CryptoValue(CryptoCurrency.BCH, absoluteSuggestedFee)
+        view.updateFeeAmount(cryptoValue, cryptoValue.toFiat(exchangeRates))
+    }
+
+    private fun updateMaxAvailable(balanceAfterFee: BigInteger) {
+        maxAvailable = balanceAfterFee
+        view.showMaxAvailable()
+
+        // Format for display
+        view.updateMaxAvailable(
+            stringUtils.getString(R.string.max_available) +
+                " ${currencyFormatter.getFormattedSelectedCoinValueWithUnit(maxAvailable)}"
+        )
+
+        if (balanceAfterFee <= Payment.DUST) {
+            view.updateMaxAvailable(stringUtils.getString(R.string.insufficient_funds))
+            view.updateMaxAvailableColor(R.color.product_red_medium)
+        } else {
+            view.updateMaxAvailableColor(R.color.primary_blue_accent)
+        }
+    }
+
+    override fun onCryptoTextChange(cryptoText: String) {
+        textChangeSubject.onNext(cryptoText)
+    }
+
+    override fun onAddressTextChange(address: String) {}
+
+    /**
+     * Calculate amounts on crypto text change
+     */
+    private fun setupTextChangeSubject() {
+        textChangeSubject.debounce(300, TimeUnit.MILLISECONDS)
+            .subscribeOn(AndroidSchedulers.mainThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext {
+                calculateSpendableAmounts(spendAll = false, amountToSendText = it)
+            }
+            .emptySubscribe()
+    }
+
+    override fun onSpendMaxClicked() {
+        calculateSpendableAmounts(spendAll = true, amountToSendText = null)
+    }
+
+    private fun calculateSpendableAmounts(spendAll: Boolean, amountToSendText: String?) {
+        view.setSendButtonEnabled(true)
+        view.hideMaxAvailable()
+        view.clearWarning()
+
+        val feePerKb = getFeePerKbFromPriority(view.getFeePriority())
+
+        calculateUnspentBch(spendAll, amountToSendText, feePerKb)
+    }
+
+    @SuppressLint("CheckResult")
+    private fun calculateUnspentBch(
+        spendAll: Boolean,
+        amountToSendText: String?,
+        feePerKb: BigInteger
+    ) {
+        val sendingObj = pendingTransaction.sendingObject
+
+        if (sendingObj?.address == null) {
+            // This shouldn't happen, but handle case anyway in case of low memory scenario onBitcoinCashChosen()
+            return
+        }
+
+        val address = sendingObj.address!!
+
+        getUnspentApiResponse(address)
+            .debounce(200, TimeUnit.MILLISECONDS)
+            .applySchedulers()
+            .subscribe(
+                { coins ->
+                    val amountToSend = currencyFormatter.getSatoshisFromText(
+                        amountToSendText,
+                        getDefaultDecimalSeparator()
+                    )
+
+                    // Future use. There might be some unconfirmed funds. Not displaying a warning currently
+                    // (to line up with iOS and Web wallet)
+                    if (coins.notice != null) {
+                        view.updateWarning(coins.notice)
+                    } else {
+                        view.clearWarning()
+                    }
+
+                    updateFee(getSuggestedAbsoluteFee(
+                        coins,
+                        CryptoValue.bitcoinCashFromSatoshis(amountToSend),
+                        feePerKb
+                    ))
+
+                    suggestedFeePayment(coins, CryptoValue.bitcoinCashFromSatoshis(amountToSend), spendAll, feePerKb)
+                },
+                { throwable ->
+                    Timber.e(throwable)
+                    // No unspent outputs
+                    updateMaxAvailable(BigInteger.ZERO)
+                    updateFee(BigInteger.ZERO)
+                    pendingTransaction.unspentOutputBundle = null
+                }
+            )
+    }
+
+    /**
+     * Payment will use suggested dynamic fee
+     */
+    @Throws(UnsupportedEncodingException::class)
+    private fun suggestedFeePayment(
+        coins: UnspentOutputs,
+        amountToSend: CryptoValue,
+        spendAll: Boolean,
+        feePerKb: BigInteger
+    ) {
+        var amount = amountToSend.amount
+
+        // Calculate sweepable amount to display max available
+        val sweepBundle = sendDataManager.getMaximumAvailable(amountToSend.currency, coins, feePerKb)
+        val sweepableAmount = sweepBundle.left
+
+        updateMaxAvailable(sweepableAmount)
+
+        if (spendAll) {
+            amount = sweepableAmount
+            view?.updateCryptoAmount(CryptoValue(CryptoCurrency.BCH, sweepableAmount))
+        }
+
+        val unspentOutputBundle = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb)
+
+        pendingTransaction.bigIntAmount = amount
+        pendingTransaction.unspentOutputBundle = unspentOutputBundle
+        pendingTransaction.bigIntFee = pendingTransaction.unspentOutputBundle!!.absoluteFee
+    }
+
+    override fun handlePrivxScan(scanData: String?) {
+        if (scanData == null) return
+
+        val format = privateKeyFactory.getFormat(scanData)
+
+        if (format == null) {
+            view?.showSnackbar(R.string.privkey_error, Snackbar.LENGTH_LONG)
+            return
+        }
+
+        when (format) {
+            PrivateKeyFactory.BIP38 -> view?.showBIP38PassphrasePrompt(scanData) // BIP38 needs passphrase
+            else -> spendFromWatchOnlyNonBIP38(format, scanData)
+        }
+    }
+
+    private fun spendFromWatchOnlyNonBIP38(format: String, scanData: String) {
+        try {
+            val key = privateKeyFactory.getKey(format, scanData)
+            val legacyAddress = pendingTransaction.sendingObject?.accountObject as LegacyAddress
+            setTempLegacyAddressPrivateKey(legacyAddress, key)
+        } catch (e: Exception) {
+            view?.showSnackbar(R.string.no_private_key, Snackbar.LENGTH_LONG)
+            Timber.e(e)
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) {
+        sendDataManager.getEcKeyFromBip38(
+            pw,
+            scanData,
+            environmentSettings.bitcoinNetworkParameters
+        ).addToCompositeDisposable(this)
+            .subscribe(
+                {
+                    val legacyAddress = pendingTransaction.senderAsLegacyAddress
+                    setTempLegacyAddressPrivateKey(legacyAddress, it)
+                },
+                { view?.showSnackbar(R.string.bip38_error, Snackbar.LENGTH_LONG) }
+            )
+    }
+
+    private fun setTempLegacyAddressPrivateKey(legacyAddress: LegacyAddress, key: ECKey) {
+        if (key.hasPrivKey() && legacyAddress.address == key.toAddress(
+                environmentSettings.bitcoinNetworkParameters
+            ).toString()
+        ) {
+
+            // Create copy, otherwise pass by ref will override private key in wallet payload
+            pendingTransaction.sendingObject!!.accountObject = LegacyAddress().apply {
+                setPrivateKeyFromBytes(key.privKeyBytes)
+                address = key.toAddress(environmentSettings.bitcoinNetworkParameters).toString()
+                label = legacyAddress.label
+                tag = PendingTransaction.WATCH_ONLY_SPEND_TAG
+            }
+
+            showPaymentReview()
+        } else {
+            view?.showSnackbar(R.string.invalid_private_key, Snackbar.LENGTH_LONG)
+        }
+    }
+
+    private fun onSendingBchLegacyAddressSelected(legacyAddress: LegacyAddress) {
+
+        var cashAddress = legacyAddress.address
+
+        if (!FormatsUtil.isValidBitcoinCashAddress(
+                environmentSettings.bitcoinCashNetworkParameters,
+                legacyAddress.address
+            ) &&
+            FormatsUtil.isValidBitcoinAddress(legacyAddress.address)
+        ) {
+            cashAddress = Address.fromBase58(
+                environmentSettings.bitcoinCashNetworkParameters,
+                legacyAddress.address
+            ).toCashAddress()
+        }
+
+        var label = legacyAddress.label
+        if (label.isNullOrEmpty()) {
+            label = cashAddress.removeBchUri()
+        }
+
+        pendingTransaction.sendingObject = ItemAccount(
+            label,
+            null,
+            null,
+            null,
+            legacyAddress,
+            legacyAddress.address
+        )
+
+        view.updateSendingAddress(label)
+        calculateSpendableAmounts(false, "0")
+    }
+
+    private fun onSendingBchAccountSelected(account: GenericMetadataAccount) {
+        var label = account.label
+        if (label.isNullOrEmpty()) {
+            label = account.xpub
+        }
+
+        pendingTransaction.sendingObject = ItemAccount(
+            label,
+            null,
+            null,
+            null,
+            account,
+            account.xpub
+        )
+
+        view.updateSendingAddress(label)
+        calculateSpendableAmounts(false, "0")
+    }
+
+    private fun onReceivingBchLegacyAddressSelected(legacyAddress: LegacyAddress) {
+
+        var cashAddress = legacyAddress.address
+
+        if (!FormatsUtil.isValidBitcoinCashAddress(
+                environmentSettings.bitcoinCashNetworkParameters,
+                legacyAddress.address
+            ) &&
+            FormatsUtil.isValidBitcoinAddress(legacyAddress.address)
+        ) {
+            cashAddress = Address.fromBase58(
+                environmentSettings.bitcoinCashNetworkParameters,
+                legacyAddress.address
+            ).toCashAddress()
+        }
+
+        var label = legacyAddress.label
+        if (label.isNullOrEmpty()) {
+            label = cashAddress.removeBchUri()
+        }
+
+        pendingTransaction.receivingObject = ItemAccount(
+            label,
+            null,
+            null,
+            null,
+            legacyAddress,
+            cashAddress
+        )
+        pendingTransaction.receivingAddress = cashAddress
+
+        view.updateReceivingAddress(label.removeBchUri())
+
+        if (legacyAddress.isWatchOnly && shouldWarnWatchOnly()) {
+            view.showWatchOnlyWarning(cashAddress)
+        }
+    }
+
+    private fun shouldWarnWatchOnly(): Boolean = prefs.getValue(PersistentPrefs.KEY_WARN_WATCH_ONLY_SPEND, true)
+
+    private fun onReceivingBchAccountSelected(account: GenericMetadataAccount) {
+        var label = account.label
+        if (label.isNullOrEmpty()) {
+            label = account.xpub
+        }
+
+        pendingTransaction.receivingObject = ItemAccount(
+            label,
+            null,
+            null,
+            null,
+            account,
+            account.xpub
+        )
+
+        view.updateReceivingAddress(label)
+
+        val position =
+            bchDataManager.getAccountMetadataList().indexOfFirst { it.xpub == account.xpub }
+
+        bchDataManager.getNextReceiveCashAddress(position)
+            .doOnNext { pendingTransaction.receivingAddress = it }
+            .addToCompositeDisposable(this)
+            .subscribe(
+                { /* No-op */ },
+                { view.showSnackbar(R.string.unexpected_error, Snackbar.LENGTH_LONG) }
+            )
+    }
+
+//    private fun selectSendingAccount(data: Intent?) {
+//        try {
+//            val type: Class<*> = Class.forName(data?.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_OBJECT_TYPE))
+//            val any = ObjectMapper().readValue(
+//                data!!.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_ITEM),
+//                type
+//            )
+//
+//            when (any) {
+//                is LegacyAddress -> onSendingBchLegacyAddressSelected(any)
+//                is GenericMetadataAccount -> onSendingBchAccountSelected(any)
+//                else -> throw IllegalArgumentException("No method for handling $type available")
+//            }
+//        } catch (e: ClassNotFoundException) {
+//            Timber.e(e)
+//            selectDefaultOrFirstFundedSendingAccount()
+//        } catch (e: IOException) {
+//            Timber.e(e)
+//            selectDefaultOrFirstFundedSendingAccount()
+//        }
+//    }
+
+    private fun isValidBitcoinAmount(bAmount: BigInteger?): Boolean {
+        if (bAmount == null) {
+            return false
+        }
+
+        // Test that amount is more than dust
+        if (bAmount.compareTo(Payment.DUST) == -1) {
+            return false
+        }
+
+        // Test that amount does not exceed btc limit
+        if (bAmount.compareTo(BigInteger.valueOf(2_100_000_000_000_000L)) == 1) {
+            clearCryptoAmount()
+            return false
+        }
+
+        // Test that amount is not zero
+        return bAmount >= BigInteger.ZERO
+    }
+
+    private fun isValidBitcoincashAddress() =
+        Observable.just(
+            FormatsUtil.isValidBitcoinCashAddress(
+                environmentSettings.bitcoinCashNetworkParameters,
+                pendingTransaction.receivingAddress
+            )
+        )
+
+    private fun validateBitcoinCashTransaction(): Pair<Boolean, Int> {
+        var validated = true
+        var errorMessage = R.string.unexpected_error
+
+        if (pendingTransaction.receivingAddress.isEmpty()) {
+            errorMessage = R.string.bch_invalid_address
+            validated = false
+
+            // Same amount validation as bitcoin
+        } else if (!isValidBitcoinAmount(pendingTransaction.bigIntAmount)) {
+            errorMessage = R.string.invalid_amount
+            validated = false
+        } else if (pendingTransaction.unspentOutputBundle == null ||
+            pendingTransaction.unspentOutputBundle!!.spendableOutputs == null
+        ) {
+            errorMessage = R.string.no_confirmed_funds
+            validated = false
+        } else if (maxAvailable == null || maxAvailable.compareTo(pendingTransaction.bigIntAmount) == -1) {
+            errorMessage = R.string.insufficient_funds
+            validated = false
+        } else if (pendingTransaction.unspentOutputBundle!!.spendableOutputs.isEmpty()) {
+            errorMessage = R.string.insufficient_funds
+            validated = false
+        }
+
+        return Pair.of(validated, errorMessage)
+    }
+}
+
+fun String.removeBchUri(): String = this.replace("bitcoincash:", "")

@@ -6,7 +6,6 @@ data class TransactionHash(
     val cryptoCurrency: CryptoCurrency,
     val transactionHash: String
 ) {
-
     val explorerUrl: String get() = baseUrl() + transactionHash
 
     private fun baseUrl() =
@@ -15,5 +14,6 @@ data class TransactionHash(
             CryptoCurrency.ETHER -> "https://www.blockchain.com/eth/tx/"
             CryptoCurrency.BCH -> "https://www.blockchain.com/bch/tx/"
             CryptoCurrency.XLM -> "https://stellarchain.io/tx/"
+            CryptoCurrency.PAX -> "https://www.blockchain.com/eth/tx/" // TODO: AND_2003: Check this is correct
         }
 }

@@ -7,30 +7,27 @@ import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import com.blockchain.features.FeatureNames
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.serialization.toMoshiJson
 import com.blockchain.wallet.toAccountReference
 import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.android.synthetic.main.activity_account_chooser.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import com.squareup.moshi.Moshi
 import info.blockchain.balance.AccountReference
 import org.koin.android.ext.android.inject
-import org.koin.android.ext.android.property
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.utils.extensions.gone
-import piuk.blockchain.androidcoreui.utils.extensions.visible
+import timber.log.Timber
+import java.io.IOException
 
 class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChooserPresenter>(),
     AccountChooserView {
 
     private val accountChooserPresenter: AccountChooserPresenter by inject()
-
-    override val isContactsEnabled: Boolean by property(FeatureNames.CONTACTS)
 
     override val accountMode: AccountMode by unsafeLazy {
         intent.getSerializableExtra(EXTRA_CHOOSER_MODE) as AccountMode
@@ -50,11 +47,6 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
         supportActionBar?.run { setDisplayHomeAsUpEnabled(true) }
 
         onViewReady()
-    }
-
-    override fun showNoContacts() {
-        recyclerview.gone()
-        layout_no_contacts.visible()
     }
 
     override fun onSupportNavigateUp(): Boolean =
@@ -152,11 +144,26 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
             putExtra(EXTRA_ACTIVITY_TITLE, title)
         }
 
+        fun unpackAccountResult(data: Intent?): JsonSerializableAccount? {
+            return try {
+                val type: Class<*> = Class.forName(data?.getStringExtra(EXTRA_SELECTED_OBJECT_TYPE))
+                val any = ObjectMapper().readValue(data!!.getStringExtra(EXTRA_SELECTED_ITEM), type)
+
+                any as JsonSerializableAccount
+            } catch (e: ClassNotFoundException) {
+                Timber.e(e)
+                null
+            } catch (e: IOException) {
+                Timber.e(e)
+                null
+            }
+        }
+
         fun getSelectedRawAccount(data: Intent): JsonSerializableAccount {
             val clazz =
-                Class.forName(data.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_OBJECT_TYPE))
+                Class.forName(data.getStringExtra(EXTRA_SELECTED_OBJECT_TYPE))
 
-            val json = data.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_ITEM)
+            val json = data.getStringExtra(EXTRA_SELECTED_ITEM)
             val any = Moshi.Builder().build().adapter(clazz)
                 .fromJson(json)
             return any as JsonSerializableAccount

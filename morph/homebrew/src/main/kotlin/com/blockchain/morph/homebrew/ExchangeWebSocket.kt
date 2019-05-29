@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 private const val ChannelNameExchangeRate = "exchange_rate"
 
-class ExchangeWebSocket(private val underlyingSocket: WebSocket<String, String>, moshi: Moshi) : ExchangeRateStream {
+class ExchangeWebSocket(underlyingSocket: WebSocket<String, String>, moshi: Moshi) : ExchangeRateStream {
 
     private val ratesSocket = underlyingSocket
         .channelMessageFilter(ChannelNameExchangeRate, throwErrors = false)

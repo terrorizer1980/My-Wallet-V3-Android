@@ -16,12 +16,14 @@
     <string name="overview">Transactions</string>
 
     <string name="cancel">Cancel</string>
+    <string name="btn_ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="polite_no">No thanks</string>
     <string name="done">Done</string>
 
     <string name="SENT">Sent</string>
+    <string name="pax_fee">PAX FEE</string>
     <string name="sending">Sending</string>
     <string name="RECEIVED">Received</string>
     <string name="receiving">Receiving</string>
@@ -69,6 +71,22 @@
     <string name="pairing_failed">Pairing failed. Please try again.</string>
     <string name="account_locked_title">Account locked</string>
     <string name="account_locked_message">Your account has been locked temporarily as a precaution. Please check your email for more information and try again later.</string>
+    <string name="pin_box_0">Pin Box 0</string>
+    <string name="pin_box_1">Pin Box 1</string>
+    <string name="pin_box_2">Pin Box 2</string>
+    <string name="pin_box_3">Pin Box 3</string>
+    <string name="fingerprint_logo">Fingerprint Logo</string>
+    <string name="keyboard_input_1">Keyboard Input 1</string>
+    <string name="keyboard_input_2">Keyboard Input 2</string>
+    <string name="keyboard_input_3">Keyboard Input 3</string>
+    <string name="keyboard_input_4">Keyboard Input 4</string>
+    <string name="keyboard_input_5">Keyboard Input 5</string>
+    <string name="keyboard_input_6">Keyboard Input 6</string>
+    <string name="keyboard_input_7">Keyboard Input 7</string>
+    <string name="keyboard_input_8">Keyboard Input 8</string>
+    <string name="keyboard_input_9">Keyboard Input 9</string>
+    <string name="keyboard_input_0">Keyboard Input 0</string>
+    <string name="keyboard_input_delete">Keyboard Input Delete</string>
 
     <string name="check_connectivity_exit">Blockchain Wallet cannot obtain an Internet connection. Please check the connectivity on your device and try again.</string>
 
@@ -208,6 +226,7 @@
     <string name="transaction_occur_when_eth">Transactions occur when you receive and send ether.</string>
     <string name="transaction_occur_when_bitcoin_cash">Transactions occur when you receive and send bitcoin cash.</string>
     <string name="transaction_occur_when_lumens">Transactions occur when you receive and send Stellar.</string>
+    <string name="transaction_occur_when_paxos">Transactions occur when you receive and send Paxos.</string>
     <string name="click">Click</string>
     <string name="to_start_sending_and_receiving_btc">to start sending and receiving bitcoin.</string>
 
@@ -424,12 +443,14 @@
     <string name="pairing_code_warning_2">Keep this code safe!\nDo not share with others.</string>
 
     <!-- SHARE RECEIVE ADDRESS -->
-    <string name="email_request_subject">Bitcoin payment request</string>
+    <string name="email_request_subject_btc">Bitcoin payment request</string>
     <string name="email_request_subject_eth">Ether payment request</string>
     <string name="email_request_subject_bch">Bitcoin Cash payment request</string>
+    <string name="email_request_subject_pax">PAX payment request</string>
     <string name="email_request_subject_xlm">Xlm payment request</string>
-    <string name="email_request_body">Please send%1$s BTC to the Bitcoin address %2$s.</string>
+    <string name="email_request_body_btc">Please send%1$s BTC to the Bitcoin address %2$s.</string>
     <string name="email_request_body_eth">Please send ETH to the Ether address %1$s.</string>
+    <string name="email_request_body_pax">Please send PAX to the USD PAX address %1$s.</string>
     <string name="email_request_body_bch">Please send BCH to the Bitcoin Cash address %1$s.</string>
     <string name="email_request_body_xlm">Please send XLM to the Stellar address %1$s.</string>
     <string name="email_request_body_fallback">attached</string>
@@ -683,6 +704,8 @@
     <string name="swipe_receive_address_info">Five addresses will be loaded consecutively, after which logging in is required to show new addresses.</string>
     <string name="swipe_receive_no_addresses">No more addresses can be loaded right now. Log in to the app to load more.</string>
     <string name="swipe_receive_request">Request %1$s</string>
+    <string name="swipe_receive_left_arrow">Swipe to Receive Left Arrow</string>
+    <string name="swipe_receive_right_arrow">Swipe to Receive Right Arrow</string>
 
     <!-- ONBOARDING -->
     <string name="onboarding_fingerprint_title">Fingerprint Login</string>
@@ -760,6 +783,11 @@
     <string name="eth_support_only_eth">At the moment we only support ETH - you cannot receive tokens to this address</string>
     <string name="eth_unconfirmed_wait">Please wait until your previous transaction confirms</string>
     <string name="eth_transaction_complete">Transaction complete! Your transactions and balance will update soon, this can take a few minutes.\n</string>
+
+    <!-- PAX/ERC 20 -->
+    <string name="pax_to_field_helper">Enter PAX/ETH address or select</string>
+    <string name="pax_to_field_helper_no_dropdown">Enter PAX/ETH address</string>
+    <string name="pax_invalid_address">Invalid USD PAX address</string>
 
     <!-- DASHBOARD -->
     <string name="dashboard_title">Dashboard</string>
@@ -845,14 +873,33 @@
         <item>@string/lockbox_title</item>
     </string-array>
 
+    <!--STABLECOIN-->
+    <string name="stablecoin_announcement_new">New</string>
+    <string name="stablecoin_announcement_introducing_title">Our First Stablecoin</string>
+    <string name="stablecoin_announcement_introducing_description">Introducing USD PAX, a safe and stable digital dollar in your wallet</string>
+    <string name="stablecoin_announcement_introducing_link">Exchange for PAX Now</string>
+
     <!-- Complete Your Profile Card -->
     <string name="complete_your_profile_card_title">Complete Your Profile</string>
-    <string name="complete_your_profile_card_body">Complete your Blockchain profile today and we\'ll Airdrop $25 of XLM directly into your wallet!</string>
+    <string name="complete_your_profile_card_body">Complete your Blockchain profile today and we\'ll Airdrop XLM directly into your wallet!</string>
     <string name="complete_your_profile_card_button">Continue to Claim Your XLM</string>
 
     <!-- Claim Your Free Crypto Card -->
     <string name="claim_your_free_crypto_card_title">@string/claim_your_free_crypto</string>
-    <string name="claim_your_free_crypto_card_body">You\'re all set! Tap this card to claim your $25 of free XLM.</string>
+    <string name="claim_your_free_crypto_card_body">You\'re all set! Tap this card to claim your free XLM.</string>
     <string name="claim_your_free_crypto_card_button">@string/claim_your_xlm</string>
+
+    <!-- PAX No Transactions Screen -->
+    <string name="pax_title">USD PAX</string>
+    <string name="pax_no_transactions_message">Your USD PAX transactions will show up here once you make your first transaction.</string>
+    <string name="pax_learn_more_link">Learn more about USD PAX</string>
+    <string name="pax_swap_now">Swap For USD PAX Now</string>
+
+    <!-- Claim Your Free Crypto Card -->
+    <string name="swap_announcement_new">New</string>
+    <string name="swap_announcement_title">Swap</string>
+    <string name="swap_announcement_description">Exchange one crypto for another without ever leaving your Blockchain Wallet.</string>
+    <string name="swap_announcement_introducing_link">Check it out!</string>
+    <string name="pax_wallet_name">My USD PAX Wallet</string>
 
 </resources>

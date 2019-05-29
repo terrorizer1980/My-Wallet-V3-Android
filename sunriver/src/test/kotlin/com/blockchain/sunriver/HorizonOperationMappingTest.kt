@@ -1,6 +1,8 @@
 package com.blockchain.sunriver
 
 import com.blockchain.testutils.lumens
+import com.blockchain.testutils.stroops
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`should equal`
@@ -8,6 +10,7 @@ import org.amshove.kluent.`should throw`
 import org.amshove.kluent.mock
 import org.junit.Test
 import org.stellar.sdk.KeyPair
+import org.stellar.sdk.responses.TransactionResponse
 import org.stellar.sdk.responses.operations.CreateAccountOperationResponse
 import org.stellar.sdk.responses.operations.ManageDataOperationResponse
 import org.stellar.sdk.responses.operations.PaymentOperationResponse
@@ -19,7 +22,7 @@ class HorizonOperationMappingTest {
     fun `map response rejects unsupported types`() {
         val unsupportedResponse: ManageDataOperationResponse = mock();
         {
-            mapOperationResponse(unsupportedResponse, "")
+            mapOperationResponse(unsupportedResponse, "", givenHorizonProxy(100))
         } `should throw` IllegalArgumentException::class
     }
 
@@ -33,10 +36,11 @@ class HorizonOperationMappingTest {
             on { transactionHash } `it returns` "ABCD"
             on { createdAt } `it returns` "TIME"
             on { amount } `it returns` 50.lumens().toStringWithoutSymbol(Locale.US)
-        }, myAccount)
+        }, myAccount, givenHorizonProxy(100))
             .apply {
                 hash `should equal` "ABCD"
                 timeStamp `should equal` "TIME"
+                fee `should equal` 100.stroops()
                 from.accountId `should equal` otherAccount
                 to.accountId `should equal` myAccount
                 value `should equal` 50.lumens()
@@ -53,10 +57,11 @@ class HorizonOperationMappingTest {
             on { transactionHash } `it returns` "ABCD"
             on { createdAt } `it returns` "TIME"
             on { amount } `it returns` 50.lumens().toStringWithoutSymbol(Locale.US)
-        }, myAccount)
+        }, myAccount, givenHorizonProxy(100))
             .apply {
                 hash `should equal` "ABCD"
                 timeStamp `should equal` "TIME"
+                fee `should equal` 100.stroops()
                 from.accountId `should equal` myAccount
                 to.accountId `should equal` otherAccount
                 value `should equal` (-50).lumens()
@@ -73,10 +78,11 @@ class HorizonOperationMappingTest {
             on { transactionHash } `it returns` "ABCD"
             on { createdAt } `it returns` "TIME"
             on { startingBalance } `it returns` 100.lumens().toStringWithoutSymbol(Locale.US)
-        }, myAccount)
+        }, myAccount, givenHorizonProxy(100))
             .apply {
                 hash `should equal` "ABCD"
                 timeStamp `should equal` "TIME"
+                fee `should equal` 100.stroops()
                 from.accountId `should equal` otherAccount
                 to.accountId `should equal` myAccount
                 value `should equal` 100.lumens()
@@ -93,13 +99,23 @@ class HorizonOperationMappingTest {
             on { transactionHash } `it returns` "ABCD"
             on { createdAt } `it returns` "TIME"
             on { startingBalance } `it returns` 100.lumens().toStringWithoutSymbol(Locale.US)
-        }, myAccount)
+        }, myAccount, givenHorizonProxy(100))
             .apply {
                 hash `should equal` "ABCD"
                 timeStamp `should equal` "TIME"
+                fee `should equal` 100.stroops()
                 from.accountId `should equal` myAccount
                 to.accountId `should equal` otherAccount
                 value `should equal` (-100).lumens()
             }
+    }
+
+    private fun givenHorizonProxy(fee: Long): HorizonProxy {
+        val mockTx: TransactionResponse = mock {
+            on { feePaid } `it returns` fee
+        }
+        return mock {
+            on { getTransaction(any()) } `it returns` mockTx
+        }
     }
 }

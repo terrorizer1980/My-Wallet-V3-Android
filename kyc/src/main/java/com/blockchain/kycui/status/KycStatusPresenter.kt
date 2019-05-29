@@ -1,7 +1,9 @@
 package com.blockchain.kycui.status
 
 import com.blockchain.BaseKycPresenter
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.Kyc2TierState
+import com.blockchain.kyc.models.nabu.KycState
+import com.blockchain.kycui.settings.KycStatusHelper
 import com.blockchain.nabu.NabuToken
 import com.blockchain.notifications.NotificationTokenManager
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -13,18 +15,14 @@ import timber.log.Timber
 
 class KycStatusPresenter(
     nabuToken: NabuToken,
-    private val nabuDataManager: NabuDataManager,
+    private val kycStatusHelper: KycStatusHelper,
     private val notificationTokenManager: NotificationTokenManager
 ) : BaseKycPresenter<KycStatusView>(nabuToken) {
 
     override fun onViewReady() {
         compositeDisposable +=
-            fetchOfflineToken
-                .flatMap {
-                    nabuDataManager.getUser(it)
-                        .subscribeOn(Schedulers.io())
-                }
-                .map { it.kycState }
+            kycStatusHelper.getKyc2TierStatus()
+                .map { it.toKycState() }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { view.showProgressDialog() }
                 .doOnEvent { _, _ -> view.dismissProgressDialog() }
@@ -34,6 +32,18 @@ class KycStatusPresenter(
                     onError = { view.finishPage() }
                 )
     }
+
+    private fun Kyc2TierState.toKycState(): KycState =
+        when (this) {
+            Kyc2TierState.Hidden -> KycState.None
+            Kyc2TierState.Locked -> KycState.None
+            Kyc2TierState.Tier1InReview -> KycState.Pending
+            Kyc2TierState.Tier1Approved -> KycState.Verified
+            Kyc2TierState.Tier1Failed -> KycState.Rejected
+            Kyc2TierState.Tier2InReview -> KycState.Pending
+            Kyc2TierState.Tier2Approved -> KycState.Verified
+            Kyc2TierState.Tier2Failed -> KycState.Rejected
+        }
 
     internal fun onClickNotifyUser() {
         compositeDisposable +=
