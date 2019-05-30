@@ -1,6 +1,6 @@
 package piuk.blockchain.android.injection;
 
-import com.blockchain.morph.ui.detail.TradeDetailActivity;
+import piuk.blockchain.android.ui.swap.detail.TradeDetailActivity;
 import dagger.Subcomponent;
 import org.jetbrains.annotations.NotNull;
 import piuk.blockchain.android.data.websocket.WebSocketService;

@@ -45,14 +45,12 @@ import com.blockchain.kyc.models.nabu.Kyc2TierState;
 import com.blockchain.kycui.navhost.KycNavHostActivity;
 import com.blockchain.kycui.navhost.models.CampaignType;
 import com.blockchain.kycui.settings.KycStatusPreference;
-import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity;
 import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.notifications.analytics.AnalyticsEvents;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.mukesh.countrypicker.fragments.CountryPicker;
 import com.mukesh.countrypicker.models.Country;
 
-import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.util.FormatsUtil;
 import info.blockchain.wallet.util.PasswordUtil;

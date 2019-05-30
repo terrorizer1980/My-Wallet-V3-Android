@@ -37,7 +37,7 @@ import com.blockchain.koin.modules.launchAsync
 import com.blockchain.kycui.navhost.KycNavHostActivity
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.lockbox.ui.LockboxLandingActivity
-import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
+import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents

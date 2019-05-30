@@ -6,7 +6,7 @@ import com.blockchain.activities.StartSwap
 import com.blockchain.kycui.navhost.KycNavHostActivity
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.morph.MorphMethodSelector
-import com.blockchain.morph.ui.homebrew.exchange.history.TradeHistoryActivity
+import piuk.blockchain.android.ui.swap.homebrew.exchange.history.TradeHistoryActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.kyc.morphmethod.TiersMorphMethodTypeSelectorSelector

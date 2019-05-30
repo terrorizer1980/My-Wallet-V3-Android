@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-    api project(':morph:ui')
+//    api project(':morph:ui')
     api project(':morph:common')
     api project(':coreui')
     implementation project(':core')
