@@ -95,8 +95,6 @@ internal class PerCurrencySendPresenter<View : SendView>(
     }
 
     override fun onCurrencySelected(currency: CryptoCurrency) {
-        if (selectedCrypto == currency) return
-
         delegate = when (currency) {
             CryptoCurrency.BTC -> btcStrategy
             CryptoCurrency.ETHER -> etherStrategy
