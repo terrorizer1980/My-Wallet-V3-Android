@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
-    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.send.SendFragment">
 
     <android.support.design.widget.AppBarLayout
@@ -35,7 +35,8 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout android:layout_width="match_parent"
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.v4.widget.NestedScrollView
@@ -44,8 +45,8 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="?attr/actionBarSize"
             android:animateLayoutChanges="true"
-            android:descendantFocusability="beforeDescendants"
             android:background="@color/white"
+            android:descendantFocusability="beforeDescendants"
             android:focusable="true"
             android:focusableInTouchMode="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -100,8 +101,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp" />
 
                 <ProgressBar
                     android:id="@+id/progressBarMaxAvailable"
@@ -147,7 +148,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="16dp"
-                        android:fontFamily="@font/montserrat_light"
                         android:gravity="center|left"
                         android:paddingLeft="16dp"
                         android:text="@string/fee"
@@ -173,7 +173,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:fontFamily="@font/montserrat"
                                 android:textColor="@color/black"
                                 android:textSize="14sp"
                                 tools:text="Priority" />
@@ -183,7 +182,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:fontFamily="@font/montserrat"
                                 android:textSize="14sp"
                                 tools:text="~ 60 min" />
 
@@ -197,7 +195,6 @@
                             android:layout_marginLeft="8dp"
                             android:layout_marginRight="16dp"
                             android:layout_weight="0.9"
-                            android:fontFamily="@font/montserrat"
                             android:gravity="right"
                             android:textColor="@color/black"
                             android:textSize="16sp"
@@ -222,7 +219,6 @@
                                 android:digits="1234567890"
                                 android:focusable="true"
                                 android:focusableInTouchMode="true"
-                                android:fontFamily="@font/montserrat"
                                 android:imeOptions="actionDone"
                                 android:inputType="number"
                                 android:textSize="16sp" />
@@ -236,8 +232,8 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginRight="4dp"
                             android:layout_weight="0.1"
-                            android:dropDownSelector="?attr/selectableItemBackground"
-                            android:dropDownWidth="250dp" />
+                            android:dropDownWidth="250dp"
+                            android:dropDownSelector="?attr/selectableItemBackground" />
 
                     </LinearLayout>
 
@@ -255,11 +251,10 @@
                         android:id="@+id/info_link"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
                         android:layout_marginTop="8dp"
-                        android:fontFamily="@font/montserrat"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="8dp"
                         android:gravity="center"
                         android:text="@string/learn_more_lead"
                         android:textColor="@color/primary_blue_accent"
@@ -275,11 +270,10 @@
                         android:id="@+id/arbitraryWarning"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
                         android:layout_marginTop="8dp"
-                        android:fontFamily="@font/montserrat"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="8dp"
                         android:gravity="center"
                         android:textColor="@color/product_red_medium"
                         android:visibility="gone"
@@ -297,8 +291,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginBottom="16dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginBottom="16dp"
                         android:paddingLeft="32dp"
                         android:paddingRight="32dp"
                         android:text="@string/CONTINUE"

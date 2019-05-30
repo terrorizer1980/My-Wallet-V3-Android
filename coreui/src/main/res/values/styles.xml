@@ -3,6 +3,7 @@
     <style name="AppTheme" parent="BaseTheme">
         <!-- <v21 specific stuff here -->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:fontFamily">@font/inter</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -60,12 +61,12 @@
     </style>
 
     <style name="ToolbarTitleTextAppearance" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/inter</item>
     </style>
 
     <!-- Using a style to apply the font as it doesn't work in Themes -->
     <style name="ButtonStyle">
-        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:fontFamily">@font/inter</item>
     </style>
 
     <style name="LightBlueButtonTheme" parent="ThemeOverlay.AppCompat.Dark">
@@ -74,7 +75,7 @@
         <!-- Enabled colour -->
         <item name="colorControlHighlight">@color/primary_navy_medium</item>
         <!-- Fonts -->
-        <item name="android:fontFamily">@font/montserrat_semi_bold</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
         <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
@@ -87,7 +88,6 @@
         <item name="colorButtonNormal">@color/primary_gray_dark</item>
         <item name="colorControlHighlight">@color/white</item>
         <item name="colorAccent">@color/white</item>
-        <item name="android:fontFamily">@font/montserrat</item>
         <item name="android:textColor">@color/primary_navy_medium</item>
         <item name="android:textSize">16sp</item>
         <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
@@ -147,16 +147,14 @@
     <style name="MinBalanceExplanationTextStyle">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">#FF505050</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="MinBalanceExplanationTextStyle.Bold">
-        <item name="android:fontFamily">@font/montserrat_semi_bold</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
     </style>
 
     <style name="MemoEditTextStyle">
         <item name="android:textColor">#FF000000</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="MemoEditTextStyle.Description">

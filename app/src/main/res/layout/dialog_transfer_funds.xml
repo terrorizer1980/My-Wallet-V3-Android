@@ -50,7 +50,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/montserrat_light"
                 android:paddingBottom="8dp"
                 android:text="@string/from"
                 android:textColor="@color/primary_gray_dark"
@@ -60,7 +59,6 @@
                 android:id="@+id/label_from"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/montserrat"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 tools:text="2 imported addresses" />
@@ -79,7 +77,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/montserrat_light"
                 android:paddingBottom="8dp"
                 android:text="@string/to"
                 android:textColor="@color/primary_gray_medium"
@@ -93,7 +90,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:divider="@null"
                 android:dropDownSelector="?attr/selectableItemBackground"
-                android:fontFamily="@font/montserrat" />
+                 />
 
         </LinearLayout>
 
@@ -119,7 +116,6 @@
                 android:layout_gravity="left"
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="16dp"
-                android:fontFamily="@font/montserrat_light"
                 android:text="@string/transfer_amount"
                 android:textColor="@color/primary_gray_dark"
                 android:textSize="14sp" />
@@ -130,7 +126,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
-                android:fontFamily="@font/montserrat"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 tools:text="0.0011242 BTC" />
@@ -141,7 +136,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:layout_marginBottom="8dp"
-                android:fontFamily="@font/montserrat"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 tools:text="$6.22" />
@@ -152,7 +146,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:layout_marginRight="16dp"
-                android:fontFamily="@font/montserrat_light"
                 android:text="@string/fee"
                 android:textColor="@color/primary_gray_dark"
                 android:textSize="14sp" />
@@ -162,7 +155,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:fontFamily="@font/montserrat"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 tools:text="0.0003685 BTC" />
@@ -172,7 +164,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:fontFamily="@font/montserrat"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 tools:text="$0.23" />

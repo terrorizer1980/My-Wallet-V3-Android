@@ -40,7 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/onboarding_complete_check"
         android:layout_centerHorizontal="true"
-        android:fontFamily="@font/montserrat"
         android:text="@string/onboarding_complete_title"
         android:textColor="@color/primary_navy_medium"
         android:textSize="18sp" />
@@ -51,7 +50,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/onboarding_complete_title"
         android:layout_centerHorizontal="true"
-        android:fontFamily="@font/montserrat"
         android:gravity="center_horizontal"
         android:paddingLeft="72dp"
         android:paddingRight="72dp"
@@ -68,7 +66,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:background="?attr/selectableItemBackground"
-        android:fontFamily="@font/montserrat"
         android:padding="16dp"
         android:text="@string/onboarding_start_over"
         android:textColor="@color/primary_blue_accent"

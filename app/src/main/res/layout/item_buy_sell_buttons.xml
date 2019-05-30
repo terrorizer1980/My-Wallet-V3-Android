@@ -39,7 +39,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:background="@color/product_light_gray_background"
-        android:fontFamily="@font/montserrat"
         android:paddingBottom="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"

@@ -2,6 +2,7 @@
 
     <style name="AppTheme.MainActivity">
         <!-- Only exists to prevent issues with pre-21 devices, see values-v21 -->
+
     </style>
 
     <style name="NoDisplay" parent="Theme.AppCompat.Light.NoActionBar">
@@ -102,7 +103,6 @@
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/selector_accent_blue</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="SpinnerWhite">
@@ -114,7 +114,6 @@
     </style>
 
     <style name="RecoveryPhraseEditText">
-        <item name="android:fontFamily">@font/montserrat</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">42dp</item>
         <item name="android:gravity">center</item>
@@ -168,7 +167,6 @@
         <item name="android:padding">16dp</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Subhead</item>
         <item name="android:textColor">@color/primary_gray_medium</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="ContactsDetail">
@@ -186,7 +184,6 @@
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:textColor">@color/product_gray_headers</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="OnboardingHeader">
@@ -197,7 +194,6 @@
         <item name="android:textSize">24sp</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Headline</item>
         <item name="android:textColor">@color/primary_navy_medium</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="OnBoardingDetail">
@@ -209,7 +205,6 @@
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
         <item name="android:textColor">@color/primary_gray_medium</item>
-        <item name="android:fontFamily">@font/montserrat_light</item>
     </style>
 
     <style name="OnBoardingEmail">
@@ -221,7 +216,7 @@
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:fontFamily">@font/montserrat_semi_bold</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
     </style>
 
     <style name="CryptoCurrencySelectorTextView">
@@ -237,13 +232,11 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="DashboardCoinTitle">
         <item name="android:textColor">@color/primary_gray_dark</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="DashboardCoinTitle.LayoutMatchParentWidth">
@@ -260,7 +253,6 @@
         <item name="android:textSize">12sp</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="DashboardCoinAmounts.LayoutMatchParentWidth">
@@ -278,9 +270,6 @@
         <item name="android:paddingTop">5dp</item>
     </style>
 
-    <style name="NavDrawerTextAppearance" parent="Widget.Design.NavigationView">
-        <item name="android:fontFamily">@font/montserrat</item>
-    </style>
 
     <style name="ExchangeBitcoinTitle">
         <item name="android:gravity">center_vertical</item>
@@ -288,7 +277,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/primary_gray_dark</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/montserrat_light</item>
     </style>
 
     <style name="EditTextNumberField">
@@ -310,7 +298,6 @@
         <item name="android:paddingBottom">8dp</item>
         <item name="android:textColor">@color/primary_gray_dark</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/montserrat_light</item>
     </style>
 
     <style name="ConfirmPaymentField">
@@ -321,7 +308,6 @@
         <item name="android:paddingBottom">8dp</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="ExchangeTextViewButton">
@@ -335,7 +321,6 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/primary_blue_accent</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="TradeConfirmationTitle">
@@ -345,7 +330,6 @@
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:textColor">@color/product_gray_headers</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">@font/montserrat_light</item>
     </style>
 
     <style name="TradeConfirmationAmount">
@@ -359,7 +343,6 @@
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="SwitchGreen" parent="Theme.AppCompat.Light">

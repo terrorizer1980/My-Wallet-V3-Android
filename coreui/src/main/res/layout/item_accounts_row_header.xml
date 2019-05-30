@@ -15,7 +15,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:fontFamily="@font/montserrat"
             android:padding="16dp"
             tools:text="@string/imported_addresses"
             android:textColor="@color/primary_navy_medium"

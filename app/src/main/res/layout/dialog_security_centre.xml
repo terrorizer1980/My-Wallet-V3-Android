@@ -38,7 +38,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:fontFamily="@font/montserrat"
                 tools:text="@string/security_centre_email_title" />
 
             <TextView

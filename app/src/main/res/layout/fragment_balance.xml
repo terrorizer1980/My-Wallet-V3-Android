@@ -39,7 +39,6 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:fontFamily="@font/montserrat"
                     android:textColor="@color/white"
                     android:textSize="24sp"
                     app:layout_constraintLeft_toLeftOf="parent"

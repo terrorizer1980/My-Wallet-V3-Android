@@ -23,7 +23,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:fontFamily="@font/montserrat"
             android:textColor="#FF4A4A4A"
             android:textSize="20sp"
             tools:text="My Bitcoin Account" />
