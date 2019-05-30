@@ -67,6 +67,7 @@
             style="@style/CustomDialogButton"
             android:layout_gravity="right"
             android:text="@string/not_now"
+            android:contentDescription="@string/not_now"
             android:textColor="@color/primary_gray_dark"
             android:visibility="gone"
             tools:ignore="RtlHardcoded"
