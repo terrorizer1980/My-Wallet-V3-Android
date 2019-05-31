@@ -59,6 +59,7 @@ import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.logging.Logging
+import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Locale
@@ -94,10 +95,10 @@ internal class ExchangeFragment : Fragment() {
     private lateinit var keyboardGroup: ConstraintLayout
 
     private lateinit var exchangeModel: ExchangeModel
-
+    private var lastUserValue: Pair<Int, BigDecimal>? = null
     private lateinit var exchangeLimitState: ExchangeLimitState
     private lateinit var exchangeMenuState: ExchangeMenuState
-
+    private var latestBaseFix: Fix = Fix.BASE_FIAT
     private val startKyc: StartKyc by inject()
     private val stringUtils: StringUtils by inject()
 
@@ -151,7 +152,6 @@ internal class ExchangeFragment : Fragment() {
             ).show(fragmentManager, "BottomDialog")
         }
         exchangeButton.setOnClickListener {
-            exchangeModel.fixAsCrypto()
             activityListener.launchConfirmation()
         }
         largeValue.setOnClickListener(toggleOnClickListener)
@@ -164,7 +164,6 @@ internal class ExchangeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-
         keyboard.setMaximums(
             Maximums(
                 maxDigits = 11,
@@ -173,7 +172,13 @@ internal class ExchangeFragment : Fragment() {
         )
 
         compositeDisposable += allTextUpdates().distinctUntilChanged()
-            .subscribeBy { exchangeModel.inputEventSink.onNext(it) }
+            .subscribeBy {
+                exchangeModel.inputEventSink.onNext(it)
+            }
+
+        lastUserValue?.let {
+            keyboard.setValue(it.first, it.second)
+        }
 
         compositeDisposable += exchangeModel
             .exchangeViewStates
@@ -187,10 +192,9 @@ internal class ExchangeFragment : Fragment() {
                 }
 
                 inputTypeRelay.onNext(it.fix)
-
+                lastUserValue = it.lastUserValue.userDecimalPlaces to it.lastUserValue.toBigDecimal()
                 selectSendAccountButton.setButtonGraphicsAndTextFromCryptoValue(it.fromCrypto)
                 selectReceiveAccountButton.setButtonGraphicsAndTextFromCryptoValue(it.toCrypto)
-
                 keyboard.setValue(it.lastUserValue.userDecimalPlaces, it.lastUserValue.toBigDecimal())
                 exchangeButton.isEnabled = it.isValid()
 
@@ -205,7 +209,19 @@ internal class ExchangeFragment : Fragment() {
                 Logging.logCustom(FixTypeEvent(it))
             }
 
-        exchangeModel.fixAsFiat()
+        compositeDisposable += exchangeModel
+            .exchangeViewStates.distinctUntilChanged { prev, current ->
+            prev.fix == current.fix
+        }.observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                latestBaseFix = it.fix
+            }
+
+        if (latestBaseFix == Fix.BASE_CRYPTO) {
+            exchangeModel.fixAsCrypto()
+        } else if (latestBaseFix == Fix.BASE_FIAT) {
+            exchangeModel.fixAsFiat()
+        }
     }
 
     private fun updateBalance(exchangeViewState: ExchangeViewState) {
@@ -238,8 +254,8 @@ internal class ExchangeFragment : Fragment() {
         val parts = fiatValue.toStringParts()
         largeValue.setText(
             ThreePartText(parts.symbol,
-            parts.major,
-            if (decimalCursor != 0) parts.minor else "")
+                parts.major,
+                if (decimalCursor != 0) parts.minor else "")
         )
 
         val fromCryptoString = cryptoValue.toStringWithSymbol()
@@ -250,8 +266,8 @@ internal class ExchangeFragment : Fragment() {
     private fun displayCryptoLarge(cryptoValue: CryptoValue, fiatValue: FiatValue, decimalCursor: Int) {
         largeValue.setText(
             ThreePartText("",
-            cryptoValue.formatExactly(decimalCursor) + " " + cryptoValue.symbol(),
-            "")
+                cryptoValue.formatExactly(decimalCursor) + " " + cryptoValue.symbol(),
+                "")
         )
 
         val fromFiatString = fiatValue.toStringWithSymbol()
