@@ -19,17 +19,17 @@ private object FiatFormat {
         val currencyInstance = Currency.getInstance(key.currencyCode)
         val fmt = NumberFormat.getCurrencyInstance(key.locale) as DecimalFormat
         fmt.apply {
-                decimalFormatSymbols =
-                    decimalFormatSymbols.apply {
-                        currency = currencyInstance
-                        if (!key.includeSymbol) {
-                            currencySymbol = ""
-                        }
+            decimalFormatSymbols =
+                decimalFormatSymbols.apply {
+                    currency = currencyInstance
+                    if (!key.includeSymbol) {
+                        currencySymbol = ""
                     }
-                minimumFractionDigits = currencyInstance.defaultFractionDigits
-                maximumFractionDigits = currencyInstance.defaultFractionDigits
-                roundingMode = RoundingMode.DOWN
-            }
+                }
+            minimumFractionDigits = currencyInstance.defaultFractionDigits
+            maximumFractionDigits = currencyInstance.defaultFractionDigits
+            roundingMode = RoundingMode.DOWN
+        }
     }
 }
 

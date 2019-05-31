@@ -49,4 +49,6 @@ class SpendableValueIntent(val cryptoValue: CryptoValue) : ExchangeIntent()
 
 object ClearQuoteIntent : ExchangeIntent()
 
+object ApplyMaxSpendable : ExchangeIntent()
+
 class LockQuoteIntent(val lockQuote: Boolean) : ExchangeIntent()

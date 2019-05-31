@@ -21,6 +21,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.blockchain.balance.coinIconWhite
 import com.blockchain.balance.colorRes
+import com.blockchain.morph.exchange.mvi.ApplyMaxSpendable
 import com.blockchain.morph.exchange.mvi.ExchangeIntent
 import com.blockchain.morph.exchange.mvi.ExchangeViewState
 import com.blockchain.morph.exchange.mvi.Fix
@@ -156,9 +157,13 @@ internal class ExchangeFragment : Fragment() {
         }
         largeValue.setOnClickListener(toggleOnClickListener)
         smallValue.setOnClickListener(toggleOnClickListener)
+
+        textViewBalance.setOnClickListener {
+            exchangeModel.inputEventSink.onNext(ApplyMaxSpendable)
+        }
     }
 
-    val toggleOnClickListener = View.OnClickListener {
+    private val toggleOnClickListener = View.OnClickListener {
         exchangeModel.inputEventSink.onNext(ToggleFiatCryptoIntent())
     }
 
