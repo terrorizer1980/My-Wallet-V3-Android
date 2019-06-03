@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -9,16 +10,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <TextView
+            android:id="@+id/text_view_country_supported_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:contentDescription="@string/kyc_veriff_splash_country_supported_header"
+            android:text="@string/kyc_veriff_splash_country_supported_header"
+            android:textColor="@color/primary_navy_medium"
+            android:textSize="17sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_view_country_supported_subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:lineSpacingExtra="5sp"
+            android:text="@string/kyc_veriff_splash_country_supported_subtitle"
+            app:layout_constraintEnd_toEndOf="@+id/text_view_country_supported_header"
+            app:layout_constraintStart_toStartOf="@+id/text_view_country_supported_header"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_country_supported_header" />
+
         <ImageView
             android:id="@+id/image_view_veriff_splash"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
+            android:layout_marginTop="18dp"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_country_supported_subtitle"
             app:srcCompat="@drawable/vector_identity" />
 
         <TextView
