@@ -79,4 +79,8 @@ val coreUiFeatureFlagsModule = applicationContext {
     factory("ff_notify_coinify_users_to_kyc") {
         get<RemoteConfig>().featureFlag("android_notify_coinify_users_to_kyc")
     }
+
+    factory("ff_get_free_xlm_popup") {
+        get<RemoteConfig>().featureFlag("get_free_xlm_popup")
+    }
 }
