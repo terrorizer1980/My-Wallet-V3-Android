@@ -29,7 +29,27 @@ import com.blockchain.ui.extensions.throttledClicks
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.*
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.button_learn_more
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.button_swap_now
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.card_tier_1
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.card_tier_2
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.icon_tier1_state
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.icon_tier2_state
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.textViewEligible
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_contact_support
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_header_tiers_line1
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_header_tiers_line2
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier1_level
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier1_limit
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier1_periodic_limit
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier1_requires
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier1_state
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier2_level
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier2_limit
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier2_periodic_limit
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier2_requires
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier2_state
+import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.tier_available_fiat
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.constants.URL_CONTACT_SUPPORT
 import piuk.blockchain.android.constants.URL_LEARN_MORE_REJECTED
@@ -69,7 +89,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         progressListener.setHostTitle(title)
         progressListener.incrementProgress(KycStep.SplashPage)
 
-        view.findViewById<TextView>(R.id.textViewEligible)?.renderSingleLink(
+        textViewEligible.renderSingleLink(
             R.string.by_completing_gold_level_you_will_be_eligible_to_participate_in_our_airdrop_program,
             R.string.learn_more,
             R.string.airdrop_learn_more_url
@@ -80,11 +100,11 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
 
     private val disposable = CompositeDisposable()
 
-    override fun renderTiersList(tiers: TiersJson) {
+    override fun renderTiersList(tiers: TiersJson, hasLargeSunriverBacklog: Boolean) {
         // Logic is now limited to 2 tiers, future refactor to traverse tiersList
-        renderTier1(tiers.tiers[1])
+        renderTier1(tiers.tiers[1], hasLargeSunriverBacklog)
 
-        renderTier2(tiers.tiers[2])
+        renderTier2(tiers.tiers[2], hasLargeSunriverBacklog)
 
         reportState(tiers.tiers[1].state, tiers.tiers[2].state)
     }
@@ -101,7 +121,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         }
     }
 
-    private fun renderTier(tier: TierJson, layoutElements: TierLayoutElements) {
+    private fun renderTier(tier: TierJson, layoutElements: TierLayoutElements, hasLargeSunriverBacklog: Boolean) {
         when (tier.state) {
             KycTierState.Rejected -> {
                 layoutElements.icon.setImageDrawable(R.drawable.vector_tier_locked)
@@ -125,6 +145,9 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
                 text_header_tiers_line2.text = getString(R.string.tier_x_in_review, getLevelForTier(tier))
                 button_learn_more.gone()
                 text_contact_support.gone()
+                if (hasLargeSunriverBacklog) {
+                    textViewEligible.text = getString(R.string.gold_level_under_review_sunriver_large_backlog)
+                }
             }
             KycTierState.Verified -> {
                 layoutElements.icon.setImageDrawable(R.drawable.vector_tier_verified)
@@ -147,7 +170,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         layoutElements.textPeriodicLimit.text = getString(getLimitString(tier))
     }
 
-    private fun renderTier1(tier: TierJson) {
+    private fun renderTier1(tier: TierJson, hasLargeSunriverBacklog: Boolean) {
         val layoutElements = TierLayoutElements(
             cardTier = card_tier_1,
             icon = icon_tier1_state,
@@ -158,10 +181,10 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             textTierRequires = text_tier1_requires
         )
 
-        renderTier(tier, layoutElements)
+        renderTier(tier, layoutElements, hasLargeSunriverBacklog)
     }
 
-    private fun renderTier2(tier: TierJson) {
+    private fun renderTier2(tier: TierJson, hasLargeSunriverBacklog: Boolean) {
         val layoutElements = TierLayoutElements(
             cardTier = card_tier_2,
             icon = icon_tier2_state,
@@ -172,7 +195,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             textTierRequires = text_tier2_requires
         )
 
-        renderTier(tier, layoutElements)
+        renderTier(tier, layoutElements, hasLargeSunriverBacklog)
     }
 
     private fun getLevelForTier(tier: TierJson): String =
