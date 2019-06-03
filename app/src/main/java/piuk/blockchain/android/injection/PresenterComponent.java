@@ -83,8 +83,6 @@ public interface PresenterComponent {
 
     void inject(@NotNull PasswordRequiredActivity passwordRequiredActivity);
 
-    void inject(@NotNull ManualPairingActivity manualPairingActivity);
-
     void inject(@NotNull MainActivity mainActivity);
 
     void inject(@NotNull PinEntryFragment pinEntryFragment);

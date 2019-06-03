@@ -78,9 +78,7 @@ class TradeHistoryActivity :
     }
 
     private fun tradeClicked(trade: Trade) {
-        Intent(this, HomebrewTradeDetailActivity::class.java).apply {
-            putExtra("EXTRA_TRADE", trade)
-        }.run { startActivity(this) }
+        HomebrewTradeDetailActivity.start(this, trade)
     }
 
     override fun onSupportNavigateUp(): Boolean = consume { finish() }

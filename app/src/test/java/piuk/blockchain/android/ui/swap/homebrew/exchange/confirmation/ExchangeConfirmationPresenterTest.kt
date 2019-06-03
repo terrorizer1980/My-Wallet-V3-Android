@@ -60,7 +60,8 @@ class ExchangeConfirmationPresenterTest {
         subject = ExchangeConfirmationPresenter(
             transactionExecutor,
             tradeExecutionService,
-            payloadDecrypt
+            payloadDecrypt,
+            Locale.ENGLISH
         )
         subject.initView(view)
 
@@ -85,7 +86,7 @@ class ExchangeConfirmationPresenterTest {
         verify(view).showSecondPasswordDialog()
         verify(transactionExecutor, never()).executeTransaction(any(), any(), any(), any())
         verify(tradeExecutionService, never()).executeTrade(any(), any(), any())
-        verify(view, never()).showExchangeCompleteDialog(any())
+        verify(view, never()).onTradeSubmitted(any(), any())
     }
 
     @Test
@@ -148,7 +149,7 @@ class ExchangeConfirmationPresenterTest {
         verifyNoMoreInteractions(transactionExecutor)
         verify(tradeExecutionService).executeTrade(any(), any(), any())
         verifyNoMoreInteractions(tradeExecutionService)
-        verify(view).showExchangeCompleteDialog(any())
+        verify(view).onTradeSubmitted(any(), any())
     }
 
     @Test
@@ -183,7 +184,7 @@ class ExchangeConfirmationPresenterTest {
             "TX_HASH",
             "The transaction failed")
         verifyNoMoreInteractions(tradeExecutionService)
-        verify(view, never()).showExchangeCompleteDialog(any())
+        verify(view, never()).onTradeSubmitted(any(), any())
     }
 
     @Test
@@ -238,7 +239,7 @@ class ExchangeConfirmationPresenterTest {
             "SendException - code: 99, extra: 'null'"
         )
         verifyNoMoreInteractions(tradeExecutionService)
-        verify(view, never()).showExchangeCompleteDialog(any())
+        verify(view, never()).onTradeSubmitted(any(), any())
     }
 
     private fun givenTradeExpected(

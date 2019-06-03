@@ -29,6 +29,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
+import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -37,13 +38,16 @@ import piuk.blockchain.androidcoreui.utils.extensions.visible
 class HomebrewTradeDetailActivity : BaseAuthActivity() {
 
     private val startKyc: StartKyc by inject()
+    private var showSuccess = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homebrew_trade_detail)
         get<Analytics>().logEvent(AnalyticsEvents.ExchangeDetailOverview)
 
-        val trade = intent.extras.get("EXTRA_TRADE") as Trade
+        val trade = intent.extras.get(EXTRA_TRADE) as Trade
+        showSuccess = intent.extras.get(EXTRA_SHOW_SUCCESS) as Boolean
+
         setupToolbar(R.id.toolbar_general, R.string.order_detail)
 
         status.text = trade.state.toStatusString(this)
@@ -125,6 +129,13 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
         hidePriceIfShapeShiftTrade(trade)
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (showSuccess) {
+            showSuccessDialog(intent.extras.getBoolean(EXTRA_IS_FIRST_PAX, false))
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean =
         consume { menuInflater.inflate(R.menu.menu_tool_bar, menu) }
 
@@ -179,6 +190,27 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
         toast(R.string.copied_to_clipboard, ToastCustom.TYPE_OK)
     }
 
+    private fun showSuccessDialog(firstGoldPaxTrade: Boolean) {
+        val title = if (!firstGoldPaxTrade) getString(R.string.morph_success_dlg_text) else
+            getString(R.string.morph_success_for_first_gold_pax_trade_title)
+
+        val description = if (!firstGoldPaxTrade) "" else
+            getString(R.string.morph_success_for_first_gold_pax_trade_description)
+
+        val exchangeStartedDialog = ErrorBottomDialog.newInstance(
+            ErrorBottomDialog.Content(
+                title = title,
+                description = description,
+                ctaButtonText = R.string.morph_success_dlg_button,
+                dismissText = 0,
+                icon = R.drawable.ic_swap_in_progress_check
+            )
+        )
+        exchangeStartedDialog.isCancelable = false
+        exchangeStartedDialog.onCtaClick = { showSuccess = false }
+        exchangeStartedDialog.show(supportFragmentManager, "BottomDialog")
+    }
+
     private fun Trade.toMessage(): String? =
         when (this.state) {
             MorphTrade.Status.FAILED,
@@ -219,5 +251,18 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
     companion object {
         private const val REFUND_LINK =
             "https://support.blockchain.com/hc/en-us/requests/new?ticket_form_id=360000014686"
+
+        private const val EXTRA_TRADE = "EXTRA_TRADE"
+        private const val EXTRA_SHOW_SUCCESS = "SHOW_SUCCESS"
+        private const val EXTRA_IS_FIRST_PAX = "IS_FIRST_PAX"
+
+        fun start(ctx: Context, trade: Trade, showSuccess: Boolean = false, isFirstPax: Boolean = false) {
+            Intent(ctx, HomebrewTradeDetailActivity::class.java).apply {
+                putExtra(EXTRA_TRADE, trade)
+                putExtra(EXTRA_SHOW_SUCCESS, showSuccess)
+                putExtra(EXTRA_IS_FIRST_PAX, isFirstPax)
+                ctx.startActivity(this)
+            }
+        }
     }
 }

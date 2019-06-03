@@ -33,10 +33,11 @@ import kotlinx.android.synthetic.main.fragment_homebrew_trade_confirmation.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.swap.homebrew.exchange.detail.HomebrewTradeDetailActivity
+import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpFragment
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
-import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -129,25 +130,9 @@ class ExchangeConfirmationFragment :
         }
     }
 
-    override fun showExchangeCompleteDialog(firstGoldPaxTrade: Boolean) {
-        val title = if (!firstGoldPaxTrade) getString(R.string.morph_success_dlg_text) else
-            getString(R.string.morph_success_for_first_gold_pax_trade_title)
-
-        val description = if (!firstGoldPaxTrade) "" else
-            getString(R.string.morph_success_for_first_gold_pax_trade_description)
-
-        val exchangeStartedDialog = ErrorBottomDialog.newInstance(
-            ErrorBottomDialog.Content(
-                title = title,
-                description = description,
-                ctaButtonText = R.string.morph_success_dlg_button,
-                dismissText = 0,
-                icon = R.drawable.ic_swap_in_progress_check
-            )
-        )
-        exchangeStartedDialog.isCancelable = false
-        exchangeStartedDialog.onCtaClick = { requireActivity().finish() }
-        exchangeStartedDialog.show(fragmentManager, "BottomDialog")
+    override fun onTradeSubmitted(trade: Trade, firstGoldPaxTrade: Boolean) {
+        HomebrewTradeDetailActivity.start(requireContext(), trade, showSuccess = true, isFirstPax = firstGoldPaxTrade)
+        requireActivity().finish()
     }
 
     override fun updateFee(cryptoValue: CryptoValue) {

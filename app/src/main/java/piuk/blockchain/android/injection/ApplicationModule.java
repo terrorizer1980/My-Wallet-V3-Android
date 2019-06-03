@@ -55,6 +55,7 @@ import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
 import piuk.blockchain.androidcore.utils.AESUtilWrapper;
 import piuk.blockchain.androidcore.utils.PrngFixer;
 import piuk.blockchain.androidcoreui.utils.AppUtil;
+import piuk.blockchain.androidcoreui.utils.OverlayDetection;
 
 import javax.inject.Named;
 
@@ -318,4 +319,7 @@ public class ApplicationModule extends KoinDaggerModule {
     EmailSyncUpdater provideEmailSyncUpdater() {
         return get(EmailSyncUpdater.class);
     }
+
+    @Provides
+    OverlayDetection providesOverlayDetection() { return get(OverlayDetection.class); }
 }

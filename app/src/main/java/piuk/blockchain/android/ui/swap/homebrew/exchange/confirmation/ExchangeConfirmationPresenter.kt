@@ -5,6 +5,7 @@ import com.blockchain.datamanagers.TransactionExecutorWithoutFees
 import com.blockchain.morph.exchange.mvi.Quote
 import com.blockchain.morph.exchange.service.TradeExecutionService
 import com.blockchain.morph.exchange.service.TradeTransaction
+import com.blockchain.morph.trade.MorphTrade
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendException
@@ -20,21 +21,24 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.ethereum.exceptions.TransactionInProgressException
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.math.BigInteger
+import java.util.Locale
 
 class ExchangeConfirmationPresenter internal constructor(
     private val transactionExecutor: TransactionExecutorWithoutFees,
     private val tradeExecutionService: TradeExecutionService,
-    private val payloadDecrypt: PayloadDecrypt
+    private val payloadDecrypt: PayloadDecrypt,
+    private val locale: Locale
 ) : BasePresenter<ExchangeConfirmationView>() {
 
     private var showPaxAirdropBottomDialog: Boolean = false
-    private var executeTradeSingle: Single<String>? = null
+    private var executeTradeSingle: Single<TradeTransaction>? = null
 
     override fun onViewReady() {
         // Ensure user hasn't got a double encrypted wallet
@@ -82,7 +86,7 @@ class ExchangeConfirmationPresenter internal constructor(
         quote: Quote,
         sendingAccount: AccountReference,
         receivingAccount: AccountReference
-    ): Single<String> {
+    ): Single<TradeTransaction> {
         return deriveAddressPair(sendingAccount, receivingAccount)
             .subscribeOn(Schedulers.io())
             .flatMap { (destination, refund) ->
@@ -105,7 +109,7 @@ class ExchangeConfirmationPresenter internal constructor(
                 }
             }
             .doOnSuccess {
-                view.showExchangeCompleteDialog(
+                view.onTradeSubmitted(it.toTrade(locale),
                     showPaxAirdropBottomDialog && receivingAccount.cryptoCurrency == CryptoCurrency.PAX
                 )
             }
@@ -114,14 +118,16 @@ class ExchangeConfirmationPresenter internal constructor(
     private fun sendFundsForTrade(
         transaction: TradeTransaction,
         sendingAccount: AccountReference
-    ): Single<String> {
+    ): Single<TradeTransaction> {
         updateDiagnostics()
         return transactionExecutor.executeTransaction(
             transaction.deposit,
             transaction.depositAddress,
             sendingAccount,
             memo = transaction.memo()
-        ).onErrorResumeNext {
+        ).flatMap {
+            Single.just(transaction)
+        }.onErrorResumeNext {
             Timber.e(it, "Transaction execution error, telling nabu")
             val hash = (it as? TransactionHashApiException)?.hashString ?: (it as? SendException)?.hash
             tradeExecutionService.putTradeFailureReason(transaction, hash, it.message)
@@ -143,12 +149,7 @@ class ExchangeConfirmationPresenter internal constructor(
             })
     }
 
-    private fun TradeTransaction.memo() = depositTextMemo?.let {
-        Memo(
-            value = it,
-            type = "text"
-        )
-    }
+    private fun TradeTransaction.memo() = depositTextMemo?.let { Memo(value = it, type = "text") }
 
     private fun deriveAddressPair(
         sendingAccount: AccountReference,
@@ -185,4 +186,18 @@ class ExchangeConfirmationPresenter internal constructor(
     private fun decryptBch(): Completable = Completable.fromCallable {
         payloadDecrypt.decryptWatchOnlyWallet()
     }
+}
+
+private fun TradeTransaction.toTrade(locale: Locale): Trade {
+    return Trade(
+        id = id,
+        state = MorphTrade.Status.IN_PROGRESS,
+        currency = pair.to.symbol,
+        price = fiatValue.toStringWithSymbol(locale),
+        fee = fee.toStringWithSymbol(locale),
+        pair = pair.pairCode,
+        quantity = withdrawal.toStringWithSymbol(locale),
+        createdAt = createdAt,
+        depositQuantity = deposit.toStringWithSymbol()
+    )
 }

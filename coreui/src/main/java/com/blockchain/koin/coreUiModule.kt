@@ -16,6 +16,7 @@ import piuk.blockchain.android.ui.dashboard.AsyncDashboardDataCalculator
 import piuk.blockchain.android.ui.dashboard.BalanceUpdater
 import piuk.blockchain.android.ui.dashboard.DashboardData
 import piuk.blockchain.androidcoreui.BuildConfig
+import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import piuk.blockchain.androidcoreui.utils.logging.AnswersEventLogger
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
@@ -71,6 +72,10 @@ val coreUiModule = applicationContext {
     factory { Answers.getInstance() }
 
     factory { AnswersEventLogger(get()) as EventLogger }
+
+    bean {
+        OverlayDetection(get())
+    }
 }
 
 val coreUiFeatureFlagsModule = applicationContext {

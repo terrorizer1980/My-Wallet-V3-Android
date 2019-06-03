@@ -59,5 +59,4 @@ public abstract class BaseMvpActivity<VIEW extends View, PRESENTER extends BaseP
     protected abstract PRESENTER createPresenter();
 
     protected abstract VIEW getView();
-
 }

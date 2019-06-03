@@ -23,6 +23,7 @@ import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
+import piuk.blockchain.android.ui.login.ManualPairingPresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.SendView
@@ -78,7 +79,11 @@ val applicationModule = applicationContext {
             EthDataManager(get(), get(), get(), get(), get(), get(), get(), get())
         }
         factory("pax") {
-            PaxAccount(ethDataManager = get(), dataStore = get(), environmentSettings = get()) as Erc20Account
+            PaxAccount(
+                ethDataManager = get(),
+                dataStore = get(),
+                environmentSettings = get()
+            ) as Erc20Account
         }
 
         factory {
@@ -309,6 +314,15 @@ val applicationModule = applicationContext {
         }
 
         factory { TransactionHelper(get(), get()) }
+
+        factory {
+            ManualPairingPresenter(
+                /* appUtil = */ get(),
+                /* authDataManager = */ get(),
+                /* payloadDataManager = */ get(),
+                /* prefs = */ get()
+            )
+        }
     }
 
     factory { DateUtil(get()) }
