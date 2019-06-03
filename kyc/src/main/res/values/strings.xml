@@ -116,7 +116,9 @@
 
     <!-- Veriff Splash -->
     <string name="kyc_veriff_splash_country_supported_header">Is my country supported?</string>
-    <string name="kyc_veriff_splash_country_supported_subtitle">Not all countries are supported at this time. Check our up to date list of countries before proceeding.</string>
+    <string name="kyc_veriff_splash_country_supported_subtitle">Not all countries are supported at this time. Check our up to date %1$s before proceeding.</string>
+    <string name="kyc_veriff_splash_list_of_countries">list of countries</string>
+    <string name="kyc_veriff_splash_list_of_countries_url">https://support.blockchain.com/hc/en-us/articles/360018751932</string>
     <string name="kyc_veriff_splash_title">@string/kyc_documents_needed</string>
     <string name="kyc_veriff_splash_header">@string/kyc_onfido_splash_header</string>
     <string name="kyc_veriff_splash_subtitle">You’ll need 1 of the ID types below to continue.</string>

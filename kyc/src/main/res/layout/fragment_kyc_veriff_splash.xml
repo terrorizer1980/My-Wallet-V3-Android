@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -30,6 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:contentDescription="@string/kyc_veriff_splash_country_supported_subtitle"
             android:lineSpacingExtra="5sp"
             android:text="@string/kyc_veriff_splash_country_supported_subtitle"
             app:layout_constraintEnd_toEndOf="@+id/text_view_country_supported_header"
@@ -153,6 +153,7 @@
             android:layout_marginTop="16dp"
             android:text="@string/kyc_veriff_splash_continue"
             android:theme="@style/LightBlueButtonTheme"
+            android:contentDescription="@string/kyc_veriff_splash_continue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
