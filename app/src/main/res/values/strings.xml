@@ -884,10 +884,10 @@
     <string name="complete_your_profile_card_body">Complete your profile to start instantly trading crypto from the security of your wallet.</string>
     <string name="complete_your_profile_card_button">Complete profile</string>
 
-    <!-- Claim Your Free Crypto Card -->
-    <string name="claim_your_free_crypto_card_title">@string/claim_your_free_crypto</string>
-    <string name="claim_your_free_crypto_card_body">You\'re all set! Tap this card to claim your free XLM.</string>
-    <string name="claim_your_free_crypto_card_button">@string/claim_your_xlm</string>
+    <!-- Airdrop Program Card -->
+    <string name="airdrop_program_card_title">Airdrop Program</string>
+    <string name="airdrop_program_card_body">You’re eligible for future airdrops.</string>
+    <string name="airdrop_program_card_button">Opt-in Now</string>
 
     <!-- PAX No Transactions Screen -->
     <string name="pax_title">USD PAX</string>
