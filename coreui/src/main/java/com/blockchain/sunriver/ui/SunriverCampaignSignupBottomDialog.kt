@@ -1,5 +1,8 @@
 package com.blockchain.sunriver.ui
 
+import android.os.Bundle
+import android.view.View
+import android.widget.ImageView
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.remoteconfig.FeatureFlag
@@ -24,6 +27,11 @@ class SunriverCampaignSignupBottomDialog : BaseAirdropBottomDialog(
     private val sunriverCampaignSignUp: SunriverCampaignSignUp by inject()
 
     private val featureFlag: FeatureFlag by inject("ff_get_free_xlm_popup")
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.findViewById<ImageView>(R.id.xlm_icon).setImageResource(R.drawable.vector_airdrop_parachute)
+    }
 
     override fun onStart() {
         super.onStart()
