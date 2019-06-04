@@ -880,9 +880,9 @@
     <string name="stablecoin_announcement_introducing_link">Exchange for PAX Now</string>
 
     <!-- Complete Your Profile Card -->
-    <string name="complete_your_profile_card_title">Complete Your Profile</string>
+    <string name="complete_your_profile_card_title">Go for Gold</string>
     <string name="complete_your_profile_card_body">Complete your profile to start instantly trading crypto from the security of your wallet.</string>
-    <string name="complete_your_profile_card_button">Continue to Claim Your XLM</string>
+    <string name="complete_your_profile_card_button">Complete profile</string>
 
     <!-- Claim Your Free Crypto Card -->
     <string name="claim_your_free_crypto_card_title">@string/claim_your_free_crypto</string>
