@@ -2,6 +2,7 @@ package piuk.blockchain.android.injection
 
 import android.content.Context
 import com.blockchain.koin.KoinDaggerModule
+import com.blockchain.nabu.CurrentTier
 import dagger.Module
 import dagger.Provides
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataStore
@@ -65,5 +66,10 @@ class ContextModule(private val appContext: Context) : KoinDaggerModule() {
     @Provides
     fun provideFiatCurrencyPreference(): FiatCurrencyPreference {
         return get(FiatCurrencyPreference::class)
+    }
+
+    @Provides
+    fun provideCurrentTier(): CurrentTier {
+        return get(CurrentTier::class)
     }
 }

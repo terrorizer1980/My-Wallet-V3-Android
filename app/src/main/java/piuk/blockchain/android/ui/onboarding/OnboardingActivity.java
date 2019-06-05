@@ -10,7 +10,6 @@ import piuk.blockchain.android.ui.fingerprint.FingerprintDialog;
 import piuk.blockchain.android.ui.fingerprint.FingerprintStage;
 import piuk.blockchain.android.ui.home.MainActivity;
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence;
-import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity;
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog;
 import timber.log.Timber;
@@ -139,7 +138,7 @@ public class OnboardingActivity extends BaseMvpActivity<OnboardingView, Onboardi
 
     @Override
     public void onVerifyEmailClicked() {
-        AccessState.getInstance().disableAutoLogout();
+        getPresenter().disableAutoLogout();
         emailLaunched = true;
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_APP_EMAIL);
@@ -178,7 +177,7 @@ public class OnboardingActivity extends BaseMvpActivity<OnboardingView, Onboardi
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == EMAIL_CLIENT_REQUEST) {
-            AccessState.getInstance().enableAutoLogout();
+            getPresenter().enableAutoLogout();
         }
     }
 }

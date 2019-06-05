@@ -30,8 +30,7 @@ class OnboardingPresenterTest {
 
     @Before
     fun setUp() {
-        subject =
-            OnboardingPresenter(mockFingerprintHelper, mockAccessState, mockSettingsDataManager)
+        subject = OnboardingPresenter(mockFingerprintHelper, mockAccessState, mockSettingsDataManager)
         subject.initView(mockActivity)
     }
 
@@ -101,7 +100,7 @@ class OnboardingPresenterTest {
         // Assert
         verify(mockFingerprintHelper).isFingerprintAvailable()
         verifyNoMoreInteractions(mockFingerprintHelper)
-        verify(mockAccessState, times(3)).pin
+        verify(mockAccessState).pin
         verifyNoMoreInteractions(mockAccessState)
         verify(mockActivity).showFingerprintDialog(captor.capture())
         verifyNoMoreInteractions(mockActivity)

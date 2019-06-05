@@ -13,6 +13,7 @@ import android.view.Window;
 
 import javax.inject.Inject;
 
+import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.R;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.android.data.websocket.WebSocketService;
@@ -21,7 +22,6 @@ import piuk.blockchain.android.injection.Injector;
 import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveFragment;
-import piuk.blockchain.androidcoreui.utils.AppUtil;
 import piuk.blockchain.android.util.OSUtil;
 import piuk.blockchain.androidcore.utils.PrefsUtil;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
@@ -33,9 +33,10 @@ public class PinEntryActivity extends BaseAuthActivity implements
 
     @Inject protected OSUtil osUtil;
     @Inject protected OverlayDetection overlayDetection;
+    @Inject protected AccessState loginState;
 
-    private static final int COOL_DOWN_MILLIS = 2 * 1000;
     @Thunk ActivityPinEntryBinding binding;
+
     private long backPressed;
     private PinEntryFragment pinEntryFragment;
 
@@ -102,8 +103,8 @@ public class PinEntryActivity extends BaseAuthActivity implements
         } else if (pinEntryFragment != null && pinEntryFragment.isValidatingPinForResult()) {
             finishWithResultCanceled();
         } else if (pinEntryFragment != null && pinEntryFragment.allowExit()) {
-            if (backPressed + COOL_DOWN_MILLIS > System.currentTimeMillis()) {
-                AccessState.getInstance().logout(this);
+            if (backPressed + BuildConfig.EXIT_APP_COOLDOWN_MILLIS > System.currentTimeMillis()) {
+                loginState.logout();
                 return;
             } else {
                 ToastCustom.makeText(this, getString(R.string.exit_confirm), ToastCustom.LENGTH_SHORT, ToastCustom.TYPE_GENERAL);

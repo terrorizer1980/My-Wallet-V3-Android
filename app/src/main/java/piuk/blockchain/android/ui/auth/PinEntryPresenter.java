@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.auth;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -202,7 +201,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
                 // If user is changing their PIN and it matches their old one, disallow it
             } else if (isChangingPin()
                     && mUserEnteredConfirmationPin == null
-                    && mAccessState.getPIN().equals(mUserEnteredPin)) {
+                    && mAccessState.getPin().equals(mUserEnteredPin)) {
                 showErrorToast(R.string.change_pin_new_matches_current);
                 clearPinViewAndReset();
             } else {
@@ -307,7 +306,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
                             } else if (throwable instanceof InvalidCipherTextException) {
                                 // Password changed on web, needs re-pairing
                                 getView().showToast(R.string.password_changed_explanation, ToastCustom.TYPE_ERROR);
-                                mAccessState.setPIN(null);
+                                mAccessState.setPin(null);
                                 mAppUtil.clearCredentialsAndRestart(LauncherActivity.class);
 
                             } else if (throwable instanceof AccountLockedException) {
@@ -339,7 +338,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
                             getView().showToast(R.string.pin_4_strikes_password_accepted, ToastCustom.TYPE_OK);
                             mPrefsUtil.removeValue(PrefsUtil.KEY_PIN_FAILS);
                             mPrefsUtil.removeValue(PrefsUtil.KEY_PIN_IDENTIFIER);
-                            mAccessState.setPIN(null);
+                            mAccessState.setPin(null);
                             getView().restartPageAndClearTop();
                         }, throwable -> {
 
@@ -486,8 +485,8 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
 
     private boolean isChangingPin() {
         return isCreatingNewPin()
-                && mAccessState.getPIN() != null
-                && !mAccessState.getPIN().isEmpty();
+                && mAccessState.getPin() != null
+                && !mAccessState.getPin().isEmpty();
     }
 
     @UiThread
@@ -501,8 +500,8 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
         return mAppUtil;
     }
 
-    void logout(Context context) {
-        mAccessState.logout(context);
+    void clearLoginState() {
+        mAccessState.logout();
     }
 
     void fetchInfoMessage() {

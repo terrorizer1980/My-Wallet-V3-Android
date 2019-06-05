@@ -505,7 +505,7 @@ class DashboardPresenter(
                 stringUtils.getString(R.string.onboarding_receive_bitcoin),
                 "",
                 stringUtils.getString(R.string.onboarding_receive_content),
-                stringUtils.getString(R.string.receive_bitcoin),
+                stringUtils.getString(R.string.request),
                 MainActivity.ACTION_RECEIVE,
                 R.color.secondary_teal_medium,
                 R.drawable.vector_receive_offset

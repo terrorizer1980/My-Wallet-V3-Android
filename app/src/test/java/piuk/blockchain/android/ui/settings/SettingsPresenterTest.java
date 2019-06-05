@@ -245,7 +245,7 @@ public class SettingsPresenterTest extends RxTest {
         String pinCode = "1234";
         when(fingerprintHelper.isFingerprintUnlockEnabled()).thenReturn(false);
         when(fingerprintHelper.areFingerprintsEnrolled()).thenReturn(true);
-        when(accessState.getPIN()).thenReturn(pinCode);
+        when(accessState.getPin()).thenReturn(pinCode);
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         // Act
         subject.onFingerprintClicked();
@@ -259,13 +259,13 @@ public class SettingsPresenterTest extends RxTest {
         // Arrange
         when(fingerprintHelper.isFingerprintUnlockEnabled()).thenReturn(false);
         when(fingerprintHelper.areFingerprintsEnrolled()).thenReturn(true);
-        when(accessState.getPIN()).thenReturn(null);
+        when(accessState.getPin()).thenReturn(null);
         // Act
         subject.onFingerprintClicked();
         // Assert
         verify(fingerprintHelper).isFingerprintUnlockEnabled();
         verify(fingerprintHelper).areFingerprintsEnrolled();
-        verify(accessState).getPIN();
+        verify(accessState).getPin();
     }
 
     @Test
@@ -697,14 +697,14 @@ public class SettingsPresenterTest extends RxTest {
         String newPassword = "NEW_PASSWORD";
         String oldPassword = "OLD_PASSWORD";
         String pin = "PIN";
-        when(accessState.getPIN()).thenReturn(pin);
+        when(accessState.getPin()).thenReturn(pin);
         when(authDataManager.createPin(newPassword, pin)).thenReturn(Completable.complete());
         when(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.complete());
         // Act
         subject.updatePassword(newPassword, oldPassword);
         // Assert
         //noinspection ResultOfMethodCallIgnored
-        verify(accessState).getPIN();
+        verify(accessState).getPin();
         verify(authDataManager).createPin(newPassword, pin);
         verify(payloadDataManager).syncPayloadWithServer();
         verify(activity).showProgressDialog(anyInt());
@@ -719,7 +719,7 @@ public class SettingsPresenterTest extends RxTest {
         String newPassword = "NEW_PASSWORD";
         String oldPassword = "OLD_PASSWORD";
         String pin = "PIN";
-        when(accessState.getPIN()).thenReturn(pin);
+        when(accessState.getPin()).thenReturn(pin);
         when(authDataManager.createPin(newPassword, pin))
                 .thenReturn(Completable.error(new Throwable()));
         when(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.complete());
@@ -727,7 +727,7 @@ public class SettingsPresenterTest extends RxTest {
         subject.updatePassword(newPassword, oldPassword);
         // Assert
         //noinspection ResultOfMethodCallIgnored
-        verify(accessState).getPIN();
+        verify(accessState).getPin();
         verify(authDataManager).createPin(newPassword, pin);
         verify(payloadDataManager).syncPayloadWithServer();
         verify(payloadManager).setTempPassword(newPassword);

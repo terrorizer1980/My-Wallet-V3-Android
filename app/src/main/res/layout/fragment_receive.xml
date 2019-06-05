@@ -171,7 +171,7 @@
                 android:layout_marginLeft="48dp"
                 android:layout_marginRight="48dp"
                 android:layout_marginTop="16dp"
-                android:text="@string/receive_bitcoin"
+                android:text="@string/request"
                 android:theme="@style/ButtonLightBlueTheme"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

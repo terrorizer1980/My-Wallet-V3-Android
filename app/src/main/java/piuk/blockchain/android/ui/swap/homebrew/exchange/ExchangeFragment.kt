@@ -10,8 +10,6 @@ import android.support.v4.content.ContextCompat
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +35,6 @@ import piuk.blockchain.android.ui.swap.logging.AmountErrorEvent
 import piuk.blockchain.android.ui.swap.logging.AmountErrorType
 import piuk.blockchain.android.ui.swap.logging.FixType
 import piuk.blockchain.android.ui.swap.logging.FixTypeEvent
-import com.blockchain.nabu.StartKyc
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
@@ -82,8 +79,6 @@ internal class ExchangeFragment : Fragment() {
     private val inputTypeRelay = PublishSubject.create<Fix>()
     private val activityListener: HomebrewHostActivityListener by ParentActivityDelegate(this)
 
-    private lateinit var currency: String
-
     private lateinit var largeValue: CurrencyTextView
     private lateinit var smallValue: TextView
     private lateinit var keyboard: FloatKeyboardView
@@ -101,8 +96,8 @@ internal class ExchangeFragment : Fragment() {
     private var lastUserValue: Pair<Int, BigDecimal>? = null
     private lateinit var exchangeLimitState: ExchangeLimitState
     private lateinit var exchangeMenuState: ExchangeMenuState
+
     private var latestBaseFix: Fix = Fix.BASE_FIAT
-    private val startKyc: StartKyc by inject()
     private val stringUtils: StringUtils by inject()
 
     override fun onAttach(context: Context?) {
@@ -126,8 +121,6 @@ internal class ExchangeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         activityListener.setToolbarTitle(R.string.morph_new_exchange)
         logEvent(AnalyticsEvents.ExchangeCreate)
-
-        currency = arguments?.getString(ARGUMENT_CURRENCY) ?: "USD"
 
         largeValue = view.findViewById(R.id.largeValue)
         smallValue = view.findViewById(R.id.smallValue)
@@ -233,8 +226,7 @@ internal class ExchangeFragment : Fragment() {
 
     private fun updateBalance(exchangeViewState: ExchangeViewState) {
         exchangeViewState.apply {
-            textViewBalanceTitle.text =
-                getString(R.string.morph_balance_title, fromCrypto.currencyCode)
+            textViewBalanceTitle.text = getString(R.string.morph_balance_title, fromCrypto.currencyCode)
             textViewBalance.text = formatSpendableString()
         }
     }
@@ -467,27 +459,6 @@ internal class ExchangeFragment : Fragment() {
         } else {
             setCompoundDrawables(null, null, null, null)
         }
-    }
-
-    private fun addLink(prefixText: String, link: String): Pair<CharSequence, TextView.BufferType> {
-        val finalString = "$prefixText. $link"
-        val spannableString = SpannableString(finalString)
-
-        val span = object : ClickableSpan() {
-            override fun onClick(widget: View?) {
-                startKyc.startKycActivity(requireContext())
-            }
-        }
-
-        val startIndexOfLink = finalString.indexOf(link)
-        spannableString.setSpan(
-            span,
-            startIndexOfLink,
-            startIndexOfLink + link.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
-        return spannableString to TextView.BufferType.SPANNABLE
     }
 }
 

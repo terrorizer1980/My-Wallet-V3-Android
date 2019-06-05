@@ -19,7 +19,7 @@
 
     <item
         android:id="@+id/action_help"
-        android:icon="@drawable/ic_faq"
+        android:icon="@drawable/vector_menu_swap_info"
         android:title="@string/help"
         app:showAsAction="ifRoom" />
 </menu>

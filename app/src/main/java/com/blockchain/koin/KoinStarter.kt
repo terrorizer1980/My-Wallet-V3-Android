@@ -13,7 +13,6 @@ import com.blockchain.koin.modules.environmentModule
 import com.blockchain.koin.modules.homeBrewModule
 import com.blockchain.koin.modules.keys
 import com.blockchain.koin.modules.localShapeShift
-import com.blockchain.koin.modules.morphMethodModule
 import com.blockchain.koin.modules.morphUiModule
 import com.blockchain.koin.modules.moshiModule
 import com.blockchain.koin.modules.nabuUrlModule
@@ -59,7 +58,6 @@ object KoinStarter {
                 kycNabuModule,
                 localShapeShift,
                 lockboxModule,
-                morphMethodModule,
                 morphUiModule,
                 moshiModule,
                 nabuModule,

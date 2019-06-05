@@ -53,7 +53,7 @@ class AdbDebugService : BroadcastReceiver() {
     private fun releasePayloadAndLogout(context: Context) {
         get<PayloadManagerWiper>().wipe()
         Timber.d("Released payload")
-        get<AccessState>().logout(context)
+        get<AccessState>().logout()
         toast(context, "Logged out")
     }
 

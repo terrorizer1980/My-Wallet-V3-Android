@@ -11,9 +11,12 @@
 
     <string name="please_wait">Please wait</string>
 
-    <string name="send_bitcoin">Send</string>
-    <string name="receive_bitcoin">Request</string>
-    <string name="overview">Transactions</string>
+    <!-- toolbar -->
+    <string name="toolbar_cmd_home">Home</string>
+    <string name="toolbar_cmd_send">Send</string>
+    <string name="toolbar_cmd_receive">Request</string>
+    <string name="toolbar_cmd_activity">Activity</string>
+    <string name="toolbar_cmd_swap">Swap</string>
 
     <string name="cancel">Cancel</string>
     <string name="btn_ok">OK</string>
@@ -216,6 +219,7 @@
 
     <string name="verification_failed">Verification Failed</string>
 
+    <string name="request">Request</string>
     <string name="send_payment">Send Payment</string>
     <string name="share">Share Receive Address</string>
     <string name="confirm_password">Confirm Password</string>
@@ -889,6 +893,8 @@
     <string name="morph_help_dialog_need_some_help_body">Our Blockchain Support Team is standing by to answer any questions you have.</string>
     <string name="morph_help_dialog_view_swap_limit">View My Swap Limit</string>
     <string name="morph_help_dialog_contact_support">@string/contact_support</string>
-    <string name="morph_help_dialog_contact_support_url">https://blockchain.zendesk.com/hc/en-us/requests/new?ticket_form_id=360000180551</string>
+    <string name="swap_info_contact_support">Contact Support</string>
+    <string name="swap_info_swap_limits">Swap limits</string>
+    <string name="swap_info_order_history">Order History</string>
 
 </resources>

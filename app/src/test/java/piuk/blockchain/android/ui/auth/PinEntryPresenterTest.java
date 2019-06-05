@@ -271,7 +271,7 @@ public class PinEntryPresenterTest {
         // Arrange
         subject.mUserEnteredPin = "258";
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("");
-        when(accessState.getPIN()).thenReturn("2580");
+        when(accessState.getPin()).thenReturn("2580");
         // Act
         subject.onPadClicked("0");
         // Assert
@@ -393,7 +393,7 @@ public class PinEntryPresenterTest {
         verify(prefsUtil).setValue(anyString(), anyInt());
         //noinspection WrongConstant
         verify(activity).showToast(anyInt(), anyString());
-        verify(accessState).setPIN(null);
+        verify(accessState).setPin(null);
         verify(appUtil).clearCredentialsAndRestart(LauncherActivity.class);
     }
 
@@ -514,7 +514,7 @@ public class PinEntryPresenterTest {
         //noinspection WrongConstant
         verify(activity).showToast(anyInt(), anyString());
         verify(prefsUtil, times(2)).removeValue(anyString());
-        verify(accessState).setPIN(null);
+        verify(accessState).setPin(null);
         verify(activity).restartPageAndClearTop();
     }
 

@@ -83,6 +83,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
     private val accountsAdapter: AccountAdapter by unsafeLazy {
         AccountAdapter(this)
     }
+
     private var progress: MaterialProgressDialog? = null
 
     init {
@@ -384,12 +385,12 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             .setPositiveButton(R.string.transfer) { _, _ ->
                 transferSpendableFunds()
                 if (checkBox.isChecked) {
-                    prefsUtil.setValue(KEY_WARN_TRANSFER_ALL, false)
+                    prefs.setValue(KEY_WARN_TRANSFER_ALL, false)
                 }
             }
             .setNegativeButton(R.string.not_now) { _, _ ->
                 if (checkBox.isChecked) {
-                    prefsUtil.setValue(KEY_WARN_TRANSFER_ALL, false)
+                    prefs.setValue(KEY_WARN_TRANSFER_ALL, false)
                 }
             }
 

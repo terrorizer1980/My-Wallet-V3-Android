@@ -54,8 +54,9 @@ public class OnboardingPresenter extends BasePresenter<OnboardingView> {
      */
     void onEnableFingerprintClicked() {
         if (fingerprintHelper.isFingerprintAvailable()) {
-            if (accessState.getPIN() != null && !accessState.getPIN().isEmpty()) {
-                getView().showFingerprintDialog(accessState.getPIN());
+            String pin = accessState.getPin();
+            if (pin != null && !pin.isEmpty()) {
+                getView().showFingerprintDialog(pin);
             } else {
                 throw new IllegalStateException("PIN not found");
             }
@@ -93,4 +94,13 @@ public class OnboardingPresenter extends BasePresenter<OnboardingView> {
             getView().showEmailPrompt();
         }
     }
+
+    void disableAutoLogout() {
+        accessState.setCanAutoLogout(false);
+    }
+
+    void enableAutoLogout() {
+        accessState.setCanAutoLogout(true);
+    }
+
 }

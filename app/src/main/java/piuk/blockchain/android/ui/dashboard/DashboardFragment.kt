@@ -47,7 +47,7 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     DashboardView {
 
     override fun startKycFlowWithNavigator(campaignType: CampaignType) {
-        navigator().gotoKyc(campaignType)
+        navigator().launchKyc(campaignType)
     }
 
     override fun goToExchange(currency: CryptoCurrency?, defCurrency: String) {

@@ -78,6 +78,7 @@ val applicationModule = applicationContext {
         factory {
             EthDataManager(get(), get(), get(), get(), get(), get(), get(), get())
         }
+
         factory("pax") {
             PaxAccount(
                 ethDataManager = get(),
@@ -140,6 +141,7 @@ val applicationModule = applicationContext {
 
         factory("spendable") { get<TransactionListDataManager>() as TotalBalance }
 
+        @Suppress("ConstantConditionIf")
         factory("all") {
             if (BuildConfig.SHOW_LOCKBOX_BALANCE) {
                 get<TotalBalance>("lockbox") + get("spendable")
@@ -288,9 +290,7 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 exchangeService = get(),
                 coinifyDataManager = get(),
-                fiatExchangeRates = get(),
-                fiatCurrencyPreference = get(),
-                currentTier = get()
+                fiatExchangeRates = get()
             )
         }
 

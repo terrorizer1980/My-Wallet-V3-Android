@@ -6,13 +6,10 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import piuk.blockchain.android.ui.swap.homebrew.exchange.detail.HomebrewTradeDetailActivity
 import piuk.blockchain.android.ui.swap.homebrew.exchange.history.adapter.TradeHistoryAdapter
-import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import org.koin.android.ext.android.get
-import org.koin.android.ext.android.inject
-import com.blockchain.preferences.FiatCurrencyPreference
 import kotlinx.android.synthetic.main.activity_homebrew_trade_history.*
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
@@ -26,7 +23,6 @@ class TradeHistoryActivity :
     TradeHistoryView {
 
     override val locale: Locale = Locale.getDefault()
-    private val fiat: FiatCurrencyPreference by inject()
 
     private val tradeHistoryAdapter = TradeHistoryAdapter(this::tradeClicked)
 
@@ -34,10 +30,6 @@ class TradeHistoryActivity :
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homebrew_trade_history)
         get<Analytics>().logEvent(AnalyticsEvents.ExchangeHistory)
-
-        button_new_exchange.setOnClickListener {
-            HomebrewNavHostActivity.start(this, fiat.fiatCurrencyPreference)
-        }
 
         setupToolbar(R.id.toolbar_constraint, R.string.swap)
 
@@ -88,7 +80,6 @@ class TradeHistoryActivity :
     override fun getView(): TradeHistoryView = this
 
     companion object {
-
         fun start(context: Context) {
             Intent(context, TradeHistoryActivity::class.java)
                 .run { context.startActivity(this) }

@@ -1,10 +1,7 @@
 package piuk.blockchain.android.ui.balance
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.nabu.CurrentTier
 import com.blockchain.notifications.models.NotificationPayload
-import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.testutils.gbp
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.isNull
@@ -65,7 +62,6 @@ class BalancePresenterTest {
     private val swipeToReceiveHelper: SwipeToReceiveHelper = mock()
     private val paxAccount: Erc20Account = mock()
     private val payloadDataManager: PayloadDataManager = mock()
-    private val currentTier: CurrentTier = mock()
     private val buyDataManager: BuyDataManager = mock()
     private val stringUtils: StringUtils = mock()
     private val prefsUtil: PrefsUtil = mock()
@@ -80,7 +76,6 @@ class BalancePresenterTest {
     private val exchangeService: ExchangeService = mock()
     private val coinifyDataManager: CoinifyDataManager = mock()
     private val fiatExchangeRates: FiatExchangeRates = mock()
-    private val fiatCurrencyPreference: FiatCurrencyPreference = mock()
     private val testScheduler: TestScheduler = TestScheduler()
 
     @get:Rule
@@ -111,9 +106,7 @@ class BalancePresenterTest {
             environmentSettings,
             exchangeService,
             coinifyDataManager,
-            fiatExchangeRates,
-            fiatCurrencyPreference,
-            currentTier
+            fiatExchangeRates
         )
         subject.initView(view)
     }
@@ -339,40 +332,6 @@ class BalancePresenterTest {
         verify(view).updateSelectedCurrency(CryptoCurrency.BTC)
         verify(view).updateBalanceHeader(value)
         verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `should go to swap if tier is higher or equal to 1`() {
-        // Arrange
-        mockDependencies()
-        whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(1))
-        // Act
-        subject.onViewReady()
-        subject.exchangePaxRequested.onNext(Unit)
-        // Assert
-        verify(view).swap()
-    }
-
-    @Test
-    fun `should go to kyc if tier is 0`() {
-        // Arrange
-        mockDependencies()
-        whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(0))
-        // Act
-        subject.onViewReady()
-        subject.exchangePaxRequested.onNext(Unit)
-        // Assert
-        verify(view).startKyc(CampaignType.Swap)
-    }
-
-    private fun mockDependencies() {
-        whenever(environmentSettings.environment).thenReturn(Environment.PRODUCTION)
-        val account: ItemAccount = mock()
-        whenever(walletAccountHelper.getAccountItemsForOverview()).thenReturn(Single.just(mutableListOf(account)))
-        whenever(currencyState.isDisplayingCryptoCurrency).thenReturn(true)
-
-        whenever(rxBus.register(NotificationPayload::class.java)).thenReturn(Observable.empty())
-        whenever(rxBus.register(AuthEvent::class.java)).thenReturn(Observable.empty())
     }
 
     @Test

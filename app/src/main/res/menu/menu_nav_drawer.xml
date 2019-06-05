@@ -10,13 +10,6 @@
         android:visible="false" />
 
     <item
-        app:contentDescription="@string/morph_exchange"
-        android:id="@+id/nav_exchange"
-        android:icon="@drawable/vector_exchange"
-        android:title="@string/morph_exchange"
-        android:visible="false" />
-
-    <item
         android:id="@+id/nav_exchange_homebrew_debug"
         android:icon="@drawable/vector_exchange"
         android:title="@string/debug_morph_exchange_homebrew"

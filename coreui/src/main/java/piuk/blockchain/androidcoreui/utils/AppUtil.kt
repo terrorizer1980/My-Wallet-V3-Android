@@ -85,7 +85,7 @@ class AppUtil(
                 putExtra("verified", true)
             }
         )
-        AccessState.getInstance().logIn()
+        accessState.logIn()
     }
 
     fun deleteQR() {

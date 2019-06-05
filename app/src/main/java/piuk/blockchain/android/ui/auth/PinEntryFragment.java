@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.auth;
 
-
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -57,7 +56,7 @@ public class PinEntryFragment extends BaseFragment<PinEntryView, PinEntryPresent
     public static final String KEY_VALIDATING_PIN_FOR_RESULT = "validating_pin";
     public static final String KEY_VALIDATED_PIN = "validated_pin";
     public static final int REQUEST_CODE_VALIDATE_PIN = 88;
-    private static final int COOL_DOWN_MILLIS = 2 * 1000;
+
     private static final String KEY_SHOW_SWIPE_HINT = "show_swipe_hint";
     private static final int PIN_LENGTH = 4;
     private static final Handler HANDLER = new Handler();
@@ -66,6 +65,7 @@ public class PinEntryFragment extends BaseFragment<PinEntryView, PinEntryPresent
     @Inject PrefsUtil prefsUtil;
     @Inject AppUtil appUtil;
     @Inject EnvironmentConfig environmentConfig;
+    @Inject AccessState loginState;
 
     private ImageView[] pinBoxArray;
     private MaterialProgressDialog materialProgressDialog;
@@ -145,10 +145,10 @@ public class PinEntryFragment extends BaseFragment<PinEntryView, PinEntryPresent
 
             binding.buttonSettings.setVisibility(View.VISIBLE);
             binding.buttonSettings.setOnClickListener(view -> {
-                        if (getActivity() != null) {
-                            new EnvironmentSwitcher(getActivity(), prefsUtil, appUtil).showDebugMenu();
-                        }
-                    }
+                if (getActivity() != null) {
+                    new EnvironmentSwitcher(getActivity(), prefsUtil, appUtil, loginState).showDebugMenu();
+                }
+            }
             );
         }
 
@@ -252,8 +252,8 @@ public class PinEntryFragment extends BaseFragment<PinEntryView, PinEntryPresent
             finishWithResultCanceled();
 
         } else if (getPresenter().allowExit()) {
-            if (backPressed + COOL_DOWN_MILLIS > System.currentTimeMillis()) {
-                getPresenter().logout(getContext());
+            if (backPressed + BuildConfig.EXIT_APP_COOLDOWN_MILLIS > System.currentTimeMillis()) {
+                getPresenter().clearLoginState();
                 return;
             } else {
                 showToast(R.string.exit_confirm, ToastCustom.TYPE_GENERAL);
@@ -270,9 +270,9 @@ public class PinEntryFragment extends BaseFragment<PinEntryView, PinEntryPresent
                     .setTitle(R.string.warning)
                     .setMessage(String.format(getString(R.string.unsupported_encryption_version), walletVersion))
                     .setCancelable(false)
-                    .setPositiveButton(R.string.exit, (dialog, whichButton) -> getPresenter().logout(getContext()))
+                    .setPositiveButton(R.string.exit, (dialog, whichButton) -> getPresenter().clearLoginState())
                     .setNegativeButton(R.string.logout, (dialog, which) -> {
-                        getPresenter().logout(getContext());
+                        getPresenter().clearLoginState();
                         getPresenter().getAppUtil().restartApp(LauncherActivity.class);
                     })
                     .show();
@@ -462,7 +462,7 @@ public class PinEntryFragment extends BaseFragment<PinEntryView, PinEntryPresent
                 }
             });
             alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v ->
-                    AccessState.getInstance().logout(getContext()));
+                    getPresenter().clearLoginState());
         }
     }
 

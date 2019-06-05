@@ -1,10 +1,7 @@
 package piuk.blockchain.android.ui.balance
 
 import android.support.annotation.VisibleForTesting
-import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.nabu.CurrentTier
 import com.blockchain.notifications.models.NotificationPayload
-import com.blockchain.preferences.FiatCurrencyPreference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.formatWithUnit
@@ -65,9 +62,7 @@ class BalancePresenter(
     private val environmentSettings: EnvironmentConfig,
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager,
-    private val fiatExchangeRates: FiatExchangeRates,
-    private val fiatCurrencyPreference: FiatCurrencyPreference,
-    private val currentTier: CurrentTier
+    private val fiatExchangeRates: FiatExchangeRates
 ) : BasePresenter<BalanceView>() {
 
     @VisibleForTesting
@@ -95,14 +90,8 @@ class BalancePresenter(
             view.disableCurrencyHeader()
         }
 
-        compositeDisposable += exchangePaxRequested.switchMap {
-            currentTier.usersCurrentTier().toObservable()
-        }.subscribe {
-            if (it > 0) {
-                view.swap()
-            } else {
-                view.startKyc(CampaignType.Swap)
-            }
+        compositeDisposable += exchangePaxRequested.subscribe {
+            view.startSwapOrKyc(currencyState.cryptoCurrency)
         }
     }
 
@@ -359,10 +348,10 @@ class BalancePresenter(
     private fun getShapeShiftTxNotesObservable() =
         shapeShiftDataManager.getTradesList()
             .addToCompositeDisposable(this)
-            .map {
+            .map { list ->
                 val mutableMap: MutableMap<String, String> = mutableMapOf()
 
-                for (trade in it) {
+                for (trade in list) {
                     trade.hashIn?.let {
                         mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_to))
                     }
@@ -378,9 +367,9 @@ class BalancePresenter(
     private fun getCoinifyTxNotesObservable() =
         tokenSingle.flatMap { coinifyDataManager.getTrades(it).toList() }
             .addToCompositeDisposable(this)
-            .map {
+            .map { list ->
                 val mutableMap: MutableMap<String, String> = mutableMapOf()
-                for (trade in it) {
+                for (trade in list) {
                     val transfer = if (trade.isSellTransaction()) {
                         trade.transferIn.details as BlockchainDetails
                     } else {
@@ -412,7 +401,6 @@ class BalancePresenter(
     }
     // endregion
 
-    // region Helper methods
     private fun CryptoValue.getFiatDisplayString(): String =
         fiatExchangeRates.getFiat(this).toStringWithSymbol()
 
@@ -428,11 +416,4 @@ class BalancePresenter(
         prefsUtil.getValue(PrefsUtil.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
 
     internal fun getCurrentCurrency() = currencyState.cryptoCurrency
-
-    fun fiatDefaultCurrency(): String =
-        fiatCurrencyPreference.fiatCurrencyPreference
-
-    fun tierLever(): Observable<Int> =
-        currentTier.usersCurrentTier().toObservable()
-    // endregion
 }

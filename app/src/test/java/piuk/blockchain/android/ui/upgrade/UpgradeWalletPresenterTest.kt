@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.upgrade
 
-import android.content.Context
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.times
@@ -206,7 +205,7 @@ class UpgradeWalletPresenterTest {
         // Assert
         verify(mockPrefs).setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true)
         verifyNoMoreInteractions(mockPrefs)
-        verify(mockAccessState).setIsLoggedIn(true)
+        verify(mockAccessState).isLoggedIn = true
         verifyNoMoreInteractions(mockAccessState)
         verify(mockAppUtil).restartAppWithVerifiedPin(LauncherActivity::class.java)
         verifyNoMoreInteractions(mockAppUtil)
@@ -215,11 +214,10 @@ class UpgradeWalletPresenterTest {
     @Test
     fun onBackButtonPressed() {
         // Arrange
-        val mockContext: Context = mock()
         // Act
-        subject.onBackButtonPressed(mockContext)
+        subject.onBackButtonPressed()
         // Assert
-        verify(mockAccessState).logout(mockContext)
+        verify(mockAccessState).logout()
         verifyNoMoreInteractions(mockAccessState)
         verify(mockActivity).onBackButtonPressed()
         verifyNoMoreInteractions(mockActivity)

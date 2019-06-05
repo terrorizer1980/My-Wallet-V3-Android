@@ -1,6 +1,5 @@
 package com.blockchain.koin
 
-import android.content.Context
 import com.blockchain.accounts.AccountList
 import com.blockchain.accounts.AllAccountList
 import com.blockchain.accounts.AllAccountsImplementation
@@ -279,17 +278,23 @@ val coreModule = applicationContext {
 
     factory { EthereumAccountWrapper() }
 
-    factory { AccessState.getInstance() }
+    bean {
+        AccessState(
+            context = get(),
+            prefs = get(),
+            rxBus = get()
+        )
+    }
 
     factory {
         val accessState = get<AccessState>()
         object : LogoutTimer {
-            override fun start(context: Context) {
-                accessState.startLogoutTimer(context)
+            override fun start() {
+                accessState.startLogoutTimer()
             }
 
-            override fun stop(context: Context) {
-                accessState.stopLogoutTimer(context)
+            override fun stop() {
+                accessState.stopLogoutTimer()
             }
         } as LogoutTimer
     }

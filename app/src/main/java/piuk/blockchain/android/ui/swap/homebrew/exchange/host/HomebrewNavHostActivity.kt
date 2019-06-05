@@ -25,7 +25,6 @@ import piuk.blockchain.android.ui.swap.homebrew.exchange.REQUEST_CODE_CHOOSE_SEN
 import piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation.ExchangeConfirmationFragment
 import piuk.blockchain.android.ui.swap.logging.WebsocketConnectionFailureEvent
 import piuk.blockchain.android.ui.swap.showErrorDialog
-import piuk.blockchain.android.ui.swap.showHelpDialog
 import com.blockchain.nabu.StartKyc
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
@@ -38,6 +37,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.swap.homebrew.exchange.SwapInfoBottomDialog
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity
@@ -72,11 +72,10 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
         setContentView(R.layout.activity_homebrew_host)
 
         val args = ExchangeFragment.bundleArgs(defaultCurrency)
-        compositeDisposable += allAccountList.allAccounts().map { accounts ->
-            accounts.first { it.cryptoCurrency == preselectedToCurrency }
-        }.subscribeBy {
-            exchangeViewModel.initWithPreselectedCurrency(it.cryptoCurrency)
-        }
+        compositeDisposable += allAccountList.allAccounts()
+            .map {
+                accounts -> accounts.first { it.cryptoCurrency == preselectedToCurrency }
+            }.subscribeBy { exchangeViewModel.initWithPreselectedCurrency(it.cryptoCurrency) }
 
         navController.navigate(R.id.exchangeFragment, args)
     }
@@ -87,6 +86,10 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
         } else {
             consume { finish() }
         }
+
+    override fun onBackPressed() {
+        onSupportNavigateUp()
+    }
 
     override fun setToolbarTitle(title: Int) {
         setupToolbar(toolbar, title)
@@ -113,10 +116,7 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
                 return true
             }
             R.id.action_help -> {
-                showHelpDialog(this, startKyc = {
-                    logEvent(AnalyticsEvents.SwapTiers)
-                    startKyc.startKycActivity(this@HomebrewNavHostActivity)
-                })
+                showHelpDialog()
                 return true
             }
             R.id.action_error -> {
@@ -134,6 +134,10 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showHelpDialog() {
+        SwapInfoBottomDialog.newInstance().show(supportFragmentManager, "SwapInfo")
     }
 
     private var showKycItem: MenuItem? = null
@@ -174,7 +178,6 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
         val quotesService = exchangeViewModel.quoteService
 
         compositeDisposable += listenForConnectionErrors(quotesService)
-
         compositeDisposable += quotesService.openAsDisposable()
 
         return quotesService
@@ -227,19 +230,14 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     }
 
     companion object {
-        private const val EXTRA_DEFAULT_CURRENCY = "com.blockchain.morph.ui.homebrew.exchange.EXTRA_DEFAULT_CURRENCY"
-        private const val EXTRA_PRESELECTED_TO_CURRENCY =
-            "com.blockchain.morph.ui.homebrew.exchange.EXTRA_PRESELECTED_TO_CURRENCY"
+        private const val EXTRA_DEFAULT_CURRENCY = "EXTRA_DEFAULT_CURRENCY"
+        private const val EXTRA_PRESELECTED_TO_CURRENCY = "EXTRA_PRESELECTED_TO_CURRENCY"
 
         @JvmStatic
-        fun start(
-            context: Context,
-            defaultCurrency: String,
-            preselectedDefaultCurrency: CryptoCurrency? = null
-        ) {
+        fun start(context: Context, defaultCurrency: String, toCryptoCurrency: CryptoCurrency? = null) {
             Intent(context, HomebrewNavHostActivity::class.java).apply {
                 putExtra(EXTRA_DEFAULT_CURRENCY, defaultCurrency)
-                putExtra(EXTRA_PRESELECTED_TO_CURRENCY, preselectedDefaultCurrency ?: CryptoCurrency.ETHER)
+                putExtra(EXTRA_PRESELECTED_TO_CURRENCY, toCryptoCurrency ?: CryptoCurrency.ETHER)
             }.run { context.startActivity(this) }
         }
     }
