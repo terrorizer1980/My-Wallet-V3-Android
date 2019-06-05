@@ -2,9 +2,6 @@ package com.blockchain.sunriver.ui
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import android.view.View
-import android.widget.ImageView
 import com.blockchain.nabu.StartKycAirdrop
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
@@ -16,18 +13,14 @@ class CoinifyKycBottomDialog : BaseAirdropBottomDialog(
         title = R.string.more_info_needed,
         description = R.string.coinify_kyc_body,
         ctaButtonText = R.string.coinify_kyc_cta,
-        dismissText = R.string.coinify_kyc_dismiss
+        dismissText = R.string.coinify_kyc_dismiss,
+        iconDrawable = R.drawable.vector_buy_shopping_cart
     )
 ) {
 
     private val analytics: Analytics by inject()
 
     private val startKyc: StartKycAirdrop by inject()
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        view.findViewById<ImageView>(R.id.xlm_icon).setImageResource(R.drawable.vector_buy_shopping_cart)
-    }
 
     override fun onStart() {
         super.onStart()
