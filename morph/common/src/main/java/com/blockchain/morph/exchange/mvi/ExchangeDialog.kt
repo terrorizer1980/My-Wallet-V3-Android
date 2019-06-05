@@ -33,6 +33,7 @@ class ExchangeDialog(intents: Observable<ExchangeIntent>, initial: ExchangeViewM
                 is ApplyMaximumLimit -> previousState.applyLimit(previousState.maxTrade)
                 is ApplyMaxSpendable -> previousState.applyMaxSpendable(previousState.maxSpendable)
                 is FiatExchangeRateIntent -> previousState.setFiatRate(intent.c2fRate)
+                is ExchangeRateIntent -> previousState.setExchangeFiatRates(intent.prices)
                 is SpendableValueIntent -> previousState.setSpendable(intent.cryptoValue)
                 is ClearQuoteIntent -> previousState.clearQuote()
                 is SetUserTier -> previousState.copy(userTier = intent.tier)
@@ -73,6 +74,10 @@ private fun ExchangeViewState.setFiatRate(c2fRate: ExchangeRate.CryptoToFiat): E
         return this
     }
     return copy(c2fRate = c2fRate)
+}
+
+private fun ExchangeViewState.setExchangeFiatRates(exchangePrices: List<ExchangeRate.CryptoToFiat>): ExchangeViewState {
+    return copy(exchangePrices = exchangePrices)
 }
 
 private fun ExchangeViewState.setHasEthEnoughFees(intent: EnoughFeesLimit): ExchangeViewState {
@@ -198,6 +203,7 @@ data class ExchangeViewState(
     val minTradeLimit: FiatValue? = null,
     val maxTradeLimit: FiatValue? = null,
     val maxTierLimit: FiatValue? = null,
+    val exchangePrices: List<ExchangeRate.CryptoToFiat> = emptyList(),
     val c2fRate: ExchangeRate.CryptoToFiat? = null,
     val maxSpendable: CryptoValue? = null,
     val decimalCursor: Int = 0,

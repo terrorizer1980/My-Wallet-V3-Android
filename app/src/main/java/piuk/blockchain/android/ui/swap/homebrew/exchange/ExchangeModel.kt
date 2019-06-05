@@ -8,6 +8,7 @@ import com.blockchain.morph.exchange.mvi.ExchangeDialog
 import com.blockchain.morph.exchange.mvi.ExchangeIntent
 import com.blockchain.morph.exchange.mvi.ExchangeViewState
 import com.blockchain.morph.exchange.mvi.EnoughFeesLimit
+import com.blockchain.morph.exchange.mvi.ExchangeRateIntent
 import com.blockchain.morph.exchange.mvi.FiatExchangeRateIntent
 import com.blockchain.morph.exchange.mvi.Fix
 import com.blockchain.morph.exchange.mvi.IsUserEligiableForFreeEthIntent
@@ -40,6 +41,7 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import com.blockchain.preferences.FiatCurrencyPreference
 import io.reactivex.rxkotlin.withLatestFrom
+import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -50,6 +52,7 @@ class ExchangeModel(
     private val tradeLimitService: TradeLimitService,
     private val currentTier: CurrentTier,
     private val ethEligibility: EthEligibility,
+    private val exchangeRateDataStore: ExchangeRateDataStore,
     private val transactionExecutor: TransactionExecutorWithoutFees,
     private val maximumSpendableCalculator: MaximumSpendableCalculator,
     private val currencyPreference: FiatCurrencyPreference
@@ -142,6 +145,15 @@ class ExchangeModel(
         dialogDisposable += ethEligibility.isEligible().subscribeBy {
             inputEventSink.onNext(IsUserEligiableForFreeEthIntent(it))
         }
+
+        dialogDisposable += exchangeRateDataStore.updateExchangeRates().subscribeBy {
+                inputEventSink.onNext(ExchangeRateIntent(CryptoCurrency.values().map {
+                    ExchangeRate.CryptoToFiat(it,
+                        currencyPreference.fiatCurrencyPreference,
+                        exchangeRateDataStore.getLastPrice(it,
+                            currencyPreference.fiatCurrencyPreference).toBigDecimal())
+                }))
+            }
 
         dialogDisposable += exchangeDialog.viewStates.distinctUntilChanged()
             .doOnError { Timber.e(it) }

@@ -47,6 +47,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.ExchangeRate
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.Money
+import info.blockchain.balance.times
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -61,6 +62,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Locale
@@ -240,8 +242,8 @@ internal class ExchangeFragment : Fragment() {
     private fun updateExchangeRate(exchangeViewState: ExchangeViewState) {
         textViewBaseRate.text = exchangeViewState.formatBase()
         textViewCounterRate.text = exchangeViewState.latestQuote?.let {
-            exchangeViewState.formatCounter(it)
-        } ?: ""
+            exchangeViewState.formatCounterFromQuote(it)
+        } ?: exchangeViewState.formatCounterFromPrices(exchangeViewState.exchangePrices)
     }
 
     private fun updateUserFeedBack(exchangeViewState: ExchangeViewState) {
@@ -397,21 +399,20 @@ internal class ExchangeFragment : Fragment() {
 
         val spendableString = SpannableStringBuilder()
 
-        latestQuote?.baseToFiatRate?.let { baseToFiatRate ->
-            val fiatSpendable = ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate)
+        val fiatSpendable = latestQuote?.baseToFiatRate?.let { baseToFiatRate ->
+            ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate)
                 .applyRate(spendable)
-
-            fiatSpendable?.let {
-                val fiatString = SpannableString(it.toStringWithSymbol())
-                fiatString.setSpan(
-                    ForegroundColorSpan(getResolvedColor(R.color.product_green_medium)),
-                    0,
-                    fiatString.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-                spendableString.append(fiatString)
-                spendableString.append(" ")
-            }
+        } ?: spendable * c2fRate
+        fiatSpendable?.let {
+            val fiatString = SpannableString(it.toStringWithSymbol())
+            fiatString.setSpan(
+                ForegroundColorSpan(getResolvedColor(R.color.product_green_medium)),
+                0,
+                fiatString.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spendableString.append(fiatString)
+            spendableString.append(" ")
         }
         spendableString.append(spendable.toStringWithSymbol())
         return spendableString
@@ -433,8 +434,17 @@ internal class ExchangeFragment : Fragment() {
     private fun ExchangeViewState.formatBase(): String =
         "1 ${fromCrypto.currencyCode} ="
 
-    private fun ExchangeViewState.formatCounter(quote: Quote): String =
+    private fun ExchangeViewState.formatCounterFromQuote(quote: Quote): String =
         "${quote.baseToCounterRate} ${toCrypto.currencyCode}"
+
+    private fun ExchangeViewState.formatCounterFromPrices(prices: List<ExchangeRate.CryptoToFiat>): String {
+        val exchangePriceFrom = prices.firstOrNull { it.from == fromCrypto.currency }?.rate ?: return ""
+        val exchangePriceTo = prices.firstOrNull { it.from == toCrypto.currency }?.rate ?: return ""
+        return "${exchangePriceFrom.divide(
+            exchangePriceTo,
+            toCrypto.currency.userDp,
+            RoundingMode.HALF_DOWN)} ${toCrypto.currencyCode}"
+    }
 
     private fun Fix.toLoggingFixType(): FixType = when (this) {
         Fix.BASE_FIAT -> FixType.BaseFiat
