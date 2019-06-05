@@ -837,16 +837,15 @@ class MainActivity
         }
 
         fun registerIntents(ctx: Context) {
-            LocalBroadcastManager.getInstance(ctx).also {
-                registerReceiver(this, IntentFilter(ACTION_SEND))
-                registerReceiver(this, IntentFilter(ACTION_RECEIVE))
-                registerReceiver(this, IntentFilter(ACTION_BUY))
-                registerReceiver(this, IntentFilter(ACTION_EXCHANGE))
-                registerReceiver(this, IntentFilter(ACTION_EXCHANGE_KYC))
-                registerReceiver(this, IntentFilter(ACTION_SUNRIVER_KYC))
-                registerReceiver(this, IntentFilter(ACTION_RESUBMIT_KYC))
-                registerReceiver(this, IntentFilter(ACTION_BUY_SELL_KYC))
-            }
+            val broadcastManager = LocalBroadcastManager.getInstance(ctx)
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_SEND))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_RECEIVE))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_BUY))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_EXCHANGE))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_EXCHANGE_KYC))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_SUNRIVER_KYC))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_RESUBMIT_KYC))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_BUY_SELL_KYC))
         }
     }
 
@@ -854,18 +853,18 @@ class MainActivity
 
         val TAG = MainActivity::class.java.simpleName!!
 
-        const val ACTION_SEND = "info.blockchain.wallet.ui.BalanceFragment.SEND"
-        const val ACTION_RECEIVE = "info.blockchain.wallet.ui.BalanceFragment.RECEIVE"
-        const val ACTION_BUY = "info.blockchain.wallet.ui.BalanceFragment.BUY"
-        const val ACTION_EXCHANGE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_EXCHANGE"
+        const val ACTION_SEND = "piuk.blockchain.android.ui.balance.BalanceFragment.SEND"
+        const val ACTION_RECEIVE = "piuk.blockchain.android.ui.balance.BalanceFragment.RECEIVE"
+        const val ACTION_BUY = "piuk.blockchain.android.ui.balance.BalanceFragment.BUY"
+        const val ACTION_EXCHANGE = "piuk.blockchain.android.ui.balance.BalanceFragment.ACTION_EXCHANGE"
         const val ACTION_BUY_SELL_KYC =
-            "info.blockchain.wallet.ui.BalanceFragment.ACTION_BUY_SELL_KYC"
+            "piuk.blockchain.android.ui.balance.BalanceFragment.ACTION_BUY_SELL_KYC"
         const val ACTION_EXCHANGE_KYC =
-            "info.blockchain.wallet.ui.BalanceFragment.ACTION_EXCHANGE_KYC"
+            "piuk.blockchain.android.ui.balance.BalanceFragment.ACTION_EXCHANGE_KYC"
         const val ACTION_SUNRIVER_KYC =
-            "info.blockchain.wallet.ui.BalanceFragment.ACTION_SUNRIVER_KYC"
+            "piuk.blockchain.android.ui.balance.BalanceFragment.ACTION_SUNRIVER_KYC"
         const val ACTION_RESUBMIT_KYC =
-            "info.blockchain.wallet.ui.BalanceFragment.ACTION_RESUBMIT_KYC"
+            "piuk.blockchain.android.ui.balance.BalanceFragment.ACTION_RESUBMIT_KYC"
 
         private const val REQUEST_BACKUP = 2225
         private const val COOL_DOWN_MILLIS = 2 * 1000
