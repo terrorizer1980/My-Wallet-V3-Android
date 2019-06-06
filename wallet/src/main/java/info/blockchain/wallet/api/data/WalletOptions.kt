@@ -3,7 +3,6 @@ package info.blockchain.wallet.api.data
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.ArrayList
 import java.util.HashMap
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -11,7 +10,7 @@ import java.util.HashMap
 class WalletOptions {
 
     @JsonProperty("showBuySellTab")
-    val buySellCountries: List<String> = ArrayList()
+    val buySellCountries: List<String> = emptyList()
 
     @JsonProperty("partners")
     val partners: Partners = Partners()
@@ -35,7 +34,9 @@ class WalletOptions {
     private val bitcoinCashFees = HashMap<String, Int>()
 
     @JsonProperty("xlm")
-    private val xlm = HashMap<String, Long>()
+    private val xlm: XlmOptions = XlmOptions()
+    @JsonProperty("xlmExchange")
+    private val xlmExchange: XlmExchange = XlmExchange()
 
     @JsonProperty("mobile")
     private val mobile = HashMap<String, String>()
@@ -54,7 +55,10 @@ class WalletOptions {
      * @return the timeout
      */
     val xlmTransactionTimeout: Long
-        get() = xlm["sendTimeOutSeconds"] ?: 0
+        get() = xlm.sendTimeOutSeconds
+
+    val xmlExchangeAddresses: List<String>
+        get() = xlmExchange.exchangeAddresses
 
     val stellarhorizonUrl: String
         get() = domains["stellarHorizon"] ?: ""

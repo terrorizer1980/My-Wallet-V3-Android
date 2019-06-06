@@ -89,10 +89,7 @@ import javax.inject.Inject
 import java.util.Arrays
 import java.util.HashMap
 
-class MainActivity
-    : BaseMvpActivity<MainView, MainPresenter>(),
-    HomeNavigator,
-    MainView,
+class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, MainView,
     ConfirmPaymentDialog.OnConfirmDialogInteractionListener,
     FrontendJavascript<String> {
 

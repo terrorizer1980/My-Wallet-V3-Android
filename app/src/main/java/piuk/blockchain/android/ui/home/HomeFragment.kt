@@ -7,8 +7,7 @@ import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.base.View
 import java.lang.IllegalStateException
 
-abstract class HomeFragment<VIEW : View, PRESENTER : BasePresenter<VIEW>>
-    : BaseFragment<VIEW, PRESENTER>() {
+abstract class HomeFragment<VIEW : View, PRESENTER : BasePresenter<VIEW>> : BaseFragment<VIEW, PRESENTER>() {
 
     fun navigator(): HomeNavigator =
         (activity as? HomeNavigator) ?: throw IllegalStateException("Parent must implement HomeNavigator")

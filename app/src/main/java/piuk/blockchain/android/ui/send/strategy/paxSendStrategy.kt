@@ -264,7 +264,8 @@ class paxSendStrategy(
         }
     }
 
-    override fun clearReceivingObject() { /* no-op : no transfers in ETH/PAX */ }
+    override fun clearReceivingObject() { /* no-op : no transfers in ETH/PAX */
+    }
 
     override fun selectSendingAccount(account: JsonSerializableAccount?) {
         throw IllegalArgumentException("Multiple accounts not supported for PAX")
@@ -501,8 +502,8 @@ private data class PendingPaxTx(
     val sendingAccountLabel: String,
     var sendingObject: ItemAccount? = null,
     var receivingAddress: String = "",
-    var amountPax: BigInteger = BigInteger.ZERO,  // Amount pax as minor
-    var feeEth: BigInteger = BigInteger.ZERO      // wei
+    var amountPax: BigInteger = BigInteger.ZERO, // Amount pax as minor
+    var feeEth: BigInteger = BigInteger.ZERO // wei
 ) {
     fun isValidAmount(): Boolean = amountPax > BigInteger.ZERO
 }

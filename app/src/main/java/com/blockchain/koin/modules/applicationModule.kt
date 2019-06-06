@@ -237,6 +237,7 @@ val applicationModule = applicationContext {
                 currencyState = get(),
                 xlmDataManager = get(),
                 xlmFeesFetcher = get(),
+                walletOptionsDataManager = get(),
                 xlmTransactionSender = get(),
                 fiatExchangeRates = get(),
                 sendFundsResultLocalizer = get()

@@ -1,4 +1,5 @@
 package piuk.blockchain.androidcore.data.walletoptions
+
 import com.blockchain.sunriver.XlmHorizonUrlFetcher
 import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
 import info.blockchain.wallet.api.data.WalletOptions
@@ -62,6 +63,10 @@ class WalletOptionsDataManager(
 
     fun getComRootLink(): String {
         return walletOptionsState.walletOptionsSource.value!!.comRootLink
+    }
+
+    private fun xlmExchangeAddresses(): List<String> {
+        return walletOptionsState.walletOptionsSource.value?.xmlExchangeAddresses ?: emptyList()
     }
 
     fun getWalletLink(): String {
@@ -144,4 +149,6 @@ class WalletOptionsDataManager(
         walletOptionsState.walletOptionsSource
             .map { it.xlmTransactionTimeout }
             .first(WalletOptions.XLM_DEFAULT_TIMEOUT_SECS)
+
+    fun isXlmAddressExchange(it: String): Boolean = xlmExchangeAddresses().contains(it.toUpperCase())
 }

@@ -51,6 +51,10 @@
     <string name="xlm_transaction_failed_min_balance_new_account">Minimum of %1$s needed for new accounts</string>
 
     <string name="xlm_memo_text">Memo Text</string>
+    <string name="xlm_memo">Memo</string>
+    <string name="xlm_memo_sending_exchange">Sending to an exchange?</string>
+    <string name="xlm_memo_sending_exchange_description">Add a Memo to avoid losing funds or use Swap to exchange in this wallet.</string>
+    <string name="memo_required">Required</string>
     <string name="xlm_memo_id">Memo ID</string>
     <string name="xlm_memo_hash">Memo Hash</string>
     <string name="xlm_memo_return">Memo Return Hash</string>

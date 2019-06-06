@@ -39,7 +39,6 @@ import piuk.blockchain.android.ui.fingerprint.FingerprintDialog;
 import piuk.blockchain.android.ui.home.MainActivity;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
 import piuk.blockchain.android.ui.login.LoginActivity;
-import piuk.blockchain.android.ui.login.ManualPairingActivity;
 import piuk.blockchain.android.ui.onboarding.OnboardingActivity;
 import piuk.blockchain.android.ui.pairingcode.PairingCodeActivity;
 import piuk.blockchain.android.ui.receive.ReceiveQrActivity;

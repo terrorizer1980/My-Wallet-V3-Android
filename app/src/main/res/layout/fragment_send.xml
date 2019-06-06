@@ -247,6 +247,84 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/customFeeContainer" />
 
+                    <android.support.constraint.ConstraintLayout
+                        android:id="@+id/memo_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <Spinner
+                            android:id="@+id/memo_type_spinner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <EditText
+                            android:id="@+id/memo_text_edit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:background="@null"
+                            android:maxLength="28"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="16dp"
+                            android:textColor="@color/black"
+                            android:textSize="17sp"
+                            app:layout_constraintTop_toBottomOf="@+id/memo_type_spinner" />
+
+                        <TextView
+                            android:id="@+id/required_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16dp"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="@string/memo_required"
+                            android:textColor="#F28B24"
+                            android:textSize="17sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <View
+                            android:id="@+id/divider5"
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@color/primary_gray_light"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/memo_text_edit" />
+
+                        <TextView
+                            android:id="@+id/xlm_sending_to_exchange_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="@string/xlm_memo_sending_exchange"
+                            android:textColor="@color/primary_blue_accent"
+                            android:textSize="15sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/divider5" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginEnd="30dp"
+                            android:fontFamily="@font/inter_medium"
+                            android:gravity="center"
+                            android:text="@string/xlm_memo_sending_exchange_description"
+                            android:textColor="@color/black"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/xlm_sending_to_exchange_title" />
+
+                    </android.support.constraint.ConstraintLayout>
+
                     <TextView
                         android:id="@+id/info_link"
                         android:layout_width="match_parent"
@@ -302,6 +380,8 @@
                         app:layout_constraintTop_toBottomOf="@+id/arbitraryWarning" />
 
                 </LinearLayout>
+
+
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </FrameLayout>

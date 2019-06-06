@@ -3,11 +3,11 @@ package com.blockchain.android.testutils
 import org.amshove.kluent.`should equal`
 import org.junit.Test
 
-class LazyImplTest {
+class DaggerLazyImplTest {
 
     @Test
     fun `get returns object`() {
         val any = Any()
-        LazyImpl(any).get() `should equal` any
+        DaggerLazyImpl(any).get() `should equal` any
     }
 }
