@@ -63,12 +63,9 @@
                     android:id="@+id/fromContainer"
                     layout="@layout/include_from_row" />
 
-                <View
+                <View style="@style/Divider"
                     android:id="@+id/divider1"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/primary_grey_light" />
+                    android:layout_marginTop="8dp"/>
 
                 <include
                     android:id="@+id/toContainer"
@@ -88,12 +85,10 @@
                     tools:text="Text memo: Hey this is a memo text!"
                     tools:visibility="visible" />
 
-                <View
+                <View style="@style/Divider"
                     android:id="@+id/divider2"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/primary_grey_light" />
+                    android:layout_marginTop="8dp"/>
 
                 <include
                     android:id="@+id/amountContainer"
@@ -126,12 +121,9 @@
                     tools:textColor="@color/primary_blue_accent"
                     tools:visibility="visible" />
 
-                <View
+                <View style="@style/Divider"
                     android:id="@+id/divider3"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/primary_grey_light" />
+                    android:layout_marginTop="8dp"/>
 
                 <!-- FEES TYPE -->
                 <LinearLayout
@@ -237,12 +229,9 @@
 
                     </LinearLayout>
 
-                    <View
+                    <View style="@style/Divider"
                         android:id="@+id/divider4"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
                         android:layout_marginTop="8dp"
-                        android:background="@color/primary_grey_light"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/customFeeContainer" />
@@ -286,12 +275,9 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <View
+                        <View style="@style/Divider"
                             android:id="@+id/divider5"
-                            android:layout_width="0dp"
-                            android:layout_height="1dp"
                             android:layout_marginTop="8dp"
-                            android:background="@color/primary_gray_light"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/memo_text_edit" />
@@ -380,8 +366,6 @@
                         app:layout_constraintTop_toBottomOf="@+id/arbitraryWarning" />
 
                 </LinearLayout>
-
-
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </FrameLayout>

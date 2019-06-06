@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="nav_icons">@color/grey_400</color>
+    <color name="nav_menu_text">@color/grey_600</color>
+    <color name="nav_logo">@color/grey_800</color>
+
     <!-- Toasts -->
     <color name="toast_error_background">@color/red_100</color>
     <color name="toast_error_text">@color/red_800</color>

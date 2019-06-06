@@ -796,25 +796,22 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     private val receiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
-            val action = intent.action ?: return
-            if (action == ACTION_SEND && activity != null) {
-                requestScan()
-            } else if (action == ACTION_RECEIVE && activity != null) {
-                // Used from onboarding
-                presenter.setCryptoCurrency(CryptoCurrency.BTC)
-                bottom_navigation.currentItem = ITEM_RECEIVE
-            } else if (action == ACTION_BUY && activity != null) {
-                presenter.routeToBuySell()
-            } else if (action == ACTION_EXCHANGE && activity != null) {
-                launchSwapOrKyc()
-            } else if (action == ACTION_SUNRIVER_KYC && activity != null) {
-                launchKyc(CampaignType.Sunriver)
-            } else if (action == ACTION_EXCHANGE_KYC && activity != null) {
-                launchKyc(CampaignType.Swap)
-            } else if (action == ACTION_RESUBMIT_KYC && activity != null) {
-                launchKyc(CampaignType.Resubmission)
-            } else if (action == ACTION_BUY_SELL_KYC && activity != null) {
-                launchKyc(CampaignType.BuySell)
+            @Suppress("SENSELESS_COMPARISON") // This was probably here for a (bugfix) reason, so leave for now
+            if (activity == null) return
+
+            when (intent.action ?: return) {
+                ACTION_SEND -> requestScan()
+                ACTION_RECEIVE -> {
+                    // Used from onboarding
+                    presenter.setCryptoCurrency(CryptoCurrency.BTC)
+                    bottom_navigation.currentItem = ITEM_RECEIVE
+                }
+                ACTION_BUY -> presenter.routeToBuySell()
+                ACTION_EXCHANGE -> launchSwapOrKyc()
+                ACTION_SUNRIVER_KYC -> launchKyc(CampaignType.Sunriver)
+                ACTION_EXCHANGE_KYC -> launchKyc(CampaignType.Swap)
+                ACTION_RESUBMIT_KYC -> launchKyc(CampaignType.Resubmission)
+                ACTION_BUY_SELL_KYC -> launchKyc(CampaignType.BuySell)
             }
         }
 
