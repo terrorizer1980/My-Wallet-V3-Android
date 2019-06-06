@@ -11,9 +11,9 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="8dp"
-        android:textColor="@color/primary_gray_medium"
+        android:textColor="@color/primary_grey_medium"
         android:textSize="16sp"
-        tools:background="@color/primary_gray_light"
+        tools:background="@color/primary_grey_light"
         tools:text="My Test Wallet" />
 
 </layout>

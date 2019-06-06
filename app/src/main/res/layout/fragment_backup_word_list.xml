@@ -14,7 +14,7 @@
         android:paddingRight="72dp"
         android:paddingTop="32dp"
         android:text="@string/backup_write_down_words"
-        android:textColor="@color/primary_gray_dark"
+        android:textColor="@color/primary_grey_dark"
         android:textSize="14sp" />
 
     <TextView
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:alpha=".5"
         android:gravity="center"
-        android:textColor="@color/primary_gray_dark"
+        android:textColor="@color/primary_grey_dark"
         android:textSize="18sp"
         tools:ignore="MissingPrefix"
         tools:text="Word 0 of 12" />

@@ -100,7 +100,7 @@ class DisplayableFormattingTest {
             on { cryptoCurrency } `it returns` CryptoCurrency.BCH
             on { confirmations } `it returns` CryptoCurrency.BCH.requiredConfirmations
         }.formatting().apply {
-            directionColour `should equal` R.color.product_gray_transferred
+            directionColour `should equal` R.color.product_grey_transferred
             valueBackground `should equal` R.drawable.rounded_view_transferred
         }
     }
@@ -112,7 +112,7 @@ class DisplayableFormattingTest {
             on { cryptoCurrency } `it returns` CryptoCurrency.BCH
             on { confirmations } `it returns` CryptoCurrency.BCH.requiredConfirmations - 1
         }.formatting().apply {
-            directionColour `should equal` R.color.product_gray_transferred_50
+            directionColour `should equal` R.color.product_grey_transferred_50
             valueBackground `should equal` R.drawable.rounded_view_transferred_50
         }
     }

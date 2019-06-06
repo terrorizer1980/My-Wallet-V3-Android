@@ -68,7 +68,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
-                    android:background="@color/primary_gray_light" />
+                    android:background="@color/primary_grey_light" />
 
                 <include
                     android:id="@+id/toContainer"
@@ -93,7 +93,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
-                    android:background="@color/primary_gray_light" />
+                    android:background="@color/primary_grey_light" />
 
                 <include
                     android:id="@+id/amountContainer"
@@ -131,7 +131,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
-                    android:background="@color/primary_gray_light" />
+                    android:background="@color/primary_grey_light" />
 
                 <!-- FEES TYPE -->
                 <LinearLayout
@@ -151,7 +151,7 @@
                         android:gravity="center|left"
                         android:paddingLeft="16dp"
                         android:text="@string/fee"
-                        android:textColor="@color/primary_gray_dark" />
+                        android:textColor="@color/primary_grey_dark" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -242,7 +242,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginTop="8dp"
-                        android:background="@color/primary_gray_light"
+                        android:background="@color/primary_grey_light"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/customFeeContainer" />

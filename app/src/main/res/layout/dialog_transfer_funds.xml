@@ -52,7 +52,7 @@
                 android:layout_height="match_parent"
                 android:paddingBottom="8dp"
                 android:text="@string/from"
-                android:textColor="@color/primary_gray_dark"
+                android:textColor="@color/primary_grey_dark"
                 android:textSize="14sp" />
 
             <TextView
@@ -79,7 +79,7 @@
                 android:layout_height="match_parent"
                 android:paddingBottom="8dp"
                 android:text="@string/to"
-                android:textColor="@color/primary_gray_medium"
+                android:textColor="@color/primary_grey_medium"
                 android:textSize="14sp" />
 
             <android.support.v7.widget.AppCompatSpinner
@@ -117,7 +117,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="16dp"
                 android:text="@string/transfer_amount"
-                android:textColor="@color/primary_gray_dark"
+                android:textColor="@color/primary_grey_dark"
                 android:textSize="14sp" />
 
             <TextView
@@ -147,7 +147,7 @@
                 android:layout_gravity="left"
                 android:layout_marginRight="16dp"
                 android:text="@string/fee"
-                android:textColor="@color/primary_gray_dark"
+                android:textColor="@color/primary_grey_dark"
                 android:textSize="14sp" />
 
             <TextView

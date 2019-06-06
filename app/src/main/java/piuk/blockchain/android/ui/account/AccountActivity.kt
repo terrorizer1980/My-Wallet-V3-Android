@@ -404,7 +404,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         }
 
         alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).apply {
-            setTextColor(ContextCompat.getColor(this@AccountActivity, R.color.primary_gray_dark))
+            setTextColor(ContextCompat.getColor(this@AccountActivity, R.color.primary_grey_dark))
         }
     }
 

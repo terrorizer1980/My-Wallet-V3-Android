@@ -140,7 +140,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:src="@drawable/ic_arrow_drop_down_grey600_24dp"
-                android:tint="@color/primary_gray_medium"
+                android:tint="@color/primary_grey_medium"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/text_view_account_to_from_description"
                 app:layout_constraintEnd_toEndOf="parent"

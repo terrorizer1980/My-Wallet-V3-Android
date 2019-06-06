@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+
     implementation Libraries.kotlin
 
     implementation Libraries.veriff

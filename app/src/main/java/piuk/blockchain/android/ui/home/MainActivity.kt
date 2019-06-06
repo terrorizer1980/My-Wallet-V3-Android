@@ -203,9 +203,12 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         // Styling
         bottom_navigation.apply {
             addItems(toolbarNavigationItems())
-            accentColor = ContextCompat.getColor(context, R.color.primary_blue_accent)
-            inactiveColor = ContextCompat.getColor(context, R.color.primary_gray_dark)
+            accentColor = ContextCompat.getColor(context, R.color.bottom_toolbar_icon_active)
+            inactiveColor = ContextCompat.getColor(context, R.color.bottom_toolbar_icon_inactive)
+
+            titleState = AHBottomNavigation.TitleState.ALWAYS_SHOW
             isForceTint = true
+
             setUseElevation(true)
             loadFont(context, CustomFont.MONTSERRAT_LIGHT) { t -> setTitleTypeface(t) }
 

@@ -110,7 +110,7 @@ internal class BuySellTransactionDelegate(
         }
 
         private fun onRefunded() {
-            direction.setTextColor(context.getResolvedColor(R.color.product_gray_transferred))
+            direction.setTextColor(context.getResolvedColor(R.color.product_grey_transferred))
             result.setBackgroundResource(R.drawable.rounded_view_transferred)
         }
     }

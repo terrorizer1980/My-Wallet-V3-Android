@@ -98,8 +98,6 @@
 
     <string name="claim_crypto_success_title">Your XLM is on its way!</string>
     <string name="claim_crypto_success_body">Once your profile is approved for Gold, we will airdrop your free crypto into your Wallet.</string>
-    <string name="claim_crypto_success_cta">Share</string>
-    <string name="claim_crypto_success_dismiss">Dismiss</string>
 
     <!-- Help -->
     <string name="help">Help</string>

@@ -72,7 +72,7 @@ class BackupWalletCompletedFragment :
         alertDialog.show()
 
         alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).apply {
-            setTextColor(ContextCompat.getColor(context, R.color.primary_gray_dark))
+            setTextColor(ContextCompat.getColor(context, R.color.primary_grey_dark))
         }
     }
 

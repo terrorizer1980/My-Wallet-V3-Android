@@ -71,7 +71,7 @@
 
     <style name="LightBlueButtonTheme" parent="ThemeOverlay.AppCompat.Dark">
         <!-- Disabled colour -->
-        <item name="colorButtonNormal">@color/primary_gray_dark</item>
+        <item name="colorButtonNormal">@color/primary_grey_dark</item>
         <!-- Enabled colour -->
         <item name="colorControlHighlight">@color/primary_navy_medium</item>
         <!-- Fonts -->
@@ -85,7 +85,7 @@
     <style name="ButtonLightBlueTheme" parent="LightBlueButtonTheme" />
 
     <style name="WhiteButtonTheme" parent="ThemeOverlay.AppCompat.Dark">
-        <item name="colorButtonNormal">@color/primary_gray_dark</item>
+        <item name="colorButtonNormal">@color/primary_grey_dark</item>
         <item name="colorControlHighlight">@color/white</item>
         <item name="colorAccent">@color/white</item>
         <item name="android:textColor">@color/primary_navy_medium</item>
@@ -154,12 +154,18 @@
     </style>
 
     <style name="MemoEditTextStyle">
-        <item name="android:textColor">#FF000000</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="MemoEditTextStyle.Description">
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">#FF838283</item>
+    </style>
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
     </style>
 
 </resources>

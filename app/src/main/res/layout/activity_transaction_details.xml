@@ -92,7 +92,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/transaction_amount"
                         android:layout_alignParentRight="true"
-                        android:textColor="@color/product_gray_headers"
+                        android:textColor="@color/product_grey_headers"
                         android:textSize="14sp"
                         tools:text="Value when recieved: $200" />
 
@@ -102,7 +102,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/transaction_value"
                         android:layout_alignParentRight="true"
-                        android:textColor="@color/product_gray_headers"
+                        android:textColor="@color/product_grey_headers"
                         android:textSize="14sp"
                         tools:text="Transaction fee: 0.00000124 BTC" />
 

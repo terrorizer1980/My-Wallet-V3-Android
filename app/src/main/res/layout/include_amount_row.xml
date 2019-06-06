@@ -23,7 +23,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="BTC"
-                android:textColor="@color/primary_gray_dark" />
+                android:textColor="@color/primary_grey_dark" />
 
             <EditText
                 android:id="@+id/amountCrypto"
@@ -58,7 +58,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="USD"
-                android:textColor="@color/primary_gray_dark" />
+                android:textColor="@color/primary_grey_dark" />
 
             <EditText
                 android:id="@+id/amountFiat"

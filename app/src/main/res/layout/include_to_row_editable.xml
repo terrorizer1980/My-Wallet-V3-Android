@@ -16,7 +16,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
         android:text="@string/to"
-        android:textColor="@color/primary_gray_dark"
+        android:textColor="@color/primary_grey_dark"
         app:layout_constraintEnd_toStartOf="@+id/toArrow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

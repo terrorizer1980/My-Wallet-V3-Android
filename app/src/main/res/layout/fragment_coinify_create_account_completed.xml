@@ -34,7 +34,7 @@
         android:layout_marginTop="32dp"
         android:gravity="center_horizontal"
         android:text="@string/buy_sell_get_to_know_you_message"
-        android:textColor="@color/primary_gray_dark"
+        android:textColor="@color/primary_grey_dark"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

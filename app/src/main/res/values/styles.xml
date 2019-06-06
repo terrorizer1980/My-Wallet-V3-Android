@@ -54,7 +54,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:textCursorDrawable">@null</item>
         <item name="android:inputType">textPassword</item>
-        <item name="android:textColor">@color/primary_gray_medium</item>
+        <item name="android:textColor">@color/primary_grey_medium</item>
     </style>
 
     <style name="PasswordChangeDialogEditTextLayout">
@@ -120,7 +120,7 @@
         <item name="android:inputType">textNoSuggestions</item>
         <item name="android:maxLines">1</item>
         <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:textColor">@color/primary_gray_dark</item>
+        <item name="android:textColor">@color/primary_grey_dark</item>
         <item name="android:textColorHint">@color/product_gray_hint</item>
     </style>
 
@@ -161,28 +161,28 @@
         <item name="android:orientation">horizontal</item>
     </style>
 
-    <style name="ContactsHeader">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Subhead</item>
-        <item name="android:textColor">@color/primary_gray_medium</item>
-    </style>
+    <!--<style name="ContactsHeader">-->
+        <!--<item name="android:layout_width">match_parent</item>-->
+        <!--<item name="android:layout_height">wrap_content</item>-->
+        <!--<item name="android:padding">16dp</item>-->
+        <!--<item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Subhead</item>-->
+        <!--<item name="android:textColor">@color/primary_gray_medium</item>-->
+    <!--</style>-->
 
-    <style name="ContactsDetail">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
-        <item name="android:textColor">@color/primary_gray_medium</item>
-    </style>
+    <!--<style name="ContactsDetail">-->
+        <!--<item name="android:layout_width">match_parent</item>-->
+        <!--<item name="android:layout_height">wrap_content</item>-->
+        <!--<item name="android:padding">16dp</item>-->
+        <!--<item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>-->
+        <!--<item name="android:textColor">@color/primary_gray_medium</item>-->
+    <!--</style>-->
 
     <style name="TransactionDetailHeader">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:textColor">@color/product_gray_headers</item>
+        <item name="android:textColor">@color/product_grey_headers</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -204,7 +204,7 @@
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
-        <item name="android:textColor">@color/primary_gray_medium</item>
+        <item name="android:textColor">@color/primary_grey_medium</item>
     </style>
 
     <style name="OnBoardingEmail">
@@ -235,7 +235,7 @@
     </style>
 
     <style name="DashboardCoinTitle">
-        <item name="android:textColor">@color/primary_gray_dark</item>
+        <item name="android:textColor">@color/primary_grey_dark</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -249,7 +249,7 @@
     </style>
 
     <style name="DashboardCoinAmounts">
-        <item name="android:textColor">@color/primary_gray_dark</item>
+        <item name="android:textColor">@color/primary_grey_dark</item>
         <item name="android:textSize">12sp</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
@@ -275,7 +275,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/primary_gray_dark</item>
+        <item name="android:textColor">@color/primary_grey_dark</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -296,7 +296,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:paddingBottom">8dp</item>
-        <item name="android:textColor">@color/primary_gray_dark</item>
+        <item name="android:textColor">@color/primary_grey_dark</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -328,7 +328,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginTop">16dp</item>
-        <item name="android:textColor">@color/product_gray_headers</item>
+        <item name="android:textColor">@color/product_grey_headers</item>
         <item name="android:textSize">16sp</item>
     </style>
 

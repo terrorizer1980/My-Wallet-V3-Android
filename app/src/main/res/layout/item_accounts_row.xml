@@ -70,7 +70,7 @@
             android:ellipsize="end"
             android:marqueeRepeatLimit="marquee_forever"
             android:maxLines="1"
-            android:textColor="@color/primary_gray_dark"
+            android:textColor="@color/primary_grey_dark"
             android:textSize="12sp"
             tools:text="1M4gfd9q9iTCGRQLatoRzcJRETyTpJLCya" />
 

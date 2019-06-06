@@ -68,7 +68,7 @@
             android:layout_gravity="right"
             android:text="@string/not_now"
             android:contentDescription="@string/not_now"
-            android:textColor="@color/primary_gray_dark"
+            android:textColor="@color/primary_grey_dark"
             android:visibility="gone"
             tools:ignore="RtlHardcoded"
             tools:visibility="visible" />
