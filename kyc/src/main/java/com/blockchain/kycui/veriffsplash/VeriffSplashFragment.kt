@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import android.view.ViewGroup
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.kyc.models.nabu.SupportedDocuments
+import com.blockchain.kycui.hyperlinks.insertSingleLink
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.notifications.analytics.AnalyticsEvents
@@ -21,6 +23,7 @@ import com.blockchain.ui.extensions.throttledClicks
 import com.blockchain.veriff.VeriffApplicantAndToken
 import com.blockchain.veriff.VeriffLauncher
 import io.reactivex.Observable
+import kotlinx.android.synthetic.main.fragment_kyc_veriff_splash.text_view_country_supported_subtitle
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
@@ -58,6 +61,15 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
 
         progressListener.setHostTitle(R.string.kyc_veriff_splash_title)
         progressListener.incrementProgress(KycStep.VeriffSplashPage)
+
+        text_view_country_supported_subtitle.insertSingleLink(
+            R.string.kyc_veriff_splash_country_supported_subtitle,
+            R.string.kyc_veriff_splash_list_of_countries
+        ) {
+            startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.kyc_veriff_splash_list_of_countries_url)))
+            )
+        }
 
         checkCameraPermissions()
 

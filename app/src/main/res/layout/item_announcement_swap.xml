@@ -149,14 +149,14 @@
                 app:srcCompat="@drawable/vector_xlm_swap_announcement" />
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintHorizontal_bias="0.75"
                 app:layout_constraintEnd_toEndOf="parent"
 
-                app:srcCompat="@drawable/vector_pax_swap_announcement" />
+                app:srcCompat="@drawable/vector_pax_colored" />
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>

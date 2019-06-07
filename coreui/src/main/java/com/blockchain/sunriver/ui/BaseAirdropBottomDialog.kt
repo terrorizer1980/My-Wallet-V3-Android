@@ -1,6 +1,7 @@
 package com.blockchain.sunriver.ui
 
 import android.os.Bundle
+import android.support.annotation.DrawableRes
 import android.support.annotation.LayoutRes
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetDialogFragment
@@ -9,10 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
-import com.blockchain.remoteconfig.FeatureFlag
 import io.reactivex.disposables.CompositeDisposable
-import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.visible
@@ -26,17 +26,16 @@ abstract class BaseAirdropBottomDialog(
         @StringRes val title: Int,
         @StringRes val description: Int,
         @StringRes val ctaButtonText: Int,
-        @StringRes val dismissText: Int = 0
+        @StringRes val dismissText: Int = 0,
+        @DrawableRes val iconDrawable: Int? = null
     )
 
     protected val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.TransparentBottomSheetDialogTheme)
+        setStyle(STYLE_NORMAL, R.style.TransparentBottomSheetDialogTheme)
     }
-
-    private val animateShip: FeatureFlag by inject("ff_animate_stellar_ship")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -78,6 +77,9 @@ abstract class BaseAirdropBottomDialog(
                         xlmLogoClick()
                     }
             }
+        content.iconDrawable?.let {
+            view.findViewById<ImageView>(R.id.xlm_icon).setImageResource(it)
+        }
         return view
     }
 

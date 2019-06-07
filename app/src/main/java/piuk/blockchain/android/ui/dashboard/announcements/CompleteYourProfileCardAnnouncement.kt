@@ -37,7 +37,7 @@ internal class CompleteYourProfileCardAnnouncement(
                 title = R.string.complete_your_profile_card_title,
                 description = R.string.complete_your_profile_card_body,
                 link = R.string.complete_your_profile_card_button,
-                image = R.drawable.vector_xlm_colored,
+                image = R.drawable.vector_gold_checkmark,
                 closeFunction = {
                     dismissEntry.isDismissed = true
                     context.dismissAnnouncement(dismissEntry.prefsKey)

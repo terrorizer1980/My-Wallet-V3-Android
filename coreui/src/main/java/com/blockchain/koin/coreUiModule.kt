@@ -74,9 +74,15 @@ val coreUiModule = applicationContext {
 }
 
 val coreUiFeatureFlagsModule = applicationContext {
-    factory("ff_animate_stellar_ship") { get<RemoteConfig>().featureFlag("animate_stellar_ship") }
-
     factory("ff_notify_coinify_users_to_kyc") {
         get<RemoteConfig>().featureFlag("android_notify_coinify_users_to_kyc")
+    }
+
+    factory("ff_get_free_xlm_popup") {
+        get<RemoteConfig>().featureFlag("get_free_xlm_popup")
+    }
+
+    factory("ff_sunriver_has_large_backlog") {
+        get<RemoteConfig>().featureFlag("sunriver_has_large_backlog")
     }
 }

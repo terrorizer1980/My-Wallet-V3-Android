@@ -7,6 +7,7 @@ import io.reactivex.Observable
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
+import piuk.blockchain.androidcore.utils.helperfunctions.JavaHashCode
 import java.math.BigInteger
 
 abstract class Displayable {
@@ -69,15 +70,15 @@ abstract class Displayable {
         var result = 17
         result = 31 * result + cryptoCurrency.hashCode()
         result = 31 * result + direction.hashCode()
-        result = 31 * result + timeStamp.hashCode()
+        result = 31 * result + JavaHashCode.hashCode(timeStamp)
         result = 31 * result + total.hashCode()
         result = 31 * result + hash.hashCode()
         result = 31 * result + inputsMap.hashCode()
         result = 31 * result + outputsMap.hashCode()
-        result = 31 * result + confirmations.hashCode()
-        result = 31 * result + isFeeTransaction.hashCode()
-        result = 31 * result + watchOnly.hashCode()
-        result = 31 * result + doubleSpend.hashCode()
+        result = 31 * result + JavaHashCode.hashCode(confirmations)
+        result = 31 * result + JavaHashCode.hashCode(isFeeTransaction)
+        result = 31 * result + JavaHashCode.hashCode(watchOnly)
+        result = 31 * result + JavaHashCode.hashCode(doubleSpend)
         result = 31 * result + (totalDisplayableCrypto?.hashCode() ?: 0)
         result = 31 * result + (totalDisplayableFiat?.hashCode() ?: 0)
         result = 31 * result + (note?.hashCode() ?: 0)

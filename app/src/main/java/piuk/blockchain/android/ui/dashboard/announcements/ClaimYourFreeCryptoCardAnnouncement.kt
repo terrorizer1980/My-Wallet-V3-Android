@@ -38,10 +38,10 @@ internal class ClaimYourFreeCryptoCardAnnouncement(
         context.showAnnouncement(
             index = 0,
             announcementData = ImageRightAnnouncementCard(
-                title = R.string.claim_your_free_crypto_card_title,
-                description = R.string.claim_your_free_crypto_card_body,
-                link = R.string.claim_your_free_crypto_card_button,
-                image = R.drawable.vector_xlm_colored,
+                title = R.string.airdrop_program_card_title,
+                description = R.string.airdrop_program_card_body,
+                link = R.string.airdrop_program_card_button,
+                image = R.drawable.vector_gold_checkmark,
                 closeFunction = {
                     dismissEntry.isDismissed = true
                     context.dismissAnnouncement(dismissEntry.prefsKey)

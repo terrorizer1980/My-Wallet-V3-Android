@@ -26,7 +26,13 @@ val dashboardAnnouncementsModule = applicationContext {
                 get("ff_notify_coinify_users_to_kyc")) as Announcement<DashboardPresenter>
         }
 
-        factory("stellar") { StellarModalPopupAnnouncement(get(), get()) as Announcement<DashboardPresenter> }
+        factory("stellar") {
+            StellarModalPopupAnnouncement(
+                tierService = get(),
+                dismissRecorder = get(),
+                showPopupFeatureFlag = get("ff_get_free_xlm_popup")
+            ) as Announcement<DashboardPresenter>
+        }
 
         factory("profile") { CompleteYourProfileCardAnnouncement(get(), get()) as Announcement<DashboardPresenter> }
 

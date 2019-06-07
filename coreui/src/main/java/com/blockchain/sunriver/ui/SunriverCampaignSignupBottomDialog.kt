@@ -2,6 +2,7 @@ package com.blockchain.sunriver.ui
 
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.SunriverCampaignSignUp
 import io.reactivex.Single
 import io.reactivex.rxkotlin.plusAssign
@@ -15,12 +16,15 @@ class SunriverCampaignSignupBottomDialog : BaseAirdropBottomDialog(
         title = R.string.claim_your_free_crypto,
         description = R.string.claim_your_free_crypto_body,
         ctaButtonText = R.string.claim_your_free_crypto_cta,
-        dismissText = R.string.claim_your_free_crypto_dismiss
+        dismissText = R.string.claim_your_free_crypto_dismiss,
+        iconDrawable = R.drawable.vector_airdrop_parachute
     )
 ) {
     private val analytics: Analytics by inject()
 
     private val sunriverCampaignSignUp: SunriverCampaignSignUp by inject()
+
+    private val featureFlag: FeatureFlag by inject("ff_get_free_xlm_popup")
 
     override fun onStart() {
         super.onStart()
@@ -47,5 +51,9 @@ class SunriverCampaignSignupBottomDialog : BaseAirdropBottomDialog(
         super.dismissButtonClick()
     }
 
-    fun shouldShow(): Single<Boolean> = sunriverCampaignSignUp.userIsInSunRiverCampaign().map { !it }
+    fun shouldShow(): Single<Boolean> =
+        Single.merge(
+            sunriverCampaignSignUp.userIsInSunRiverCampaign().map { !it },
+            featureFlag.enabled
+        ).all { it }
 }

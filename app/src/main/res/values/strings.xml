@@ -846,11 +846,6 @@
     <string name="buy_sell_create_account">Create Account</string>
 
     <!-- SUNRIVER -->
-    <string name="sunriver_announcement_stellar_support_title">We Now Support Stellar (XLM)</string>
-    <string name="sunriver_announcement_stellar_support_message">XLM is a token that enables quick, low cost global transactions. Send, receive, and trade XLM in the Wallet today.</string>
-    <string name="sunriver_announcement_stellar_support_secondary_message">For the chance to get free XLM</string>
-    <string name="sunriver_announcement_stellar_support_cta">Claim your free XLM now</string>
-
     <string name="sunriver_announcement_stellar_claim_title">Claim Your Stellar (XLM)</string>
     <string name="sunriver_announcement_stellar_claim_message">Looks like you started verifying your identity but didn\'t finish. Pick up where you left off.</string>
     <string name="sunriver_announcement_stellar_claim_cta">Continue Verification</string>
@@ -880,14 +875,14 @@
     <string name="stablecoin_announcement_introducing_link">Exchange for PAX Now</string>
 
     <!-- Complete Your Profile Card -->
-    <string name="complete_your_profile_card_title">Complete Your Profile</string>
-    <string name="complete_your_profile_card_body">Complete your Blockchain profile today and we\'ll Airdrop XLM directly into your wallet!</string>
-    <string name="complete_your_profile_card_button">Continue to Claim Your XLM</string>
+    <string name="complete_your_profile_card_title">Go for Gold</string>
+    <string name="complete_your_profile_card_body">Complete your profile to start instantly trading crypto from the security of your wallet.</string>
+    <string name="complete_your_profile_card_button">Complete profile</string>
 
-    <!-- Claim Your Free Crypto Card -->
-    <string name="claim_your_free_crypto_card_title">@string/claim_your_free_crypto</string>
-    <string name="claim_your_free_crypto_card_body">You\'re all set! Tap this card to claim your free XLM.</string>
-    <string name="claim_your_free_crypto_card_button">@string/claim_your_xlm</string>
+    <!-- Airdrop Program Card -->
+    <string name="airdrop_program_card_title">Airdrop Program</string>
+    <string name="airdrop_program_card_body">You’re eligible for future airdrops.</string>
+    <string name="airdrop_program_card_button">Opt-in Now</string>
 
     <!-- PAX No Transactions Screen -->
     <string name="pax_title">USD PAX</string>
