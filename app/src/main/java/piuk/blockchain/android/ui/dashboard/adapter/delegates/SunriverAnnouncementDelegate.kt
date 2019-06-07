@@ -72,18 +72,6 @@ data class SunriverCard(
 
     companion object {
 
-        fun nowSupported(
-            closeFunction: () -> Unit,
-            linkFunction: () -> Unit
-        ) = SunriverCard(
-            title = R.string.sunriver_announcement_stellar_support_title,
-            description = R.string.sunriver_announcement_stellar_support_message,
-            link = R.string.sunriver_announcement_stellar_support_cta,
-            closeFunction = closeFunction,
-            linkFunction = linkFunction,
-            prefsKey = SunriverCardType.JoinWaitList.javaClass.simpleName
-        )
-
         fun continueClaim(
             closeFunction: () -> Unit,
             linkFunction: () -> Unit
