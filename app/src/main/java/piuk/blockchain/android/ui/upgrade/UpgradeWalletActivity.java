@@ -137,7 +137,7 @@ public class UpgradeWalletActivity extends BaseMvpActivity<UpgradeWalletView, Up
 
     @Override
     public void onBackPressed() {
-        getPresenter().onBackButtonPressed(this);
+        getPresenter().onBackButtonPressed();
     }
 
     @Override

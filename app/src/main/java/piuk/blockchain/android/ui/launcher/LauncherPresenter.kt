@@ -83,7 +83,7 @@ class LauncherPresenter @Inject constructor(
         appUtil.clearCredentialsAndRestart(LauncherActivity::class.java)
 
     private fun promptUpgrade() {
-        accessState.setIsLoggedIn(true)
+        accessState.isLoggedIn = true
         view.onRequestUpgrade()
     }
 
@@ -96,7 +96,7 @@ class LauncherPresenter @Inject constructor(
             payloadDataManager.wallet!!.guid,
             payloadDataManager.wallet!!.sharedKey
         )
-            .doOnComplete { accessState.setIsLoggedIn(true) }
+            .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }
             .addToCompositeDisposable(this)
             .subscribe({ settings ->

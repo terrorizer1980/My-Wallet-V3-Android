@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:padding="16dp"
-            android:textColor="@color/product_gray_headers"
+            android:textColor="@color/product_grey_headers"
             android:textSize="16sp"
             tools:text="FR14 2004 1010 0505 0001 3M02 606" />
 

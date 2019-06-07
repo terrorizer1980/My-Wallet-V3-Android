@@ -8,6 +8,7 @@ import com.blockchain.koin.injectActivity
 import com.blockchain.ui.password.SecondPasswordHandler
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.data.access.LogoutTimer
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 
@@ -18,7 +19,7 @@ abstract class BaseAuthActivity : ToolBarActivity() {
 
     private val logoutTimer: LogoutTimer by inject()
 
-    protected val prefsUtil: PrefsUtil by inject()
+    protected val prefs: PersistentPrefs by inject()
 
     protected val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
@@ -41,7 +42,7 @@ abstract class BaseAuthActivity : ToolBarActivity() {
         stopLogoutTimer()
         ApplicationLifeCycle.getInstance().onActivityResumed()
 
-        if (prefsUtil.getValue(PrefsUtil.KEY_SCREENSHOTS_ENABLED, false) && !enforceFlagSecure()) {
+        if (prefs.getValue(PrefsUtil.KEY_SCREENSHOTS_ENABLED, false) && !enforceFlagSecure()) {
             enableScreenshots()
         } else {
             disallowScreenshots()
@@ -71,11 +72,11 @@ abstract class BaseAuthActivity : ToolBarActivity() {
      * Starts the logout timer. Override in an activity if timeout is not needed.
      */
     protected open fun startLogoutTimer() {
-        logoutTimer.start(this)
+        logoutTimer.start()
     }
 
     private fun stopLogoutTimer() {
-        logoutTimer.stop(this)
+        logoutTimer.stop()
     }
 
     private fun disallowScreenshots() {

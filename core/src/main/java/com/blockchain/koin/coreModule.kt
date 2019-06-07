@@ -1,6 +1,5 @@
 package com.blockchain.koin
 
-import android.content.Context
 import com.blockchain.accounts.AccountList
 import com.blockchain.accounts.AllAccountList
 import com.blockchain.accounts.AllAccountsImplementation
@@ -37,13 +36,13 @@ import com.blockchain.logging.TimberLogger
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.preferences.FiatCurrencyPreference
+import com.blockchain.sunriver.XlmHorizonUrlFetcher
 import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
 import com.blockchain.wallet.DefaultLabels
 import com.blockchain.wallet.ResourceDefaultLabels
 import com.blockchain.wallet.SeedAccess
 import com.blockchain.wallet.SeedAccessWithoutPrompt
 import info.blockchain.api.blockexplorer.BlockExplorer
-import info.blockchain.wallet.contacts.Contacts
 import info.blockchain.wallet.util.PrivateKeyFactory
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.androidcore.BuildConfig
@@ -52,10 +51,6 @@ import piuk.blockchain.androidcore.data.access.LogoutTimer
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.auth.AuthService
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataStore
-import piuk.blockchain.androidcore.data.contacts.ContactsDataManager
-import piuk.blockchain.androidcore.data.contacts.ContactsService
-import piuk.blockchain.androidcore.data.contacts.datastore.ContactsMapStore
-import piuk.blockchain.androidcore.data.contacts.datastore.PendingTransactionListStore
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatUtil
 import piuk.blockchain.androidcore.data.currency.CurrencyState
@@ -217,10 +212,6 @@ val coreModule = applicationContext {
 
         bean { BchDataStore() }
 
-        bean { ContactsMapStore() }
-
-        bean { PendingTransactionListStore() }
-
         bean { WalletOptionsState() }
 
         bean { SettingsDataManager(get(), get(), get()) }
@@ -231,14 +222,8 @@ val coreModule = applicationContext {
             SettingsDataStore(SettingsMemoryStore(), get<SettingsService>().getSettingsObservable())
         }
 
-        bean { Contacts() }
-
-        factory { ContactsService(get()) }
-
-        factory { ContactsDataManager(get(), get(), get(), get()) }
-
         factory { WalletOptionsDataManager(get(), get(), get(), get("explorer-url")) }
-            .bind(XlmTransactionTimeoutFetcher::class)
+            .bind(XlmTransactionTimeoutFetcher::class).bind(XlmHorizonUrlFetcher::class)
 
         factory { ExchangeRateDataManager(get(), get()) }
 
@@ -293,17 +278,23 @@ val coreModule = applicationContext {
 
     factory { EthereumAccountWrapper() }
 
-    factory { AccessState.getInstance() }
+    bean {
+        AccessState(
+            context = get(),
+            prefs = get(),
+            rxBus = get()
+        )
+    }
 
     factory {
         val accessState = get<AccessState>()
         object : LogoutTimer {
-            override fun start(context: Context) {
-                accessState.startLogoutTimer(context)
+            override fun start() {
+                accessState.startLogoutTimer()
             }
 
-            override fun stop(context: Context) {
-                accessState.stopLogoutTimer(context)
+            override fun stop() {
+                accessState.stopLogoutTimer()
             }
         } as LogoutTimer
     }

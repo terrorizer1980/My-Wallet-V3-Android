@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
-    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.send.SendFragment">
 
     <android.support.design.widget.AppBarLayout
@@ -35,7 +35,8 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout android:layout_width="match_parent"
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.v4.widget.NestedScrollView
@@ -44,8 +45,8 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="?attr/actionBarSize"
             android:animateLayoutChanges="true"
-            android:descendantFocusability="beforeDescendants"
             android:background="@color/white"
+            android:descendantFocusability="beforeDescendants"
             android:focusable="true"
             android:focusableInTouchMode="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -62,12 +63,9 @@
                     android:id="@+id/fromContainer"
                     layout="@layout/include_from_row" />
 
-                <View
+                <View style="@style/Divider"
                     android:id="@+id/divider1"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/primary_gray_light" />
+                    android:layout_marginTop="8dp"/>
 
                 <include
                     android:id="@+id/toContainer"
@@ -87,12 +85,10 @@
                     tools:text="Text memo: Hey this is a memo text!"
                     tools:visibility="visible" />
 
-                <View
+                <View style="@style/Divider"
                     android:id="@+id/divider2"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/primary_gray_light" />
+                    android:layout_marginTop="8dp"/>
 
                 <include
                     android:id="@+id/amountContainer"
@@ -100,8 +96,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp" />
 
                 <ProgressBar
                     android:id="@+id/progressBarMaxAvailable"
@@ -125,12 +121,9 @@
                     tools:textColor="@color/primary_blue_accent"
                     tools:visibility="visible" />
 
-                <View
+                <View style="@style/Divider"
                     android:id="@+id/divider3"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/primary_gray_light" />
+                    android:layout_marginTop="8dp"/>
 
                 <!-- FEES TYPE -->
                 <LinearLayout
@@ -147,11 +140,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="16dp"
-                        android:fontFamily="@font/montserrat_light"
                         android:gravity="center|left"
                         android:paddingLeft="16dp"
                         android:text="@string/fee"
-                        android:textColor="@color/primary_gray_dark" />
+                        android:textColor="@color/primary_grey_dark" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -173,7 +165,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:fontFamily="@font/montserrat"
                                 android:textColor="@color/black"
                                 android:textSize="14sp"
                                 tools:text="Priority" />
@@ -183,7 +174,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
-                                android:fontFamily="@font/montserrat"
                                 android:textSize="14sp"
                                 tools:text="~ 60 min" />
 
@@ -197,7 +187,6 @@
                             android:layout_marginLeft="8dp"
                             android:layout_marginRight="16dp"
                             android:layout_weight="0.9"
-                            android:fontFamily="@font/montserrat"
                             android:gravity="right"
                             android:textColor="@color/black"
                             android:textSize="16sp"
@@ -222,7 +211,6 @@
                                 android:digits="1234567890"
                                 android:focusable="true"
                                 android:focusableInTouchMode="true"
-                                android:fontFamily="@font/montserrat"
                                 android:imeOptions="actionDone"
                                 android:inputType="number"
                                 android:textSize="16sp" />
@@ -236,30 +224,101 @@
                             android:layout_gravity="center_vertical"
                             android:layout_marginRight="4dp"
                             android:layout_weight="0.1"
-                            android:dropDownSelector="?attr/selectableItemBackground"
-                            android:dropDownWidth="250dp" />
+                            android:dropDownWidth="250dp"
+                            android:dropDownSelector="?attr/selectableItemBackground" />
 
                     </LinearLayout>
 
-                    <View
+                    <View style="@style/Divider"
                         android:id="@+id/divider4"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
                         android:layout_marginTop="8dp"
-                        android:background="@color/primary_gray_light"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/customFeeContainer" />
+
+                    <android.support.constraint.ConstraintLayout
+                        android:id="@+id/memo_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <Spinner
+                            android:id="@+id/memo_type_spinner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <EditText
+                            android:id="@+id/memo_text_edit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:background="@null"
+                            android:maxLength="28"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="16dp"
+                            android:textColor="@color/black"
+                            android:textSize="17sp"
+                            app:layout_constraintTop_toBottomOf="@+id/memo_type_spinner" />
+
+                        <TextView
+                            android:id="@+id/required_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16dp"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="@string/memo_required"
+                            android:textColor="#F28B24"
+                            android:textSize="17sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <View style="@style/Divider"
+                            android:id="@+id/divider5"
+                            android:layout_marginTop="8dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/memo_text_edit" />
+
+                        <TextView
+                            android:id="@+id/xlm_sending_to_exchange_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:fontFamily="@font/inter_medium"
+                            android:text="@string/xlm_memo_sending_exchange"
+                            android:textColor="@color/primary_blue_accent"
+                            android:textSize="15sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/divider5" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginEnd="30dp"
+                            android:fontFamily="@font/inter_medium"
+                            android:gravity="center"
+                            android:text="@string/xlm_memo_sending_exchange_description"
+                            android:textColor="@color/black"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/xlm_sending_to_exchange_title" />
+
+                    </android.support.constraint.ConstraintLayout>
 
                     <TextView
                         android:id="@+id/info_link"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
                         android:layout_marginTop="8dp"
-                        android:fontFamily="@font/montserrat"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="8dp"
                         android:gravity="center"
                         android:text="@string/learn_more_lead"
                         android:textColor="@color/primary_blue_accent"
@@ -275,11 +334,10 @@
                         android:id="@+id/arbitraryWarning"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
                         android:layout_marginTop="8dp"
-                        android:fontFamily="@font/montserrat"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="8dp"
                         android:gravity="center"
                         android:textColor="@color/product_red_medium"
                         android:visibility="gone"
@@ -297,8 +355,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginBottom="16dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginBottom="16dp"
                         android:paddingLeft="32dp"
                         android:paddingRight="32dp"
                         android:text="@string/CONTINUE"

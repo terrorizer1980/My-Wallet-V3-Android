@@ -32,12 +32,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.Spinner
 import com.blockchain.annotations.CommonCode
 import com.blockchain.balance.errorIcon
 import com.blockchain.koin.injectActivity
 import com.blockchain.serialization.JsonSerializableAccount
-import com.blockchain.sunriver.ui.MemoEditDialog
 import com.blockchain.sunriver.ui.MinBalanceExplanationDialog
 import com.blockchain.transactions.Memo
 import com.blockchain.ui.chooser.AccountChooserActivity
@@ -73,6 +75,8 @@ import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
 import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity
+import piuk.blockchain.android.ui.send.external.MEMO_ID_TYPE
+import piuk.blockchain.android.ui.send.external.MEMO_TEXT_TYPE
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import piuk.blockchain.android.ui.send.external.SendPresenter
 import piuk.blockchain.android.ui.zxing.CaptureActivity
@@ -86,12 +90,12 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
+import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
-import piuk.blockchain.androidcoreui.utils.extensions.visible
-import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -101,7 +105,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     NumericKeyboardCallback {
 
     private val appUtil: AppUtil by inject()
-
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
     private val currencyState: CurrencyState by inject()
@@ -143,11 +146,11 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
             with(activity as MainActivity) {
                 setOnTouchOutsideViewListener(currency_header,
-                object : OnTouchOutsideViewListener {
-                    override fun onTouchOutside(view: View, event: MotionEvent) {
-                        currency_header.close()
-                    }
-                })
+                    object : OnTouchOutsideViewListener {
+                        override fun onTouchOutside(view: View, event: MotionEvent) {
+                            currency_header.close()
+                        }
+                    })
             }
         }
 
@@ -161,6 +164,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         setupCryptoTextField()
         setupFiatTextField()
         setupFeesView()
+        setUpMemoEdittext()
+        setUpSpinner()
 
         buttonContinue.setOnClickListener {
             if (ConnectivityStatus.hasConnectivity(activity)) {
@@ -215,6 +220,14 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
+    override fun updateRequiredLabelVisibility(isVisible: Boolean) {
+        if (isVisible) {
+            required_label?.visible()
+        } else {
+            required_label?.gone()
+        }
+    }
+
     private fun setCustomKeypad() {
         keyboard.setCallback(this)
         keyboard.setDecimalSeparator(presenter.getDefaultDecimalSeparator())
@@ -233,6 +246,59 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     private fun closeKeypad() {
         keyboard.setNumpadVisibility(View.GONE)
+    }
+
+    private val memoEditText: EditText?
+        get() = memo_text_edit
+
+    private fun setUpSpinner() {
+        memo_type_spinner.apply {
+            setupOptions(0)
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(parent: AdapterView<*>, spinner: View, pos: Int, id: Long) {
+                    val newMemoType = if (pos == 0) MEMO_TEXT_TYPE else MEMO_ID_TYPE
+                    presenter.onMemoTypeChanged(newMemoType)
+                    if (pos == 0)
+                        memoEditText?.inputType = InputType.TYPE_CLASS_TEXT
+                    else
+                        memoEditText?.inputType = InputType.TYPE_CLASS_NUMBER
+                    post {
+                        if (memoEditText?.hasFocus() == true) {
+                            memoEditText?.requestFocus()
+                            memoEditText?.setText("")
+                        }
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {
+                }
+            }
+            setSelection(0)
+        }
+    }
+
+    private fun Spinner.setupOptions(selectedIndex: Int) {
+        ArrayAdapter.createFromResource(
+            activity,
+            arrayToDisplay(selectedIndex),
+            piuk.blockchain.androidcoreui.R.layout.dialog_edit_memo_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            this.adapter = adapter
+        }
+    }
+
+    private fun arrayToDisplay(selectedIndex: Int): Int {
+        val manualArraySize =
+            view?.resources?.getStringArray(piuk.blockchain.androidcoreui.R.array.xlm_memo_types_manual) ?: return 0
+        return if (selectedIndex < manualArraySize.size) {
+            piuk.blockchain.androidcoreui.R.array.xlm_memo_types_manual
+        } else {
+            piuk.blockchain.androidcoreui.R.array.xlm_memo_types_all
+        }
     }
 
     private fun isKeyboardVisible(): Boolean = keyboard.isVisible
@@ -282,7 +348,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         val supportActionBar = (activity as AppCompatActivity).supportActionBar
         if (supportActionBar != null) {
             (activity as ToolBarActivity).setupToolbar(
-                supportActionBar, R.string.send_bitcoin
+                supportActionBar, R.string.request
             )
         } else {
             finishPage()
@@ -314,7 +380,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             REQUEST_CODE_BTC_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
             REQUEST_CODE_BCH_SENDING -> presenter.selectSendingAccount(unpackAccountResult(data))
             REQUEST_CODE_BCH_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
-            REQUEST_CODE_MEMO -> presenter.onMemoChange(MemoEditDialog.toMemo(data))
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
     }
@@ -349,7 +414,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                     presenter.clearReceivingObject()
                 }
             }
-            .skip(1)
             .map { it.toString() }
             .subscribe(
                 { presenter.onAddressTextChange(it) },
@@ -662,6 +726,14 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         textviewFeeTime.setText(R.string.fee_options_regular_time)
     }
 
+    private fun setUpMemoEdittext() {
+        memo_text_edit.addTextChangedListener(object : AfterTextChangedWatcher() {
+            override fun afterTextChanged(p0: Editable?) {
+                presenter.onMemoChange(p0?.toString() ?: return)
+            }
+        })
+    }
+
     override fun enableFeeDropdown() {
         spinnerPriority.isEnabled = true
         textviewFeeAbsolute.isEnabled = true
@@ -711,17 +783,11 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
 
     override fun showMemo() {
-        memo.visible()
-        memo.setOnClickListener {
-            MemoEditDialog.create(lastMemo).also { dialog ->
-                dialog.setTargetFragment(this, REQUEST_CODE_MEMO)
-                dialog.show(fragmentManager, "Dialog")
-            }
-        }
+        memo_container.visible()
     }
 
     override fun hideMemo() {
-        memo.gone()
+        memo_container.gone()
     }
 
     override fun displayMemo(usersMemo: Memo) {
@@ -1021,7 +1087,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         edittextCustomFee.textChanges()
             .skip(1)
             .map { it.toString() }
-            .doOnNext { buttonContinue.isEnabled = !it.isEmpty() && it != "0" }
+            .doOnNext { buttonContinue.isEnabled = it.isNotEmpty() && it != "0" }
             .filter { !it.isEmpty() }
             .map { it.toLong() }
             .onErrorReturnItem(0L)

@@ -32,12 +32,10 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.blockchain.annotations.ButWhy
 import com.blockchain.annotations.CommonCode
-import com.blockchain.koin.modules.MorphActivityLauncher
-import com.blockchain.koin.modules.launchAsync
 import com.blockchain.kycui.navhost.KycNavHostActivity
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.lockbox.ui.LockboxLandingActivity
-import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
+import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
@@ -76,7 +74,6 @@ import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
-import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.annotations.Thunk
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
@@ -92,10 +89,7 @@ import javax.inject.Inject
 import java.util.Arrays
 import java.util.HashMap
 
-class MainActivity
-    : BaseMvpActivity<MainView, MainPresenter>(),
-    HomeNavigator,
-    MainView,
+class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, MainView,
     ConfirmPaymentDialog.OnConfirmDialogInteractionListener,
     FrontendJavascript<String> {
 
@@ -110,9 +104,6 @@ class MainActivity
 
     private val appUtil: AppUtil by inject()
     private val analytics: Analytics by inject()
-
-    @Inject
-    internal lateinit var morphActivityLauncher: MorphActivityLauncher
 
     internal lateinit var binding: ActivityMainBinding
 
@@ -144,13 +135,16 @@ class MainActivity
                         startDashboardFragment()
                         ViewUtils.setElevation(binding.appbarLayout, 4f)
                     }
-                    ITEM_TRANSACTIONS -> {
+                    ITEM_ACTIVITY -> {
                         startBalanceFragment()
                         ViewUtils.setElevation(binding.appbarLayout, 0f)
                     }
                     ITEM_RECEIVE -> {
                         startReceiveFragment()
                         ViewUtils.setElevation(binding.appbarLayout, 0f)
+                    }
+                    ITEM_SWAP -> {
+                        presenter.startSwapOrKyc(null)
                     }
                 }
             }
@@ -206,21 +200,15 @@ class MainActivity
         // Notify Presenter that page is setup
         onViewReady()
 
-        // Add items
-        bottom_navigation.addItems(
-            Arrays.asList(
-                AHBottomNavigationItem(R.string.send_bitcoin, R.drawable.vector_send, R.color.white),
-                AHBottomNavigationItem(R.string.dashboard_title, R.drawable.vector_home, R.color.white),
-                AHBottomNavigationItem(R.string.overview, R.drawable.vector_transactions, R.color.white),
-                AHBottomNavigationItem(R.string.receive_bitcoin, R.drawable.vector_receive, R.color.white)
-            )
-        )
-
         // Styling
         bottom_navigation.apply {
-            accentColor = ContextCompat.getColor(context, R.color.primary_blue_accent)
-            inactiveColor = ContextCompat.getColor(context, R.color.primary_gray_dark)
+            addItems(toolbarNavigationItems())
+            accentColor = ContextCompat.getColor(context, R.color.bottom_toolbar_icon_active)
+            inactiveColor = ContextCompat.getColor(context, R.color.bottom_toolbar_icon_inactive)
+
+            titleState = AHBottomNavigation.TitleState.ALWAYS_SHOW
             isForceTint = true
+
             setUseElevation(true)
             loadFont(context, CustomFont.MONTSERRAT_LIGHT) { t -> setTitleTypeface(t) }
 
@@ -287,7 +275,7 @@ class MainActivity
             requestCode == KYC_STARTED
         ) {
             replaceContentFragment(DashboardFragment.newInstance())
-            // Reset state incase of changing currency etc
+            // Reset state in case of changing currency etc
             bottom_navigation.currentItem = ITEM_HOME
 
             // Pass this result to balance fragment
@@ -319,8 +307,8 @@ class MainActivity
         }
 
         if (!backHandled) {
-            if (backPressed + COOL_DOWN_MILLIS > System.currentTimeMillis()) {
-                AccessState.getInstance().logout(this)
+            if (backPressed + BuildConfig.EXIT_APP_COOLDOWN_MILLIS > System.currentTimeMillis()) {
+                presenter.clearLoginState()
             } else {
                 showExitConfirmToast()
                 backPressed = System.currentTimeMillis()
@@ -376,17 +364,14 @@ class MainActivity
             R.id.nav_lockbox -> LockboxLandingActivity.start(this)
             R.id.nav_backup -> startActivityForResult(
                 Intent(this, BackupWalletActivity::class.java), REQUEST_BACKUP)
-            R.id.nav_exchange -> morphActivityLauncher.launchAsync(this@MainActivity)
             R.id.nav_exchange_homebrew_debug -> HomebrewNavHostActivity.start(
                 this,
                 mainPresenter.defaultCurrency
             )
-            R.id.nav_addresses -> startActivityForResult(
-                Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
+            R.id.nav_addresses -> startActivityForResult(Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
             R.id.nav_buy -> presenter.routeToBuySell()
             R.id.login_web_wallet -> PairingCodeActivity.start(this)
-            R.id.nav_settings -> startActivityForResult(
-                Intent(this, SettingsActivity::class.java), SETTINGS_EDIT)
+            R.id.nav_settings -> startActivityForResult(Intent(this, SettingsActivity::class.java), SETTINGS_EDIT)
             R.id.nav_support -> onSupportClicked()
             R.id.nav_logout -> showLogoutDialog()
         }
@@ -417,7 +402,7 @@ class MainActivity
         with(bottom_navigation) {
             when (currentFragment) {
                 is DashboardFragment -> currentItem = ITEM_HOME
-                is BalanceFragment -> currentItem = ITEM_TRANSACTIONS
+                is BalanceFragment -> currentItem = ITEM_ACTIVITY
                 is SendFragment -> currentItem = ITEM_SEND
                 is ReceiveFragment -> currentItem = ITEM_RECEIVE
             }
@@ -464,7 +449,7 @@ class MainActivity
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.metadata_load_failure)
                 .setPositiveButton(R.string.retry) { _, _ -> presenter.initMetadataElements() }
-                .setNegativeButton(R.string.exit) { _, _ -> AccessState.getInstance().logout(this) }
+                .setNegativeButton(R.string.exit) { _, _ -> presenter.clearLoginState() }
                 .setCancelable(false)
                 .create()
                 .show()
@@ -477,6 +462,18 @@ class MainActivity
 
     override fun launchKyc(campaignType: CampaignType) {
         startActivityForResult(KycNavHostActivity.intentArgs(this, campaignType), KYC_STARTED)
+    }
+
+    override fun launchSwap(defCurrency: String, targetCrypto: CryptoCurrency?) {
+        HomebrewNavHostActivity.start(
+            (activity as? Context) ?: return,
+            defCurrency,
+            targetCrypto
+        )
+    }
+
+    override fun launchSwapOrKyc(targetCurrency: CryptoCurrency?) {
+        presenter.startSwapOrKyc(targetCurrency)
     }
 
     @ButWhy("What does this really do? Who calls it?")
@@ -630,6 +627,14 @@ class MainActivity
         }
     }
 
+    override fun enableSwapButton(isEnabled: Boolean) {
+        if (isEnabled) {
+            bottom_navigation.enableItemAtPosition(ITEM_SWAP)
+        } else {
+            bottom_navigation.disableItemAtPosition(ITEM_SWAP)
+        }
+    }
+
     override fun showCustomPrompt(dlgFn: PromptDlgFactory) {
         if (!isFinishing) {
             dlgFn(this).apply {
@@ -638,13 +643,8 @@ class MainActivity
         }
     }
 
-    override fun createPresenter(): MainPresenter? {
-        return mainPresenter
-    }
-
-    override fun getView(): MainView {
-        return this
-    }
+    override fun createPresenter() = mainPresenter
+    override fun getView() = this
 
     override fun showSecondPasswordDialog() {
         val editText = AppCompatEditText(this)
@@ -681,19 +681,11 @@ class MainActivity
             .show()
     }
 
-    override fun showExchange() {
-        menu.findItem(R.id.nav_exchange).isVisible = true
-    }
-
-    override fun hideExchange() {
-        menu.findItem(R.id.nav_exchange).isVisible = false
-    }
-
-    override fun displayLockbox(lockboxAvailable: Boolean) {
+    override fun displayLockboxMenu(lockboxAvailable: Boolean) {
         menu.findItem(R.id.nav_lockbox).isVisible = lockboxAvailable
     }
 
-    override fun showHomebrewDebug() {
+    override fun showHomebrewDebugMenu() {
         menu.findItem(R.id.nav_exchange_homebrew_debug).isVisible = true
     }
 
@@ -764,21 +756,9 @@ class MainActivity
         replaceContentFragment(fragment)
     }
 
-    override fun swap(defCurrency: String, cryptoCurrency: CryptoCurrency?) {
-        HomebrewNavHostActivity.start(
-            (activity as? Context) ?: return,
-            defCurrency,
-            cryptoCurrency
-        )
-    }
-
-    override fun gotoKyc(campaignType: CampaignType) {
-        KycNavHostActivity.start((activity as? Context) ?: return, CampaignType.Swap)
-    }
-
     override fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency) {
         presenter.setCryptoCurrency(cryptoCurrency)
-        bottom_navigation.currentItem = ITEM_TRANSACTIONS
+        bottom_navigation.currentItem = ITEM_ACTIVITY
     }
 
     override fun startBalanceFragment() {
@@ -806,33 +786,32 @@ class MainActivity
 
     /*** Silently switch the current tab in the tab_bar */
     private fun setCurrentTabItem(item: Int) {
-        bottom_navigation.removeOnTabSelectedListener()
-        bottom_navigation.currentItem = item
-        bottom_navigation.setOnTabSelectedListener(tabSelectedListener)
+        bottom_navigation.apply {
+            removeOnTabSelectedListener()
+            currentItem = item
+            setOnTabSelectedListener(tabSelectedListener)
+        }
     }
 
     private val receiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
-            val action = intent.action ?: return
-            if (action == ACTION_SEND && activity != null) {
-                requestScan()
-            } else if (action == ACTION_RECEIVE && activity != null) {
-                // Used from onboarding
-                presenter.setCryptoCurrency(CryptoCurrency.BTC)
-                bottom_navigation.currentItem = ITEM_RECEIVE
-            } else if (action == ACTION_BUY && activity != null) {
-                presenter.routeToBuySell()
-            } else if (action == ACTION_EXCHANGE && activity != null) {
-                morphActivityLauncher.launchAsync(this@MainActivity)
-            } else if (action == ACTION_SUNRIVER_KYC && activity != null) {
-                launchKyc(CampaignType.Sunriver)
-            } else if (action == ACTION_EXCHANGE_KYC && activity != null) {
-                launchKyc(CampaignType.Swap)
-            } else if (action == ACTION_RESUBMIT_KYC && activity != null) {
-                launchKyc(CampaignType.Resubmission)
-            } else if (action == ACTION_BUY_SELL_KYC && activity != null) {
-                launchKyc(CampaignType.BuySell)
+            @Suppress("SENSELESS_COMPARISON") // This was probably here for a (bugfix) reason, so leave for now
+            if (activity == null) return
+
+            when (intent.action ?: return) {
+                ACTION_SEND -> requestScan()
+                ACTION_RECEIVE -> {
+                    // Used from onboarding
+                    presenter.setCryptoCurrency(CryptoCurrency.BTC)
+                    bottom_navigation.currentItem = ITEM_RECEIVE
+                }
+                ACTION_BUY -> presenter.routeToBuySell()
+                ACTION_EXCHANGE -> launchSwapOrKyc()
+                ACTION_SUNRIVER_KYC -> launchKyc(CampaignType.Sunriver)
+                ACTION_EXCHANGE_KYC -> launchKyc(CampaignType.Swap)
+                ACTION_RESUBMIT_KYC -> launchKyc(CampaignType.Resubmission)
+                ACTION_BUY_SELL_KYC -> launchKyc(CampaignType.BuySell)
             }
         }
 
@@ -853,31 +832,58 @@ class MainActivity
 
         val TAG = MainActivity::class.java.simpleName!!
 
-        const val ACTION_SEND = "piuk.blockchain.android.ui.balance.BalanceFragment.SEND"
-        const val ACTION_RECEIVE = "piuk.blockchain.android.ui.balance.BalanceFragment.RECEIVE"
-        const val ACTION_BUY = "piuk.blockchain.android.ui.balance.BalanceFragment.BUY"
-        const val ACTION_EXCHANGE = "piuk.blockchain.android.ui.balance.BalanceFragment.ACTION_EXCHANGE"
-        const val ACTION_BUY_SELL_KYC =
-            "piuk.blockchain.android.ui.balance.BalanceFragment.ACTION_BUY_SELL_KYC"
-        const val ACTION_EXCHANGE_KYC =
-            "piuk.blockchain.android.ui.balance.BalanceFragment.ACTION_EXCHANGE_KYC"
-        const val ACTION_SUNRIVER_KYC =
-            "piuk.blockchain.android.ui.balance.BalanceFragment.ACTION_SUNRIVER_KYC"
-        const val ACTION_RESUBMIT_KYC =
-            "piuk.blockchain.android.ui.balance.BalanceFragment.ACTION_RESUBMIT_KYC"
+        const val ACTION_SEND = "info.blockchain.wallet.ui.BalanceFragment.SEND"
+        const val ACTION_RECEIVE = "info.blockchain.wallet.ui.BalanceFragment.RECEIVE"
+        const val ACTION_BUY = "info.blockchain.wallet.ui.BalanceFragment.BUY"
+        const val ACTION_EXCHANGE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_EXCHANGE"
+        const val ACTION_BUY_SELL_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_BUY_SELL_KYC"
+        const val ACTION_EXCHANGE_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_EXCHANGE_KYC"
+        const val ACTION_SUNRIVER_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_SUNRIVER_KYC"
+        const val ACTION_RESUBMIT_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_RESUBMIT_KYC"
 
         private const val REQUEST_BACKUP = 2225
-        private const val COOL_DOWN_MILLIS = 2 * 1000
 
         const val SCAN_URI = 2007
         const val ACCOUNT_EDIT = 2008
         const val SETTINGS_EDIT = 2009
         const val KYC_STARTED = 2011
 
-        private const val ITEM_SEND = 0
-        private const val ITEM_HOME = 1
-        private const val ITEM_TRANSACTIONS = 2
-        private const val ITEM_RECEIVE = 3
+        // Keep these constants - the position of the toolbar items - and the generation of the toolbar items
+        // together.
+        private const val ITEM_ACTIVITY = 0
+        private const val ITEM_SWAP = 1
+        private const val ITEM_HOME = 2
+        private const val ITEM_SEND = 3
+        private const val ITEM_RECEIVE = 4
+
+        private fun toolbarNavigationItems(): List<AHBottomNavigationItem> =
+            Arrays.asList(
+                AHBottomNavigationItem(
+                    R.string.toolbar_cmd_activity,
+                    R.drawable.ic_vector_toolbar_activity,
+                    R.color.white
+                ),
+                AHBottomNavigationItem(
+                    R.string.toolbar_cmd_swap,
+                    R.drawable.ic_vector_toolbar_swap,
+                    R.color.white
+                ),
+                AHBottomNavigationItem(
+                    R.string.toolbar_cmd_home,
+                    R.drawable.ic_vector_toolbar_home,
+                    R.color.white
+                ),
+                AHBottomNavigationItem(
+                    R.string.toolbar_cmd_send,
+                    R.drawable.ic_vector_toolbar_send,
+                    R.color.white
+                ),
+                AHBottomNavigationItem(
+                    R.string.toolbar_cmd_receive,
+                    R.drawable.ic_vector_toolbar_receive,
+                    R.color.white
+                )
+            )
 
         fun start(context: Context, bundle: Bundle) {
             Intent(context, MainActivity::class.java).apply {

@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.login
 
-import com.blockchain.android.testutils.LazyImpl
+import com.blockchain.android.testutils.DaggerLazyImpl
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.eq
@@ -32,7 +32,7 @@ class LoginPresenterTest {
 
     @Before
     fun setUp() {
-        subject = LoginPresenter(appUtil, LazyImpl(payloadDataManager), prefsUtil)
+        subject = LoginPresenter(appUtil, DaggerLazyImpl(payloadDataManager), prefsUtil)
         subject.initView(view)
     }
 

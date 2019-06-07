@@ -35,6 +35,8 @@ class SetUserTier(val tier: Int) : ExchangeIntent()
 
 class IsUserEligiableForFreeEthIntent(val isEligiable: Boolean) : ExchangeIntent()
 
+class ExchangeRateIntent(val prices: List<ExchangeRate.CryptoToFiat>) : ExchangeIntent()
+
 class SetTierLimit(val availableOnTier: FiatValue) : ExchangeIntent()
 
 class ApplyMinimumLimit : ExchangeIntent()
@@ -48,5 +50,7 @@ class FiatExchangeRateIntent(val c2fRate: ExchangeRate.CryptoToFiat) : ExchangeI
 class SpendableValueIntent(val cryptoValue: CryptoValue) : ExchangeIntent()
 
 object ClearQuoteIntent : ExchangeIntent()
+
+object ApplyMaxSpendable : ExchangeIntent()
 
 class LockQuoteIntent(val lockQuote: Boolean) : ExchangeIntent()

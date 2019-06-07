@@ -3,8 +3,10 @@ package piuk.blockchain.android.ui.send.external
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
+import io.reactivex.Observable
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.any
 import org.amshove.kluent.mock
@@ -120,5 +122,32 @@ class PerCurrencySendPresenterTest {
         verify(etherStrategy, never()).processURIScanAddress(any())
         verify(xlmStrategy, never()).processURIScanAddress(any())
         verify(erc20Strategy, never()).processURIScanAddress(any())
+    }
+
+    @Test
+    fun `memo required should start with false and then get the strategy exposed value`() {
+        val btcStrategy: SendStrategy<SendView> = mock()
+        whenever(btcStrategy.memoRequired()).thenReturn(Observable.just(true))
+        val view: SendView = mock()
+
+        PerCurrencySendPresenter(
+            btcStrategy = btcStrategy,
+            bchStrategy = mock(),
+            etherStrategy = mock(),
+            xlmStrategy = mock(),
+            paxStrategy = mock(),
+            prefs = mock(),
+            exchangeRates = mock(),
+            stringUtils = mock(),
+            envSettings = mock(),
+            exchangeRateFactory = mock {
+                on { updateTickers() } `it returns` Completable.complete()
+            }
+        ).apply {
+            initView(view)
+            onViewReady()
+        }
+        verify(view).updateRequiredLabelVisibility(false)
+        verify(view).updateRequiredLabelVisibility(true)
     }
 }

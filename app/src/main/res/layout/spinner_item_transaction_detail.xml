@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:tint="@color/product_gray_transferred"
+        android:tint="@color/product_grey_transferred"
         app:srcCompat="@drawable/vector_user" />
 
     <LinearLayout
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:minWidth="250dp"
-            android:textColor="@color/primary_gray_medium"
+            android:textColor="@color/primary_grey_medium"
             tools:text="1XUzFYTvEjWxLkqtL4100MQ7zyzRvq9xXX" />
 
         <android.support.v7.widget.AppCompatTextView

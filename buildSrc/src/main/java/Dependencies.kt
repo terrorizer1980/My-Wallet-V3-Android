@@ -79,6 +79,8 @@ object Versions {
 
     // Third Party SDKs
     const val onfido = "4.3.0"
+    const val veriff = "2.3.2"
+    const val probity = "1.0.0"
 
     // Logging
     const val timber = "4.7.1"
@@ -124,7 +126,8 @@ object Libraries {
     const val multidex = "com.android.support:multidex:${Versions.multidex}"
     const val navigationControllerCore = "android.arch.navigation:navigation-ui:${Versions.navigation}"
     const val navigationControllerFragments = "android.arch.navigation:navigation-fragment:${Versions.navigation}"
-    const val navigationControllerSafeArgsPlugin = "android.arch.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
+    const val navigationControllerSafeArgsPlugin =
+        "android.arch.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
     const val lifecycleViewModel = "android.arch.lifecycle:viewmodel:${Versions.lifecycle_version}"
     const val lifecycleExtensions = "android.arch.lifecycle:extensions:${Versions.lifecycle_version}"
 
@@ -196,6 +199,8 @@ object Libraries {
 
     // Third Party SDKs
     const val onfido = "com.onfido.sdk.capture:onfido-capture-sdk:${Versions.onfido}"
+    const val veriff = "com.veriff:veriff-library:${Versions.veriff}"
+    const val probity = "io.probity.sdk:collector:${Versions.probity}"
 
     // Logging
     const val timber = "com.jakewharton.timber:timber:${Versions.timber}"

@@ -20,7 +20,7 @@ val sunriverModule = applicationContext {
 
         factory { XlmSecretAccess(get()) }
 
-        factory { XlmDataManager(get(), get(), get(), get(), get(), get()) }
+        factory { XlmDataManager(get(), get(), get(), get(), get(), get(), get(), getProperty("HorizonURL")) }
             .bind(DefaultAccountDataManager::class)
             .bind(AsyncAddressBalanceReporter::class)
 
@@ -28,7 +28,7 @@ val sunriverModule = applicationContext {
 
         factory { get<XlmDataManager>().updateLastTxOnSend(get()).logMemoType(get()) }
 
-        factory { HorizonProxy(getProperty("HorizonURL")) }
+        factory { HorizonProxy() }
 
         bean { XlmMetaDataInitializer(get(), get(), get(), get()) }
 

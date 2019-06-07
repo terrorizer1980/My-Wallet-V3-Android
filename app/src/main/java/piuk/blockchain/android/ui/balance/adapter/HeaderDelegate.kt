@@ -43,7 +43,7 @@ class HeaderDelegate<in T> : AdapterDelegate<T> {
             header.setTextColor(
                 ContextCompat.getColor(
                     itemView.context,
-                    R.color.primary_gray_medium
+                    R.color.primary_grey_medium
                 )
             )
             layout.layoutParams = ViewGroup.LayoutParams(

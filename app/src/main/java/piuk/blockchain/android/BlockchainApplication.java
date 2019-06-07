@@ -71,6 +71,8 @@ public class BlockchainApplication extends Application implements FrameworkInter
     CurrentContextAccess currentContextAccess;
     @Inject
     AppUtil appUtils;
+    @Inject
+    AccessState loginState;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -108,7 +110,7 @@ public class BlockchainApplication extends Application implements FrameworkInter
 
         RxJavaPlugins.setErrorHandler(throwable -> Timber.tag(RX_ERROR_TAG).e(throwable));
 
-        AccessState.getInstance().initAccessState(this, prefsUtil, rxBus, LogoutActivity.class);
+        loginState.setLogoutActivity(LogoutActivity.class);
 
         // Apply PRNG fixes on app start if needed
         prngHelper.applyPRNGFixes();

@@ -22,6 +22,7 @@ class FcmCallbackService : FirebaseMessagingService() {
     private val notificationManager: NotificationManager by inject()
     private val prefsUtil: PrefsUtil by inject()
     private val rxBus: RxBus by inject()
+    private val accessState: AccessState by inject()
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         // Check if message contains a data payload.
@@ -37,7 +38,7 @@ class FcmCallbackService : FirebaseMessagingService() {
 
     private fun sendNotification(payload: NotificationPayload) {
         if (ApplicationLifeCycle.getInstance().isForeground &&
-            AccessState.getInstance().isLoggedIn
+            accessState.isLoggedIn
         ) {
             sendForegroundNotification(payload)
         } else {

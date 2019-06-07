@@ -27,10 +27,12 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         archivesBaseName = "blockchain-$versionName"
+
         // Flag to hide or show the Contacts feature
-        buildConfigBoolean "CONTACTS_ENABLED", false
         buildConfigBoolean "SHOW_LOCKBOX_BALANCE", false
         buildConfigBoolean "LOG_KOIN_STARTUP", false
+        buildConfigLong    "EXIT_APP_COOLDOWN_MILLIS", 2 * 1000
+
         buildConfigString "SHAPE_SHIFT_API_KEY", buildProperties.secrets['shapeShiftApiKey']
         manifestPlaceholders = [FABRIC_API_KEY: buildProperties.secrets['fabricApiKey'].string]
         resConfigs 'en',
@@ -229,12 +231,21 @@ dependencies {
     kapt Libraries.daggerKapt
     implementation Libraries.koin
     implementation Libraries.koinAndroid
+    implementation Libraries.koinAndroidArchitecture
+    
     // Views
     implementation project(":zxing")
     implementation Libraries.countryPicker
     implementation Libraries.bottomNav
     implementation Libraries.circleIndicator
     implementation Libraries.charts
+
+    api Libraries.appCompat
+    implementation Libraries.navigationControllerCore
+    implementation Libraries.navigationControllerFragments
+
+    api Libraries.lifecycleViewModel
+    api Libraries.lifecycleExtensions
 
     // UI/Instrumentation Tests
     androidTestImplementation(Libraries.espresso) {

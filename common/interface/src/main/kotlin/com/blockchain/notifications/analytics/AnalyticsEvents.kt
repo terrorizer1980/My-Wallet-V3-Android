@@ -52,7 +52,11 @@ enum class AnalyticsEvents(
     ClaimFreeCryptoSuccessDialogClickedRocket("claim_free_crypto_success_clicked_rocket"),
     SwapErrorDialog("swap_error_dialog"),
     SwapErrorDialogCtaClicked("swap_error_dialog_cta_clicked"),
-    SwapErrorDialogDismissClicked("swap_error_dialog_dismiss_clicked")
+    SwapErrorDialogDismissClicked("swap_error_dialog_dismiss_clicked"),
+    SwapInfoDialog("swap_info_dialog"),
+    SwapInfoDialogViewHistory("swap_info_dialog_history_click"),
+    SwapInfoDialogSwapLimits("swap_info_dialog_limits_click"),
+    SwapInfoDialogSupport("swap_info_dialog_support_click")
 }
 
 fun kycTierStart(tier: Int): AnalyticsEvent = object : AnalyticsEvent {

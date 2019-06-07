@@ -7,6 +7,5 @@
         android:layout_height="match_parent"
         android:background="?attr/selectableItemBackground"
         android:divider="@null"
-        android:dropDownSelector="?attr/selectableItemBackground"
-        android:fontFamily="@font/montserrat" />
+        android:dropDownSelector="?attr/selectableItemBackground" />
 </layout>

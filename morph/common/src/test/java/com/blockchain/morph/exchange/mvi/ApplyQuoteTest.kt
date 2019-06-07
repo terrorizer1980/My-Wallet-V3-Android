@@ -21,6 +21,7 @@ class ApplyQuoteTest {
             SimpleFieldUpdateIntent(10.toBigDecimal()),
             Quote(
                 fix = Fix.BASE_CRYPTO,
+                baseToFiatRate = 10.toBigDecimal(),
                 from = 10.bitcoin() `equivalent to` 99.12.cad(),
                 to = 25.ether() `equivalent to` 95.32.cad()
             ).toIntent()
@@ -28,7 +29,7 @@ class ApplyQuoteTest {
             assertValue {
                 it.from `should equal` value(
                     userEntered(10.bitcoin()),
-                    upToDate(99.12.cad())
+                    upToDate(100.00.cad())
                 )
                 it.to `should equal` value(
                     upToDate(25.ether()),

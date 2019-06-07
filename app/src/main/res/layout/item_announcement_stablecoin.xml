@@ -16,7 +16,7 @@
         style="@style/DefaultCardStyle"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
-        app:cardBackgroundColor="@color/primary_gray_lightest">
+        app:cardBackgroundColor="@color/primary_grey_lightest">
 
 
         <android.support.constraint.ConstraintLayout
@@ -41,10 +41,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="25dp"
                 android:background="@drawable/rounded_announcement_new"
-                android:fontFamily="@font/montserrat_semi_bold"
+                android:fontFamily="@font/inter_medium"
                 android:gravity="center"
-                android:textAllCaps="true"
                 android:text="@string/stablecoin_announcement_new"
+                android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="19dp"
-                android:fontFamily="@font/montserrat_semi_bold"
+                android:fontFamily="@font/inter_medium"
                 android:text="@{stableCoinCard.title}"
                 android:textColor="@color/black"
                 android:textSize="17sp"
@@ -74,7 +74,6 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="3dp"
                 android:layout_marginRight="16dp"
-                android:fontFamily="@font/montserrat"
                 android:text="@{stableCoinCard.description}"
                 android:textColor="@color/stablecoin_announcement_text_description"
                 android:textSize="14sp"
@@ -89,7 +88,7 @@
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="14dp"
-                android:fontFamily="@font/montserrat_semi_bold"
+                android:fontFamily="@font/inter_medium"
                 android:text="@{stableCoinCard.link}"
                 android:textColor="#004A7C"
                 android:textSize="14sp"
@@ -119,7 +118,7 @@
             android:onClick="@{()->stableCoinCard.closeFunction.invoke()}"
             android:padding="8dp"
             android:src="@drawable/ic_clear_white_24dp"
-            android:tint="@color/primary_gray"
+            android:tint="@color/primary_grey"
             tools:ignore="RtlHardcoded" />
     </android.support.v7.widget.CardView>
 </layout>

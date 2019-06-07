@@ -5,8 +5,7 @@ import piuk.blockchain.androidcore.BuildConfig
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import timber.log.Timber
 
-class UncaughtExceptionHandler private constructor(val appUtil: AppUtil)
-    : Thread.UncaughtExceptionHandler {
+class UncaughtExceptionHandler private constructor(val appUtil: AppUtil) : Thread.UncaughtExceptionHandler {
 
     private val rootHandler = Thread.getDefaultUncaughtExceptionHandler()
 

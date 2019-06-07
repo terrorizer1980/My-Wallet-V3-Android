@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.upgrade;
 
-import android.content.Context;
 import android.support.annotation.Nullable;
 
 import info.blockchain.wallet.util.PasswordUtil;
@@ -75,7 +74,7 @@ public class UpgradeWalletPresenter extends BasePresenter<UpgradeWalletView> {
                 final String currentPassword = payloadDataManager.getTempPassword();
                 payloadDataManager.setTempPassword(secondPassword);
 
-                authDataManager.createPin(currentPassword, accessState.getPIN())
+                authDataManager.createPin(currentPassword, accessState.getPin())
                         .andThen(payloadDataManager.syncPayloadWithServer())
                         .doOnError(ignored -> payloadDataManager.setTempPassword(currentPassword))
                         .doOnSubscribe(ignored -> getView().showProgressDialog(R.string.please_wait))
@@ -114,12 +113,12 @@ public class UpgradeWalletPresenter extends BasePresenter<UpgradeWalletView> {
 
     void onContinueClicked() {
         prefs.setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true);
-        accessState.setIsLoggedIn(true);
+        accessState.setLoggedIn(true);
         appUtil.restartAppWithVerifiedPin(LauncherActivity.class);
     }
 
-    void onBackButtonPressed(Context context) {
-        accessState.logout(context);
+    void onBackButtonPressed() {
+        accessState.logout();
         getView().onBackButtonPressed();
     }
 

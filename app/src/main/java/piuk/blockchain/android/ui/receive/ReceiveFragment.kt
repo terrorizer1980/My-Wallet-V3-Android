@@ -157,7 +157,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         val supportActionBar = (activity as AppCompatActivity).supportActionBar
         if (supportActionBar != null) {
             (activity as ToolBarActivity).setupToolbar(
-                supportActionBar, R.string.receive_bitcoin
+                supportActionBar, R.string.request
             )
         } else {
             finishPage()

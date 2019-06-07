@@ -4,20 +4,17 @@ import android.app.Activity
 import android.content.Context
 import android.support.v7.app.AlertDialog
 import android.view.MotionEvent
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PersistentPrefs.KEY_OVERLAY_TRUSTED
-import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcoreui.R
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class OverlayDetection @Inject constructor(private val preferences: PrefsUtil) {
+class OverlayDetection constructor(private val prefs: PersistentPrefs) {
 
     private var alertDialog: AlertDialog? = null
 
     fun detectObscuredWindow(context: Context, event: MotionEvent): Boolean {
         // Detect if touch events are being obscured by hidden overlays - These could be used for tapjacking
-        if (!preferences.getValue(KEY_OVERLAY_TRUSTED, false) &&
+        if (!prefs.getValue(KEY_OVERLAY_TRUSTED, false) &&
             event.flags and MotionEvent.FLAG_WINDOW_IS_OBSCURED != 0
         ) {
 
@@ -29,7 +26,7 @@ class OverlayDetection @Inject constructor(private val preferences: PrefsUtil) {
                 .setMessage(R.string.screen_overlay_note)
                 .setCancelable(false)
                 .setPositiveButton(R.string.dialog_continue) { _, _ ->
-                    preferences.setValue(
+                    prefs.setValue(
                         KEY_OVERLAY_TRUSTED,
                         true
                     )

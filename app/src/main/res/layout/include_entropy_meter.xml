@@ -14,7 +14,7 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/primary_gray_light"
+            android:background="@color/primary_grey_light"
             android:progressDrawable="@drawable/progress_orange" />
 
         <TextView

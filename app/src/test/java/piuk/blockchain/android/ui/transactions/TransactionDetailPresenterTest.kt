@@ -226,7 +226,7 @@ class TransactionDetailPresenterTest {
             "txMoved_hash"
         )
         verify(view).setTransactionType(TransactionSummary.Direction.TRANSFERRED, false)
-        verify(view).setTransactionColour(R.color.product_gray_transferred_50)
+        verify(view).setTransactionColour(R.color.product_grey_transferred_50)
         verify(view).setDescription(null)
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
@@ -283,7 +283,7 @@ class TransactionDetailPresenterTest {
             "txMoved_hash"
         )
         verify(view).setTransactionType(TransactionSummary.Direction.TRANSFERRED, false)
-        verify(view).setTransactionColour(R.color.product_gray_transferred_50)
+        verify(view).setTransactionColour(R.color.product_grey_transferred_50)
         verify(view).setDescription(null)
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
@@ -443,7 +443,7 @@ class TransactionDetailPresenterTest {
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
         verify(view).setFromAddress(any())
-        verify(view).setFee("0.00000155 ETH")
+        verify(view).setFee("0.00000154 ETH")
         verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
         verify(view).updateFeeFieldVisibility(any())
@@ -734,7 +734,7 @@ class TransactionDetailPresenterTest {
         // Act
         subject.setTransactionColor(displayable)
         // Assert
-        verify(view).setTransactionColour(R.color.product_gray_transferred_50)
+        verify(view).setTransactionColour(R.color.product_grey_transferred_50)
         verifyNoMoreInteractions(view)
     }
 
@@ -748,7 +748,7 @@ class TransactionDetailPresenterTest {
         // Act
         subject.setTransactionColor(displayable)
         // Assert
-        verify(view).setTransactionColour(R.color.product_gray_transferred)
+        verify(view).setTransactionColour(R.color.product_grey_transferred)
         verifyNoMoreInteractions(view)
     }
 

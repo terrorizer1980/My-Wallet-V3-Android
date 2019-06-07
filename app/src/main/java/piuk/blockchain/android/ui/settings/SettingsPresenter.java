@@ -25,7 +25,7 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.EmailSyncUpdater;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AndroidUtils;
@@ -42,7 +42,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     private PayloadManager payloadManager;
     private PayloadDataManager payloadDataManager;
     private StringUtils stringUtils;
-    private PrefsUtil prefsUtil;
+    private PersistentPrefs prefsUtil;
     private AccessState accessState;
     private SwipeToReceiveHelper swipeToReceiveHelper;
     private NotificationTokenManager notificationTokenManager;
@@ -60,7 +60,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                       PayloadManager payloadManager,
                       PayloadDataManager payloadDataManager,
                       StringUtils stringUtils,
-                      PrefsUtil prefsUtil,
+                      PersistentPrefs prefsUtil,
                       AccessState accessState,
                       SwipeToReceiveHelper swipeToReceiveHelper,
                       NotificationTokenManager notificationTokenManager,
@@ -181,7 +181,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         getView().setTorBlocked(settings.isBlockTorIps());
 
         // Screenshots
-        getView().setScreenshotsEnabled(prefsUtil.getValue(PrefsUtil.KEY_SCREENSHOTS_ENABLED, false));
+        getView().setScreenshotsEnabled(prefsUtil.getValue(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, false));
 
         // Launcher shortcuts
         getView().setLauncherShortcutVisibility(AndroidUtils.is25orHigher());
@@ -209,7 +209,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     void setFingerprintUnlockEnabled(boolean enabled) {
         fingerprintHelper.setFingerprintUnlockEnabled(enabled);
         if (!enabled) {
-            fingerprintHelper.clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE);
+            fingerprintHelper.clearEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE);
         }
     }
 
@@ -224,8 +224,9 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             // No fingerprints enrolled, prompt user to add some
             getView().showNoFingerprintsAddedDialog();
         } else {
-            if (accessState.getPIN() != null && !accessState.getPIN().isEmpty()) {
-                getView().showFingerprintDialog(accessState.getPIN());
+            String pin = accessState.getPin();
+            if (pin != null && !pin.isEmpty()) {
+                getView().showFingerprintDialog(pin);
             } else {
                 throw new IllegalStateException("PIN code not found in AccessState");
             }
@@ -241,7 +242,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      */
     @NonNull
     String getFiatUnits() {
-        return prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY);
+        return prefsUtil.getValue(PersistentPrefs.KEY_SELECTED_FIAT, PersistentPrefs.DEFAULT_CURRENCY);
     }
 
     /**
@@ -483,8 +484,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * PIN code validated, take user to PIN change page
      */
     void pinCodeValidatedForChange() {
-        prefsUtil.removeValue(PrefsUtil.KEY_PIN_FAILS);
-        prefsUtil.removeValue(PrefsUtil.KEY_PIN_IDENTIFIER);
+        prefsUtil.removeValue(PersistentPrefs.KEY_PIN_FAILS);
+        prefsUtil.removeValue(PersistentPrefs.KEY_PIN_IDENTIFIER);
 
         getView().goToPinEntryPage();
     }
@@ -498,7 +499,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     void updatePassword(@NonNull String password, @NonNull String fallbackPassword) {
         payloadManager.setTempPassword(password);
 
-        authDataManager.createPin(password, accessState.getPIN())
+        authDataManager.createPin(password, accessState.getPin())
                 .doOnSubscribe(ignored -> getView().showProgressDialog(R.string.please_wait))
                 .doOnTerminate(() -> getView().hideProgressDialog())
                 .andThen(payloadDataManager.syncPayloadWithServer())
@@ -546,7 +547,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     boolean isPushNotificationEnabled() {
-        return prefsUtil.getValue(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED, true);
+        return prefsUtil.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true);
     }
 
     void enablePushNotifications() {

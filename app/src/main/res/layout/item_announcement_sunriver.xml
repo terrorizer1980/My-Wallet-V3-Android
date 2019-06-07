@@ -5,7 +5,7 @@
     style="@style/DefaultCardStyle"
     android:layout_marginTop="16dp"
     android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="@color/primary_gray_lightest">
+    app:cardBackgroundColor="@color/primary_grey_lightest">
 
     <ImageView
         android:id="@+id/imageview_close"
@@ -15,7 +15,7 @@
         android:contentDescription="@string/CLOSE"
         android:padding="8dp"
         android:src="@drawable/ic_clear_white_24dp"
-        android:tint="@color/primary_gray"
+        android:tint="@color/primary_grey"
         tools:ignore="RtlHardcoded" />
 
     <LinearLayout
@@ -32,7 +32,6 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="32dp"
             android:layout_marginRight="16dp"
-            android:fontFamily="@font/montserrat"
             android:gravity="center"
             android:textColor="@color/primary_navy_medium"
             android:textSize="20sp"
@@ -45,9 +44,8 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginRight="16dp"
-            android:fontFamily="@font/montserrat"
             android:gravity="center"
-            android:textColor="@color/primary_gray_dark"
+            android:textColor="@color/primary_grey_dark"
             android:textSize="16sp"
             tools:text="You can now send, request and exchange Stellar (XLM) directly from your Blockchain Wallet." />
 

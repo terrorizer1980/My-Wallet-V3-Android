@@ -55,7 +55,6 @@
                         android:layout_gravity="center"
                         android:drawableLeft="@drawable/ic_warning_white_24dp"
                         android:drawablePadding="8dp"
-                        android:fontFamily="@font/montserrat"
                         android:gravity="center"
                         android:padding="8dp"
                         android:text="@string/transaction_detail_double_spend"
@@ -74,7 +73,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
-                        android:fontFamily="@font/montserrat"
                         android:textSize="20sp"
                         tools:text="Received"
                         tools:textColor="@color/product_green_received" />
@@ -94,8 +92,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/transaction_amount"
                         android:layout_alignParentRight="true"
-                        android:fontFamily="@font/montserrat"
-                        android:textColor="@color/product_gray_headers"
+                        android:textColor="@color/product_grey_headers"
                         android:textSize="14sp"
                         tools:text="Value when recieved: $200" />
 
@@ -105,8 +102,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/transaction_value"
                         android:layout_alignParentRight="true"
-                        android:fontFamily="@font/montserrat"
-                        android:textColor="@color/product_gray_headers"
+                        android:textColor="@color/product_grey_headers"
                         android:textSize="14sp"
                         tools:text="Transaction fee: 0.00000124 BTC" />
 
@@ -136,7 +132,6 @@
                         android:layout_toLeftOf="@+id/edit_icon"
                         android:background="@android:color/transparent"
                         android:ellipsize="end"
-                        android:fontFamily="@font/montserrat"
                         android:hint="@string/transaction_detail_description_hint"
                         android:maxLines="1"
                         android:paddingRight="8dp"
@@ -181,7 +176,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.9"
-                            android:fontFamily="@font/montserrat"
                             android:paddingRight="16dp"
                             android:textColor="@color/black"
                             android:textIsSelectable="true"
@@ -215,7 +209,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.9"
-                            android:fontFamily="@font/montserrat"
                             android:paddingRight="16dp"
                             android:textColor="@color/black"
                             android:textIsSelectable="true"
@@ -251,7 +244,6 @@
                             android:id="@+id/transaction_note"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/montserrat"
                             android:textColor="@color/black"
                             android:textSize="16sp"
                             tools:text="For the burger" />
@@ -276,7 +268,6 @@
                         android:id="@+id/date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/montserrat"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         tools:text="August 18, 2016 @ 12:15pm" />
@@ -301,7 +292,6 @@
                         android:id="@+id/status"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/montserrat"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         tools:text="Confirmed" />

@@ -1,6 +1,7 @@
 package com.blockchain.morph.exchange.mvi
 
 import info.blockchain.balance.AccountReference
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.ExchangeRate
 import info.blockchain.balance.FiatValue
@@ -30,7 +31,9 @@ class ExchangeDialog(intents: Observable<ExchangeIntent>, initial: ExchangeViewM
                 is SetTradeLimits -> previousState.mapTradeLimits(intent)
                 is ApplyMinimumLimit -> previousState.applyLimit(previousState.minTradeLimit)
                 is ApplyMaximumLimit -> previousState.applyLimit(previousState.maxTrade)
+                is ApplyMaxSpendable -> previousState.applyMaxSpendable(previousState.maxSpendable)
                 is FiatExchangeRateIntent -> previousState.setFiatRate(intent.c2fRate)
+                is ExchangeRateIntent -> previousState.setExchangeFiatRates(intent.prices)
                 is SpendableValueIntent -> previousState.setSpendable(intent.cryptoValue)
                 is ClearQuoteIntent -> previousState.clearQuote()
                 is SetUserTier -> previousState.copy(userTier = intent.tier)
@@ -73,8 +76,21 @@ private fun ExchangeViewState.setFiatRate(c2fRate: ExchangeRate.CryptoToFiat): E
     return copy(c2fRate = c2fRate)
 }
 
+private fun ExchangeViewState.setExchangeFiatRates(exchangePrices: List<ExchangeRate.CryptoToFiat>): ExchangeViewState {
+    return copy(exchangePrices = exchangePrices)
+}
+
 private fun ExchangeViewState.setHasEthEnoughFees(intent: EnoughFeesLimit): ExchangeViewState {
     return copy(hasEnoughEthFees = intent.hasEnoughForFess)
+}
+
+private fun ExchangeViewState.applyMaxSpendable(cryptoValue: CryptoValue?): ExchangeViewState {
+    return cryptoValue?.let {
+        copy(
+            fix = Fix.BASE_CRYPTO,
+            fromCrypto = cryptoValue
+        )
+    } ?: this
 }
 
 private fun ExchangeViewState.applyLimit(tradeLimit: Money?) =
@@ -187,6 +203,7 @@ data class ExchangeViewState(
     val minTradeLimit: FiatValue? = null,
     val maxTradeLimit: FiatValue? = null,
     val maxTierLimit: FiatValue? = null,
+    val exchangePrices: List<ExchangeRate.CryptoToFiat> = emptyList(),
     val c2fRate: ExchangeRate.CryptoToFiat? = null,
     val maxSpendable: CryptoValue? = null,
     val decimalCursor: Int = 0,
@@ -351,7 +368,10 @@ private fun ExchangeViewState.mapQuote(intent: QuoteIntent) =
     ) {
         copy(
             fromCrypto = intent.quote.from.cryptoValue,
-            fromFiat = intent.quote.from.fiatValue,
+            fromFiat = if (fix == Fix.BASE_CRYPTO) calculateFiatValue(intent.quote,
+                fromCrypto.currency,
+                fromFiat.currencyCode,
+                fromCrypto) else intent.quote.from.fiatValue,
             toCrypto = intent.quote.to.cryptoValue,
             toFiat = intent.quote.to.fiatValue,
             latestQuote = intent.quote,
@@ -359,6 +379,10 @@ private fun ExchangeViewState.mapQuote(intent: QuoteIntent) =
     } else {
         this
     }
+
+private fun calculateFiatValue(quote: Quote, cryptoCurrency: CryptoCurrency, fiatCode: String, fromCrypto: CryptoValue):
+        FiatValue = ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, quote.baseToFiatRate)
+    .applyRate(fromCrypto) ?: FiatValue.zero(fiatCode)
 
 private fun ExchangeViewState.fromCurrencyMatch(intent: QuoteIntent) =
     currencyMatch(intent.quote.from, fromCrypto, fromFiat)

@@ -290,7 +290,7 @@ class BuySellBuildOrderActivity :
         val spannable = getFormattedLimit(status)
 
         spannable.setSpan(
-            ForegroundColorSpan(getResolvedColor(R.color.primary_gray_medium)),
+            ForegroundColorSpan(getResolvedColor(R.color.primary_grey_medium)),
             0,
             start,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -304,7 +304,7 @@ class BuySellBuildOrderActivity :
         )
 
         spannable.setSpan(
-            ForegroundColorSpan(getResolvedColor(R.color.primary_gray_medium)),
+            ForegroundColorSpan(getResolvedColor(R.color.primary_grey_medium)),
             end,
             text.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE

@@ -7,12 +7,14 @@ import android.os.Handler
 import android.support.v7.app.AlertDialog
 import android.view.MotionEvent
 import kotlinx.android.synthetic.main.activity_landing.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.connectivity.ConnectivityStatus
 import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.createwallet.CreateWalletActivity
 import piuk.blockchain.android.ui.login.LoginActivity
 import piuk.blockchain.android.ui.recover.RecoverFundsActivity
+import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
@@ -29,6 +31,8 @@ class LandingActivity : BaseMvpActivity<LandingView, LandingPresenter>(), Landin
     lateinit var appUtil: AppUtil
     @Inject
     lateinit var overlayDetection: OverlayDetection
+
+    private val loginState: AccessState by inject()
 
     init {
         Injector.getInstance().presenterComponent.inject(this)
@@ -69,7 +73,7 @@ class LandingActivity : BaseMvpActivity<LandingView, LandingPresenter>(), Landin
     override fun showDebugMenu() {
         buttonSettings.visible()
         buttonSettings.setOnClickListener {
-            EnvironmentSwitcher(this, prefsUtil, appUtil).showDebugMenu()
+            EnvironmentSwitcher(this, prefs, appUtil, loginState).showDebugMenu()
         }
     }
 

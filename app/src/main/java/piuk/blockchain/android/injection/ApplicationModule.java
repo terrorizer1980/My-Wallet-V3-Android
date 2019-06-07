@@ -3,7 +3,6 @@ package piuk.blockchain.android.injection;
 import android.app.NotificationManager;
 
 import com.blockchain.koin.KoinDaggerModule;
-import com.blockchain.koin.modules.MorphActivityLauncher;
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager;
 import com.blockchain.kycui.settings.KycStatusHelper;
 import com.blockchain.kycui.stablecoin.StableCoinCampaignHelper;
@@ -55,6 +54,7 @@ import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
 import piuk.blockchain.androidcore.utils.AESUtilWrapper;
 import piuk.blockchain.androidcore.utils.PrngFixer;
 import piuk.blockchain.androidcoreui.utils.AppUtil;
+import piuk.blockchain.androidcoreui.utils.OverlayDetection;
 
 import javax.inject.Named;
 
@@ -147,11 +147,6 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     NabuDataManager provideNabuDataManager() {
         return get(NabuDataManager.class);
-    }
-
-    @Provides
-    MorphActivityLauncher provideMorphActivityLauncher() {
-        return get(MorphActivityLauncher.class);
     }
 
     @Provides
@@ -318,4 +313,7 @@ public class ApplicationModule extends KoinDaggerModule {
     EmailSyncUpdater provideEmailSyncUpdater() {
         return get(EmailSyncUpdater.class);
     }
+
+    @Provides
+    OverlayDetection providesOverlayDetection() { return get(OverlayDetection.class); }
 }
