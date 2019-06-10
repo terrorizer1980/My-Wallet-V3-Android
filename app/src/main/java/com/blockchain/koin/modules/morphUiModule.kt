@@ -20,6 +20,7 @@ val morphUiModule = applicationContext {
                 transactionExecutor = get("Priority"),
                 tradeExecutionService = get(),
                 payloadDecrypt = get(),
+                stringUtils = get(),
                 locale = get()
             )
         }

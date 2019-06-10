@@ -61,6 +61,10 @@ class ExchangeConfirmationPresenterTest {
             transactionExecutor,
             tradeExecutionService,
             payloadDecrypt,
+            mock {
+                on { getString(any()) } `it returns` ""
+                on { getFormattedString(any(), any()) } `it returns` ""
+            },
             Locale.ENGLISH
         )
         subject.initView(view)
@@ -240,6 +244,7 @@ class ExchangeConfirmationPresenterTest {
         )
         verifyNoMoreInteractions(tradeExecutionService)
         verify(view, never()).onTradeSubmitted(any(), any())
+        verify(view).displayErrorBottomDialog(any())
     }
 
     private fun givenTradeExpected(

@@ -43,7 +43,6 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.ExchangeRate
 import info.blockchain.balance.FiatValue
-import info.blockchain.balance.Money
 import info.blockchain.balance.times
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -461,13 +460,6 @@ internal class ExchangeFragment : Fragment() {
         }
     }
 }
-
-private fun Money.formatOrSymbolForZero() =
-    if (isZero) {
-        symbol()
-    } else {
-        toStringWithSymbol()
-    }
 
 internal const val REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT = 800
 internal const val REQUEST_CODE_CHOOSE_SENDING_ACCOUNT = 801

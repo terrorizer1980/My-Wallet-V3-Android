@@ -21,6 +21,18 @@
     <string name="upgrade_now">Upgrade now</string>
 
     <string name="dialog_title_exchange">What do you want to exchange?</string>
+    <string name="markets_are_moving">Markets are Moving 🚀</string>
+    <string name="hold_your_horses">Whoa! Hold your horses.</string>
+    <string name="markets_movement_markets_below_required">Due to market movement, your order value is now below the minimum required threshold of %1$s.</string>
+    <string name="markets_movement_markets_above_required">Due to market movement, your order value is now above the maximum allowable threshold of %1$s.</string>
+    <string name="above_limit_description">There is a limit to how much crypto you can exchange. The value of your order must be less than your limit  of %1$s.</string>
+    <string name="update_order">Update Order</string>
+    <string name="more_info">More Info</string>
+    <string name="increase_limits">Increase My Limits</string>
+    <string name="try_again">Try Again</string>
+    <string name="ops_something_went_wrong">Ooops! Something went wrong.</string>
+    <string name="something_went_wrong_description">We\'re not sure what happened but we didn\'t receive your order details. Unfortunately, you\'re going to have to enter your order again.</string>
     <string name="dialog_title_receive">What do you want to receive?</string>
+
 
 </resources>

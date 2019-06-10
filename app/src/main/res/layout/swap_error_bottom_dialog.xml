@@ -3,20 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:background="#1f1f1f">
-
-    <View
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/bottom_error_dialog_background"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:background="@color/white" />
+    android:layout_height="wrap_content"
+    android:background="@color/bottom_error_dialog_background">
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/dialog_icon"
@@ -69,15 +57,18 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:theme="@style/LightBlueButtonTheme"
+        android:layout_marginBottom="6dp"
+        android:background="@color/swap_error_dialog_primary_button_background"
+        android:fontFamily="@font/inter_medium"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:theme="@style/LightBlueButtonTheme"
+        app:layout_constraintBottom_toTopOf="@+id/button_dismiss"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_body"
-        app:layout_constraintVertical_bias="0"
+        app:layout_goneMarginBottom="10dp"
         tools:text="Learn More" />
 
     <Button
@@ -85,17 +76,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
-        android:background="@color/primary_blue_accent"
-        android:textColor="@color/white"
-        android:theme="@style/WhiteButtonTheme"
+        android:background="@drawable/swap_dialog_secondary_button_background"
+        android:fontFamily="@font/inter_medium"
+        android:textAllCaps="false"
+        android:textColor="@color/swap_error_dialog_primary_button_background"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_cta"
-        app:layout_constraintVertical_bias="0"
         tools:text="OK" />
 
 </android.support.constraint.ConstraintLayout>
