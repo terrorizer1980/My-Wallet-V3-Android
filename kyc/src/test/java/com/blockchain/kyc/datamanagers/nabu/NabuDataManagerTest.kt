@@ -27,6 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class NabuDataManagerTest {
 
@@ -36,6 +37,7 @@ class NabuDataManagerTest {
     private val nabuTokenStore: NabuSessionTokenStore = mock()
     private val settingsDataManager: SettingsDataManager = mock()
     private val payloadDataManager: PayloadDataManager = mock()
+    private val prefs: PersistentPrefs = mock()
     private val appVersion = "6.14.0"
     private val deviceId = "DEVICE_ID"
     private val email = "EMAIL"
@@ -56,9 +58,9 @@ class NabuDataManagerTest {
             tokenService,
             nabuTokenStore,
             appVersion,
-            deviceId,
             settingsDataManager,
-            payloadDataManager
+            payloadDataManager,
+            prefs
         )
     }
 
@@ -138,6 +140,7 @@ class NabuDataManagerTest {
                 appVersion
             )
         ).thenReturn(Single.just(sessionTokenResponse))
+        whenever(prefs.deviceId).thenReturn(deviceId)
         // Act
         val testObserver = subject.getSessionToken(offlineToken).test()
         // Assert

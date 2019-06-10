@@ -36,7 +36,7 @@ import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity;
 import piuk.blockchain.android.util.DialogButtonCallback;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment;
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog;
@@ -62,7 +62,7 @@ public class PinEntryFragment extends BaseFragment<PinEntryView, PinEntryPresent
     private static final Handler HANDLER = new Handler();
 
     @Inject PinEntryPresenter pinEntryPresenter;
-    @Inject PrefsUtil prefsUtil;
+    @Inject PersistentPrefs prefs;
     @Inject AppUtil appUtil;
     @Inject EnvironmentConfig environmentConfig;
     @Inject AccessState loginState;
@@ -146,7 +146,7 @@ public class PinEntryFragment extends BaseFragment<PinEntryView, PinEntryPresent
             binding.buttonSettings.setVisibility(View.VISIBLE);
             binding.buttonSettings.setOnClickListener(view -> {
                 if (getActivity() != null) {
-                    new EnvironmentSwitcher(getActivity(), prefsUtil, appUtil, loginState).showDebugMenu();
+                    new EnvironmentSwitcher(getActivity(), prefs, appUtil, loginState).showDebugMenu();
                 }
             }
             );

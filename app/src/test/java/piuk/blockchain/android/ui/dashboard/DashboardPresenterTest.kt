@@ -46,13 +46,13 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ratesFor
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import java.util.Locale
 
 class DashboardPresenterTest {
 
     private lateinit var subject: DashboardPresenter
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefsUtil: PersistentPrefs = mock()
     private val currentTier: CurrentTier = mock()
     private val exchangeRateFactory: ExchangeRateDataManager = mock()
     private val bchDataManager: BchDataManager = mock()
@@ -125,8 +125,7 @@ class DashboardPresenterTest {
         // updatePrices()
         whenever(exchangeRateFactory.updateTickers()).thenReturn(Completable.complete())
         whenever(currencyFormatManager.getFormattedFiatValueWithSymbol(any())).thenReturn("$2.00")
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn("USD")
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         whenever(
             exchangeRateFactory.getLastPrice(
                 eq(CryptoCurrency.BTC),
@@ -146,8 +145,7 @@ class DashboardPresenterTest {
         // getOnboardingStatusObservable()
         val metadataObservable = Observable.just(MetadataEvent.SETUP_COMPLETE)
         whenever(rxBus.register(MetadataEvent::class.java)).thenReturn(metadataObservable)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false))
-            .thenReturn(true)
+        whenever(prefsUtil.isOnboardingComplete).thenReturn(true)
         whenever(accessState.isNewlyCreated).thenReturn(false)
 
         // doOnSuccess { updateAllBalances() }
@@ -200,7 +198,7 @@ class DashboardPresenterTest {
         verify(view, atLeastOnce()).notifyItemAdded(any(), eq(0))
         verify(view, atLeastOnce()).notifyItemUpdated(any(), any())
         verify(view, atLeastOnce()).scrollToTop()
-        verify(prefsUtil, atLeastOnce()).getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false)
+        verify(prefsUtil, atLeastOnce()).isOnboardingComplete
 
         verify(exchangeRateFactory, atLeastOnce()).updateTickers()
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.BTC), any())
@@ -240,8 +238,7 @@ class DashboardPresenterTest {
         // updatePrices()
         whenever(exchangeRateFactory.updateTickers()).thenReturn(Completable.complete())
         whenever(currencyFormatManager.getFormattedFiatValueWithSymbol(any())).thenReturn("$2.00")
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn("USD")
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         whenever(
             exchangeRateFactory.getLastPrice(
                 eq(CryptoCurrency.BTC),
@@ -261,8 +258,7 @@ class DashboardPresenterTest {
         // getOnboardingStatusObservable()
         val metadataObservable = Observable.just(MetadataEvent.SETUP_COMPLETE)
         whenever(rxBus.register(MetadataEvent::class.java)).thenReturn(metadataObservable)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false))
-            .thenReturn(false)
+        whenever(prefsUtil.isOnboardingComplete).thenReturn(false)
         whenever(accessState.isNewlyCreated).thenReturn(false)
 
         // doOnSuccess { updateAllBalances() }
@@ -354,8 +350,7 @@ class DashboardPresenterTest {
         // updatePrices()
         whenever(exchangeRateFactory.updateTickers()).thenReturn(Completable.complete())
         whenever(currencyFormatManager.getFormattedFiatValueWithSymbol(any())).thenReturn("$2.00")
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn("USD")
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         whenever(
             exchangeRateFactory.getLastPrice(
                 eq(CryptoCurrency.BTC),
@@ -375,8 +370,7 @@ class DashboardPresenterTest {
         // getOnboardingStatusObservable()
         val metadataObservable = Observable.just(MetadataEvent.SETUP_COMPLETE)
         whenever(rxBus.register(MetadataEvent::class.java)).thenReturn(metadataObservable)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false))
-            .thenReturn(true)
+        whenever(prefsUtil.isOnboardingComplete).thenReturn(true)
         whenever(accessState.isNewlyCreated).thenReturn(false)
 
         // doOnSuccess { updateAllBalances() }
@@ -477,8 +471,7 @@ class DashboardPresenterTest {
         // updatePrices()
         whenever(exchangeRateFactory.updateTickers()).thenReturn(Completable.complete())
         whenever(currencyFormatManager.getFormattedFiatValueWithSymbol(any())).thenReturn("$2.00")
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn("USD")
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         whenever(exchangeRateFactory.getLastPrice(eq(CryptoCurrency.BTC), any()))
             .thenReturn(5000.00)
         whenever(exchangeRateFactory.getLastPrice(eq(CryptoCurrency.ETHER), any()))
@@ -489,8 +482,7 @@ class DashboardPresenterTest {
         // getOnboardingStatusObservable()
         val metadataObservable = Observable.just(MetadataEvent.SETUP_COMPLETE)
         whenever(rxBus.register(MetadataEvent::class.java)).thenReturn(metadataObservable)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false))
-            .thenReturn(true)
+        whenever(prefsUtil.isOnboardingComplete).thenReturn(true)
         whenever(accessState.isNewlyCreated).thenReturn(false)
 
         // doOnSuccess { updateAllBalances() }
@@ -594,8 +586,7 @@ class DashboardPresenterTest {
         // updatePrices()
         whenever(exchangeRateFactory.updateTickers()).thenReturn(Completable.complete())
         whenever(currencyFormatManager.getFormattedFiatValueWithSymbol(any())).thenReturn("$2.00")
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn("USD")
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         whenever(
             exchangeRateFactory.getLastPrice(
                 eq(CryptoCurrency.BTC),
@@ -615,8 +606,7 @@ class DashboardPresenterTest {
         // getOnboardingStatusObservable()
         val metadataObservable = Observable.just(MetadataEvent.SETUP_COMPLETE)
         whenever(rxBus.register(MetadataEvent::class.java)).thenReturn(metadataObservable)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false))
-            .thenReturn(true)
+        whenever(prefsUtil.isOnboardingComplete).thenReturn(true)
         whenever(accessState.isNewlyCreated).thenReturn(false)
 
         // doOnSuccess { updateAllBalances() }
@@ -710,8 +700,7 @@ class DashboardPresenterTest {
         // updatePrices()
         whenever(exchangeRateFactory.updateTickers()).thenReturn(Completable.complete())
         whenever(currencyFormatManager.getFormattedFiatValueWithSymbol(any())).thenReturn("$2.00")
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn("USD")
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         whenever(
             exchangeRateFactory.getLastPrice(
                 eq(CryptoCurrency.BTC),
@@ -731,8 +720,7 @@ class DashboardPresenterTest {
         // getOnboardingStatusObservable()
         val metadataObservable = Observable.just(MetadataEvent.SETUP_COMPLETE)
         whenever(rxBus.register(MetadataEvent::class.java)).thenReturn(metadataObservable)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false))
-            .thenReturn(true)
+        whenever(prefsUtil.isOnboardingComplete).thenReturn(true)
         whenever(accessState.isNewlyCreated).thenReturn(false)
 
         // doOnSuccess { updateAllBalances() }
@@ -914,8 +902,7 @@ class DashboardPresenterTest {
         // updatePrices()
         whenever(exchangeRateFactory.updateTickers()).thenReturn(Completable.complete())
         whenever(currencyFormatManager.getFormattedFiatValueWithSymbol(any())).thenReturn("$2.00")
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn("USD")
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         whenever(exchangeRateFactory.getLastPrice(eq(CryptoCurrency.BTC), any()))
             .thenReturn(5000.00)
         whenever(exchangeRateFactory.getLastPrice(eq(CryptoCurrency.ETHER), any()))
@@ -926,8 +913,7 @@ class DashboardPresenterTest {
         // getOnboardingStatusObservable()
         val metadataObservable = Observable.just(MetadataEvent.SETUP_COMPLETE)
         whenever(rxBus.register(MetadataEvent::class.java)).thenReturn(metadataObservable)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, false))
-            .thenReturn(true)
+        whenever(prefsUtil.isOnboardingComplete).thenReturn(true)
         whenever(accessState.isNewlyCreated).thenReturn(false)
 
         // doOnSuccess { updateAllBalances() }

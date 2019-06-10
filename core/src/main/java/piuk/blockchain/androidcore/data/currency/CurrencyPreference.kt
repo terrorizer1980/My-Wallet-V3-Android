@@ -1,12 +1,12 @@
 package piuk.blockchain.androidcore.data.currency
 
 import info.blockchain.balance.CryptoCurrency
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 internal class CurrencyPreference(
-    private val prefs: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val preferenceKey: String,
     private val defaultCurrency: CryptoCurrency
 ) : ReadWriteProperty<CurrencyState, CryptoCurrency> {

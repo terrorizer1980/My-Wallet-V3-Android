@@ -17,7 +17,7 @@ import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.onboarding.OnboardingActivity.EXTRAS_EMAIL_ONLY
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import java.lang.IllegalStateException
 
 class OnboardingPresenterTest {
@@ -172,7 +172,7 @@ class OnboardingPresenterTest {
         subject.setFingerprintUnlockEnabled(false)
         // Assert
         verify(mockFingerprintHelper).setFingerprintUnlockEnabled(false)
-        verify(mockFingerprintHelper).clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE)
+        verify(mockFingerprintHelper).clearEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE)
         verifyNoMoreInteractions(mockFingerprintHelper)
     }
 

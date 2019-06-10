@@ -112,7 +112,12 @@ val kycModule = applicationContext {
 
         factory { OnfidoSplashPresenter(get(), get(), get()) }
 
-        factory { VeriffSplashPresenter(get(), get()) }
+        factory {
+            VeriffSplashPresenter(
+                nabuToken = get(),
+                nabuDataManager = get()
+            )
+        }
 
         factory { KycStatusPresenter(get(), get(), get()) }
 
@@ -159,13 +164,13 @@ val kycNabuModule = applicationContext {
 
         factory {
             NabuDataManagerImpl(
-                get(),
-                get(),
-                get(),
-                getProperty("app-version"),
-                get("device-id"),
-                get(),
-                get()
+                nabuService = get(),
+                retailWalletTokenService = get(),
+                nabuTokenStore = get(),
+                appVersion = getProperty("app-version"),
+                settingsDataManager = get(),
+                payloadDataManager = get(),
+                prefs = get()
             ) as NabuDataManager
         }
 

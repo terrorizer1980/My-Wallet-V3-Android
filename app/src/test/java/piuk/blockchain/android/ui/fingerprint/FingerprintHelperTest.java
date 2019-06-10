@@ -22,7 +22,7 @@ import io.reactivex.Observable;
 import piuk.blockchain.android.BlockchainTestApplication;
 import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.data.fingerprint.FingerprintAuth;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -39,7 +39,7 @@ public class FingerprintHelperTest {
 
     private FingerprintHelper subject;
     @Mock private Context applicationContext;
-    @Mock private PrefsUtil prefsUtil;
+    @Mock private PersistentPrefs prefsUtil;
     @Mock private FingerprintAuth fingerprintAuth;
 
     @Before
@@ -83,7 +83,7 @@ public class FingerprintHelperTest {
     public void getIfFingerprintUnlockEnabledTrue() throws Exception {
         // Arrange
         when(fingerprintAuth.isFingerprintAvailable(applicationContext)).thenReturn(true);
-        when(prefsUtil.getValue(PrefsUtil.KEY_FINGERPRINT_ENABLED, false)).thenReturn(true);
+        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_FINGERPRINT_ENABLED, false)).thenReturn(true);
         // Act
         boolean value = subject.isFingerprintUnlockEnabled();
         // Assert
@@ -94,7 +94,7 @@ public class FingerprintHelperTest {
     public void getIfFingerprintUnlockEnabledFalse() throws Exception {
         // Arrange
         when(fingerprintAuth.isFingerprintAvailable(applicationContext)).thenReturn(true);
-        when(prefsUtil.getValue(PrefsUtil.KEY_FINGERPRINT_ENABLED, false)).thenReturn(false);
+        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_FINGERPRINT_ENABLED, false)).thenReturn(false);
         // Act
         boolean value = subject.isFingerprintUnlockEnabled();
         // Assert
@@ -108,7 +108,7 @@ public class FingerprintHelperTest {
         // Act
         subject.setFingerprintUnlockEnabled(true);
         // Assert
-        verify(prefsUtil).setValue(PrefsUtil.KEY_FINGERPRINT_ENABLED, true);
+        verify(prefsUtil).setValue(PersistentPrefs.Companion.KEY_FINGERPRINT_ENABLED, true);
     }
 
     @Test

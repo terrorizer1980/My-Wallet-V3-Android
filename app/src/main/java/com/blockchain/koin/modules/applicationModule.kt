@@ -98,7 +98,7 @@ val applicationModule = applicationContext {
         factory {
             SwipeToReceiveHelper(
                 payloadDataManager = get(),
-                prefsUtil = get(),
+                prefs = get(),
                 ethDataManager = get(),
                 bchDataManager = get(),
                 stringUtils = get(),
@@ -153,7 +153,7 @@ val applicationModule = applicationContext {
         factory {
             TransactionDetailPresenter(
                 transactionHelper = get(),
-                prefsUtil = get(),
+                prefs = get(),
                 payloadDataManager = get(),
                 stringUtils = get(),
                 transactionListDataManager = get(),
@@ -282,7 +282,7 @@ val applicationModule = applicationContext {
                 payloadDataManager = get(),
                 buyDataManager = get(),
                 stringUtils = get(),
-                prefsUtil = get(),
+                prefs = get(),
                 rxBus = get(),
                 currencyState = get(),
                 shapeShiftDataManager = get(),

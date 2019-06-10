@@ -5,7 +5,7 @@ import android.support.annotation.VisibleForTesting
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.fingerprint.FingerprintDialog.Companion.KEY_BUNDLE_PIN_CODE
 import piuk.blockchain.android.ui.fingerprint.FingerprintDialog.Companion.KEY_BUNDLE_STAGE
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import javax.inject.Inject
 
@@ -57,7 +57,7 @@ class FingerprintPresenter @Inject constructor(
         view.onAuthenticated(data)
 
         if (currentStage == FingerprintStage.REGISTER_FINGERPRINT && data != null) {
-            fingerprintHelper.storeEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE, data)
+            fingerprintHelper.storeEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE, data)
         }
     }
 
@@ -73,7 +73,7 @@ class FingerprintPresenter @Inject constructor(
         view.setCancelButtonText(R.string.fingerprint_use_pin)
         view.onFatalError()
 
-        fingerprintHelper.clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE)
+        fingerprintHelper.clearEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE)
         fingerprintHelper.setFingerprintUnlockEnabled(false)
     }
 
@@ -91,7 +91,7 @@ class FingerprintPresenter @Inject constructor(
         }
         view.onFatalError()
 
-        fingerprintHelper.clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE)
+        fingerprintHelper.clearEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE)
         fingerprintHelper.setFingerprintUnlockEnabled(false)
     }
 
@@ -104,13 +104,13 @@ class FingerprintPresenter @Inject constructor(
 
     private fun authenticateFingerprint() {
         view.setCancelButtonText(R.string.fingerprint_use_pin)
-        fingerprintHelper.decryptString(PrefsUtil.KEY_ENCRYPTED_PIN_CODE, pincode!!, this)
+        fingerprintHelper.decryptString(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE, pincode!!, this)
     }
 
     private fun registerFingerprint() {
         view.setCancelButtonText(android.R.string.cancel)
         view.setDescriptionText(R.string.fingerprint_prompt)
-        fingerprintHelper.encryptString(PrefsUtil.KEY_ENCRYPTED_PIN_CODE, pincode!!, this)
+        fingerprintHelper.encryptString(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE, pincode!!, this)
     }
 
     override fun onViewDestroyed() {

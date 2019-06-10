@@ -115,16 +115,6 @@ class SettingsService(private val settingsApi: SettingsManager) {
         settingsApi.updateSetting(SettingsManager.METHOD_UPDATE_AUTH_TYPE, authType)
 
     /**
-     * Update the user's btc unit preference
-     *
-     * @param btcUnit The user's preference for btc unit
-     * @return A [ResponseBody] containing the response from the server
-     */
-    @WebRequest
-    internal fun updateBtcUnit(btcUnit: String): Observable<ResponseBody> =
-        settingsApi.updateSetting(SettingsManager.METHOD_UPDATE_BTC_CURRENCY, btcUnit)
-
-    /**
      * Update the user's fiat unit preference
      *
      * @param fiatUnit The user's preference for fiat unit

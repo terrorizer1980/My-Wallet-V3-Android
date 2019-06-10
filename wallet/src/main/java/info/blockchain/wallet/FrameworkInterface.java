@@ -45,8 +45,4 @@ public interface FrameworkInterface extends ApiCode {
      */
     String getAppVersion();
 
-    /**
-     * Provides a unique device ID for the user's handset.
-     */
-    String getDeviceId();
 }

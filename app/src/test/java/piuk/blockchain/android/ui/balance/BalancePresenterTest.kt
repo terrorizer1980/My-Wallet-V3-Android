@@ -48,7 +48,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager
 import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import java.math.BigInteger
 
@@ -64,7 +64,7 @@ class BalancePresenterTest {
     private val payloadDataManager: PayloadDataManager = mock()
     private val buyDataManager: BuyDataManager = mock()
     private val stringUtils: StringUtils = mock()
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefsUtil: PersistentPrefs = mock()
     private val currencyState: CurrencyState = mock()
     private val rxBus: RxBus = mock()
     private val ethDataManager: EthDataManager = mock()
@@ -153,12 +153,12 @@ class BalancePresenterTest {
     @Test
     fun areLauncherShortcutsEnabled() {
         // Arrange
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_RECEIVE_SHORTCUTS_ENABLED, true))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true))
             .thenReturn(false)
         // Act
         val result = subject.areLauncherShortcutsEnabled()
         // Assert
-        verify(prefsUtil).getValue(PrefsUtil.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
         verifyNoMoreInteractions(prefsUtil)
         result `should equal to` false
     }

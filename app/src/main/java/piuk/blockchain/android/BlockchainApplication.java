@@ -3,7 +3,6 @@ package piuk.blockchain.android;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
 import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatDelegate;
 import com.blockchain.koin.KoinStarter;
@@ -30,7 +29,6 @@ import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.connectivity.ConnectionEvent;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle;
 import piuk.blockchain.androidcoreui.BuildConfig;
@@ -59,8 +57,6 @@ public class BlockchainApplication extends Application implements FrameworkInter
     @Named("explorer")
     protected Lazy<Retrofit> retrofitExplorer;
 
-    @Inject
-    PrefsUtil prefsUtil;
     @Inject
     RxBus rxBus;
     @Inject
@@ -179,14 +175,6 @@ public class BlockchainApplication extends Application implements FrameworkInter
     @Override
     public String getDevice() {
         return "android";
-    }
-
-    @Override
-    public String getDeviceId() {
-        return Settings.Secure.getString(
-                getContentResolver(),
-                Settings.Secure.ANDROID_ID
-        );
     }
 
     @Override

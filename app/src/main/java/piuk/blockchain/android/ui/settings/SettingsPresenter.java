@@ -42,7 +42,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     private PayloadManager payloadManager;
     private PayloadDataManager payloadDataManager;
     private StringUtils stringUtils;
-    private PersistentPrefs prefsUtil;
+    private PersistentPrefs prefs;
     private AccessState accessState;
     private SwipeToReceiveHelper swipeToReceiveHelper;
     private NotificationTokenManager notificationTokenManager;
@@ -60,7 +60,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                       PayloadManager payloadManager,
                       PayloadDataManager payloadDataManager,
                       StringUtils stringUtils,
-                      PersistentPrefs prefsUtil,
+                      PersistentPrefs prefs,
                       AccessState accessState,
                       SwipeToReceiveHelper swipeToReceiveHelper,
                       NotificationTokenManager notificationTokenManager,
@@ -75,7 +75,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         this.payloadManager = payloadManager;
         this.payloadDataManager = payloadDataManager;
         this.stringUtils = stringUtils;
-        this.prefsUtil = prefsUtil;
+        this.prefs = prefs;
         this.accessState = accessState;
         this.swipeToReceiveHelper = swipeToReceiveHelper;
         this.notificationTokenManager = notificationTokenManager;
@@ -181,7 +181,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         getView().setTorBlocked(settings.isBlockTorIps());
 
         // Screenshots
-        getView().setScreenshotsEnabled(prefsUtil.getValue(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, false));
+        getView().setScreenshotsEnabled(prefs.getValue(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, false));
 
         // Launcher shortcuts
         getView().setLauncherShortcutVisibility(AndroidUtils.is25orHigher());
@@ -242,7 +242,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      */
     @NonNull
     String getFiatUnits() {
-        return prefsUtil.getValue(PersistentPrefs.KEY_SELECTED_FIAT, PersistentPrefs.DEFAULT_CURRENCY);
+        return prefs.getSelectedFiatCurrency();
     }
 
     /**
@@ -295,7 +295,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * @param value The value to be stored as a String
      */
     void updatePreferences(String key, String value) {
-        prefsUtil.setValue(key, value);
+        prefs.setValue(key, value);
         updateUi();
     }
 
@@ -306,7 +306,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * @param value The value to be stored as an int
      */
     void updatePreferences(String key, int value) {
-        prefsUtil.setValue(key, value);
+        prefs.setValue(key, value);
         updateUi();
     }
 
@@ -317,7 +317,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * @param value The value to be stored as a boolean
      */
     void updatePreferences(String key, boolean value) {
-        prefsUtil.setValue(key, value);
+        prefs.setValue(key, value);
         updateUi();
     }
 
@@ -484,8 +484,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * PIN code validated, take user to PIN change page
      */
     void pinCodeValidatedForChange() {
-        prefsUtil.removeValue(PersistentPrefs.KEY_PIN_FAILS);
-        prefsUtil.removeValue(PersistentPrefs.KEY_PIN_IDENTIFIER);
+        prefs.removeValue(PersistentPrefs.KEY_PIN_FAILS);
+        prefs.removeValue(PersistentPrefs.KEY_PIN_IDENTIFIER);
 
         getView().goToPinEntryPage();
     }
@@ -525,6 +525,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                         .doAfterTerminate(this::updateUi)
                         .subscribe(
                                 settings -> {
+                                    prefs.setSelectedFiatCurrency(fiatUnit);
                                     currencyFormatManager.invalidateFiatCode();
                                     this.settings = settings;
                                 },
@@ -547,7 +548,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     boolean isPushNotificationEnabled() {
-        return prefsUtil.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true);
+        return prefs.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true);
     }
 
     void enablePushNotifications() {

@@ -1,11 +1,13 @@
 package piuk.blockchain.androidcore.utils
 
+import com.blockchain.annotations.BurnCandidate
 import com.blockchain.preferences.FiatCurrencyPreference
 
+@BurnCandidate("This does nothing")
 internal class SharedPreferencesFiatCurrencyPreference(
-    private val prefsUtil: PrefsUtil
+    private val prefs: PersistentPrefs
 ) : FiatCurrencyPreference {
 
     override val fiatCurrencyPreference: String
-        get() = prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY)
+        get() = prefs.selectedFiatCurrency
 }

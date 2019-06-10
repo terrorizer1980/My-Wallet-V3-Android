@@ -19,10 +19,4 @@ public class BlockchainTestApplication extends BlockchainApplication {
     protected void checkSecurityProviderAndPatchIfNeeded() {
         // No-op
     }
-
-    @Override
-    public String getDeviceId() {
-        // Settings.Secure is not mocked by Robolectric, so here we pass an empty identifier.
-        return "";
-    }
 }

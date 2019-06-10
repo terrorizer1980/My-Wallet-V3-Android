@@ -3,18 +3,18 @@ package piuk.blockchain.android.ui.backup.completed
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
 import javax.inject.Inject
 
 class BackupWalletCompletedPresenter @Inject constructor(
     private val transferFundsDataManager: TransferFundsDataManager,
-    private val prefsUtil: PrefsUtil
+    private val prefs: PersistentPrefs
 ) : BasePresenter<BackupWalletCompletedView>() {
 
     override fun onViewReady() {
-        val lastBackup = prefsUtil.getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L)
+        val lastBackup = prefs.getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L)
         if (lastBackup != 0L) {
             view.showLastBackupDate(lastBackup)
         } else {

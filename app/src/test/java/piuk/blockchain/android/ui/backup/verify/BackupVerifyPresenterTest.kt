@@ -16,7 +16,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 class BackupVerifyPresenterTest {
@@ -25,7 +25,7 @@ class BackupVerifyPresenterTest {
     private val view: BackupVerifyView = mock()
     private val payloadDataManager: PayloadDataManager =
         mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefsUtil: PersistentPrefs = mock()
     private val backupWalletUtil: BackupWalletUtil = mock()
 
     @Before

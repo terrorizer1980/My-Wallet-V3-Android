@@ -30,7 +30,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.Email;
 import piuk.blockchain.androidcore.data.settings.EmailSyncUpdater;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import retrofit2.Response;
 
@@ -68,7 +68,7 @@ public class SettingsPresenterTest extends RxTest {
     @Mock
     private StringUtils stringUtils;
     @Mock
-    private PrefsUtil prefsUtil;
+    private PersistentPrefs prefsUtil;
     @Mock
     private AccessState accessState;
     @Mock
@@ -215,7 +215,7 @@ public class SettingsPresenterTest extends RxTest {
         subject.setFingerprintUnlockEnabled(false);
         // Assert
         verify(fingerprintHelper).setFingerprintUnlockEnabled(false);
-        verify(fingerprintHelper).clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE);
+        verify(fingerprintHelper).clearEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE);
     }
 
     @Test
@@ -685,8 +685,8 @@ public class SettingsPresenterTest extends RxTest {
         // Act
         subject.pinCodeValidatedForChange();
         // Assert
-        verify(prefsUtil).removeValue(PrefsUtil.KEY_PIN_FAILS);
-        verify(prefsUtil).removeValue(PrefsUtil.KEY_PIN_IDENTIFIER);
+        verify(prefsUtil).removeValue(PersistentPrefs.Companion.KEY_PIN_FAILS);
+        verify(prefsUtil).removeValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER);
         verify(activity).goToPinEntryPage();
         verifyNoMoreInteractions(activity);
     }

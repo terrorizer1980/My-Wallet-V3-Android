@@ -46,7 +46,7 @@ import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.util.Locale
 
@@ -54,7 +54,7 @@ class ReceivePresenterTest {
 
     private lateinit var subject: ReceivePresenter
     private val payloadDataManager: PayloadDataManager = mock(defaultAnswer = RETURNS_DEEP_STUBS)
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefsUtil: PersistentPrefs = mock()
     private val qrCodeDataManager: QrCodeDataManager = mock()
     private val walletAccountHelper: WalletAccountHelper = mock()
     private val activity: ReceiveView = mock()

@@ -1,16 +1,16 @@
 package piuk.blockchain.android.ui.launcher
 
+import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
 import info.blockchain.wallet.api.data.Settings
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.notifications.FcmCallbackService.Companion.EXTRA_CONTACT_ACCEPTED
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -19,7 +19,7 @@ import javax.inject.Inject
 class LauncherPresenter @Inject constructor(
     private val appUtil: AppUtil,
     private val payloadDataManager: PayloadDataManager,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val deepLinkPersistence: DeepLinkPersistence,
     private val accessState: AccessState,
     private val settingsDataManager: SettingsDataManager,
@@ -32,12 +32,12 @@ class LauncherPresenter @Inject constructor(
         val scheme = intent.scheme
         val intentData = intent.dataString
         val extras = intent.extras
-        val hasLoggedOut = prefsUtil.getValue(PrefsUtil.LOGGED_OUT, false)
+        val hasLoggedOut = prefs.isLoggedOut
         var isPinValidated = false
 
         // Store incoming bitcoin URI if needed
         if (action != null && Intent.ACTION_VIEW == action && scheme != null && scheme == "bitcoin") {
-            prefsUtil.setValue(PrefsUtil.KEY_SCHEME_URL, intent.data.toString())
+            prefs.setValue(PersistentPrefs.KEY_SCHEME_URL, intent.data.toString())
         }
 
         if (Intent.ACTION_VIEW == action) {
@@ -49,12 +49,7 @@ class LauncherPresenter @Inject constructor(
                 "blockchain"
             )
         ) {
-            prefsUtil.setValue(PrefsUtil.KEY_METADATA_URI, intentData)
-        }
-
-        // Store if coming from specific Contacts notification
-        if (intent.hasExtra(EXTRA_CONTACT_ACCEPTED)) {
-            prefsUtil.setValue(PrefsUtil.KEY_CONTACTS_NOTIFICATION, true)
+            prefs.setValue(PersistentPrefs.KEY_METADATA_URI, intentData)
         }
 
         if (extras != null && extras.containsKey(INTENT_EXTRA_VERIFIED)) {
@@ -63,11 +58,11 @@ class LauncherPresenter @Inject constructor(
 
         when {
         // No GUID? Treat as new installation
-            prefsUtil.getValue(PrefsUtil.KEY_GUID, "").isEmpty() -> view.onNoGuid()
+            prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, "").isEmpty() -> view.onNoGuid()
         // User has logged out recently. Show password reentry page
             hasLoggedOut -> view.onReEnterPassword()
         // No PIN ID? Treat as installed app without confirmed PIN
-            prefsUtil.getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "").isEmpty() -> view.onRequestPin()
+            prefs.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "").isEmpty() -> view.onRequestPin()
         // Installed app, check sanity
             !appUtil.isSane -> view.onCorruptPayload()
         // Legacy app has not been prompted for upgrade
@@ -91,6 +86,7 @@ class LauncherPresenter @Inject constructor(
      * Init of the [SettingsDataManager] must complete here so that we can access the [Settings]
      * object from memory when the user is logged in.
      */
+    @SuppressLint("CheckResult")
     private fun initSettings() {
         settingsDataManager.initSettings(
             payloadDataManager.wallet!!.guid,
@@ -102,7 +98,7 @@ class LauncherPresenter @Inject constructor(
             .subscribe({ settings ->
                 checkOnboardingStatus(settings)
                 setCurrencyUnits(settings)
-            }, { _ ->
+            }, {
                 view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
                 view.onRequestPin()
             })
@@ -113,13 +109,13 @@ class LauncherPresenter @Inject constructor(
             accessState.isNewlyCreated -> view.onStartOnboarding(false)
             !settings.isEmailVerified &&
                 settings.email != null
-                && !settings.email.isEmpty() -> checkIfOnboardingNeeded()
+                && settings.email.isNotEmpty() -> checkIfOnboardingNeeded()
             else -> view.onStartMainActivity(deepLinkPersistence.popUriFromSharedPrefs())
         }
     }
 
     private fun checkIfOnboardingNeeded() {
-        var visits = prefsUtil.getValue(PrefsUtil.KEY_APP_VISITS, 0)
+        var visits = prefs.getValue(PersistentPrefs.KEY_APP_VISITS, 0)
         // Nag user to verify email after second login
         when (visits) {
             1 -> view.onStartOnboarding(true)
@@ -127,11 +123,11 @@ class LauncherPresenter @Inject constructor(
         }
 
         visits++
-        prefsUtil.setValue(PrefsUtil.KEY_APP_VISITS, visits)
+        prefs.setValue(PersistentPrefs.KEY_APP_VISITS, visits)
     }
 
     private fun setCurrencyUnits(settings: Settings) {
-        prefsUtil.setValue(PrefsUtil.KEY_SELECTED_FIAT, settings.currency)
+        prefs.setSelectedFiatCurrency(settings.currency)
     }
 
     companion object {

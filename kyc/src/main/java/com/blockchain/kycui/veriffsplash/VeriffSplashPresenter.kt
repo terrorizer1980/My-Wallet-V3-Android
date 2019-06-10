@@ -31,6 +31,7 @@ class VeriffSplashPresenter(
                 .flatMapSingle {
                     fetchOfflineToken
                         .flatMap { token ->
+                            // TODO: handle error results for pre_IDV etc
                             nabuDataManager.startVeriffSession(token)
                         }
                         .observeOn(AndroidSchedulers.mainThread())

@@ -11,14 +11,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import piuk.blockchain.androidcore.data.access.AuthEvent;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import timber.log.Timber;
 
 public class NotificationTokenManager {
 
     private NotificationService notificationService;
     private PayloadManager payloadManager;
-    private PrefsUtil prefsUtil;
+    private PersistentPrefs prefs;
     private FirebaseInstanceId firebaseInstanceId;
     private RxBus rxBus;
 
@@ -26,12 +26,12 @@ public class NotificationTokenManager {
 
     public NotificationTokenManager(NotificationService notificationService,
                                     PayloadManager payloadManager,
-                                    PrefsUtil prefsUtil,
+                                    PersistentPrefs prefsUtil,
                                     FirebaseInstanceId firebaseInstanceId,
                                     RxBus rxBus) {
         this.notificationService = notificationService;
         this.payloadManager = payloadManager;
-        this.prefsUtil = prefsUtil;
+        this.prefs = prefsUtil;
         this.firebaseInstanceId = firebaseInstanceId;
         this.rxBus = rxBus;
     }
@@ -43,7 +43,7 @@ public class NotificationTokenManager {
      * @param token A Firebase access token
      */
     void storeAndUpdateToken(@NonNull String token) {
-        prefsUtil.setValue(PrefsUtil.KEY_FIREBASE_TOKEN, token);
+        prefs.setValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN, token);
         if (!token.isEmpty()) {
             sendFirebaseToken(token)
                     .subscribeOn(Schedulers.io())
@@ -59,7 +59,7 @@ public class NotificationTokenManager {
                 .subscribeOn(Schedulers.io())
                 .flatMapCompletable(authEvent -> {
                     if (authEvent == AuthEvent.LOGIN) {
-                        String storedToken = prefsUtil.getValue(PrefsUtil.KEY_FIREBASE_TOKEN, "");
+                        String storedToken = prefs.getValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN, "");
 
                         if (!storedToken.isEmpty()) {
                             return sendFirebaseToken(storedToken);
@@ -68,7 +68,7 @@ public class NotificationTokenManager {
                         }
 
                     } else if (authEvent == AuthEvent.FORGET) {
-                        prefsUtil.removeValue(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED);
+                        prefs.removeValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED);
                         return revokeAccessToken();
                     } else {
                         return Completable.complete();
@@ -86,7 +86,7 @@ public class NotificationTokenManager {
      * @return The Firebase token
      */
     private Observable<Optional<String>> getStoredFirebaseToken() {
-        String storedToken = prefsUtil.getValue(PrefsUtil.KEY_FIREBASE_TOKEN, "");
+        String storedToken = prefs.getValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN, "");
 
         if (!storedToken.isEmpty()) {
             return Observable.just(Optional.of(storedToken));
@@ -103,7 +103,7 @@ public class NotificationTokenManager {
      * Resets Instance ID and revokes all tokens. Clears stored token if successful
      */
     public Completable disableNotifications() {
-        prefsUtil.setValue(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED, false);
+        prefs.setValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, false);
         return revokeAccessToken()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -126,7 +126,7 @@ public class NotificationTokenManager {
      * Resend stored notification token, or generate and send new token if no stored token exists.
      */
     public Completable enableNotifications() {
-        prefsUtil.setValue(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED, true);
+        prefs.setValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true);
         return resendNotificationToken();
     }
 
@@ -150,7 +150,7 @@ public class NotificationTokenManager {
     }
 
     private Completable sendFirebaseToken(@NonNull String refreshedToken) {
-        if (prefsUtil.getValue(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED, true)
+        if (prefs.getValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true)
                 && payloadManager.getPayload() != null) {
 
             Wallet payload = payloadManager.getPayload();
@@ -169,7 +169,7 @@ public class NotificationTokenManager {
      * Removes the stored token from Shared Preferences
      */
     private void clearStoredToken() {
-        prefsUtil.removeValue(PrefsUtil.KEY_FIREBASE_TOKEN);
+        prefs.removeValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN);
     }
 
     /**
@@ -177,7 +177,7 @@ public class NotificationTokenManager {
      */
     private Completable removeNotificationToken() {
 
-        String token = prefsUtil.getValue(PrefsUtil.KEY_FIREBASE_TOKEN, "");
+        String token = prefs.getValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN, "");
 
         if (!token.isEmpty()) {
             return notificationService.removeNotificationToken(token);

@@ -25,6 +25,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
 import piuk.blockchain.android.injection.Injector;
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcoreui.utils.AppUtil;
 import piuk.blockchain.androidcore.utils.PrefsUtil;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
@@ -41,7 +42,7 @@ public class WebSocketService extends Service {
     @Inject protected PayloadDataManager payloadDataManager;
     @Inject protected EthDataManager ethDataManager;
     @Inject protected BchDataManager bchDataManager;
-    @Inject protected PrefsUtil prefsUtil;
+    @Inject protected PersistentPrefs prefs;
     @Inject protected NotificationManager notificationManager;
     @Inject protected SwipeToReceiveHelper swipeToReceiveHelper;
     @Inject protected OkHttpClient okHttpClient;
@@ -97,7 +98,7 @@ public class WebSocketService extends Service {
                 notificationManager,
                 environmentConfig,
                 currencyFormatManager,
-                prefsUtil.getValue(PrefsUtil.KEY_GUID, ""),
+                prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, ""),
                 getXpubsBtc(),
                 getAddressesBtc(),
                 getXpubsBch(),

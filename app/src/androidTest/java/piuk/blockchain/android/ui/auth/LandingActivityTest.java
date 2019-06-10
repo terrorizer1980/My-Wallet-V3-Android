@@ -34,7 +34,7 @@ public class LandingActivityTest extends BaseEspressoTest {
 
     @Before
     public void setUp() throws Exception {
-        new PrefsUtil(activityRule.getActivity()).setValue("disable_root_warning", true);
+        prefs.setValue("disable_root_warning", true);
     }
 
     @Rule

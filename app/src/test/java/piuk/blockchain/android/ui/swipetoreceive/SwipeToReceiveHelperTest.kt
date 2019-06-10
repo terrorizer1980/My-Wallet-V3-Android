@@ -37,7 +37,7 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import java.math.BigInteger
 import java.util.LinkedHashMap
 
@@ -45,7 +45,7 @@ class SwipeToReceiveHelperTest {
 
     private lateinit var subject: SwipeToReceiveHelper
     private val payloadDataManager: PayloadDataManager = mock()
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefsUtil: PersistentPrefs = mock()
     private val stringUtils: StringUtils = mock()
     private val ethDataManager: EthDataManager = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private val bchDataManager: BchDataManager = mock()
@@ -79,7 +79,7 @@ class SwipeToReceiveHelperTest {
     @Test
     fun updateAndStoreBitcoinAddresses() {
         // Arrange
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
             .thenReturn(true)
         val mockAccount: Account = mock()
         whenever(payloadDataManager.defaultAccount).thenReturn(mockAccount)
@@ -91,7 +91,7 @@ class SwipeToReceiveHelperTest {
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        verify(prefsUtil).getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
         verify(payloadDataManager, times(5)).getReceiveAddressAtPosition(eq(mockAccount), anyInt())
         verify(prefsUtil).setValue(KEY_SWIPE_RECEIVE_BTC_ACCOUNT_NAME, "Account")
         verify(prefsUtil).setValue(
@@ -103,7 +103,7 @@ class SwipeToReceiveHelperTest {
     @Test
     fun updateAndStoreBitcoinCashAddresses() {
         // Arrange
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
             .thenReturn(true)
         val mockAccount: GenericMetadataAccount = mock()
         whenever(bchDataManager.getDefaultGenericMetadataAccount()).thenReturn(mockAccount)
@@ -116,7 +116,7 @@ class SwipeToReceiveHelperTest {
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        verify(prefsUtil).getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
         verify(bchDataManager, times(5)).getReceiveAddressAtPosition(eq(0), anyInt())
         verify(prefsUtil).setValue(KEY_SWIPE_RECEIVE_BCH_ACCOUNT_NAME, "BCH Account")
         verify(prefsUtil).setValue(
@@ -132,7 +132,7 @@ class SwipeToReceiveHelperTest {
     @Test
     fun `store eth address completes`() {
         // Arrange
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
             .thenReturn(true)
         whenever(ethDataManager.getEthWallet()?.account?.address).thenReturn("address")
         // Act
@@ -140,7 +140,7 @@ class SwipeToReceiveHelperTest {
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        verify(prefsUtil).getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
         verify(ethDataManager, atLeastOnce()).getEthWallet()
         verify(prefsUtil).setValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS, "address")
     }
@@ -148,14 +148,14 @@ class SwipeToReceiveHelperTest {
     @Test
     fun `store eth address completes as swipe to receive disabled`() {
         // Arrange
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, false))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, false))
             .thenReturn(true)
         // Act
         val testObserver = subject.storeEthAddress().test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        verify(prefsUtil).getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
         verify(ethDataManager, never()).getEthWallet()
         verify(prefsUtil, never()).setValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS, "address")
     }
@@ -163,7 +163,7 @@ class SwipeToReceiveHelperTest {
     @Test
     fun `store eth address completes despite missing eth address`() {
         // Arrange
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
             .thenReturn(true)
         whenever(ethDataManager.getEthWallet()?.account?.address).thenReturn(null)
         // Act
@@ -171,7 +171,7 @@ class SwipeToReceiveHelperTest {
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        verify(prefsUtil).getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
         verify(ethDataManager, atLeastOnce()).getEthWallet()
         verify(prefsUtil, never()).setValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS, "address")
     }
@@ -179,7 +179,7 @@ class SwipeToReceiveHelperTest {
     @Test
     fun `store xlm address enabled completes`() {
         // Arrange
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
             .thenReturn(true)
         val accountReference = AccountReference.Xlm("XLM", "Account ID")
         whenever(xlmDataManager.defaultAccount())
@@ -189,7 +189,7 @@ class SwipeToReceiveHelperTest {
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        verify(prefsUtil).getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
         verify(xlmDataManager).defaultAccount()
         verify(prefsUtil).setValue(SwipeToReceiveHelper.KEY_SWIPE_RECEIVE_XLM_ADDRESS, accountReference.toUri())
     }
@@ -197,7 +197,7 @@ class SwipeToReceiveHelperTest {
     @Test
     fun `store xlm address enabled errors, completes anyway`() {
         // Arrange
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
             .thenReturn(true)
         whenever(xlmDataManager.defaultAccount())
             .thenReturn(Single.error { Throwable() })
@@ -206,7 +206,7 @@ class SwipeToReceiveHelperTest {
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        verify(prefsUtil).getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
         verify(xlmDataManager).defaultAccount()
         verify(prefsUtil, never()).setValue(SwipeToReceiveHelper.KEY_SWIPE_RECEIVE_XLM_ADDRESS, "Account ID")
     }
@@ -214,21 +214,21 @@ class SwipeToReceiveHelperTest {
     @Test
     fun `store xlm address not enabled, completes anyway`() {
         // Arrange
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
             .thenReturn(false)
         // Act
         val testObserver = subject.storeXlmAddress().test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        verify(prefsUtil).getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
         verify(xlmDataManager, never()).defaultAccount()
     }
 
     @Test
     fun `store all generates addresses for all currencies`() {
         // Arrange
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true))
             .thenReturn(true)
         whenever(xlmDataManager.defaultAccount())
             .thenReturn(Single.just(AccountReference.Xlm("XLM", "Account ID")))
@@ -375,7 +375,7 @@ class SwipeToReceiveHelperTest {
     fun getEthReceiveAddressSingle() {
         // Arrange
         val address = "ADDRESS"
-        whenever(prefsUtil.getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS, null))
+        whenever(prefsUtil.getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS))
             .thenReturn(address)
         // Act
         val testObserver = subject.getEthReceiveAddressSingle().test()
@@ -389,7 +389,7 @@ class SwipeToReceiveHelperTest {
     fun getXlmReceiveAddressSingle() {
         // Arrange
         val address = "ADDRESS"
-        whenever(prefsUtil.getValue(KEY_SWIPE_RECEIVE_XLM_ADDRESS, null))
+        whenever(prefsUtil.getValue(KEY_SWIPE_RECEIVE_XLM_ADDRESS))
             .thenReturn(address)
         // Act
         val testObserver = subject.getXlmReceiveAddressSingle().test()
@@ -447,12 +447,12 @@ class SwipeToReceiveHelperTest {
     fun getEthReceiveAddress() {
         // Arrange
         val address = "ADDRESS"
-        whenever(prefsUtil.getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS, null))
+        whenever(prefsUtil.getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS))
             .thenReturn(address)
         // Act
         val result = subject.getEthReceiveAddress()
         // Assert
-        verify(prefsUtil).getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS, null)
+        verify(prefsUtil).getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS)
         result `should equal` address
     }
 

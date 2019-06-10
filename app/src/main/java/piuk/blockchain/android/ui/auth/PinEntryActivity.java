@@ -19,11 +19,11 @@ import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.android.data.websocket.WebSocketService;
 import piuk.blockchain.android.databinding.ActivityPinEntryBinding;
 import piuk.blockchain.android.injection.Injector;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveFragment;
 import piuk.blockchain.android.util.OSUtil;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.utils.OverlayDetection;
 
@@ -34,6 +34,7 @@ public class PinEntryActivity extends BaseAuthActivity implements
     @Inject protected OSUtil osUtil;
     @Inject protected OverlayDetection overlayDetection;
     @Inject protected AccessState loginState;
+    @Inject protected PersistentPrefs prefs;
 
     @Thunk ActivityPinEntryBinding binding;
 
@@ -84,7 +85,7 @@ public class PinEntryActivity extends BaseAuthActivity implements
     private boolean shouldHideSwipeToReceive() {
         return getIntent().hasExtra(PinEntryFragment.KEY_VALIDATING_PIN_FOR_RESULT)
                 || isCreatingNewPin()
-                || !new PrefsUtil(this).getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true);
+                || !prefs.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true);
     }
 
     private void lockViewpager() {
@@ -136,7 +137,7 @@ public class PinEntryActivity extends BaseAuthActivity implements
     }
 
     public boolean isCreatingNewPin() {
-        return new PrefsUtil(this).getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "").isEmpty();
+        return prefs.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "").isEmpty();
     }
 
     @Override

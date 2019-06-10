@@ -215,11 +215,11 @@ public class MainPresenter extends BasePresenter<MainView> {
      * available addresses.
      */
     private void doPushNotifications() {
-        if (!prefs.has(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED)) {
-            prefs.setValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true);
+        if (!prefs.has(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED)) {
+            prefs.setValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true);
         }
 
-        if (prefs.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true)) {
+        if (prefs.getValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true)) {
             payloadDataManager.syncPayloadAndPublicKeys()
                     .compose(RxUtil.addCompletableToCompositeDisposable(this))
                     .subscribe(() -> {
@@ -284,9 +284,9 @@ public class MainPresenter extends BasePresenter<MainView> {
 
                             initPrompts();
 
-                            if (!prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "").isEmpty()) {
-                                String strUri = prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "");
-                                prefs.removeValue(PersistentPrefs.KEY_SCHEME_URL);
+                            if (!prefs.getValue(PersistentPrefs.Companion.KEY_SCHEME_URL, "").isEmpty()) {
+                                String strUri = prefs.getValue(PersistentPrefs.Companion.KEY_SCHEME_URL, "");
+                                prefs.removeValue(PersistentPrefs.Companion.KEY_SCHEME_URL);
                                 getView().onScanInput(strUri);
                             }
                         }
@@ -543,9 +543,9 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     private void dismissAnnouncementIfOnboardingCompleted() {
-        if (prefs.getValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, false)
-                && prefs.getValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_SEEN, false)) {
-            prefs.setValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_DISMISSED, true);
+        if (prefs.getValue(PersistentPrefs.Companion.KEY_ONBOARDING_COMPLETE, false)
+                && prefs.getValue(PersistentPrefs.Companion.KEY_LATEST_ANNOUNCEMENT_SEEN, false)) {
+            prefs.setValue(PersistentPrefs.Companion.KEY_LATEST_ANNOUNCEMENT_DISMISSED, true);
         }
     }
 

@@ -20,7 +20,6 @@ import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager;
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState;
 import piuk.blockchain.androidcore.utils.PersistentPrefs;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
 
 public class LogoutActivity extends AppCompatActivity {
 
@@ -49,7 +48,7 @@ public class LogoutActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, WebSocketService.class);
 
                 //When user logs out, assume onboarding has been completed
-                prefs.setValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, true);
+                prefs.setValue(PersistentPrefs.Companion.KEY_ONBOARDING_COMPLETE, true);
 
                 if (osUtil.isServiceRunning(WebSocketService.class)) {
                     stopService(intent);

@@ -47,6 +47,7 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.androidcore.BuildConfig
 import piuk.blockchain.androidcore.data.access.AccessState
+import piuk.blockchain.androidcore.data.access.AccessStateImpl
 import piuk.blockchain.androidcore.data.access.LogoutTimer
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.auth.AuthService
@@ -85,6 +86,8 @@ import piuk.blockchain.androidcore.data.transactions.TransactionListStore
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
 import piuk.blockchain.androidcore.utils.AESUtilWrapper
+import piuk.blockchain.androidcore.utils.DeviceIdGenerator
+import piuk.blockchain.androidcore.utils.DeviceIdGeneratorImpl
 import piuk.blockchain.androidcore.utils.MetadataUtils
 import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -257,9 +260,19 @@ val coreModule = applicationContext {
 
     factory { ExchangeRateService(get()) }
 
-    bean { PrefsUtil(get()) }
+    factory {
+        DeviceIdGeneratorImpl(
+            ctx = get(),
+            analytics = get()
+        )
+    }.bind(DeviceIdGenerator::class)
 
-    bean { PrefsUtil(get()) as PersistentPrefs }
+    bean {
+        PrefsUtil(
+            context = get(),
+            idGenerator = get()
+        )
+    }.bind(PersistentPrefs::class)
 
     bean { SharedPreferencesFiatCurrencyPreference(get()) as FiatCurrencyPreference }
 
@@ -279,12 +292,12 @@ val coreModule = applicationContext {
     factory { EthereumAccountWrapper() }
 
     bean {
-        AccessState(
+        AccessStateImpl(
             context = get(),
             prefs = get(),
             rxBus = get()
         )
-    }
+    }.bind(AccessState::class)
 
     factory {
         val accessState = get<AccessState>()
