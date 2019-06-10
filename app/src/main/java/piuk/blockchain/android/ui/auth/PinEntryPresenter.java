@@ -40,7 +40,7 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.PrngFixer;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
@@ -58,7 +58,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
 
     private AuthDataManager mAuthDataManager;
     private AppUtil mAppUtil;
-    private PrefsUtil mPrefsUtil;
+    private PersistentPrefs prefs;
     private PayloadDataManager mPayloadDataManager;
     private StringUtils mStringUtils;
     private FingerprintHelper mFingerprintHelper;
@@ -76,7 +76,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
     @Inject
     PinEntryPresenter(AuthDataManager mAuthDataManager,
                       AppUtil mAppUtil,
-                      PrefsUtil mPrefsUtil,
+                      PersistentPrefs prefs,
                       PayloadDataManager mPayloadDataManager,
                       StringUtils mStringUtils,
                       FingerprintHelper mFingerprintHelper,
@@ -86,7 +86,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
 
         this.mAuthDataManager = mAuthDataManager;
         this.mAppUtil = mAppUtil;
-        this.mPrefsUtil = mPrefsUtil;
+        this.prefs = prefs;
         this.mPayloadDataManager = mPayloadDataManager;
         this.mStringUtils = mStringUtils;
         this.mFingerprintHelper = mFingerprintHelper;
@@ -124,7 +124,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
     void checkFingerprintStatus() {
         if (getIfShouldShowFingerprintLogin()) {
             getView().showFingerprintDialog(
-                    mFingerprintHelper.getEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE));
+                    mFingerprintHelper.getEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE));
         } else {
             getView().showKeyboard();
         }
@@ -137,7 +137,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
     boolean getIfShouldShowFingerprintLogin() {
         return !(mValidatingPinForResult || isCreatingNewPin())
                 && mFingerprintHelper.isFingerprintUnlockEnabled()
-                && mFingerprintHelper.getEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE) != null;
+                && mFingerprintHelper.getEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE) != null;
     }
 
     void loginWithDecryptedPin(String pincode) {
@@ -214,7 +214,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
     @Thunk
     void validateAndConfirmPin() {
         // Validate
-        if (!mPrefsUtil.getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "").isEmpty()) {
+        if (!prefs.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, "").isEmpty()) {
             getView().setTitleVisibility(View.INVISIBLE);
             validatePIN(mUserEnteredPin);
         } else if (mUserEnteredConfirmationPin == null) {
@@ -256,8 +256,8 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
 
         getCompositeDisposable().add(
                 mPayloadDataManager.initializeAndDecrypt(
-                        mPrefsUtil.getValue(PrefsUtil.KEY_SHARED_KEY, ""),
-                        mPrefsUtil.getValue(PrefsUtil.KEY_GUID, ""),
+                        prefs.getValue(PersistentPrefs.Companion.KEY_SHARED_KEY, ""),
+                        prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, ""),
                         password)
                         .doAfterTerminate(() -> {
                             getView().dismissProgressDialog();
@@ -330,14 +330,14 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
 
         getCompositeDisposable().add(
                 mPayloadDataManager.initializeAndDecrypt(
-                        mPrefsUtil.getValue(PrefsUtil.KEY_SHARED_KEY, ""),
-                        mPrefsUtil.getValue(PrefsUtil.KEY_GUID, ""),
+                        prefs.getValue(PersistentPrefs.Companion.KEY_SHARED_KEY, ""),
+                        prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, ""),
                         password)
                         .doAfterTerminate(() -> getView().dismissProgressDialog())
                         .subscribe(() -> {
                             getView().showToast(R.string.pin_4_strikes_password_accepted, ToastCustom.TYPE_OK);
-                            mPrefsUtil.removeValue(PrefsUtil.KEY_PIN_FAILS);
-                            mPrefsUtil.removeValue(PrefsUtil.KEY_PIN_IDENTIFIER);
+                            prefs.removeValue(PersistentPrefs.Companion.KEY_PIN_FAILS);
+                            prefs.removeValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER);
                             mAccessState.setPin(null);
                             getView().restartPageAndClearTop();
                         }, throwable -> {
@@ -371,7 +371,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
         String tempPassword = mPayloadDataManager.getTempPassword();
         if (tempPassword == null) {
             showErrorToast(R.string.create_pin_failed);
-            mPrefsUtil.clear();
+            prefs.clear();
             mAppUtil.restartApp(LauncherActivity.class);
             return;
         }
@@ -381,13 +381,13 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
                         .doOnSubscribe(disposable -> getView().showProgressDialog(R.string.creating_pin, null))
                         .subscribe(() -> {
                             getView().dismissProgressDialog();
-                            mFingerprintHelper.clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE);
+                            mFingerprintHelper.clearEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE);
                             mFingerprintHelper.setFingerprintUnlockEnabled(false);
-                            mPrefsUtil.setValue(PrefsUtil.KEY_PIN_FAILS, 0);
+                            prefs.setValue(PersistentPrefs.Companion.KEY_PIN_FAILS, 0);
                             updatePayload(tempPassword);
                         }, throwable -> {
                             showErrorToast(R.string.create_pin_failed);
-                            mPrefsUtil.clear();
+                            prefs.clear();
                             mAppUtil.restartApp(LauncherActivity.class);
                         }));
     }
@@ -404,7 +404,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
                         } else {
                             updatePayload(password);
                         }
-                        mPrefsUtil.setValue(PrefsUtil.KEY_PIN_FAILS, 0);
+                        prefs.setValue(PersistentPrefs.Companion.KEY_PIN_FAILS, 0);
                     } else {
                         handleValidateFailure();
                     }
@@ -428,8 +428,8 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
     }
 
     private void incrementFailureCount() {
-        int fails = mPrefsUtil.getValue(PrefsUtil.KEY_PIN_FAILS, 0);
-        mPrefsUtil.setValue(PrefsUtil.KEY_PIN_FAILS, ++fails);
+        int fails = prefs.getValue(PersistentPrefs.Companion.KEY_PIN_FAILS, 0);
+        prefs.setValue(PersistentPrefs.Companion.KEY_PIN_FAILS, ++fails);
         showErrorToast(R.string.invalid_pin);
         mUserEnteredPin = "";
         for (ImageView textView : getView().getPinBoxArray()) {
@@ -440,15 +440,15 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
     }
 
     void incrementFailureCountAndRestart() {
-        int fails = mPrefsUtil.getValue(PrefsUtil.KEY_PIN_FAILS, 0);
-        mPrefsUtil.setValue(PrefsUtil.KEY_PIN_FAILS, ++fails);
+        int fails = prefs.getValue(PersistentPrefs.Companion.KEY_PIN_FAILS, 0);
+        prefs.setValue(PersistentPrefs.Companion.KEY_PIN_FAILS, ++fails);
         showErrorToast(R.string.invalid_pin);
         getView().restartPageAndClearTop();
     }
 
     // Check user's password if PIN fails >= 4
     private void checkPinFails() {
-        int fails = mPrefsUtil.getValue(PrefsUtil.KEY_PIN_FAILS, 0);
+        int fails = prefs.getValue(PersistentPrefs.Companion.KEY_PIN_FAILS, 0);
         if (fails >= MAX_ATTEMPTS) {
             showErrorToast(R.string.pin_4_strikes);
             getView().showMaxAttemptsDialog();
@@ -480,7 +480,7 @@ public class PinEntryPresenter extends BasePresenter<PinEntryView> {
     }
 
     boolean isCreatingNewPin() {
-        return mPrefsUtil.getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "").isEmpty();
+        return prefs.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, "").isEmpty();
     }
 
     private boolean isChangingPin() {

@@ -13,7 +13,7 @@ import okhttp3.ResponseBody
 import org.spongycastle.util.encoders.Hex
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.AESUtilWrapper
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import retrofit2.Response
@@ -21,7 +21,7 @@ import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
 
 class AuthDataManager(
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val authService: AuthService,
     private val accessState: AccessState,
     private val aesUtilWrapper: AESUtilWrapper,
@@ -151,8 +151,8 @@ class AuthDataManager(
 
     private fun getValidatePinObservable(passedPin: String): Observable<String> {
         accessState.pin = passedPin
-        val key = prefsUtil.getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "")
-        val encryptedPassword = prefsUtil.getValue(PrefsUtil.KEY_ENCRYPTED_PASSWORD, "")
+        val key = prefs.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")
+        val encryptedPassword = prefs.getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, "")
         return authService.validateAccess(key, passedPin)
             .map { response ->
                 /*
@@ -206,8 +206,8 @@ class AuthDataManager(
                             AESUtil.PIN_PBKDF2_ITERATIONS
                         )
 
-                        prefsUtil.setValue(PrefsUtil.KEY_ENCRYPTED_PASSWORD, encryptedPassword)
-                        prefsUtil.setValue(PrefsUtil.KEY_PIN_IDENTIFIER, key)
+                        prefs.setValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, encryptedPassword)
+                        prefs.setValue(PersistentPrefs.KEY_PIN_IDENTIFIER, key)
 
                         if (!subscriber.isDisposed) {
                             subscriber.onComplete()

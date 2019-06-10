@@ -8,22 +8,50 @@ import android.os.SystemClock
 
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.PrefsUtil
 
-class AccessState(
+interface AccessState {
+
+    var canAutoLogout: Boolean
+
+    var pin: String?
+
+    var isLoggedIn: Boolean
+
+    var isNewlyCreated: Boolean
+
+    fun startLogoutTimer()
+
+    fun setLogoutActivity(logoutActivity: Class<*>)
+
+    fun stopLogoutTimer()
+
+    fun logout()
+
+    fun logIn()
+
+    fun unpairWallet()
+
+    fun forgetWallet()
+
+    companion object {
+        const val LOGOUT_ACTION = "info.blockchain.wallet.LOGOUT"
+    }
+}
+
+internal class AccessStateImpl(
     val context: Context,
     val prefs: PersistentPrefs,
     val rxBus: RxBus
-) {
+) : AccessState {
 
-    var canAutoLogout = true
+    override var canAutoLogout = true
 
     private var logoutActivity: Class<*>? = null
     private var logoutPendingIntent: PendingIntent? = null
 
-    var pin: String? = null
+    override var pin: String? = null
 
-    var isLoggedIn = false
+    override var isLoggedIn = false
         set(loggedIn) {
             logIn()
             field = loggedIn
@@ -34,14 +62,14 @@ class AccessState(
             }
         }
 
-    var isNewlyCreated: Boolean
-        get() = prefs.getValue(PrefsUtil.KEY_NEWLY_CREATED_WALLET, false)
-        set(newlyCreated) = prefs.setValue(PrefsUtil.KEY_NEWLY_CREATED_WALLET, newlyCreated)
+    override var isNewlyCreated: Boolean
+        get() = prefs.getValue(PersistentPrefs.KEY_NEWLY_CREATED_WALLET, false)
+        set(newlyCreated) = prefs.setValue(PersistentPrefs.KEY_NEWLY_CREATED_WALLET, newlyCreated)
 
     /**
      * Called from BaseAuthActivity#onPause()
      */
-    fun startLogoutTimer() {
+    override fun startLogoutTimer() {
         if (canAutoLogout) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.set(
@@ -52,12 +80,12 @@ class AccessState(
         }
     }
 
-    fun setLogoutActivity(logoutActivity: Class<*>) {
+    override fun setLogoutActivity(logoutActivity: Class<*>) {
         this.logoutActivity = logoutActivity
 
         val intent = Intent(context, logoutActivity)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        intent.action = LOGOUT_ACTION
+        intent.action = AccessState.LOGOUT_ACTION
         logoutPendingIntent =
             PendingIntent.getActivity(
                 context,
@@ -70,32 +98,30 @@ class AccessState(
     /**
      * Called from BaseAuthActivity#onResume()
      */
-    fun stopLogoutTimer() {
+    override fun stopLogoutTimer() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.cancel(logoutPendingIntent)
     }
 
-    fun logout() {
+    override fun logout() {
         pin = null
         val intent = Intent(context, logoutActivity!!)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        intent.action = LOGOUT_ACTION
+        intent.action = AccessState.LOGOUT_ACTION
         context.startActivity(intent)
     }
 
-    fun logIn() = prefs.logIn()
+    override fun logIn() = prefs.logIn()
 
-    fun unpairWallet() {
+    override fun unpairWallet() {
         pin = null
         prefs.logOut()
         rxBus.emitEvent(AuthEvent::class.java, AuthEvent.UNPAIR)
     }
 
-    fun forgetWallet() = rxBus.emitEvent(AuthEvent::class.java, AuthEvent.FORGET)
+    override fun forgetWallet() = rxBus.emitEvent(AuthEvent::class.java, AuthEvent.FORGET)
 
     companion object {
         private const val LOGOUT_TIMEOUT_MILLIS = 1000L * 30L
-
-        const val LOGOUT_ACTION = "info.blockchain.wallet.LOGOUT"
     }
 }

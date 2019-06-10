@@ -17,7 +17,6 @@ import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.injection.PresenterScope
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.PrefsUtil
 import javax.inject.Inject
 
 typealias PromptDlgFactory = (Context) -> SecurityPromptDialog
@@ -56,43 +55,43 @@ class PromptManager @Inject constructor(
     }
 
     private fun isFirstRun(): Boolean {
-        return prefs.getValue(PrefsUtil.KEY_APP_VISITS, 0) == 0
+        return prefs.getValue(PersistentPrefs.KEY_APP_VISITS, 0) == 0
     }
 
     private fun getAppVisitCount(): Int {
-        return prefs.getValue(PrefsUtil.KEY_APP_VISITS, 0)
+        return prefs.getValue(PersistentPrefs.KEY_APP_VISITS, 0)
     }
 
     private fun getGuid(): String {
-        return prefs.getValue(PrefsUtil.KEY_GUID, "")
+        return prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, "")
     }
 
     private fun getIfNeverPrompt2Fa(): Boolean {
-        return prefs.getValue(PrefsUtil.KEY_SECURITY_TWO_FA_NEVER, false)
+        return prefs.getValue(PersistentPrefs.KEY_SECURITY_TWO_FA_NEVER, false)
     }
 
     private fun getTimeOfLastSecurityPrompt(): Long {
-        return prefs.getValue(PrefsUtil.KEY_SECURITY_TIME_ELAPSED, 0L)
+        return prefs.getValue(PersistentPrefs.KEY_SECURITY_TIME_ELAPSED, 0L)
     }
 
     private fun storeTimeOfLastSecurityPrompt() {
-        prefs.setValue(PrefsUtil.KEY_SECURITY_TIME_ELAPSED, System.currentTimeMillis())
+        prefs.setValue(PersistentPrefs.KEY_SECURITY_TIME_ELAPSED, System.currentTimeMillis())
     }
 
     private fun neverPrompt2Fa() {
-        prefs.setValue(PrefsUtil.KEY_SECURITY_TWO_FA_NEVER, true)
+        prefs.setValue(PersistentPrefs.KEY_SECURITY_TWO_FA_NEVER, true)
     }
 
     private fun getIfNeverPromptBackup(): Boolean {
-        return prefs.getValue(PrefsUtil.KEY_SECURITY_BACKUP_NEVER, false)
+        return prefs.getValue(PersistentPrefs.KEY_SECURITY_BACKUP_NEVER, false)
     }
 
     private fun setBackupCompleted() {
-        prefs.setValue(PrefsUtil.KEY_SECURITY_BACKUP_NEVER, true)
+        prefs.setValue(PersistentPrefs.KEY_SECURITY_BACKUP_NEVER, true)
     }
 
     private fun hasTransactions(): Boolean {
-        return !transactionListDataManager.getTransactionList().isEmpty()
+        return transactionListDataManager.getTransactionList().isNotEmpty()
     }
 
     private fun isRooted(): Boolean {

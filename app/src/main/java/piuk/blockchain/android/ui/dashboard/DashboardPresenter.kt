@@ -50,7 +50,7 @@ import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -61,7 +61,7 @@ import java.text.DecimalFormat
 
 class DashboardPresenter(
     private val dashboardBalanceCalculator: DashboardData,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val exchangeRateFactory: ExchangeRateDataManager,
     private val bchDataManager: BchDataManager,
     private val stringUtils: StringUtils,
@@ -356,7 +356,7 @@ class DashboardPresenter(
     }
 
     private fun SunriverCard.addIfNotDismissed(): Boolean {
-        val add = !prefsUtil.getValue(prefsKey, false)
+        val add = !prefs.getValue(prefsKey, false)
         if (add) {
             displayList.add(0, this)
             view.notifyItemAdded(displayList, 0)
@@ -368,7 +368,7 @@ class DashboardPresenter(
     private fun removeSunriverCard() {
         displayList.firstOrNull { it is SunriverCard }?.let {
             displayList.remove(it)
-            prefsUtil.setValue((it as AnnouncementData).prefsKey, true)
+            prefs.setValue((it as AnnouncementData).prefsKey, true)
             view.notifyItemRemoved(displayList, 0)
             view.scrollToTop()
         }
@@ -383,7 +383,7 @@ class DashboardPresenter(
                 link = R.string.kyc_drop_off_card_button,
                 image = R.drawable.vector_kyc_onboarding,
                 closeFunction = {
-                    prefsUtil.setValue(dismissKey, true)
+                    prefs.setValue(dismissKey, true)
                     dismissAnnouncement(dismissKey)
                 },
                 linkFunction = {
@@ -414,7 +414,7 @@ class DashboardPresenter(
                 link = R.string.kyc_resubmission_card_button,
                 image = R.drawable.vector_kyc_onboarding,
                 closeFunction = {
-                    prefsUtil.setValue(dismissKey, true)
+                    prefs.setValue(dismissKey, true)
                     dismissAnnouncement(dismissKey)
                 },
                 linkFunction = {
@@ -435,7 +435,7 @@ class DashboardPresenter(
         show: Single<Boolean>,
         createAnnouncement: (SunriverCardType) -> AnnouncementData
     ): Maybe<Unit> {
-        if (prefsUtil.getValue(dismissKey, false)) return Maybe.empty()
+        if (prefs.getValue(dismissKey, false)) return Maybe.empty()
 
         return Singles.zip(
             show,
@@ -509,13 +509,10 @@ class DashboardPresenter(
 
     private fun isOnboardingComplete() =
         // If wallet isn't newly created, don't show onboarding
-        prefsUtil.getValue(
-            PrefsUtil.KEY_ONBOARDING_COMPLETE,
-            false
-        ) || !accessState.isNewlyCreated
+        prefs.isOnboardingComplete || !accessState.isNewlyCreated
 
     private fun setOnboardingComplete(completed: Boolean) {
-        prefsUtil.setValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, completed)
+        prefs.isOnboardingComplete = completed
     }
 
     private fun storeSwipeToReceiveAddresses() {
@@ -558,8 +555,7 @@ class DashboardPresenter(
         }
     }
 
-    private fun getFiatCurrency() =
-        prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY)
+    private fun getFiatCurrency() = prefs.selectedFiatCurrency
 
     private fun getLastPrice(cryptoCurrency: CryptoCurrency, fiat: String) =
         exchangeRateFactory.getLastPrice(cryptoCurrency, fiat)

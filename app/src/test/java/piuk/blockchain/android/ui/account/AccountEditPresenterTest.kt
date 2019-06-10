@@ -53,7 +53,7 @@ import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.payments.SendDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.math.BigInteger
 import java.util.ArrayList
@@ -72,7 +72,7 @@ class AccountEditPresenterTest {
     private val payloadDataManager: PayloadDataManager = mock()
     private val bchDataManager: BchDataManager = mock()
     private val metadataManager: MetadataManager = mock()
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefsUtil: PersistentPrefs = mock()
     private val stringUtils: StringUtils = mock()
     private val accountEditModel: AccountEditModel = mock()
     private val swipeToReceiveHelper: SwipeToReceiveHelper = mock()
@@ -205,8 +205,7 @@ class AccountEditPresenterTest {
                 any()
             )
         ).thenReturn(spendableUnspentOutputs)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn("USD")
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         whenever(sendDataManager.estimateSize(anyInt(), anyInt())).thenReturn(1337)
 
         whenever(currencyFormatManager.getFormattedSelectedCoinValue(any()))

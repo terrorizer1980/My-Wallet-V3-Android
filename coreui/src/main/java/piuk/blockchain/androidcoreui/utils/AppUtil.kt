@@ -10,7 +10,6 @@ import java.io.File
 import info.blockchain.wallet.payload.PayloadManagerWiper
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.PrefsUtil
 
 class AppUtil(
     private val context: Context,
@@ -25,21 +24,21 @@ class AppUtil(
 
     val isSane: Boolean
         get() {
-            val guid = prefs.getValue(PrefsUtil.KEY_GUID, "")
+            val guid = prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, "")
 
             if (!guid.matches(REGEX_UUID.toRegex())) {
                 return false
             }
 
-            val encryptedPassword = prefs.getValue(PrefsUtil.KEY_ENCRYPTED_PASSWORD, "")
-            val pinID = prefs.getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "")
+            val encryptedPassword = prefs.getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, "")
+            val pinID = prefs.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")
 
             return !(encryptedPassword.isEmpty() || pinID.isEmpty())
         }
 
     var sharedKey: String
-        get() = prefs.getValue(PrefsUtil.KEY_SHARED_KEY, "")
-        set(sharedKey) = prefs.setValue(PrefsUtil.KEY_SHARED_KEY, sharedKey)
+        get() = prefs.getValue(PersistentPrefs.KEY_SHARED_KEY, "")
+        set(sharedKey) = prefs.setValue(PersistentPrefs.KEY_SHARED_KEY, sharedKey)
 
     val packageManager: PackageManager
         get() = context.packageManager

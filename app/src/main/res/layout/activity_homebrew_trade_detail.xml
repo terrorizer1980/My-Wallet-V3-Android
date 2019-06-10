@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/toolbar_general"
         layout="@layout/toolbar_general" />
 
     <ScrollView
-        android:fillViewport="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constraint_layout_morph_detail"
@@ -26,8 +26,8 @@
             <View
                 android:id="@+id/view_status"
                 android:layout_width="match_parent"
-                android:background="@color/trade_row_background"
                 android:layout_height="0dp"
+                android:background="@color/trade_row_background"
                 app:layout_constraintBottom_toBottomOf="@id/status"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -67,8 +67,8 @@
             <View
                 android:id="@+id/view_value"
                 android:layout_width="match_parent"
-                android:background="@color/trade_row_background"
                 android:layout_height="0dp"
+                android:background="@color/trade_row_background"
                 app:layout_constraintBottom_toBottomOf="@id/value"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -109,8 +109,8 @@
             <View
                 android:id="@+id/view_exchange"
                 android:layout_width="match_parent"
-                android:background="@color/trade_row_background"
                 android:layout_height="0dp"
+                android:background="@color/trade_row_background"
                 app:layout_constraintBottom_toBottomOf="@id/exchange"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -123,9 +123,9 @@
                 android:layout_marginTop="2dp"
                 android:gravity="center_vertical"
                 android:padding="16dp"
+                android:text="@string/swap"
                 android:textColor="@color/exchange_text_gray_color"
                 android:textSize="16sp"
-                android:text="@string/swap"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/value_title" />
 
@@ -144,53 +144,13 @@
                 app:layout_constraintTop_toBottomOf="@+id/value"
                 tools:text="0.25 BTC" />
 
-            <!-- Fees -->
-
-            <View
-                android:id="@+id/view_fees"
-                android:layout_width="match_parent"
-                android:background="@color/trade_row_background"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="@id/fees"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/fees" />
-
-            <TextView
-                android:id="@+id/fees_title"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/exchange_row_height"
-                android:layout_marginTop="2dp"
-                android:gravity="center_vertical"
-                android:padding="16dp"
-                android:textColor="@color/exchange_text_gray_color"
-                android:textSize="16sp"
-                android:text="@string/fees"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/exchange_title" />
-
-            <TextView
-                android:id="@+id/fees"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/exchange_row_height"
-                android:layout_gravity="end"
-                android:layout_marginTop="2dp"
-                android:gravity="center_vertical|end"
-                android:padding="16dp"
-                android:textColor="@color/exchange_text_dark_color"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/fees_title"
-                app:layout_constraintTop_toBottomOf="@+id/exchange"
-                tools:text="0.000414 BTC" />
-
             <!-- Receive -->
 
             <View
                 android:id="@+id/view_receive"
                 android:layout_width="match_parent"
-                android:background="@color/trade_row_background"
                 android:layout_height="0dp"
+                android:background="@color/trade_row_background"
                 app:layout_constraintBottom_toBottomOf="@id/receive"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -203,12 +163,12 @@
                 android:layout_marginTop="2dp"
                 android:gravity="center_vertical"
                 android:padding="16dp"
+                android:text="@string/receive"
                 android:textColor="@color/exchange_text_dark_color"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:text="@string/receive"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fees_title" />
+                app:layout_constraintTop_toBottomOf="@+id/exchange_title" />
 
             <TextView
                 android:id="@+id/receive"
@@ -223,7 +183,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/receive_title"
-                app:layout_constraintTop_toBottomOf="@+id/fees"
+                app:layout_constraintTop_toBottomOf="@+id/exchange"
                 tools:text="5.668586 ETH" />
 
             <!-- ID -->
@@ -231,8 +191,8 @@
             <View
                 android:id="@+id/view_id"
                 android:layout_width="match_parent"
-                android:background="@color/trade_row_background"
                 android:layout_height="0dp"
+                android:background="@color/trade_row_background"
                 app:layout_constraintBottom_toBottomOf="@id/trade_id"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -245,9 +205,9 @@
                 android:layout_marginTop="2dp"
                 android:gravity="center_vertical"
                 android:padding="16dp"
+                android:text="@string/morph_order_id_title"
                 android:textColor="@color/exchange_text_gray_color"
                 android:textSize="16sp"
-                android:text="@string/morph_order_id_title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/receive_title" />
 
@@ -257,11 +217,11 @@
                 android:layout_height="58dp"
                 android:layout_marginTop="2dp"
                 android:ellipsize="end"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:gravity="center_vertical|end"
                 android:inputType="none"
                 android:maxLines="1"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 android:padding="16dp"
                 android:textColor="@color/exchange_text_dark_color"
                 android:textSize="16sp"
@@ -271,23 +231,38 @@
                 tools:text="ede39566-1f0d-4e48-96fa-b558b70e46b7" />
 
             <TextView
-                android:id="@+id/status_detail_textView"
-                android:layout_width="0dp"
+                android:id="@+id/warning_title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="24dp"
                 android:layout_marginEnd="32dp"
+                android:layout_marginTop="7dp"
+                android:fontFamily="@font/inter_medium"
                 android:gravity="center"
-                android:text="@string/status_inprogress_detail"
-                android:textAlignment="center"
-                android:textColor="@color/exchange_text_gray_color"
-                android:textSize="12sp"
-                android:layout_marginBottom="32dp"
-                app:layout_constraintBottom_toTopOf="@+id/button_request_refund"
+                android:textColor="@color/swap_error_dialog_message_text_color"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@+id/status_detail_textView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/trade_id"
                 app:layout_constraintVertical_bias="1.0"
+                android:text="Hmm, something's not right. 👀" />
+
+            <TextView
+                android:id="@+id/status_detail_textView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:text="@string/status_inprogress_detail"
+                android:textAlignment="center"
+                android:textColor="@color/swap_error_dialog_message_text_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/button_request_refund"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 tools:text="Thanks for placing your trade! Funds will usually reach your wallet within 2 hours and we’ll wend you a notification when that happens. Keep track of your trade’s progress in the Order History area." />
 
             <Button
@@ -296,10 +271,10 @@
                 android:layout_height="56dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:visibility="invisible"
                 android:layout_marginBottom="16dp"
-                android:theme="@style/LightBlueButtonTheme"
                 android:text="@string/status_request_refund"
+                android:theme="@style/LightBlueButtonTheme"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

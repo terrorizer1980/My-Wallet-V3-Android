@@ -8,21 +8,20 @@ import android.view.MotionEvent;
 import org.junit.After;
 import org.junit.Before;
 
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.PrefsUtil;
-
-import static piuk.blockchain.androidcore.utils.PrefsUtil.KEY_OVERLAY_TRUSTED;
 
 @SuppressWarnings("WeakerAccess")
 public class BaseEspressoTest {
 
     private SystemAnimations systemAnimations;
-    private PrefsUtil prefsUtil;
+    protected PrefsUtil prefs;
 
     @CallSuper
     @Before
     public void setup() {
         systemAnimations = new SystemAnimations(InstrumentationRegistry.getTargetContext());
-        prefsUtil = new PrefsUtil(InstrumentationRegistry.getTargetContext());
+        prefs = new PrefsUtil(InstrumentationRegistry.getTargetContext());
         clearState();
         ignoreTapJacking(true);
         disableAnimations();
@@ -40,7 +39,7 @@ public class BaseEspressoTest {
      * to avoid Espresso starting your activity automatically, if that's what you need.
      */
     protected void clearState() {
-        prefsUtil.clear();
+        prefs.clear();
     }
 
     /**
@@ -50,7 +49,7 @@ public class BaseEspressoTest {
      * @param ignore Set to true to ignore all touch events
      */
     protected void ignoreTapJacking(boolean ignore) {
-        prefsUtil.setValue(KEY_OVERLAY_TRUSTED, ignore);
+        prefs.setValue(PersistentPrefs.KEY_OVERLAY_TRUSTED, ignore);
     }
 
     /**

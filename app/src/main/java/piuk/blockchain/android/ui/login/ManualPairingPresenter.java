@@ -16,7 +16,6 @@ import piuk.blockchain.android.ui.launcher.LauncherActivity;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.utils.PersistentPrefs;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
@@ -181,9 +180,9 @@ public class ManualPairingPresenter extends BasePresenter<ManualPairingView> {
         getCompositeDisposable().add(
             payloadDataManager.initializeFromPayload(payload, password)
                 .doOnComplete(() -> {
-                    prefs.setValue(PrefsUtil.KEY_GUID, payloadDataManager.getWallet().getGuid());
+                    prefs.setValue(PersistentPrefs.KEY_WALLET_GUID, payloadDataManager.getWallet().getGuid());
                     appUtil.setSharedKey(payloadDataManager.getWallet().getSharedKey());
-                    prefs.setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true);
+                    prefs.setValue(PersistentPrefs.KEY_EMAIL_VERIFIED, true);
                 })
                 .subscribe(() -> {
                     getView().goToPinPage();

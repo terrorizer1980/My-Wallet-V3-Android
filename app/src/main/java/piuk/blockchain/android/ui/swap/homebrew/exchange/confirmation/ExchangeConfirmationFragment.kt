@@ -1,6 +1,8 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.annotation.UiThread
@@ -11,6 +13,8 @@ import android.view.ViewGroup
 import com.blockchain.annotations.CommonCode
 import com.blockchain.balance.colorRes
 import com.blockchain.koin.injectActivity
+import com.blockchain.kycui.navhost.KycNavHostActivity
+import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.morph.exchange.mvi.ExchangeViewState
 import com.blockchain.morph.exchange.mvi.Quote
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeModel
@@ -34,7 +38,9 @@ import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.swap.homebrew.exchange.detail.HomebrewTradeDetailActivity
+import piuk.blockchain.android.ui.swap.homebrew.exchange.model.SwapErrorDialogContent
 import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
+import piuk.blockchain.android.ui.swap.ui.SwapErrorBottomDialog
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpFragment
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
@@ -188,6 +194,31 @@ class ExchangeConfirmationFragment :
     override fun createPresenter(): ExchangeConfirmationPresenter = presenter
 
     override fun getMvpView(): ExchangeConfirmationView = this
+
+    override fun displayErrorBottomDialog(swapErrorDialogContent: SwapErrorDialogContent) {
+        val bottomSheetDialog = SwapErrorBottomDialog.newInstance(swapErrorDialogContent.content)
+        swapErrorDialogContent.ctaClick?.let {
+            bottomSheetDialog.onCtaClick = it
+        }
+        swapErrorDialogContent.dismissClick?.let {
+            bottomSheetDialog.onDismissClick = it
+        }
+        bottomSheetDialog.show(fragmentManager, "BottomDialog")
+    }
+
+    override fun openTiersCard() {
+        context?.let {
+            KycNavHostActivity.start(it, CampaignType.Swap)
+        }
+    }
+
+    override fun openMoreInfoLink(link: String) {
+        context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
+    }
+
+    override fun goBack() {
+        fragmentManager?.popBackStack()
+    }
 }
 
 class ExchangeConfirmationViewModel(

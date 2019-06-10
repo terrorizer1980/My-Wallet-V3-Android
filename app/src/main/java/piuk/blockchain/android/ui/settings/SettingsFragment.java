@@ -62,7 +62,7 @@ import piuk.blockchain.android.ui.balance.BalanceFragment;
 import piuk.blockchain.android.ui.fingerprint.FingerprintDialog;
 import piuk.blockchain.android.ui.fingerprint.FingerprintStage;
 import piuk.blockchain.android.util.RootUtil;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
@@ -196,7 +196,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
         screenshotPref = (SwitchPreferenceCompat) findPreference("screenshots_enabled");
         screenshotPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            settingsPresenter.updatePreferences(PrefsUtil.KEY_SCREENSHOTS_ENABLED, (Boolean) newValue);
+            settingsPresenter.updatePreferences(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, (Boolean) newValue);
             return true;
         });
 
@@ -612,7 +612,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 .setTitle(R.string.select_currency)
                 .setSingleChoiceItems(currencies, selected, (dialog, which) -> {
                     String fiatUnit = currencies[which].substring(currencies[which].length() - 3);
-                    settingsPresenter.updatePreferences(PrefsUtil.KEY_SELECTED_FIAT, fiatUnit);
                     settingsPresenter.updateFiatUnit(fiatUnit);
                     dialog.dismiss();
                 })

@@ -16,6 +16,8 @@ Run the bootstrap script from terminal via `scripts/bootstrap.sh`. This will ins
 as the official Android Kotlin code style and remove any file header templates. The script may indicate that you need 
 to restart Android Studio for it's changes to take effect.
 
+The Stellar libraries live in a git submodule, so be sure to 'git pull --recurse-submodules' before starting the build.
+
 Build -> Make Project
 
 If there are build errors, in Android Studio go to Tools -> Android -> SDK Manager and install any available updates.

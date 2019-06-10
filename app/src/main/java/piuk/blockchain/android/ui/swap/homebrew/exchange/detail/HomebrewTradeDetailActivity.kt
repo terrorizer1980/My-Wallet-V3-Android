@@ -52,7 +52,6 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
         )
         value.text = if (trade.approximateValue()) trade.price.displayAsApproximate() else trade.price
         receive.text = trade.quantity
-        fees.text = trade.fee
 
         if (trade.shouldStrike()) {
             receive.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG
@@ -60,21 +59,20 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
 
         if (trade.refunding()) {
             receive.text = trade.quantity.displayAsApproximate()
-            fees.text = trade.fee.displayAsApproximate()
             receive_title.setText(R.string.morph_status_refund_in_progress)
         }
 
         if (trade.refunded()) {
             receive.text = trade.quantity
-            fees.text = trade.fee.displayAsNegative()
             receive_title.setText(R.string.morph_exchange)
         }
 
         trade_id.text = trade.id
         exchange.text = trade.depositQuantity
-        status_detail_textView.text = trade.toMessage()
+        status_detail_textView.text = trade.toDescriptionMessage()
+        warning_title.text = trade.toTitleMessage()
 
-        if (trade.expired()) {
+        if (trade.expired() || trade.failed()) {
             button_request_refund.visible()
             button_request_refund.setOnClickListener {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(REFUND_LINK)))
@@ -183,13 +181,17 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
         exchangeStartedDialog.show(supportFragmentManager, "BottomDialog")
     }
 
-    private fun Trade.toMessage(): String? =
+    private fun Trade.toDescriptionMessage(): String? =
         when (this.state) {
             MorphTrade.Status.FAILED,
-            MorphTrade.Status.REFUNDED -> getString(R.string.status_failed_detail)
-            MorphTrade.Status.IN_PROGRESS -> getString(R.string.status_inprogress_detail)
-            MorphTrade.Status.REFUND_IN_PROGRESS -> getString(R.string.status_refund_in_progress_detail)
-            MorphTrade.Status.EXPIRED -> getString(R.string.status_expired_detail)
+            MorphTrade.Status.EXPIRED -> getString(R.string.status_failed_expired_detail)
+            else -> null
+        }
+
+    private fun Trade.toTitleMessage(): String? =
+        when (this.state) {
+            MorphTrade.Status.FAILED,
+            MorphTrade.Status.EXPIRED -> getString(R.string.failed_expired_status_title)
             else -> null
         }
 
@@ -201,18 +203,6 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
             MorphTrade.Status.FAILED -> true
             else -> false
         }
-
-    private fun Trade.approximateValue(): Boolean =
-        this.state == MorphTrade.Status.IN_PROGRESS
-
-    private fun Trade.refunding(): Boolean =
-        this.state == MorphTrade.Status.REFUND_IN_PROGRESS
-
-    private fun Trade.refunded(): Boolean =
-        this.state == MorphTrade.Status.REFUNDED
-
-    private fun Trade.expired(): Boolean =
-        this.state == MorphTrade.Status.EXPIRED
 
     private fun String.displayAsApproximate() = "~$this"
 

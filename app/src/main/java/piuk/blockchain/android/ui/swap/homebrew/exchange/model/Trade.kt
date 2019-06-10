@@ -15,4 +15,20 @@ data class Trade(
     val quantity: String,
     val createdAt: String,
     val depositQuantity: String
-) : Parcelable
+) : Parcelable {
+
+    fun approximateValue(): Boolean =
+        state == MorphTrade.Status.IN_PROGRESS
+
+    fun refunding(): Boolean =
+        state == MorphTrade.Status.REFUND_IN_PROGRESS
+
+    fun refunded(): Boolean =
+        state == MorphTrade.Status.REFUNDED
+
+    fun expired(): Boolean =
+        state == MorphTrade.Status.EXPIRED
+
+    fun failed(): Boolean =
+        state == MorphTrade.Status.FAILED
+}

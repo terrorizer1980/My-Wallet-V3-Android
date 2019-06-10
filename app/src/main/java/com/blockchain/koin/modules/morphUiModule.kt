@@ -10,11 +10,8 @@ import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeModel
 import piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation.ExchangeConfirmationPresenter
 import piuk.blockchain.android.ui.swap.homebrew.exchange.history.TradeHistoryPresenter
-import piuk.blockchain.androidcore.utils.PrefsUtil
 
 val morphUiModule = applicationContext {
-
-    bean { PrefsUtil(get()) }
 
     context("Payload") {
 
@@ -23,6 +20,7 @@ val morphUiModule = applicationContext {
                 transactionExecutor = get("Priority"),
                 tradeExecutionService = get(),
                 payloadDecrypt = get(),
+                stringUtils = get(),
                 locale = get()
             )
         }

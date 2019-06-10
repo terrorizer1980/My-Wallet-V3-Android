@@ -23,11 +23,11 @@ import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AppUtil;
 import piuk.blockchain.android.util.DialogButtonCallback;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import retrofit2.Response;
 import timber.log.Timber;
@@ -38,7 +38,7 @@ public class PasswordRequiredPresenter extends BasePresenter<PasswordRequiredVie
 
     @SuppressWarnings("WeakerAccess")
     @Thunk AppUtil appUtil;
-    private PrefsUtil prefsUtil;
+    private PersistentPrefs prefs;
     private AuthDataManager authDataManager;
     private PayloadDataManager payloadDataManager;
     private BuyDataManager buyDataManager;
@@ -48,14 +48,14 @@ public class PasswordRequiredPresenter extends BasePresenter<PasswordRequiredVie
 
     @Inject
     PasswordRequiredPresenter(AppUtil appUtil,
-                              PrefsUtil prefsUtil,
+                              PersistentPrefs prefs,
                               AuthDataManager authDataManager,
                               PayloadDataManager payloadDataManager,
                               BuyDataManager buyDataManager,
                               CoinifyDataManager coinifyDataManager) {
 
         this.appUtil = appUtil;
-        this.prefsUtil = prefsUtil;
+        this.prefs = prefs;
         this.authDataManager = authDataManager;
         this.payloadDataManager = payloadDataManager;
         this.buyDataManager = buyDataManager;
@@ -110,7 +110,7 @@ public class PasswordRequiredPresenter extends BasePresenter<PasswordRequiredVie
         if (code == null || code.isEmpty()) {
             getView().showToast(R.string.two_factor_null_error, ToastCustom.TYPE_ERROR);
         } else {
-            String guid = prefsUtil.getValue(PrefsUtil.KEY_GUID, "");
+            String guid = prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "");
             getCompositeDisposable().add(
                     authDataManager.submitTwoFactorCode(sessionId, guid, code)
                             .doOnSubscribe(disposable -> getView().showProgressDialog(R.string.please_wait, null, false))
@@ -132,7 +132,7 @@ public class PasswordRequiredPresenter extends BasePresenter<PasswordRequiredVie
     }
 
     private void verifyPassword(String password) {
-        String guid = prefsUtil.getValue(PrefsUtil.KEY_GUID, "");
+        String guid = prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "");
         waitingForAuth = true;
 
         getCompositeDisposable().add(
@@ -202,10 +202,10 @@ public class PasswordRequiredPresenter extends BasePresenter<PasswordRequiredVie
         getCompositeDisposable().add(
                 payloadDataManager.initializeFromPayload(payload, password)
                         .doOnComplete(() -> {
-                            prefsUtil.setValue(PrefsUtil.KEY_GUID, payloadDataManager.getWallet().getGuid());
+                            prefs.setValue(PersistentPrefs.Companion.KEY_WALLET_GUID, payloadDataManager.getWallet().getGuid());
                             appUtil.setSharedKey(payloadDataManager.getWallet().getSharedKey());
-                            prefsUtil.setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true);
-                            prefsUtil.removeValue(PrefsUtil.KEY_PIN_IDENTIFIER);
+                            prefs.setValue(PersistentPrefs.Companion.KEY_EMAIL_VERIFIED, true);
+                            prefs.removeValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER);
                         })
                         .subscribe(() -> getView().goToPinPage(),
                                 throwable -> {

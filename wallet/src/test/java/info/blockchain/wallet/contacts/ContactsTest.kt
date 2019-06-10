@@ -103,10 +103,6 @@ class ContactsTest {
                 return null
             }
 
-            override fun getDeviceId(): String {
-                return "DeviceId"
-            }
-
             override fun getAppVersion(): String? {
                 return null
             }

@@ -38,7 +38,7 @@ import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.base.UiState
@@ -53,7 +53,7 @@ class BalancePresenter(
     internal val payloadDataManager: PayloadDataManager,
     private val buyDataManager: BuyDataManager,
     private val stringUtils: StringUtils,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val rxBus: RxBus,
     private val currencyState: CurrencyState,
     private val shapeShiftDataManager: ShapeShiftDataManager,
@@ -413,7 +413,7 @@ class BalancePresenter(
         }
 
     internal fun areLauncherShortcutsEnabled() =
-        prefsUtil.getValue(PrefsUtil.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
+        prefs.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
 
     internal fun getCurrentCurrency() = currencyState.cryptoCurrency
 }

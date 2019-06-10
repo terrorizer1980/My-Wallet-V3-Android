@@ -13,13 +13,10 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-
 import info.blockchain.wallet.api.data.Settings
 import kotlinx.android.synthetic.main.activity_manual_pairing.*
-
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
-
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.auth.PinEntryActivity
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity

@@ -64,11 +64,6 @@ public abstract class MockedResponseTest {
             }
 
             @Override
-            public String getDeviceId() {
-                return "DeviceId";
-            }
-
-            @Override
             public String getAppVersion() {
                 return null;
             }

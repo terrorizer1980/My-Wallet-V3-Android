@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
 import piuk.blockchain.androidcore.data.access.AccessState;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcoreui.utils.logging.Logging;
 import piuk.blockchain.androidcoreui.utils.logging.WalletUpgradeEvent;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
@@ -17,12 +18,11 @@ import piuk.blockchain.android.data.rxjava.RxUtil;
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AppUtil;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
 import piuk.blockchain.android.util.StringUtils;
 
 public class UpgradeWalletPresenter extends BasePresenter<UpgradeWalletView> {
 
-    private PrefsUtil prefs;
+    private PersistentPrefs prefs;
     private AppUtil appUtil;
     private AccessState accessState;
     private AuthDataManager authDataManager;
@@ -30,7 +30,7 @@ public class UpgradeWalletPresenter extends BasePresenter<UpgradeWalletView> {
     private StringUtils stringUtils;
 
     @Inject
-    UpgradeWalletPresenter(PrefsUtil prefs,
+    UpgradeWalletPresenter(PersistentPrefs prefs,
                            AppUtil appUtil,
                            AccessState accessState,
                            AuthDataManager authDataManager,
@@ -112,7 +112,7 @@ public class UpgradeWalletPresenter extends BasePresenter<UpgradeWalletView> {
     }
 
     void onContinueClicked() {
-        prefs.setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true);
+        prefs.setValue(PersistentPrefs.Companion.KEY_EMAIL_VERIFIED, true);
         accessState.setLoggedIn(true);
         appUtil.restartAppWithVerifiedPin(LauncherActivity.class);
     }

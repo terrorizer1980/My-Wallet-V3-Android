@@ -47,7 +47,7 @@ import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.payments.SendDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -59,7 +59,7 @@ import javax.inject.Inject
 
 // TODO: This page is pretty nasty and could do with a proper refactor
 class AccountEditPresenter @Inject internal constructor(
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val stringUtils: StringUtils,
     private val payloadDataManager: PayloadDataManager,
     private val bchDataManager: BchDataManager,
@@ -199,7 +199,7 @@ class AccountEditPresenter @Inject internal constructor(
     }
 
     internal fun areLauncherShortcutsEnabled(): Boolean =
-        prefsUtil.getValue(PrefsUtil.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
+        prefs.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
 
     private fun setDefault(isDefault: Boolean) {
         if (isDefault) {
@@ -316,7 +316,7 @@ class AccountEditPresenter @Inject internal constructor(
             details.toLabel = pendingTransaction.receivingAddress
         }
 
-        val fiatUnit = prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY)
+        val fiatUnit = prefs.selectedFiatCurrency
         val btcUnit = CryptoCurrency.BTC.name
 
         with(details) {

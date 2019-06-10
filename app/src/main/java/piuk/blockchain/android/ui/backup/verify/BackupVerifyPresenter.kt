@@ -7,7 +7,7 @@ import piuk.blockchain.android.ui.backup.wordlist.BackupWalletWordListFragment.C
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class BackupVerifyPresenter @Inject constructor(
     private val payloadDataManager: PayloadDataManager,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val backupWalletUtil: BackupWalletUtil
 ) : BasePresenter<BackupVerifyView>() {
 
@@ -48,7 +48,7 @@ class BackupVerifyPresenter @Inject constructor(
             .addToCompositeDisposable(this)
             .subscribe(
                 {
-                    prefsUtil.setValue(
+                    prefs.setValue(
                         BackupWalletActivity.BACKUP_DATE_KEY,
                         (System.currentTimeMillis() / 1000).toInt()
                     )
