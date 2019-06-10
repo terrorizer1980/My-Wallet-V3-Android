@@ -52,7 +52,6 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
         )
         value.text = if (trade.approximateValue()) trade.price.displayAsApproximate() else trade.price
         receive.text = trade.quantity
-        fees.text = trade.fee
 
         if (trade.shouldStrike()) {
             receive.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG
@@ -60,13 +59,11 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
 
         if (trade.refunding()) {
             receive.text = trade.quantity.displayAsApproximate()
-            fees.text = trade.fee.displayAsApproximate()
             receive_title.setText(R.string.morph_status_refund_in_progress)
         }
 
         if (trade.refunded()) {
             receive.text = trade.quantity
-            fees.text = trade.fee.displayAsNegative()
             receive_title.setText(R.string.morph_exchange)
         }
 
