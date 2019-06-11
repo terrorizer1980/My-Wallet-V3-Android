@@ -10,9 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.airdrop_bottom_dialog.xlm_icon
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.visible
@@ -78,7 +78,7 @@ abstract class BaseAirdropBottomDialog(
                     }
             }
         content.iconDrawable?.let {
-            view.findViewById<ImageView>(R.id.xlm_icon).setImageResource(it)
+            xlm_icon.setImageResource(it)
         }
         return view
     }
