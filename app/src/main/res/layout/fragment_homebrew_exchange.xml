@@ -13,44 +13,89 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:stateListAnimator="@null"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:drawablePadding="32dp"
-        android:gravity="center"
         android:maxLines="1"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:singleLine="true"
-        android:textColor="@color/exchange_button_color"
-        app:autoSizePresetSizes="@array/exchange_send_receive_autosize_text_sizes"
-        app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_exchange"
-        tools:drawableStart="@drawable/vector_bitcoin_white"
-        tools:background="@color/color_bitcoin_logo"
+        tools:background="@color/color_bitcoin_logo" />
+
+    <ImageView
+        android:id="@+id/select_from_account_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/select_from_account_button"
+        app:layout_constraintEnd_toStartOf="@+id/select_from_account_text"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="@+id/select_from_account_button"
+        app:layout_constraintTop_toTopOf="@+id/select_from_account_button"
+        tools:srcCompat="@drawable/vector_bitcoin_white" />
+
+    <TextView
+        android:id="@+id/select_from_account_text"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:elevation="2dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="@color/exchange_button_color"
+        app:autoSizePresetSizes="@array/exchange_send_receive_autosize_text_sizes"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/select_from_account_button"
+        app:layout_constraintEnd_toEndOf="@+id/select_from_account_button"
+        app:layout_constraintStart_toEndOf="@+id/select_from_account_icon"
+        app:layout_constraintTop_toTopOf="@+id/select_from_account_button"
         tools:text="BTC" />
+
 
     <Button
         android:id="@+id/select_to_account_button"
         style="@style/ExchangeButton.SendReceive"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:stateListAnimator="@null"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:maxLines="1"
-        android:textColor="@color/exchange_button_color"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        app:autoSizePresetSizes="@array/exchange_send_receive_autosize_text_sizes"
-        app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/textView_receive"
-        tools:drawableStart="@drawable/vector_eth_white"
-        tools:background="@color/color_ether_logo"
-        tools:text="ETH" />
+        tools:background="@color/color_ether_logo" />
+
+    <ImageView
+        android:id="@+id/select_to_account_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/select_from_account_button"
+        app:layout_constraintEnd_toStartOf="@+id/select_to_account_text"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="@+id/select_to_account_button"
+        app:layout_constraintTop_toTopOf="@+id/select_to_account_button"
+        tools:srcCompat="@drawable/vector_eth_white" />
+
+    <TextView
+        android:id="@+id/select_to_account_text"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:elevation="2dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="@color/exchange_button_color"
+        app:autoSizePresetSizes="@array/exchange_send_receive_autosize_text_sizes"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="@+id/select_to_account_button"
+        app:layout_constraintEnd_toEndOf="@+id/select_to_account_button"
+        app:layout_constraintStart_toEndOf="@+id/select_to_account_icon"
+        app:layout_constraintTop_toTopOf="@+id/select_to_account_button"
+        tools:text="BTC" />
 
     <TextView
         android:id="@+id/textView_receive"
@@ -131,7 +176,7 @@
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/text_view_base_rate"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="Your BTC Balance"/>
+        tools:text="Your BTC Balance" />
 
     <TextView
         android:id="@+id/text_view_balance_value"
