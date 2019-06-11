@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import com.blockchain.balance.coinIconWhite
 import com.blockchain.balance.colorRes
@@ -50,6 +51,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_homebrew_exchange.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.StringUtils
@@ -192,8 +194,13 @@ internal class ExchangeFragment : Fragment() {
 
                 inputTypeRelay.onNext(it.fix)
                 lastUserValue = it.lastUserValue.userDecimalPlaces to it.lastUserValue.toBigDecimal()
-                selectSendAccountButton.setButtonGraphicsAndTextFromCryptoValue(it.fromCrypto)
-                selectReceiveAccountButton.setButtonGraphicsAndTextFromCryptoValue(it.toCrypto)
+                ExchangeCryptoButtonLayout(select_from_account_button,
+                    select_from_account_text,
+                    select_from_account_icon).setButtonGraphicsAndTextFromCryptoValue(it.fromCrypto)
+                ExchangeCryptoButtonLayout(select_to_account_button,
+                    select_to_account_text,
+                    select_to_account_icon).setButtonGraphicsAndTextFromCryptoValue(it.toCrypto)
+
                 keyboard.setValue(it.lastUserValue.userDecimalPlaces, it.lastUserValue.toBigDecimal())
                 exchangeButton.isEnabled = it.isValid()
 
@@ -444,21 +451,30 @@ internal class ExchangeFragment : Fragment() {
         Fix.COUNTER_CRYPTO -> FixType.CounterCrypto
     }
 
-    private fun Button.setButtonGraphicsAndTextFromCryptoValue(cryptoValue: CryptoValue) {
+    private fun ExchangeCryptoButtonLayout.setButtonGraphicsAndTextFromCryptoValue(cryptoValue: CryptoValue) {
         val fromCryptoString = cryptoValue.formatOrSymbolForZero()
-        setBackgroundResource(cryptoValue.currency.colorRes())
-        setCryptoLeftImageIfZero(cryptoValue)
-        text = fromCryptoString
+        button.setBackgroundResource(cryptoValue.currency.colorRes())
+
+        textView.text = fromCryptoString
+        imageView.setCryptoImageIfZero(cryptoValue)
+        val params = textView.layoutParams as ConstraintLayout.LayoutParams
+        if (cryptoValue.isZero)
+            params.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
+        else
+            params.width = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+        textView.layoutParams = params
     }
 
-    private fun Button.setCryptoLeftImageIfZero(cryptoValue: CryptoValue) {
+    private fun ImageView.setCryptoImageIfZero(cryptoValue: CryptoValue) {
         if (cryptoValue.isZero) {
-            val drawable = ContextCompat.getDrawable(this.context, cryptoValue.currency.coinIconWhite())
-            setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
+            val drawable = ContextCompat.getDrawable(activity ?: return, cryptoValue.currency.coinIconWhite())
+            setImageDrawable(drawable)
         } else {
-            setCompoundDrawables(null, null, null, null)
+            setImageDrawable(null)
         }
     }
+
+    class ExchangeCryptoButtonLayout(val button: Button, val textView: TextView, val imageView: ImageView)
 }
 
 internal const val REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT = 800
