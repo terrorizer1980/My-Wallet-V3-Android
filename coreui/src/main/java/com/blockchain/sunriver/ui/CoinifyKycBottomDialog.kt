@@ -13,7 +13,8 @@ class CoinifyKycBottomDialog : BaseAirdropBottomDialog(
         title = R.string.more_info_needed,
         description = R.string.coinify_kyc_body,
         ctaButtonText = R.string.coinify_kyc_cta,
-        dismissText = R.string.coinify_kyc_dismiss
+        dismissText = R.string.coinify_kyc_dismiss,
+        iconDrawable = R.drawable.vector_buy_shopping_cart
     )
 ) {
 

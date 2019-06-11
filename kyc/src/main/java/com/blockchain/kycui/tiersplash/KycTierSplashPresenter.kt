@@ -5,8 +5,10 @@ import com.blockchain.kyc.models.nabu.KycTierState
 import com.blockchain.kyc.services.nabu.TierService
 import com.blockchain.kyc.services.nabu.TierUpdater
 import com.blockchain.kycui.reentry.KycNavigator
+import com.blockchain.remoteconfig.FeatureFlag
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -16,7 +18,8 @@ import timber.log.Timber
 class KycTierSplashPresenter(
     private val tierUpdater: TierUpdater,
     private val tierService: TierService,
-    private val kycNavigator: KycNavigator
+    private val kycNavigator: KycNavigator,
+    private val sunriverLargeBacklogFlag: FeatureFlag
 ) : BasePresenter<KycTierSplashView>() {
 
     override fun onViewReady() {}
@@ -24,12 +27,14 @@ class KycTierSplashPresenter(
     override fun onViewResumed() {
         super.onViewResumed()
         compositeDisposable +=
-            tierService.tiers()
-                .observeOn(AndroidSchedulers.mainThread())
+            Singles.zip(
+                tierService.tiers(),
+                sunriverLargeBacklogFlag.enabled
+            ).observeOn(AndroidSchedulers.mainThread())
                 .doOnError(Timber::e)
                 .subscribeBy(
                     onSuccess = {
-                        view!!.renderTiersList(it)
+                        view!!.renderTiersList(it.first, it.second)
                     },
                     onError = {
                         view!!.showErrorToast(R.string.kyc_non_specific_server_error)

@@ -9,7 +9,8 @@ class ClaimFreeCryptoSuccessDialog : BaseAirdropBottomDialog(
     Content(
         title = R.string.claim_crypto_success_title,
         description = R.string.claim_crypto_success_body,
-        ctaButtonText = android.R.string.ok
+        ctaButtonText = android.R.string.ok,
+        iconDrawable = R.drawable.vector_airdrop_parachute
     )
 ) {
 

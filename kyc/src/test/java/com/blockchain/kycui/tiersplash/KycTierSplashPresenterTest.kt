@@ -9,6 +9,7 @@ import com.blockchain.kyc.models.nabu.TiersJson
 import com.blockchain.kyc.services.nabu.TierService
 import com.blockchain.kyc.services.nabu.TierUpdater
 import com.blockchain.kycui.reentry.KycNavigator
+import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.testutils.usd
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
@@ -34,7 +35,7 @@ class KycTierSplashPresenterTest {
     fun `on tier1 selected`() {
         val view: KycTierSplashView = mock()
         val tierUpdater: TierUpdater = givenTierUpdater()
-        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(email()))
+        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(email()), givenFeature())
             .also {
                 it.initView(view)
                 it.onViewResumed()
@@ -48,7 +49,7 @@ class KycTierSplashPresenterTest {
     fun `on tier1 selected - error setting tier`() {
         val view: KycTierSplashView = mock()
         val tierUpdater: TierUpdater = givenUnableToSetTier()
-        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(email()))
+        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(email()), givenFeature())
             .also {
                 it.initView(view)
                 it.onViewResumed()
@@ -71,7 +72,8 @@ class KycTierSplashPresenterTest {
                     KycTierState.None to 25000.usd()
                 )
             ),
-            givenRedirect(mobile())
+            givenRedirect(mobile()),
+            givenFeature()
         ).also {
             it.initView(view)
             it.onViewResumed()
@@ -84,7 +86,7 @@ class KycTierSplashPresenterTest {
     fun `on tier2 selected`() {
         val view: KycTierSplashView = mock()
         val tierUpdater: TierUpdater = givenTierUpdater()
-        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(veriff()))
+        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(veriff()), givenFeature())
             .also {
                 it.initView(view)
                 it.onViewResumed()
@@ -98,7 +100,7 @@ class KycTierSplashPresenterTest {
     fun `on tier2 selected - error setting tier`() {
         val view: KycTierSplashView = mock()
         val tierUpdater: TierUpdater = givenUnableToSetTier()
-        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(veriff()))
+        KycTierSplashPresenter(tierUpdater, givenTiers(), givenRedirect(veriff()), givenFeature())
             .also {
                 it.initView(view)
                 it.onViewResumed()
@@ -121,7 +123,8 @@ class KycTierSplashPresenterTest {
                     KycTierState.Verified to 25000.usd()
                 )
             ),
-            mock()
+            mock(),
+            givenFeature()
         ).also {
             it.initView(view)
             it.onViewResumed()
@@ -140,6 +143,11 @@ class KycTierSplashPresenterTest {
             on { setUserTier(any()) } `it returns` Completable.error(Throwable())
         }
 }
+
+private fun givenFeature(): FeatureFlag =
+    mock {
+        on { enabled } `it returns` Single.just(true)
+    }
 
 private fun givenTiers(tiers: TiersJson? = null): TierService =
     mock {

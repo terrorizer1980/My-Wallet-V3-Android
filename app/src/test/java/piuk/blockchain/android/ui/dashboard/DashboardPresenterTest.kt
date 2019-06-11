@@ -831,18 +831,6 @@ class DashboardPresenterTest {
     }
 
     @Test
-    fun `addSunriverPrompts type JoinWaitList`() {
-        // Arrange
-        whenever(sunriverCampaignHelper.getCampaignCardType())
-            .thenReturn(Single.just(SunriverCardType.JoinWaitList))
-        // Act
-        subject.addSunriverPrompts().test()
-        // Assert
-        verify(view).notifyItemAdded(any(), eq(0))
-        verify(view).scrollToTop()
-    }
-
-    @Test
     fun `addSunriverPrompts type FinishSignUp ignored as already dismissed`() {
         // Arrange
         whenever(sunriverCampaignHelper.getCampaignCardType())

@@ -115,6 +115,10 @@
     <string name="kyc_onfido_splash_residence_permit">My Residence Permit</string>
 
     <!-- Veriff Splash -->
+    <string name="kyc_veriff_splash_country_supported_header">Is my country supported?</string>
+    <string name="kyc_veriff_splash_country_supported_subtitle">Not all countries are supported at this time. Check our up to date %1$s before proceeding.</string>
+    <string name="kyc_veriff_splash_list_of_countries">list of countries</string>
+    <string name="kyc_veriff_splash_list_of_countries_url">https://support.blockchain.com/hc/en-us/articles/360018751932</string>
     <string name="kyc_veriff_splash_title">@string/kyc_documents_needed</string>
     <string name="kyc_veriff_splash_header">@string/kyc_onfido_splash_header</string>
     <string name="kyc_veriff_splash_subtitle">You’ll need 1 of the ID types below to continue.</string>
@@ -232,6 +236,7 @@
     <string name="takes_10_min">Takes 10 min</string>
     <string name="get_free_crypto">GET FREE CRYPTO</string>
     <string name="by_completing_gold_level_you_will_be_eligible_to_participate_in_our_airdrop_program">By completing the Gold Level requirements you are automatically eligible for our airdrop program.</string>
+    <string name="gold_level_under_review_sunriver_large_backlog">Gold verification is under review, once verified you\'ll be able to use Swap and trade up to our Gold Level limit.\n\nPlease be aware there is a large waiting list for Stellar airdrops and unfortunately not all applications for free XLM will be successful.</string>
     <string name="airdrop_learn_more_url">https://support.blockchain.com/hc/en-us/categories/360001126692-Airdrop-Program</string>
     <string name="start_arrow">start arrow</string>
     <string name="approved">Approved!</string>

@@ -92,7 +92,14 @@ val kycModule = applicationContext {
 
         factory { ReentryDecisionKycNavigator(get(), get(), get()) as KycNavigator }
 
-        factory { KycTierSplashPresenter(get(), get(), get()) }
+        factory {
+            KycTierSplashPresenter(
+                get(),
+                get(),
+                get(),
+                get("ff_sunriver_has_large_backlog")
+            )
+        }
 
         factory { KycSplashPresenter(get(), get(), get(), get(), get()) }
 

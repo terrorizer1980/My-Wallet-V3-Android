@@ -816,16 +816,15 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         }
 
         fun registerIntents(ctx: Context) {
-            LocalBroadcastManager.getInstance(ctx).also {
-                registerReceiver(this, IntentFilter(ACTION_SEND))
-                registerReceiver(this, IntentFilter(ACTION_RECEIVE))
-                registerReceiver(this, IntentFilter(ACTION_BUY))
-                registerReceiver(this, IntentFilter(ACTION_EXCHANGE))
-                registerReceiver(this, IntentFilter(ACTION_EXCHANGE_KYC))
-                registerReceiver(this, IntentFilter(ACTION_SUNRIVER_KYC))
-                registerReceiver(this, IntentFilter(ACTION_RESUBMIT_KYC))
-                registerReceiver(this, IntentFilter(ACTION_BUY_SELL_KYC))
-            }
+            val broadcastManager = LocalBroadcastManager.getInstance(ctx)
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_SEND))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_RECEIVE))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_BUY))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_EXCHANGE))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_EXCHANGE_KYC))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_SUNRIVER_KYC))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_RESUBMIT_KYC))
+            broadcastManager.registerReceiver(this, IntentFilter(ACTION_BUY_SELL_KYC))
         }
     }
 

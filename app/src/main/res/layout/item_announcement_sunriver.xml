@@ -59,17 +59,6 @@
             android:layout_marginBottom="16dp"
             app:srcCompat="@drawable/vector_xlm_colored" />
 
-        <TextView
-            android:id="@+id/text_view_sunriver_announcement_secondary_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center"
-            android:text="@string/sunriver_announcement_stellar_support_secondary_message"
-            android:textColor="@color/primary_grey_dark"
-            android:textSize="16sp" />
-
         <Button
             android:id="@+id/button_call_to_action"
             android:layout_width="match_parent"

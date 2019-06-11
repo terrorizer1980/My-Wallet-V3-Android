@@ -42,7 +42,6 @@ class SunriverAnnouncementDelegate<in T> : AdapterDelegate<T> {
         internal var button: Button = itemView.button_call_to_action
         internal var title: TextView = itemView.text_view_sunriver_announcement_title
         internal var message: TextView = itemView.text_view_sunriver_announcement_message
-        internal var secondaryMessage: TextView = itemView.text_view_sunriver_announcement_secondary_message
         internal var close: ImageView = itemView.imageview_close
 
         fun bind(data: SunriverCard) {
@@ -52,7 +51,6 @@ class SunriverAnnouncementDelegate<in T> : AdapterDelegate<T> {
             button.setTextOrHide(data.link)
             title.setText(data.title)
             message.setText(data.description)
-            secondaryMessage.setTextOrHide(data.secondaryMessage)
         }
     }
 }
@@ -69,24 +67,10 @@ data class SunriverCard(
     override val closeFunction: () -> Unit,
     override val linkFunction: () -> Unit,
     override val prefsKey: String,
-    override val emoji: String? = null,
-    @StringRes val secondaryMessage: Int? = null
+    override val emoji: String? = null
 ) : AnnouncementData {
 
     companion object {
-
-        fun nowSupported(
-            closeFunction: () -> Unit,
-            linkFunction: () -> Unit
-        ) = SunriverCard(
-            title = R.string.sunriver_announcement_stellar_support_title,
-            description = R.string.sunriver_announcement_stellar_support_message,
-            secondaryMessage = R.string.sunriver_announcement_stellar_support_secondary_message,
-            link = R.string.sunriver_announcement_stellar_support_cta,
-            closeFunction = closeFunction,
-            linkFunction = linkFunction,
-            prefsKey = SunriverCardType.JoinWaitList.javaClass.simpleName
-        )
 
         fun continueClaim(
             closeFunction: () -> Unit,

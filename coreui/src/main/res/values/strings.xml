@@ -80,7 +80,7 @@
     </string-array>
 
     <string name="get_free_xlm">Get Free XLM</string>
-    <string name="get_free_xlm_body">Complete your profile today and we will airdrop free Stellar (XLM) in your Wallet.</string>
+    <string name="get_free_xlm_body">Complete your profile to start instantly trading crypto from the security of your wallet. Pro tip: Gold level gets you higher limits and future airdrops.</string>
 
     <string name="maybe_later">Maybe later</string>
 
@@ -91,13 +91,15 @@
     <string name="claim_your_free_crypto_dismiss">@string/maybe_later</string>
 
     <string name="more_info_needed">More Info Needed</string>
-    <string name="coinify_kyc_body">To keep using Buy &amp; Sell, you’ll need you to update your profile. We’ll Airdrop at least $25 of XLM as a thank you when you do!</string>
+    <string name="coinify_kyc_body">To keep using Buy &amp; Sell, you’ll need to update your profile. Once completed, you’ll also unlock higher trading limits in Swap.</string>
     <string name="coinify_kyc_cta">Update Now</string>
     <string name="coinify_kyc_dismiss">Learn More</string>
     <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
 
-    <string name="claim_crypto_success_title">Your XLM is on its way!</string>
-    <string name="claim_crypto_success_body">Once your profile is approved for Gold, we will airdrop your free crypto into your Wallet.</string>
+    <string name="claim_crypto_success_title">Success!</string>
+    <string name="claim_crypto_success_body">You’re now eligible for future Airdrops.</string>
+    <string name="claim_crypto_success_cta">Share</string>
+    <string name="claim_crypto_success_dismiss">Dismiss</string>
 
     <!-- Help -->
     <string name="help">Help</string>

@@ -30,7 +30,6 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.balance.AnnouncementData
-import piuk.blockchain.android.ui.balance.ImageLeftAnnouncementCard
 import piuk.blockchain.android.ui.balance.ImageRightAnnouncementCard
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
@@ -340,12 +339,8 @@ class DashboardPresenter(
             .observeOn(AndroidSchedulers.mainThread())
             .map { sunriverCardType ->
                 when (sunriverCardType) {
-                    SunriverCardType.None -> false
-                    SunriverCardType.JoinWaitList ->
-                        SunriverCard.nowSupported(
-                            { removeSunriverCard() },
-                            { view.launchWaitlist() }
-                        ).addIfNotDismissed()
+                    SunriverCardType.None,
+                    SunriverCardType.JoinWaitList -> false
                     SunriverCardType.FinishSignUp ->
                         SunriverCard.continueClaim(
                             { removeSunriverCard() },
@@ -377,32 +372,6 @@ class DashboardPresenter(
             view.notifyItemRemoved(displayList, 0)
             view.scrollToTop()
         }
-    }
-
-    private fun checkNativeBuySellAnnouncement() {
-        val buyPrefKey = NATIVE_BUY_SELL_DISMISSED
-        buyDataManager.isCoinifyAllowed
-            .addToCompositeDisposable(this)
-            .subscribeBy(
-                onNext = {
-                    if (it && !prefs.getValue(buyPrefKey, false)) {
-                        prefs.setValue(buyPrefKey, true)
-
-                        val announcementData = ImageLeftAnnouncementCard(
-                            title = R.string.announcement_trading_cta,
-                            description = R.string.announcement_trading_description,
-                            link = R.string.announcement_trading_link,
-                            image = R.drawable.vector_buy_onboarding,
-                            emoji = null,
-                            closeFunction = { dismissAnnouncement(buyPrefKey) },
-                            linkFunction = { view.startBuyActivity() },
-                            prefsKey = buyPrefKey
-                        )
-                        showAnnouncement(0, announcementData)
-                    }
-                },
-                onError = { Timber.e(it) }
-            )
     }
 
     private fun checkKycPrompt(): Maybe<Unit> {
