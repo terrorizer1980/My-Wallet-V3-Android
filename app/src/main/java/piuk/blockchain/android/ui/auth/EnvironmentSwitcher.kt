@@ -31,6 +31,7 @@ internal class EnvironmentSwitcher(
                     LauncherActivity::class.java
                 )
             }
+            .setPositiveButton("Randomise Device Id") { _, _ -> randomiseDeviceId() }
             .setNeutralButton(android.R.string.cancel, null)
             .create()
             .show()
@@ -48,11 +49,17 @@ internal class EnvironmentSwitcher(
             removeValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_SEEN)
             removeValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_DISMISSED)
             removeValue(PersistentPrefs.KEY_CURRENCY_CRYPTO_STATE)
+            qaRandomiseDeviceId = false
         }
 
         AppRate.reset(context)
         loginState.pin = null
 
         context.toast("Prefs Reset")
+    }
+
+    private fun randomiseDeviceId() {
+        prefs.qaRandomiseDeviceId = true
+        context.toast("Device ID randomisation enabled")
     }
 }

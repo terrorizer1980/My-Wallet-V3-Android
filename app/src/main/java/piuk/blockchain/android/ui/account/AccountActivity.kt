@@ -231,8 +231,8 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
                 presenter.onScanButtonClicked()
             }
 
-            override fun onSecondPasswordValidated(validateSecondPassword: String) {
-                presenter.doubleEncryptionPassword = validateSecondPassword
+            override fun onSecondPasswordValidated(validatedSecondPassword: String) {
+                presenter.doubleEncryptionPassword = validatedSecondPassword
                 presenter.onScanButtonClicked()
             }
         })
@@ -244,8 +244,8 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
                 promptForAccountLabel()
             }
 
-            override fun onSecondPasswordValidated(validateSecondPassword: String) {
-                presenter.doubleEncryptionPassword = validateSecondPassword
+            override fun onSecondPasswordValidated(validatedSecondPassword: String) {
+                presenter.doubleEncryptionPassword = validatedSecondPassword
                 promptForAccountLabel()
             }
         })

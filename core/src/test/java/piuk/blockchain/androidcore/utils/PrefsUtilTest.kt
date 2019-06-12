@@ -1,0 +1,106 @@
+package piuk.blockchain.androidcore.utils
+
+import android.content.SharedPreferences
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.never
+import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.whenever
+import junit.framework.Assert.assertEquals
+import org.junit.Test
+
+import org.junit.Before
+
+class PrefsUtilTest {
+
+    private val store: SharedPreferences = mock()
+    private val editor: SharedPreferences.Editor = mock()
+    private val idGenerator: DeviceIdGenerator = mock()
+    private val uuidGenerator: UUIDGenerator = mock()
+
+    private val subject: PrefsUtil = PrefsUtil(store, idGenerator, uuidGenerator)
+
+    @Before
+    fun setUpSharedPrefs() {
+        whenever(store.edit()).thenReturn(editor)
+        whenever(editor.putString(any(), any())).thenReturn(editor)
+    }
+
+    @Test
+    fun getDeviceId_qaRandomiseNotSet_nothingStored() {
+        // Arrange
+        whenever(idGenerator.generateId()).thenReturn(STATIC_DEVICE_ID)
+        whenever(store.getBoolean(PrefsUtil.KEY_IS_DEVICE_ID_RANDOMISED, false))
+            .thenReturn(false)
+        whenever(store.getString(PrefsUtil.KEY_PRE_IDV_DEVICE_ID, ""))
+            .thenReturn("")
+
+        // Act
+        val id = subject.deviceId
+
+        // Assert
+        assertEquals(id, STATIC_DEVICE_ID)
+        verify(store).getBoolean(PrefsUtil.KEY_IS_DEVICE_ID_RANDOMISED, false)
+        verify(uuidGenerator, never()).generateUUID()
+    }
+
+    @Test
+    fun getDeviceId_qaRandomiseIsSet_nothingStored() {
+        // Arrange
+        whenever(idGenerator.generateId()).thenReturn(STATIC_DEVICE_ID)
+        whenever(uuidGenerator.generateUUID()).thenReturn(RANDOM_DEVICE_ID)
+        whenever(store.getBoolean(PrefsUtil.KEY_IS_DEVICE_ID_RANDOMISED, false))
+            .thenReturn(true)
+        whenever(store.getString(PrefsUtil.KEY_PRE_IDV_DEVICE_ID, ""))
+            .thenReturn("")
+
+        // Act
+        val id = subject.deviceId
+
+        // Assert
+        assertEquals(id, RANDOM_DEVICE_ID)
+        verify(store).getBoolean(PrefsUtil.KEY_IS_DEVICE_ID_RANDOMISED, false)
+        verify(uuidGenerator).generateUUID()
+    }
+
+    @Test
+    fun getDeviceId_qaRandomiseNotSet_returnStored() {
+        // Arrange
+        whenever(store.getBoolean(PrefsUtil.KEY_IS_DEVICE_ID_RANDOMISED, false))
+            .thenReturn(false)
+        whenever(store.getString(PrefsUtil.KEY_PRE_IDV_DEVICE_ID, ""))
+            .thenReturn(STATIC_DEVICE_ID)
+
+        // Act
+        val id = subject.deviceId
+
+        // Assert
+        assertEquals(id, STATIC_DEVICE_ID)
+        verify(store).getBoolean(PrefsUtil.KEY_IS_DEVICE_ID_RANDOMISED, false)
+        verify(uuidGenerator, never()).generateUUID()
+        verify(idGenerator, never()).generateId()
+    }
+
+    @Test
+    fun getDeviceId_qaRandomiseIsSet_valueStored_returnRandomised() {
+        // Arrange
+        whenever(idGenerator.generateId()).thenReturn(STATIC_DEVICE_ID)
+        whenever(uuidGenerator.generateUUID()).thenReturn(RANDOM_DEVICE_ID)
+        whenever(store.getBoolean(PrefsUtil.KEY_IS_DEVICE_ID_RANDOMISED, false))
+            .thenReturn(true)
+
+        // Act
+        val id = subject.deviceId
+
+        // Assert
+        assertEquals(id, RANDOM_DEVICE_ID)
+        verify(store).getBoolean(PrefsUtil.KEY_IS_DEVICE_ID_RANDOMISED, false)
+        verify(store, never()).getString(PrefsUtil.KEY_PRE_IDV_DEVICE_ID, "")
+        verify(uuidGenerator).generateUUID()
+    }
+
+    companion object {
+        private const val STATIC_DEVICE_ID = "12345678901234567890"
+        private const val RANDOM_DEVICE_ID = "84962066204735275920"
+    }
+}

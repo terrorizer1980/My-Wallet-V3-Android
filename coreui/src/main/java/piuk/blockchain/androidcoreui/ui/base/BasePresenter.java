@@ -2,6 +2,7 @@ package piuk.blockchain.androidcoreui.ui.base;
 
 import android.support.annotation.CallSuper;
 
+import android.support.annotation.Nullable;
 import io.reactivex.disposables.CompositeDisposable;
 
 public abstract class BasePresenter<VIEW extends View> implements Presenter<VIEW> {

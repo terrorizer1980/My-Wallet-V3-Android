@@ -31,6 +31,9 @@ interface PersistentPrefs {
 
     fun setSelectedFiatCurrency(fiat: String)
 
+    // Allow QA to randomise device ids when testing kyc
+    var qaRandomiseDeviceId: Boolean
+
     companion object {
 
         const val KEY_PIN_IDENTIFIER = "pin_kookup_key"
@@ -43,7 +46,6 @@ interface PersistentPrefs {
         const val KEY_EMAIL_VERIFIED = "code_verified"
         const val KEY_SCHEME_URL = "scheme_url"
         const val KEY_METADATA_URI = "metadata_uri"
-        const val KEY_CONTACTS_NOTIFICATION = "contacts_notification"
         const val KEY_NEWLY_CREATED_WALLET = "newly_created_wallet"
         const val KEY_SECURITY_TIME_ELAPSED = "security_time_elapsed"
         const val KEY_SECURITY_TWO_FA_NEVER = "security_two_fa_never"

@@ -1,5 +1,7 @@
 package com.blockchain.koin
 
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import com.blockchain.accounts.AccountList
 import com.blockchain.accounts.AllAccountList
 import com.blockchain.accounts.AllAccountsImplementation
@@ -92,6 +94,8 @@ import piuk.blockchain.androidcore.utils.MetadataUtils
 import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.SharedPreferencesFiatCurrencyPreference
+import piuk.blockchain.androidcore.utils.UUIDGenerator
+import java.util.UUID
 
 val coreModule = applicationContext {
 
@@ -267,10 +271,19 @@ val coreModule = applicationContext {
         )
     }.bind(DeviceIdGenerator::class)
 
+    factory {
+        object : UUIDGenerator {
+            override fun generateUUID(): String = UUID.randomUUID().toString()
+        }
+    }.bind(UUIDGenerator::class)
+
     bean {
+        val store: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(/* context = */ get())
+
         PrefsUtil(
-            context = get(),
-            idGenerator = get()
+            store = store,
+            idGenerator = get(),
+            uuidGenerator = get()
         )
     }.bind(PersistentPrefs::class)
 

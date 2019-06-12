@@ -225,17 +225,13 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         disposable += view!!.findViewById<View>(R.id.card_tier_1)
             .throttledClicks()
             .subscribeBy(
-                onNext = {
-                    presenter.tier1Selected()
-                },
+                onNext = { presenter.tier1Selected() },
                 onError = { Timber.e(it) }
             )
         disposable += view!!.findViewById<View>(R.id.card_tier_2)
             .throttledClicks()
             .subscribeBy(
-                onNext = {
-                    presenter.tier2Selected()
-                },
+                onNext = { presenter.tier2Selected() },
                 onError = { Timber.e(it) }
             )
         disposable +=
@@ -252,30 +248,14 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             button_learn_more
                 .throttledClicks()
                 .subscribeBy(
-                    onNext = {
-                        startActivity(
-                            Intent(
-                                Intent.ACTION_VIEW, Uri.parse(
-                                    URL_LEARN_MORE_REJECTED
-                                )
-                            )
-                        )
-                    },
+                    onNext = { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(URL_LEARN_MORE_REJECTED))) },
                     onError = { Timber.e(it) }
                 )
         disposable +=
             text_contact_support
                 .throttledClicks()
                 .subscribeBy(
-                    onNext = {
-                        startActivity(
-                            Intent(
-                                Intent.ACTION_VIEW, Uri.parse(
-                                    URL_CONTACT_SUPPORT
-                                )
-                            )
-                        )
-                    },
+                    onNext = { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(URL_CONTACT_SUPPORT))) },
                     onError = { Timber.e(it) }
                 )
     }

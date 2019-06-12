@@ -143,6 +143,7 @@ android {
             buildConfigString "NABU_WEBSOCKET_URL", buildProperties.secrets['stagingNabuWebsocket']
             buildConfigString "HORIZON_URL", buildProperties.secrets['stagingHorizonUrl']
             buildConfigField "String", "ENVIRONMENT", '"env_staging"'
+
             versionNameSuffix '-staging'
             applicationId "piuk.blockchain.android.staging"
         }

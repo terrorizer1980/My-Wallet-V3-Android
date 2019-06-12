@@ -122,7 +122,8 @@ val kycModule = applicationContext {
         factory {
             VeriffSplashPresenter(
                 nabuToken = get(),
-                nabuDataManager = get()
+                nabuDataManager = get(),
+                analytics = get()
             )
         }
 

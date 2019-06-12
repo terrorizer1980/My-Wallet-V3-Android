@@ -1,25 +1,30 @@
 package piuk.blockchain.androidcore.utils
 
-import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import android.support.annotation.VisibleForTesting
+
+interface UUIDGenerator {
+    fun generateUUID(): String
+}
 
 class PrefsUtil(
-    context: Context,
-    private val idGenerator: DeviceIdGenerator
+    private val store: SharedPreferences,
+    private val idGenerator: DeviceIdGenerator,
+    private val uuidGenerator: UUIDGenerator
 ) : PersistentPrefs {
-
-    private val store: SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(context)
 
     override val deviceId: String
         get() {
-            var deviceId = getValue(KEY_PRE_IDV_DEVICE_ID, "")
-            if (deviceId.isEmpty()) {
-                deviceId = idGenerator.generateId()
-                setValue(KEY_PRE_IDV_DEVICE_ID, deviceId)
+            return if (qaRandomiseDeviceId) {
+                uuidGenerator.generateUUID()
+            } else {
+                var deviceId = getValue(KEY_PRE_IDV_DEVICE_ID, "")
+                if (deviceId.isEmpty()) {
+                    deviceId = idGenerator.generateId()
+                    setValue(KEY_PRE_IDV_DEVICE_ID, deviceId)
+                }
+                deviceId
             }
-            return deviceId
         }
 
     override var isOnboardingComplete: Boolean
@@ -31,6 +36,10 @@ class PrefsUtil(
 
     override val selectedFiatCurrency: String
         get() = getValue(KEY_SELECTED_FIAT, DEFAULT_CURRENCY)
+
+    override var qaRandomiseDeviceId: Boolean
+        get() = getValue(KEY_IS_DEVICE_ID_RANDOMISED, false)
+        set(value) = setValue(KEY_IS_DEVICE_ID_RANDOMISED, value)
 
     override fun getValue(name: String): String? =
         store.getString(name, null)
@@ -56,15 +65,11 @@ class PrefsUtil(
     }
 
     override fun setValue(name: String, value: Int) {
-        val editor = store.edit()
-        editor.putInt(name, if (value < 0) 0 else value)
-        editor.apply()
+        store.edit().putInt(name, if (value < 0) 0 else value).apply()
     }
 
     override fun setValue(name: String, value: Long) {
-        val editor = store.edit()
-        editor.putLong(name, if (value < 0L) 0L else value)
-        editor.apply()
+        store.edit().putLong(name, if (value < 0L) 0L else value).apply()
     }
 
     override fun setValue(name: String, value: Boolean) {
@@ -109,9 +114,17 @@ class PrefsUtil(
     }
 
     companion object {
-        private const val DEFAULT_CURRENCY = "USD"
-        private const val KEY_SELECTED_FIAT = "ccurrency"
-        private const val KEY_PRE_IDV_DEVICE_ID = "pre_idv_device_id"
-        private const val KEY_LOGGED_OUT = "logged_out"
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val DEFAULT_CURRENCY = "USD"
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val KEY_SELECTED_FIAT = "ccurrency" // Historical misspelling, don't update
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val KEY_PRE_IDV_DEVICE_ID = "pre_idv_device_id"
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val KEY_LOGGED_OUT = "logged_out"
+
+        // For QA:
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val KEY_IS_DEVICE_ID_RANDOMISED = "random_device_id"
     }
 }

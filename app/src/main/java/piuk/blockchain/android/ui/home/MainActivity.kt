@@ -344,11 +344,11 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
                 .setTitle(R.string.confirm_currency)
                 .setMessage(R.string.confirm_currency_message)
                 .setCancelable(true)
-                .setPositiveButton(R.string.bitcoin_cash) { dialog, which ->
+                .setPositiveButton(R.string.bitcoin_cash) { _, _ ->
                     presenter.setCryptoCurrency(CryptoCurrency.BCH)
                     startSendFragment(strResult)
                 }
-                .setNegativeButton(R.string.bitcoin) { dialog, which ->
+                .setNegativeButton(R.string.bitcoin) { _, _ ->
                     presenter.setCryptoCurrency(CryptoCurrency.BTC)
                     startSendFragment(strResult)
                 }
@@ -581,7 +581,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
     override fun onCompletedTrade(txHash: String) {
         /** Called from javascript in a webview at the end of a 'buy' operation, so ensure it runs
-         * on the UI thread. see [piuk.blockchain.android.ui.buy.BuyActivity.java]
+         * on the UI thread.
          */
         runOnUiThread { showTradeCompleteMsg(txHash) }
     }

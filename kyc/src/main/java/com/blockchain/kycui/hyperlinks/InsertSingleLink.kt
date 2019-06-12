@@ -14,6 +14,7 @@ import android.widget.TextView
  * If that does not correctly insert, it sets the text to just [link].
  * It makes [link] a hyperlink which executes [action] on click.
  */
+@Deprecated("This is clunky and error prone. Use string annotations and StringUtils.getStringWithMappedLinks")
 fun TextView.insertSingleLink(
     @StringRes text: Int,
     @StringRes link: Int,

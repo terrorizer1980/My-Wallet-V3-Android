@@ -114,6 +114,8 @@
     <color name="kyc_splash_title_black">@color/grey_600</color>
     <color name="kyc_in_progress">@color/orange_400</color>
 
+    <color name="kyc_error_title">@color/blue_800</color>
+
     <!-- app colors -->
     <color name="exchange_history_sent">@color/blue_800</color>
     <color name="exchange_history_received">@color/green_600</color>

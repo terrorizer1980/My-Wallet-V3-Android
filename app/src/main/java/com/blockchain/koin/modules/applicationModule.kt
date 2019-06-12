@@ -1,6 +1,7 @@
 package com.blockchain.koin.modules
 
 import android.content.Context
+import com.blockchain.activities.StartSwap
 import com.blockchain.balance.TotalBalance
 import com.blockchain.balance.plus
 import com.blockchain.kycui.settings.KycStatusHelper
@@ -35,6 +36,7 @@ import piuk.blockchain.android.ui.send.strategy.EtherSendStrategy
 import piuk.blockchain.android.ui.send.strategy.SendStrategy
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.send.strategy.paxSendStrategy
+import piuk.blockchain.android.ui.swap.SwapStarter
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
@@ -325,6 +327,10 @@ val applicationModule = applicationContext {
             )
         }
     }
+
+    factory {
+        SwapStarter(prefs = get())
+    }.bind(StartSwap::class)
 
     factory { DateUtil(get()) }
 

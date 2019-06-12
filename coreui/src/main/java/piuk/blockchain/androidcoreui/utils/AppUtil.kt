@@ -90,9 +90,11 @@ class AppUtil(
     fun deleteQR() {
         // getExternalCacheDir can return null if permission for write storage not granted
         // or if running on an emulator
-        val file = File(context.externalCacheDir.toString() + File.separator + "qr.png")
-        if (file.exists()) {
-            file.delete()
+        context.externalCacheDir ?.let {
+            val file = File(context.externalCacheDir.toString() + File.separator + "qr.png")
+            if (file.exists()) {
+                file.delete()
+            }
         }
     }
 

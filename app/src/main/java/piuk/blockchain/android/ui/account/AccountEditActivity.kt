@@ -89,8 +89,8 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
                         presenter.onClickTransferFunds()
                     }
 
-                    override fun onSecondPasswordValidated(validateSecondPassword: String) {
-                        presenter.secondPassword = validateSecondPassword
+                    override fun onSecondPasswordValidated(validatedSecondPassword: String) {
+                        presenter.secondPassword = validatedSecondPassword
                         presenter.onClickTransferFunds()
                     }
                 })
@@ -185,8 +185,8 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
                         startScanActivity()
                     }
 
-                    override fun onSecondPasswordValidated(validateSecondPassword: String) {
-                        presenter.secondPassword = validateSecondPassword
+                    override fun onSecondPasswordValidated(validatedSecondPassword: String) {
+                        presenter.secondPassword = validatedSecondPassword
                         startScanActivity()
                     }
                 })

@@ -534,6 +534,7 @@ class AccountEditPresenter @Inject internal constructor(
             )
     }
 
+    @SuppressLint("CheckResult")
     private fun updateSwipeToReceiveAddresses() {
         swipeToReceiveHelper.updateAndStoreBitcoinAddresses()
             .andThen(swipeToReceiveHelper.updateAndStoreBitcoinCashAddresses())

@@ -23,3 +23,9 @@ const val URL_BLOCKCHAIN_ORDER_LIMIT_EXCEED =
 
 const val URL_BLOCKCHAIN_ORDER_EXPIRED =
     "https://support.blockchain.com/hc/en-us/articles/360023587592-Why-has-my-order-expired-"
+
+const val URL_BLOCKCHAIN_GOLD_UNAVAILABLE_SUPPORT =
+    "https://support.blockchain.com/hc/en-us/categories/360001135512-Identity-Verification"
+
+const val URL_BLOCKCHAIN_KYC_SUPPORTED_COUNTRIES_LIST =
+    "https://support.blockchain.com/hc/en-us/articles/360018751932"
