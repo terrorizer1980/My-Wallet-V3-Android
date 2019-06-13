@@ -29,6 +29,7 @@ import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.connectivity.ConnectionEvent;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle;
 import piuk.blockchain.androidcoreui.BuildConfig;
@@ -69,6 +70,8 @@ public class BlockchainApplication extends Application implements FrameworkInter
     AppUtil appUtils;
     @Inject
     AccessState loginState;
+    @Inject
+    PersistentPrefs prefs;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -135,6 +138,12 @@ public class BlockchainApplication extends Application implements FrameworkInter
 
         // Report Google Play Services availability
         Logging.INSTANCE.logCustom(new AppLaunchEvent(isGooglePlayServicesAvailable(this)));
+
+        // Set screen shots to enabled in staging builds, to simplify automation and QA processes
+        prefs.setValue(
+                PersistentPrefs.KEY_SCREENSHOTS_ENABLED,
+                environmentSettings.shouldShowDebugMenu()
+        );
 
         rxBus.register(ConnectionEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())

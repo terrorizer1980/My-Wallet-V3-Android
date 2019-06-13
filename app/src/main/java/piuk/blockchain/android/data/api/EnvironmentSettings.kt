@@ -23,7 +23,7 @@ class EnvironmentSettings : EnvironmentConfig {
             CryptoCurrency.PAX -> TODO("PAX is not yet supported - AND-2003")
         }
 
-    override fun shouldShowDebugMenu(): Boolean = BuildConfig.DEBUG
+    override fun shouldShowDebugMenu(): Boolean = BuildConfig.FLAVOR != "envProd"
 
     override val environment: Environment = Environment.fromString(BuildConfig.ENVIRONMENT)
 
