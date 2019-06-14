@@ -5,6 +5,10 @@
     <color name="nav_menu_text">@color/grey_600</color>
     <color name="nav_logo">@color/grey_800</color>
 
+    <color name="pit_text_title">@color/grey_800</color>
+    <color name="pit_text_heading">@color/blue_800</color>
+    <color name="Pit_text_body">@color/grey_800</color>
+
     <!-- Toasts -->
     <color name="toast_error_background">@color/red_100</color>
     <color name="toast_error_text">@color/red_800</color>

@@ -31,7 +31,7 @@ android {
         // Flag to hide or show the Contacts feature
         buildConfigBoolean "SHOW_LOCKBOX_BALANCE", false
         buildConfigBoolean "LOG_KOIN_STARTUP", false
-        buildConfigLong    "EXIT_APP_COOLDOWN_MILLIS", 2 * 1000
+        buildConfigLong "EXIT_APP_COOLDOWN_MILLIS", 2 * 1000
 
         buildConfigString "SHAPE_SHIFT_API_KEY", buildProperties.secrets['shapeShiftApiKey']
         manifestPlaceholders = [FABRIC_API_KEY: buildProperties.secrets['fabricApiKey'].string]
@@ -98,7 +98,7 @@ android {
         envProd {
             dimension "environment"
             manifestPlaceholders = [
-                    DYNAMIC_LINK_HOST: buildProperties.secrets['prodDynamicLink'].string,
+                    DYNAMIC_LINK_HOST  : buildProperties.secrets['prodDynamicLink'].string,
                     DYNAMIC_LINK_HOST_2: buildProperties.secrets['prodDynamicLink2'].string
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['prodExplorer']
@@ -114,7 +114,7 @@ android {
         envDev {
             dimension "environment"
             manifestPlaceholders = [
-                    DYNAMIC_LINK_HOST: buildProperties.secrets['devDynamicLink'].string,
+                    DYNAMIC_LINK_HOST  : buildProperties.secrets['devDynamicLink'].string,
                     DYNAMIC_LINK_HOST_2: buildProperties.secrets['devDynamicLink2'].string
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['devExplorer']
@@ -131,7 +131,7 @@ android {
         envStaging {
             dimension "environment"
             manifestPlaceholders = [
-                    DYNAMIC_LINK_HOST: buildProperties.secrets['stagingDynamicLink'].string,
+                    DYNAMIC_LINK_HOST  : buildProperties.secrets['stagingDynamicLink'].string,
                     DYNAMIC_LINK_HOST_2: buildProperties.secrets['stagingDynamicLink2'].string
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['stagingExplorer']
@@ -150,7 +150,7 @@ android {
         envTestnet {
             dimension "environment"
             manifestPlaceholders = [
-                    DYNAMIC_LINK_HOST: buildProperties.secrets['testnetDynamicLink'].string,
+                    DYNAMIC_LINK_HOST  : buildProperties.secrets['testnetDynamicLink'].string,
                     DYNAMIC_LINK_HOST_2: buildProperties.secrets['testnetDynamicLink2'].string
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['testnetExplorer']
@@ -233,7 +233,7 @@ dependencies {
     implementation Libraries.koin
     implementation Libraries.koinAndroid
     implementation Libraries.koinAndroidArchitecture
-    
+
     // Views
     implementation project(":zxing")
     implementation Libraries.countryPicker

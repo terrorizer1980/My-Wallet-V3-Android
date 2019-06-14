@@ -29,3 +29,7 @@ const val URL_BLOCKCHAIN_GOLD_UNAVAILABLE_SUPPORT =
 
 const val URL_BLOCKCHAIN_KYC_SUPPORTED_COUNTRIES_LIST =
     "https://support.blockchain.com/hc/en-us/articles/360018751932"
+
+// TODO: AND-2200 - add the correct link
+const val URL_THE_PIT_LANDING_LEARN_MORE =
+    "https://support.blockchain.com/"
