@@ -1027,6 +1027,10 @@
     </string>
     <string name="stablecoin_announcement_introducing_link">Exchange for PAX Now</string>
 
+    <!--Pit-->
+    <string name="pit_announcement_description">It\'s time to Level Up to a better crypto exchange. First 100,000 traders to sign up will trade free for 30 days.</string>
+    <string name="pit_announcement_introducing_link">Check it out</string>
+
     <!-- Complete Your Profile Card -->
     <string name="complete_your_profile_card_title">Go for Gold</string>
     <string name="complete_your_profile_card_body">Complete your profile to start instantly trading

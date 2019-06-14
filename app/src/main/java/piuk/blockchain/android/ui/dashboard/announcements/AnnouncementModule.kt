@@ -17,6 +17,7 @@ val dashboardAnnouncementsModule = applicationContext {
                 add(get("claim"))
                 add(get("stablecoin"))
                 add(get("swap"))
+                add(get("pit"))
             })
         }
 
@@ -35,6 +36,8 @@ val dashboardAnnouncementsModule = applicationContext {
         }
 
         factory("profile") { CompleteYourProfileCardAnnouncement(get(), get()) as Announcement<DashboardPresenter> }
+
+        factory("pit") { PitAnnouncement(get()) as Announcement<DashboardPresenter> }
 
         factory("claim") {
             ClaimYourFreeCryptoCardAnnouncement(get(),

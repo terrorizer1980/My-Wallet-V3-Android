@@ -134,5 +134,7 @@
     <color name="bottom_toolbar_icon_inactive">@color/grey_400</color>
 
     <color name="product_grey_transferred">#7b9eb1</color>       <!-- still used? -->
-    <color name="product_grey_transferred_50">#807b9eb1</color>  <!-- still used? -->
+    <color name="product_grey_transferred_50">#807b9eb1</color>
+    <color name="pit_card_gradient_dark">@color/black_100</color>
+    <color name="pit_card_gradient_light">@color/blue_1000</color>  <!-- still used? -->
 </resources>
