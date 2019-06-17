@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.buysell.createorder
 
+import android.annotation.SuppressLint
 import com.blockchain.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.nabu.extensions.toLocalTime
 import com.crashlytics.android.answers.AddToCartEvent
@@ -487,6 +488,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
             )
     }
 
+    @SuppressLint("CheckResult")
     private fun initialiseUi() {
         // Get quote for value of 1 BTC for UI using default currency
         tokenSingle
@@ -716,7 +718,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
 
     // region Extension Functions
     private fun List<KycResponse>.hasPendingKyc(): Boolean = this.any { it.state.isProcessing() } &&
-        this.none { it.state == ReviewState.Completed }
+            this.none { it.state == ReviewState.Completed }
 
     private fun BigDecimal.sanitise() = this.stripTrailingZeros().toPlainString()
 

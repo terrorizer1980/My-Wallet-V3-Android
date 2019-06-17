@@ -1226,5 +1226,17 @@
     <string name="pit_landing_body_3">The only exchange seamlessly integrated with your secure digital wallet.</string>
     <string name="pit_landing_signup_btn">Sign Up Now</string>
     <string name="pit_logo_content_descr">The Pit Logo</string>
+    <string name="pit_slogan_kyc_promo">The only Exchange that connects to your Wallet.</string>
+    <string name="pit_thunder_kyc_promo">Lightning Fast Trades</string>
+    <string name="pit_security_kyc_promo"><![CDATA[Liquid & Reliable]]></string>
+    <string name="pit_built_kyc_promo">Built by Blockchain.com</string>
+    <string name="pit_dollar_kyc_promo">Low Fees</string>
+    <string name="this_app_will_be_able">This application will be able to:</string>
+    <string name="this_app_will_not_be_able">Will not be able to:</string>
+    <string name="facilitate_crypto_transfers">Facilitate crypto transfers between accounts</string>
+    <string name="share_your_status">Share your Gold or Silver Level status</string>
+    <string name="add_your_linked_banks">Add your linked banks</string>
+    <string name="view_your_wallet_pass">View your wallet pass</string>
+    <string name="pit_promo_kyc_connect_now">Connect Now</string>
 
 </resources>

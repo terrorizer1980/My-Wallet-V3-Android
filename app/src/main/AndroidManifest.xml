@@ -194,8 +194,11 @@
                 android:configChanges="keyboardHidden|orientation|screenSize"
                 android:launchMode="singleTask"/>
         <activity
-                android:name=".ui.thepit.PitLandingActivity"
-                android:configChanges="keyboardHidden|orientation|screenSize"/>
+            android:name=".ui.thepit.PitLandingActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
+            android:name=".ui.thepit.KycPromoPitActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <service
                 android:name=".data.websocket.WebSocketService"

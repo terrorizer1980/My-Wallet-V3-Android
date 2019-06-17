@@ -13,8 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
@@ -137,16 +135,11 @@ public class SettingsFragment extends PreferenceFragmentCompat
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         settingsPresenter.initView(this);
+        settingsPresenter.onViewReady();
 
         analytics.logEvent(AnalyticsEvents.Settings);
         Logging.INSTANCE.logContentView(new ContentViewEvent()
                 .putContentName(getClass().getSimpleName()));
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        settingsPresenter.onViewReady();
     }
 
     @SuppressLint("NewApi")
@@ -875,6 +868,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     @Override
     public void launchKycFlow() {
         KycNavHostActivity.start(requireContext(), CampaignType.Swap);
+        requireActivity().finish();
     }
 
     private void setCountryFlag(TextView tvCountry, String dialCode, int flagResourceId) {

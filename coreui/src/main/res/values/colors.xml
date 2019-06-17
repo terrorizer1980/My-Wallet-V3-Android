@@ -7,7 +7,8 @@
 
     <color name="pit_text_title">@color/grey_800</color>
     <color name="pit_text_heading">@color/blue_800</color>
-    <color name="Pit_text_body">@color/grey_800</color>
+    <color name="pit_text_body">@color/grey_800</color>
+    <color name="pit_text_body_app_able_to_text">@color/green_200</color>
 
     <!-- Toasts -->
     <color name="toast_error_background">@color/red_100</color>
