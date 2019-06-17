@@ -42,10 +42,7 @@ fun loadFont(context: Context, font: CustomFont, func: (Typeface) -> Unit) {
         request,
         object : FontsContractCompat.FontRequestCallback() {
             override fun onTypefaceRetrieved(typeface: Typeface) {
-                FontCache.cacheFont(
-                    font,
-                    typeface
-                )
+                FontCache.cacheFont(font, typeface)
                 func.invoke(typeface)
             }
 
@@ -58,10 +55,9 @@ fun loadFont(context: Context, font: CustomFont, func: (Typeface) -> Unit) {
 }
 
 enum class CustomFont(val query: String) {
-
     MONTSERRAT_REGULAR("Montserrat"),
     MONTSERRAT_LIGHT("name=Montserrat&weight=300"),
-    MONTSERRAT_SEMI_BOLD("name=Montserrat&weight=600"),
+    MONTSERRAT_SEMI_BOLD("name=Montserrat&weight=600")
 }
 
 /**

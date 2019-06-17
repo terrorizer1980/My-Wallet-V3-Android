@@ -23,6 +23,7 @@ import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
+import piuk.blockchain.android.ui.dashboard.DashboardPresenter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.login.ManualPairingPresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
@@ -35,7 +36,7 @@ import piuk.blockchain.android.ui.send.strategy.BitcoinSendStrategy
 import piuk.blockchain.android.ui.send.strategy.EtherSendStrategy
 import piuk.blockchain.android.ui.send.strategy.SendStrategy
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
-import piuk.blockchain.android.ui.send.strategy.paxSendStrategy
+import piuk.blockchain.android.ui.send.strategy.PaxSendStrategy
 import piuk.blockchain.android.ui.swap.SwapStarter
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
@@ -173,7 +174,7 @@ val applicationModule = applicationContext {
                 bchStrategy = get("BCHStrategy"),
                 etherStrategy = get("EtherStrategy"),
                 xlmStrategy = get("XLMStrategy"),
-                paxStrategy = get("paxStrategy"),
+                paxStrategy = get("PaxStrategy"),
                 prefs = get(),
                 exchangeRates = get(),
                 stringUtils = get(),
@@ -230,7 +231,8 @@ val applicationModule = applicationContext {
                 currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
-                currencyState = get()
+                currencyState = get(),
+                currencyPrefs = get()
             )
         }
 
@@ -246,8 +248,8 @@ val applicationModule = applicationContext {
             )
         }
 
-        factory<SendStrategy<SendView>>("paxStrategy") {
-            paxSendStrategy(
+        factory<SendStrategy<SendView>>("PaxStrategy") {
+            PaxSendStrategy(
                 walletAccountHelper = get(),
                 payloadDataManager = get(),
                 ethDataManager = get(),
@@ -258,7 +260,8 @@ val applicationModule = applicationContext {
                 currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
-                currencyState = get()
+                currencyState = get(),
+                currencyPrefs = get()
             )
         }
 
@@ -273,6 +276,26 @@ val applicationModule = applicationContext {
         factory { ConfirmPaymentPresenter() }
 
         factory { SunRiverCampaignAccountProviderAdapter(get()) as SunriverCampaignHelper.XlmAccountProvider }
+
+        factory {
+            DashboardPresenter(
+                dashboardBalanceCalculator = get(),
+                prefs = get(),
+                exchangeRateFactory = get(),
+                bchDataManager = get(),
+                stringUtils = get(),
+                accessState = get(),
+                buyDataManager = get(),
+                rxBus = get(),
+                swipeToReceiveHelper = get(),
+                currencyFormatManager = get(),
+                kycTiersQueries = get(),
+                lockboxDataManager = get(),
+                currentTier = get(),
+                sunriverCampaignHelper = get(),
+                dashboardAnnouncements = get()
+            )
+        }
 
         factory {
             BalancePresenter(

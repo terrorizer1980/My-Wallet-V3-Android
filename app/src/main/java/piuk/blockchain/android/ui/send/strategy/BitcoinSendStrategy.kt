@@ -342,7 +342,7 @@ class BitcoinSendStrategy(
         details.toLabel = pendingTransaction.displayableReceivingLabel?.removeBchUri() ?: ""
 
         details.cryptoUnit = CryptoCurrency.BTC.symbol
-        details.fiatUnit = exchangeRates.fiatUnit
+        details.fiatUnit = prefs.selectedFiatCurrency
         details.fiatSymbol = currencyFormatter.getFiatSymbol(
             currencyFormatter.fiatCountryCode
         )

@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.serialization.JsonSerializableAccount
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -52,6 +53,7 @@ class EtherSendStrategy(
     private val feeDataManager: FeeDataManager,
     private val currencyFormatter: CurrencyFormatManager,
     private val exchangeRates: FiatExchangeRates,
+    private val currencyPrefs: CurrencyPrefs,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
@@ -252,7 +254,7 @@ class EtherSendStrategy(
             toLabel = pendingTransaction.displayableReceivingLabel ?: throw IllegalStateException("No receive label")
 
             cryptoUnit = CryptoCurrency.ETHER.symbol
-            fiatUnit = exchangeRates.fiatUnit
+            fiatUnit = currencyPrefs.selectedFiatCurrency
             fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode)
 
             var ethAmount = Convert.fromWei(pendingTransaction.bigIntAmount.toString(), Convert.Unit.ETHER)

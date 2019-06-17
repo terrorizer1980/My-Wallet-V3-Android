@@ -4,9 +4,11 @@ import android.content.SharedPreferences
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
+import com.nhaarman.mockito_kotlin.validateMockitoUsage
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import junit.framework.Assert.assertEquals
+import org.junit.After
 import org.junit.Test
 
 import org.junit.Before
@@ -24,6 +26,8 @@ class PrefsUtilTest {
     fun setUpSharedPrefs() {
         whenever(store.edit()).thenReturn(editor)
         whenever(editor.putString(any(), any())).thenReturn(editor)
+        whenever(editor.remove(any())).thenReturn(editor)
+        whenever(editor.clear()).thenReturn(editor)
     }
 
     @Test
@@ -99,8 +103,27 @@ class PrefsUtilTest {
         verify(uuidGenerator).generateUUID()
     }
 
+    @Test
+    fun getSelectedCrypto_corruptedStore_returnDefault() {
+        // Arrange
+        whenever(store.getString(PrefsUtil.KEY_SELECTED_CRYPTO, PrefsUtil.DEFAULT_CRYPTO_CURRENCY.name))
+            .thenReturn("NOPE")
+
+        // Act
+        val currency = subject.selectedCryptoCurrency
+
+        // Arrange
+        assertEquals(currency, PrefsUtil.DEFAULT_CRYPTO_CURRENCY)
+        verify(editor).remove(PrefsUtil.KEY_SELECTED_CRYPTO)
+    }
+
     companion object {
         private const val STATIC_DEVICE_ID = "12345678901234567890"
         private const val RANDOM_DEVICE_ID = "84962066204735275920"
+    }
+
+    @After
+    fun validate() {
+        validateMockitoUsage()
     }
 }

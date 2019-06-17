@@ -2,6 +2,7 @@ package piuk.blockchain.androidcore.utils
 
 import android.content.SharedPreferences
 import android.support.annotation.VisibleForTesting
+import info.blockchain.balance.CryptoCurrency
 
 interface UUIDGenerator {
     fun generateUUID(): String
@@ -34,12 +35,25 @@ class PrefsUtil(
     override val isLoggedOut: Boolean
         get() = getValue(KEY_LOGGED_OUT, true)
 
-    override val selectedFiatCurrency: String
-        get() = getValue(KEY_SELECTED_FIAT, DEFAULT_CURRENCY)
-
     override var qaRandomiseDeviceId: Boolean
         get() = getValue(KEY_IS_DEVICE_ID_RANDOMISED, false)
         set(value) = setValue(KEY_IS_DEVICE_ID_RANDOMISED, value)
+
+    // From CurrencyPrefs
+    override var selectedFiatCurrency: String
+        get() = getValue(KEY_SELECTED_FIAT, DEFAULT_FIAT_CURRENCY)
+        set(fiat) { setValue(KEY_SELECTED_FIAT, fiat) }
+
+    override var selectedCryptoCurrency: CryptoCurrency
+        get() =
+            try {
+                CryptoCurrency.valueOf(getValue(KEY_SELECTED_CRYPTO, DEFAULT_CRYPTO_CURRENCY.name))
+            } catch (e: IllegalArgumentException) {
+                removeValue(KEY_SELECTED_CRYPTO)
+                DEFAULT_CRYPTO_CURRENCY
+            }
+
+        set(crypto) = setValue(KEY_SELECTED_CRYPTO, crypto.name)
 
     override fun getValue(name: String): String? =
         store.getString(name, null)
@@ -109,19 +123,19 @@ class PrefsUtil(
         setValue(KEY_LOGGED_OUT, false)
     }
 
-    override fun setSelectedFiatCurrency(fiat: String) {
-        setValue(KEY_SELECTED_FIAT, fiat)
-    }
-
     companion object {
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        const val DEFAULT_CURRENCY = "USD"
+        const val DEFAULT_FIAT_CURRENCY = "USD"
+        val DEFAULT_CRYPTO_CURRENCY = CryptoCurrency.BTC
+
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         const val KEY_SELECTED_FIAT = "ccurrency" // Historical misspelling, don't update
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         const val KEY_PRE_IDV_DEVICE_ID = "pre_idv_device_id"
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         const val KEY_LOGGED_OUT = "logged_out"
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val KEY_SELECTED_CRYPTO = "KEY_CURRENCY_CRYPTO_STATE"
 
         // For QA:
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

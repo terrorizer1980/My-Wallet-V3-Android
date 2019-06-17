@@ -46,6 +46,7 @@ abstract class BaseAirdropBottomDialog(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         dialog_title.setText(content.title)
         dialog_body.setText(content.description)
@@ -69,13 +70,13 @@ abstract class BaseAirdropBottomDialog(
             }
         }
 
-        xlm_icon.setOnClickListener { xlmLogoClick() }
+        img_icon.setOnClickListener { iconClick() }
         content.iconDrawable?.let {
-            xlm_icon.setImageResource(it)
+            img_icon.setImageResource(it)
         }
     }
 
-    abstract fun xlmLogoClick()
+    abstract fun iconClick()
 
     abstract fun ctaButtonClick()
 

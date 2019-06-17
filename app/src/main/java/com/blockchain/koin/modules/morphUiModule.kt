@@ -45,7 +45,7 @@ val morphUiModule = applicationContext {
                     currentTier = get(),
                     transactionExecutor = get("Priority"),
                     maximumSpendableCalculator = get("Priority"),
-                    currencyPreference = get(),
+                    currencyPrefs = get(),
                     exchangeRateDataStore = get(),
                     ethEligibility = get())
             }

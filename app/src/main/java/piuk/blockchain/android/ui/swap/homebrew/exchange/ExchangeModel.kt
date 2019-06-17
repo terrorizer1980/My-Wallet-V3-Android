@@ -28,6 +28,7 @@ import com.blockchain.morph.exchange.service.TradeLimitService
 import com.blockchain.morph.quote.ExchangeQuoteRequest
 import com.blockchain.nabu.CurrentTier
 import com.blockchain.nabu.EthEligibility
+import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -39,7 +40,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
-import com.blockchain.preferences.FiatCurrencyPreference
 import io.reactivex.rxkotlin.withLatestFrom
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import timber.log.Timber
@@ -55,7 +55,7 @@ class ExchangeModel(
     private val exchangeRateDataStore: ExchangeRateDataStore,
     private val transactionExecutor: TransactionExecutorWithoutFees,
     private val maximumSpendableCalculator: MaximumSpendableCalculator,
-    private val currencyPreference: FiatCurrencyPreference
+    private val currencyPrefs: CurrencyPrefs
 ) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
@@ -91,7 +91,7 @@ class ExchangeModel(
     }
 
     private fun initDialog(quoteService: QuoteService) {
-        val fiatCurrency = currencyPreference.fiatCurrencyPreference
+        val fiatCurrency = currencyPrefs.selectedFiatCurrency
         newDialog(
             fiatCurrency,
             quoteService,
@@ -147,12 +147,20 @@ class ExchangeModel(
         }
 
         dialogDisposable += exchangeRateDataStore.updateExchangeRates().subscribeBy {
-                inputEventSink.onNext(ExchangeRateIntent(CryptoCurrency.values().map {
-                    ExchangeRate.CryptoToFiat(it,
-                        currencyPreference.fiatCurrencyPreference,
-                        exchangeRateDataStore.getLastPrice(it,
-                            currencyPreference.fiatCurrencyPreference).toBigDecimal())
-                }))
+                inputEventSink.onNext(
+                    ExchangeRateIntent(
+                        CryptoCurrency.values().map {
+                            ExchangeRate.CryptoToFiat(
+                                it,
+                                currencyPrefs.selectedFiatCurrency,
+                                exchangeRateDataStore.getLastPrice(
+                                    it,
+                                    currencyPrefs.selectedFiatCurrency
+                                ).toBigDecimal()
+                            )
+                        }
+                    )
+                )
             }
 
         dialogDisposable += exchangeDialog.viewStates.distinctUntilChanged()

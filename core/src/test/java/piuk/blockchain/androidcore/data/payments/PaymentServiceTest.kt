@@ -57,8 +57,7 @@ class PaymentServiceTest {
 
     @Before
     fun setUp() {
-        subject =
-            PaymentService(environmentSettings, payment, dustService)
+        subject = PaymentService(environmentSettings, payment, dustService)
 
         whenever(environmentSettings.bitcoinNetworkParameters)
             .thenReturn(BitcoinMainNetParams.get())

@@ -17,6 +17,7 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AlertDialog
@@ -75,15 +76,12 @@ import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
-import piuk.blockchain.androidcore.utils.annotations.Thunk
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
-import piuk.blockchain.androidcoreui.utils.helperfunctions.CustomFont
-import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
 import timber.log.Timber
 
 import javax.inject.Inject
@@ -94,7 +92,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     ConfirmPaymentDialog.OnConfirmDialogInteractionListener,
     FrontendJavascript<String> {
 
-    @Thunk
     var drawerOpen = false
         internal set
 
@@ -168,7 +165,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         Injector.getInstance().presenterComponent.inject(this)
     }
 
-    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -211,7 +207,9 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             isForceTint = true
 
             setUseElevation(true)
-            loadFont(context, CustomFont.MONTSERRAT_LIGHT) { t -> setTitleTypeface(t) }
+            setTitleTypeface(ResourcesCompat.getFont(context, R.font.inter_medium))
+
+            setTitleTextSizeInSp(10.0f, 10.0f)
 
             // Select Dashboard by default
             setOnTabSelectedListener(tabSelectedListener)
@@ -219,7 +217,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         }
     }
 
-    @SuppressLint("NewApi")
     override fun onResume() {
         super.onResume()
 
@@ -324,8 +321,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             ToastCustom.TYPE_GENERAL)
     }
 
-    @Thunk
-    internal fun startScanActivity() {
+    private fun startScanActivity() {
         if (!appUtil.isCameraOpen) {
             val intent = Intent(this@MainActivity, CaptureActivity::class.java)
             startActivityForResult(intent, SCAN_URI)
@@ -411,16 +407,24 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         }
     }
 
-    @Thunk
-    internal fun requestScan() {
+    private fun requestScan() {
+
+        val fragment = if (BuildConfig.DEBUG) {
+            // We're getting a number of 'unknowns' in the request scan analytics, and I want to know why
+            // So crash here if currentFragment is null... TODO: Don't forget to take this out!
+            currentFragment::class.simpleName ?: throw IllegalStateException("WTF?")
+        } else {
+            currentFragment::class.simpleName ?: "unknown"
+        }
+
         analytics.logEvent(object : AnalyticsEvent {
             override val event = "qr_scan_requested"
-            override val params = mapOf("fragment" to (currentFragment::class.simpleName ?: "unknown"))
+            override val params = mapOf("fragment" to fragment)
         })
 
         val deniedPermissionListener = SnackbarOnDeniedPermissionListener.Builder
             .with(binding.root, R.string.request_camera_permission)
-            .withButton(android.R.string.ok) { v -> requestScan() }
+            .withButton(android.R.string.ok) { requestScan() }
             .build()
 
         val grantedPermissionListener = object : BasePermissionListener() {
@@ -809,7 +813,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
                     bottom_navigation.currentItem = ITEM_RECEIVE
                 }
                 ACTION_BUY -> presenter.routeToBuySell()
-                ACTION_EXCHANGE -> launchSwapOrKyc()
                 ACTION_SUNRIVER_KYC -> launchKyc(CampaignType.Sunriver)
                 ACTION_EXCHANGE_KYC -> launchKyc(CampaignType.Swap)
                 ACTION_RESUBMIT_KYC -> launchKyc(CampaignType.Resubmission)
@@ -822,7 +825,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_SEND))
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_RECEIVE))
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_BUY))
-            broadcastManager.registerReceiver(this, IntentFilter(ACTION_EXCHANGE))
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_EXCHANGE_KYC))
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_SUNRIVER_KYC))
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_RESUBMIT_KYC))
@@ -837,7 +839,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         const val ACTION_SEND = "info.blockchain.wallet.ui.BalanceFragment.SEND"
         const val ACTION_RECEIVE = "info.blockchain.wallet.ui.BalanceFragment.RECEIVE"
         const val ACTION_BUY = "info.blockchain.wallet.ui.BalanceFragment.BUY"
-        const val ACTION_EXCHANGE = "info.blockchain.wallet.ui.BalanceFragment.ACTION_EXCHANGE"
         const val ACTION_BUY_SELL_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_BUY_SELL_KYC"
         const val ACTION_EXCHANGE_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_EXCHANGE_KYC"
         const val ACTION_SUNRIVER_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_SUNRIVER_KYC"

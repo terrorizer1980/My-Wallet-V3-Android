@@ -1,6 +1,5 @@
 package com.blockchain.koin
 
-import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.blockchain.accounts.AccountList
 import com.blockchain.accounts.AllAccountList
@@ -37,7 +36,7 @@ import com.blockchain.logging.NullLogger
 import com.blockchain.logging.TimberLogger
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.payload.PayloadDecrypt
-import com.blockchain.preferences.FiatCurrencyPreference
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.sunriver.XlmHorizonUrlFetcher
 import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
 import com.blockchain.wallet.DefaultLabels
@@ -62,8 +61,8 @@ import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateService
+import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
-import piuk.blockchain.androidcore.data.exchangerate.ratesFor
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.metadata.MoshiMetadataRepositoryAdapter
@@ -93,7 +92,6 @@ import piuk.blockchain.androidcore.utils.DeviceIdGeneratorImpl
 import piuk.blockchain.androidcore.utils.MetadataUtils
 import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.SharedPreferencesFiatCurrencyPreference
 import piuk.blockchain.androidcore.utils.UUIDGenerator
 import java.util.UUID
 
@@ -236,10 +234,12 @@ val coreModule = applicationContext {
 
         bean { ExchangeRateDataStore(get(), get()) }
 
-        /**
-         * Yields a FiatExchangeRates preset for the users preferred currency and suitable for use in CryptoValue.toFiat
-         */
-        factory { get<ExchangeRateDataManager>().ratesFor(get<FiatCurrencyPreference>()) }
+        factory {
+            FiatExchangeRates(
+                exchangeRates = get(),
+                currencyPrefs = get()
+            )
+        }
 
         factory { FeeDataManager(get(), get(), get()) }
 
@@ -278,16 +278,12 @@ val coreModule = applicationContext {
     }.bind(UUIDGenerator::class)
 
     bean {
-        val store: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(/* context = */ get())
-
         PrefsUtil(
-            store = store,
+            store = PreferenceManager.getDefaultSharedPreferences(/* context = */ get()),
             idGenerator = get(),
             uuidGenerator = get()
         )
-    }.bind(PersistentPrefs::class)
-
-    bean { SharedPreferencesFiatCurrencyPreference(get()) as FiatCurrencyPreference }
+    }.bind(PersistentPrefs::class).bind(CurrencyPrefs::class)
 
     factory { CurrencyFormatUtil() }
 

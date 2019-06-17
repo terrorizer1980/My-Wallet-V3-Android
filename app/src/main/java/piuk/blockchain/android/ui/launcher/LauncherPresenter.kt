@@ -127,7 +127,7 @@ class LauncherPresenter @Inject constructor(
     }
 
     private fun setCurrencyUnits(settings: Settings) {
-        prefs.setSelectedFiatCurrency(settings.currency)
+        prefs.selectedFiatCurrency = settings.currency
     }
 
     companion object {

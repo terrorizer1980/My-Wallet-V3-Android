@@ -27,7 +27,7 @@ class CoinifyKycBottomDialog : BaseAirdropBottomDialog(
         analytics.logEvent(AnalyticsEvents.CoinifyKycBottomDialog)
     }
 
-    override fun xlmLogoClick() {
+    override fun iconClick() {
         analytics.logEvent(AnalyticsEvents.CoinifyKycBottomDialogClickedRocket)
         startKycAndDismiss()
     }

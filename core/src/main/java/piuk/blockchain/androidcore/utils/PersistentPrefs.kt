@@ -1,13 +1,13 @@
 package piuk.blockchain.androidcore.utils
 
-interface PersistentPrefs {
+import com.blockchain.preferences.CurrencyPrefs
 
+interface PersistentPrefs :
+    CurrencyPrefs {
     val isLoggedOut: Boolean
     var isOnboardingComplete: Boolean
 
     val deviceId: String // Pre-IDV device identifier
-
-    val selectedFiatCurrency: String
 
     fun getValue(name: String): String?
     fun getValue(name: String, defaultValue: String): String
@@ -28,8 +28,6 @@ interface PersistentPrefs {
     fun logOut()
 
     fun logIn()
-
-    fun setSelectedFiatCurrency(fiat: String)
 
     // Allow QA to randomise device ids when testing kyc
     var qaRandomiseDeviceId: Boolean
@@ -59,7 +57,6 @@ interface PersistentPrefs {
         const val KEY_SCREENSHOTS_ENABLED = "screenshots_enabled"
         const val KEY_ONBOARDING_COMPLETE = "onboarding_complete_1"
         const val KEY_OVERLAY_TRUSTED = "overlay_trusted"
-        const val KEY_CURRENCY_CRYPTO_STATE = "KEY_CURRENCY_CRYPTO_STATE"
         const val KEY_PUSH_NOTIFICATION_ENABLED = "push_notification_enabled"
 
         const val KEY_LATEST_ANNOUNCEMENT_DISMISSED = "latest_announcement_dismissed"

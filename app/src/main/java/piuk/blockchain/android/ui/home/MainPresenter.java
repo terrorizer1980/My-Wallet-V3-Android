@@ -14,7 +14,6 @@ import com.blockchain.kycui.sunriver.SunriverCampaignHelper;
 import com.blockchain.kycui.sunriver.SunriverCardType;
 import com.blockchain.lockbox.data.LockboxDataManager;
 import com.blockchain.nabu.CurrentTier;
-import com.blockchain.preferences.FiatCurrencyPreference;
 import com.blockchain.sunriver.XlmDataManager;
 
 import info.blockchain.balance.CryptoCurrency;
@@ -97,7 +96,6 @@ public class MainPresenter extends BasePresenter<MainView> {
     private ExchangeService exchangeService;
     private KycStatusHelper kycStatusHelper;
     private CurrentTier currentKycTier;
-    private FiatCurrencyPreference fiatCurrencyPreference;
     private LockboxDataManager lockboxDataManager;
     private DeepLinkProcessor deepLinkProcessor;
     private SunriverCampaignHelper sunriverCampaignHelper;
@@ -128,7 +126,6 @@ public class MainPresenter extends BasePresenter<MainView> {
                   ExchangeService exchangeService,
                   KycStatusHelper kycStatusHelper,
                   CurrentTier currentKycTier,
-                  FiatCurrencyPreference fiatCurrencyPreference,
                   LockboxDataManager lockboxDataManager,
                   DeepLinkProcessor deepLinkProcessor,
                   SunriverCampaignHelper sunriverCampaignHelper,
@@ -159,7 +156,6 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.exchangeService = exchangeService;
         this.kycStatusHelper = kycStatusHelper;
         this.currentKycTier = currentKycTier;
-        this.fiatCurrencyPreference = fiatCurrencyPreference;
         this.lockboxDataManager = lockboxDataManager;
         this.deepLinkProcessor = deepLinkProcessor;
         this.sunriverCampaignHelper = sunriverCampaignHelper;
@@ -498,7 +494,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     String getDefaultCurrency() {
-        return fiatCurrencyPreference.getFiatCurrencyPreference();
+        return prefs.getSelectedFiatCurrency();
     }
 
     private void initBuyService() {
@@ -590,7 +586,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                 currentTier -> {
                     if (currentTier > 0) {
                         getView().launchSwap(
-                            fiatCurrencyPreference.getFiatCurrencyPreference(),
+                            prefs.getSelectedFiatCurrency(),
                             targetCurrency
                         );
                     } else {

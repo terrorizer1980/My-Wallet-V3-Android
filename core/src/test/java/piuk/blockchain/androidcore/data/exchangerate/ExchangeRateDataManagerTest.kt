@@ -2,9 +2,7 @@ package piuk.blockchain.androidcore.data.exchangerate
 
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
-import com.blockchain.testutils.cad
 import com.blockchain.testutils.ether
-import com.blockchain.testutils.gbp
 import com.blockchain.testutils.lumens
 import com.blockchain.testutils.rxInit
 import com.blockchain.testutils.usd
@@ -18,7 +16,6 @@ import org.junit.Before
 import org.junit.Rule
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import com.blockchain.preferences.FiatCurrencyPreference
 import java.math.BigDecimal
 import java.util.Locale
 import kotlin.test.Test
@@ -131,62 +128,6 @@ class ExchangeRateDataManagerTest {
     }
 
     @Test
-    fun `BTC toFiat via rateFor`() {
-        givenExchangeRate(CryptoCurrency.BTC, "GBP", 5000.0)
-
-        val rate = subject.ratesFor("GBP")
-
-        0.01.bitcoin().toFiat(rate) `should equal` 50.gbp()
-    }
-
-    @Test
-    fun `BCH toFiat via ratesFor`() {
-        givenExchangeRate(CryptoCurrency.BCH, "CAD", 1000.0)
-
-        val rate = subject.ratesFor("CAD")
-
-        0.1.bitcoinCash().toFiat(rate) `should equal` 100.cad()
-    }
-
-    @Test
-    fun `ETH toFiat via two ratesFor`() {
-        givenExchangeRate(CryptoCurrency.ETHER, "CAD", 2000.0)
-        givenExchangeRate(CryptoCurrency.ETHER, "USD", 1000.0)
-
-        val cadRate = subject.ratesFor("CAD")
-        val usdRate = subject.ratesFor("USD")
-
-        2.ether().toFiat(cadRate) `should equal` 4000.cad()
-        2.ether().toFiat(usdRate) `should equal` 2000.usd()
-    }
-
-    @Test
-    fun `multiple currencies from one ratesFor`() {
-        givenExchangeRate(CryptoCurrency.BTC, "CAD", 1000.0)
-        givenExchangeRate(CryptoCurrency.ETHER, "CAD", 500.0)
-
-        val cadRate = subject.ratesFor("CAD")
-
-        2.bitcoin().toFiat(cadRate) `should equal` 2000.cad()
-        2.ether().toFiat(cadRate) `should equal` 1000.cad()
-    }
-
-    @Test
-    fun `ratesFor from preference`() {
-        givenExchangeRate(CryptoCurrency.BTC, "GBP", 1000.0)
-        givenExchangeRate(CryptoCurrency.ETHER, "GBP", 500.0)
-
-        val cadRate = subject.ratesFor(
-            object : FiatCurrencyPreference {
-                override val fiatCurrencyPreference: String
-                    get() = "GBP"
-            })
-
-        2.bitcoin().toFiat(cadRate) `should equal` 2000.gbp()
-        2.ether().toFiat(cadRate) `should equal` 1000.gbp()
-    }
-
-    @Test
     fun `USD toCrypto BTC`() {
         givenExchangeRate(CryptoCurrency.BTC, "USD", 5000.0)
 
@@ -205,24 +146,6 @@ class ExchangeRateDataManagerTest {
         givenExchangeRate(CryptoCurrency.ETHER, "USD", 1000.0)
 
         2000.usd().toCrypto(subject, CryptoCurrency.ETHER) `should equal` 2.ether()
-    }
-
-    @Test
-    fun `USD toCrypto via rateFor`() {
-        givenExchangeRate(CryptoCurrency.BTC, "GBP", 5000.0)
-
-        val rate = subject.ratesFor("GBP")
-
-        50.gbp().toCrypto(rate, CryptoCurrency.BTC) `should equal` 0.01.bitcoin()
-    }
-
-    @Test
-    fun `USD toCrypto via rateFor for wrong fiat`() {
-        givenExchangeRate(CryptoCurrency.BTC, "USD", 5000.0)
-
-        val rate = subject.ratesFor("GBP")
-
-        50.usd().toCrypto(rate, CryptoCurrency.BTC) `should equal` 0.01.bitcoin()
     }
 
     @Test

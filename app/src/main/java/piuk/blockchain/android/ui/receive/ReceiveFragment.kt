@@ -234,8 +234,8 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     private fun updateUnits() {
-        currencyCrypto.text = presenter.getCryptoUnit()
-        currencyFiat.text = presenter.getFiatUnit()
+        currencyCrypto.text = presenter.cryptoUnit
+        currencyFiat.text = presenter.fiatUnit
     }
 
     private val btcTextWatcher = object : AfterTextChangedWatcher() {

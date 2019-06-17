@@ -8,7 +8,6 @@ import com.blockchain.koin.modules.apiInterceptorsModule
 import com.blockchain.koin.modules.appBuySellModule
 import com.blockchain.koin.modules.appProperties
 import com.blockchain.koin.modules.applicationModule
-import com.blockchain.koin.modules.dashboardModule
 import com.blockchain.koin.modules.environmentModule
 import com.blockchain.koin.modules.homeBrewModule
 import com.blockchain.koin.modules.keys
@@ -50,7 +49,6 @@ object KoinStarter {
                 coreUiFeatureFlagsModule,
                 coreUiModule,
                 dashboardAnnouncementsModule,
-                dashboardModule,
                 environmentModule,
                 homeBrewModule,
                 kycCoinifyModule,
