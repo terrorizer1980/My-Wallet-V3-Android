@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.serialization.JsonSerializableAccount
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -40,7 +41,7 @@ import java.math.BigInteger
 import java.math.RoundingMode
 import java.util.concurrent.TimeUnit
 
-class paxSendStrategy(
+class PaxSendStrategy(
     private val walletAccountHelper: WalletAccountHelper,
     private val payloadDataManager: PayloadDataManager,
     private val ethDataManager: EthDataManager,
@@ -50,6 +51,7 @@ class paxSendStrategy(
     private val currencyFormatter: CurrencyFormatManager,
     private val exchangeRates: FiatExchangeRates,
     private val stringUtils: StringUtils,
+    private val currencyPrefs: CurrencyPrefs,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
@@ -238,7 +240,7 @@ class paxSendStrategy(
             cryptoUnit = CryptoCurrency.PAX.symbol
             cryptoFeeUnit = CryptoCurrency.ETHER.symbol
 
-            fiatUnit = exchangeRates.fiatUnit
+            fiatUnit = currencyPrefs.selectedFiatCurrency
             fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode)
 
             val paxValue = CryptoValue.usdPaxFromMinor(pendingTx.amountPax)

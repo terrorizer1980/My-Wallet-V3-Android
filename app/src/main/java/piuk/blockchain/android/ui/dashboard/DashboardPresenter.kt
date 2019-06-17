@@ -10,7 +10,6 @@ import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.nabu.CurrentTier
-import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.sunriver.ui.ClaimFreeCryptoSuccessDialog
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
@@ -68,7 +67,6 @@ class DashboardPresenter(
     private val accessState: AccessState,
     private val buyDataManager: BuyDataManager,
     private val rxBus: RxBus,
-    private val fiatCurrencyPreference: FiatCurrencyPreference,
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     private val currencyFormatManager: CurrencyFormatManager,
     private val kycTiersQueries: KycTiersQueries,
@@ -136,7 +134,7 @@ class DashboardPresenter(
             currentTier.usersCurrentTier().toObservable().zipWith(Observable.just(currency))
         }.subscribe { (tier, currency) ->
             if (tier > 0) {
-                view.goToExchange(currency, fiatCurrencyPreference.fiatCurrencyPreference)
+                view.goToExchange(currency, prefs.selectedFiatCurrency)
             } else {
                 view.startKycFlowWithNavigator(CampaignType.Swap)
             }

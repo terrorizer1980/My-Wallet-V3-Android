@@ -209,7 +209,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
             getDefaultDecimalSeparator()
         ).toString()
 
-        val fiatValue = FiatValue.fromMajorOrZero(exchangeRates.fiatUnit, fiat)
+        val fiatValue = FiatValue.fromMajorOrZero(prefs.selectedFiatCurrency, fiat)
         val cryptoValue = fiatValue.toCrypto(exchangeRates, selectedCrypto)
 
         view.updateCryptoAmount(cryptoValue, true)

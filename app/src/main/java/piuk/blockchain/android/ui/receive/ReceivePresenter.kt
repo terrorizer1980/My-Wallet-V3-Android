@@ -61,8 +61,10 @@ class ReceivePresenter(
 
     fun getMaxCryptoDecimalLength() = currencyState.cryptoCurrency.dp
 
-    fun getCryptoUnit() = currencyState.cryptoCurrency.symbol
-    fun getFiatUnit() = fiatExchangeRates.fiatUnit
+    val cryptoUnit
+        get() = currencyState.cryptoCurrency.symbol
+    val fiatUnit
+        get() = prefs.selectedFiatCurrency
 
     override fun onViewReady() {
         if (environmentSettings.environment == Environment.TESTNET) {
@@ -320,7 +322,7 @@ class ReceivePresenter(
 
     internal fun updateBtcTextField(fiat: String) {
         view.updateBtcTextField(
-            FiatValue.fromMajorOrZero(fiatExchangeRates.fiatUnit, fiat)
+            FiatValue.fromMajorOrZero(fiatUnit, fiat)
                 .toCrypto(fiatExchangeRates, currencyState.cryptoCurrency)
                 .format()
         )

@@ -6,19 +6,19 @@ import com.blockchain.morph.trade.MorphTradeStatus
 import com.blockchain.nabu.dataadapters.NabuTradeAdapter
 import com.blockchain.nabu.dataadapters.NabuTradeStatusResponseAdapter
 import com.blockchain.nabu.service.NabuMarketsService
-import com.blockchain.preferences.FiatCurrencyPreference
+import com.blockchain.preferences.CurrencyPrefs
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 
 internal class NabuDataManagerAdapter(
     private val nabuMarketsService: NabuMarketsService,
-    private val currencyPreference: FiatCurrencyPreference
+    private val currencyPreference: CurrencyPrefs
 ) : MorphTradeDataManager {
 
     override fun findTrade(depositAddress: String): Single<MorphTrade> =
         nabuMarketsService
-            .getTrades(currencyPreference.fiatCurrencyPreference)
+            .getTrades(currencyPreference.selectedFiatCurrency)
             .flattenAsObservable { it }
             .filter { it.depositAddress == depositAddress }
             .map<MorphTrade> { NabuTradeAdapter(it) }
@@ -26,14 +26,14 @@ internal class NabuDataManagerAdapter(
 
     override fun getTrades(): Single<List<MorphTrade>> =
         nabuMarketsService
-            .getTrades(currencyPreference.fiatCurrencyPreference)
+            .getTrades(currencyPreference.selectedFiatCurrency)
             .flattenAsObservable { it }
             .map<MorphTrade> { NabuTradeAdapter(it) }
             .toList()
 
     override fun getTradeStatus(depositAddress: String): Observable<MorphTradeStatus> =
         nabuMarketsService
-            .getTrades(currencyPreference.fiatCurrencyPreference)
+            .getTrades(currencyPreference.selectedFiatCurrency)
             .flattenAsObservable { it }
             .filter { it.depositAddress == depositAddress }
             .map<MorphTradeStatus> { NabuTradeStatusResponseAdapter(it) }

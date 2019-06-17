@@ -5,7 +5,6 @@ import android.content.Context
 import android.support.v7.app.AlertDialog
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.access.AccessState
-import piuk.blockchain.android.ui.account.AccountPresenter
 import piuk.blockchain.android.util.AppRate
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -38,19 +37,7 @@ internal class EnvironmentSwitcher(
     }
 
     private fun resetPrefs() {
-        with(prefs) {
-            removeValue(PersistentPrefs.KEY_PIN_FAILS)
-            removeValue(PersistentPrefs.KEY_SECURITY_TIME_ELAPSED)
-            removeValue(PersistentPrefs.KEY_SECURITY_BACKUP_NEVER)
-            removeValue(PersistentPrefs.KEY_SECURITY_TWO_FA_NEVER)
-            removeValue(AccountPresenter.KEY_WARN_TRANSFER_ALL)
-            removeValue(PersistentPrefs.KEY_APP_VISITS)
-            removeValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE)
-            removeValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_SEEN)
-            removeValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_DISMISSED)
-            removeValue(PersistentPrefs.KEY_CURRENCY_CRYPTO_STATE)
-            qaRandomiseDeviceId = false
-        }
+        prefs.clear()
 
         AppRate.reset(context)
         loginState.pin = null

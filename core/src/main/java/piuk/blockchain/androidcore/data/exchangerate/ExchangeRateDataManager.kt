@@ -1,5 +1,6 @@
 package piuk.blockchain.androidcore.data.exchangerate
 
+import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -10,7 +11,6 @@ import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataS
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
 import piuk.blockchain.androidcore.injection.PresenterScope
-import com.blockchain.preferences.FiatCurrencyPreference
 import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.inject.Inject
@@ -86,25 +86,22 @@ fun FiatValue.toCryptoOrNull(exchangeRateDataManager: ExchangeRateDataManager, c
  * Exchange rates for a single fiat currency.
  * Saves passing around a fiat currency string, or looking up the users preferred currency.
  */
-class FiatExchangeRates internal constructor(
-    internal val exchangeRateDataManager: ExchangeRateDataManager,
-    val fiatUnit: String
-) {
 
-    fun getFiat(cryptoValue: CryptoValue): FiatValue = cryptoValue.toFiat(exchangeRateDataManager, fiatUnit)
+class FiatExchangeRates constructor(
+    internal val exchangeRates: ExchangeRateDataManager,
+    internal val fiatUnit: String
+) {
+    constructor(exchangeRates: ExchangeRateDataManager, currencyPrefs: CurrencyPrefs) :
+        this(exchangeRates, currencyPrefs.selectedFiatCurrency)
+
+    fun getFiat(cryptoValue: CryptoValue): FiatValue = cryptoValue.toFiat(exchangeRates, fiatUnit)
 
     fun getCrypto(fiatValue: FiatValue, cryptoCurrency: CryptoCurrency): CryptoValue =
-        fiatValue.toCrypto(exchangeRateDataManager, cryptoCurrency)
+        fiatValue.toCrypto(exchangeRates, cryptoCurrency)
 }
 
 fun CryptoValue.toFiat(liveFiatExchangeRates: FiatExchangeRates) =
     liveFiatExchangeRates.getFiat(this)
-
-fun ExchangeRateDataManager.ratesFor(fiatUnit: String) =
-    FiatExchangeRates(this, fiatUnit)
-
-fun ExchangeRateDataManager.ratesFor(fiatCurrencyPreference: FiatCurrencyPreference) =
-    ratesFor(fiatCurrencyPreference.fiatCurrencyPreference)
 
 fun FiatValue.toCrypto(liveFiatExchangeRates: FiatExchangeRates, cryptoCurrency: CryptoCurrency) =
     liveFiatExchangeRates.getCrypto(this, cryptoCurrency)

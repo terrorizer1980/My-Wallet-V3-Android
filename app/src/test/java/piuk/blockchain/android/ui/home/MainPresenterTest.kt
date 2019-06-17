@@ -6,7 +6,6 @@ import com.blockchain.kycui.settings.KycStatusHelper
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.nabu.CurrentTier
-import com.blockchain.preferences.FiatCurrencyPreference
 import com.blockchain.sunriver.XlmDataManager
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
@@ -74,7 +73,6 @@ class MainPresenterTest {
     private val exchangeService: ExchangeService = mock()
     private val kycStatusHelper: KycStatusHelper = mock()
     private val currentKycTier: CurrentTier = mock()
-    private val fiatCurrencyPreference: FiatCurrencyPreference = mock()
     private val lockboxDataManager: LockboxDataManager = mock()
     private val deepLinkProcessor: DeepLinkProcessor = mock()
     private val sunriverCampaignHelper: SunriverCampaignHelper = mock()
@@ -113,7 +111,6 @@ class MainPresenterTest {
             exchangeService,
             kycStatusHelper,
             currentKycTier,
-            fiatCurrencyPreference,
             lockboxDataManager,
             deepLinkProcessor,
             sunriverCampaignHelper,
@@ -127,7 +124,7 @@ class MainPresenterTest {
     @Test
     fun `should go to kyc if tier is zero`() {
         // Arrange
-        whenever(fiatCurrencyPreference.fiatCurrencyPreference).thenReturn("USD")
+        whenever(prefs.selectedFiatCurrency).thenReturn("USD")
         whenever(currentKycTier.usersCurrentTier()).thenReturn(Single.just(0))
 
         // Act
@@ -142,7 +139,7 @@ class MainPresenterTest {
     @Test
     fun `should go to swap if tier is equal to 1`() {
         // Arrange
-        whenever(fiatCurrencyPreference.fiatCurrencyPreference).thenReturn("USD")
+        whenever(prefs.selectedFiatCurrency).thenReturn("USD")
         whenever(currentKycTier.usersCurrentTier()).thenReturn(Single.just(1))
 
         // Act
@@ -157,7 +154,7 @@ class MainPresenterTest {
     @Test
     fun `should go to swap if tier is higher that 1`() {
         // Arrange
-        whenever(fiatCurrencyPreference.fiatCurrencyPreference).thenReturn("USD")
+        whenever(prefs.selectedFiatCurrency).thenReturn("USD")
         whenever(currentKycTier.usersCurrentTier()).thenReturn(Single.just(2))
 
         // Act

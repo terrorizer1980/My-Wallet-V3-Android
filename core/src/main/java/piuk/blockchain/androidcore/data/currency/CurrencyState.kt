@@ -1,8 +1,8 @@
 package piuk.blockchain.androidcore.data.currency
 
 import com.blockchain.annotations.BurnCandidate
+import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 /**
  * Singleton class to store user's preferred crypto currency state.
@@ -10,7 +10,7 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
  */
 @Deprecated("Remove")
 @BurnCandidate("Global state is bad.")
-class CurrencyState(private val prefs: PersistentPrefs) {
+class CurrencyState(private val prefs: CurrencyPrefs) {
 
     enum class DisplayMode {
         Crypto,
@@ -35,9 +35,7 @@ class CurrencyState(private val prefs: PersistentPrefs) {
     val fiatUnit: String
         get() = prefs.selectedFiatCurrency
 
-    var cryptoCurrency: CryptoCurrency by CurrencyPreference(
-        prefs,
-        PersistentPrefs.KEY_CURRENCY_CRYPTO_STATE,
-        defaultCurrency = CryptoCurrency.BTC
-    )
+    var cryptoCurrency: CryptoCurrency
+        get() = prefs.selectedCryptoCurrency
+        set(value) { prefs.selectedCryptoCurrency = value }
 }
