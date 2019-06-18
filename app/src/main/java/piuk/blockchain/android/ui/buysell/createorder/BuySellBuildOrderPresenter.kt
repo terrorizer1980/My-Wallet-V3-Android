@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.buysell.createorder
 
+import android.annotation.SuppressLint
 import com.blockchain.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.nabu.extensions.toLocalTime
 import com.crashlytics.android.answers.AddToCartEvent
@@ -266,6 +267,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
         view.startOrderConfirmation(view.orderType, quote)
     }
 
+    @SuppressLint("CheckResult")
     private fun getSellDetails(
         amountToSend: Double,
         currencyToSend: String,
@@ -341,6 +343,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
             )
     }
 
+    @SuppressLint("CheckResult")
     private fun subscribeToSubjects() {
         sendSubject.applyDefaults()
             .flatMapSingle { amount ->
@@ -472,6 +475,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun loadMax(account: Account) {
         fetchFeesObservable()
             .flatMap { getBtcMaxObservable(account) }
@@ -487,6 +491,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
             )
     }
 
+    @SuppressLint("CheckResult")
     private fun initialiseUi() {
         // Get quote for value of 1 BTC for UI using default currency
         tokenSingle
@@ -508,31 +513,38 @@ class BuySellBuildOrderPresenter @Inject constructor(
                         .doOnNext {
                             maximumInCardAmount = trader.level.limits.card.inLimits.daily
                         }
-                        .flatMap { getPaymentMethods(token, inMedium).toObservable() }
+                        .flatMap { getPaymentMethods(token) }
                         .doOnNext { defaultCurrency = getDefaultCurrency(trader.defaultCurrency) }
-                        .doOnNext {
+                        .doOnNext { paymentMethods ->
+                            val topPaymentMethod = paymentMethods.first { it.inMedium == inMedium }
                             if (initialLoad) {
-                                selectCurrencies(it, inMedium, defaultCurrency)
+                                selectCurrencies(topPaymentMethod,
+                                    inMedium,
+                                    defaultCurrency)
                                 initialLoad = false
                             }
 
-                            inPercentageFee = it.inPercentageFee
-                            outPercentageFee = it.outPercentageFee
-                            outFixedFee = it.outFixedFees.btc
+                            inPercentageFee = topPaymentMethod.inPercentageFee
+                            outPercentageFee = topPaymentMethod.outPercentageFee
+                            outFixedFee = topPaymentMethod.outFixedFees.btc
 
                             minimumInAmount = if (view.orderType == OrderType.Sell) {
-                                it.minimumInAmounts.getLimitsForCurrency("btc")
+                                topPaymentMethod
+                                    .minimumInAmounts.getLimitsForCurrency("btc")
                             } else {
-                                it.minimumInAmounts.getLimitsForCurrency(selectedCurrency)
+                                findMinimumBuyAmountBasedOnPaymentMethods(paymentMethods, selectedCurrency)
                             }
                             maximumInAmounts = if (view.orderType == OrderType.Sell) {
-                                it.limitInAmounts.getLimitsForCurrency("btc")
+                                topPaymentMethod
+                                    .limitInAmounts.getLimitsForCurrency("btc")
                             } else {
-                                it.limitInAmounts.getLimitsForCurrency(selectedCurrency)
+                                topPaymentMethod
+                                    .limitInAmounts.getLimitsForCurrency(
+                                    selectedCurrency)
                             }
                         }
-                        .doOnNext { renderLimits(it.limitInAmounts) }
-                        .doOnNext { checkIfCanTrade(it) }
+                        .doOnNext { renderLimits(it.first { it.inMedium == inMedium }.limitInAmounts) }
+                        .doOnNext { checkIfCanTrade(it.first { it.inMedium == inMedium }) }
                 }
             }
             .subscribeBy(
@@ -542,6 +554,16 @@ class BuySellBuildOrderPresenter @Inject constructor(
                 }
             )
     }
+
+    private fun findMinimumBuyAmountBasedOnPaymentMethods(
+        paymentMethods: List<PaymentMethod>,
+        selectedCurrency: String
+    ): Double =
+        paymentMethods.filter {
+            it.inMedium == Medium.Card || it.inMedium == Medium.Bank
+        }.minBy {
+            it.minimumInAmounts.getLimitsForCurrency(selectedCurrency)
+        }?.minimumInAmounts?.getLimitsForCurrency(selectedCurrency) ?: 0.toDouble()
 
     private fun getDefaultCurrency(userDefaultCurrency: String): String = if (!isSell) {
         userDefaultCurrency
@@ -572,10 +594,8 @@ class BuySellBuildOrderPresenter @Inject constructor(
         view.showToast(R.string.buy_sell_error_fetching_quote, ToastCustom.TYPE_ERROR)
     }
 
-    private fun getPaymentMethods(token: String, inMedium: Medium): Single<PaymentMethod> =
+    private fun getPaymentMethods(token: String): Observable<List<PaymentMethod>> =
         coinifyDataManager.getPaymentMethods(token)
-            .filter { it.inMedium == inMedium }
-            .firstOrError()
 
     private fun selectCurrencies(
         paymentMethod: PaymentMethod,
@@ -716,7 +736,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
 
     // region Extension Functions
     private fun List<KycResponse>.hasPendingKyc(): Boolean = this.any { it.state.isProcessing() } &&
-        this.none { it.state == ReviewState.Completed }
+            this.none { it.state == ReviewState.Completed }
 
     private fun BigDecimal.sanitise() = this.stripTrailingZeros().toPlainString()
 

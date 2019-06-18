@@ -225,15 +225,14 @@ class CoinifyDataManager @Inject constructor(
         offlineToken: String,
         inCurrency: String? = null,
         outCurrency: String? = null
-    ): Observable<PaymentMethod> =
+    ): Observable<List<PaymentMethod>> =
         authenticate(offlineToken) {
             coinifyService.getPaymentMethods(
                 inCurrency = inCurrency,
                 outCurrency = outCurrency,
                 accessToken = it.accessToken
             )
-        }.flattenAsObservable { it }
-            .applySchedulers()
+        }.applySchedulers().toObservable()
 
     /**
      * Creates a new trade with Coinify and returns a [CoinifyTrade] object wrapped in a [Single].
