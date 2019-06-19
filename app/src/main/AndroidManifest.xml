@@ -197,7 +197,7 @@
             android:name=".ui.thepit.PitLandingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".ui.thepit.KycPromoPitActivity"
+            android:name=".ui.thepit.PitPermissionsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <service

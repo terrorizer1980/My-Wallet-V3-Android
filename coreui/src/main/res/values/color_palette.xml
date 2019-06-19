@@ -39,6 +39,7 @@
 
     <color name="blue_100">#D8EBFD</color>
     <color name="blue_200">#BBDBFC</color>
+    <color name="blue_400">#10ADE4</color>
     <color name="blue_600">#0C6CF2</color>
     <color name="blue_800">#144699</color>
     <color name="blue_900">#0D3578</color>

@@ -11,8 +11,6 @@ import piuk.blockchain.android.ui.auth.PinEntryActivity
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.ui.home.SecurityPromptDialog
 import piuk.blockchain.android.ui.settings.SettingsActivity
-import piuk.blockchain.android.ui.settings.SettingsFragment
-import piuk.blockchain.android.ui.settings.SettingsFragment.EXTRA_SHOW_ADD_EMAIL_DIALOG
 import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.injection.PresenterScope
@@ -203,7 +201,7 @@ class PromptManager @Inject constructor(
                 neverPrompt2Fa()
             }
             val bundle = Bundle()
-            bundle.putBoolean(SettingsFragment.EXTRA_SHOW_TWO_FA_DIALOG, true)
+            bundle.putBoolean(EXTRA_SHOW_TWO_FA_DIALOG, true)
             SettingsActivity.start(context, bundle)
         }
 
@@ -245,7 +243,9 @@ class PromptManager @Inject constructor(
     }
 
     companion object {
-
         private const val ONE_MONTH = 28 * 24 * 60 * 60 * 1000L
+
+        const val EXTRA_SHOW_ADD_EMAIL_DIALOG = "show_add_email_dialog"
+        const val EXTRA_SHOW_TWO_FA_DIALOG = "show_two_fa_dialog"
     }
 }

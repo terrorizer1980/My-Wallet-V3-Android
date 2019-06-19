@@ -138,4 +138,7 @@
     <color name="product_grey_transferred_50">#807b9eb1</color>
     <color name="pit_card_gradient_dark">@color/black_100</color>
     <color name="pit_card_gradient_light">@color/blue_1000</color>  <!-- still used? -->
+
+    <color name="prefs_status_background_blue">@color/blue_400</color>
+    <color name="prefs_status_background_green">@color/green_200</color>
 </resources>

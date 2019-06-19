@@ -43,7 +43,6 @@ import piuk.blockchain.android.ui.onboarding.OnboardingActivity;
 import piuk.blockchain.android.ui.pairingcode.PairingCodeActivity;
 import piuk.blockchain.android.ui.receive.ReceiveQrActivity;
 import piuk.blockchain.android.ui.recover.RecoverFundsActivity;
-import piuk.blockchain.android.ui.settings.SettingsFragment;
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity;
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity;
 import piuk.blockchain.androidcore.injection.PresenterScope;
@@ -93,8 +92,6 @@ public interface PresenterComponent {
     void inject(@NotNull OnboardingActivity onboardingActivity);
 
     void inject(@NotNull AccountActivity accountActivity);
-
-    void inject(@NotNull SettingsFragment settingsFragment);
 
     void inject(@NotNull ReceiveQrActivity receiveQrActivity);
 

@@ -10,10 +10,9 @@ import piuk.blockchain.android.data.fingerprint.FingerprintAuth
 import piuk.blockchain.androidcore.injection.PresenterScope
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import java.io.UnsupportedEncodingException
-import javax.inject.Inject
 
 @PresenterScope
-class FingerprintHelper @Inject constructor(
+class FingerprintHelper constructor(
     private val applicationContext: Context,
     private val prefs: PersistentPrefs,
     private val fingerprintAuth: FingerprintAuth

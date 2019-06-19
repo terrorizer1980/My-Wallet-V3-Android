@@ -1027,10 +1027,6 @@
     </string>
     <string name="stablecoin_announcement_introducing_link">Exchange for PAX Now</string>
 
-    <!--Pit-->
-    <string name="pit_announcement_description">It\'s time to Level Up to a better crypto exchange. First 100,000 traders to sign up will trade free for 30 days.</string>
-    <string name="pit_announcement_introducing_link">Check it out</string>
-
     <!-- Complete Your Profile Card -->
     <string name="complete_your_profile_card_title">Go for Gold</string>
     <string name="complete_your_profile_card_body">Complete your profile to start instantly trading
@@ -1216,6 +1212,8 @@
     <string name="swap_info_order_history">Order History</string>
 
     <!-- The Pit linking -->
+    <string name="pit_announcement_description">It\'s time to Level Up to a better crypto exchange. First 100,000 traders to sign up will trade free for 30 days.</string>
+    <string name="pit_announcement_introducing_link">Check it out</string>
     <string name="pit_landing_learn_more"><annotation link="pit_info">Learn more.</annotation></string>
     <string name="pit_landing_title">Level up to our new exchange for unlimited trading in the most desired cryptocurrency pairs.</string>
     <string name="pit_landing_heading_1">Fast and Liquid</string>
@@ -1231,12 +1229,16 @@
     <string name="pit_security_kyc_promo"><![CDATA[Liquid & Reliable]]></string>
     <string name="pit_built_kyc_promo">Built by Blockchain.com</string>
     <string name="pit_dollar_kyc_promo">Low Fees</string>
-    <string name="this_app_will_be_able">This application will be able to:</string>
-    <string name="this_app_will_not_be_able">Will not be able to:</string>
-    <string name="facilitate_crypto_transfers">Facilitate crypto transfers between accounts</string>
-    <string name="share_your_status">Share your Gold or Silver Level status</string>
-    <string name="add_your_linked_banks">Add your linked banks</string>
-    <string name="view_your_wallet_pass">View your wallet pass</string>
-    <string name="pit_promo_kyc_connect_now">Connect Now</string>
+    <string name="pit_permission_title">This application will be able to:</string>
+    <string name="pit_permission_subtitle">Will not be able to:</string>
+    <string name="pit_permission_1">Facilitate crypto transfers between accounts</string>
+    <string name="pit_permission_2">Share your Gold or Silver Level status</string>
+    <string name="pit_permission_3">Add your linked banks</string>
+    <string name="pit_permission_4">View your wallet pass</string>
+    <string name="pit_connect_now">Connect Now</string>
+
+    <string name="pit_setting_title">The Pit</string>
+    <string name="pit_setting_connect">Connect</string>
+    <string name="pit_setting_connected">Connected</string>
 
 </resources>

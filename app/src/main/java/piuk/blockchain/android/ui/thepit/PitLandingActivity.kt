@@ -6,7 +6,6 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.widget.Toast
 import com.blockchain.ui.dialoglinks.URL_THE_PIT_LANDING_LEARN_MORE
 import kotlinx.android.synthetic.main.activity_pit_landing.*
 import org.koin.android.ext.android.get
@@ -38,10 +37,7 @@ class PitLandingActivity : AppCompatActivity() {
     }
 
     private fun handleSignupClick() {
-        // TODO: AND-2200 / AND-2193 Add pit sign-up flow routing
-
-        Toast.makeText(this, "TODO: Hook this method up", Toast.LENGTH_SHORT).show()
-
+        PitPermissionsActivity.start(this)
         finish()
     }
 

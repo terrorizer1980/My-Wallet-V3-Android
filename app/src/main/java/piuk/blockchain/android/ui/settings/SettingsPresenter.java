@@ -31,8 +31,6 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AndroidUtils;
 import timber.log.Timber;
 
-import javax.inject.Inject;
-
 public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     private FingerprintHelper fingerprintHelper;
@@ -52,21 +50,22 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     @VisibleForTesting
     Settings settings;
 
-    @Inject
-    SettingsPresenter(FingerprintHelper fingerprintHelper,
-                      AuthDataManager authDataManager,
-                      SettingsDataManager settingsDataManager,
-                      EmailSyncUpdater emailUpdater,
-                      PayloadManager payloadManager,
-                      PayloadDataManager payloadDataManager,
-                      StringUtils stringUtils,
-                      PersistentPrefs prefs,
-                      AccessState accessState,
-                      SwipeToReceiveHelper swipeToReceiveHelper,
-                      NotificationTokenManager notificationTokenManager,
-                      ExchangeRateDataManager exchangeRateDataManager,
-                      CurrencyFormatManager currencyFormatManager,
-                      KycStatusHelper kycStatusHelper) {
+            // Show dialog "are you sure you want to disable fingerprint login?
+    public SettingsPresenter(
+            FingerprintHelper fingerprintHelper,
+            AuthDataManager authDataManager,
+            SettingsDataManager settingsDataManager,
+            EmailSyncUpdater emailUpdater,
+            PayloadManager payloadManager,
+            PayloadDataManager payloadDataManager,
+            StringUtils stringUtils,
+            PersistentPrefs prefs,
+            AccessState accessState,
+            SwipeToReceiveHelper swipeToReceiveHelper,
+            NotificationTokenManager notificationTokenManager,
+            ExchangeRateDataManager exchangeRateDataManager,
+            CurrencyFormatManager currencyFormatManager,
+            KycStatusHelper kycStatusHelper) {
 
         this.fingerprintHelper = fingerprintHelper;
         this.authDataManager = authDataManager;
@@ -218,7 +217,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      */
     void onFingerprintClicked() {
         if (getIfFingerprintUnlockEnabled()) {
-            // Show dialog "are you sure you want to disable fingerprint login?
             getView().showDisableFingerprintDialog();
         } else if (!fingerprintHelper.areFingerprintsEnrolled()) {
             // No fingerprints enrolled, prompt user to add some
@@ -493,7 +491,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     /**
      * Updates the user's password
      *
-     * @param password         The requested new password as a {@link String}
+     * @param password         The requested new password as a String
      * @param fallbackPassword The user's current password as a fallback
      */
     void updatePassword(@NonNull String password, @NonNull String fallbackPassword) {
@@ -576,5 +574,11 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     public String[] getCurrencyLabels() {
         return exchangeRateDataManager.getCurrencyLabels();
+    }
+
+    public void onThePitClicked() {
+        // TODO: If we're connected, do something else
+        // else:
+        getView().launchThePitLandingActivity();
     }
 }

@@ -27,6 +27,7 @@ import piuk.blockchain.android.data.datamanagers.QrCodeDataManager;
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager;
 import piuk.blockchain.android.deeplink.DeepLinkProcessor;
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter;
+import piuk.blockchain.android.ui.fingerprint.FingerprintHelper;
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence;
 import piuk.blockchain.android.ui.receive.WalletAccountHelper;
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper;
@@ -316,4 +317,7 @@ public class ApplicationModule extends KoinDaggerModule {
 
     @Provides
     OverlayDetection providesOverlayDetection() { return get(OverlayDetection.class); }
+
+    @Provides
+    FingerprintHelper providesFingerprintHelper() { return get(FingerprintHelper.class); }
 }
