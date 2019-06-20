@@ -241,6 +241,9 @@ dependencies {
     implementation Libraries.circleIndicator
     implementation Libraries.charts
 
+    // Google core
+    implementation Libraries.googlePlayCore
+
     api Libraries.appCompat
     implementation Libraries.navigationControllerCore
     implementation Libraries.navigationControllerFragments

@@ -1,5 +1,6 @@
 package piuk.blockchain.android.injection;
 
+import piuk.blockchain.android.ui.auth.PinEntryFragment;
 import piuk.blockchain.android.ui.swap.detail.TradeDetailActivity;
 import dagger.Subcomponent;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +11,6 @@ import piuk.blockchain.android.ui.auth.LandingActivity;
 import piuk.blockchain.android.ui.auth.LogoutActivity;
 import piuk.blockchain.android.ui.auth.PasswordRequiredActivity;
 import piuk.blockchain.android.ui.auth.PinEntryActivity;
-import piuk.blockchain.android.ui.auth.PinEntryFragment;
 import piuk.blockchain.android.ui.backup.completed.BackupWalletCompletedFragment;
 import piuk.blockchain.android.ui.backup.start.BackupWalletStartingFragment;
 import piuk.blockchain.android.ui.backup.transfer.ConfirmFundsTransferDialogFragment;

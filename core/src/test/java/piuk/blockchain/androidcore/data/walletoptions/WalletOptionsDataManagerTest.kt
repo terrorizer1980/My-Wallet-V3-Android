@@ -3,6 +3,8 @@ package piuk.blockchain.androidcore.data.walletoptions
 import com.blockchain.android.testutils.rxInit
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
+import info.blockchain.wallet.api.data.AndroidUpgrade
+import info.blockchain.wallet.api.data.UpdateType
 import info.blockchain.wallet.api.data.WalletOptions
 import io.reactivex.Observable
 import org.junit.Before
@@ -44,94 +46,64 @@ class WalletOptionsDataManagerTest {
     fun `checkForceUpgrade missing androidUpgrade JSON object`() {
         // Arrange
         val walletOptions: WalletOptions = mock()
-        val versionCode = 360
-        val sdk = 16
+        val versionName = "360.0.1"
+        whenever(walletOptions.androidUpdate).thenReturn(AndroidUpgrade())
         whenever(authService.getWalletOptions()).thenReturn(Observable.just(walletOptions))
         // Act
-        val testObserver = subject.checkForceUpgrade(versionCode, sdk).test()
+        val testObserver = subject.checkForceUpgrade(versionName).test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        testObserver.assertValue(false)
+        testObserver.assertValue(UpdateType.NONE)
     }
 
     @Test
     fun `checkForceUpgrade empty androidUpgrade JSON object`() {
         // Arrange
         val walletOptions: WalletOptions = mock()
-        whenever(walletOptions.androidUpgrade).thenReturn(emptyMap())
-        val versionCode = 360
-        val sdk = 16
+        whenever(walletOptions.androidUpdate).thenReturn(AndroidUpgrade())
+        val versionName = "360.0.1"
         whenever(authService.getWalletOptions()).thenReturn(Observable.just(walletOptions))
         // Act
-        val testObserver = subject.checkForceUpgrade(versionCode, sdk).test()
+        val testObserver = subject.checkForceUpgrade(versionName).test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        testObserver.assertValue(false)
+        testObserver.assertValue(UpdateType.NONE)
     }
 
     @Test
     fun `checkForceUpgrade ignore minSdk despite versionCode unsupported`() {
         // Arrange
         val walletOptions: WalletOptions = mock()
-        whenever(walletOptions.androidUpgrade).thenReturn(
-            mapOf(
-                "minSdk" to 18,
-                "minVersionCode" to 361
-            )
+        whenever(walletOptions.androidUpdate).thenReturn(
+            AndroidUpgrade("361.0.1", UpdateType.RECOMMENDED)
         )
-        val versionCode = 360
-        val sdk = 16
+        val versionName = "360.0.1"
         whenever(authService.getWalletOptions()).thenReturn(Observable.just(walletOptions))
         // Act
-        val testObserver = subject.checkForceUpgrade(versionCode, sdk).test()
+        val testObserver = subject.checkForceUpgrade(versionName).test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        testObserver.assertValue(false)
-    }
-
-    @Test
-    fun `checkForceUpgrade versionCode supported, minSdk lower than supplied`() {
-        // Arrange
-        val walletOptions: WalletOptions = mock()
-        whenever(walletOptions.androidUpgrade).thenReturn(
-            mapOf(
-                "minSdk" to 18,
-                "minVersionCode" to 360
-            )
-        )
-        val versionCode = 360
-        val sdk = 21
-        whenever(authService.getWalletOptions()).thenReturn(Observable.just(walletOptions))
-        // Act
-        val testObserver = subject.checkForceUpgrade(versionCode, sdk).test()
-        // Assert
-        testObserver.assertComplete()
-        testObserver.assertNoErrors()
-        testObserver.assertValue(false)
+        testObserver.assertValue(UpdateType.RECOMMENDED)
     }
 
     @Test
     fun `checkForceUpgrade should force upgrade`() {
         // Arrange
         val walletOptions: WalletOptions = mock()
-        whenever(walletOptions.androidUpgrade).thenReturn(
-            mapOf(
-                "minSdk" to 16,
-                "minVersionCode" to 361
-            )
+        whenever(walletOptions.androidUpdate).thenReturn(
+            AndroidUpgrade("361.0.1", UpdateType.FORCE)
         )
-        val versionCode = 360
-        val sdk = 16
+        val versionName = "360.0.1"
         whenever(authService.getWalletOptions()).thenReturn(Observable.just(walletOptions))
         // Act
-        val testObserver = subject.checkForceUpgrade(versionCode, sdk).test()
+        val testObserver = subject.checkForceUpgrade(versionName).test()
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
-        testObserver.assertValue(true)
+        testObserver.assertValue(UpdateType.FORCE)
     }
 
     @Test

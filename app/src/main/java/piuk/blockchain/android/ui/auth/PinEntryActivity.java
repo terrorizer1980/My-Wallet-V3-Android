@@ -10,33 +10,38 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
 import android.view.Window;
-
 import javax.inject.Inject;
-
 import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.R;
-import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.android.data.websocket.WebSocketService;
 import piuk.blockchain.android.databinding.ActivityPinEntryBinding;
 import piuk.blockchain.android.injection.Injector;
-import piuk.blockchain.androidcore.utils.PersistentPrefs;
-import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity;
-import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveFragment;
 import piuk.blockchain.android.util.OSUtil;
+import piuk.blockchain.androidcore.data.access.AccessState;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
+import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity;
+import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.OverlayDetection;
+
+import static piuk.blockchain.android.ui.auth.PinEntryFragmentKt.KEY_VALIDATING_PIN_FOR_RESULT;
 
 public class PinEntryActivity extends BaseAuthActivity implements
         PinEntryFragment.OnPinEntryFragmentInteractionListener,
         ViewPager.OnPageChangeListener {
 
-    @Inject protected OSUtil osUtil;
-    @Inject protected OverlayDetection overlayDetection;
-    @Inject protected AccessState loginState;
-    @Inject protected PersistentPrefs prefs;
-
-    @Thunk ActivityPinEntryBinding binding;
+    public static final int REQUEST_CODE_UPDATE = 188;
+    @Inject
+    protected OSUtil osUtil;
+    @Inject
+    protected OverlayDetection overlayDetection;
+    @Inject
+    protected AccessState loginState;
+    @Inject
+    protected PersistentPrefs prefs;
+    @Thunk
+    ActivityPinEntryBinding binding;
 
     private long backPressed;
     private PinEntryFragment pinEntryFragment;
@@ -57,7 +62,7 @@ public class PinEntryActivity extends BaseAuthActivity implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_pin_entry);
-        pinEntryFragment = PinEntryFragment.newInstance(!shouldHideSwipeToReceive());
+        pinEntryFragment = PinEntryFragment.Companion.newInstance(!shouldHideSwipeToReceive());
 
         final FragmentPagerAdapter fragmentPagerAdapter;
         if (shouldHideSwipeToReceive()) {
@@ -83,7 +88,7 @@ public class PinEntryActivity extends BaseAuthActivity implements
     }
 
     private boolean shouldHideSwipeToReceive() {
-        return getIntent().hasExtra(PinEntryFragment.KEY_VALIDATING_PIN_FOR_RESULT)
+        return getIntent().hasExtra(KEY_VALIDATING_PIN_FOR_RESULT)
                 || isCreatingNewPin()
                 || !prefs.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true);
     }
@@ -196,5 +201,4 @@ public class PinEntryActivity extends BaseAuthActivity implements
             return NUM_ITEMS;
         }
     }
-
 }

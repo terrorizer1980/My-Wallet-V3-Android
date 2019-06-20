@@ -20,10 +20,12 @@ import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
+import piuk.blockchain.android.ui.auth.PinEntryPresenter
 import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter
+import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.login.ManualPairingPresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
@@ -37,6 +39,7 @@ import piuk.blockchain.android.ui.send.strategy.EtherSendStrategy
 import piuk.blockchain.android.ui.send.strategy.SendStrategy
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.send.strategy.PaxSendStrategy
+import piuk.blockchain.android.ui.settings.SettingsPresenter
 import piuk.blockchain.android.ui.swap.SwapStarter
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
@@ -75,6 +78,14 @@ val applicationModule = applicationContext {
     factory { Locale.getDefault() }
 
     bean { CurrentContextAccess() }
+
+    factory {
+        FingerprintHelper(
+            applicationContext = get(),
+            prefs = get(),
+            fingerprintAuth = get()
+        )
+    }
 
     context("Payload") {
 
@@ -347,6 +358,40 @@ val applicationModule = applicationContext {
                 /* authDataManager = */ get(),
                 /* payloadDataManager = */ get(),
                 /* prefs = */ get()
+            )
+        }
+
+        factory {
+            SettingsPresenter(
+                /* fingerprintHelper = */ get(),
+                /* authDataManager = */ get(),
+                /* settingsDataManager = */ get(),
+                /* emailUpdater = */ get(),
+                /* payloadManager = */ get(),
+                /* payloadDataManager = */ get(),
+                /* stringUtils = */ get(),
+                /* prefs = */ get(),
+                /* accessState = */ get(),
+                /* swipeToReceiveHelper = */ get(),
+                /* notificationTokenManager = */ get(),
+                /* exchangeRateDataManager = */ get(),
+                /* currencyFormatManager = */ get(),
+                /* kycStatusHelper = */ get()
+            )
+        }
+
+        factory {
+            PinEntryPresenter(
+                mAuthDataManager = get(),
+                appUtil = get(),
+                prefs = get(),
+                mPayloadDataManager = get(),
+                mStringUtils = get(),
+                mFingerprintHelper = get(),
+                mAccessState = get(),
+                walletOptionsDataManager = get(),
+                environmentSettings = get(),
+                prngFixer = get()
             )
         }
     }

@@ -2,10 +2,12 @@ package piuk.blockchain.android.ui.settings;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+
 import com.blockchain.kyc.models.nabu.NabuApiException;
 import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes;
 import com.blockchain.kycui.settings.KycStatusHelper;
 import com.blockchain.notifications.NotificationTokenManager;
+
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.PayloadManager;
 import info.blockchain.wallet.settings.SettingsManager;
@@ -53,20 +55,20 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     Settings settings;
 
     @Inject
-    SettingsPresenter(FingerprintHelper fingerprintHelper,
-                      AuthDataManager authDataManager,
-                      SettingsDataManager settingsDataManager,
-                      EmailSyncUpdater emailUpdater,
-                      PayloadManager payloadManager,
-                      PayloadDataManager payloadDataManager,
-                      StringUtils stringUtils,
-                      PersistentPrefs prefs,
-                      AccessState accessState,
-                      SwipeToReceiveHelper swipeToReceiveHelper,
-                      NotificationTokenManager notificationTokenManager,
-                      ExchangeRateDataManager exchangeRateDataManager,
-                      CurrencyFormatManager currencyFormatManager,
-                      KycStatusHelper kycStatusHelper) {
+    public SettingsPresenter(FingerprintHelper fingerprintHelper,
+                             AuthDataManager authDataManager,
+                             SettingsDataManager settingsDataManager,
+                             EmailSyncUpdater emailUpdater,
+                             PayloadManager payloadManager,
+                             PayloadDataManager payloadDataManager,
+                             StringUtils stringUtils,
+                             PersistentPrefs prefs,
+                             AccessState accessState,
+                             SwipeToReceiveHelper swipeToReceiveHelper,
+                             NotificationTokenManager notificationTokenManager,
+                             ExchangeRateDataManager exchangeRateDataManager,
+                             CurrencyFormatManager currencyFormatManager,
+                             KycStatusHelper kycStatusHelper) {
 
         this.fingerprintHelper = fingerprintHelper;
         this.authDataManager = authDataManager;

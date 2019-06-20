@@ -80,8 +80,8 @@ import static android.app.Activity.RESULT_OK;
 import static piuk.blockchain.android.R.string.success;
 import static piuk.blockchain.android.constants.SettingsConstantsKt.URL_PRIVACY_POLICY;
 import static piuk.blockchain.android.constants.SettingsConstantsKt.URL_TOS_POLICY;
-import static piuk.blockchain.android.ui.auth.PinEntryFragment.KEY_VALIDATING_PIN_FOR_RESULT;
-import static piuk.blockchain.android.ui.auth.PinEntryFragment.REQUEST_CODE_VALIDATE_PIN;
+import static piuk.blockchain.android.ui.auth.PinEntryFragmentKt.KEY_VALIDATING_PIN_FOR_RESULT;
+import static piuk.blockchain.android.ui.auth.PinEntryFragmentKt.REQUEST_CODE_VALIDATE_PIN;
 import static piuk.blockchain.android.ui.settings.UpdateEmailDialogKt.showUpdateEmailDialog;
 
 public class SettingsFragment extends PreferenceFragmentCompat

@@ -23,6 +23,7 @@ object Versions {
     // Support Libraries
     const val supportLibs = "27.1.1"
     const val googleServices = "16.0.0"
+    const val googlePlayCore = "1.6.1"
     const val firebaseMessaging = "17.3.3"
     const val firebaseCore = "16.0.4"
     const val firebaseConfig = "16.0.1"
@@ -138,6 +139,7 @@ object Libraries {
     const val firebaseDynamicLink = "com.google.firebase:firebase-dynamic-links:${Versions.firebaseDynamicLink}"
     const val googlePlayServicesBase = "com.google.android.gms:play-services-base:${Versions.googleServices}"
     const val googlePlaces = "com.google.android.gms:play-services-places:${Versions.googleServices}"
+    const val googlePlayCore = "com.google.android.play:core:${Versions.googlePlayCore}"
 
     // Networking, RxJava
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
