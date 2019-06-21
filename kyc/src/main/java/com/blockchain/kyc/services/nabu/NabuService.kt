@@ -13,6 +13,7 @@ import com.blockchain.kyc.models.nabu.RecordCountryRequest
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SupportedDocuments
+import com.blockchain.kyc.models.nabu.WalletMercuryLink
 import com.blockchain.nabu.models.NabuOfflineTokenRequest
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.nabu.models.NabuSessionTokenResponse
@@ -176,6 +177,12 @@ class NabuService(retrofit: Retrofit) {
     ): Completable = service.registerCampaign(
         campaignRequest,
         campaignName,
+        sessionToken.authHeader
+    ).wrapErrorMessage()
+
+    internal fun linkWalletWithMercury(
+        sessionToken: NabuSessionTokenResponse
+    ): Single<WalletMercuryLink> = service.connectWalletWithMercury(
         sessionToken.authHeader
     ).wrapErrorMessage()
 

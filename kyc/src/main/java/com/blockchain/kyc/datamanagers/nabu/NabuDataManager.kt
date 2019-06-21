@@ -9,6 +9,7 @@ import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SupportedDocuments
+import com.blockchain.kyc.models.nabu.WalletMercuryLink
 import com.blockchain.kyc.services.nabu.NabuService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
@@ -109,6 +110,8 @@ interface NabuDataManager {
     fun invalidateToken()
 
     fun currentToken(offlineToken: NabuOfflineTokenResponse): Single<NabuSessionTokenResponse>
+
+    fun linkWalletWithMercury(offlineTokenResponse: NabuOfflineTokenResponse): Single<WalletMercuryLink>
 }
 
 internal class NabuDataManagerImpl(
@@ -315,6 +318,11 @@ internal class NabuDataManagerImpl(
             nabuTokenStore.getAccessToken()
                 .map { (it as Optional.Some).element }
                 .singleOrError()
+        }
+
+    override fun linkWalletWithMercury(offlineTokenResponse: NabuOfflineTokenResponse): Single<WalletMercuryLink> =
+        authenticate(offlineTokenResponse) {
+            nabuService.linkWalletWithMercury(it)
         }
 
     private fun <T> refreshOrReturnError(

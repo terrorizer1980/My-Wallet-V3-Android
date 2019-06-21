@@ -15,6 +15,7 @@ import com.blockchain.kyc.models.nabu.TierUpdateJson
 import com.blockchain.kyc.models.nabu.TiersJson
 import com.blockchain.kyc.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.kyc.models.nabu.VeriffToken
+import com.blockchain.kyc.models.nabu.WalletMercuryLink
 import com.blockchain.nabu.models.NabuOfflineTokenRequest
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.nabu.models.NabuSessionTokenResponse
@@ -145,4 +146,9 @@ internal interface Nabu {
         @Body coinifyTraderId: UpdateCoinifyTraderIdRequest,
         @Header("authorization") authorization: String
     ): Completable
+
+    @PUT(NABU_CONNECT_WALLET_MERCURY)
+    fun connectWalletWithMercury(
+        @Header("authorization") authorization: String
+    ): Single<WalletMercuryLink>
 }
