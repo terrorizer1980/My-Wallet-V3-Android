@@ -47,8 +47,6 @@ interface MainView : View, HomeNavigator {
 
     fun showTestnetWarning()
 
-    fun onStartLegacyBuySell()
-
     fun onStartBuySell()
 
     fun launchSwap(defCurrency: String, targetCrypto: CryptoCurrency? = null)

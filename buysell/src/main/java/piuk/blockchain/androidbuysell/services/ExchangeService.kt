@@ -81,8 +81,6 @@ class ExchangeService(
                 val trades = ArrayList<TradeData>()
                 when {
                     data.coinify != null -> trades.addAll(data.coinify?.trades ?: arrayListOf())
-                    data.sfox != null -> trades.addAll(data.sfox?.trades ?: arrayListOf())
-                    data.unocoin != null -> trades.addAll(data.unocoin?.trades ?: arrayListOf())
                 }
 
                 trades
