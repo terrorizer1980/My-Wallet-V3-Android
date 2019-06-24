@@ -1240,5 +1240,6 @@
     <string name="pit_setting_title">The Pit</string>
     <string name="pit_setting_connect">Connect</string>
     <string name="pit_setting_connected">Connected</string>
-
+    <string name="launch_the_pit">Launch The Pit</string>
+    <string name="pit_contact_support">Contact Support</string>
 </resources>

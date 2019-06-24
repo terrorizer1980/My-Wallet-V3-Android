@@ -71,7 +71,7 @@ import piuk.blockchain.android.ui.pairingcode.PairingCodeActivity
 import piuk.blockchain.android.ui.receive.ReceiveFragment
 import piuk.blockchain.android.ui.send.SendFragment
 import piuk.blockchain.android.ui.settings.SettingsActivity
-import piuk.blockchain.android.ui.thepit.PitLandingActivity
+import piuk.blockchain.android.ui.thepit.PitBottomDialog
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
@@ -79,6 +79,7 @@ import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
+import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -365,7 +366,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
                 this,
                 mainPresenter.defaultCurrency
             )
-            R.id.nav_the_pit -> PitLandingActivity.start(this)
+            R.id.nav_the_pit -> handleClickOnThePitItem()
             R.id.nav_addresses -> startActivityForResult(Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
             R.id.nav_buy -> presenter.routeToBuySell()
             R.id.login_web_wallet -> PairingCodeActivity.start(this)
@@ -374,6 +375,16 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             R.id.nav_logout -> showLogoutDialog()
         }
         binding.drawerLayout.closeDrawers()
+    }
+
+    private fun handleClickOnThePitItem() {
+        // TODO check status and handle properly
+        // PitLandingActivity.start(this)
+        val bottomSheetDialog =
+            PitBottomDialog.newInstance(ErrorBottomDialog.Content(getString(R.string.pit_setting_title),
+                "",
+                R.string.launch_the_pit, R.string.pit_contact_support, R.drawable.vector_pit_p))
+        bottomSheetDialog.show(supportFragmentManager, "BottomDialog")
     }
 
     private fun showLogoutDialog() {

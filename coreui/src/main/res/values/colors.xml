@@ -141,4 +141,6 @@
 
     <color name="prefs_status_background_blue">@color/blue_400</color>
     <color name="prefs_status_background_green">@color/green_200</color>
+    <color name="pit_bottom_dialog_buttons_text_color">@color/blue_400</color>
+    <color name="pit_bottom_dialog_divider">@color/grey_100</color>
 </resources>
