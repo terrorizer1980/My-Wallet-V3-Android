@@ -403,7 +403,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         return ethDataManager.initEthereumWallet(
                 stringUtils.getString(R.string.eth_default_account_label),
                 stringUtils.getString(R.string.pax_default_account_label)
-                )
+        )
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
                 .doOnError(throwable -> {
                     Logging.INSTANCE.logException(throwable);
@@ -565,12 +565,8 @@ public class MainPresenter extends BasePresenter<MainView> {
         buyDataManager.isCoinifyAllowed()
                 .compose(RxUtil.addObservableToCompositeDisposable(this))
                 .subscribe(coinifyAllowed -> {
-
-                    if (coinifyAllowed) {
+                    if (coinifyAllowed)
                         getView().onStartBuySell();
-                    } else {
-                        getView().onStartLegacyBuySell();
-                    }
                 }, Throwable::printStackTrace);
     }
 
@@ -581,19 +577,19 @@ public class MainPresenter extends BasePresenter<MainView> {
     @SuppressLint("CheckResult")
     void startSwapOrKyc(@Nullable CryptoCurrency targetCurrency /* = null*/) {
         currentKycTier.usersCurrentTier()
-            .compose(RxUtil.addSingleToCompositeDisposable(this))
-            .subscribe(
-                currentTier -> {
-                    if (currentTier > 0) {
-                        getView().launchSwap(
-                            prefs.getSelectedFiatCurrency(),
-                            targetCurrency
-                        );
-                    } else {
-                        getView().launchKyc(CampaignType.Swap);
-                    }
-                },
-                Timber::e
-            );
+                .compose(RxUtil.addSingleToCompositeDisposable(this))
+                .subscribe(
+                        currentTier -> {
+                            if (currentTier > 0) {
+                                getView().launchSwap(
+                                        prefs.getSelectedFiatCurrency(),
+                                        targetCurrency
+                                );
+                            } else {
+                                getView().launchKyc(CampaignType.Swap);
+                            }
+                        },
+                        Timber::e
+                );
     }
 }

@@ -30,6 +30,7 @@ import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AndroidUtils;
 import timber.log.Timber;
+import javax.inject.Inject;
 
 public class SettingsPresenter extends BasePresenter<SettingsView> {
 
@@ -217,6 +218,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      */
     void onFingerprintClicked() {
         if (getIfFingerprintUnlockEnabled()) {
+            // Show dialog "are you sure you want to disable fingerprint login?
             getView().showDisableFingerprintDialog();
         } else if (!fingerprintHelper.areFingerprintsEnrolled()) {
             // No fingerprints enrolled, prompt user to add some
@@ -491,7 +493,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     /**
      * Updates the user's password
      *
-     * @param password         The requested new password as a String
+     * @param password         The requested new password as a {@link String}
      * @param fallbackPassword The user's current password as a fallback
      */
     void updatePassword(@NonNull String password, @NonNull String fallbackPassword) {

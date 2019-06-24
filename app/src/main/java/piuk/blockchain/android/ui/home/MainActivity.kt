@@ -1,8 +1,6 @@
 package piuk.blockchain.android.ui.home
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -10,7 +8,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ShortcutManager
 import android.databinding.DataBindingUtil
-import android.os.Build
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
@@ -27,8 +24,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.blockchain.annotations.ButWhy
@@ -36,7 +31,6 @@ import com.blockchain.annotations.CommonCode
 import com.blockchain.kycui.navhost.KycNavHostActivity
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.lockbox.ui.LockboxLandingActivity
-import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
@@ -59,9 +53,6 @@ import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.account.AccountActivity
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.ui.balance.BalanceFragment
-import piuk.blockchain.android.ui.buy.BuyActivity
-import piuk.blockchain.android.ui.buy.FrontendJavascript
-import piuk.blockchain.android.ui.buy.FrontendJavascriptManager
 import piuk.blockchain.android.ui.buysell.launcher.BuySellLauncherActivity
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
@@ -72,6 +63,7 @@ import piuk.blockchain.android.ui.receive.ReceiveFragment
 import piuk.blockchain.android.ui.send.SendFragment
 import piuk.blockchain.android.ui.settings.SettingsActivity
 import piuk.blockchain.android.ui.thepit.PitBottomDialog
+import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
@@ -84,14 +76,12 @@ import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import timber.log.Timber
-
 import javax.inject.Inject
 import java.util.Arrays
 import java.util.HashMap
 
 class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, MainView,
-    ConfirmPaymentDialog.OnConfirmDialogInteractionListener,
-    FrontendJavascript<String> {
+    ConfirmPaymentDialog.OnConfirmDialogInteractionListener {
 
     var drawerOpen = false
         internal set
@@ -109,7 +99,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     private var progressDlg: MaterialProgressDialog? = null
     private var backPressed: Long = 0
 
-    private var frontendJavascriptManager: FrontendJavascriptManager? = null
     private var webViewLoginDetails: WebViewLoginDetails? = null
 
     private var initialized: Boolean = false
@@ -527,10 +516,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     }
 
     override fun setBuySellEnabled(enabled: Boolean, useWebView: Boolean) {
-        if (enabled && useWebView) {
-            // For legacy SFOX + Unocoin only
-            setupBuyWebView()
-        }
         setBuyBitcoinVisible(enabled)
     }
 
@@ -554,61 +539,9 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         menu.findItem(R.id.nav_buy).isVisible = visible
     }
 
-    @SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface", "JavascriptInterface")
-    private fun setupBuyWebView() {
-        if (AndroidUtils.is21orHigher()) {
-            WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
-        }
-        // Setup buy WebView
-        val buyWebView = WebView(this).apply {
-            webViewClient = WebViewClient()
-            settings.javaScriptEnabled = true
-            loadUrl(presenter.currentServerUrl)
-        }
-
-        frontendJavascriptManager = FrontendJavascriptManager(this, buyWebView)
-        buyWebView.addJavascriptInterface(
-            frontendJavascriptManager,
-            FrontendJavascriptManager.JS_INTERFACE_NAME
-        )
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private fun checkTradesIfReady() {
-        if (initialized && webViewLoginDetails != null && AppUtil.isBuySellPermitted) {
-            frontendJavascriptManager!!.checkForCompletedTrades(webViewLoginDetails)
-        }
-    }
-
     override fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails) {
         Timber.d("setWebViewLoginDetails: called")
         webViewLoginDetails = loginDetails
-        checkTradesIfReady()
-    }
-
-    override fun onFrontendInitialized() {
-        Timber.d("onFrontendInitialized: called")
-        initialized = true
-        checkTradesIfReady()
-    }
-
-    override fun onBuyCompleted() {
-        // No-op
-    }
-
-    override fun onCompletedTrade(txHash: String) {
-        /** Called from javascript in a webview at the end of a 'buy' operation, so ensure it runs
-         * on the UI thread.
-         */
-        runOnUiThread { showTradeCompleteMsg(txHash) }
-    }
-
-    override fun onReceiveValue(value: String) {
-        Timber.d("onReceiveValue: %s", value)
-    }
-
-    override fun onShowTx(txHash: String) {
-        Timber.d("onShowTx: %s", txHash)
     }
 
     override fun clearAllDynamicShortcuts() {
@@ -782,12 +715,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         val fragment = BalanceFragment.newInstance(true)
         replaceContentFragment(fragment)
         toolbar_general.title = ""
-    }
-
-    @Suppress("DeprecatedCallableAddReplaceWith")
-    @Deprecated("Can we lose this soon?")
-    override fun onStartLegacyBuySell() {
-        BuyActivity.start(this)
     }
 
     override fun onStartBuySell() {

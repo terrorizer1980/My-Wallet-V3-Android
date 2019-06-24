@@ -23,12 +23,6 @@ public class ExchangeData {
     @JsonProperty("coinify")
     private CoinifyData coinify = null;
 
-    @JsonProperty("sfox")
-    private SfoxData sfox = null;
-
-    @JsonProperty("unocoin")
-    private UnocoinData unocoin = null;
-
     @Nullable
     public CoinifyData getCoinify() {
         return coinify;
@@ -36,23 +30,5 @@ public class ExchangeData {
 
     public void setCoinify(CoinifyData coinify) {
         this.coinify = coinify;
-    }
-
-    @Nullable
-    public SfoxData getSfox() {
-        return sfox;
-    }
-
-    public void setSfox(SfoxData sfox) {
-        this.sfox = sfox;
-    }
-
-    @Nullable
-    public UnocoinData getUnocoin() {
-        return unocoin;
-    }
-
-    public void setUnocoin(UnocoinData unocoin) {
-        this.unocoin = unocoin;
     }
 }
