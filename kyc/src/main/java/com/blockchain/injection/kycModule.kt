@@ -105,9 +105,21 @@ val kycModule = applicationContext {
 
         factory { KycCountrySelectionPresenter(get(), get()) }
 
-        factory { KycProfilePresenter(get(), get(), get(), get(), get()) }
+        factory {
+            KycProfilePresenter(nabuToken = get(),
+                nabuDataManager = get(),
+                metadataRepository = get(),
+                stringUtils = get())
+        }
 
-        factory { KycHomeAddressPresenter(get(), get(), get(), get()) }
+        factory {
+            KycHomeAddressPresenter(
+                nabuToken = get(),
+                nabuDataManager = get(),
+                tier2Decision = get(),
+                phoneVerificationQuery = get(),
+                nabuCoinifyAccountCreator = get())
+        }
 
         factory { KycMobileEntryPresenter(get(), get()) }
 
