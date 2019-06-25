@@ -79,14 +79,6 @@ val applicationModule = applicationContext {
 
     bean { CurrentContextAccess() }
 
-    factory {
-        FingerprintHelper(
-            applicationContext = get(),
-            prefs = get(),
-            fingerprintAuth = get()
-        )
-    }
-
     context("Payload") {
 
         factory {
@@ -387,7 +379,6 @@ val applicationModule = applicationContext {
                 /* kycStatusHelper = */ get()
             )
         }
-
 
         factory {
             PinEntryPresenter(

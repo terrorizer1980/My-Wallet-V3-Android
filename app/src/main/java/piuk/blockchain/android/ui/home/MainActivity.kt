@@ -62,7 +62,7 @@ import piuk.blockchain.android.ui.pairingcode.PairingCodeActivity
 import piuk.blockchain.android.ui.receive.ReceiveFragment
 import piuk.blockchain.android.ui.send.SendFragment
 import piuk.blockchain.android.ui.settings.SettingsActivity
-import piuk.blockchain.android.ui.thepit.PitBottomDialog
+import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
@@ -370,7 +370,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         // TODO check status and handle properly
         // PitLandingActivity.start(this)
         val bottomSheetDialog =
-            PitBottomDialog.newInstance(ErrorBottomDialog.Content(getString(R.string.pit_setting_title),
+            PitLaunchBottomDialog.newInstance(ErrorBottomDialog.Content(getString(R.string.pit_setting_title),
                 "",
                 R.string.launch_the_pit, R.string.pit_contact_support, R.drawable.vector_pit_p))
         bottomSheetDialog.show(supportFragmentManager, "BottomDialog")
