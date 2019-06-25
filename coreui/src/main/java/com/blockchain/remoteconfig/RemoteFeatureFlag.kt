@@ -8,6 +8,11 @@ import timber.log.Timber
 interface RemoteConfig {
 
     fun getIfFeatureEnabled(key: String): Single<Boolean>
+    fun getABVariant(key: String): Single<Boolean>
+
+    companion object {
+        const val AB_PAX_POPUP = "ab_show_pax_popup"
+    }
 }
 
 class RemoteConfiguration(private val remoteConfig: FirebaseRemoteConfig) : RemoteConfig {
@@ -20,6 +25,9 @@ class RemoteConfiguration(private val remoteConfig: FirebaseRemoteConfig) : Remo
             .map { remoteConfig }
 
     override fun getIfFeatureEnabled(key: String): Single<Boolean> =
+        configuration.map { it.getBoolean(key) }
+
+    override fun getABVariant(key: String): Single<Boolean> =
         configuration.map { it.getBoolean(key) }
 }
 

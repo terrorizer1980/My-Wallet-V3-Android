@@ -1,23 +1,20 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
-import com.blockchain.announcement.Announcement
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.services.nabu.TierService
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.balance.ImageRightAnnouncementCard
-import piuk.blockchain.android.ui.dashboard.DashboardPresenter
 
 internal class ClaimYourFreeCryptoCardAnnouncement(
     private val tierService: TierService,
     private val sunriverCampaignHelper: SunriverCampaignHelper,
     dismissRecorder: DismissRecorder
-) : Announcement<DashboardPresenter> {
+) : Announcement {
 
     private val dismissEntry = dismissRecorder["ClaimYourFreeCryptoCard_DISMISSED"]
 
-    override fun shouldShow(context: DashboardPresenter): Single<Boolean> {
+    override fun shouldShow(): Single<Boolean> {
         if (dismissEntry.isDismissed) {
             return Single.just(false)
         }
@@ -34,21 +31,20 @@ internal class ClaimYourFreeCryptoCardAnnouncement(
             }
     }
 
-    override fun show(context: DashboardPresenter) {
-        context.showAnnouncement(
-            index = 0,
-            announcementData = ImageRightAnnouncementCard(
+    override fun show(host: AnnouncementHost) {
+        host.showAnnouncementCard(
+            card = ImageRightAnnouncementCard(
                 title = R.string.airdrop_program_card_title,
                 description = R.string.airdrop_program_card_body,
                 link = R.string.airdrop_program_card_button,
                 image = R.drawable.vector_gold_checkmark,
                 closeFunction = {
                     dismissEntry.isDismissed = true
-                    context.dismissAnnouncement(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 linkFunction = {
-                    context.signupToSunRiverCampaign()
-                    context.dismissAnnouncement(dismissEntry.prefsKey)
+                    host.signupToSunRiverCampaign()
+                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 prefsKey = dismissEntry.prefsKey
             )

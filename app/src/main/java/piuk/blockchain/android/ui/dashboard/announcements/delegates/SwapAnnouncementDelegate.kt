@@ -1,11 +1,11 @@
-package piuk.blockchain.android.ui.dashboard.adapter.delegates
+package piuk.blockchain.android.ui.dashboard.announcements.delegates
 
-import android.support.annotation.StringRes
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import piuk.blockchain.android.databinding.ItemAnnouncementSwapBinding
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.SwapAnnouncementCard
 
 class SwapAnnouncementDelegate<in T> : AdapterDelegate<T> {
     override fun isForViewType(items: List<T>, position: Int): Boolean =
@@ -18,7 +18,9 @@ class SwapAnnouncementDelegate<in T> : AdapterDelegate<T> {
             parent,
             false
         )
-        return SwapAnnouncementViewHolder(binding)
+        return SwapAnnouncementViewHolder(
+            binding
+        )
     }
 
     override fun onBindViewHolder(
@@ -43,12 +45,3 @@ class SwapAnnouncementDelegate<in T> : AdapterDelegate<T> {
         }
     }
 }
-
-data class SwapAnnouncementCard(
-    @StringRes val title: Int,
-    @StringRes val description: Int,
-    @StringRes val link: Int? = null,
-    val isNew: Boolean,
-    val closeFunction: () -> Unit,
-    val linkFunction: () -> Unit
-)

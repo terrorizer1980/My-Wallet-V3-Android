@@ -1,3 +1,4 @@
+@file:Suppress("USELESS_CAST")
 package com.blockchain.injection
 
 import com.blockchain.koin.moshiInterceptor
@@ -22,7 +23,6 @@ import com.blockchain.kyc.services.nabu.TierUpdater
 import com.blockchain.kyc.services.onfido.OnfidoService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
 import com.blockchain.kyc.smsVerificationRemoteConfig
-import com.blockchain.kyc.stableCoinRemoteConfig
 import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kyc.sunriverAirdropRemoteConfig
 import com.blockchain.kycui.address.EligibilityForFreeEthAdapter
@@ -47,7 +47,6 @@ import com.blockchain.kycui.reentry.ReentryDecision
 import com.blockchain.kycui.reentry.ReentryDecisionKycNavigator
 import com.blockchain.kycui.reentry.TiersReentryDecision
 import com.blockchain.kycui.splash.KycSplashPresenter
-import com.blockchain.kycui.stablecoin.StableCoinCampaignHelper
 import com.blockchain.kycui.status.KycStatusPresenter
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.tiersplash.KycTierSplashPresenter
@@ -55,8 +54,8 @@ import com.blockchain.kycui.veriffsplash.VeriffSplashPresenter
 import com.blockchain.nabu.Authenticator
 import com.blockchain.nabu.CreateNabuToken
 import com.blockchain.nabu.CurrentTier
-import com.blockchain.nabu.NabuUserSync
 import com.blockchain.nabu.EthEligibility
+import com.blockchain.nabu.NabuUserSync
 import com.blockchain.nabu.StartKyc
 import com.blockchain.nabu.StartKycAirdrop
 import com.blockchain.nabu.StartKycForBuySell
@@ -147,8 +146,6 @@ val kycModule = applicationContext {
 
         factory("sunriver") { sunriverAirdropRemoteConfig(get()) }
 
-        factory("stablecoin") { stableCoinRemoteConfig(get()) }
-
         factory("ff_sms_verification") { smsVerificationRemoteConfig(get()) }
 
         factory { NabuDataUserProviderNabuDataManagerAdapter(get(), get()) as NabuDataUserProvider }
@@ -229,7 +226,10 @@ val kycNabuModule = applicationContext {
         }
 
         factory {
-            EligibilityForFreeEthAdapter(nabuToken = get(), nabuDataManager = get()) as EthEligibility
+            EligibilityForFreeEthAdapter(
+                nabuToken = get(),
+                nabuDataManager = get()
+            ) as EthEligibility
         }
 
         factory {
@@ -238,7 +238,5 @@ val kycNabuModule = applicationContext {
 
         factory { SunriverCampaignHelper(get("sunriver"), get(), get(), get(), get()) }
             .bind(SunriverCampaignSignUp::class)
-
-        factory { StableCoinCampaignHelper(get("stablecoin")) }
     }
 }

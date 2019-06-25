@@ -1,12 +1,10 @@
 package piuk.blockchain.android.ui.dashboard
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.announcement.AnnouncementList
 import com.blockchain.balance.TotalBalance
 import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
-import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.nabu.CurrentTier
 import com.blockchain.testutils.bitcoinCash
@@ -22,18 +20,20 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
-import com.nhaarman.mockito_kotlin.verifyZeroInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import org.amshove.kluent.`it returns`
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
+import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.StringUtils
@@ -65,7 +65,7 @@ class DashboardPresenterTest {
     private val view: DashboardView = mock()
     private val currencyFormatManager: CurrencyFormatManager = mock()
     private val kycTiersQueries: KycTiersQueries = mock {
-        on { isKycResumbissionRequired() } `it returns` Single.just(false)
+        on { isKycResubmissionRequired() } `it returns` Single.just(false)
     }
     private val lockboxDataManager: LockboxDataManager = mock()
     private val sunriverCampaignHelper: SunriverCampaignHelper = mock()
@@ -98,14 +98,15 @@ class DashboardPresenterTest {
             rxBus,
             swipeToReceiveHelper,
             currencyFormatManager,
-            kycTiersQueries,
             lockboxDataManager,
             currentTier,
             sunriverCampaignHelper,
-            mock {
-                on { this.announcementList } `it returns` AnnouncementList()
-            }
-
+            AnnouncementList(
+                dismissRecorder = DismissRecorder(prefs = prefs),
+                sunriverCampaignHelper = sunriverCampaignHelper,
+                kycTiersQueries = kycTiersQueries,
+                mainScheduler = Schedulers.trampoline()
+            )
         )
 
         subject.initView(view)
@@ -181,7 +182,7 @@ class DashboardPresenterTest {
         // Native Buy/Sell not available
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(false))
         // KYC already dismissed
-        whenever(prefs.getValue(DashboardPresenter.KYC_INCOMPLETE_DISMISSED, false)).thenReturn(
+        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false)).thenReturn(
             true
         )
         // No Lockbox, not available
@@ -292,11 +293,9 @@ class DashboardPresenterTest {
 
         // checkLatestAnnouncements()
         // No Native Buy/Sell announcement
-        whenever(prefs.getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false))
-            .thenReturn(true)
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(false))
         // KYC already dismissed
-        whenever(prefs.getValue(DashboardPresenter.KYC_INCOMPLETE_DISMISSED, false)).thenReturn(
+        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false)).thenReturn(
             true
         )
         // No Lockbox, not available
@@ -404,13 +403,10 @@ class DashboardPresenterTest {
 
         // checkLatestAnnouncements()
         // No Native Buy/Sell announcement
-        whenever(prefs.getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false))
-            .thenReturn(false)
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(true))
-        whenever(prefs.getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false))
-            .thenReturn(false)
+
         // KYC already dismissed
-        whenever(prefs.getValue(DashboardPresenter.KYC_INCOMPLETE_DISMISSED, false))
+        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false))
             .thenReturn(true)
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
@@ -516,13 +512,10 @@ class DashboardPresenterTest {
 
         // checkLatestAnnouncements()
         // No Native Buy/Sell announcement
-        whenever(prefs.getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false))
-            .thenReturn(false)
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(true))
-        whenever(prefs.getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false))
-            .thenReturn(false)
+
         // KYC already dismissed
-        whenever(prefs.getValue(DashboardPresenter.KYC_INCOMPLETE_DISMISSED, false))
+        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false))
             .thenReturn(false)
         whenever(kycTiersQueries.isKycInProgress()).thenReturn(Single.just(true))
         // No Lockbox, not available
@@ -640,11 +633,9 @@ class DashboardPresenterTest {
 
         // checkLatestAnnouncements()
         // No Native Buy/Sell announcement
-        whenever(prefs.getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false))
-            .thenReturn(false)
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(false))
         // KYC Already dismissed
-        whenever(prefs.getValue(DashboardPresenter.KYC_INCOMPLETE_DISMISSED, false)).thenReturn(
+        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false)).thenReturn(
             true
         )
         // No Lockbox, not available
@@ -819,30 +810,6 @@ class DashboardPresenterTest {
     }
 
     @Test
-    fun `addSunriverPrompts type none`() {
-        // Arrange
-        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.just(
-            SunriverCardType.None))
-        // Act
-        subject.addSunriverPrompts().test()
-        // Assert
-        verifyZeroInteractions(view)
-    }
-
-    @Test
-    fun `addSunriverPrompts type FinishSignUp ignored as already dismissed`() {
-        // Arrange
-        whenever(sunriverCampaignHelper.getCampaignCardType())
-            .thenReturn(Single.just(SunriverCardType.FinishSignUp))
-        whenever(prefs.getValue(SunriverCardType.FinishSignUp.javaClass.simpleName, false))
-            .thenReturn(true)
-        // Act
-        subject.addSunriverPrompts().test()
-        // Assert
-        verifyZeroInteractions(view)
-    }
-
-    @Test
     fun `should propagate the correct fiat and crypto currency to the view`() {
         // Arrange
         mockDependencies()
@@ -932,13 +899,9 @@ class DashboardPresenterTest {
 
         // checkLatestAnnouncements()
         // No Native Buy/Sell announcement
-        whenever(prefs.getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false))
-            .thenReturn(false)
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(true))
-        whenever(prefs.getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false))
-            .thenReturn(false)
         // KYC already dismissed
-        whenever(prefs.getValue(DashboardPresenter.KYC_INCOMPLETE_DISMISSED, false))
+        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false))
             .thenReturn(false)
         whenever(kycTiersQueries.isKycInProgress()).thenReturn(Single.just(true))
         // No Lockbox, not available

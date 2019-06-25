@@ -189,7 +189,7 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
                             .add(fingerprintDialog, FingerprintDialog.TAG)
                             .commitAllowingStateLoss()
                     }
-                } ?: kotlin.run { fingerprintDialog = null }
+                } ?: run { fingerprintDialog = null }
             }, 200)
 
             hideKeyboard()
@@ -542,9 +542,9 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
         }
     }
 
-    override fun showCustomPrompt(alertFragments: AppCompatDialogFragment) {
+    override fun showCustomPrompt(alertFragment: AppCompatDialogFragment) {
         if (activity != null && !activity!!.isFinishing) {
-            alertFragments.show(fragmentManager!!, alertFragments.tag)
+            alertFragment.show(fragmentManager!!, alertFragment.tag)
         }
     }
 
@@ -577,7 +577,7 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
     }
 
     companion object {
-        private val KEY_SHOW_SWIPE_HINT = "show_swipe_hint"
+        private const val KEY_SHOW_SWIPE_HINT = "show_swipe_hint"
         private val PIN_LENGTH = 4
         private val HANDLER = Handler()
 

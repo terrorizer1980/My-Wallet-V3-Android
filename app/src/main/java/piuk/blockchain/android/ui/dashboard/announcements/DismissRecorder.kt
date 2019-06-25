@@ -9,9 +9,7 @@ class DismissRecorder(private val prefs: PersistentPrefs) {
 
     operator fun get(key: String) = DismissEntry(key)
 
-    inner class DismissEntry(
-        val prefsKey: String
-    ) {
+    inner class DismissEntry(val prefsKey: String) {
         var isDismissed: Boolean
             get() = prefs.getValue(prefsKey, false)
             set(value) = prefs.setValue(prefsKey, value)

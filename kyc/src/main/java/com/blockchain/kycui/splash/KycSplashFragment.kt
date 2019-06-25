@@ -14,11 +14,11 @@ import com.blockchain.nabu.StartBuySell
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
+import com.blockchain.ui.urllinks.URL_COINIFY_POLICY
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.inject
-import piuk.blockchain.android.constants.URL_COINIFY_POLICY
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom

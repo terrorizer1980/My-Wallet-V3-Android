@@ -29,8 +29,8 @@ class SecurityPromptDialog : AppCompatDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        button_positive.setOnClickListener { v -> positiveButtonListener?.invoke() }
-        button_negative.setOnClickListener { v -> negativeButtonListener?.invoke() }
+        button_positive.setOnClickListener { positiveButtonListener?.invoke() }
+        button_negative.setOnClickListener { negativeButtonListener?.invoke() }
 
         arguments?.let {
             if (it.containsKey(KEY_TITLE)) {

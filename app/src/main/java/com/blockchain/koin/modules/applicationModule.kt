@@ -1,3 +1,5 @@
+@file:Suppress("USELESS_CAST")
+
 package com.blockchain.koin.modules
 
 import android.content.Context
@@ -25,6 +27,7 @@ import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.login.ManualPairingPresenter
@@ -300,13 +303,12 @@ val applicationModule = applicationContext {
                 rxBus = get(),
                 swipeToReceiveHelper = get(),
                 currencyFormatManager = get(),
-                kycTiersQueries = get(),
                 lockboxDataManager = get(),
                 currentTier = get(),
                 sunriverCampaignHelper = get(),
-                dashboardAnnouncements = get()
+                announcements = get()
             )
-        }
+        }.bind(AnnouncementHost::class)
 
         factory {
             BalancePresenter(

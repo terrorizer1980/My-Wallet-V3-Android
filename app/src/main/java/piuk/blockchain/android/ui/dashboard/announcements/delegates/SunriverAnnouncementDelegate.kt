@@ -1,6 +1,5 @@
-package piuk.blockchain.android.ui.dashboard.adapter.delegates
+package piuk.blockchain.android.ui.dashboard.announcements.delegates
 
-import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -8,11 +7,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import com.blockchain.kycui.sunriver.SunriverCardType
 import kotlinx.android.synthetic.main.item_announcement_sunriver.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
-import piuk.blockchain.android.ui.balance.AnnouncementData
+import piuk.blockchain.android.ui.dashboard.announcements.SunriverCard
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
@@ -23,7 +21,9 @@ class SunriverAnnouncementDelegate<in T> : AdapterDelegate<T> {
         items[position] is SunriverCard
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        SunriverAnnouncementViewHolder(parent.inflate(R.layout.item_announcement_sunriver))
+        SunriverAnnouncementViewHolder(
+            parent.inflate(R.layout.item_announcement_sunriver)
+        )
 
     @Suppress("CascadeIf")
     override fun onBindViewHolder(
@@ -57,42 +57,4 @@ class SunriverAnnouncementDelegate<in T> : AdapterDelegate<T> {
 
 private fun TextView.setTextOrHide(@StringRes text: Int?) {
     text?.let { this.setText(text); visible() } ?: this.gone()
-}
-
-data class SunriverCard(
-    @StringRes override val title: Int,
-    @StringRes override val description: Int,
-    @StringRes override val link: Int? = null,
-    @DrawableRes override val image: Int = R.drawable.vector_xlm_colored,
-    override val closeFunction: () -> Unit,
-    override val linkFunction: () -> Unit,
-    override val prefsKey: String,
-    override val emoji: String? = null
-) : AnnouncementData {
-
-    companion object {
-
-        fun continueClaim(
-            closeFunction: () -> Unit,
-            linkFunction: () -> Unit
-        ) = SunriverCard(
-            title = R.string.sunriver_announcement_stellar_claim_title,
-            description = R.string.sunriver_announcement_stellar_claim_message,
-            link = R.string.sunriver_announcement_stellar_claim_cta,
-            closeFunction = closeFunction,
-            linkFunction = linkFunction,
-            prefsKey = SunriverCardType.FinishSignUp.javaClass.simpleName
-        )
-
-        fun onTheWay(
-            closeFunction: () -> Unit,
-            linkFunction: () -> Unit
-        ) = SunriverCard(
-            title = R.string.sunriver_announcement_stellar_on_the_way_title,
-            description = R.string.sunriver_announcement_stellar_on_the_way_message,
-            closeFunction = closeFunction,
-            linkFunction = linkFunction,
-            prefsKey = SunriverCardType.Complete.javaClass.simpleName
-        )
-    }
 }

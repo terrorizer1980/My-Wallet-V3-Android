@@ -44,8 +44,8 @@ import com.blockchain.sunriver.ui.MinBalanceExplanationDialog
 import com.blockchain.transactions.Memo
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import com.blockchain.ui.password.SecondPasswordHandler
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionGrantedResponse

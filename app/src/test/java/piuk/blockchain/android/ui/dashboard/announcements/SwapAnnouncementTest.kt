@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.dashboard.announcement
+package piuk.blockchain.android.ui.dashboard.announcements
 
 import com.blockchain.kyc.models.nabu.KycTierState
 import com.blockchain.kyc.models.nabu.LimitsJson
@@ -17,9 +17,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import piuk.blockchain.android.ui.dashboard.DashboardPresenter
-import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
-import piuk.blockchain.android.ui.dashboard.announcements.SwapAnnouncement
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class SwapAnnouncementTest {
@@ -30,8 +27,6 @@ class SwapAnnouncementTest {
     private lateinit var tradeData: MorphTradeDataHistoryList
     @Mock
     private lateinit var prefs: PersistentPrefs
-    @Mock
-    private lateinit var dashboardPresenter: DashboardPresenter
     @Mock
     private lateinit var morphTrade: MorphTrade
 
@@ -54,7 +49,7 @@ class SwapAnnouncementTest {
     fun `should not show when is already dismissed`() {
         mockDismissRecorder(true)
 
-        swapAnnouncement.shouldShow(dashboardPresenter).test().apply {
+        swapAnnouncement.shouldShow().test().apply {
             assertNoErrors()
             values() `should equal` listOf(false)
         }
@@ -82,7 +77,7 @@ class SwapAnnouncementTest {
         ))))
         whenever(tradeData.getTrades()).thenReturn(Single.just(emptyList()))
 
-        swapAnnouncement.shouldShow(dashboardPresenter).test().apply {
+        swapAnnouncement.shouldShow().test().apply {
             assertNoErrors()
             values() `should equal` listOf(true)
         }
@@ -110,7 +105,7 @@ class SwapAnnouncementTest {
         ))))
         whenever(tradeData.getTrades()).thenReturn(Single.just(emptyList()))
 
-        swapAnnouncement.shouldShow(dashboardPresenter).test().apply {
+        swapAnnouncement.shouldShow().test().apply {
             assertNoErrors()
             values() `should equal` listOf(true)
         }
@@ -125,7 +120,7 @@ class SwapAnnouncementTest {
 
         whenever(tradeData.getTrades()).thenReturn(Single.just(sampleTrades))
 
-        swapAnnouncement.shouldShow(dashboardPresenter).test().apply {
+        swapAnnouncement.shouldShow().test().apply {
             assertNoErrors()
             values() `should equal` listOf(false)
         }

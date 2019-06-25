@@ -2,18 +2,21 @@ package piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation
 
 import android.annotation.SuppressLint
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees
+import com.blockchain.morph.CoinPair
 import com.blockchain.morph.exchange.mvi.Quote
 import com.blockchain.morph.exchange.service.TradeExecutionService
 import com.blockchain.morph.exchange.service.TradeTransaction
 import com.blockchain.morph.trade.MorphTrade
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.serialization.fromMoshiJson
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendException
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_ORDER_ABOVE_MAX
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_ORDER_EXPIRED
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_ORDER_FAILED_BELOW_MIN
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_ORDER_LIMIT_EXCEED
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_ORDER_ABOVE_MAX
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_ORDER_EXPIRED
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_ORDER_FAILED_BELOW_MIN
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_ORDER_LIMIT_EXCEED
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -47,7 +50,8 @@ class ExchangeConfirmationPresenter internal constructor(
     private val tradeExecutionService: TradeExecutionService,
     private val payloadDecrypt: PayloadDecrypt,
     private val stringUtils: StringUtils,
-    private val locale: Locale
+    private val locale: Locale,
+    private val analytics: Analytics
 ) : BasePresenter<ExchangeConfirmationView>() {
 
     private var showPaxAirdropBottomDialog: Boolean = false
@@ -164,6 +168,12 @@ class ExchangeConfirmationPresenter internal constructor(
             val hash = (it as? TransactionHashApiException)?.hashString ?: (it as? SendException)?.hash
             tradeExecutionService.putTradeFailureReason(transaction, hash, it.message)
                 .andThen(Single.error(it))
+        }.doOnSuccess { triggerPaxTradeEvent(it) }
+    }
+
+    private fun triggerPaxTradeEvent(transaction: TradeTransaction) {
+        if (transaction.isPaxTrade()) {
+            analytics.logEvent(PaxTradeEvent())
         }
     }
 
@@ -298,4 +308,13 @@ private fun TradeTransaction.toTrade(locale: Locale): Trade {
         createdAt = createdAt,
         depositQuantity = deposit.toStringWithSymbol()
     )
+}
+
+private fun CoinPair.isPaxTrade() = (from == CryptoCurrency.PAX) or (to == CryptoCurrency.PAX)
+
+private fun TradeTransaction.isPaxTrade() = pair.isPaxTrade()
+
+private class PaxTradeEvent : AnalyticsEvent {
+    override val event = "pax_swap_traded"
+    override val params = emptyMap<String, String>()
 }

@@ -1,14 +1,15 @@
-package com.blockchain.sunriver.ui
+package piuk.blockchain.android.ui.dashboard.announcements.popups
 
 import android.content.Intent
 import android.net.Uri
 import com.blockchain.nabu.StartKycAirdrop
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.sunriver.ui.BaseAirdropBottomDialog
 import org.koin.android.ext.android.inject
-import piuk.blockchain.androidcoreui.R
+import piuk.blockchain.android.R
 
-class CoinifyKycBottomDialog : BaseAirdropBottomDialog(
+class CoinifyKycPopup : BaseAirdropBottomDialog(
     Content(
         title = R.string.more_info_needed,
         description = R.string.coinify_kyc_body,

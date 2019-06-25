@@ -4,23 +4,20 @@ import android.annotation.SuppressLint
 import android.support.annotation.DrawableRes
 import android.support.annotation.VisibleForTesting
 import com.blockchain.balance.drawableResFilled
-import com.blockchain.kyc.status.KycTiersQueries
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
-import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.nabu.CurrentTier
+import com.blockchain.sunriver.ui.BaseAirdropBottomDialog
 import com.blockchain.sunriver.ui.ClaimFreeCryptoSuccessDialog
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Observables
-import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.zipWith
@@ -28,14 +25,11 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.balance.AnnouncementData
-import piuk.blockchain.android.ui.balance.ImageRightAnnouncementCard
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
-import piuk.blockchain.android.ui.dashboard.adapter.delegates.StableCoinAnnouncementCard
-import piuk.blockchain.android.ui.dashboard.adapter.delegates.SunriverCard
-import piuk.blockchain.android.ui.dashboard.adapter.delegates.SwapAnnouncementCard
-import piuk.blockchain.android.ui.dashboard.announcements.DashboardAnnouncements
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
 import piuk.blockchain.android.ui.dashboard.models.OnboardingModel
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.models.MetadataEvent
@@ -69,12 +63,11 @@ class DashboardPresenter(
     private val rxBus: RxBus,
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     private val currencyFormatManager: CurrencyFormatManager,
-    private val kycTiersQueries: KycTiersQueries,
     private val lockboxDataManager: LockboxDataManager,
     private val currentTier: CurrentTier,
     private val sunriverCampaignHelper: SunriverCampaignHelper,
-    private val dashboardAnnouncements: DashboardAnnouncements
-) : BasePresenter<DashboardView>() {
+    private val announcements: AnnouncementList
+) : BasePresenter<DashboardView>(), AnnouncementHost {
 
     private val currencies = DashboardConfig.currencies
     private val exchangeRequested = PublishSubject.create<CryptoCurrency>()
@@ -124,7 +117,7 @@ class DashboardPresenter(
             // Clears subscription after single event
             .firstOrError()
             .doOnSuccess { updateAllBalances() }
-            .doOnSuccess { checkLatestAnnouncements() }
+            .doOnSuccess { announcements.checkLatest(this, compositeDisposable) }
             .flatMapCompletable { swipeToReceiveHelper.storeEthAddress() }
             .subscribe(
                 { /* No-op */ },
@@ -139,12 +132,6 @@ class DashboardPresenter(
                 view.startKycFlowWithNavigator(CampaignType.Swap)
             }
         }
-    }
-
-    fun exchangeRequested(cryptoCurrency: CryptoCurrency? = null) {
-        cryptoCurrency?.let {
-            exchangeRequested.onNext(cryptoCurrency)
-        } ?: exchangeRequested.onNext(CryptoCurrency.ETHER)
     }
 
     fun updateBalances() {
@@ -235,41 +222,26 @@ class DashboardPresenter(
         BiFunction { available: Boolean, hasLockbox: Boolean -> available && hasLockbox }
     )
 
-    internal fun showAnnouncement(index: Int, announcementData: AnnouncementData) {
-        displayList.add(index, announcementData)
+    override fun clearAllAnnouncements() {
+        displayList.removeAll { it is AnnouncementCard }
+    }
+
+    override fun showAnnouncementCard(card: AnnouncementCard) {
+        displayList.add(0, card)
         with(view) {
-            notifyItemAdded(displayList, index)
+            notifyItemAdded(displayList, 0)
             scrollToTop()
         }
     }
 
-    internal fun showStableCoinIntroduction(
-        index: Int,
-        stableCoinAnnouncementCard: StableCoinAnnouncementCard
-    ) {
-        displayList.add(index, stableCoinAnnouncementCard)
-        with(view) {
-            notifyItemAdded(displayList, index)
-            scrollToTop()
-        }
+    override fun showAnnouncmentPopup(popup: BaseAirdropBottomDialog) {
+        view.showBottomSheetDialog(popup)
     }
 
-    internal fun dismissStableCoinIntroduction() {
-        displayList.filterIsInstance<StableCoinAnnouncementCard>()
-            .forEach {
-                val originalIndex = displayList.indexOf(it)
-                displayList.remove(it)
-                with(view) {
-                    notifyItemRemoved(displayList, originalIndex)
-                    scrollToTop()
-                }
-            }
-    }
-
-    internal fun dismissAnnouncement(prefKey: String) {
-        displayList.filterIsInstance<AnnouncementData>()
+    override fun dismissAnnouncementCard(prefsKey: String) {
+        displayList.filterIsInstance<AnnouncementCard>()
             .forEachIndexed { index, any ->
-                if (any.prefsKey == prefKey) {
+                if (any.prefsKey == prefsKey) {
                     displayList.remove(any)
                     with(view) {
                         notifyItemRemoved(displayList, index)
@@ -279,25 +251,27 @@ class DashboardPresenter(
             }
     }
 
-    internal fun showSwapAnnouncement(swapAnnouncementCard: SwapAnnouncementCard) {
-        val index = 0
-        displayList.add(index, swapAnnouncementCard)
-        with(view) {
-            notifyItemAdded(displayList, index)
-            scrollToTop()
-        }
+    override fun startKyc(campaignType: CampaignType) {
+        view.startKycFlow(campaignType)
     }
 
-    internal fun dismissSwapAnnouncementCard() {
-        displayList.filterIsInstance<SwapAnnouncementCard>()
-            .forEach {
-                val originalIndex = displayList.indexOf(it)
-                displayList.remove(it)
-                with(view) {
-                    notifyItemRemoved(displayList, originalIndex)
-                    scrollToTop()
-                }
-            }
+    override fun exchangeRequested(cryptoCurrency: CryptoCurrency?) {
+        cryptoCurrency?.let {
+            exchangeRequested.onNext(cryptoCurrency)
+        } ?: exchangeRequested.onNext(CryptoCurrency.ETHER)
+    }
+
+    override fun signupToSunRiverCampaign() {
+        compositeDisposable += sunriverCampaignHelper
+            .registerSunRiverCampaign()
+            .doOnError(Timber::e)
+            .subscribeBy(onComplete = {
+                showSignUpToSunRiverCampaignSuccessDialog()
+            })
+    }
+
+    private fun showSignUpToSunRiverCampaignSuccessDialog() {
+        view.showBottomSheetDialog(ClaimFreeCryptoSuccessDialog())
     }
 
     private fun getOnboardingStatusObservable(): Observable<Boolean> = if (isOnboardingComplete()) {
@@ -310,143 +284,6 @@ class DashboardPresenter(
             .doOnNext { view.notifyItemAdded(displayList, 0) }
             .doOnNext { view.scrollToTop() }
             .doOnError { Timber.e(it) }
-    }
-
-    private fun checkLatestAnnouncements() {
-        displayList.removeAll { it is AnnouncementData }
-        // TODO: AND-1691 This is disabled temporarily for now until onboarding/announcements have been rethought.
-//            checkNativeBuySellAnnouncement()
-        compositeDisposable +=
-            checkKycResubmissionPrompt()
-                .switchIfEmpty(checkDashboardAnnouncements())
-                .switchIfEmpty(checkKycPrompt())
-                .switchIfEmpty(addSunriverPrompts())
-                .subscribeBy(
-                    onError = Timber::e
-                )
-    }
-
-    private fun checkDashboardAnnouncements(): Maybe<Unit> =
-        dashboardAnnouncements
-            .announcementList
-            .showNextAnnouncement(this, AndroidSchedulers.mainThread())
-            .map { Unit }
-
-    internal fun addSunriverPrompts(): Maybe<Unit> {
-        return sunriverCampaignHelper.getCampaignCardType()
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { sunriverCardType ->
-                when (sunriverCardType) {
-                    SunriverCardType.None,
-                    SunriverCardType.JoinWaitList -> false
-                    SunriverCardType.FinishSignUp ->
-                        SunriverCard.continueClaim(
-                            { removeSunriverCard() },
-                            { view.startKycFlow(CampaignType.Sunriver) }
-                        ).addIfNotDismissed()
-                    SunriverCardType.Complete ->
-                        SunriverCard.onTheWay(
-                            { removeSunriverCard() },
-                            {}
-                        ).addIfNotDismissed()
-                }
-            }.flatMapMaybe { shown -> if (shown) Maybe.just(Unit) else Maybe.empty() }
-    }
-
-    private fun SunriverCard.addIfNotDismissed(): Boolean {
-        val add = !prefs.getValue(prefsKey, false)
-        if (add) {
-            displayList.add(0, this)
-            view.notifyItemAdded(displayList, 0)
-            view.scrollToTop()
-        }
-        return add
-    }
-
-    private fun removeSunriverCard() {
-        displayList.firstOrNull { it is SunriverCard }?.let {
-            displayList.remove(it)
-            prefs.setValue((it as AnnouncementData).prefsKey, true)
-            view.notifyItemRemoved(displayList, 0)
-            view.scrollToTop()
-        }
-    }
-
-    private fun checkKycPrompt(): Maybe<Unit> {
-        val dismissKey = KYC_INCOMPLETE_DISMISSED
-        val kycIncompleteData: (SunriverCardType) -> AnnouncementData = { campaignCard ->
-            ImageRightAnnouncementCard(
-                title = R.string.buy_sell_verify_your_identity,
-                description = R.string.kyc_drop_off_card_description,
-                link = R.string.kyc_drop_off_card_button,
-                image = R.drawable.vector_kyc_onboarding,
-                closeFunction = {
-                    prefs.setValue(dismissKey, true)
-                    dismissAnnouncement(dismissKey)
-                },
-                linkFunction = {
-                    view.startKycFlow(
-                        if (campaignCard == SunriverCardType.FinishSignUp) {
-                            CampaignType.Sunriver
-                        } else {
-                            CampaignType.Swap
-                        }
-                    )
-                },
-                prefsKey = dismissKey
-            )
-        }
-        return maybeDisplayAnnouncement(
-            dismissKey = dismissKey,
-            show = kycTiersQueries.isKycInProgress(),
-            createAnnouncement = kycIncompleteData
-        )
-    }
-
-    private fun checkKycResubmissionPrompt(): Maybe<Unit> {
-        val dismissKey = KYC_RESUBMISSION_DISMISSED
-        val kycIncompleteData: (SunriverCardType) -> AnnouncementData = {
-            ImageRightAnnouncementCard(
-                title = R.string.kyc_resubmission_card_title,
-                description = R.string.kyc_resubmission_card_description,
-                link = R.string.kyc_resubmission_card_button,
-                image = R.drawable.vector_kyc_onboarding,
-                closeFunction = {
-                    prefs.setValue(dismissKey, true)
-                    dismissAnnouncement(dismissKey)
-                },
-                linkFunction = {
-                    view.startKycFlow(CampaignType.Resubmission)
-                },
-                prefsKey = dismissKey
-            )
-        }
-        return maybeDisplayAnnouncement(
-            dismissKey = "IGNORE_USER_DISMISS",
-            show = kycTiersQueries.isKycResumbissionRequired(),
-            createAnnouncement = kycIncompleteData
-        )
-    }
-
-    private fun maybeDisplayAnnouncement(
-        dismissKey: String,
-        show: Single<Boolean>,
-        createAnnouncement: (SunriverCardType) -> AnnouncementData
-    ): Maybe<Unit> {
-        if (prefs.getValue(dismissKey, false)) return Maybe.empty()
-
-        return Singles.zip(
-            show,
-            sunriverCampaignHelper.getCampaignCardType()
-        ).observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess { (show, campaignCard) ->
-                if (show) {
-                    showAnnouncement(0, createAnnouncement(campaignCard))
-                }
-            }
-            .flatMapMaybe { (show, _) ->
-                if (show) Maybe.just(Unit) else Maybe.empty()
-            }
     }
 
     private fun getOnboardingPages(isBuyAllowed: Boolean): OnboardingModel {
@@ -513,6 +350,7 @@ class DashboardPresenter(
         prefs.isOnboardingComplete = completed
     }
 
+    @SuppressLint("CheckResult")
     private fun storeSwipeToReceiveAddresses() {
         bchDataManager.getWalletTransactions(50, 0)
             .flatMapCompletable { getSwipeToReceiveCompletable() }
@@ -536,7 +374,7 @@ class DashboardPresenter(
 
     private fun getFormattedPriceString(cryptoCurrency: CryptoCurrency): String {
         val lastPrice = getLastPrice(cryptoCurrency, getFiatCurrency())
-        val fiatSymbol = currencyFormatManager.getFiatSymbol(getFiatCurrency(), view.locale)
+        val fiatSymbol = currencyFormatManager.getFiatSymbol(getFiatCurrency())
         val format = DecimalFormat().apply { minimumFractionDigits = 2 }
 
         return stringUtils.getFormattedString(
@@ -558,29 +396,7 @@ class DashboardPresenter(
     private fun getLastPrice(cryptoCurrency: CryptoCurrency, fiat: String) =
         exchangeRateFactory.getLastPrice(cryptoCurrency, fiat)
 
-    fun signupToSunRiverCampaign() {
-        compositeDisposable += sunriverCampaignHelper
-            .registerSunRiverCampaign()
-            .doOnError(Timber::e)
-            .subscribeBy(onComplete = {
-                showSignUpToSunRiverCampaignSuccessDialog()
-            })
-    }
-
-    private fun showSignUpToSunRiverCampaignSuccessDialog() {
-        view.showBottomSheetDialog(ClaimFreeCryptoSuccessDialog())
-    }
-
     companion object {
-
-        @VisibleForTesting
-        internal const val KYC_INCOMPLETE_DISMISSED = "KYC_INCOMPLETE_DISMISSED"
-
-        @VisibleForTesting
-        internal const val KYC_RESUBMISSION_DISMISSED = "KYC_RESUBMISSION_DISMISSED"
-
-        @VisibleForTesting
-        internal const val NATIVE_BUY_SELL_DISMISSED = "NATIVE_BUY_SELL_DISMISSED"
 
         /**
          * This field stores whether or not the presenter has been run for the first time across

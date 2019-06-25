@@ -682,6 +682,17 @@
     <string name="dashboard_non_spendable_value">%1$s Non-Spendable</string>
     <string name="dashboard_lockbox_disclaimer">The total balance shown on this device does not include your linked %1$s.</string>
 
+    <!-- ANNOUNCEMTNS -->
+    <string name="more_info_needed">More Info Needed</string>
+    <string name="coinify_kyc_body">To keep using Buy &amp; Sell, you’ll need to update your profile. Once completed, you’ll also unlock higher trading limits in Swap.</string>
+    <string name="coinify_kyc_cta">Update Now</string>
+    <string name="coinify_kyc_dismiss">Learn More</string>
+    <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+
+    <string name="pax_intro_popup_title">Digital US Dollars</string>
+    <string name="pax_intro_popup_text">Introducing USD PAX, a safe and stable crypto asset you can use to staore value. 1 PAX equals 1 USD..</string>
+    <string name="pax_intro_popup_cta_btn">Get USD PAX Now</string>
+
     <!-- KV STORE -->
     <string name="metadata_load_failure">Error loading full wallet functionality. Service might temporarily be unavailable.</string>
 
@@ -744,9 +755,9 @@
 
     <!--STABLECOIN-->
     <string name="stablecoin_announcement_new">New</string>
-    <string name="stablecoin_announcement_introducing_title">Our First Stablecoin</string>
-    <string name="stablecoin_announcement_introducing_description">Introducing USD PAX, a safe and stable digital dollar in your wallet</string>
-    <string name="stablecoin_announcement_introducing_link">Exchange for PAX Now</string>
+    <string name="stablecoin_announcement_introducing_title">Digital US Dollars</string>
+    <string name="stablecoin_announcement_introducing_description">Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX equals 1 USD.</string>
+    <string name="stablecoin_announcement_introducing_link">Get USD PAX Now</string>
 
     <!-- Complete Your Profile Card -->
     <string name="complete_your_profile_card_title">Go for Gold</string>

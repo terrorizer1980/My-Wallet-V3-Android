@@ -24,7 +24,7 @@ class FingerprintPresenter @Inject constructor(
         pincode = view.getBundle()?.getString(KEY_BUNDLE_PIN_CODE)
 
         if (!stageString.isNullOrEmpty() && !pincode.isNullOrEmpty()) {
-            currentStage = FingerprintStage.valueOf(stageString!!)
+            currentStage = FingerprintStage.valueOf(stageString)
         } else {
             view.onCanceled()
             return

@@ -39,7 +39,7 @@ import piuk.blockchain.android.ui.swap.logging.FixTypeEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.ExchangeRate
