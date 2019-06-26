@@ -28,6 +28,10 @@ class PrefsUtil(
             }
         }
 
+    override var devicePreIDVCheckFailed: Boolean
+        get() = getValue(KEY_PRE_IDV_FAILED, false)
+        set(value) = setValue(KEY_PRE_IDV_FAILED, value)
+
     override var isOnboardingComplete: Boolean
         get() = getValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, false)
         set(completed) = setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, completed)
@@ -127,6 +131,8 @@ class PrefsUtil(
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         const val DEFAULT_FIAT_CURRENCY = "USD"
         val DEFAULT_CRYPTO_CURRENCY = CryptoCurrency.BTC
+
+        const val KEY_PRE_IDV_FAILED = "pre_idv_check_failed"
 
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         const val KEY_SELECTED_FIAT = "ccurrency" // Historical misspelling, don't update

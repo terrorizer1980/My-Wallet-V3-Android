@@ -1,17 +1,20 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
+import android.support.annotation.VisibleForTesting
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.services.nabu.TierService
 import com.blockchain.kycui.navhost.models.CampaignType
 import io.reactivex.Single
 import piuk.blockchain.android.R
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 
-internal class CompleteYourProfileCardAnnouncement(
+internal class GoForGoldAnnouncement(
     private val tierService: TierService,
+    private val prefs: PersistentPrefs,
     dismissRecorder: DismissRecorder
 ) : Announcement {
 
-    private val dismissEntry = dismissRecorder["CompleteYourProfileCard_DISMISSED"]
+    private val dismissEntry = dismissRecorder[DISMISS_KEY]
 
     override fun shouldShow(): Single<Boolean> {
         if (dismissEntry.isDismissed) {
@@ -23,7 +26,7 @@ internal class CompleteYourProfileCardAnnouncement(
                 Kyc2TierState.Tier2InReview,
                 Kyc2TierState.Tier2Approved,
                 Kyc2TierState.Tier2Failed
-            )
+            ) && !prefs.devicePreIDVCheckFailed
         }
     }
 
@@ -44,5 +47,10 @@ internal class CompleteYourProfileCardAnnouncement(
                 prefsKey = dismissEntry.prefsKey
             )
         )
+    }
+
+    companion object {
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val DISMISS_KEY = "CompleteYourProfileCard_DISMISSED"
     }
 }

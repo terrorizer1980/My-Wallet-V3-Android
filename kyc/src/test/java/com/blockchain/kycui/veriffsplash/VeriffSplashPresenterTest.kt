@@ -20,6 +20,7 @@ import junit.framework.Assert.assertEquals
 import okhttp3.ResponseBody
 import org.junit.Rule
 import org.junit.Test
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import retrofit2.Response
 
@@ -29,11 +30,13 @@ class VeriffSplashPresenterTest {
     private val nabuDataManager: NabuDataManager = mock()
     private val view: VeriffSplashView = mock()
     private val analytics: Analytics = mock()
+    private val prefs: PersistentPrefs = mock()
 
     private val subject = VeriffSplashPresenter(
         nabuToken = nabuToken,
         nabuDataManager = nabuDataManager,
-        analytics = analytics
+        analytics = analytics,
+        prefs = prefs
     )
 
     @Suppress("unused")
@@ -102,6 +105,7 @@ class VeriffSplashPresenterTest {
         }
 
         verify(view).setUiState(UiState.FAILURE)
+        verify(prefs).devicePreIDVCheckFailed = true
 
         argumentCaptor<AnalyticsEvent>().apply {
             verify(analytics).logEvent(capture())

@@ -134,7 +134,8 @@ val kycModule = applicationContext {
             VeriffSplashPresenter(
                 nabuToken = get(),
                 nabuDataManager = get(),
-                analytics = get()
+                analytics = get(),
+                prefs = get()
             )
         }
 

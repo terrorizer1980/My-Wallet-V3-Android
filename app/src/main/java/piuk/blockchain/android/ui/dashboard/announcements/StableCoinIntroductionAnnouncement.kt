@@ -33,32 +33,33 @@ class StableCoinIntroductionAnnouncement(
                 if (enabled) {
                     host.showAnnouncmentPopup(StablecoinIntroPopup())
                 } else {
-                    host.showAnnouncementCard(
-                        StableCoinAnnouncementCard(
-                            title = R.string.stablecoin_announcement_introducing_title,
-                            description = R.string.stablecoin_announcement_introducing_description,
-                            link = R.string.stablecoin_announcement_introducing_link,
-                            closeFunction = {
-                                dismissEntry.isDismissed = true
-                                host.dismissAnnouncementCard(dismissEntry.prefsKey)
-                                analytics.logEvent(
-                                    PaxCardAnalyticsEvent(PaxCardAnalyticsEvent.ANALYTICS_DISMISS_CLOSED)
-                                )
-                            },
-                            linkFunction = {
-                                dismissEntry.isDismissed = true
-                                host.dismissAnnouncementCard(dismissEntry.prefsKey)
-                                host.exchangeRequested(CryptoCurrency.PAX)
-                                analytics.logEvent(
-                                    PaxCardAnalyticsEvent(PaxCardAnalyticsEvent.ANALYTICS_DISMISS_CTA_CLICK)
-                                )
-                            },
-                            prefsKey = dismissEntry.prefsKey
-                        )
-                    )
+                    host.showAnnouncementCard(createAnnouncementCard(host))
                 }
             }
     }
+
+    private fun createAnnouncementCard(host: AnnouncementHost) =
+        StableCoinAnnouncementCard(
+            title = R.string.stablecoin_announcement_introducing_title,
+            description = R.string.stablecoin_announcement_introducing_description,
+            link = R.string.stablecoin_announcement_introducing_link,
+            closeFunction = {
+                dismissEntry.isDismissed = true
+                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                analytics.logEvent(
+                    PaxCardAnalyticsEvent(PaxCardAnalyticsEvent.ANALYTICS_DISMISS_CLOSED)
+                )
+            },
+            linkFunction = {
+                dismissEntry.isDismissed = true
+                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                host.exchangeRequested(CryptoCurrency.PAX)
+                analytics.logEvent(
+                    PaxCardAnalyticsEvent(PaxCardAnalyticsEvent.ANALYTICS_DISMISS_CTA_CLICK)
+                )
+            },
+            prefsKey = dismissEntry.prefsKey
+        )
 }
 
 private class PaxCardAnalyticsEvent(val dismissBy: String) : AnalyticsEvent {

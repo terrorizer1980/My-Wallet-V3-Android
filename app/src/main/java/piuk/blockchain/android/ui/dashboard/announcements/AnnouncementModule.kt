@@ -40,7 +40,11 @@ val dashboardAnnouncementsModule = applicationContext {
         }
 
         factory("profile") {
-            CompleteYourProfileCardAnnouncement(get(), get()) as Announcement
+            GoForGoldAnnouncement(
+                tierService = get(),
+                prefs = get(),
+                dismissRecorder = get()
+            ) as Announcement
         }
 
         factory("claim") {
