@@ -11,6 +11,6 @@ data class SwapErrorResponse(val id: String, val code: Int, val description: Str
             45 -> SwapErrorType.DAILY_LIMIT_EXCEEDED
             46 -> SwapErrorType.WEEKLY_LIMIT_EXCEEDED
             38 -> SwapErrorType.ALBERT_EXECUTION_ERROR
-            else -> SwapErrorType.UNKOWN
+            else -> SwapErrorType.UNKNOWN
         }
 }

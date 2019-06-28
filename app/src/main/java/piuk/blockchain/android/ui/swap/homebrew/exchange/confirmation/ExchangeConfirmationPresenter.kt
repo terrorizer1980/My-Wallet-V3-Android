@@ -139,7 +139,7 @@ class ExchangeConfirmationPresenter internal constructor(
                         view.displayErrorBottomDialog(errorType.toContent(minSpendableFiatValue,
                             maxSpendableFiatValue,
                             maxSpendable))
-                    } ?: view.displayErrorBottomDialog(SwapErrorType.UNKOWN.toContent(minSpendableFiatValue,
+                    } ?: view.displayErrorBottomDialog(SwapErrorType.UNKNOWN.toContent(minSpendableFiatValue,
                         maxSpendableFiatValue,
                         maxSpendable))
                 }

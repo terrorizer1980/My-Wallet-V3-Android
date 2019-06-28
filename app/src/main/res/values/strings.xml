@@ -901,7 +901,7 @@
     <string name="morph_help_dialog_view_swap_limit">View My Swap Limit</string>
     <string name="morph_help_dialog_contact_support">@string/contact_support</string>
     <string name="swap_info_contact_support">Contact Support</string>
-    <string name="swap_info_swap_limits">Swap limits</string>
+    <string name="swap_info_swap_limits">Swap Limits</string>
     <string name="swap_info_order_history">Order History</string>
 
 </resources>
