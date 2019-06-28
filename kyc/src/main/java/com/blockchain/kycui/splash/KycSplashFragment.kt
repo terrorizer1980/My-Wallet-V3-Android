@@ -29,7 +29,6 @@ import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.kyc.R
 import timber.log.Timber
 import kotlinx.android.synthetic.main.fragment_kyc_splash.button_kyc_splash_apply_now as buttonContinue
-import kotlinx.android.synthetic.main.fragment_kyc_splash.image_view_cityscape as imageView
 import kotlinx.android.synthetic.main.fragment_kyc_splash.text_view_kyc_splash_message as textViewMessage
 import kotlinx.android.synthetic.main.fragment_kyc_splash.text_view_kyc_terms_and_conditions as textViewTerms
 
@@ -63,29 +62,23 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
         )
 
         val title = when (progressListener.campaignType) {
-            CampaignType.BuySell -> R.string.buy_sell_splash_title
+            CampaignType.BuySell,
+            CampaignType.Sunriver,
+            CampaignType.Resubmission -> R.string.buy_sell_splash_title
             CampaignType.Swap -> R.string.kyc_splash_title
-            CampaignType.Sunriver, CampaignType.Resubmission -> R.string.sunriver_splash_title
         }
 
         progressListener.setHostTitle(title)
         progressListener.incrementProgress(KycStep.SplashPage)
 
-        if (campaignType == CampaignType.BuySell) {
-            textViewTerms.renderTermsLinks(
-                R.string.buy_sell_splash_terms_and_conditions,
-                URL_COINIFY_POLICY,
-                URL_COINIFY_POLICY
-            )
-            textViewTerms.visible()
-        }
+        textViewTerms.renderTermsLinks(
+            R.string.buy_sell_splash_terms_and_conditions,
+            URL_COINIFY_POLICY,
+            URL_COINIFY_POLICY
+        )
+        textViewTerms.visible()
 
-        if (campaignType == CampaignType.Sunriver) {
-            imageView.setImageResource(R.drawable.vector_xlm_colored)
-            textViewMessage.setText(R.string.sunriver_splash_message)
-        } else if (campaignType == CampaignType.BuySell) {
-            textViewMessage.setText(R.string.buy_sell_splash_message)
-        }
+        textViewMessage.setText(R.string.buy_sell_splash_message)
     }
 
     private val disposable = CompositeDisposable()
@@ -124,6 +117,7 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
             progressDialog = null
         }
     }
+
     override fun showError(message: String) {
         toast(message, ToastCustom.TYPE_ERROR)
     }
