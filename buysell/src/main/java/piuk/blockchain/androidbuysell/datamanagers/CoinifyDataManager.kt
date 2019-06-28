@@ -28,6 +28,7 @@ import piuk.blockchain.androidbuysell.services.CoinifyService
 import piuk.blockchain.androidcore.data.auth.AuthService
 import piuk.blockchain.androidcore.injection.PresenterScope
 import com.blockchain.utils.Optional
+import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import javax.inject.Inject
 
@@ -320,6 +321,9 @@ class CoinifyDataManager @Inject constructor(
             ).toSingle { Any() }
         }.ignoreElement()
             .applySchedulers()
+
+    fun getSupportedCountries(): Single<Map<String, CountrySupport>> =
+        coinifyService.getSupportedCountries().applySchedulers()
 
     /**
      * Adds the specified [BankAccount] object to the list of [BankAccount] objects associated

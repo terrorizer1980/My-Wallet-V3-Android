@@ -29,6 +29,7 @@ import piuk.blockchain.android.ui.buysell.createorder.models.SellConfirmationDis
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
+import piuk.blockchain.androidbuysell.models.coinify.CountryNoSupported
 import piuk.blockchain.androidbuysell.models.coinify.ForcedDelay
 import piuk.blockchain.androidbuysell.models.coinify.KycResponse
 import piuk.blockchain.androidbuysell.models.coinify.LimitInAmounts
@@ -58,11 +59,10 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlin.math.absoluteValue
 import kotlin.properties.Delegates
 
-class BuySellBuildOrderPresenter @Inject constructor(
+class BuySellBuildOrderPresenter constructor(
     private val coinifyDataManager: CoinifyDataManager,
     private val sendDataManager: SendDataManager,
     private val payloadDataManager: PayloadDataManager,
@@ -74,14 +74,17 @@ class BuySellBuildOrderPresenter @Inject constructor(
     private val stringUtils: StringUtils
 ) : BasePresenter<BuySellBuildOrderView>() {
 
-    val receiveSubject: PublishSubject<String> = PublishSubject.create<String>()
-    val sendSubject: PublishSubject<String> = PublishSubject.create<String>()
-    var account by Delegates.observable(payloadDataManager.defaultAccount) { _, old, new ->
-        if (old != new) {
-            view.updateAccountSelector(new.label)
-            if (isSell) loadMax(new)
+    val receiveSubject: PublishSubject<String> = PublishSubject.create()
+    val sendSubject: PublishSubject<String> = PublishSubject.create()
+    var account: Account? = null
+        set(value) {
+            field = value
+            value?.let {
+                view.updateAccountSelector(it.label)
+                if (isSell) loadMax(it)
+            }
         }
-    }
+
     var selectedCurrency: String by Delegates.observable("EUR") { _, old, new ->
         if (old != new) initialiseUi(); subscribeToSubjects()
     }
@@ -140,13 +143,16 @@ class BuySellBuildOrderPresenter @Inject constructor(
 
     override fun onViewReady() {
         // Display Accounts selector if necessary
+        account = payloadDataManager.defaultAccount
         if (payloadDataManager.accounts.size > 1) {
-            view.displayAccountSelector(account.label)
+            view.displayAccountSelector(account!!.label)
         }
 
         initialiseUi()
         subscribeToSubjects()
-        loadMax(account)
+        account?.let {
+            loadMax(it)
+        }
     }
 
     internal fun onMaxClicked() {
@@ -280,7 +286,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
             .multiply(BigDecimal.valueOf(1e8))
             .toBigInteger()
 
-        val xPub = account.xpub
+        val xPub = account?.xpub ?: ""
 
         tokenSingle
             .applySchedulers()
@@ -543,8 +549,8 @@ class BuySellBuildOrderPresenter @Inject constructor(
                                     selectedCurrency)
                             }
                         }
-                        .doOnNext { renderLimits(it.first { it.inMedium == inMedium }.limitInAmounts) }
                         .doOnNext { checkIfCanTrade(it.first { it.inMedium == inMedium }) }
+                        .doOnNext { renderLimits(it.first { it.inMedium == inMedium }.limitInAmounts) }
                 }
             }
             .subscribeBy(
@@ -657,7 +663,10 @@ class BuySellBuildOrderPresenter @Inject constructor(
                 is LimitsExceeded ->
                     view.displayFatalErrorDialog(stringUtils.getString(R.string.buy_sell_error_limits_exceeded))
             }
+            view.isCountrySupported(reason !is CountryNoSupported)
             view.setButtonEnabled(false)
+        } else {
+            view.isCountrySupported(true)
         }
     }
 

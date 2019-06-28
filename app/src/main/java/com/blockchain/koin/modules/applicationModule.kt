@@ -24,6 +24,7 @@ import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.auth.PinEntryPresenter
 import piuk.blockchain.android.ui.balance.BalancePresenter
+import piuk.blockchain.android.ui.buysell.createorder.BuySellBuildOrderPresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter
@@ -165,6 +166,20 @@ val applicationModule = applicationContext {
             } else {
                 get("spendable")
             }
+        }
+
+        factory {
+            BuySellBuildOrderPresenter(
+                coinifyDataManager = get(),
+                sendDataManager = get(),
+                exchangeService = get(),
+                stringUtils = get(),
+                currencyFormatManager = get(),
+                exchangeRateDataManager = get(),
+                feeDataManager = get(),
+                dynamicFeeCache = get(),
+                payloadDataManager = get()
+            )
         }
 
         factory {

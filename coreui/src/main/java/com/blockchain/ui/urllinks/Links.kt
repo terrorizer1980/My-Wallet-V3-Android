@@ -36,3 +36,6 @@ const val URL_PRIVACY_POLICY = "https://blockchain.com/privacy"
 const val URL_CONTACT_SUPPORT = "https://support.blockchain.com/hc/requests/new"
 const val URL_LEARN_MORE_REJECTED =
     "https://support.blockchain.com/hc/articles/360018080352-Why-has-my-ID-submission-been-rejected-"
+
+const val URL_SUPPORTED_COUNTRIES =
+    "https://support.blockchain.com/hc/en-us/articles/360000804146-What-countries-are-supported-for-buying-selling-"

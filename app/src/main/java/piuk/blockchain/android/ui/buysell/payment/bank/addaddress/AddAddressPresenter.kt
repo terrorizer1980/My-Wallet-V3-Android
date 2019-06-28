@@ -1,6 +1,8 @@
 package piuk.blockchain.android.ui.buysell.payment.bank.addaddress
 
 import io.reactivex.Single
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
@@ -44,7 +46,7 @@ class AddAddressPresenter @Inject constructor(
             .map { it.coinify!!.token }
 
     override fun onViewReady() {
-        buyDataManager.countryCode
+        compositeDisposable += buyDataManager.countryCode
             .applySchedulers()
             .addToCompositeDisposable(this)
             .subscribeBy(onNext = { selectCountry(it) })
@@ -94,7 +96,7 @@ class AddAddressPresenter @Inject constructor(
                         view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
                     }
                 }
-            )
+            ).addTo(compositeDisposable)
     }
 
     private fun isDataValid(): Boolean {
