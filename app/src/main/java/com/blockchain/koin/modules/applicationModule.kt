@@ -22,6 +22,8 @@ import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
+import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
+import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.PinEntryPresenter
 import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.buysell.createorder.BuySellBuildOrderPresenter
@@ -408,9 +410,14 @@ val applicationModule = applicationContext {
                 mAccessState = get(),
                 walletOptionsDataManager = get(),
                 environmentSettings = get(),
-                prngFixer = get()
+                prngFixer = get(),
+                mobileNoticeRemoteConfig = get()
             )
         }
+    }
+
+    factory {
+        FirebaseMobileNoticeRemoteConfig(remoteConfig = get()) as MobileNoticeRemoteConfig
     }
 
     factory {

@@ -8,5 +8,8 @@
     <color name="nabu_divider_grey">#FFDDDDDD</color>
     <color name="keyboard_guideline_gray">#FFDFE3EB</color>
     <color name="swap_error_dialog_primary_button_background">#10ADE4</color>
+    <color name="mobile_notice_dialog_title">@color/grey_800</color>
+    <color name="mobile_notice_dialog_body">@color/grey_800</color>
+    <color name="mobile_notice_dialog_button_background">@color/blue_600</color>
     <color name="no_sell_available_learn_more">@color/blue_600</color>
 </resources>

@@ -15,14 +15,12 @@ import info.blockchain.wallet.exceptions.InvalidCredentialsException
 import info.blockchain.wallet.exceptions.PayloadException
 import info.blockchain.wallet.exceptions.ServerConnectionException
 import info.blockchain.wallet.exceptions.UnsupportedVersionException
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import org.spongycastle.crypto.InvalidCipherTextException
-import java.net.SocketTimeoutException
-import java.util.Arrays
-import javax.inject.Inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.rxjava.RxUtil
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
-import piuk.blockchain.android.ui.home.SecurityPromptDialog
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.DialogButtonCallback
 import piuk.blockchain.android.util.StringUtils
@@ -39,6 +37,8 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
+import java.net.SocketTimeoutException
+import javax.inject.Inject
 
 class PinEntryPresenter @Inject constructor(
     private val mAuthDataManager: AuthDataManager,
@@ -50,7 +50,8 @@ class PinEntryPresenter @Inject constructor(
     private val mAccessState: AccessState,
     private val walletOptionsDataManager: WalletOptionsDataManager,
     private val environmentSettings: EnvironmentConfig,
-    private val prngFixer: PrngFixer
+    private val prngFixer: PrngFixer,
+    private val mobileNoticeRemoteConfig: MobileNoticeRemoteConfig
 ) :
     BasePresenter<PinEntryView>() {
 
@@ -417,7 +418,7 @@ class PinEntryPresenter @Inject constructor(
     }
 
     private fun isPinCommon(pin: String): Boolean {
-        val commonPins = Arrays.asList("1234", "1111", "1212", "7777", "1004")
+        val commonPins = listOf("1234", "1111", "1212", "7777", "1004")
         return commonPins.contains(pin)
     }
 
@@ -441,12 +442,10 @@ class PinEntryPresenter @Inject constructor(
 
     @SuppressLint("CheckResult")
     fun fetchInfoMessage() {
-        walletOptionsDataManager.fetchInfoMessage(view.locale)
-            .compose(RxUtil.addObservableToCompositeDisposable(this))
-            .subscribe({ message ->
-                if (!message.isEmpty())
-                    view.showCustomPrompt(getWarningPrompt(message))
-            }) { Timber.e(it) }
+        compositeDisposable += mobileNoticeRemoteConfig.mobileNoticeDialog()
+            .subscribeBy(onError = { Timber.e(it) }, onSuccess = {
+                view.showMobileNotice(it)
+            })
     }
 
     @SuppressLint("CheckResult")
@@ -458,21 +457,6 @@ class PinEntryPresenter @Inject constructor(
                     if (updateType !== UpdateType.NONE)
                         view.appNeedsUpgrade(updateType === UpdateType.FORCE)
                 }) { Timber.e(it) }
-    }
-
-    private fun getWarningPrompt(message: String): SecurityPromptDialog {
-        val prompt = SecurityPromptDialog.newInstance(
-            R.string.information,
-            message,
-            R.drawable.vector_help,
-            R.string.ok_cap,
-            false,
-            false)
-        prompt.positiveButtonListener = {
-            prompt.dismiss()
-            Unit
-        }
-        return prompt
     }
 
     companion object {

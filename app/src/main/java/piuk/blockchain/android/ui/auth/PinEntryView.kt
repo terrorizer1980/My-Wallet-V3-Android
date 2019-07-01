@@ -2,11 +2,8 @@ package piuk.blockchain.android.ui.auth
 
 import android.content.Intent
 import android.support.annotation.StringRes
-import android.support.v7.app.AppCompatDialogFragment
 import android.widget.ImageView
-
 import java.util.Locale
-
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.util.DialogButtonCallback
@@ -54,7 +51,7 @@ interface PinEntryView : View {
 
     fun showAccountLockedDialog()
 
-    fun showCustomPrompt(alertFragment: AppCompatDialogFragment)
+    fun showMobileNotice(mobileNoticeDialog: MobileNoticeDialog)
 
     fun appNeedsUpgrade(isForced: Boolean)
 

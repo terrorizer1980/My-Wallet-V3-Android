@@ -12,7 +12,6 @@ import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatDialogFragment
 import android.support.v7.widget.AppCompatEditText
 import android.text.InputType
 import android.view.LayoutInflater
@@ -57,6 +56,7 @@ import piuk.blockchain.androidcoreui.utils.ViewUtils
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.ui.home.MobileNoticeDialogFragment
 
 internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(), PinEntryView {
 
@@ -339,7 +339,7 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
                 .setPositiveButton(android.R.string.ok) { dialog, whichButton ->
                     val pw = password.text.toString()
 
-                    if (!pw.isEmpty()) {
+                    if (pw.isNotEmpty()) {
                         presenter.validatePassword(pw)
                     } else {
                         presenter.incrementFailureCountAndRestart()
@@ -542,9 +542,10 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
         }
     }
 
-    override fun showCustomPrompt(alertFragment: AppCompatDialogFragment) {
-        if (activity != null && !activity!!.isFinishing) {
-            alertFragment.show(fragmentManager!!, alertFragment.tag)
+    override fun showMobileNotice(mobileNoticeDialog: MobileNoticeDialog) {
+        if (activity?.isFinishing == false) {
+            val alertFragment = MobileNoticeDialogFragment.newInstance(mobileNoticeDialog)
+            alertFragment.show(fragmentManager, alertFragment.tag)
         }
     }
 
