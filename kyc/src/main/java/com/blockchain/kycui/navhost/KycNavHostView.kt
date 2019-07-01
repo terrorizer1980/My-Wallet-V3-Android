@@ -9,6 +9,8 @@ interface KycNavHostView : View {
 
     val campaignType: CampaignType
 
+    val isFromSettingsLimits: Boolean
+
     fun displayLoading(loading: Boolean)
 
     fun showErrorToastAndFinish(@StringRes message: Int)

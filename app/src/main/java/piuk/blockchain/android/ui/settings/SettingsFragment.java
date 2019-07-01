@@ -874,7 +874,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     @Override
     public void launchKycFlow() {
-        KycNavHostActivity.start(requireContext(), CampaignType.Swap);
+        KycNavHostActivity.start(requireContext(), CampaignType.Swap, true);
     }
 
     private void setCountryFlag(TextView tvCountry, String dialCode, int flagResourceId) {
