@@ -50,6 +50,8 @@ interface BuySellBuildOrderView : View {
 
     fun displayFatalErrorDialog(errorMessage: String)
 
+    fun isCountrySupported(supported: Boolean)
+
     fun launchAddNewBankAccount(displayModel: SellConfirmationDisplayModel)
 
     fun launchBankAccountSelection(displayModel: SellConfirmationDisplayModel)

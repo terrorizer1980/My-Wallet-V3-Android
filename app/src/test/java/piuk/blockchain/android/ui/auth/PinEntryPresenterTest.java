@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
+
 import info.blockchain.wallet.api.Environment;
 import info.blockchain.wallet.api.data.UpdateType;
 import info.blockchain.wallet.exceptions.AccountLockedException;
@@ -15,6 +16,7 @@ import info.blockchain.wallet.exceptions.ServerConnectionException;
 import info.blockchain.wallet.exceptions.UnsupportedVersionException;
 import info.blockchain.wallet.payload.data.Account;
 import info.blockchain.wallet.payload.data.Wallet;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,11 +26,14 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.spongycastle.crypto.InvalidCipherTextException;
+
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Locale;
+
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import piuk.blockchain.android.BlockchainTestApplication;
 import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
@@ -44,6 +49,7 @@ import piuk.blockchain.android.ui.fingerprint.FingerprintHelper;
 import piuk.blockchain.androidcoreui.utils.AppUtil;
 import piuk.blockchain.android.util.DialogButtonCallback;
 import piuk.blockchain.android.util.StringUtils;
+
 import static io.reactivex.Observable.just;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -89,6 +95,8 @@ public class PinEntryPresenterTest {
     private EnvironmentConfig environmentSettings;
     @Mock
     private PrngFixer prngFixer;
+    @Mock
+    private MobileNoticeRemoteConfig mobileNoticeRemoteConfig;
 
     @Before
     public void setUp() {
@@ -109,7 +117,8 @@ public class PinEntryPresenterTest {
                 accessState,
                 walletOptionsDataManager,
                 environmentSettings,
-                prngFixer);
+                prngFixer,
+                mobileNoticeRemoteConfig);
         subject.initView(activity);
     }
 
@@ -883,26 +892,18 @@ public class PinEntryPresenterTest {
     @Test
     public void fetchInfoMessage() {
         // Arrange
-        when(walletOptionsDataManager.fetchInfoMessage(any(Locale.class)))
-                .thenReturn(Observable.just("Some generic message"));
+        MobileNoticeDialog mobileNoticeDialog =
+                new MobileNoticeDialog("title",
+                        "body",
+                        "primarybutton",
+                        "link");
+        when(mobileNoticeRemoteConfig.mobileNoticeDialog()).
+                thenReturn(Single.just(mobileNoticeDialog));
 
         // Act
         subject.fetchInfoMessage();
         // Assert
-        verify(activity).showCustomPrompt(any());
-    }
-
-    @Test
-    public void fetchInfoMessage_none() {
-        // Arrange
-        when(walletOptionsDataManager.fetchInfoMessage(any(Locale.class)))
-                .thenReturn(Observable.just(""));
-
-        // Act
-        subject.fetchInfoMessage();
-        // Assert
-        verify(activity).getLocale();
-        verifyNoMoreInteractions(activity);
+        verify(activity).showMobileNotice(mobileNoticeDialog);
     }
 
     @Test

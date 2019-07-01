@@ -21,7 +21,8 @@ val morphUiModule = applicationContext {
                 tradeExecutionService = get(),
                 payloadDecrypt = get(),
                 stringUtils = get(),
-                locale = get()
+                locale = get(),
+                analytics = get()
             )
         }
 
@@ -46,6 +47,7 @@ val morphUiModule = applicationContext {
                     transactionExecutor = get("Priority"),
                     maximumSpendableCalculator = get("Priority"),
                     currencyPrefs = get(),
+                    ethDataManager = get(),
                     exchangeRateDataStore = get(),
                     ethEligibility = get())
             }

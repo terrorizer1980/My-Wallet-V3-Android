@@ -297,4 +297,6 @@
         android:layout_gravity="bottom"
         android:visibility="gone" />
 
+    <include layout="@layout/no_sell_available_layout" />
+
 </android.support.design.widget.CoordinatorLayout>

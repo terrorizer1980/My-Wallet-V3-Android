@@ -6,6 +6,7 @@ import piuk.blockchain.androidbuysell.api.Coinify
 import piuk.blockchain.androidbuysell.api.PATH_COINFY_AUTH
 import piuk.blockchain.androidbuysell.api.PATH_COINFY_BANK_ACCOUNTS
 import piuk.blockchain.androidbuysell.api.PATH_COINFY_CANCEL
+import piuk.blockchain.androidbuysell.api.PATH_COINFY_COUNTRIES
 import piuk.blockchain.androidbuysell.api.PATH_COINFY_GET_TRADER
 import piuk.blockchain.androidbuysell.api.PATH_COINFY_KYC
 import piuk.blockchain.androidbuysell.api.PATH_COINFY_PREP_KYC
@@ -19,6 +20,7 @@ import piuk.blockchain.androidbuysell.models.coinify.AuthResponse
 import piuk.blockchain.androidbuysell.models.coinify.BankAccount
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTradeRequest
+import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidbuysell.models.coinify.KycResponse
 import piuk.blockchain.androidbuysell.models.coinify.PaymentMethod
 import piuk.blockchain.androidbuysell.models.coinify.Quote
@@ -68,6 +70,11 @@ class CoinifyService @Inject constructor(
         accessToken: String
     ): Single<List<Subscription>> = rxPinning.callSingle {
         service.getSubscriptions(path, getFormattedToken(accessToken))
+            .wrapErrorMessage()
+    }
+
+    internal fun getSupportedCountries(): Single<Map<String, CountrySupport>> = rxPinning.callSingle {
+        service.getSupportedCountries("$baseUrl$PATH_COINFY_COUNTRIES")
             .wrapErrorMessage()
     }
 

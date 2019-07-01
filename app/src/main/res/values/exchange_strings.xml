@@ -19,6 +19,8 @@
     <string name="over_max">The maximum amount for an exchange is %1$s</string>
     <string name="over_max_amount_exchange">The maximum amount for an exchange is %1$s</string>
     <string name="upgrade_now">Upgrade now</string>
+    <string name="eth_in_flight_title">Transaction In Progress</string>
+    <string name="eth_in_flight_msg">Please wait until your previous %1$s transaction is complete before you process with a new one.</string>
 
     <string name="dialog_title_exchange">What do you want to exchange?</string>
     <string name="markets_are_moving">Markets are Moving 🚀</string>
@@ -30,7 +32,7 @@
     <string name="more_info">More Info</string>
     <string name="increase_limits">Increase My Limits</string>
     <string name="try_again">Try Again</string>
-    <string name="ops_something_went_wrong">Ooops! Something went wrong.</string>
+    <string name="ops_something_went_wrong">Oops! Something went wrong.</string>
     <string name="something_went_wrong_description">We\'re not sure what happened but we didn\'t receive your order details. Unfortunately, you\'re going to have to enter your order again.</string>
     <string name="dialog_title_receive">What do you want to receive?</string>
 

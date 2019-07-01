@@ -21,5 +21,6 @@ internal const val PATH_COINFY_PREP_KYC: String = "$PATH_COINFY_TRADERS/me/kyc"
 internal const val PATH_COINFY_KYC: String = "kyc"
 internal const val PATH_COINFY_TRADES_QUOTE: String = "$PATH_COINFY_TRADES/quote"
 internal const val PATH_COINFY_SUBSCRIPTIONS: String = "$PATH_COINFY_TRADES/subscriptions"
+internal const val PATH_COINFY_COUNTRIES: String = "countries/70c76011-2b52-400e-8344-272e196b2fad"
 internal const val PATH_COINFY_TRADES_PAYMENT_METHODS: String =
     "$PATH_COINFY_TRADES/payment-methods"

@@ -80,7 +80,7 @@ object Versions {
 
     // Third Party SDKs
     const val onfido = "4.3.0"
-    const val veriff = "2.3.2"
+    const val veriff = "2.3.5"
     const val probity = "1.0.0"
 
     // Logging

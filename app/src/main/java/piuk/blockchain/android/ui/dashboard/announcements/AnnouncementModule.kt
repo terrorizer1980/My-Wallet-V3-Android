@@ -1,54 +1,88 @@
+@file:Suppress("USELESS_CAST")
+
 package piuk.blockchain.android.ui.dashboard.announcements
 
-import com.blockchain.announcement.Announcement
-import com.blockchain.announcement.AnnouncementList
+import io.reactivex.android.schedulers.AndroidSchedulers
 import org.koin.dsl.module.applicationContext
-import piuk.blockchain.android.ui.dashboard.DashboardPresenter
 
 val dashboardAnnouncementsModule = applicationContext {
 
     context("Payload") {
 
-        factory {
-            DashboardAnnouncements(AnnouncementList<DashboardPresenter>().apply {
+        bean {
+            AnnouncementList(
+                dismissRecorder = get(),
+                sunriverCampaignHelper = get(),
+                kycTiersQueries = get(),
+                mainScheduler = AndroidSchedulers.mainThread()
+            ).apply {
+                add(get("pit"))
+                add(get("stablecoin"))
                 add(get("coinify"))
                 add(get("stellar"))
                 add(get("profile"))
                 add(get("claim"))
-                add(get("stablecoin"))
                 add(get("swap"))
-                add(get("pit"))
-            })
+//                add(get("pit"))
+            }
         }
 
-        bean("coinify") {
-            CoinifyKycModalPopupAnnouncement(get(),
-                get(),
-                get("ff_notify_coinify_users_to_kyc")) as Announcement<DashboardPresenter>
+        factory("coinify") {
+            CoinifyKycModalPopupAnnouncementRule(
+                tierService = get(),
+                coinifyWalletService = get(),
+                showPopupFeatureFlag = get("ff_notify_coinify_users_to_kyc"),
+                dismissRecorder = get()
+            ) as AnnouncementRule
         }
 
         factory("stellar") {
-            StellarModalPopupAnnouncement(
+            StellarModalPopupAnnouncementRule(
                 tierService = get(),
                 dismissRecorder = get(),
                 showPopupFeatureFlag = get("ff_get_free_xlm_popup")
-            ) as Announcement<DashboardPresenter>
+            ) as AnnouncementRule
         }
 
-        factory("profile") { CompleteYourProfileCardAnnouncement(get(), get()) as Announcement<DashboardPresenter> }
+        factory("profile") {
+            GoForGoldAnnouncementRule(
+                tierService = get(),
+                prefs = get(),
+                dismissRecorder = get()
+            ) as AnnouncementRule
+        }
 
-        factory("pit") { PitAnnouncement(get()) as Announcement<DashboardPresenter> }
+        factory("pit") {
+            PitAnnouncementRule(
+                dismissRecorder = get()
+            ) as AnnouncementRule
+        }
 
         factory("claim") {
-            ClaimYourFreeCryptoCardAnnouncement(get(),
-                get(),
-                get()) as Announcement<DashboardPresenter>
+            ClaimYourFreeCryptoAnnouncementRule(
+                tierService = get(),
+                sunriverCampaignHelper = get(),
+                dismissRecorder = get()
+            ) as AnnouncementRule
         }
 
-        factory("stablecoin") { StableCoinIntroductionAnnouncement(get(), get()) as Announcement<DashboardPresenter> }
+        factory("stablecoin") {
+            StableCoinIntroAnnouncementRule(
+                featureEnabled = get("ff_stablecoin"),
+                config = get(),
+                analytics = get(),
+                dismissRecorder = get()
+            ) as AnnouncementRule
+        }
 
-        factory("swap") { SwapAnnouncement(get(), get("merge"), get()) as Announcement<DashboardPresenter> }
+        factory("swap") {
+            SwapAnnouncementRule(
+                tierService = get(),
+                dataManager = get("merge"),
+                dismissRecorder = get()
+            ) as AnnouncementRule
+        }
     }
 
-    factory { DismissRecorder(get()) }
+    bean { DismissRecorder(prefs = get()) }
 }

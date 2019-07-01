@@ -11,8 +11,8 @@ import android.view.ViewGroup
 import com.blockchain.nabu.StartKyc
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_RAISE_SUPPORT_TICKET
 import com.blockchain.ui.extensions.throttledClicks
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_RAISE_SUPPORT_TICKET
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy

@@ -34,7 +34,7 @@ import com.blockchain.lockbox.ui.LockboxLandingActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_SUPPORT_PORTAL
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_SUPPORT_PORTAL
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.single.BasePermissionListener

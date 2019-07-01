@@ -238,7 +238,7 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
                 buttonNext
                     .throttledClicks()
                     .subscribeBy(
-                        onNext = { presenter.onContinueClicked() },
+                        onNext = { presenter.onContinueClicked(progressListener.campaignType) },
                         onError = { Timber.e(it) }
                     )
 

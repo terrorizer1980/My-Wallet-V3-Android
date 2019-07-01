@@ -95,7 +95,7 @@ class KycNavHostPresenter(
             view.navigateToKycSplash()
         } else if (view.campaignType == CampaignType.Resubmission || user.isMarkedForResubmission) {
             view.navigateToResubmissionSplash()
-        } else if (user.state != UserState.None && user.kycState == KycState.None) {
+        } else if (user.state != UserState.None && user.kycState == KycState.None && !view.isFromSettingsLimits) {
             val current = user.tiers?.current
             if (current == null || current == 0) {
                 val reentryPoint = reentryDecision.findReentryPoint(user)

@@ -9,6 +9,7 @@ import com.blockchain.koin.modules.appBuySellModule
 import com.blockchain.koin.modules.appProperties
 import com.blockchain.koin.modules.applicationModule
 import com.blockchain.koin.modules.environmentModule
+import com.blockchain.koin.modules.featureFlagsModule
 import com.blockchain.koin.modules.homeBrewModule
 import com.blockchain.koin.modules.keys
 import com.blockchain.koin.modules.localShapeShift
@@ -46,7 +47,7 @@ object KoinStarter {
                 applicationModule,
                 buySellModule,
                 coreModule,
-                coreUiFeatureFlagsModule,
+                featureFlagsModule,
                 coreUiModule,
                 dashboardAnnouncementsModule,
                 environmentModule,

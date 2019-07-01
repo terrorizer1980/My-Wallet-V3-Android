@@ -59,10 +59,10 @@ import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 
 import android.app.Activity.RESULT_OK
+import com.blockchain.ui.urllinks.URL_PRIVACY_POLICY
+import com.blockchain.ui.urllinks.URL_TOS_POLICY
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R.string.success
-import piuk.blockchain.android.constants.URL_PRIVACY_POLICY
-import piuk.blockchain.android.constants.URL_TOS_POLICY
 import piuk.blockchain.android.data.datamanagers.PromptManager
 import piuk.blockchain.android.ui.auth.KEY_VALIDATING_PIN_FOR_RESULT
 import piuk.blockchain.android.ui.auth.REQUEST_CODE_VALIDATE_PIN

@@ -54,3 +54,5 @@ object ClearQuoteIntent : ExchangeIntent()
 object ApplyMaxSpendable : ExchangeIntent()
 
 class LockQuoteIntent(val lockQuote: Boolean) : ExchangeIntent()
+
+class SetEthTransactionInFlight(val ethInFlight: Boolean) : ExchangeIntent()
