@@ -1,18 +1,20 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
+import android.support.annotation.VisibleForTesting
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.services.nabu.TierService
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import io.reactivex.Single
 import piuk.blockchain.android.R
 
-internal class ClaimYourFreeCryptoCardAnnouncement(
+internal class ClaimYourFreeCryptoAnnouncementRule(
     private val tierService: TierService,
     private val sunriverCampaignHelper: SunriverCampaignHelper,
     dismissRecorder: DismissRecorder
-) : Announcement {
+) : AnnouncementRule {
 
-    private val dismissEntry = dismissRecorder["ClaimYourFreeCryptoCard_DISMISSED"]
+    override val dismissKey = DISMISS_KEY
+    private val dismissEntry = dismissRecorder[dismissKey]
 
     override fun shouldShow(): Single<Boolean> {
         if (dismissEntry.isDismissed) {
@@ -39,7 +41,7 @@ internal class ClaimYourFreeCryptoCardAnnouncement(
                 link = R.string.airdrop_program_card_button,
                 image = R.drawable.vector_gold_checkmark,
                 closeFunction = {
-                    dismissEntry.isDismissed = true
+                    dismissEntry.dismiss(DismissRule.DismissForSession)
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 linkFunction = {
@@ -49,5 +51,10 @@ internal class ClaimYourFreeCryptoCardAnnouncement(
                 prefsKey = dismissEntry.prefsKey
             )
         )
+    }
+
+    companion object {
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val DISMISS_KEY = "ClaimYourFreeCryptoCard_DISMISSED"
     }
 }

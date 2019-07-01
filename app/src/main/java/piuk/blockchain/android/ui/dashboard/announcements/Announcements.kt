@@ -25,13 +25,14 @@ interface AnnouncementHost {
 
     fun showAnnouncmentPopup(popup: BaseAirdropBottomDialog)
 
-    // TEMP: Actions
+    // Actions
     fun signupToSunRiverCampaign()
-    fun exchangeRequested(cryptoCurrency: CryptoCurrency? = null)
+    fun startSwapOrKyc(swapTarget: CryptoCurrency? = null)
     fun startKyc(campaignType: CampaignType)
 }
 
-interface Announcement {
+interface AnnouncementRule {
+    val dismissKey: String
     fun shouldShow(): Single<Boolean>
     fun show(host: AnnouncementHost)
 }
@@ -43,14 +44,17 @@ class AnnouncementList(
     private val mainScheduler: Scheduler
 ) {
 
-    private val list = mutableListOf<Announcement>()
+    private val list = mutableListOf<AnnouncementRule>()
 
-    fun add(announcement: Announcement): AnnouncementList {
+    fun add(announcement: AnnouncementRule): AnnouncementList {
         list.add(announcement)
         return this
     }
 
     fun checkLatest(host: AnnouncementHost, disposables: CompositeDisposable) {
+
+        dismissRecorder.undismissAll(this)
+
         host.clearAllAnnouncements()
 
         disposables +=
@@ -73,7 +77,7 @@ class AnnouncementList(
                 link = R.string.kyc_resubmission_card_button,
                 image = R.drawable.vector_kyc_onboarding,
                 closeFunction = {
-                    dismissEntry.isDismissed = true
+                    dismissEntry.dismiss(DismissRule.DismissForever)
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 linkFunction = {
@@ -100,7 +104,7 @@ class AnnouncementList(
                 link = R.string.kyc_drop_off_card_button,
                 image = R.drawable.vector_kyc_onboarding,
                 closeFunction = {
-                    dismissEntry.isDismissed = true
+                    dismissEntry.dismiss(DismissRule.DismissForever)
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 linkFunction = {
@@ -172,7 +176,7 @@ class AnnouncementList(
                     link = R.string.sunriver_announcement_stellar_claim_cta,
                     closeFunction = {
                         host.dismissAnnouncementCard(prefsKey)
-                        dismissEntry.isDismissed = true
+                        dismissEntry.dismiss(DismissRule.DismissForever)
                     },
                     linkFunction = {
                         host.startKyc(CampaignType.Sunriver)
@@ -198,7 +202,7 @@ class AnnouncementList(
                     description = R.string.sunriver_announcement_stellar_on_the_way_message,
                     closeFunction = {
                         host.dismissAnnouncementCard(prefsKey)
-                        dismissEntry.isDismissed = true
+                        dismissEntry.dismiss(DismissRule.DismissForever)
                     },
                     linkFunction = { },
                     prefsKey = prefsKey
@@ -214,12 +218,12 @@ class AnnouncementList(
             .map { Unit }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun showNextAnnouncement(host: AnnouncementHost): Maybe<Announcement> =
+    fun showNextAnnouncement(host: AnnouncementHost): Maybe<AnnouncementRule> =
         getNextAnnouncement()
             .observeOn(mainScheduler)
             .doOnSuccess { it.show(host) }
 
-    private fun getNextAnnouncement(): Maybe<Announcement> =
+    private fun getNextAnnouncement(): Maybe<AnnouncementRule> =
         Observable.concat(
             list.map { a ->
                 Observable.defer {
@@ -230,6 +234,8 @@ class AnnouncementList(
                 }
             }
         ).firstElement()
+
+    internal fun dismissKeys(): List<String> = list.map { it.dismissKey }
 
     companion object {
         @VisibleForTesting

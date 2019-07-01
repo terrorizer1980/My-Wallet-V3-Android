@@ -1,22 +1,19 @@
 package piuk.blockchain.android.ui.dashboard.announcements.popups
 
+import android.os.Bundle
 import com.blockchain.nabu.StartKycAirdrop
-import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
-import com.blockchain.sunriver.ui.BaseAirdropBottomDialog
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.androidcoreui.R
 
-class AirdropPopup : BaseAirdropBottomDialog(
+class StellarModelPopup : BaseAnnouncementBottomDialog(
     Content(
         title = R.string.get_free_xlm,
         description = R.string.get_free_xlm_body,
         ctaButtonText = R.string.get_free_xlm
     )
 ) {
-
-    private val analytics: Analytics by inject()
-
     private val startKyc: StartKycAirdrop by inject()
 
     override fun onStart() {
@@ -38,5 +35,17 @@ class AirdropPopup : BaseAirdropBottomDialog(
     private fun startKycAndDismiss() {
         dismiss()
         startKyc.startKycActivity(activity!!)
+    }
+
+    companion object {
+        fun show(host: AnnouncementHost, dismissKey: String) {
+
+            val popup = StellarModelPopup().apply {
+                arguments = Bundle().also {
+                    it.putString(ARG_DISMISS_KEY, dismissKey)
+                }
+            }
+            host.showAnnouncmentPopup(popup)
+        }
     }
 }

@@ -20,10 +20,8 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
@@ -70,7 +68,6 @@ class DashboardPresenter(
 ) : BasePresenter<DashboardView>(), AnnouncementHost {
 
     private val currencies = DashboardConfig.currencies
-    private val exchangeRequested = PublishSubject.create<CryptoCurrency>()
 
     private val displayList by unsafeLazy {
         (listOf(
@@ -123,15 +120,11 @@ class DashboardPresenter(
                 { /* No-op */ },
                 { Timber.e(it) }
             )
-        compositeDisposable += exchangeRequested.switchMap { currency ->
-            currentTier.usersCurrentTier().toObservable().zipWith(Observable.just(currency))
-        }.subscribe { (tier, currency) ->
-            if (tier > 0) {
-                view.goToExchange(currency, prefs.selectedFiatCurrency)
-            } else {
-                view.startKycFlowWithNavigator(CampaignType.Swap)
-            }
-        }
+    }
+
+    override fun onViewDestroyed() {
+        rxBus.unregister(MetadataEvent::class.java, metadataObservable)
+        super.onViewDestroyed()
     }
 
     fun updateBalances() {
@@ -142,11 +135,6 @@ class DashboardPresenter(
 
         updatePrices()
         updateAllBalances()
-    }
-
-    override fun onViewDestroyed() {
-        rxBus.unregister(MetadataEvent::class.java, metadataObservable)
-        super.onViewDestroyed()
     }
 
     @SuppressLint("CheckResult")
@@ -255,10 +243,17 @@ class DashboardPresenter(
         view.startKycFlow(campaignType)
     }
 
-    override fun exchangeRequested(cryptoCurrency: CryptoCurrency?) {
-        cryptoCurrency?.let {
-            exchangeRequested.onNext(cryptoCurrency)
-        } ?: exchangeRequested.onNext(CryptoCurrency.ETHER)
+    override fun startSwapOrKyc(swapTarget: CryptoCurrency?) {
+        val currency = swapTarget ?: CryptoCurrency.ETHER
+
+        compositeDisposable += currentTier.usersCurrentTier()
+            .subscribe { tier ->
+                if (tier > 0) {
+                    view.goToExchange(currency, prefs.selectedFiatCurrency)
+                } else {
+                    view.startKycFlowWithNavigator(CampaignType.Swap)
+                }
+            }
     }
 
     override fun signupToSunRiverCampaign() {

@@ -13,15 +13,15 @@ import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Test
 import piuk.blockchain.android.R
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 import kotlin.test.assertEquals
 
-class StableCoinIntroductionAnnouncementTest {
+class StableCoinIntroAnnouncementTest {
 
-    private val prefs: PersistentPrefs = mock()
-    private lateinit var dismissRecorder: DismissRecorder
+    private val dismissRecorder: DismissRecorder = mock()
+    private val dismissEntry: DismissRecorder.DismissEntry = mock()
+
     private val host: AnnouncementHost = mock()
-    private lateinit var subject: StableCoinIntroductionAnnouncement
+    private lateinit var subject: StableCoinIntroAnnouncementRule
 
     private val config: RemoteConfig = mock()
     private val analytics: Analytics = mock()
@@ -29,8 +29,10 @@ class StableCoinIntroductionAnnouncementTest {
 
     @Before
     fun setUp() {
-        dismissRecorder = DismissRecorder(prefs)
-        subject = StableCoinIntroductionAnnouncement(
+        whenever(dismissRecorder[StableCoinIntroAnnouncementRule.DISMISS_KEY]).thenReturn(dismissEntry)
+        whenever(dismissEntry.prefsKey).thenReturn(StableCoinIntroAnnouncementRule.DISMISS_KEY)
+
+        subject = StableCoinIntroAnnouncementRule(
             featureEnabled = featureEnabled,
             config = config,
             analytics = analytics,
@@ -40,44 +42,38 @@ class StableCoinIntroductionAnnouncementTest {
 
     @Test
     fun `should not show, when already shown`() {
-        whenever(prefs.getValue("StableCoinIntroductionCard_DISMISSED", false)).thenReturn(true)
+        whenever(dismissEntry.isDismissed).thenReturn(true)
         whenever(featureEnabled.enabled).thenReturn(Single.just(true))
 
-        val shouldShowObserver = subject.shouldShow().test()
-
-        shouldShowObserver.assertValue {
-            !it
-        }
-        shouldShowObserver.assertValueCount(1)
-        shouldShowObserver.assertComplete()
+        subject.shouldShow()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
     }
 
     @Test
     fun `should not show, when not enabled and not already shown`() {
-        whenever(prefs.getValue("StableCoinIntroductionCard_DISMISSED", false)).thenReturn(false)
+        whenever(dismissEntry.isDismissed).thenReturn(false)
         whenever(featureEnabled.enabled).thenReturn(Single.just(false))
 
-        val shouldShowObserver = subject.shouldShow().test()
-
-        shouldShowObserver.assertValue {
-            !it
-        }
-        shouldShowObserver.assertValueCount(1)
-        shouldShowObserver.assertComplete()
+        subject.shouldShow()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
     }
 
     @Test
     fun `should show, when enabled and not already shown`() {
-        whenever(prefs.getValue("StableCoinIntroductionCard_DISMISSED", false)).thenReturn(false)
+        whenever(dismissEntry.isDismissed).thenReturn(false)
         whenever(featureEnabled.enabled).thenReturn(Single.just(true))
 
-        val shouldShowObserver = subject.shouldShow().test()
-
-        shouldShowObserver.assertValue {
-            it
-        }
-        shouldShowObserver.assertValueCount(1)
-        shouldShowObserver.assertComplete()
+        subject.shouldShow()
+            .test()
+            .assertValue { it }
+            .assertValueCount(1)
+            .assertComplete()
     }
 
     @Test
@@ -89,10 +85,7 @@ class StableCoinIntroductionAnnouncementTest {
         verify(host).showAnnouncementCard(captor.capture())
 
         assertEquals(captor.firstValue.title, R.string.stablecoin_announcement_introducing_title)
-        assertEquals(
-            captor.firstValue.description,
-            R.string.stablecoin_announcement_introducing_description
-        )
+        assertEquals(captor.firstValue.description, R.string.stablecoin_announcement_introducing_description)
         assertEquals(captor.firstValue.link, R.string.stablecoin_announcement_introducing_link)
 
         verifyNoMoreInteractions(host)

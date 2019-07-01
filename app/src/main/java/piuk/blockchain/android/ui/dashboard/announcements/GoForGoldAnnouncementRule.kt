@@ -8,13 +8,14 @@ import io.reactivex.Single
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 
-internal class GoForGoldAnnouncement(
+internal class GoForGoldAnnouncementRule(
     private val tierService: TierService,
     private val prefs: PersistentPrefs,
     dismissRecorder: DismissRecorder
-) : Announcement {
+) : AnnouncementRule {
 
-    private val dismissEntry = dismissRecorder[DISMISS_KEY]
+    override val dismissKey = DISMISS_KEY
+    private val dismissEntry = dismissRecorder[dismissKey]
 
     override fun shouldShow(): Single<Boolean> {
         if (dismissEntry.isDismissed) {
@@ -38,10 +39,11 @@ internal class GoForGoldAnnouncement(
                 link = R.string.complete_your_profile_card_button,
                 image = R.drawable.vector_gold_checkmark,
                 closeFunction = {
-                    dismissEntry.isDismissed = true
+                    dismissEntry.dismiss(DismissRule.DismissForSession)
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 linkFunction = {
+                    dismissEntry.dismiss(DismissRule.DismissForever)
                     host.startKyc(CampaignType.Sunriver)
                 },
                 prefsKey = dismissEntry.prefsKey

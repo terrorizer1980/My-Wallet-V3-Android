@@ -2,14 +2,14 @@ package piuk.blockchain.android.ui.dashboard.announcements.popups
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import com.blockchain.nabu.StartKycAirdrop
-import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
-import com.blockchain.sunriver.ui.BaseAirdropBottomDialog
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 
-class CoinifyKycPopup : BaseAirdropBottomDialog(
+class CoinifyKycPopup : BaseAnnouncementBottomDialog(
     Content(
         title = R.string.more_info_needed,
         description = R.string.coinify_kyc_body,
@@ -18,9 +18,6 @@ class CoinifyKycPopup : BaseAirdropBottomDialog(
         iconDrawable = R.drawable.vector_buy_shopping_cart
     )
 ) {
-
-    private val analytics: Analytics by inject()
-
     private val startKyc: StartKycAirdrop by inject()
 
     override fun onStart() {
@@ -47,5 +44,16 @@ class CoinifyKycPopup : BaseAirdropBottomDialog(
     private fun startKycAndDismiss() {
         dismiss()
         startKyc.startKycActivity(activity!!)
+    }
+
+    companion object {
+        fun show(host: AnnouncementHost, dismissKey: String) {
+            val popup = CoinifyKycPopup().apply {
+                arguments = Bundle().also {
+                    it.putString(ARG_DISMISS_KEY, dismissKey)
+                }
+            }
+            host.showAnnouncmentPopup(popup)
+        }
     }
 }

@@ -51,7 +51,7 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     }
 
     override fun goToExchange(currency: CryptoCurrency?, defCurrency: String) {
-        (activity as?Context)?.let {
+        (activity as? Context)?.let {
             HomebrewNavHostActivity.start(it, defCurrency, currency)
         }
     }

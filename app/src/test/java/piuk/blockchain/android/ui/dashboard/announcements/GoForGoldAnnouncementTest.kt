@@ -11,16 +11,20 @@ import org.junit.Test
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class GoForGoldAnnouncementTest {
-    private val tiers: TiersJson = mock()
+    private val dismissRecorder: DismissRecorder = mock()
+    private val dismissEntry: DismissRecorder.DismissEntry = mock()
     private val prefs: PersistentPrefs = mock()
+    private val tiers: TiersJson = mock()
     private val tierService: TierService = mock()
-    private lateinit var dismissRecorder: DismissRecorder
-    private lateinit var subject: GoForGoldAnnouncement
+
+    private lateinit var subject: GoForGoldAnnouncementRule
 
     @Before
     fun setUp() {
-        dismissRecorder = DismissRecorder(prefs)
-        subject = GoForGoldAnnouncement(
+        whenever(dismissRecorder[GoForGoldAnnouncementRule.DISMISS_KEY]).thenReturn(dismissEntry)
+        whenever(dismissEntry.prefsKey).thenReturn(GoForGoldAnnouncementRule.DISMISS_KEY)
+
+        subject = GoForGoldAnnouncementRule(
             tierService = tierService,
             prefs = prefs,
             dismissRecorder = dismissRecorder
@@ -29,82 +33,82 @@ class GoForGoldAnnouncementTest {
 
     @Test
     fun `should not show, when already shown`() {
-        whenever(prefs.getValue(GoForGoldAnnouncement.DISMISS_KEY, false)).thenReturn(true)
+        whenever(dismissEntry.isDismissed).thenReturn(true)
 
-        val shouldShowObserver = subject.shouldShow().test()
-
-        shouldShowObserver.assertValue { !it }
-        shouldShowObserver.assertValueCount(1)
-        shouldShowObserver.assertComplete()
+        subject.shouldShow()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
     }
 
     @Test
     fun `should show when tier 1 verified`() {
-        whenever(prefs.getValue(GoForGoldAnnouncement.DISMISS_KEY, false)).thenReturn(false)
+        whenever(dismissEntry.isDismissed).thenReturn(false)
         whenever(prefs.devicePreIDVCheckFailed).thenReturn(false)
         whenever(tierService.tiers()).thenReturn(Single.just(tiers))
         whenever(tiers.combinedState).thenReturn(Kyc2TierState.Tier1Approved)
 
-        val result = subject.shouldShow().test()
-
-        result.assertValue { it }
-        result.assertValueCount(1)
-        result.assertComplete()
+        subject.shouldShow()
+            .test()
+            .assertValue { it }
+            .assertValueCount(1)
+            .assertComplete()
     }
 
     @Test
     fun `should not show when tier 2 failed`() {
-        whenever(prefs.getValue(GoForGoldAnnouncement.DISMISS_KEY, false)).thenReturn(false)
+        whenever(dismissEntry.isDismissed).thenReturn(false)
         whenever(prefs.devicePreIDVCheckFailed).thenReturn(false)
         whenever(tierService.tiers()).thenReturn(Single.just(tiers))
         whenever(tiers.combinedState).thenReturn(Kyc2TierState.Tier2Failed)
 
-        val result = subject.shouldShow().test()
-
-        result.assertValue { !it }
-        result.assertValueCount(1)
-        result.assertComplete()
+        subject.shouldShow()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
     }
 
     @Test
     fun `should not show when tier 2 verified`() {
-        whenever(prefs.getValue(GoForGoldAnnouncement.DISMISS_KEY, false)).thenReturn(false)
+        whenever(dismissEntry.isDismissed).thenReturn(false)
         whenever(prefs.devicePreIDVCheckFailed).thenReturn(false)
         whenever(tierService.tiers()).thenReturn(Single.just(tiers))
         whenever(tiers.combinedState).thenReturn(Kyc2TierState.Tier2Approved)
 
-        val result = subject.shouldShow().test()
-
-        result.assertValue { !it }
-        result.assertValueCount(1)
-        result.assertComplete()
+        subject.shouldShow()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
     }
 
     @Test
     fun `should not show when tier 2 in review`() {
-        whenever(prefs.getValue(GoForGoldAnnouncement.DISMISS_KEY, false)).thenReturn(false)
+        whenever(dismissEntry.isDismissed).thenReturn(false)
         whenever(prefs.devicePreIDVCheckFailed).thenReturn(false)
         whenever(tierService.tiers()).thenReturn(Single.just(tiers))
         whenever(tiers.combinedState).thenReturn(Kyc2TierState.Tier2InReview)
 
-        val result = subject.shouldShow().test()
-
-        result.assertValue { !it }
-        result.assertValueCount(1)
-        result.assertComplete()
+        subject.shouldShow()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
     }
 
     @Test
     fun `should not show when pre-IDV check failed`() {
-        whenever(prefs.getValue(GoForGoldAnnouncement.DISMISS_KEY, false)).thenReturn(false)
+        whenever(dismissEntry.isDismissed).thenReturn(false)
         whenever(prefs.devicePreIDVCheckFailed).thenReturn(true)
         whenever(tierService.tiers()).thenReturn(Single.just(tiers))
         whenever(tiers.combinedState).thenReturn(Kyc2TierState.Tier1Approved)
 
-        val result = subject.shouldShow().test()
-
-        result.assertValue { !it }
-        result.assertValueCount(1)
-        result.assertComplete()
+        subject.shouldShow()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
     }
 }

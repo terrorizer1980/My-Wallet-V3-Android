@@ -104,18 +104,18 @@ class AnnouncementListTest {
             .assertNoErrors()
     }
 
-    private fun announcement(): Announcement =
+    private fun announcement(): AnnouncementRule =
         mock {
             on { shouldShow() } `it returns` Single.just(true)
         }
 
-    private fun dontShowAnnouncement(): Announcement =
+    private fun dontShowAnnouncement(): AnnouncementRule =
         mock {
             on { shouldShow() } `it returns` Single.just(false)
             on { show(host) } `it throws` RuntimeException("Not expected")
         }
 
-    private fun dontCheckAnnouncement(): Announcement =
+    private fun dontCheckAnnouncement(): AnnouncementRule =
         mock {
             on { shouldShow() } `it throws` RuntimeException("Not expected")
             on { show(host) } `it throws` RuntimeException("Not expected")

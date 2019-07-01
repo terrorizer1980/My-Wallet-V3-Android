@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
+import android.support.annotation.VisibleForTesting
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.services.nabu.TierService
 import com.blockchain.remoteconfig.FeatureFlag
@@ -7,16 +8,18 @@ import piuk.blockchain.android.ui.dashboard.announcements.popups.CoinifyKycPopup
 import io.reactivex.Single
 import piuk.blockchain.androidbuysell.api.CoinifyWalletService
 
-internal class CoinifyKycModalPopupAnnouncement(
+internal class CoinifyKycModalPopupAnnouncementRule(
     private val tierService: TierService,
     private val coinifyWalletService: CoinifyWalletService,
-    private val showPopupFeatureFlag: FeatureFlag
-) : Announcement {
+    private val showPopupFeatureFlag: FeatureFlag,
+    dismissRecorder: DismissRecorder
+) : AnnouncementRule {
 
-    private var didShowPopup = false
+    override val dismissKey = DISMISS_KEY
+    private val dismissEntry = dismissRecorder[dismissKey]
 
     override fun shouldShow(): Single<Boolean> {
-        if (didShowPopup) {
+        if (dismissEntry.isDismissed) {
             return Single.just(false)
         }
 
@@ -28,8 +31,8 @@ internal class CoinifyKycModalPopupAnnouncement(
     }
 
     override fun show(host: AnnouncementHost) {
-        didShowPopup = true
-        host.showAnnouncmentPopup(CoinifyKycPopup())
+        dismissEntry.dismiss(DismissRule.DismissForSession)
+        CoinifyKycPopup.show(host, DISMISS_KEY)
     }
 
     private fun isCoinifyTrader(): Single<Boolean> =
@@ -45,4 +48,9 @@ internal class CoinifyKycModalPopupAnnouncement(
                 Kyc2TierState.Tier2Failed
             )
         }
+
+    companion object {
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val DISMISS_KEY = "CoinifyKycModalPopup_DISMISSED"
+    }
 }

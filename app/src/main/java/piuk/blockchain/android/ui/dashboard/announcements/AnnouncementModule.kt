@@ -25,45 +25,56 @@ val dashboardAnnouncementsModule = applicationContext {
             }
         }
 
-        bean("coinify") {
-            CoinifyKycModalPopupAnnouncement(get(),
-                get(),
-                get("ff_notify_coinify_users_to_kyc")) as Announcement
+        factory("coinify") {
+            CoinifyKycModalPopupAnnouncementRule(
+                tierService = get(),
+                coinifyWalletService = get(),
+                showPopupFeatureFlag = get("ff_notify_coinify_users_to_kyc"),
+                dismissRecorder = get()
+            ) as AnnouncementRule
         }
 
         factory("stellar") {
-            StellarModalPopupAnnouncement(
+            StellarModalPopupAnnouncementRule(
                 tierService = get(),
                 dismissRecorder = get(),
                 showPopupFeatureFlag = get("ff_get_free_xlm_popup")
-            ) as Announcement
+            ) as AnnouncementRule
         }
 
         factory("profile") {
-            GoForGoldAnnouncement(
+            GoForGoldAnnouncementRule(
                 tierService = get(),
                 prefs = get(),
                 dismissRecorder = get()
-            ) as Announcement
+            ) as AnnouncementRule
         }
 
         factory("claim") {
-            ClaimYourFreeCryptoCardAnnouncement(get(),
-                get(),
-                get()) as Announcement
+            ClaimYourFreeCryptoAnnouncementRule(
+                tierService = get(),
+                sunriverCampaignHelper = get(),
+                dismissRecorder = get()
+            ) as AnnouncementRule
         }
 
         factory("stablecoin") {
-            StableCoinIntroductionAnnouncement(
+            StableCoinIntroAnnouncementRule(
                 featureEnabled = get("ff_stablecoin"),
                 config = get(),
                 analytics = get(),
                 dismissRecorder = get()
-            ) as Announcement
+            ) as AnnouncementRule
         }
 
-        factory("swap") { SwapAnnouncement(get(), get("merge"), get()) as Announcement }
+        factory("swap") {
+            SwapAnnouncementRule(
+                tierService = get(),
+                dataManager = get("merge"),
+                dismissRecorder = get()
+            ) as AnnouncementRule
+        }
     }
 
-    factory { DismissRecorder(get()) }
+    bean { DismissRecorder(prefs = get()) }
 }

@@ -7,52 +7,45 @@ import com.blockchain.kyc.models.nabu.TiersJson
 import com.blockchain.kyc.services.nabu.TierService
 import com.blockchain.morph.trade.MorphTrade
 import com.blockchain.morph.trade.MorphTradeDataHistoryList
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Single
-import org.amshove.kluent.`should equal`
+import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class SwapAnnouncementTest {
 
-    @Mock
-    private lateinit var tierService: TierService
-    @Mock
-    private lateinit var tradeData: MorphTradeDataHistoryList
-    @Mock
-    private lateinit var prefs: PersistentPrefs
-    @Mock
-    private lateinit var morphTrade: MorphTrade
+    private val dismissRecorder: DismissRecorder = mock()
+    private val dismissEntry: DismissRecorder.DismissEntry = mock()
 
-    private lateinit var dismissRecorder: DismissRecorder
-    private lateinit var swapAnnouncement: SwapAnnouncement
+    private val tierService: TierService = mock()
+    private val tradeData: MorphTradeDataHistoryList = mock()
+    private val morphTrade: MorphTrade = mock()
+
     private val sampleLimits = LimitsJson("", 0.toBigDecimal(), 0.toBigDecimal())
+    private val sampleTrades by lazy { listOf(morphTrade) }
 
-    private val sampleTrades by lazy {
-        listOf(morphTrade)
-    }
+    private lateinit var subject: SwapAnnouncementRule
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
-        dismissRecorder = DismissRecorder(prefs)
-        swapAnnouncement = SwapAnnouncement(tierService, tradeData, dismissRecorder)
+        whenever(dismissRecorder[SwapAnnouncementRule.DISMISS_KEY]).thenReturn(dismissEntry)
+        whenever(dismissEntry.prefsKey).thenReturn(SwapAnnouncementRule.DISMISS_KEY)
+
+        subject = SwapAnnouncementRule(tierService, tradeData, dismissRecorder)
     }
 
     @Test
     fun `should not show when is already dismissed`() {
-        mockDismissRecorder(true)
+        whenever(dismissEntry.isDismissed).thenReturn(true)
 
-        swapAnnouncement.shouldShow().test().apply {
-            assertNoErrors()
-            values() `should equal` listOf(false)
-        }
+        subject.shouldShow()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
 
         verify(tierService, never()).tiers()
         verify(tradeData, never()).getTrades()
@@ -60,27 +53,38 @@ class SwapAnnouncementTest {
 
     @Test
     fun `should show for tier1Verified and no swaps if not already shown`() {
-        mockDismissRecorder(false)
-        whenever(tierService.tiers()).thenReturn(Single.just(TiersJson(listOf(
-            TierJson(0,
-                "",
-                KycTierState.None,
-                sampleLimits),
-            TierJson(0,
-                "",
-                KycTierState.Verified,
-                sampleLimits),
-            TierJson(0,
-                "",
-                KycTierState.None,
-                sampleLimits)
-        ))))
+        whenever(dismissEntry.isDismissed).thenReturn(false)
+
+        whenever(tierService.tiers()).thenReturn(
+            Single.just(
+                TiersJson(
+                    listOf(
+                        TierJson(0,
+                            "",
+                            KycTierState.None,
+                            sampleLimits
+                        ),
+                        TierJson(0,
+                            "",
+                            KycTierState.Verified,
+                            sampleLimits
+                        ),
+                        TierJson(0,
+                            "",
+                            KycTierState.None,
+                            sampleLimits
+                        )
+                    )
+                )
+            )
+        )
         whenever(tradeData.getTrades()).thenReturn(Single.just(emptyList()))
 
-        swapAnnouncement.shouldShow().test().apply {
-            assertNoErrors()
-            values() `should equal` listOf(true)
-        }
+        subject.shouldShow()
+            .test()
+            .assertValue { it }
+            .assertValueCount(1)
+            .assertComplete()
 
         verify(tierService).tiers()
         verify(tradeData).getTrades()
@@ -88,27 +92,38 @@ class SwapAnnouncementTest {
 
     @Test
     fun `should show for tier2Verified and no swaps if not already shown`() {
-        mockDismissRecorder(false)
-        whenever(tierService.tiers()).thenReturn(Single.just(TiersJson(listOf(
-            TierJson(0,
-                "",
-                KycTierState.None,
-                sampleLimits),
-            TierJson(0,
-                "",
-                KycTierState.Verified,
-                sampleLimits),
-            TierJson(0,
-                "",
-                KycTierState.Verified,
-                sampleLimits)
-        ))))
+        whenever(dismissEntry.isDismissed).thenReturn(false)
+
+        whenever(tierService.tiers()).thenReturn(
+            Single.just(
+                TiersJson(
+                    listOf(
+                        TierJson(0,
+                            "",
+                            KycTierState.None,
+                            sampleLimits
+                        ),
+                        TierJson(0,
+                            "",
+                            KycTierState.Verified,
+                            sampleLimits
+                        ),
+                        TierJson(0,
+                            "",
+                            KycTierState.Verified,
+                            sampleLimits
+                        )
+                    )
+                )
+            )
+        )
         whenever(tradeData.getTrades()).thenReturn(Single.just(emptyList()))
 
-        swapAnnouncement.shouldShow().test().apply {
-            assertNoErrors()
-            values() `should equal` listOf(true)
-        }
+        subject.shouldShow()
+            .test()
+            .assertValue { it }
+            .assertValueCount(1)
+            .assertComplete()
 
         verify(tierService).tiers()
         verify(tradeData).getTrades()
@@ -116,20 +131,17 @@ class SwapAnnouncementTest {
 
     @Test
     fun `should not show if there are swaps`() {
-        mockDismissRecorder(false)
+        whenever(dismissEntry.isDismissed).thenReturn(false)
 
         whenever(tradeData.getTrades()).thenReturn(Single.just(sampleTrades))
 
-        swapAnnouncement.shouldShow().test().apply {
-            assertNoErrors()
-            values() `should equal` listOf(false)
-        }
+        subject.shouldShow()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
 
         verify(tradeData).getTrades()
         verify(tierService, never()).tiers()
-    }
-
-    private fun mockDismissRecorder(alreadyShown: Boolean) {
-        whenever(prefs.getValue(any(), any<Boolean>())).thenReturn(alreadyShown)
     }
 }

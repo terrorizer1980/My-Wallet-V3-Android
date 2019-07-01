@@ -1,18 +1,20 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
+import android.support.annotation.VisibleForTesting
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.services.nabu.TierService
 import com.blockchain.remoteconfig.FeatureFlag
-import piuk.blockchain.android.ui.dashboard.announcements.popups.AirdropPopup
+import piuk.blockchain.android.ui.dashboard.announcements.popups.StellarModelPopup
 import io.reactivex.Single
 
-internal class StellarModalPopupAnnouncement(
+internal class StellarModalPopupAnnouncementRule(
     private val tierService: TierService,
     dismissRecorder: DismissRecorder,
     private val showPopupFeatureFlag: FeatureFlag
-) : Announcement {
+) : AnnouncementRule {
 
-    private val dismissEntry = dismissRecorder["StellarModalPopupAnnouncement_DISMISSED"]
+    override val dismissKey = DISMISS_KEY
+    private val dismissEntry = dismissRecorder[dismissKey]
 
     override fun shouldShow(): Single<Boolean> {
         if (dismissEntry.isDismissed) {
@@ -30,7 +32,11 @@ internal class StellarModalPopupAnnouncement(
     }
 
     override fun show(host: AnnouncementHost) {
-        host.showAnnouncmentPopup(AirdropPopup())
-        dismissEntry.isDismissed = true
+        StellarModelPopup.show(host, DISMISS_KEY)
+    }
+
+    companion object {
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val DISMISS_KEY = "StellarModalPopupAnnouncement_DISMISSED"
     }
 }

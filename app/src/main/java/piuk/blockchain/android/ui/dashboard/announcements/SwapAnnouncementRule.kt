@@ -1,19 +1,20 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
+import android.support.annotation.VisibleForTesting
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.services.nabu.TierService
 import com.blockchain.morph.trade.MorphTradeDataHistoryList
 import io.reactivex.Single
 import piuk.blockchain.android.R
 
-class SwapAnnouncement(
+class SwapAnnouncementRule(
     private val tierService: TierService,
     private val dataManager: MorphTradeDataHistoryList,
     dismissRecorder: DismissRecorder
-) : Announcement {
+) : AnnouncementRule {
 
-    private val dismissEntry =
-        dismissRecorder["SwapAnnouncementCard_DISMISSED"]
+    override val dismissKey = DISMISS_KEY
+    private val dismissEntry = dismissRecorder[dismissKey]
 
     override fun shouldShow(): Single<Boolean> {
         if (dismissEntry.isDismissed) {
@@ -45,16 +46,21 @@ class SwapAnnouncement(
                 description = R.string.swap_announcement_description,
                 link = R.string.swap_announcement_introducing_link,
                 closeFunction = {
-                    dismissEntry.isDismissed = true
+                    dismissEntry.dismiss(DismissRule.DismissForSession)
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 linkFunction = {
-                    host.exchangeRequested()
-                    dismissEntry.isDismissed = true
+                    host.startSwapOrKyc()
+                    dismissEntry.dismiss(DismissRule.DismissForever)
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 prefsKey = dismissEntry.prefsKey
             )
         )
+    }
+
+    companion object {
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        const val DISMISS_KEY = "SwapAnnouncementCard_DISMISSED"
     }
 }

@@ -178,7 +178,6 @@ class DashboardPresenterTest {
         whenever(bchDataManager.getWalletTransactions(any(), any()))
             .thenReturn(Observable.empty())
 
-        // checkLatestAnnouncements()
         // Native Buy/Sell not available
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(false))
         // KYC already dismissed
@@ -214,12 +213,7 @@ class DashboardPresenterTest {
         // PieChartsState
         verify(view, atLeastOnce()).updatePieChartState(any())
 
-        // storeSwipeToReceiveAddresses()
         verify(view, atLeastOnce()).startWebsocketService()
-
-        // checkLatestAnnouncements()
-        // TODO: AND-1691 Temporarily disabled while onboarding/announcements are rethought.
-//        verify(buyDataManager).isCoinifyAllowed
 
         verify(swipeToReceiveHelper).storeEthAddress()
 
@@ -291,7 +285,6 @@ class DashboardPresenterTest {
         whenever(bchDataManager.getWalletTransactions(any(), any()))
             .thenReturn(Observable.empty())
 
-        // checkLatestAnnouncements()
         // No Native Buy/Sell announcement
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(false))
         // KYC already dismissed
@@ -328,9 +321,7 @@ class DashboardPresenterTest {
         // storeSwipeToReceiveAddresses()
         verify(view, atLeastOnce()).startWebsocketService()
 
-        // checkLatestAnnouncements()
         // no announcements allowed while onboarding hasn't been completed
-
         verify(swipeToReceiveHelper).storeEthAddress()
 
         verifyNoMoreInteractions(exchangeRateFactory)
@@ -437,15 +428,6 @@ class DashboardPresenterTest {
         // storeSwipeToReceiveAddresses()
         verify(view, atLeastOnce()).startWebsocketService()
 
-        // checkLatestAnnouncements()
-        // Native Buy/Sell
-        // TODO: AND-1691 Temporarily disabled while onboarding/announcements are rethought.
-//        verify(buyDataManager).isCoinifyAllowed
-//        verify(prefsUtil).getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false)
-//        verify(prefsUtil, atLeastOnce()).setValue(
-//            DashboardPresenter.NATIVE_BUY_SELL_DISMISSED,
-//            true
-//        )
         verify(view, atLeastOnce()).notifyItemAdded(any(), eq(0))
         verify(view, atLeastOnce()).scrollToTop()
 
@@ -510,7 +492,6 @@ class DashboardPresenterTest {
         whenever(bchDataManager.getWalletTransactions(any(), any()))
             .thenReturn(Observable.empty())
 
-        // checkLatestAnnouncements()
         // No Native Buy/Sell announcement
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(true))
 
@@ -547,15 +528,6 @@ class DashboardPresenterTest {
         // storeSwipeToReceiveAddresses()
         verify(view, atLeastOnce()).startWebsocketService()
 
-        // checkLatestAnnouncements()
-        // Native Buy/Sell
-        // TODO: AND-1691 Temporarily disabled while onboarding/announcements are rethought.
-//        verify(buyDataManager).isCoinifyAllowed
-//        verify(prefsUtil).getValue(DashboardPresenter.NATIVE_BUY_SELL_DISMISSED, false)
-//        verify(prefsUtil, atLeastOnce()).setValue(
-//            DashboardPresenter.NATIVE_BUY_SELL_DISMISSED,
-//            true
-//        )
         // KYC
         verify(kycTiersQueries).isKycInProgress()
         verify(view, atLeastOnce()).notifyItemAdded(any(), eq(0))
@@ -667,11 +639,6 @@ class DashboardPresenterTest {
 
         // storeSwipeToReceiveAddresses()
         verify(view, atLeastOnce()).startWebsocketService()
-
-        // checkLatestAnnouncements()
-        // Native Buy/Sell
-        // TODO: AND-1691 Temporarily disabled while onboarding/announcements are rethought.
-//        verify(buyDataManager).isCoinifyAllowed
 
         verify(swipeToReceiveHelper).storeEthAddress()
 
@@ -816,7 +783,7 @@ class DashboardPresenterTest {
 
         // Act
         subject.onViewReady()
-        subject.exchangeRequested(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(CryptoCurrency.ETHER)
         // Assert
         verify(view).goToExchange(CryptoCurrency.ETHER, "USD")
     }
@@ -829,7 +796,7 @@ class DashboardPresenterTest {
 
         // Act
         subject.onViewReady()
-        subject.exchangeRequested(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(CryptoCurrency.ETHER)
         // Assert
         verify(view).goToExchange(CryptoCurrency.ETHER, "USD")
         verify(view, never()).startKycFlowWithNavigator(CampaignType.Swap)
@@ -842,7 +809,7 @@ class DashboardPresenterTest {
         whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(0))
         // Act
         subject.onViewReady()
-        subject.exchangeRequested(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(CryptoCurrency.ETHER)
         // Assert
         verify(view, never()).goToExchange(any(), any())
         verify(view).startKycFlowWithNavigator(CampaignType.Swap)
