@@ -151,12 +151,12 @@ internal class NabuDataManagerImpl(
     ): Single<NabuSessionTokenResponse> =
         emailSingle.flatMap {
             nabuService.getSessionToken(
-                offlineTokenResponse.userId,
-                offlineTokenResponse.token,
-                guid,
-                it,
-                prefs.deviceId,
-                appVersion
+                userId = offlineTokenResponse.userId,
+                offlineToken = offlineTokenResponse.token,
+                guid = guid,
+                email = it,
+                appVersion = appVersion,
+                deviceId = prefs.deviceId
             )
         }
 

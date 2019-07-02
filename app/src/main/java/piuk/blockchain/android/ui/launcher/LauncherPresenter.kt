@@ -57,19 +57,19 @@ class LauncherPresenter @Inject constructor(
         }
 
         when {
-        // No GUID? Treat as new installation
+            // No GUID? Treat as new installation
             prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, "").isEmpty() -> view.onNoGuid()
-        // User has logged out recently. Show password reentry page
+            // User has logged out recently. Show password reentry page
             hasLoggedOut -> view.onReEnterPassword()
-        // No PIN ID? Treat as installed app without confirmed PIN
+            // No PIN ID? Treat as installed app without confirmed PIN
             prefs.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "").isEmpty() -> view.onRequestPin()
-        // Installed app, check sanity
+            // Installed app, check sanity
             !appUtil.isSane -> view.onCorruptPayload()
-        // Legacy app has not been prompted for upgrade
+            // Legacy app has not been prompted for upgrade
             isPinValidated && !payloadDataManager.wallet!!.isUpgraded -> promptUpgrade()
-        // App has been PIN validated
+            // App has been PIN validated
             isPinValidated || accessState.isLoggedIn -> initSettings()
-        // Something odd has happened, re-request PIN
+            // Something odd has happened, re-request PIN
             else -> view.onRequestPin()
         }
     }
@@ -108,8 +108,8 @@ class LauncherPresenter @Inject constructor(
         when {
             accessState.isNewlyCreated -> view.onStartOnboarding(false)
             !settings.isEmailVerified &&
-                settings.email != null
-                && settings.email.isNotEmpty() -> checkIfOnboardingNeeded()
+                    settings.email != null
+                    && settings.email.isNotEmpty() -> checkIfOnboardingNeeded()
             else -> view.onStartMainActivity(deepLinkPersistence.popUriFromSharedPrefs())
         }
     }

@@ -11,4 +11,6 @@ interface KycSplashView : View {
     fun goToBuySellView()
 
     fun showError(message: String)
+
+    fun onEmailNotVerified()
 }

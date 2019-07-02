@@ -26,7 +26,7 @@
         android:theme="@style/AppTheme">
 
         <TextView
-            android:id="@+id/text_view_sunriver_announcement_title"
+            android:id="@+id/textview_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -38,7 +38,7 @@
             tools:text="We now support Stellar" />
 
         <TextView
-            android:id="@+id/text_view_sunriver_announcement_message"
+            android:id="@+id/textview_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -50,7 +50,7 @@
             tools:text="You can now send, request and exchange Stellar (XLM) directly from your Blockchain Wallet." />
 
         <ImageView
-            android:id="@+id/image_view_stellar_icon"
+            android:id="@+id/imageview_icon"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginLeft="32dp"
@@ -60,7 +60,7 @@
             app:srcCompat="@drawable/vector_xlm_colored" />
 
         <Button
-            android:id="@+id/button_call_to_action"
+            android:id="@+id/textview_link"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

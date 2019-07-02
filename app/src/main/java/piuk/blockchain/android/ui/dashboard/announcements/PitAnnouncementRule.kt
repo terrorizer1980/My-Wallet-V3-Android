@@ -19,7 +19,8 @@ class PitAnnouncementRule(dismissRecorder: DismissRecorder) : AnnouncementRule {
 
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
-            card = PitAnnouncementCard(
+            card = AnnouncementCard(
+                style = AnnouncementStyle.ThePit,
                 description = R.string.pit_announcement_description,
                 link = R.string.pit_announcement_introducing_link,
                 closeFunction = {

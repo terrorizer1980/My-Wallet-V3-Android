@@ -33,7 +33,6 @@ import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
-import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.StringUtils
@@ -102,9 +101,6 @@ class DashboardPresenterTest {
             currentTier,
             sunriverCampaignHelper,
             AnnouncementList(
-                dismissRecorder = DismissRecorder(prefs = prefs),
-                sunriverCampaignHelper = sunriverCampaignHelper,
-                kycTiersQueries = kycTiersQueries,
                 mainScheduler = Schedulers.trampoline()
             )
         )
@@ -180,10 +176,7 @@ class DashboardPresenterTest {
 
         // Native Buy/Sell not available
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(false))
-        // KYC already dismissed
-        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false)).thenReturn(
-            true
-        )
+
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
@@ -287,10 +280,7 @@ class DashboardPresenterTest {
 
         // No Native Buy/Sell announcement
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(false))
-        // KYC already dismissed
-        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false)).thenReturn(
-            true
-        )
+
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
@@ -396,9 +386,6 @@ class DashboardPresenterTest {
         // No Native Buy/Sell announcement
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(true))
 
-        // KYC already dismissed
-        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false))
-            .thenReturn(true)
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
@@ -495,9 +482,6 @@ class DashboardPresenterTest {
         // No Native Buy/Sell announcement
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(true))
 
-        // KYC already dismissed
-        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false))
-            .thenReturn(false)
         whenever(kycTiersQueries.isKycInProgress()).thenReturn(Single.just(true))
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
@@ -529,7 +513,6 @@ class DashboardPresenterTest {
         verify(view, atLeastOnce()).startWebsocketService()
 
         // KYC
-        verify(kycTiersQueries).isKycInProgress()
         verify(view, atLeastOnce()).notifyItemAdded(any(), eq(0))
         verify(view, atLeastOnce()).scrollToTop()
 
@@ -606,10 +589,7 @@ class DashboardPresenterTest {
         // checkLatestAnnouncements()
         // No Native Buy/Sell announcement
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(false))
-        // KYC Already dismissed
-        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false)).thenReturn(
-            true
-        )
+
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
@@ -867,9 +847,7 @@ class DashboardPresenterTest {
         // checkLatestAnnouncements()
         // No Native Buy/Sell announcement
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(true))
-        // KYC already dismissed
-        whenever(prefs.getValue(AnnouncementList.KYC_INCOMPLETE_DISMISSED, false))
-            .thenReturn(false)
+
         whenever(kycTiersQueries.isKycInProgress()).thenReturn(Single.just(true))
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))

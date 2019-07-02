@@ -35,7 +35,8 @@ internal class ClaimYourFreeCryptoAnnouncementRule(
 
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
-            card = ImageRightAnnouncementCard(
+            card = AnnouncementCard(
+                style = AnnouncementStyle.ImageRight,
                 title = R.string.airdrop_program_card_title,
                 description = R.string.airdrop_program_card_body,
                 link = R.string.airdrop_program_card_button,

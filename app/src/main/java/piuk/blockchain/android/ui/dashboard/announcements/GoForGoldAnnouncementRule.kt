@@ -33,7 +33,8 @@ internal class GoForGoldAnnouncementRule(
 
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
-            card = ImageRightAnnouncementCard(
+            card = AnnouncementCard(
+                style = AnnouncementStyle.ImageRight,
                 title = R.string.complete_your_profile_card_title,
                 description = R.string.complete_your_profile_card_body,
                 link = R.string.complete_your_profile_card_button,

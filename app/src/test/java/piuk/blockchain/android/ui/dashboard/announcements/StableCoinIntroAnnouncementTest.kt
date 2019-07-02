@@ -79,7 +79,7 @@ class StableCoinIntroAnnouncementTest {
     @Test
     fun `should show card with the correct values when in AB test control group`() {
         whenever(config.getABVariant(RemoteConfig.AB_PAX_POPUP)).thenReturn(Single.just(false))
-        val captor = argumentCaptor<StableCoinAnnouncementCard>()
+        val captor = argumentCaptor<AnnouncementCard>()
         subject.show(host)
 
         verify(host).showAnnouncementCard(captor.capture())
