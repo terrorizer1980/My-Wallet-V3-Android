@@ -522,7 +522,7 @@ class BuySellBuildOrderPresenter constructor(
                         .flatMap { getPaymentMethods(token) }
                         .doOnNext { defaultCurrency = getDefaultCurrency(trader.defaultCurrency) }
                         .doOnNext { paymentMethods ->
-                            val topPaymentMethod = paymentMethods.first { it.inMedium == inMedium }
+                            val topPaymentMethod = paymentMethods.firstAvailable(inMedium)
                             if (initialLoad) {
                                 selectCurrencies(topPaymentMethod,
                                     inMedium,
@@ -549,8 +549,8 @@ class BuySellBuildOrderPresenter constructor(
                                     selectedCurrency)
                             }
                         }
-                        .doOnNext { checkIfCanTrade(it.first { it.inMedium == inMedium }) }
-                        .doOnNext { renderLimits(it.first { it.inMedium == inMedium }.limitInAmounts) }
+                        .doOnNext { checkIfCanTrade(it.firstAvailable(inMedium)) }
+                        .doOnNext { renderLimits(it.firstAvailable(inMedium).limitInAmounts) }
                 }
             }
             .subscribeBy(
@@ -851,4 +851,12 @@ class BuySellBuildOrderPresenter constructor(
         data class ErrorTooHigh(val textResourceId: Int, val limit: String) : LimitStatus()
         object Failure : LimitStatus()
     }
+}
+
+private fun List<PaymentMethod>.firstAvailable(inMedium: Medium): PaymentMethod {
+    val paymentWithTheSameMedium = first { it.inMedium == inMedium }
+    if (paymentWithTheSameMedium.canTrade) {
+        return paymentWithTheSameMedium
+    }
+    return first { it.inMedium == Medium.Card }
 }
