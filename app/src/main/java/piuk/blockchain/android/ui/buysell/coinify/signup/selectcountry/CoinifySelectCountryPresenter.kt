@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.buysell.coinify.signup.selectcountry
 
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
@@ -23,7 +24,7 @@ class CoinifySelectCountryPresenter @Inject constructor(
     override fun onViewReady() {
         setCountryCodeMap()
 
-        buyDataManager.countryCode
+        compositeDisposable += buyDataManager.countryCode
             .applySchedulers()
             .addToCompositeDisposable(this)
             .subscribeBy(onNext = { autoSelectCountry(it) })
@@ -48,7 +49,7 @@ class CoinifySelectCountryPresenter @Inject constructor(
             countryCodeMap.keys.filterIndexed { index, _ -> index == countryPosition }.last()
         val countryCode = countryCodeMap[countryName]!!
 
-        buyDataManager.isInCoinifyCountry(countryCode)
+        compositeDisposable += buyDataManager.isInCoinifyCountry(countryCode)
             .applySchedulers()
             .addToCompositeDisposable(this)
             .subscribeBy(

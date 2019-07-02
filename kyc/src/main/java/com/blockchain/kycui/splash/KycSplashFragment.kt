@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.NavDirections
+import com.blockchain.activities.StartOnboarding
 import com.blockchain.kycui.hyperlinks.renderTermsLinks
 import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.CampaignType
@@ -19,6 +20,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.inject
+import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -37,6 +39,10 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
     private val startBuySell: StartBuySell by inject()
 
     private val presenter: KycSplashPresenter by inject()
+
+    private val settingsDataManager: SettingsDataManager by inject()
+
+    private val onBoardingStarter: StartOnboarding by inject()
 
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
 
@@ -120,6 +126,14 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
 
     override fun showError(message: String) {
         toast(message, ToastCustom.TYPE_ERROR)
+    }
+
+    override fun onEmailNotVerified() {
+        disposable += settingsDataManager.getSettings().subscribeBy(onNext = {
+            activity?.let {
+                onBoardingStarter.startOnBoarding(it, true, false)
+            }
+        }, onError = {})
     }
 
     override fun createPresenter(): KycSplashPresenter = presenter

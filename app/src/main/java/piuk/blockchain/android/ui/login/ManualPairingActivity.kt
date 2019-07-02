@@ -162,10 +162,11 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         // Test for screen overlays before user enters PIN
         return overlayDetection.detectObscuredWindow(this, event) ||
-            super.dispatchTouchEvent(event)
+                super.dispatchTouchEvent(event)
     }
 
-    override fun startLogoutTimer() { /* No-op */ }
+    override fun startLogoutTimer() { /* No-op */
+    }
 
     override fun enforceFlagSecure(): Boolean = true
 

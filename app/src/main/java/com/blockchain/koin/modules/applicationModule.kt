@@ -3,6 +3,7 @@
 package com.blockchain.koin.modules
 
 import android.content.Context
+import com.blockchain.activities.StartOnboarding
 import com.blockchain.activities.StartSwap
 import com.blockchain.balance.TotalBalance
 import com.blockchain.balance.plus
@@ -34,6 +35,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.login.ManualPairingPresenter
+import piuk.blockchain.android.ui.onboarding.OnBoardingStarter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.SendView
@@ -423,6 +425,10 @@ val applicationModule = applicationContext {
     factory {
         SwapStarter(prefs = get())
     }.bind(StartSwap::class)
+
+    factory {
+        OnBoardingStarter()
+    }.bind(StartOnboarding::class)
 
     factory { DateUtil(get()) }
 
