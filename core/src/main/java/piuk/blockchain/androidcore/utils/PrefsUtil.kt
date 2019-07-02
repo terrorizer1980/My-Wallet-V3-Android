@@ -63,7 +63,7 @@ class PrefsUtil(
         store.getString(name, null)
 
     override fun getValue(name: String, defaultValue: String): String =
-        store.getString(name, defaultValue)
+        store.getString(name, defaultValue) ?: ""
 
     override fun getValue(name: String, defaultValue: Int): Int =
         store.getInt(name, defaultValue)

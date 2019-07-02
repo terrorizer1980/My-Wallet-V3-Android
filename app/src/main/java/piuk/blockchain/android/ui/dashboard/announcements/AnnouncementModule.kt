@@ -11,18 +11,32 @@ val dashboardAnnouncementsModule = applicationContext {
 
         bean {
             AnnouncementList(
-                dismissRecorder = get(),
-                sunriverCampaignHelper = get(),
-                kycTiersQueries = get(),
                 mainScheduler = AndroidSchedulers.mainThread()
             ).apply {
+                add(get("kycresubmission")) // Always first
                 add(get("stablecoin"))
                 add(get("coinify"))
-                add(get("stellar"))
                 add(get("profile"))
                 add(get("claim"))
                 add(get("swap"))
+                add(get("kycincomplete")) // Always last
             }
+        }
+
+        factory("kycresubmission") {
+            KycResubmissionAnnouncementRule(
+                kycTiersQueries = get(),
+                dismissRecorder = get()
+            ) as AnnouncementRule
+        }
+
+        factory("kycincomplete") {
+            KycIncompleteAnnouncementRule(
+                kycTiersQueries = get(),
+                sunriverCampaignHelper = get(),
+                dismissRecorder = get(),
+                mainScheduler = AndroidSchedulers.mainThread()
+            ) as AnnouncementRule
         }
 
         factory("coinify") {

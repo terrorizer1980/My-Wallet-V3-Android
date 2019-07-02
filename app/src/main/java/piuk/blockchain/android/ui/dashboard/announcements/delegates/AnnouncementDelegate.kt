@@ -11,13 +11,11 @@ import kotlinx.android.synthetic.main.item_announcement_left_icon.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
-import piuk.blockchain.android.ui.dashboard.announcements.ImageLeftAnnouncementCard
-import piuk.blockchain.android.ui.dashboard.announcements.ImageRightAnnouncementCard
-import piuk.blockchain.android.ui.dashboard.announcements.StableCoinAnnouncementCard
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementStyle
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 
-abstract class AnnouncementDelegate<in T> : AdapterDelegate<T> {
+sealed class AnnouncementDelegate<in T> : AdapterDelegate<T> {
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(
@@ -49,6 +47,17 @@ abstract class AnnouncementDelegate<in T> : AdapterDelegate<T> {
         }
     }
 
+    final override fun isForViewType(items: List<T>, position: Int): Boolean {
+        val item = items[position]
+        return if (item is AnnouncementCard) {
+            isForAnnouncementStyle(item)
+        } else {
+            false
+        }
+    }
+
+    protected abstract fun isForAnnouncementStyle(card: AnnouncementCard): Boolean
+
     protected class AnnouncementViewHolder internal constructor(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
@@ -62,24 +71,36 @@ abstract class AnnouncementDelegate<in T> : AdapterDelegate<T> {
 }
 
 class ImageRightAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
-
-    override fun isForViewType(items: List<T>, position: Int) = items[position] is ImageRightAnnouncementCard
+    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.ImageRight
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_right_icon))
 }
 
 class ImageLeftAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
-
-    override fun isForViewType(items: List<T>, position: Int) = items[position] is ImageLeftAnnouncementCard
+    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.ImageLeft
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_left_icon))
 }
 
 class StableCoinAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
-    override fun isForViewType(items: List<T>, position: Int) = items[position] is StableCoinAnnouncementCard
+    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.StableCoin
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_stablecoin))
+}
+
+class SwapAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
+    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.Swap
+
+    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_swap))
+}
+
+class SunriverAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
+    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.Sunriver
+
+    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_sunriver))
 }

@@ -1,13 +1,8 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
-import com.blockchain.kyc.status.KycTiersQueries
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
-import com.blockchain.kycui.sunriver.SunriverCardType
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.verifyZeroInteractions
-import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -15,20 +10,13 @@ import io.reactivex.schedulers.TestScheduler
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`it throws`
 import org.junit.Test
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class AnnouncementListTest {
 
     private val host: AnnouncementHost = mock()
-    private val prefs: PersistentPrefs = mock()
-    private val sunriverCampaignHelper: SunriverCampaignHelper = mock()
-    private val kycTiersQueries: KycTiersQueries = mock()
 
     private fun createAnnouncementList(scheduler: Scheduler = Schedulers.trampoline()) =
         AnnouncementList(
-            dismissRecorder = DismissRecorder(prefs = prefs),
-            sunriverCampaignHelper = sunriverCampaignHelper,
-            kycTiersQueries = kycTiersQueries,
             mainScheduler = scheduler
         )
 
@@ -120,33 +108,4 @@ class AnnouncementListTest {
             on { shouldShow() } `it throws` RuntimeException("Not expected")
             on { show(host) } `it throws` RuntimeException("Not expected")
         }
-
-    @Test
-    fun `addSunriverPrompts type none`() {
-        // Arrange
-        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.just(SunriverCardType.None))
-
-        // Act
-        createAnnouncementList()
-            .addSunriverPrompts(host).test()
-
-        // Assert
-        verifyZeroInteractions(host)
-    }
-
-    @Test
-    fun `addSunriverPrompts type FinishSignUp ignored as already dismissed`() {
-        // Arrange
-        whenever(sunriverCampaignHelper.getCampaignCardType())
-            .thenReturn(Single.just(SunriverCardType.FinishSignUp))
-        whenever(prefs.getValue(SunriverCardType.FinishSignUp.javaClass.simpleName, false))
-            .thenReturn(true)
-
-        // Act
-        createAnnouncementList()
-            .addSunriverPrompts(host).test()
-
-        // Assert
-        verifyZeroInteractions(host)
-    }
 }

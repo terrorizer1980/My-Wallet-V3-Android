@@ -210,6 +210,8 @@ class DashboardPresenter(
         BiFunction { available: Boolean, hasLockbox: Boolean -> available && hasLockbox }
     )
 
+    override val disposables: CompositeDisposable = compositeDisposable
+
     override fun clearAllAnnouncements() {
         displayList.removeAll { it is AnnouncementCard }
     }

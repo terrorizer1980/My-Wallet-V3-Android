@@ -731,12 +731,12 @@
     <string name="buy_sell_create_account">Create Account</string>
 
     <!-- SUNRIVER -->
-    <string name="sunriver_announcement_stellar_claim_title">Claim Your Stellar (XLM)</string>
-    <string name="sunriver_announcement_stellar_claim_message">Looks like you started verifying your identity but didn\'t finish. Pick up where you left off.</string>
-    <string name="sunriver_announcement_stellar_claim_cta">Continue Verification</string>
+    <!--<string name="sunriver_announcement_stellar_claim_title">Claim Your Stellar (XLM)</string>-->
+    <!--<string name="sunriver_announcement_stellar_claim_message">Looks like you started verifying your identity but didn\'t finish. Pick up where you left off.</string>-->
+    <!--<string name="sunriver_announcement_stellar_claim_cta">Continue Verification</string>-->
 
-    <string name="sunriver_announcement_stellar_on_the_way_title">Your XLM is on its way</string>
-    <string name="sunriver_announcement_stellar_on_the_way_message">We have successfully verified your identity.</string>
+    <!--<string name="sunriver_announcement_stellar_on_the_way_title">Your XLM is on its way</string>-->
+    <!--<string name="sunriver_announcement_stellar_on_the_way_message">We have successfully verified your identity.</string>-->
     <string name="sunriver_error_registering">Error registering for Airdrop, please try again later.</string>
     <string name="sunriver_invalid_url_message">Your XLM has already been claimed.</string>
     <string name="sunriver_invalid_url_title">Oh No!</string>

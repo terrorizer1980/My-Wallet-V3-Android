@@ -41,7 +41,8 @@ class StableCoinIntroAnnouncementRule(
     }
 
     private fun createAnnouncementCard(host: AnnouncementHost) =
-        StableCoinAnnouncementCard(
+        AnnouncementCard(
+            style = AnnouncementStyle.StableCoin,
             title = R.string.stablecoin_announcement_introducing_title,
             description = R.string.stablecoin_announcement_introducing_description,
             link = R.string.stablecoin_announcement_introducing_link,
