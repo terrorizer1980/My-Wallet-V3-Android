@@ -52,7 +52,6 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import java.math.BigInteger
 
-@Suppress("IllegalIdentifier")
 class BalancePresenterTest {
 
     private lateinit var subject: BalancePresenter
@@ -93,7 +92,6 @@ class BalancePresenterTest {
             transactionListDataManager,
             ethDataManager,
             paxAccount,
-            swipeToReceiveHelper,
             payloadDataManager,
             buyDataManager,
             stringUtils,

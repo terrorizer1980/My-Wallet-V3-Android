@@ -337,7 +337,6 @@ val applicationModule = applicationContext {
                 transactionListDataManager = get(),
                 ethDataManager = get(),
                 paxAccount = get("pax"),
-                swipeToReceiveHelper = get(),
                 payloadDataManager = get(),
                 buyDataManager = get(),
                 stringUtils = get(),

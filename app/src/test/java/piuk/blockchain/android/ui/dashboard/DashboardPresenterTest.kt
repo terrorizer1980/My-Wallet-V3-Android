@@ -23,6 +23,7 @@ import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
+import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -109,6 +110,8 @@ class DashboardPresenterTest {
 
         whenever(view.locale).thenReturn(Locale.US)
         whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(1))
+
+        val summaryMock: TransactionSummary = mock()
         whenever(bchDataManager.getWalletTransactions(50, 0))
             .thenReturn(Observable.just(emptyList()))
     }
@@ -208,7 +211,7 @@ class DashboardPresenterTest {
 
         verify(view, atLeastOnce()).startWebsocketService()
 
-        verify(swipeToReceiveHelper).storeEthAddress()
+        verify(swipeToReceiveHelper).storeAll()
 
         verifyNoMoreInteractions(exchangeRateFactory)
         verifyNoMoreInteractions(payloadDataManager)
@@ -312,7 +315,7 @@ class DashboardPresenterTest {
         verify(view, atLeastOnce()).startWebsocketService()
 
         // no announcements allowed while onboarding hasn't been completed
-        verify(swipeToReceiveHelper).storeEthAddress()
+        verify(swipeToReceiveHelper).storeAll()
 
         verifyNoMoreInteractions(exchangeRateFactory)
         verifyNoMoreInteractions(payloadDataManager)
@@ -418,7 +421,7 @@ class DashboardPresenterTest {
         verify(view, atLeastOnce()).notifyItemAdded(any(), eq(0))
         verify(view, atLeastOnce()).scrollToTop()
 
-        verify(swipeToReceiveHelper).storeEthAddress()
+        verify(swipeToReceiveHelper).storeAll()
 
         verifyNoMoreInteractions(exchangeRateFactory)
         verifyNoMoreInteractions(payloadDataManager)
@@ -516,7 +519,7 @@ class DashboardPresenterTest {
         verify(view, atLeastOnce()).notifyItemAdded(any(), eq(0))
         verify(view, atLeastOnce()).scrollToTop()
 
-        verify(swipeToReceiveHelper).storeEthAddress()
+        verify(swipeToReceiveHelper).storeAll()
 
         verifyNoMoreInteractions(exchangeRateFactory)
         verifyNoMoreInteractions(payloadDataManager)
@@ -620,7 +623,7 @@ class DashboardPresenterTest {
         // storeSwipeToReceiveAddresses()
         verify(view, atLeastOnce()).startWebsocketService()
 
-        verify(swipeToReceiveHelper).storeEthAddress()
+        verify(swipeToReceiveHelper).storeAll()
 
         verifyNoMoreInteractions(exchangeRateFactory)
         verifyNoMoreInteractions(payloadDataManager)
