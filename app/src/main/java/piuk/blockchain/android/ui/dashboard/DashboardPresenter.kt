@@ -11,7 +11,6 @@ import com.blockchain.nabu.CurrentTier
 import com.blockchain.sunriver.ui.BaseAirdropBottomDialog
 import com.blockchain.sunriver.ui.ClaimFreeCryptoSuccessDialog
 import info.blockchain.balance.CryptoCurrency
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,7 +19,6 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
@@ -115,7 +113,17 @@ class DashboardPresenter(
             .firstOrError()
             .doOnSuccess { updateAllBalances() }
             .doOnSuccess { announcements.checkLatest(this, compositeDisposable) }
-            .flatMapCompletable { swipeToReceiveHelper.storeEthAddress() }
+            .doOnSuccess { storeSwipeToReceiveAddresses() }
+            .subscribe(
+                { /* No-op */ },
+                { Timber.e(it) }
+            )
+    }
+
+    private fun storeSwipeToReceiveAddresses() {
+        compositeDisposable += bchDataManager.getWalletTransactions(50, 0)
+            .ignoreElements()
+            .andThen { swipeToReceiveHelper.storeAll() }
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
@@ -176,8 +184,7 @@ class DashboardPresenter(
 
     private fun updateAllBalances() {
         balanceUpdateDisposable.clear()
-        val data =
-            dashboardBalanceCalculator.getPieChartData(balanceFilter.distinctUntilChanged())
+        val data = dashboardBalanceCalculator.getPieChartData(balanceFilter.distinctUntilChanged())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
                     Logging.logCustom(
@@ -190,14 +197,12 @@ class DashboardPresenter(
                         )
                     )
                     cachedData = it
-                    storeSwipeToReceiveAddresses()
                 }
-        balanceUpdateDisposable += Observables.combineLatest(
-            data,
-            shouldDisplayLockboxMessage().cache().toObservable()
-        ).map { (data, hasLockbox) ->
-            data.copy(hasLockbox = hasLockbox)
-        }.observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { view.startWebsocketService() }
+
+        balanceUpdateDisposable += Observables.combineLatest(data, shouldDisplayLockboxMessage().cache().toObservable())
+            .map { (data, hasLockbox) -> data.copy(hasLockbox = hasLockbox) }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 view::updatePieChartState,
                 Timber::e
@@ -350,24 +355,6 @@ class DashboardPresenter(
     private fun setOnboardingComplete(completed: Boolean) {
         prefs.isOnboardingComplete = completed
     }
-
-    @SuppressLint("CheckResult")
-    private fun storeSwipeToReceiveAddresses() {
-        bchDataManager.getWalletTransactions(50, 0)
-            .flatMapCompletable { getSwipeToReceiveCompletable() }
-            .addToCompositeDisposable(this)
-            .subscribe(
-                { view.startWebsocketService() },
-                { Timber.e(it) }
-            )
-    }
-
-    private fun getSwipeToReceiveCompletable(): Completable =
-        swipeToReceiveHelper.updateAndStoreBitcoinAddresses()
-            .andThen(swipeToReceiveHelper.updateAndStoreBitcoinCashAddresses())
-            .subscribeOn(Schedulers.computation())
-            // Ignore failure
-            .onErrorComplete()
 
     // /////////////////////////////////////////////////////////////////////////
     // Units

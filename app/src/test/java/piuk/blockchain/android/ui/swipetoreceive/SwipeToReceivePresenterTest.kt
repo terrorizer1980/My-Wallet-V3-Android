@@ -120,20 +120,17 @@ class SwipeToReceivePresenterTest {
         // Arrange
         val address = "addr0"
         val bitmap: Bitmap = mock()
+
         whenever(swipeToReceiveHelper.getEthReceiveAddress()).thenReturn(address)
         whenever(swipeToReceiveHelper.getEthAccountName()).thenReturn("Account")
-        whenever(swipeToReceiveHelper.getEthReceiveAddressSingle())
-            .thenReturn(Single.just(address))
-        whenever(
-            stringUtils.getFormattedString(
-                R.string.swipe_receive_request,
-                CryptoCurrency.ETHER.unit
-            )
-        ).thenReturn("ETH")
-        whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt()))
-            .thenReturn(Observable.just(bitmap))
+        whenever(swipeToReceiveHelper.getEthReceiveAddressSingle()).thenReturn(Single.just(address))
+        whenever(stringUtils.getFormattedString(R.string.swipe_receive_request, CryptoCurrency.ETHER.unit))
+            .thenReturn("ETH")
+        whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt())).thenReturn(Observable.just(bitmap))
+
         // Act
         subject.currencyPosition = 1
+
         // Assert
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
@@ -151,20 +148,17 @@ class SwipeToReceivePresenterTest {
         // Arrange
         val bitmap: Bitmap = mock()
         val addresses = listOf("adrr0", "addr1", "addr2", "addr3", "addr4")
+
         whenever(swipeToReceiveHelper.getBitcoinCashReceiveAddresses()).thenReturn(addresses)
         whenever(swipeToReceiveHelper.getBitcoinCashAccountName()).thenReturn("Account")
-        whenever(swipeToReceiveHelper.getNextAvailableBitcoinCashAddressSingle())
-            .thenReturn(Single.just("addr0"))
-        whenever(
-            stringUtils.getFormattedString(
-                R.string.swipe_receive_request,
-                CryptoCurrency.BCH.unit
-            )
-        ).thenReturn("BCH")
-        whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt()))
-            .thenReturn(Observable.just(bitmap))
+        whenever(swipeToReceiveHelper.getNextAvailableBitcoinCashAddressSingle()).thenReturn(Single.just("addr0"))
+        whenever(stringUtils.getFormattedString(R.string.swipe_receive_request, CryptoCurrency.BCH.unit))
+            .thenReturn("BCH")
+        whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt())).thenReturn(Observable.just(bitmap))
+
         // Act
         subject.currencyPosition = 2
+
         // Assert
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)

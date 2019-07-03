@@ -165,8 +165,7 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
                 super.dispatchTouchEvent(event)
     }
 
-    override fun startLogoutTimer() { /* No-op */
-    }
+    override fun startLogoutTimer() { /* No-op */ }
 
     override fun enforceFlagSecure(): Boolean = true
 

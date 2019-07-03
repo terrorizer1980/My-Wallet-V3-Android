@@ -182,7 +182,9 @@ val applicationModule = applicationContext {
                 exchangeRateDataManager = get(),
                 feeDataManager = get(),
                 dynamicFeeCache = get(),
-                payloadDataManager = get()
+                payloadDataManager = get(),
+                nabuToken = get(),
+                nabuDataManager = get()
             )
         }
 
@@ -335,7 +337,6 @@ val applicationModule = applicationContext {
                 transactionListDataManager = get(),
                 ethDataManager = get(),
                 paxAccount = get("pax"),
-                swipeToReceiveHelper = get(),
                 payloadDataManager = get(),
                 buyDataManager = get(),
                 stringUtils = get(),

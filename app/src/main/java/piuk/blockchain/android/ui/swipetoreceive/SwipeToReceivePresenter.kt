@@ -4,9 +4,9 @@ import com.blockchain.sunriver.tryFromStellarUri
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import kotlin.properties.Delegates
@@ -66,25 +66,30 @@ class SwipeToReceivePresenter(
         if (!accountDetails.hasAddresses) {
             view.setUiState(UiState.EMPTY)
         } else {
-            accountDetails
+            compositeDisposable += accountDetails
                 .nextAddress
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess { address ->
                     require(address.isNotEmpty()) { "Returned address is empty, no more addresses available" }
+
                     view.displayReceiveAddress(
                         address.replace("bitcoincash:", "")
                             .replace("bitcoin:", "")
                             .stripXlmUri()
                     )
                 }
-                .flatMapObservable { qrGenerator.generateQrCode(it, DIMENSION_QR_CODE) }
-                .addToCompositeDisposable(this)
+                .flatMapObservable {
+                    qrGenerator.generateQrCode(it, DIMENSION_QR_CODE)
+                }
                 .subscribe(
                     {
                         view.displayQrCode(it)
                         view.setUiState(UiState.CONTENT)
                     },
-                    { _ -> view.setUiState(UiState.FAILURE) })
+                    {
+                        view.setUiState(UiState.FAILURE)
+                    }
+                )
         }
     }
 
@@ -94,32 +99,33 @@ class SwipeToReceivePresenter(
                 AccountDetails(
                     accountName = swipeToReceiveHelper.getBitcoinAccountName(),
                     nextAddress = bitcoinAddress.map { "bitcoin:$it" },
-                    hasAddresses = !swipeToReceiveHelper.getBitcoinReceiveAddresses().isEmpty()
+                    hasAddresses = swipeToReceiveHelper.getBitcoinReceiveAddresses().isNotEmpty()
                 )
             }
             CryptoCurrency.ETHER -> {
                 AccountDetails(
                     accountName = swipeToReceiveHelper.getEthAccountName(),
                     nextAddress = ethereumAddress,
-                    hasAddresses = !swipeToReceiveHelper.getEthReceiveAddress().isNullOrEmpty()
+                    hasAddresses = swipeToReceiveHelper.getEthReceiveAddress().isNotEmpty()
                 )
             }
             CryptoCurrency.BCH -> {
                 AccountDetails(
                     accountName = swipeToReceiveHelper.getBitcoinCashAccountName(),
                     nextAddress = bitcoinCashAddress,
-                    hasAddresses = !swipeToReceiveHelper.getBitcoinCashReceiveAddresses().isEmpty()
+                    hasAddresses = swipeToReceiveHelper.getBitcoinCashReceiveAddresses().isNotEmpty()
                 )
             }
             CryptoCurrency.XLM -> AccountDetails(
                 accountName = swipeToReceiveHelper.getXlmAccountName(),
                 nextAddress = xlmAddress,
-                hasAddresses = !swipeToReceiveHelper.getXlmReceiveAddress().isNullOrEmpty()
+                hasAddresses = swipeToReceiveHelper.getXlmReceiveAddress().isNotEmpty()
             )
             CryptoCurrency.PAX -> AccountDetails(
                 accountName = swipeToReceiveHelper.getPaxAccountName(),
                 nextAddress = paxAddress,
-                hasAddresses = !swipeToReceiveHelper.getPaxReceiveAddress().isNullOrEmpty())
+                hasAddresses = swipeToReceiveHelper.getPaxReceiveAddress().isNotEmpty()
+            )
         }
 
     companion object {

@@ -22,6 +22,7 @@ import info.blockchain.wallet.util.DoubleEncryptionFactory
 import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.ECKey
@@ -40,7 +41,6 @@ import piuk.blockchain.android.ui.zxing.Contents
 import piuk.blockchain.android.ui.zxing.encode.QRCodeEncoder
 import piuk.blockchain.android.util.LabelUtil
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
@@ -280,8 +280,7 @@ class AccountEditPresenter @Inject internal constructor(
 
     @SuppressLint("CheckResult")
     internal fun onClickTransferFunds() {
-        getPendingTransactionForLegacyAddress(cryptoCurrency, legacyAddress)
-            .addToCompositeDisposable(this)
+        compositeDisposable += getPendingTransactionForLegacyAddress(cryptoCurrency, legacyAddress)
             .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
             .doAfterTerminate { view.dismissProgressDialog() }
             .doOnError { Timber.e(it) }
@@ -380,15 +379,14 @@ class AccountEditPresenter @Inject internal constructor(
             return
         }
 
-        sendDataManager.submitBtcPayment(
+        compositeDisposable += sendDataManager.submitBtcPayment(
             pendingTransaction!!.unspentOutputBundle!!,
             keys,
             pendingTransaction!!.receivingAddress,
             changeAddress,
             pendingTransaction!!.bigIntFee,
             pendingTransaction!!.bigIntAmount
-        ).addToCompositeDisposable(this)
-            .doAfterTerminate { view.dismissProgressDialog() }
+        ).doAfterTerminate { view.dismissProgressDialog() }
             .doOnError { Timber.e(it) }
             .subscribe(
                 {
@@ -457,7 +455,7 @@ class AccountEditPresenter @Inject internal constructor(
                 }
             }
 
-            walletSync.addToCompositeDisposable(this)
+            compositeDisposable += walletSync
                 .doOnError { Timber.e(it) }
                 .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
                 .doAfterTerminate { view.dismissProgressDialog() }
@@ -514,7 +512,7 @@ class AccountEditPresenter @Inject internal constructor(
             )
         }
 
-        walletSync.addToCompositeDisposable(this)
+        compositeDisposable += walletSync
             .doOnSubscribe { getView().showProgressDialog(R.string.please_wait) }
             .doOnError { Timber.e(it) }
             .doAfterTerminate { getView().dismissProgressDialog() }
@@ -534,12 +532,9 @@ class AccountEditPresenter @Inject internal constructor(
             )
     }
 
-    @SuppressLint("CheckResult")
     private fun updateSwipeToReceiveAddresses() {
-        swipeToReceiveHelper.updateAndStoreBitcoinAddresses()
-            .andThen(swipeToReceiveHelper.updateAndStoreBitcoinCashAddresses())
+        compositeDisposable += swipeToReceiveHelper.storeAll()
             .subscribeOn(Schedulers.computation())
-            .addToCompositeDisposable(this)
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
@@ -621,8 +616,7 @@ class AccountEditPresenter @Inject internal constructor(
     ) {
         setLegacyAddressKey(key, address)
 
-        payloadDataManager.syncPayloadWithServer()
-            .addToCompositeDisposable(this)
+        compositeDisposable += payloadDataManager.syncPayloadWithServer()
             .doOnError { Timber.e(it) }
             .subscribe(
                 {
@@ -762,7 +756,7 @@ class AccountEditPresenter @Inject internal constructor(
                 Completable.fromObservable(bchDataManager.getWalletTransactions(50, 50))
         }
 
-        walletSync.addToCompositeDisposable(this)
+        compositeDisposable += walletSync
             .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
             .doOnError { Timber.e(it) }
             .doAfterTerminate { view.dismissProgressDialog() }
@@ -836,8 +830,7 @@ class AccountEditPresenter @Inject internal constructor(
         addressCopy.add(legacyAddress)
         payloadDataManager.legacyAddresses = addressCopy
 
-        payloadDataManager.syncPayloadWithServer()
-            .addToCompositeDisposable(this)
+        compositeDisposable += payloadDataManager.syncPayloadWithServer()
             .doOnError { Timber.e(it) }
             .subscribe(
                 {

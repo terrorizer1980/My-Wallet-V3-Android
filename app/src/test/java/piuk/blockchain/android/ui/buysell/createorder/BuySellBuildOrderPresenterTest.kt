@@ -1,11 +1,13 @@
 package piuk.blockchain.android.ui.buysell.createorder
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.kyc.models.nabu.Address
+import com.blockchain.kyc.models.nabu.NabuUser
+import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.anyOrNull
 import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -16,9 +18,8 @@ import piuk.blockchain.android.ui.buysell.createorder.models.OrderType
 import piuk.blockchain.androidbuysell.models.CoinifyData
 import piuk.blockchain.androidbuysell.models.ExchangeData
 import piuk.blockchain.androidbuysell.models.coinify.BankLimits
-import piuk.blockchain.androidbuysell.models.coinify.CannotTradeReason
 import piuk.blockchain.androidbuysell.models.coinify.CardLimits
-import piuk.blockchain.androidbuysell.models.coinify.CountryNoSupported
+import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidbuysell.models.coinify.KycResponse
 import piuk.blockchain.androidbuysell.models.coinify.Level
 import piuk.blockchain.androidbuysell.models.coinify.LimitInAmounts
@@ -41,6 +42,14 @@ class BuySellBuildOrderPresenterTest {
             Limits(CardLimits(LimitValues(1.0, 100.0)), BankLimits(LimitValues(10.0, 1000.0),
                 LimitValues(10.0, 1000.0))))
 
+    private val userWithState: NabuUser = mock {
+        on { address } `it returns` Address("", "", "", "XX", "", "YY")
+    }
+
+    private val userWithOutState: NabuUser = mock {
+        on { address } `it returns` Address("", "", "", "", "", "EE")
+    }
+
     @get:Rule
     val initSchedulers = rxInit {
         mainTrampoline()
@@ -53,7 +62,7 @@ class BuySellBuildOrderPresenterTest {
         val presenter =
             BuySellBuildOrderPresenter(
                 coinifyDataManager = mock {
-                    on { getTrader(any()) } `it returns` Single.just(Trader(1, "EUR", "",
+                    on { getTrader(any()) } `it returns` Single.just(Trader(1, "USD", "",
                         mock(), traderLevel()))
                     on { getKycReviews(any()) } `it returns` Single.just(listOf(KycResponse(1,
                         ReviewState.Completed,
@@ -66,6 +75,7 @@ class BuySellBuildOrderPresenterTest {
                     on { getPaymentMethods(any(), anyOrNull(), anyOrNull()) } `it returns` Observable.just(listOf(
                         cardPaymentMethod(), transferPaymentMethod()
                     ))
+                    on { getSupportedCountries() } `it returns` Single.just(mapOf("US" to CountrySupport(false)))
                 },
                 sendDataManager = mock(),
                 payloadDataManager = mock(),
@@ -82,7 +92,12 @@ class BuySellBuildOrderPresenterTest {
                 },
                 dynamicFeeCache = mock(),
                 exchangeRateDataManager = mock(),
-
+                nabuDataManager = mock {
+                    on { getUser(any()) } `it returns` Single.just(userWithOutState)
+                },
+                nabuToken = mock {
+                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+                },
                 stringUtils = mock())
 
         presenter.initView(view)
@@ -90,8 +105,7 @@ class BuySellBuildOrderPresenterTest {
         presenter.onMinClicked()
 
         verify(view).requestSendFocus()
-        verify(view, atLeastOnce()).isCountrySupported(true)
-        verify(view, never()).isCountrySupported(false)
+        verify(view, atLeastOnce()).isCountrySupported(false)
         verify(view).updateSendAmount("1.0")
     }
 
@@ -113,6 +127,8 @@ class BuySellBuildOrderPresenterTest {
                     on { getPaymentMethods(any(), anyOrNull(), anyOrNull()) } `it returns` Observable.just(listOf(
                         cardPaymentMethod(), transferPaymentMethod()
                     ))
+                    on { getSupportedCountries() } `it returns` Single.just(mapOf("EE"
+                            to CountrySupport(true)))
                 },
                 sendDataManager = mock(),
                 payloadDataManager = mock(),
@@ -129,13 +145,18 @@ class BuySellBuildOrderPresenterTest {
                 },
                 dynamicFeeCache = mock(),
                 exchangeRateDataManager = mock(),
-
+                nabuDataManager = mock {
+                    on { getUser(any()) } `it returns` Single.just(userWithOutState)
+                },
+                nabuToken = mock {
+                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+                },
                 stringUtils = mock())
 
         presenter.initView(view)
         presenter.onViewReady()
+
         verify(view, atLeastOnce()).isCountrySupported(true)
-        verify(view, never()).isCountrySupported(false)
     }
 
     @Test
@@ -154,9 +175,10 @@ class BuySellBuildOrderPresenterTest {
                         "")))
                     on { getQuote(any(), any(), any(), any()) } `it returns` Single.just(mock())
                     on { getPaymentMethods(any(), anyOrNull(), anyOrNull()) } `it returns` Observable.just(listOf(
-                        cardPaymentMethod(false, listOf(CountryNoSupported())),
-                        transferPaymentMethod(false, listOf(CountryNoSupported()))
+                        cardPaymentMethod(), transferPaymentMethod()
                     ))
+                    on { getSupportedCountries() } `it returns` Single.just(mapOf("FF"
+                            to CountrySupport(true)))
                 },
                 sendDataManager = mock(),
                 payloadDataManager = mock(),
@@ -173,17 +195,20 @@ class BuySellBuildOrderPresenterTest {
                 },
                 dynamicFeeCache = mock(),
                 exchangeRateDataManager = mock(),
+                nabuDataManager = mock {
+                    on { getUser(any()) } `it returns` Single.just(userWithOutState)
+                },
+                nabuToken = mock {
+                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+                },
                 stringUtils = mock())
 
         presenter.initView(view)
         presenter.onViewReady()
-
         verify(view, atLeastOnce()).isCountrySupported(false)
-        verify(view, never()).isCountrySupported(true)
     }
 
-    private fun transferPaymentMethod(canTrade: Boolean = true, reasons: List<CannotTradeReason> = listOf()):
-            PaymentMethod =
+    private fun transferPaymentMethod(): PaymentMethod =
         PaymentMethod(
             inMedium = Medium.Card,
             outMedium = Medium.Blockchain,
@@ -196,11 +221,10 @@ class BuySellBuildOrderPresenterTest {
             limitInAmounts = LimitInAmounts(10.00, 10.00, 10.00, 10.00, 10.00),
             limitOutAmounts = null,
             inFixedFees = mock(), inPercentageFee = 1.0, outFixedFees = mock(),
-            outPercentageFee = 1.0, canTrade = canTrade, cannotTradeReasons = reasons
+            outPercentageFee = 1.0, canTrade = true, cannotTradeReasons = null
         )
 
-    private fun cardPaymentMethod(canTrade: Boolean = true, reasons: List<CannotTradeReason> = listOf()):
-            PaymentMethod =
+    private fun cardPaymentMethod(): PaymentMethod =
         PaymentMethod(
             inMedium = Medium.Bank,
             outMedium = Medium.Blockchain,
@@ -213,6 +237,6 @@ class BuySellBuildOrderPresenterTest {
             limitInAmounts = LimitInAmounts(100.00, 100.00, 100.00, 100.00, 100.00),
             limitOutAmounts = null,
             inFixedFees = mock(), inPercentageFee = 1.0, outFixedFees = mock(),
-            outPercentageFee = 1.0, canTrade = canTrade, cannotTradeReasons = reasons
+            outPercentageFee = 1.0, canTrade = true, cannotTradeReasons = null
         )
 }

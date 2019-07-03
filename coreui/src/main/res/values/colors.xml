@@ -56,7 +56,7 @@
     <color name="product_green_received_50">@color/teal_200</color>
     <color name="product_grey_watch_only">@color/grey_600</color>
     <color name="product_grey_headers">@color/grey_800</color>
-    <color name="product_light_blue_background">@color/blue_600</color>
+    <color name="product_light_blue_background">@color/blue_100</color>
     <color name="product_light_gray_background">@color/grey_000</color>
     <color name="product_light_gray_divider">@color/grey_100</color>
 
