@@ -77,6 +77,7 @@ class CoinifyBuyConfirmationActivity :
         Injector.INSTANCE.presenterComponent.inject(this)
     }
 
+    @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_coinify_confirmation)

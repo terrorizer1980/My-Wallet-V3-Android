@@ -913,7 +913,7 @@ class BuySellBuildOrderPresenter constructor(
 
 private fun List<PaymentMethod>.firstAvailable(inMedium: Medium): PaymentMethod {
     val paymentWithTheSameMedium = first { it.inMedium == inMedium }
-    if (paymentWithTheSameMedium.canTrade) {
+    if (paymentWithTheSameMedium.canTrade || inMedium == Medium.Blockchain) {
         return paymentWithTheSameMedium
     }
     return first { it.inMedium == Medium.Card }
