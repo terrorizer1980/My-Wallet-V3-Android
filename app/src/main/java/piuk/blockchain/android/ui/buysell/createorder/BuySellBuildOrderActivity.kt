@@ -170,12 +170,19 @@ class BuySellBuildOrderActivity :
         clearEditTexts()
     }
 
-    override fun startOrderConfirmation(orderType: OrderType, quote: BuyConfirmationDisplayModel) {
+    override fun startOrderConfirmation(
+        orderType: OrderType,
+        quote: BuyConfirmationDisplayModel,
+        cardAvailable: Boolean,
+        bankAvailable: Boolean
+    ) {
         CoinifyBuyConfirmationActivity.startForResult(
             this,
             CoinifyBuyConfirmationActivity.REQUEST_CODE_CONFIRM_BUY_ORDER,
             orderType,
-            quote
+            quote,
+            cardAvailable && orderType == OrderType.Buy,
+            bankAvailable && orderType == OrderType.Buy
         )
     }
 

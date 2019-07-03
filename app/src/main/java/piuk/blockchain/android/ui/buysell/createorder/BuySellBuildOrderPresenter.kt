@@ -117,6 +117,9 @@ class BuySellBuildOrderPresenter constructor(
     // For comparison to avoid double logging
     private var lastLog: LogItem? = null
 
+    private var canTradeWithCard = false
+    private var canTradeWithBank = false
+
     private val fiatFormat by unsafeLazy {
         (NumberFormat.getInstance(view.locale) as DecimalFormat).apply {
             maximumFractionDigits = 2
@@ -304,7 +307,7 @@ class BuySellBuildOrderPresenter constructor(
             accountIndex = payloadDataManager.accounts.indexOf(account)
         )
 
-        view.startOrderConfirmation(view.orderType, quote)
+        view.startOrderConfirmation(view.orderType, quote, canTradeWithCard, canTradeWithBank)
     }
 
     @SuppressLint("CheckResult")
@@ -557,6 +560,11 @@ class BuySellBuildOrderPresenter constructor(
                         .doOnNext { defaultCurrency = getDefaultCurrency(trader.defaultCurrency) }
                         .doOnNext { paymentMethods ->
                             val topPaymentMethod = paymentMethods.firstAvailable(inMedium)
+                            canTradeWithCard =
+                                paymentMethods.firstOrNull { it.inMedium == Medium.Card }?.canTrade ?: false
+                            canTradeWithBank =
+                                paymentMethods.firstOrNull { it.inMedium == Medium.Bank }?.canTrade ?: false
+
                             if (initialLoad) {
                                 selectCurrencies(topPaymentMethod,
                                     inMedium,

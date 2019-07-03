@@ -11,6 +11,8 @@ import android.support.v7.view.ContextThemeWrapper
 import android.view.View
 import android.widget.Button
 import com.jakewharton.rxbinding2.view.RxView
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.R
 import piuk.blockchain.android.injection.Injector
@@ -54,6 +56,13 @@ class CoinifyBuyConfirmationActivity :
     override val displayableQuote by unsafeLazy {
         intent.getParcelableExtra(EXTRA_DISPLAY_MODEL) as BuyConfirmationDisplayModel
     }
+
+    private val canTradeWithCard by unsafeLazy {
+        intent.getBooleanExtra(EXTRA_CAN_TRADE_WITH_CARD, false)
+    }
+    private val canTradeWithBank by unsafeLazy {
+        intent.getBooleanExtra(EXTRA_CAN_TRADE_WITH_BANK, false)
+    }
     private var progressDialog: MaterialProgressDialog? = null
     private val methodSelectionViews by unsafeLazy {
         listOf(buttonCard, buttonBank)
@@ -61,6 +70,8 @@ class CoinifyBuyConfirmationActivity :
     private val confirmationViews by unsafeLazy {
         listOf(buttonConfirm, textViewTimeRemaining)
     }
+
+    private val compositeDisposable = CompositeDisposable()
 
     init {
         Injector.INSTANCE.presenterComponent.inject(this)
@@ -78,15 +89,15 @@ class CoinifyBuyConfirmationActivity :
 
         renderUi()
 
-        RxView.clicks(buttonConfirm)
+        compositeDisposable += RxView.clicks(buttonConfirm)
             .throttleFirst(500, TimeUnit.MILLISECONDS)
             .subscribeBy(onNext = { presenter.onConfirmClicked() })
 
-        RxView.clicks(buttonCard)
+        compositeDisposable += RxView.clicks(buttonCard)
             .throttleFirst(500, TimeUnit.MILLISECONDS)
             .subscribeBy(onNext = { presenter.onCardClicked() })
 
-        RxView.clicks(buttonBank)
+        compositeDisposable += RxView.clicks(buttonBank)
             .throttleFirst(500, TimeUnit.MILLISECONDS)
             .subscribeBy(onNext = { presenter.onBankClicked() })
 
@@ -109,6 +120,8 @@ class CoinifyBuyConfirmationActivity :
         methodSelectionViews.forEach { it.goneIf { view.orderType != OrderType.Buy } }
         setVectorDrawableToButton(buttonCard, R.drawable.vector_card)
         setVectorDrawableToButton(buttonBank, R.drawable.vector_bank)
+        buttonBank.goneIf(canTradeWithBank.not())
+        buttonCard.goneIf(canTradeWithCard.not())
 
         if (view.orderType == OrderType.BuyBank) {
             buttonConfirm.setText(R.string.submit)
@@ -185,7 +198,9 @@ class CoinifyBuyConfirmationActivity :
             this,
             REQUEST_CODE_CONFIRM_BUY_ORDER,
             OrderType.BuyCard,
-            displayableQuote
+            displayableQuote,
+            canTradeWithCard = false,
+            canTradeWithBak = false
         )
         setResult(Activity.RESULT_OK)
         finish()
@@ -196,7 +211,9 @@ class CoinifyBuyConfirmationActivity :
             this,
             REQUEST_CODE_CONFIRM_BUY_ORDER,
             OrderType.BuyBank,
-            displayableQuote
+            displayableQuote,
+            canTradeWithCard = false,
+            canTradeWithBak = false
         )
         setResult(Activity.RESULT_OK)
         finish()
@@ -264,6 +281,10 @@ class CoinifyBuyConfirmationActivity :
             "piuk.blockchain.android.ui.buysell.confirmation.EXTRA_DISPLAY_MODEL"
         const val EXTRA_CARD_LIMIT =
             "piuk.blockchain.android.ui.buysell.confirmation.EXTRA_CARD_LIMIT"
+        const val EXTRA_CAN_TRADE_WITH_CARD =
+            "piuk.blockchain.android.ui.buysell.confirmation.EXTRA_CAN_TRADE_WITH_CARD"
+        const val EXTRA_CAN_TRADE_WITH_BANK =
+            "piuk.blockchain.android.ui.buysell.confirmation.EXTRA_CAN_TRADE_WITH_BANK"
 
         const val REQUEST_CODE_CONFIRM_BUY_ORDER = 803
 
@@ -271,12 +292,23 @@ class CoinifyBuyConfirmationActivity :
             activity: Activity,
             requestCode: Int,
             orderType: OrderType,
-            displayModel: BuyConfirmationDisplayModel
+            displayModel: BuyConfirmationDisplayModel,
+            canTradeWithCard: Boolean,
+            canTradeWithBak: Boolean
         ) {
-            Intent(activity, CoinifyBuyConfirmationActivity::class.java)
-                .apply { putExtra(EXTRA_ORDER_TYPE, orderType) }
-                .apply { putExtra(EXTRA_DISPLAY_MODEL, displayModel) }
-                .run { activity.startActivityForResult(this, requestCode) }
+            val intent = Intent(activity, CoinifyBuyConfirmationActivity::class.java)
+                .apply {
+                    putExtra(EXTRA_ORDER_TYPE, orderType)
+                    putExtra(EXTRA_DISPLAY_MODEL, displayModel)
+                    putExtra(EXTRA_CAN_TRADE_WITH_CARD, canTradeWithCard)
+                    putExtra(EXTRA_CAN_TRADE_WITH_BANK, canTradeWithBak)
+                }
+            activity.startActivityForResult(intent, requestCode)
         }
+    }
+
+    override fun onDestroy() {
+        compositeDisposable.clear()
+        super.onDestroy()
     }
 }
