@@ -1,6 +1,9 @@
 package piuk.blockchain.android.ui.buysell.createorder
 
 import android.annotation.SuppressLint
+import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.NabuUser
+import com.blockchain.nabu.NabuToken
 import com.blockchain.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.nabu.extensions.toLocalTime
 import com.crashlytics.android.answers.AddToCartEvent
@@ -17,6 +20,8 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.Singles
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
@@ -30,6 +35,7 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.models.coinify.CountryNoSupported
+import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidbuysell.models.coinify.ForcedDelay
 import piuk.blockchain.androidbuysell.models.coinify.KycResponse
 import piuk.blockchain.androidbuysell.models.coinify.LimitInAmounts
@@ -71,7 +77,9 @@ class BuySellBuildOrderPresenter constructor(
     private val feeDataManager: FeeDataManager,
     private val dynamicFeeCache: DynamicFeeCache,
     private val exchangeRateDataManager: ExchangeRateDataManager,
-    private val stringUtils: StringUtils
+    private val stringUtils: StringUtils,
+    private val nabuDataManager: NabuDataManager,
+    private val nabuToken: NabuToken
 ) : BasePresenter<BuySellBuildOrderView>() {
 
     val receiveSubject: PublishSubject<String> = PublishSubject.create()
@@ -176,6 +184,32 @@ class BuySellBuildOrderPresenter constructor(
             view.requestSendFocus()
             view.updateSendAmount(updateAmount)
         }
+    }
+
+    private fun checkCountryAvailability(): Single<Boolean> {
+        val userAddress = nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.getUser(it)
+        }
+
+        return Singles.zip(coinifyDataManager.getSupportedCountries(), userAddress) { countries, user ->
+            return@zip checkUserCountryAvailability(countries, user)
+        }.observeOn(AndroidSchedulers.mainThread())
+    }
+
+    private fun checkUserCountryAvailability(countries: Map<String, CountrySupport>, user: NabuUser): Boolean {
+        val country = countries[user.address?.countryCode] ?: return false
+        val countrySupported = country.supported
+        val countryHasStates = country.states.isNotEmpty()
+        val stateSupported = countryHasStates && country.stateSupported(user.address?.state)
+
+        if (countrySupported && !countryHasStates) {
+            return true
+        } else if (!countrySupported && countryHasStates) {
+            return stateSupported
+        } else if (countrySupported && countryHasStates) {
+            return stateSupported
+        }
+        return countrySupported
     }
 
     internal fun onConfirmClicked() {
@@ -654,19 +688,35 @@ class BuySellBuildOrderPresenter constructor(
     }
 
     private fun checkIfCanTrade(paymentMethod: PaymentMethod) {
-        if (!paymentMethod.canTrade) {
-            val reason = paymentMethod.cannotTradeReasons!!.first()
-            when (reason) {
-                is ForcedDelay -> renderWaitTime(reason.delayEnd)
-                is TradeInProgress ->
-                    view.displayFatalErrorDialog(stringUtils.getString(R.string.buy_sell_error_trade_in_progress))
-                is LimitsExceeded ->
-                    view.displayFatalErrorDialog(stringUtils.getString(R.string.buy_sell_error_limits_exceeded))
-            }
-            view.isCountrySupported(reason !is CountryNoSupported)
+        compositeDisposable += checkCountryAvailability().subscribeBy(onError = {
+            view.setButtonEnabled(false)
+            view.isCountrySupported(false)
+        }, onSuccess = {
+            onSupportedCountriesRetrieved(paymentMethod, it)
+        })
+    }
+
+    private fun onSupportedCountriesRetrieved(paymentMethod: PaymentMethod, countrySupported: Boolean) {
+        if (!countrySupported) {
+            view.isCountrySupported(false)
             view.setButtonEnabled(false)
         } else {
-            view.isCountrySupported(true)
+            if (!paymentMethod.canTrade) {
+                val reason = paymentMethod.cannotTradeReasons!!.first()
+                when (reason) {
+                    is ForcedDelay -> renderWaitTime(reason.delayEnd)
+                    is TradeInProgress ->
+                        view.displayFatalErrorDialog(
+                            stringUtils.getString(R.string.buy_sell_error_trade_in_progress)
+                        )
+                    is LimitsExceeded ->
+                        view.displayFatalErrorDialog(stringUtils.getString(R.string.buy_sell_error_limits_exceeded))
+                }
+                view.isCountrySupported(reason !is CountryNoSupported)
+                view.setButtonEnabled(false)
+            } else {
+                view.isCountrySupported(true)
+            }
         }
     }
 
