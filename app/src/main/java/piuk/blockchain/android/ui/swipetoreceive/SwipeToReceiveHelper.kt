@@ -116,6 +116,7 @@ class SwipeToReceiveHelper(
                 it?.let { store(KEY_SWIPE_RECEIVE_ETH_ADDRESS, it) }
                     ?: Timber.e("ETH Wallet was null when attempting to store ETH address")
             }
+            .doOnError { Timber.e("Error fetching ETH account when attempting to store ETH address") }
             .ignoreElement()
     } else {
         Completable.complete()

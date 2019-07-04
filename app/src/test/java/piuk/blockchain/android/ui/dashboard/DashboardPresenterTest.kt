@@ -23,7 +23,6 @@ import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
-import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -91,7 +90,6 @@ class DashboardPresenterTest {
             ),
             prefs,
             exchangeRateFactory,
-            bchDataManager,
             stringUtils,
             accessState,
             buyDataManager,
@@ -110,10 +108,6 @@ class DashboardPresenterTest {
 
         whenever(view.locale).thenReturn(Locale.US)
         whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(1))
-
-        val summaryMock: TransactionSummary = mock()
-        whenever(bchDataManager.getWalletTransactions(50, 0))
-            .thenReturn(Observable.just(emptyList()))
     }
 
     @Test
@@ -172,10 +166,6 @@ class DashboardPresenterTest {
             .thenReturn("$2.00")
         whenever(currencyFormatManager.getFormattedEthShortValueWithUnit(any(), any()))
             .thenReturn("$2.00")
-
-        // storeSwipeToReceiveAddresses()
-        whenever(bchDataManager.getWalletTransactions(any(), any()))
-            .thenReturn(Observable.empty())
 
         // Native Buy/Sell not available
         whenever(buyDataManager.isCoinifyAllowed).thenReturn(Observable.just(false))

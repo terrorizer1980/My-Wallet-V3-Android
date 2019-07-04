@@ -317,7 +317,6 @@ val applicationModule = applicationContext {
                 dashboardBalanceCalculator = get(),
                 prefs = get(),
                 exchangeRateFactory = get(),
-                bchDataManager = get(),
                 stringUtils = get(),
                 accessState = get(),
                 buyDataManager = get(),
