@@ -35,7 +35,6 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidcore.data.access.AccessState
-import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -52,7 +51,6 @@ class DashboardPresenter(
     private val dashboardBalanceCalculator: DashboardData,
     private val prefs: PersistentPrefs,
     private val exchangeRateFactory: ExchangeRateDataManager,
-    private val bchDataManager: BchDataManager,
     private val stringUtils: StringUtils,
     private val accessState: AccessState,
     private val buyDataManager: BuyDataManager,
@@ -121,9 +119,7 @@ class DashboardPresenter(
     }
 
     private fun storeSwipeToReceiveAddresses() {
-        compositeDisposable += bchDataManager.getWalletTransactions(50, 0)
-            .ignoreElements()
-            .andThen { swipeToReceiveHelper.storeAll() }
+        compositeDisposable += swipeToReceiveHelper.storeAll()
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
