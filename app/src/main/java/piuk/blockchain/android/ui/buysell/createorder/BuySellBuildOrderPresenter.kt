@@ -41,6 +41,7 @@ import piuk.blockchain.androidbuysell.models.coinify.KycResponse
 import piuk.blockchain.androidbuysell.models.coinify.LimitInAmounts
 import piuk.blockchain.androidbuysell.models.coinify.LimitsExceeded
 import piuk.blockchain.androidbuysell.models.coinify.Medium
+import piuk.blockchain.androidbuysell.models.coinify.NabuState
 import piuk.blockchain.androidbuysell.models.coinify.PaymentMethod
 import piuk.blockchain.androidbuysell.models.coinify.Quote
 import piuk.blockchain.androidbuysell.models.coinify.ReviewState
@@ -202,8 +203,10 @@ class BuySellBuildOrderPresenter constructor(
     private fun checkUserCountryAvailability(countries: Map<String, CountrySupport>, user: NabuUser): Boolean {
         val country = countries[user.address?.countryCode] ?: return false
         val countrySupported = country.supported
-        val countryHasStates = country.states.isNotEmpty()
-        val stateSupported = countryHasStates && country.stateSupported(user.address?.state)
+        val countryHasStates = country.states?.isNotEmpty() ?: false
+        val stateSupported =
+            countryHasStates && country.stateSupported(NabuState(user.address?.state ?: "",
+            user.address?.countryCode ?: "").toCodeName())
 
         if (countrySupported && !countryHasStates) {
             return true
@@ -559,7 +562,7 @@ class BuySellBuildOrderPresenter constructor(
                         .flatMap { getPaymentMethods(token) }
                         .doOnNext { defaultCurrency = getDefaultCurrency(trader.defaultCurrency) }
                         .doOnNext { paymentMethods ->
-                            val topPaymentMethod = paymentMethods.firstAvailable(inMedium)
+                            val topPaymentMethod = paymentMethods.firstAvailable(inMedium, view.orderType)
                             canTradeWithCard =
                                 paymentMethods.firstOrNull { it.inMedium == Medium.Card }?.canTrade ?: false
                             canTradeWithBank =
@@ -591,8 +594,8 @@ class BuySellBuildOrderPresenter constructor(
                                     selectedCurrency)
                             }
                         }
-                        .doOnNext { checkIfCanTrade(it.firstAvailable(inMedium)) }
-                        .doOnNext { renderLimits(it.firstAvailable(inMedium).limitInAmounts) }
+                        .doOnNext { checkIfCanTrade(it.firstAvailable(inMedium, view.orderType)) }
+                        .doOnNext { renderLimits(it.firstAvailable(inMedium, view.orderType).limitInAmounts) }
                 }
             }
             .subscribeBy(
@@ -911,9 +914,9 @@ class BuySellBuildOrderPresenter constructor(
     }
 }
 
-private fun List<PaymentMethod>.firstAvailable(inMedium: Medium): PaymentMethod {
+private fun List<PaymentMethod>.firstAvailable(inMedium: Medium, orderType: OrderType): PaymentMethod {
     val paymentWithTheSameMedium = first { it.inMedium == inMedium }
-    if (paymentWithTheSameMedium.canTrade || inMedium == Medium.Blockchain) {
+    if (paymentWithTheSameMedium.canTrade || orderType != OrderType.Buy) {
         return paymentWithTheSameMedium
     }
     return first { it.inMedium == Medium.Card }
