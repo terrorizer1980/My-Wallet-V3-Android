@@ -1231,4 +1231,6 @@
     <string name="pit_setting_connected">Connected</string>
     <string name="launch_the_pit">Launch The Pit</string>
     <string name="pit_contact_support">Contact Support</string>
+    <string name="pit_loading_dialog_title">Taking You To The PIT</string>
+    <string name="pit_loading_dialog_description">Loading description for pit loading</string>
 </resources>

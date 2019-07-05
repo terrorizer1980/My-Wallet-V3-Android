@@ -8,7 +8,9 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import kotlinx.android.synthetic.main.activity_pit_kyc_promo_layout.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
+import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 
 class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermissionsView, PitPermissionsPresenter>() {
     private val presenter: PitPermissionsPresenter by inject()
@@ -17,12 +19,20 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
 
     override fun getView(): PitPermissionsView = this
 
+    private var loadingDialog: PitStateBottomDialog? = null
+    private var errorDialog: PitStateBottomDialog? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pit_kyc_promo_layout)
         connect_now.setOnClickListener {
             presenter.connect()
         }
+        loadingDialog = PitStateBottomDialog.newInstance(
+            PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(getString(R.string.pit_loading_dialog_title),
+                getString(R.string.pit_loading_dialog_description), 0, 0, 0), true
+            ))
     }
 
     override fun onLinkSuccess(uuid: String) {
@@ -32,9 +42,11 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
     }
 
     override fun showLoading() {
+        loadingDialog?.show(supportFragmentManager, "LoadingBottomDialog")
     }
 
     override fun hideLoading() {
+        loadingDialog?.dismiss()
     }
 
     companion object {
