@@ -3,6 +3,7 @@ package piuk.blockchain.android.ui.thepit
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import kotlinx.android.synthetic.main.activity_pit_kyc_promo_layout.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
@@ -33,6 +34,10 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
             PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(getString(R.string.pit_loading_dialog_title),
                 getString(R.string.pit_loading_dialog_description), 0, 0, 0), true
             ))
+
+        connect_now.setOnClickListener {
+            presenter.tryToConnect.onNext(Unit)
+        }
 
         onViewReady()
     }

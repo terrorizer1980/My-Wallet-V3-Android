@@ -359,7 +359,7 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            PitPermissionsPresenter(nabuDataManager = get(), nabuToken = get(), settingsManager = get())
+            PitPermissionsPresenter(nabuDataManager = get(), nabuToken = get(), settingsDataManager = get())
         }
 
         factory {
