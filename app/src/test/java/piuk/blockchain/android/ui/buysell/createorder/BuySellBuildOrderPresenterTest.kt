@@ -75,7 +75,8 @@ class BuySellBuildOrderPresenterTest {
                     on { getPaymentMethods(any(), anyOrNull(), anyOrNull()) } `it returns` Observable.just(listOf(
                         cardPaymentMethod(), transferPaymentMethod()
                     ))
-                    on { getSupportedCountries() } `it returns` Single.just(mapOf("US" to CountrySupport(false)))
+                    on { getSupportedCountries() } `it returns` Single.just(mapOf("US" to CountrySupport(false,
+                        mapOf())))
                 },
                 sendDataManager = mock(),
                 payloadDataManager = mock(),
@@ -128,7 +129,7 @@ class BuySellBuildOrderPresenterTest {
                         cardPaymentMethod(), transferPaymentMethod()
                     ))
                     on { getSupportedCountries() } `it returns` Single.just(mapOf("EE"
-                            to CountrySupport(true)))
+                            to CountrySupport(true, mapOf())))
                 },
                 sendDataManager = mock(),
                 payloadDataManager = mock(),
@@ -178,7 +179,7 @@ class BuySellBuildOrderPresenterTest {
                         cardPaymentMethod(), transferPaymentMethod()
                     ))
                     on { getSupportedCountries() } `it returns` Single.just(mapOf("FF"
-                            to CountrySupport(true)))
+                            to CountrySupport(true, mapOf())))
                 },
                 sendDataManager = mock(),
                 payloadDataManager = mock(),
