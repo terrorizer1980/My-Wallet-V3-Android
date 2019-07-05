@@ -12,8 +12,8 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.TextView
-import piuk.blockchain.android.constants.URL_PRIVACY_POLICY
-import piuk.blockchain.android.constants.URL_TOS_POLICY
+import com.blockchain.ui.urllinks.URL_PRIVACY_POLICY
+import com.blockchain.ui.urllinks.URL_TOS_POLICY
 import piuk.blockchain.kyc.R
 
 fun TextView.renderTermsLinks(

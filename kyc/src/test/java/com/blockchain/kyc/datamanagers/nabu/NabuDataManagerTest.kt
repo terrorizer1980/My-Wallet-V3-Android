@@ -38,7 +38,7 @@ class NabuDataManagerTest {
     private val settingsDataManager: SettingsDataManager = mock()
     private val payloadDataManager: PayloadDataManager = mock()
     private val prefs: PersistentPrefs = mock()
-    private val appVersion = "6.14.0"
+    private val appVersion = "6.23.2"
     private val deviceId = "DEVICE_ID"
     private val email = "EMAIL"
     private val guid = "GUID"
@@ -132,12 +132,12 @@ class NabuDataManagerTest {
         val sessionTokenResponse = getEmptySessionToken()
         whenever(
             nabuService.getSessionToken(
-                offlineToken.userId,
-                offlineToken.token,
-                guid,
-                email,
-                deviceId,
-                appVersion
+                userId = offlineToken.userId,
+                offlineToken = offlineToken.token,
+                guid = guid,
+                email = email,
+                deviceId = deviceId,
+                appVersion = appVersion
             )
         ).thenReturn(Single.just(sessionTokenResponse))
         whenever(prefs.deviceId).thenReturn(deviceId)
@@ -148,12 +148,12 @@ class NabuDataManagerTest {
         testObserver.assertNoErrors()
         testObserver.assertValue(sessionTokenResponse)
         verify(nabuService).getSessionToken(
-            offlineToken.userId,
-            offlineToken.token,
-            guid,
-            email,
-            deviceId,
-            appVersion
+            userId = offlineToken.userId,
+            offlineToken = offlineToken.token,
+            guid = guid,
+            email = email,
+            deviceId = deviceId,
+            appVersion = appVersion
         )
     }
 

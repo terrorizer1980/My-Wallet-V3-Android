@@ -105,7 +105,7 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
             .setTitle(R.string.two_factor_dialog_title)
             .setMessage(message)
             .setView(ViewUtils.getAlertDialogPaddedView(this, editText))
-            .setPositiveButton(android.R.string.ok) { dialog, which ->
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 presenter.submitTwoFactorCode(
                     responseObject,
                     sessionId,
@@ -162,7 +162,7 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         // Test for screen overlays before user enters PIN
         return overlayDetection.detectObscuredWindow(this, event) ||
-            super.dispatchTouchEvent(event)
+                super.dispatchTouchEvent(event)
     }
 
     override fun startLogoutTimer() { /* No-op */ }

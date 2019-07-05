@@ -605,10 +605,8 @@
     <string name="learn_more">Learn More</string>
     <string name="pairing_code_log_in">Log in to Web Wallet</string>
     <string name="pairing_code_instruction_1">Go to %1$s on your computer.</string>
-    <string name="pairing_code_instruction_2">Select Log in via mobile</string>
-    <string name="pairing_code_instruction_3">Using your computer\'s camera, scan the QR code
-        below.
-    </string>
+    <string name="pairing_code_instruction_2">Select Log in via mobile.</string>
+    <string name="pairing_code_instruction_3">Using your computer\'s camera, scan the QR code below.</string>
     <string name="pairing_code_show_qr">Show QR code</string>
     <string name="pairing_code_hide_qr">Hide QR code</string>
     <string name="pairing_code_warning_1">Keep this code hidden until you\'re ready.</string>
@@ -935,6 +933,17 @@
         include your linked %1$s.
     </string>
 
+    <!-- ANNOUNCEMTNS -->
+    <string name="more_info_needed">More Info Needed</string>
+    <string name="coinify_kyc_body">To keep using Buy &amp; Sell, you’ll need to update your profile. Once completed, you’ll also unlock higher trading limits in Swap.</string>
+    <string name="coinify_kyc_cta">Update Now</string>
+    <string name="coinify_kyc_dismiss">Learn More</string>
+    <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+
+    <string name="pax_intro_popup_title">Digital US Dollars</string>
+    <string name="pax_intro_popup_text">Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX equals 1 USD.</string>
+    <string name="pax_intro_popup_cta_btn">Get USD PAX Now</string>
+
     <!-- KV STORE -->
     <string name="metadata_load_failure">Error loading full wallet functionality. Service might
         temporarily be unavailable.
@@ -983,33 +992,15 @@
     <string name="buy_sell_create_account">Create Account</string>
 
     <!-- SUNRIVER -->
-    <string name="sunriver_announcement_stellar_claim_title">Claim Your Stellar (XLM)</string>
-    <string name="sunriver_announcement_stellar_claim_message">Looks like you started verifying your
-        identity but didn\'t finish. Pick up where you left off.
-    </string>
-    <string name="sunriver_announcement_stellar_claim_cta">Continue Verification</string>
-
-    <string name="sunriver_announcement_stellar_on_the_way_title">Your XLM is on its way</string>
-    <string name="sunriver_announcement_stellar_on_the_way_message">We have successfully verified
-        your identity.
-    </string>
-    <string name="sunriver_error_registering">Error registering for Airdrop, please try again
-        later.
-    </string>
+    <string name="sunriver_error_registering">Error registering for Airdrop, please try again later.</string>
     <string name="sunriver_invalid_url_message">Your XLM has already been claimed.</string>
     <string name="sunriver_invalid_url_title">Oh No!</string>
-    <string name="sunriver_invalid_campaign_user">We\'re sorry, the airdrop program is currently not
-        available where you are.
-    </string>
-    <string name="sunriver_user_already_registered">Looks like you\'ve already received your
-        airdrop!
-    </string>
+    <string name="sunriver_invalid_campaign_user">We\'re sorry, the airdrop program is currently not available where you are.</string>
+    <string name="sunriver_user_already_registered">Looks like you\'ve already received your airdrop!</string>
     <string name="sunriver_campaign_expired">We\'re sorry, the XLM airdrop is over. Complete your
         profile to be eligible for future airdrops and access trading.
     </string>
-    <string name="sunriver_generic_error">Oops! We had trouble processing your airdrop. Please try
-        again.
-    </string>
+    <string name="sunriver_generic_error">Oops! We had trouble processing your airdrop. Please try again.</string>
 
     <string name="sunriver_set_memo">Set memo</string>
 
@@ -1021,11 +1012,9 @@
 
     <!--STABLECOIN-->
     <string name="stablecoin_announcement_new">New</string>
-    <string name="stablecoin_announcement_introducing_title">Our First Stablecoin</string>
-    <string name="stablecoin_announcement_introducing_description">Introducing USD PAX, a safe and
-        stable digital dollar in your wallet
-    </string>
-    <string name="stablecoin_announcement_introducing_link">Exchange for PAX Now</string>
+    <string name="stablecoin_announcement_introducing_title">Digital US Dollars</string>
+    <string name="stablecoin_announcement_introducing_description">Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX equals 1 USD.</string>
+    <string name="stablecoin_announcement_introducing_link">Get USD PAX Now</string>
 
     <!-- Complete Your Profile Card -->
     <string name="complete_your_profile_card_title">Go for Gold</string>
@@ -1203,12 +1192,12 @@
     <string name="over_limit">Over limit</string>
 
     <!-- Help -->
-    <string name="morph_help_dialog_need_some_help">@string/need_some_help</string>
+    <string name="morph_help_dialog_need_some_help" translatable="false">@string/need_some_help</string>
     <string name="morph_help_dialog_need_some_help_body">Our Blockchain Support Team is standing by to answer any questions you have.</string>
     <string name="morph_help_dialog_view_swap_limit">View My Swap Limit</string>
-    <string name="morph_help_dialog_contact_support">@string/contact_support</string>
+    <string name="morph_help_dialog_contact_support" translatable="false">@string/contact_support</string>
     <string name="swap_info_contact_support">Contact Support</string>
-    <string name="swap_info_swap_limits">Swap limits</string>
+    <string name="swap_info_swap_limits">Swap Limits</string>
     <string name="swap_info_order_history">Order History</string>
 
     <!-- The Pit linking -->
@@ -1240,5 +1229,6 @@
     <string name="pit_setting_title">The Pit</string>
     <string name="pit_setting_connect">Connect</string>
     <string name="pit_setting_connected">Connected</string>
-
+    <string name="launch_the_pit">Launch The Pit</string>
+    <string name="pit_contact_support">Contact Support</string>
 </resources>

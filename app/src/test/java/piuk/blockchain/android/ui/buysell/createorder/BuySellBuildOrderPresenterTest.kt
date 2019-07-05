@@ -1,8 +1,12 @@
 package piuk.blockchain.android.ui.buysell.createorder
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.kyc.models.nabu.Address
+import com.blockchain.kyc.models.nabu.NabuUser
+import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.anyOrNull
+import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import io.reactivex.Observable
@@ -15,6 +19,7 @@ import piuk.blockchain.androidbuysell.models.CoinifyData
 import piuk.blockchain.androidbuysell.models.ExchangeData
 import piuk.blockchain.androidbuysell.models.coinify.BankLimits
 import piuk.blockchain.androidbuysell.models.coinify.CardLimits
+import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidbuysell.models.coinify.KycResponse
 import piuk.blockchain.androidbuysell.models.coinify.Level
 import piuk.blockchain.androidbuysell.models.coinify.LimitInAmounts
@@ -36,6 +41,14 @@ class BuySellBuildOrderPresenterTest {
         Level(1, "Test", "USD", 1.0,
             Limits(CardLimits(LimitValues(1.0, 100.0)), BankLimits(LimitValues(10.0, 1000.0),
                 LimitValues(10.0, 1000.0))))
+
+    private val userWithState: NabuUser = mock {
+        on { address } `it returns` Address("", "", "", "XX", "", "YY")
+    }
+
+    private val userWithOutState: NabuUser = mock {
+        on { address } `it returns` Address("", "", "", "", "", "EE")
+    }
 
     @get:Rule
     val initSchedulers = rxInit {
@@ -62,6 +75,7 @@ class BuySellBuildOrderPresenterTest {
                     on { getPaymentMethods(any(), anyOrNull(), anyOrNull()) } `it returns` Observable.just(listOf(
                         cardPaymentMethod(), transferPaymentMethod()
                     ))
+                    on { getSupportedCountries() } `it returns` Single.just(mapOf("US" to CountrySupport(false)))
                 },
                 sendDataManager = mock(),
                 payloadDataManager = mock(),
@@ -78,6 +92,12 @@ class BuySellBuildOrderPresenterTest {
                 },
                 dynamicFeeCache = mock(),
                 exchangeRateDataManager = mock(),
+                nabuDataManager = mock {
+                    on { getUser(any()) } `it returns` Single.just(userWithOutState)
+                },
+                nabuToken = mock {
+                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+                },
                 stringUtils = mock())
 
         presenter.initView(view)
@@ -85,7 +105,107 @@ class BuySellBuildOrderPresenterTest {
         presenter.onMinClicked()
 
         verify(view).requestSendFocus()
+        verify(view, atLeastOnce()).isCountrySupported(false)
         verify(view).updateSendAmount("1.0")
+    }
+
+    @Test
+    fun `test availability when user country is supported`() {
+        val presenter =
+            BuySellBuildOrderPresenter(
+                coinifyDataManager = mock {
+                    on { getTrader(any()) } `it returns` Single.just(Trader(1, "USD", "",
+                        mock(), traderLevel()))
+                    on { getKycReviews(any()) } `it returns` Single.just(listOf(KycResponse(1,
+                        ReviewState.Completed,
+                        "",
+                        "",
+                        "",
+                        "",
+                        "")))
+                    on { getQuote(any(), any(), any(), any()) } `it returns` Single.just(mock())
+                    on { getPaymentMethods(any(), anyOrNull(), anyOrNull()) } `it returns` Observable.just(listOf(
+                        cardPaymentMethod(), transferPaymentMethod()
+                    ))
+                    on { getSupportedCountries() } `it returns` Single.just(mapOf("EE"
+                            to CountrySupport(true)))
+                },
+                sendDataManager = mock(),
+                payloadDataManager = mock(),
+                exchangeService = mock {
+                    on { getExchangeMetaData() } `it returns` Observable.just(ExchangeData().apply {
+                        coinify = CoinifyData(1, "testToken")
+                    })
+                },
+                currencyFormatManager = mock {
+                    on { getFormattedFiatValueWithSymbol(any(), any(), any()) } `it returns` ""
+                },
+                feeDataManager = mock {
+                    on { btcFeeOptions } `it returns` Observable.just(mock())
+                },
+                dynamicFeeCache = mock(),
+                exchangeRateDataManager = mock(),
+                nabuDataManager = mock {
+                    on { getUser(any()) } `it returns` Single.just(userWithOutState)
+                },
+                nabuToken = mock {
+                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+                },
+                stringUtils = mock())
+
+        presenter.initView(view)
+        presenter.onViewReady()
+
+        verify(view, atLeastOnce()).isCountrySupported(true)
+    }
+
+    @Test
+    fun `test availability when user country is not supported`() {
+        val presenter =
+            BuySellBuildOrderPresenter(
+                coinifyDataManager = mock {
+                    on { getTrader(any()) } `it returns` Single.just(Trader(1, "USD", "",
+                        mock(), traderLevel()))
+                    on { getKycReviews(any()) } `it returns` Single.just(listOf(KycResponse(1,
+                        ReviewState.Completed,
+                        "",
+                        "",
+                        "",
+                        "",
+                        "")))
+                    on { getQuote(any(), any(), any(), any()) } `it returns` Single.just(mock())
+                    on { getPaymentMethods(any(), anyOrNull(), anyOrNull()) } `it returns` Observable.just(listOf(
+                        cardPaymentMethod(), transferPaymentMethod()
+                    ))
+                    on { getSupportedCountries() } `it returns` Single.just(mapOf("FF"
+                            to CountrySupport(true)))
+                },
+                sendDataManager = mock(),
+                payloadDataManager = mock(),
+                exchangeService = mock {
+                    on { getExchangeMetaData() } `it returns` Observable.just(ExchangeData().apply {
+                        coinify = CoinifyData(1, "testToken")
+                    })
+                },
+                currencyFormatManager = mock {
+                    on { getFormattedFiatValueWithSymbol(any(), any(), any()) } `it returns` ""
+                },
+                feeDataManager = mock {
+                    on { btcFeeOptions } `it returns` Observable.just(mock())
+                },
+                dynamicFeeCache = mock(),
+                exchangeRateDataManager = mock(),
+                nabuDataManager = mock {
+                    on { getUser(any()) } `it returns` Single.just(userWithOutState)
+                },
+                nabuToken = mock {
+                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+                },
+                stringUtils = mock())
+
+        presenter.initView(view)
+        presenter.onViewReady()
+        verify(view, atLeastOnce()).isCountrySupported(false)
     }
 
     private fun transferPaymentMethod(): PaymentMethod =

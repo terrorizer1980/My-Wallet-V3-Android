@@ -211,11 +211,11 @@ public class MainPresenter extends BasePresenter<MainView> {
      * available addresses.
      */
     private void doPushNotifications() {
-        if (!prefs.has(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED)) {
-            prefs.setValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true);
+        if (!prefs.has(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED)) {
+            prefs.setValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true);
         }
 
-        if (prefs.getValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true)) {
+        if (prefs.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true)) {
             payloadDataManager.syncPayloadAndPublicKeys()
                     .compose(RxUtil.addCompletableToCompositeDisposable(this))
                     .subscribe(() -> {
@@ -280,9 +280,9 @@ public class MainPresenter extends BasePresenter<MainView> {
 
                             initPrompts();
 
-                            if (!prefs.getValue(PersistentPrefs.Companion.KEY_SCHEME_URL, "").isEmpty()) {
-                                String strUri = prefs.getValue(PersistentPrefs.Companion.KEY_SCHEME_URL, "");
-                                prefs.removeValue(PersistentPrefs.Companion.KEY_SCHEME_URL);
+                            if (!prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "").isEmpty()) {
+                                String strUri = prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "");
+                                prefs.removeValue(PersistentPrefs.KEY_SCHEME_URL);
                                 getView().onScanInput(strUri);
                             }
                         }
@@ -403,7 +403,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         return ethDataManager.initEthereumWallet(
                 stringUtils.getString(R.string.eth_default_account_label),
                 stringUtils.getString(R.string.pax_default_account_label)
-                )
+        )
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
                 .doOnError(throwable -> {
                     Logging.INSTANCE.logException(throwable);
@@ -539,9 +539,9 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     private void dismissAnnouncementIfOnboardingCompleted() {
-        if (prefs.getValue(PersistentPrefs.Companion.KEY_ONBOARDING_COMPLETE, false)
-                && prefs.getValue(PersistentPrefs.Companion.KEY_LATEST_ANNOUNCEMENT_SEEN, false)) {
-            prefs.setValue(PersistentPrefs.Companion.KEY_LATEST_ANNOUNCEMENT_DISMISSED, true);
+        if (prefs.getValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, false)
+                && prefs.getValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_SEEN, false)) {
+            prefs.setValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_DISMISSED, true);
         }
     }
 
@@ -565,12 +565,8 @@ public class MainPresenter extends BasePresenter<MainView> {
         buyDataManager.isCoinifyAllowed()
                 .compose(RxUtil.addObservableToCompositeDisposable(this))
                 .subscribe(coinifyAllowed -> {
-
-                    if (coinifyAllowed) {
+                    if (coinifyAllowed)
                         getView().onStartBuySell();
-                    } else {
-                        getView().onStartLegacyBuySell();
-                    }
                 }, Throwable::printStackTrace);
     }
 
@@ -581,19 +577,19 @@ public class MainPresenter extends BasePresenter<MainView> {
     @SuppressLint("CheckResult")
     void startSwapOrKyc(@Nullable CryptoCurrency targetCurrency /* = null*/) {
         currentKycTier.usersCurrentTier()
-            .compose(RxUtil.addSingleToCompositeDisposable(this))
-            .subscribe(
-                currentTier -> {
-                    if (currentTier > 0) {
-                        getView().launchSwap(
-                            prefs.getSelectedFiatCurrency(),
-                            targetCurrency
-                        );
-                    } else {
-                        getView().launchKyc(CampaignType.Swap);
-                    }
-                },
-                Timber::e
-            );
+                .compose(RxUtil.addSingleToCompositeDisposable(this))
+                .subscribe(
+                        currentTier -> {
+                            if (currentTier > 0) {
+                                getView().launchSwap(
+                                        prefs.getSelectedFiatCurrency(),
+                                        targetCurrency
+                                );
+                            } else {
+                                getView().launchKyc(CampaignType.Swap);
+                            }
+                        },
+                        Timber::e
+                );
     }
 }

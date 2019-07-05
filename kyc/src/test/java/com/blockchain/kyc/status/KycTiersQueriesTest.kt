@@ -91,7 +91,7 @@ class KycTiersQueriesResubmissionTest {
             tier1State = KycTierState.Verified,
             tier2State = KycTierState.Pending
         ) then {
-            isKycResumbissionRequired()
+            isKycResubmissionRequired()
         } `should be` false
     }
 
@@ -101,7 +101,7 @@ class KycTiersQueriesResubmissionTest {
             tier1State = KycTierState.Verified,
             tier2State = KycTierState.Pending
         ) then {
-            isKycResumbissionRequired()
+            isKycResubmissionRequired()
         } `should be` true
     }
 }

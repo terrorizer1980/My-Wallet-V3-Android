@@ -1,6 +1,9 @@
+@file:Suppress("USELESS_CAST")
+
 package com.blockchain.koin.modules
 
 import android.content.Context
+import com.blockchain.activities.StartOnboarding
 import com.blockchain.activities.StartSwap
 import com.blockchain.balance.TotalBalance
 import com.blockchain.balance.plus
@@ -20,13 +23,19 @@ import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
+import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
+import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
+import piuk.blockchain.android.ui.auth.PinEntryPresenter
 import piuk.blockchain.android.ui.balance.BalancePresenter
+import piuk.blockchain.android.ui.buysell.createorder.BuySellBuildOrderPresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.login.ManualPairingPresenter
+import piuk.blockchain.android.ui.onboarding.OnBoardingStarter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.SendView
@@ -165,6 +174,22 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            BuySellBuildOrderPresenter(
+                coinifyDataManager = get(),
+                sendDataManager = get(),
+                exchangeService = get(),
+                stringUtils = get(),
+                currencyFormatManager = get(),
+                exchangeRateDataManager = get(),
+                feeDataManager = get(),
+                dynamicFeeCache = get(),
+                payloadDataManager = get(),
+                nabuToken = get(),
+                nabuDataManager = get()
+            )
+        }
+
+        factory {
             TransactionDetailPresenter(
                 transactionHelper = get(),
                 prefs = get(),
@@ -293,20 +318,18 @@ val applicationModule = applicationContext {
                 dashboardBalanceCalculator = get(),
                 prefs = get(),
                 exchangeRateFactory = get(),
-                bchDataManager = get(),
                 stringUtils = get(),
                 accessState = get(),
                 buyDataManager = get(),
                 rxBus = get(),
                 swipeToReceiveHelper = get(),
                 currencyFormatManager = get(),
-                kycTiersQueries = get(),
                 lockboxDataManager = get(),
                 currentTier = get(),
                 sunriverCampaignHelper = get(),
-                dashboardAnnouncements = get()
+                announcements = get()
             )
-        }
+        }.bind(AnnouncementHost::class)
 
         factory {
             BalancePresenter(
@@ -314,7 +337,6 @@ val applicationModule = applicationContext {
                 transactionListDataManager = get(),
                 ethDataManager = get(),
                 paxAccount = get("pax"),
-                swipeToReceiveHelper = get(),
                 payloadDataManager = get(),
                 buyDataManager = get(),
                 stringUtils = get(),
@@ -383,11 +405,35 @@ val applicationModule = applicationContext {
                 /* kycStatusHelper = */ get()
             )
         }
+
+        factory {
+            PinEntryPresenter(
+                mAuthDataManager = get(),
+                appUtil = get(),
+                prefs = get(),
+                mPayloadDataManager = get(),
+                mStringUtils = get(),
+                mFingerprintHelper = get(),
+                mAccessState = get(),
+                walletOptionsDataManager = get(),
+                environmentSettings = get(),
+                prngFixer = get(),
+                mobileNoticeRemoteConfig = get()
+            )
+        }
+    }
+
+    factory {
+        FirebaseMobileNoticeRemoteConfig(remoteConfig = get()) as MobileNoticeRemoteConfig
     }
 
     factory {
         SwapStarter(prefs = get())
     }.bind(StartSwap::class)
+
+    factory {
+        OnBoardingStarter()
+    }.bind(StartOnboarding::class)
 
     factory { DateUtil(get()) }
 

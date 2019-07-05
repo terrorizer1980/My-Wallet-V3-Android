@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.swipetoreceive
 
+import android.support.annotation.VisibleForTesting
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.toUri
 import info.blockchain.api.data.Balance
@@ -67,6 +68,7 @@ class SwipeToReceiveHelper(
      * account name in SharedPrefs. Only stores addresses if enabled in SharedPrefs. This should be
      * called on a Computation thread as it can take up to 2 seconds on a mid-range device.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun updateAndStoreBitcoinAddresses(): Completable =
         Completable.fromCallable { storeBitcoinAddresses() }
 
@@ -99,6 +101,7 @@ class SwipeToReceiveHelper(
      * account name in SharedPrefs. Only stores addresses if enabled in SharedPrefs. This should be
      * called on a Computation thread as it can take up to 2 seconds on a mid-range device.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun updateAndStoreBitcoinCashAddresses(): Completable =
         Completable.fromCallable { storeBitcoinCashAddresses() }
 
@@ -106,17 +109,20 @@ class SwipeToReceiveHelper(
      * Stores the user's ETH address locally in SharedPrefs. Only stores addresses if enabled in
      * SharedPrefs.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun storeEthAddress(): Completable = if (getIfSwipeEnabled()) {
         Maybe.fromCallable { ethDataManager.getEthWallet()?.account?.address }
             .doOnSuccess {
                 it?.let { store(KEY_SWIPE_RECEIVE_ETH_ADDRESS, it) }
                     ?: Timber.e("ETH Wallet was null when attempting to store ETH address")
             }
+            .doOnError { Timber.e("Error fetching ETH account when attempting to store ETH address") }
             .ignoreElement()
     } else {
         Completable.complete()
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun storeXlmAddress(): Completable = if (getIfSwipeEnabled()) {
         xlmDataManager.defaultAccount()
             .doOnSuccess { store(KEY_SWIPE_RECEIVE_XLM_ADDRESS, it.toUri()) }
@@ -196,13 +202,13 @@ class SwipeToReceiveHelper(
     /**
      * Returns the previously stored Ethereum address or null if not stored
      */
-    fun getEthReceiveAddress(): String? = prefs.getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS)
+    fun getEthReceiveAddress(): String = prefs.getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS) ?: ""
 
     fun getXlmReceiveAddressSingle(): Single<String> = Single.just(getXlmReceiveAddress())
 
-    fun getXlmReceiveAddress(): String? = prefs.getValue(KEY_SWIPE_RECEIVE_XLM_ADDRESS)
+    fun getXlmReceiveAddress(): String = prefs.getValue(KEY_SWIPE_RECEIVE_XLM_ADDRESS) ?: ""
 
-    fun getPaxReceiveAddress(): String? = getEthReceiveAddress()
+    fun getPaxReceiveAddress(): String = getEthReceiveAddress()
 
     /**
      * Returns the Bitcoin account name associated with the receive addresses.

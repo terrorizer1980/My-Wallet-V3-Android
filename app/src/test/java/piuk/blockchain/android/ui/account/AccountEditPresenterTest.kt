@@ -443,16 +443,14 @@ class AccountEditPresenterTest {
         subject.account = account
         val mockPayload: Wallet = mock(defaultAnswer = RETURNS_DEEP_STUBS)
         whenever(payloadDataManager.defaultAccountIndex).thenReturn(0)
-        whenever(mockPayload.hdWallets[0].accounts)
-            .thenReturn(listOf(account))
+        whenever(mockPayload.hdWallets[0].accounts).thenReturn(listOf(account))
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
         whenever(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.complete())
-        whenever(swipeToReceiveHelper.updateAndStoreBitcoinAddresses())
-            .thenReturn(Completable.complete())
-        whenever(swipeToReceiveHelper.updateAndStoreBitcoinCashAddresses())
-            .thenReturn(Completable.complete())
+        whenever(swipeToReceiveHelper.storeAll()).thenReturn(Completable.complete())
+
         // Act
         subject.onClickDefault(mock())
+
         // Assert
         verify(view).showProgressDialog(anyInt())
         verify(view).dismissProgressDialog()

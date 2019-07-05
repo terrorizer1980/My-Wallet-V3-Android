@@ -2,10 +2,12 @@ package piuk.blockchain.androidcore.data.walletoptions
 
 import com.blockchain.sunriver.XlmHorizonUrlFetcher
 import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
+import info.blockchain.wallet.api.data.UpdateType
 import info.blockchain.wallet.api.data.WalletOptions
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.androidcore.data.appversion.SemanticVersion
 import piuk.blockchain.androidcore.data.auth.AuthService
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -100,24 +102,15 @@ class WalletOptionsDataManager(
      * @param sdk The device's Android SDK version
      * @return A [Boolean] value contained within an [Observable]
      */
-    fun checkForceUpgrade(versionCode: Int, sdk: Int): Observable<Boolean> {
+    fun checkForceUpgrade(versionName: String): Observable<UpdateType> {
         initWalletOptionsReplaySubjects()
 
         return walletOptionsState.walletOptionsSource.map {
-            val androidUpgradeMap = it.androidUpgrade
-            var forceUpgrade = false
-            val minSdk = androidUpgradeMap["minSdk"] ?: 0
-            val minVersionCode = androidUpgradeMap["minVersionCode"] ?: 0
-            if (sdk < minSdk) {
-                // Can safely ignore force upgrade
-            } else {
-                if (versionCode < minVersionCode) {
-                    // Force the client to update
-                    forceUpgrade = true
-                }
-            }
-
-            return@map forceUpgrade
+            val latestApiVersion = SemanticVersion(it.androidUpdate.latestStoreVersion)
+            val currentVersion = SemanticVersion(versionName)
+            if (latestApiVersion > currentVersion) {
+                return@map it.androidUpdate.updateType
+            } else return@map UpdateType.NONE
         }
     }
 

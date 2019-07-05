@@ -7,6 +7,7 @@ import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.reentry.KycNavigator
 import com.blockchain.kycui.settings.KycStatusHelper
 import com.blockchain.nabu.NabuToken
+import info.blockchain.wallet.exceptions.ApiException
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -55,6 +56,8 @@ class KycSplashPresenter(
                     Timber.e(it)
                     if (it is CoinifyApiException) {
                         view.showError(it.getErrorDescription())
+                    } else if (it is ApiException && it.isMailNotVerifiedException) {
+                        view.onEmailNotVerified()
                     } else {
                         view.showError(stringUtils.getString(R.string.kyc_non_specific_server_error))
                     }

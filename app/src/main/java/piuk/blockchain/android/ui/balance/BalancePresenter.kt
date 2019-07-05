@@ -20,7 +20,6 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
-import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
@@ -49,7 +48,6 @@ class BalancePresenter(
     private val transactionListDataManager: TransactionListDataManager,
     private val ethDataManager: EthDataManager,
     private val paxAccount: Erc20Account,
-    private val swipeToReceiveHelper: SwipeToReceiveHelper,
     internal val payloadDataManager: PayloadDataManager,
     private val buyDataManager: BuyDataManager,
     private val stringUtils: StringUtils,
@@ -186,7 +184,6 @@ class BalancePresenter(
     internal fun updateTransactionsListCompletable(account: ItemAccount): Completable {
         return Completable.fromObservable(
             transactionListDataManager.fetchTransactions(account, 50, 0)
-                .doAfterTerminate(this::storeSwipeReceiveAddresses)
                 .map { txs ->
                     Observable.zip(
                         getShapeShiftTxNotesObservable(),
@@ -391,14 +388,6 @@ class BalancePresenter(
             .doOnError { Timber.e(it) }
             .onErrorReturn { mutableMapOf() }
 
-    private fun storeSwipeReceiveAddresses() {
-        compositeDisposable +=
-            swipeToReceiveHelper.storeAll()
-                .subscribeOn(Schedulers.computation())
-                .subscribe(
-                    { /* No-op */ },
-                    { Timber.e(it) })
-    }
     // endregion
 
     private fun CryptoValue.getFiatDisplayString(): String =

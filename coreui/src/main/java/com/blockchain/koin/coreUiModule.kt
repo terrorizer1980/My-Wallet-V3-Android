@@ -1,10 +1,11 @@
+@file:Suppress("USELESS_CAST")
+
 package com.blockchain.koin
 
 import com.blockchain.logging.EventLogger
 import com.blockchain.metadata.MetadataWarningLog
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.remoteconfig.RemoteConfiguration
-import com.blockchain.remoteconfig.featureFlag
 import com.blockchain.transactions.ResourceSendFundsResultLocalizer
 import com.blockchain.transactions.SendFundsResultLocalizer
 import com.blockchain.ui.chooser.AccountChooserPresenter
@@ -75,19 +76,5 @@ val coreUiModule = applicationContext {
 
     bean {
         OverlayDetection(get())
-    }
-}
-
-val coreUiFeatureFlagsModule = applicationContext {
-    factory("ff_notify_coinify_users_to_kyc") {
-        get<RemoteConfig>().featureFlag("android_notify_coinify_users_to_kyc")
-    }
-
-    factory("ff_get_free_xlm_popup") {
-        get<RemoteConfig>().featureFlag("get_free_xlm_popup")
-    }
-
-    factory("ff_sunriver_has_large_backlog") {
-        get<RemoteConfig>().featureFlag("sunriver_has_large_backlog")
     }
 }

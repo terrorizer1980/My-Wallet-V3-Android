@@ -22,7 +22,6 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.visible
-import java.lang.IllegalStateException
 
 open class ErrorBottomDialog : BottomSheetDialogFragment() {
 

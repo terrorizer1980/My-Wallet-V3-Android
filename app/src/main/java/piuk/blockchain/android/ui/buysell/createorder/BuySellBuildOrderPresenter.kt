@@ -1,6 +1,9 @@
 package piuk.blockchain.android.ui.buysell.createorder
 
 import android.annotation.SuppressLint
+import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.NabuUser
+import com.blockchain.nabu.NabuToken
 import com.blockchain.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.nabu.extensions.toLocalTime
 import com.crashlytics.android.answers.AddToCartEvent
@@ -17,6 +20,8 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.Singles
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
@@ -29,6 +34,8 @@ import piuk.blockchain.android.ui.buysell.createorder.models.SellConfirmationDis
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
+import piuk.blockchain.androidbuysell.models.coinify.CountryNoSupported
+import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidbuysell.models.coinify.ForcedDelay
 import piuk.blockchain.androidbuysell.models.coinify.KycResponse
 import piuk.blockchain.androidbuysell.models.coinify.LimitInAmounts
@@ -58,11 +65,10 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlin.math.absoluteValue
 import kotlin.properties.Delegates
 
-class BuySellBuildOrderPresenter @Inject constructor(
+class BuySellBuildOrderPresenter constructor(
     private val coinifyDataManager: CoinifyDataManager,
     private val sendDataManager: SendDataManager,
     private val payloadDataManager: PayloadDataManager,
@@ -71,17 +77,22 @@ class BuySellBuildOrderPresenter @Inject constructor(
     private val feeDataManager: FeeDataManager,
     private val dynamicFeeCache: DynamicFeeCache,
     private val exchangeRateDataManager: ExchangeRateDataManager,
-    private val stringUtils: StringUtils
+    private val stringUtils: StringUtils,
+    private val nabuDataManager: NabuDataManager,
+    private val nabuToken: NabuToken
 ) : BasePresenter<BuySellBuildOrderView>() {
 
-    val receiveSubject: PublishSubject<String> = PublishSubject.create<String>()
-    val sendSubject: PublishSubject<String> = PublishSubject.create<String>()
-    var account by Delegates.observable(payloadDataManager.defaultAccount) { _, old, new ->
-        if (old != new) {
-            view.updateAccountSelector(new.label)
-            if (isSell) loadMax(new)
+    val receiveSubject: PublishSubject<String> = PublishSubject.create()
+    val sendSubject: PublishSubject<String> = PublishSubject.create()
+    var account: Account? = null
+        set(value) {
+            field = value
+            value?.let {
+                view.updateAccountSelector(it.label)
+                if (isSell) loadMax(it)
+            }
         }
-    }
+
     var selectedCurrency: String by Delegates.observable("EUR") { _, old, new ->
         if (old != new) initialiseUi(); subscribeToSubjects()
     }
@@ -105,6 +116,9 @@ class BuySellBuildOrderPresenter @Inject constructor(
     private var initialLoad = true
     // For comparison to avoid double logging
     private var lastLog: LogItem? = null
+
+    private var canTradeWithCard = false
+    private var canTradeWithBank = false
 
     private val fiatFormat by unsafeLazy {
         (NumberFormat.getInstance(view.locale) as DecimalFormat).apply {
@@ -140,13 +154,16 @@ class BuySellBuildOrderPresenter @Inject constructor(
 
     override fun onViewReady() {
         // Display Accounts selector if necessary
+        account = payloadDataManager.defaultAccount
         if (payloadDataManager.accounts.size > 1) {
-            view.displayAccountSelector(account.label)
+            view.displayAccountSelector(account!!.label)
         }
 
         initialiseUi()
         subscribeToSubjects()
-        loadMax(account)
+        account?.let {
+            loadMax(it)
+        }
     }
 
     internal fun onMaxClicked() {
@@ -170,6 +187,32 @@ class BuySellBuildOrderPresenter @Inject constructor(
             view.requestSendFocus()
             view.updateSendAmount(updateAmount)
         }
+    }
+
+    private fun checkCountryAvailability(): Single<Boolean> {
+        val userAddress = nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.getUser(it)
+        }
+
+        return Singles.zip(coinifyDataManager.getSupportedCountries(), userAddress) { countries, user ->
+            return@zip checkUserCountryAvailability(countries, user)
+        }.observeOn(AndroidSchedulers.mainThread())
+    }
+
+    private fun checkUserCountryAvailability(countries: Map<String, CountrySupport>, user: NabuUser): Boolean {
+        val country = countries[user.address?.countryCode] ?: return false
+        val countrySupported = country.supported
+        val countryHasStates = country.states.isNotEmpty()
+        val stateSupported = countryHasStates && country.stateSupported(user.address?.state)
+
+        if (countrySupported && !countryHasStates) {
+            return true
+        } else if (!countrySupported && countryHasStates) {
+            return stateSupported
+        } else if (countrySupported && countryHasStates) {
+            return stateSupported
+        }
+        return countrySupported
     }
 
     internal fun onConfirmClicked() {
@@ -264,7 +307,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
             accountIndex = payloadDataManager.accounts.indexOf(account)
         )
 
-        view.startOrderConfirmation(view.orderType, quote)
+        view.startOrderConfirmation(view.orderType, quote, canTradeWithCard, canTradeWithBank)
     }
 
     @SuppressLint("CheckResult")
@@ -280,7 +323,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
             .multiply(BigDecimal.valueOf(1e8))
             .toBigInteger()
 
-        val xPub = account.xpub
+        val xPub = account?.xpub ?: ""
 
         tokenSingle
             .applySchedulers()
@@ -516,7 +559,12 @@ class BuySellBuildOrderPresenter @Inject constructor(
                         .flatMap { getPaymentMethods(token) }
                         .doOnNext { defaultCurrency = getDefaultCurrency(trader.defaultCurrency) }
                         .doOnNext { paymentMethods ->
-                            val topPaymentMethod = paymentMethods.first { it.inMedium == inMedium }
+                            val topPaymentMethod = paymentMethods.firstAvailable(inMedium)
+                            canTradeWithCard =
+                                paymentMethods.firstOrNull { it.inMedium == Medium.Card }?.canTrade ?: false
+                            canTradeWithBank =
+                                paymentMethods.firstOrNull { it.inMedium == Medium.Bank }?.canTrade ?: false
+
                             if (initialLoad) {
                                 selectCurrencies(topPaymentMethod,
                                     inMedium,
@@ -543,8 +591,8 @@ class BuySellBuildOrderPresenter @Inject constructor(
                                     selectedCurrency)
                             }
                         }
-                        .doOnNext { renderLimits(it.first { it.inMedium == inMedium }.limitInAmounts) }
-                        .doOnNext { checkIfCanTrade(it.first { it.inMedium == inMedium }) }
+                        .doOnNext { checkIfCanTrade(it.firstAvailable(inMedium)) }
+                        .doOnNext { renderLimits(it.firstAvailable(inMedium).limitInAmounts) }
                 }
             }
             .subscribeBy(
@@ -648,16 +696,35 @@ class BuySellBuildOrderPresenter @Inject constructor(
     }
 
     private fun checkIfCanTrade(paymentMethod: PaymentMethod) {
-        if (!paymentMethod.canTrade) {
-            val reason = paymentMethod.cannotTradeReasons!!.first()
-            when (reason) {
-                is ForcedDelay -> renderWaitTime(reason.delayEnd)
-                is TradeInProgress ->
-                    view.displayFatalErrorDialog(stringUtils.getString(R.string.buy_sell_error_trade_in_progress))
-                is LimitsExceeded ->
-                    view.displayFatalErrorDialog(stringUtils.getString(R.string.buy_sell_error_limits_exceeded))
-            }
+        compositeDisposable += checkCountryAvailability().subscribeBy(onError = {
             view.setButtonEnabled(false)
+            view.isCountrySupported(false)
+        }, onSuccess = {
+            onSupportedCountriesRetrieved(paymentMethod, it)
+        })
+    }
+
+    private fun onSupportedCountriesRetrieved(paymentMethod: PaymentMethod, countrySupported: Boolean) {
+        if (!countrySupported) {
+            view.isCountrySupported(false)
+            view.setButtonEnabled(false)
+        } else {
+            if (!paymentMethod.canTrade) {
+                val reason = paymentMethod.cannotTradeReasons!!.first()
+                when (reason) {
+                    is ForcedDelay -> renderWaitTime(reason.delayEnd)
+                    is TradeInProgress ->
+                        view.displayFatalErrorDialog(
+                            stringUtils.getString(R.string.buy_sell_error_trade_in_progress)
+                        )
+                    is LimitsExceeded ->
+                        view.displayFatalErrorDialog(stringUtils.getString(R.string.buy_sell_error_limits_exceeded))
+                }
+                view.isCountrySupported(reason !is CountryNoSupported)
+                view.setButtonEnabled(false)
+            } else {
+                view.isCountrySupported(true)
+            }
         }
     }
 
@@ -842,4 +909,12 @@ class BuySellBuildOrderPresenter @Inject constructor(
         data class ErrorTooHigh(val textResourceId: Int, val limit: String) : LimitStatus()
         object Failure : LimitStatus()
     }
+}
+
+private fun List<PaymentMethod>.firstAvailable(inMedium: Medium): PaymentMethod {
+    val paymentWithTheSameMedium = first { it.inMedium == inMedium }
+    if (paymentWithTheSameMedium.canTrade || inMedium == Medium.Blockchain) {
+        return paymentWithTheSameMedium
+    }
+    return first { it.inMedium == Medium.Card }
 }

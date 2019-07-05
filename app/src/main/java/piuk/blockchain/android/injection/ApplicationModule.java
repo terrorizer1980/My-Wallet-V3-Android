@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import com.blockchain.koin.KoinDaggerModule;
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager;
 import com.blockchain.kycui.settings.KycStatusHelper;
-import com.blockchain.kycui.stablecoin.StableCoinCampaignHelper;
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper;
 import com.blockchain.lockbox.data.LockboxDataManager;
 import com.blockchain.logging.LastTxUpdater;
@@ -293,11 +292,6 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     SunriverCampaignHelper provideSunriverCampaignHelper() {
         return get(SunriverCampaignHelper.class);
-    }
-
-    @Provides
-    StableCoinCampaignHelper provideStableCoinCampaignHelper() {
-        return get(StableCoinCampaignHelper.class);
     }
 
     @Provides

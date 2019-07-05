@@ -14,6 +14,7 @@ import com.blockchain.morph.exchange.mvi.Fix
 import com.blockchain.morph.exchange.mvi.IsUserEligiableForFreeEthIntent
 import com.blockchain.morph.exchange.mvi.LockQuoteIntent
 import com.blockchain.morph.exchange.mvi.Quote
+import com.blockchain.morph.exchange.mvi.SetEthTransactionInFlight
 import com.blockchain.morph.exchange.mvi.SetFixIntent
 import com.blockchain.morph.exchange.mvi.SetTierLimit
 import com.blockchain.morph.exchange.mvi.SetTradeLimits
@@ -39,8 +40,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import io.reactivex.rxkotlin.withLatestFrom
+import io.reactivex.subjects.ReplaySubject
+import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -55,6 +57,7 @@ class ExchangeModel(
     private val exchangeRateDataStore: ExchangeRateDataStore,
     private val transactionExecutor: TransactionExecutorWithoutFees,
     private val maximumSpendableCalculator: MaximumSpendableCalculator,
+    private val ethDataManager: EthDataManager,
     private val currencyPrefs: CurrencyPrefs
 ) : ViewModel() {
 
@@ -73,7 +76,7 @@ class ExchangeModel(
 
     private val exchangeViewModelsSubject = BehaviorSubject.create<ExchangeViewState>()
 
-    val inputEventSink = PublishSubject.create<ExchangeIntent>()
+    val inputEventSink = ReplaySubject.create<ExchangeIntent>()
 
     val exchangeViewStates: Observable<ExchangeViewState> = exchangeViewModelsSubject
 
@@ -140,6 +143,15 @@ class ExchangeModel(
             }
             .subscribeBy {
                 inputEventSink.onNext(SetUserTier(it))
+            }
+
+        dialogDisposable += Observable.interval(1, TimeUnit.MINUTES)
+            .startWith(0L)
+            .flatMap {
+                ethDataManager.isLastTxPending()
+            }
+            .subscribeBy {
+                inputEventSink.onNext(SetEthTransactionInFlight(it))
             }
 
         dialogDisposable += ethEligibility.isEligible().subscribeBy {
@@ -277,7 +289,7 @@ interface ExchangeMenuState {
     )
 
     enum class ErrorType {
-        TRADE, TIER, BALANCE
+        TRADE, TIER, BALANCE, TRANSACTION_STATE
     }
 
     fun setMenuState(state: ExchangeMenu)

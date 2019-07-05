@@ -33,6 +33,7 @@ import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import timber.log.Timber
 import java.math.BigInteger
 import java.util.HashMap
+import kotlin.math.max
 
 class EthDataManager(
     private val payloadManager: PayloadManager,
@@ -130,7 +131,7 @@ class EthDataManager(
     fun isLastTxPending(): Observable<Boolean> {
         val lastTxHash = ethDataStore.ethWallet?.lastTransactionHash
         // default 1 day
-        val lastTxTimestamp = Math.max(ethDataStore.ethWallet?.lastTransactionTimestamp ?: 0L, 86400L)
+        val lastTxTimestamp = max(ethDataStore.ethWallet?.lastTransactionTimestamp ?: 0L, 86400L)
 
         // No previous transactions
         if (lastTxHash == null || ethDataStore.ethAddressResponse?.getTransactions()?.size ?: 0 == 0)
@@ -199,8 +200,8 @@ class EthDataManager(
         }
 
     /**
-     * Returns true if a given ETH address is associated with an Ethereum contract, which is
-     * currently unsupported. This should be used to validate any proposed destination address for
+     * Returns true if a given ETH address is associated with an Ethereum contract.
+     * This should be used to validate any proposed destination address for
      * funds.
      *
      * @param address The ETH address to be queried

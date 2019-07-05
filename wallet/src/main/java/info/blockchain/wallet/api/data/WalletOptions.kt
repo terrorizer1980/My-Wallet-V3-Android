@@ -24,8 +24,8 @@ class WalletOptions {
     @JsonProperty("ethereum")
     val ethereum: EthereumOptions = EthereumOptions()
 
-    @JsonProperty("androidUpgrade")
-    val androidUpgrade: Map<String, Int> = HashMap()
+    @JsonProperty("android_update")
+    val androidUpdate: AndroidUpgrade = AndroidUpgrade()
 
     @JsonProperty("mobileInfo")
     val mobileInfo: Map<String, String> = HashMap()

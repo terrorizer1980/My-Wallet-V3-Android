@@ -65,7 +65,8 @@ class ExchangeConfirmationPresenterTest {
                 on { getString(any()) } `it returns` ""
                 on { getFormattedString(any(), any()) } `it returns` ""
             },
-            Locale.ENGLISH
+            Locale.ENGLISH,
+            mock()
         )
         subject.initView(view)
 

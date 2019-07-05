@@ -62,7 +62,14 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
     private val navController by unsafeLazy { findNavController(navHostFragment) }
     private val currentFragment: Fragment?
         get() = navHostFragment.childFragmentManager.findFragmentById(R.id.nav_host)
-    override val campaignType by unsafeLazy { intent.getSerializableExtra(EXTRA_CAMPAIGN_TYPE) as CampaignType }
+    override val campaignType by unsafeLazy {
+        intent.getSerializableExtra(EXTRA_CAMPAIGN_TYPE)
+                as CampaignType
+    }
+    override val isFromSettingsLimits by unsafeLazy {
+        intent.getBooleanExtra(EXTRA_IS_FROM_SETTINGS_LIMITS,
+            false)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,10 +114,10 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
     override fun incrementProgress(kycStep: KycStep) {
         val progress =
             100 * (
-                KycStep.values()
-                    .takeWhile { it != kycStep }
-                    .sumBy { it.relativeValue } + kycStep.relativeValue
-                ) / KycStep.values().sumBy { it.relativeValue }
+                    KycStep.values()
+                        .takeWhile { it != kycStep }
+                        .sumBy { it.relativeValue } + kycStep.relativeValue
+                    ) / KycStep.values().sumBy { it.relativeValue }
 
         updateProgressBar(progress)
     }
@@ -185,6 +192,7 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
     companion object {
 
         private const val EXTRA_CAMPAIGN_TYPE = "piuk.blockchain.android.EXTRA_CAMPAIGN_TYPE"
+        private const val EXTRA_IS_FROM_SETTINGS_LIMITS = "piuk.blockchain.android.EXTRA_IS_FROM_SETTINGS_LIMITS"
 
         @JvmStatic
         fun start(context: Context, campaignType: CampaignType) {
@@ -193,9 +201,18 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
         }
 
         @JvmStatic
-        fun intentArgs(context: Context, campaignType: CampaignType): Intent =
+        fun start(context: Context, campaignType: CampaignType, isFromSettingsLimits: Boolean) {
+            intentArgs(context, campaignType, isFromSettingsLimits)
+                .run { context.startActivity(this) }
+        }
+
+        @JvmStatic
+        fun intentArgs(context: Context, campaignType: CampaignType, isFromSettingsLimits: Boolean = false): Intent =
             Intent(context, KycNavHostActivity::class.java)
-                .apply { putExtra(EXTRA_CAMPAIGN_TYPE, campaignType) }
+                .apply {
+                    putExtra(EXTRA_CAMPAIGN_TYPE, campaignType)
+                    putExtra(EXTRA_IS_FROM_SETTINGS_LIMITS, isFromSettingsLimits)
+                }
     }
 }
 

@@ -15,7 +15,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_FAQ
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_FAQ
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_balance.*
 import kotlinx.android.synthetic.main.include_no_transaction_message.*

@@ -63,7 +63,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
                 .setTitle(R.string.app_name)
                 .setView(ViewUtils.getAlertDialogPaddedView(this, editText))
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok) { dialog, which ->
+                .setPositiveButton(android.R.string.ok) { _, _ ->
                     presenter.updateTransactionNote(editText.text.toString())
                     setDescription(editText.text.toString())
                 }
@@ -132,7 +132,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
             binding.toSpinner.visible()
             val adapter = TransactionDetailAdapter(ArrayList(addresses))
             binding.toAddress.text = String.format(Locale.getDefault(), "%1s Recipients", addresses.size)
-            binding.toAddress.setOnClickListener { v -> binding.toSpinner.performClick() }
+            binding.toAddress.setOnClickListener { binding.toSpinner.performClick() }
             binding.toSpinner.adapter = adapter
             binding.toSpinner.onItemSelectedListener = null
         }
@@ -187,7 +187,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
             }
         }
 
-        binding.buttonVerify.setOnClickListener { v ->
+        binding.buttonVerify.setOnClickListener {
             val viewIntent = Intent(Intent.ACTION_VIEW)
             viewIntent.data = Uri.parse(presenter.transactionHash.explorerUrl)
             startActivity(viewIntent)

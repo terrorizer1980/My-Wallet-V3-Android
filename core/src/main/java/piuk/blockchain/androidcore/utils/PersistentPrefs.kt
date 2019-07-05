@@ -8,6 +8,7 @@ interface PersistentPrefs :
     var isOnboardingComplete: Boolean
 
     val deviceId: String // Pre-IDV device identifier
+    var devicePreIDVCheckFailed: Boolean // Pre-IDV check has failed! Don't show 'gold' announce cards etc
 
     fun getValue(name: String): String?
     fun getValue(name: String, defaultValue: String): String

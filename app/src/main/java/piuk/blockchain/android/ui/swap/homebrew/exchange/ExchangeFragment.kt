@@ -39,7 +39,7 @@ import piuk.blockchain.android.ui.swap.logging.FixTypeEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.ExchangeRate
@@ -317,9 +317,13 @@ internal class ExchangeFragment : Fragment() {
     }
 
     private fun ExchangeViewState.exchangeError(): ExchangeMenuState.ExchangeMenuError? {
-        logMinMaxErrors()
+
         val validity = validity()
+
+        logMinMaxErrors(validity)
+
         exchangeLimitState.setOverTierLimit(validity == QuoteValidity.OverTierLimit)
+
         return when (validity) {
             QuoteValidity.Valid,
             QuoteValidity.NoQuote,
@@ -372,14 +376,22 @@ internal class ExchangeFragment : Fragment() {
                     ExchangeMenuState.ErrorType.BALANCE
                 )
             }
+            QuoteValidity.HasTransactionInFlight -> ExchangeMenuState.ExchangeMenuError(
+                fromCrypto.currency,
+                userTier,
+                getString(R.string.eth_in_flight_title),
+                getString(R.string.eth_in_flight_msg, fromCrypto.currency.symbol),
+                ExchangeMenuState.ErrorType.TRANSACTION_STATE
+            )
         }
     }
 
-    private fun ExchangeViewState.logMinMaxErrors() {
-        val errorType = when (validity()) {
+    private fun logMinMaxErrors(validity: QuoteValidity) {
+        val errorType = when (validity) {
             QuoteValidity.Valid,
             QuoteValidity.NotEnoughFees,
             QuoteValidity.NoQuote,
+            QuoteValidity.HasTransactionInFlight,
             QuoteValidity.MissMatch -> null
             QuoteValidity.UnderMinTrade -> AmountErrorType.UnderMin
             QuoteValidity.OverMaxTrade -> AmountErrorType.OverMax
@@ -401,6 +413,7 @@ internal class ExchangeFragment : Fragment() {
             ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, baseToFiatRate)
                 .applyRate(spendable)
         } ?: spendable * c2fRate
+
         fiatSpendable?.let {
             val fiatString = SpannableString(it.toStringWithSymbol())
             fiatString.setSpan(

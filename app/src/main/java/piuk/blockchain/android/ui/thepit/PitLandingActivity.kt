@@ -6,7 +6,7 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import com.blockchain.ui.dialoglinks.URL_THE_PIT_LANDING_LEARN_MORE
+import com.blockchain.ui.urllinks.URL_THE_PIT_LANDING_LEARN_MORE
 import kotlinx.android.synthetic.main.activity_pit_landing.*
 import org.koin.android.ext.android.get
 import piuk.blockchain.android.R

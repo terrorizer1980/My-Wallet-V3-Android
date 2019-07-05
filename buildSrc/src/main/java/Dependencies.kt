@@ -6,8 +6,8 @@ object Versions {
     const val minSdk = 19
     const val targetSdk = 27
     const val compileSdk = 27
-    const val versionCode = 457
-    const val versionName = "6.25.3"
+    const val versionCode = 458
+    const val versionName = "6.25.4"
     const val buildTools = "28.0.3"
 
     // Build tools and languages
@@ -23,6 +23,7 @@ object Versions {
     // Support Libraries
     const val supportLibs = "27.1.1"
     const val googleServices = "16.0.0"
+    const val googlePlayCore = "1.6.1"
     const val firebaseMessaging = "17.3.3"
     const val firebaseCore = "16.0.4"
     const val firebaseConfig = "16.0.1"
@@ -79,7 +80,7 @@ object Versions {
 
     // Third Party SDKs
     const val onfido = "4.3.0"
-    const val veriff = "2.3.2"
+    const val veriff = "2.3.5"
     const val probity = "1.0.0"
 
     // Logging
@@ -138,6 +139,7 @@ object Libraries {
     const val firebaseDynamicLink = "com.google.firebase:firebase-dynamic-links:${Versions.firebaseDynamicLink}"
     const val googlePlayServicesBase = "com.google.android.gms:play-services-base:${Versions.googleServices}"
     const val googlePlaces = "com.google.android.gms:play-services-places:${Versions.googleServices}"
+    const val googlePlayCore = "com.google.android.play:core:${Versions.googlePlayCore}"
 
     // Networking, RxJava
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
