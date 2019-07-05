@@ -6,5 +6,7 @@ interface PitPermissionsView : View {
     fun showLoading()
     fun hideLoading()
     fun onLinkSuccess(uuid: String)
+    fun promptForEmailVerification(email: String)
     fun onLinkFailed(reason: String)
+    fun showEmailVerifiedDialog()
 }

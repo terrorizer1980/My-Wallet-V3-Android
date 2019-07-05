@@ -52,6 +52,7 @@ import piuk.blockchain.android.ui.swap.SwapStarter
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
+import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionHelper
 import piuk.blockchain.android.util.OSUtil
@@ -358,7 +359,7 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            PitPermissionsPresenter(get(), get())
+            PitPermissionsPresenter(nabuDataManager = get(), nabuToken = get(), settingsManager = get())
         }
 
         factory {
@@ -419,6 +420,12 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 prngFixer = get(),
                 mobileNoticeRemoteConfig = get()
+            )
+        }
+
+        factory {
+            PitVerifyEmailPresenter(
+                emailSyncUpdater = get()
             )
         }
     }

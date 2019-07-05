@@ -28,7 +28,7 @@
         android:fontFamily="@font/inter_medium"
         android:gravity="center"
         android:textAlignment="center"
-        android:textColor="@color/swap_error_dialog_title_text_color"
+        android:textColor="@color/info_dialog_title_text_color"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/text_button_divider"
         app:layout_constraintEnd_toEndOf="parent"
