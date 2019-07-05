@@ -86,7 +86,7 @@
     <color name="swap_announcement_card_background">@color/grey_900</color>
 
     <!-- swap error dialog colors -->
-    <color name="swap_error_dialog_title_text_color">@color/grey_800</color>
+    <color name="info_dialog_title_text_color">@color/grey_800</color>
     <color name="swap_error_dialog_message_text_color">@color/grey_600</color>
 
     <!-- Used for hint/disclaimer/footnote text -->

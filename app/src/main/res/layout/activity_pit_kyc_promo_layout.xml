@@ -299,6 +299,7 @@
                 android:background="@drawable/promo_kyc_button_background"
                 android:text="@string/pit_connect_now"
                 android:textAllCaps="false"
+                android:id="@+id/connect_now"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"

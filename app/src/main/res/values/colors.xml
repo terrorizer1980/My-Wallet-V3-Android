@@ -17,5 +17,7 @@
     <color name="mobile_notice_dialog_body">@color/grey_800</color>
     <color name="mobile_notice_dialog_button_background">@color/blue_600</color>
     <color name="no_sell_available_learn_more">@color/blue_600</color>
-
+    <color name="pit_email_veriff_description">@color/grey_800</color>
+    <color name="pit_email_veriff_address">@color/blue_500</color>
+    <color name="pit_open_mail_app_background">@color/blue_600</color>
 </resources>

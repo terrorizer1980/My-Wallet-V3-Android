@@ -992,6 +992,16 @@
     <string name="buy_sell_create_account">Create Account</string>
 
     <!-- SUNRIVER -->
+    <string name="sunriver_announcement_stellar_claim_title">Claim Your Stellar (XLM)</string>
+    <string name="sunriver_announcement_stellar_claim_message">Looks like you started verifying your
+        identity but didn\'t finish. Pick up where you left off.
+    </string>
+    <string name="sunriver_announcement_stellar_claim_cta">Continue Verification</string>
+
+    <string name="sunriver_announcement_stellar_on_the_way_title">Your XLM is on its way</string>
+    <string name="sunriver_announcement_stellar_on_the_way_message">We have successfully verified
+        your identity.
+    </string>
     <string name="sunriver_error_registering">Error registering for Airdrop, please try again later.</string>
     <string name="sunriver_invalid_url_message">Your XLM has already been claimed.</string>
     <string name="sunriver_invalid_url_title">Oh No!</string>
@@ -1231,4 +1241,13 @@
     <string name="pit_setting_connected">Connected</string>
     <string name="launch_the_pit">Launch The Pit</string>
     <string name="pit_contact_support">Contact Support</string>
+    <string name="pit_verify_email_title">Verify Your Email</string>
+    <string name="pit_verify_email_description">We just sent you a verification email. Your email address needs to be verified before you can connect to The PIT.</string>
+    <string name="pit_open_email_app">Open Email App</string>
+    <string name="pit_did_not_get_email">Didn\'t get the email?</string>
+    <string name="pit_send_again">Send again</string>
+    <string name="mail_resent_succeed">Email sent. Check your inbox to continue.</string>
+    <string name="mail_resent_failed">Something went wrong. Please tap Send Again.</string>
+    <string name="pit_email_verified_description">You\'re all set to connect your Blockchain Wallet to The PIT.</string>
+    <string name="pit_email_verified_title">Email Verified.</string>
 </resources>
