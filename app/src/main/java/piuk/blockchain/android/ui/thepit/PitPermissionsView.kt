@@ -5,7 +5,7 @@ import piuk.blockchain.androidcoreui.ui.base.View
 interface PitPermissionsView : View {
     fun showLoading()
     fun hideLoading()
-    fun onLinkSuccess(uuid: String)
+    fun onLinkSuccess(pitLinkingUrl: String)
     fun promptForEmailVerification(email: String)
     fun onLinkFailed(reason: String)
     fun showEmailVerifiedDialog()

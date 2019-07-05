@@ -109,6 +109,7 @@ android {
             buildConfigString "XLM_WEBSOCKET_URL", buildProperties.secrets['prodXlmWebsocket']
             buildConfigString "NABU_WEBSOCKET_URL", buildProperties.secrets['prodNabuWebsocket']
             buildConfigString "HORIZON_URL", buildProperties.secrets['prodHorizonUrl']
+            buildConfigString "PIT_URL", buildProperties.secrets['prodPit']
             buildConfigField "String", "ENVIRONMENT", '"env_prod"'
         }
         envDev {
@@ -125,6 +126,7 @@ android {
             buildConfigString "XLM_WEBSOCKET_URL", buildProperties.secrets['devXlmWebsocket']
             buildConfigString "NABU_WEBSOCKET_URL", buildProperties.secrets['devNabuWebsocket']
             buildConfigString "HORIZON_URL", buildProperties.secrets['devHorizonUrl']
+            buildConfigString "PIT_URL", buildProperties.secrets['devPit']
             buildConfigField "String", "ENVIRONMENT", '"env_dev"'
             versionNameSuffix '-dev'
         }
@@ -142,6 +144,7 @@ android {
             buildConfigString "XLM_WEBSOCKET_URL", buildProperties.secrets['stagingXlmWebsocket']
             buildConfigString "NABU_WEBSOCKET_URL", buildProperties.secrets['stagingNabuWebsocket']
             buildConfigString "HORIZON_URL", buildProperties.secrets['stagingHorizonUrl']
+            buildConfigString "PIT_URL", buildProperties.secrets['stagingPit']
             buildConfigField "String", "ENVIRONMENT", '"env_staging"'
 
             versionNameSuffix '-staging'
@@ -161,6 +164,7 @@ android {
             buildConfigString "XLM_WEBSOCKET_URL", buildProperties.secrets['testnetXlmWebsocket']
             buildConfigString "NABU_WEBSOCKET_URL", buildProperties.secrets['testnetNabuWebsocket']
             buildConfigString "HORIZON_URL", buildProperties.secrets['testnetHorizonUrl']
+            buildConfigString "PIT_URL", buildProperties.secrets['testnetPit']
             buildConfigField "String", "ENVIRONMENT", '"env_testnet"'
             versionNameSuffix '-testnet'
         }

@@ -1242,7 +1242,7 @@
     <string name="launch_the_pit">Launch The Pit</string>
     <string name="pit_contact_support">Contact Support</string>
     <string name="pit_loading_dialog_title">Taking You To The PIT</string>
-    <string name="pit_loading_dialog_description">Loading description for pit loading</string>
+    <string name="pit_loading_dialog_description">A new window should open within 10 seconds.</string>
     <string name="pit_verify_email_title">Verify Your Email</string>
     <string name="pit_verify_email_description">We just sent you a verification email. Your email address needs to be verified before you can connect to The PIT.</string>
     <string name="pit_open_email_app">Open Email App</string>
@@ -1252,4 +1252,6 @@
     <string name="mail_resent_failed">Something went wrong. Please tap Send Again.</string>
     <string name="pit_email_verified_description">You\'re all set to connect your Blockchain Wallet to The PIT.</string>
     <string name="pit_email_verified_title">Email Verified.</string>
+    <string name="pit_connection_error_title">Connection Error</string>
+    <string name="pit_connection_error_description">We could not connect your Wallet to The PIT. Please go back to The PIT and try again.</string>
 </resources>

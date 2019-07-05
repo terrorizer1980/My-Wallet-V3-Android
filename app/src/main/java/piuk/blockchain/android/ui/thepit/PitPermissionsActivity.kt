@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.thepit
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_pit_kyc_promo_layout.*
 import org.koin.android.ext.android.inject
@@ -30,35 +31,58 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pit_kyc_promo_layout)
 
-        loadingDialog = PitStateBottomDialog.newInstance(
-            PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(getString(R.string.pit_loading_dialog_title),
-                getString(R.string.pit_loading_dialog_description), 0, 0, 0), true
-            ))
-
         connect_now.setOnClickListener {
             presenter.tryToConnect.onNext(Unit)
         }
-
-        onViewReady()
     }
 
-    override fun onLinkSuccess(uuid: String) {
+    override fun onLinkSuccess(pitLinkingUrl: String) {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pitLinkingUrl)))
     }
 
     override fun onLinkFailed(reason: String) {
+        if (errorDialog == null) {
+            errorDialog = PitStateBottomDialog.newInstance(
+                PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(
+                    getString(R.string.pit_connection_error_title),
+                    getString(R.string.pit_connection_error_description),
+                    R.string.try_again,
+                    0,
+                    R.drawable.vector_pit_request_failure), false
+                )).apply {
+                this.onCtaClick = {
+                    presenter.tryToConnect.onNext(Unit)
+                    this.dismiss()
+                }
+            }
+            errorDialog?.show(supportFragmentManager, "LoadingBottomDialog")
+        }
     }
 
     override fun showLoading() {
-        loadingDialog?.show(supportFragmentManager, "LoadingBottomDialog")
+        if (loadingDialog == null) {
+            loadingDialog = PitStateBottomDialog.newInstance(
+                PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(
+                    getString(R.string.pit_loading_dialog_title),
+                    getString(R.string.pit_loading_dialog_description),
+                    0,
+                    0,
+                    0
+                ),
+                    true
+                ))
+            loadingDialog?.show(supportFragmentManager, "LoadingBottomDialog")
+        }
     }
 
     override fun hideLoading() {
         loadingDialog?.dismiss()
-
+        loadingDialog = null
     }
 
     override fun onResume() {
         super.onResume()
+        onViewReady()
         if (promptForEmailVerification) {
             promptForEmailVerification = false
             presenter.checkEmailIfEmailIsVerified.onNext(Unit)
