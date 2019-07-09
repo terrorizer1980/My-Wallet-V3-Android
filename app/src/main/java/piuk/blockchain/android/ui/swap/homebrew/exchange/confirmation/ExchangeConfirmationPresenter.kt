@@ -8,6 +8,7 @@ import com.blockchain.morph.exchange.service.TradeExecutionService
 import com.blockchain.morph.exchange.service.TradeTransaction
 import com.blockchain.morph.trade.MorphTrade
 import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.serialization.fromMoshiJson
@@ -165,6 +166,7 @@ class ExchangeConfirmationPresenter internal constructor(
             Single.just(transaction)
         }.onErrorResumeNext {
             Timber.e(it, "Transaction execution error, telling nabu")
+            analytics.logEvent(AnalyticsEvents.ExchangeExecutionError)
             val hash = (it as? TransactionHashApiException)?.hashString ?: (it as? SendException)?.hash
             tradeExecutionService.putTradeFailureReason(transaction, hash, it.message)
                 .andThen(Single.error(it))

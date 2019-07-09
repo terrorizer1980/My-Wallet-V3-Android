@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 public class HDWalletTest extends MockedResponseTest {
 
     private NetworkParameters networkParameters = BitcoinMainNetParams.get();
+    private boolean useNewCoinSelection = true;
 
     @Test
     public void fromJson_1() throws Exception {
@@ -384,23 +385,24 @@ public class HDWalletTest extends MockedResponseTest {
         HDWallet hdWallet = HDWallet.fromJson(networkParameters, body);
 
         hdWallet.decryptHDWallet(networkParameters, "hello", "d14f3d2c-f883-40da-87e2-c8448521ee64", 5000);
-        /*
-        8 available Payment. [80200,70000,60000,50000,40000,30000,20000,10000]
-         */
+
+        // Available unspents: [8290, 4616, 5860, 3784, 2290, 13990, 8141]
         uri = getClass().getClassLoader().getResource("wallet_body_1_account1_unspent.txt").toURI();
         body = new String(Files.readAllBytes(Paths.get(uri)), Charset.forName("utf-8"));
         UnspentOutputs unspentOutputs = UnspentOutputs.fromJson(body);
 
         Payment payment = new Payment();
 
-        long spendAmount = 80200L + 70000L + 60000L + 50000L + 40000L + 30000L + 20000L + 10000L - Payment.DUST.longValue();
-        long feeManual = Payment.DUST.longValue();
+        long spendAmount = 40108;
 
         SpendableUnspentOutputs paymentBundle = payment
                 .getSpendableCoins(unspentOutputs,
-                        BigInteger.valueOf(spendAmount - feeManual),
-                        BigInteger.valueOf(30000L),
-                        false);
+                        BigInteger.valueOf(spendAmount),
+                        BigInteger.valueOf(1000L),
+                        false,
+                        useNewCoinSelection);
+
+        assertEquals(789, paymentBundle.getAbsoluteFee().longValue());
 
         List<ECKey> keyList = hdWallet
                 .getHDKeysForSigning(hdWallet.getAccount(0), paymentBundle);

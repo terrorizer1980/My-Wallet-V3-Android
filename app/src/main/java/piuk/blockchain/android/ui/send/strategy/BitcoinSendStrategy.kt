@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.serialization.JsonSerializableAccount
 import info.blockchain.api.data.UnspentOutputs
 import info.blockchain.balance.CryptoCurrency
@@ -15,6 +16,7 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import info.blockchain.wallet.util.Tools
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.subjects.PublishSubject
 import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.ECKey
@@ -61,6 +63,7 @@ class BitcoinSendStrategy(
     private val currencyFormatter: CurrencyFormatManager,
     private val exchangeRates: FiatExchangeRates,
     private val prefs: PersistentPrefs,
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig,
     currencyState: CurrencyState
 ) : SendStrategy<SendView>(currencyState) {
 
@@ -458,9 +461,10 @@ class BitcoinSendStrategy(
     private fun getSuggestedAbsoluteFee(
         coins: UnspentOutputs,
         amountToSend: CryptoValue,
-        feePerKb: BigInteger
+        feePerKb: BigInteger,
+        useNewCoinSelection: Boolean
     ): BigInteger {
-        val spendableCoins = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb)
+        val spendableCoins = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb, useNewCoinSelection)
         return spendableCoins.absoluteFee
     }
 
@@ -593,11 +597,14 @@ class BitcoinSendStrategy(
 
         val address = sendingObj.address!!
 
-        getUnspentApiResponse(address)
+        Observables.zip(
+            getUnspentApiResponse(address),
+            coinSelectionRemoteConfig.enabled.toObservable()
+        )
             .debounce(200, TimeUnit.MILLISECONDS)
             .applySchedulers()
             .subscribe(
-                { coins ->
+                { (coins, newCoinSelectionEnabled) ->
                     val amountToSend = currencyFormatter.getSatoshisFromText(
                         amountToSendText,
                         getDefaultDecimalSeparator()
@@ -613,10 +620,17 @@ class BitcoinSendStrategy(
                     updateFee(getSuggestedAbsoluteFee(
                         coins,
                         CryptoValue.bitcoinFromSatoshis(amountToSend),
-                        feePerKb
+                        feePerKb,
+                        newCoinSelectionEnabled
                     ))
 
-                    suggestedFeePayment(coins, CryptoValue.bitcoinFromSatoshis(amountToSend), spendAll, feePerKb)
+                    suggestedFeePayment(
+                        coins,
+                        CryptoValue.bitcoinFromSatoshis(amountToSend),
+                        spendAll,
+                        feePerKb,
+                        newCoinSelectionEnabled
+                    )
                 },
                 { throwable ->
                     Timber.e(throwable)
@@ -636,12 +650,18 @@ class BitcoinSendStrategy(
         coins: UnspentOutputs,
         amountToSend: CryptoValue,
         spendAll: Boolean,
-        feePerKb: BigInteger
+        feePerKb: BigInteger,
+        useNewCoinSelection: Boolean
     ) {
         var amount = amountToSend.amount
 
         // Calculate sweepable amount to display max available
-        val sweepBundle = sendDataManager.getMaximumAvailable(amountToSend.currency, coins, feePerKb)
+        val sweepBundle = sendDataManager.getMaximumAvailable(
+            amountToSend.currency,
+            coins,
+            feePerKb,
+            useNewCoinSelection
+        )
         val sweepableAmount = sweepBundle.left
 
         updateMaxAvailable(sweepableAmount)
@@ -651,7 +671,12 @@ class BitcoinSendStrategy(
             view?.updateCryptoAmount(CryptoValue(CryptoCurrency.BTC, sweepableAmount))
         }
 
-        val unspentOutputBundle = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb)
+        val unspentOutputBundle = sendDataManager.getSpendableCoins(
+            coins,
+            amountToSend,
+            feePerKb,
+            useNewCoinSelection
+        )
 
         pendingTransaction.bigIntAmount = amount
         pendingTransaction.unspentOutputBundle = unspentOutputBundle

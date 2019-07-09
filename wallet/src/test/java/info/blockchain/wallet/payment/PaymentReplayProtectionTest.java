@@ -24,18 +24,16 @@ public final class PaymentReplayProtectionTest extends MockedResponseTest {
     private Payment subject = new Payment();
 
     private boolean addReplayProtection = true;
+    private boolean useNewCoinSelection = true;
 
     private String getTestData(String file) throws Exception {
         URI uri = getClass().getClassLoader().getResource(file).toURI();
         return new String(Files.readAllBytes(Paths.get(uri)), Charset.forName("utf-8"));
     }
 
-    private long calculateFee(int outputs, int inputs, BigInteger feePerKb, boolean addReplayProtection) {
+    private long calculateFee(int outputs, int inputs, BigInteger feePerKb) {
         // Manually calculated fee
-        long size = (outputs * 34) + (inputs * 148) + 10;
-        if (addReplayProtection) {
-            size = size + Coins.DUST_INPUT_TX_SIZE_ADAPT;
-        }
+        long size = (outputs * 34) + (inputs * 149) + 10;
         double txBytes = ((double) size / 1000.0);
         return (long) Math.ceil(feePerKb.doubleValue() * txBytes);
     }
@@ -50,13 +48,13 @@ public final class PaymentReplayProtectionTest extends MockedResponseTest {
         list.add(coin);
         unspentOutputs.setUnspentOutputs(list);
 
-        BigInteger feePerKb = BigInteger.valueOf(200);
+        BigInteger feePerKb = BigInteger.valueOf(1000);
 
         Pair<BigInteger, BigInteger> sweepBundle = subject
-                .getMaximumAvailable(unspentOutputs, feePerKb, addReplayProtection);
+                .getMaximumAvailable(unspentOutputs, feePerKb, addReplayProtection, useNewCoinSelection);
 
         // Added extra input and output for dust-service
-        long feeManual = calculateFee(1, 2, feePerKb, true);
+        long feeManual = calculateFee(1, 2, feePerKb);
 
         assertEquals(feeManual, sweepBundle.getRight().longValue());
         // Available would be our amount + fake dust
@@ -71,13 +69,13 @@ public final class PaymentReplayProtectionTest extends MockedResponseTest {
         UnspentOutputs unspentOutputs = UnspentOutputs.fromJson(response);
         subject = new Payment();
 
-        long spendAmount = 26000L;
-        BigInteger feePKb = BigInteger.valueOf(200);
+        long spendAmount = 4134L;
         SpendableUnspentOutputs paymentBundle = subject.getSpendableCoins(
                 unspentOutputs,
                 BigInteger.valueOf(spendAmount),
-                feePKb,
-                addReplayProtection);
+                BigInteger.valueOf(35000),
+                addReplayProtection,
+                useNewCoinSelection);
 
         List<UnspentOutput> unspentList = paymentBundle.getSpendableOutputs();
 
@@ -106,12 +104,13 @@ public final class PaymentReplayProtectionTest extends MockedResponseTest {
         UnspentOutputs unspentOutputs = UnspentOutputs.fromJson(response);
         subject = new Payment();
 
-        long spendAmount = 1500000L;
+        long spendAmount = 34864L;
         SpendableUnspentOutputs paymentBundle = subject.getSpendableCoins(
                 unspentOutputs,
                 BigInteger.valueOf(spendAmount),
-                BigInteger.valueOf(30000L),
-                addReplayProtection);
+                BigInteger.valueOf(7000L),
+                addReplayProtection,
+                useNewCoinSelection);
 
         List<UnspentOutput> unspentList = paymentBundle.getSpendableOutputs();
 
@@ -144,12 +143,13 @@ public final class PaymentReplayProtectionTest extends MockedResponseTest {
         UnspentOutputs unspentOutputs = UnspentOutputs.fromJson(response);
         subject = new Payment();
 
-        long spendAmount = 1500000L;
+        long spendAmount = 31770L;
         SpendableUnspentOutputs paymentBundle = subject.getSpendableCoins(
                 unspentOutputs,
                 BigInteger.valueOf(spendAmount),
-                BigInteger.valueOf(30000L),
-                addReplayProtection);
+                BigInteger.valueOf(10000L),
+                addReplayProtection,
+                useNewCoinSelection);
 
         List<UnspentOutput> unspentList = paymentBundle.getSpendableOutputs();
 
@@ -185,7 +185,8 @@ public final class PaymentReplayProtectionTest extends MockedResponseTest {
                 unspentOutputs,
                 BigInteger.valueOf(spendAmount),
                 BigInteger.valueOf(30000L),
-                addReplayProtection
+                addReplayProtection,
+                useNewCoinSelection
         );
 
         assertTrue(paymentBundle.getSpendableOutputs().isEmpty());
@@ -200,8 +201,9 @@ public final class PaymentReplayProtectionTest extends MockedResponseTest {
 
         final Pair<BigInteger, BigInteger> pair = subject.getMaximumAvailable(
                 unspentOutputs,
-                BigInteger.valueOf(300L),
-                addReplayProtection
+                BigInteger.valueOf(1000L),
+                addReplayProtection,
+                useNewCoinSelection
         );
 
         assertEquals(BigInteger.ZERO, pair.getLeft());

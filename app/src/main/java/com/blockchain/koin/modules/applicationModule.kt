@@ -9,6 +9,7 @@ import com.blockchain.balance.TotalBalance
 import com.blockchain.balance.plus
 import com.blockchain.kycui.settings.KycStatusHelper
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
 import com.blockchain.ui.password.SecondPasswordHandler
@@ -184,7 +185,8 @@ val applicationModule = applicationContext {
                 dynamicFeeCache = get(),
                 payloadDataManager = get(),
                 nabuToken = get(),
-                nabuDataManager = get()
+                nabuDataManager = get(),
+                coinSelectionRemoteConfig = get()
             )
         }
 
@@ -232,7 +234,8 @@ val applicationModule = applicationContext {
                 privateKeyFactory = get(),
                 environmentSettings = get(),
                 currencyFormatter = get(),
-                exchangeRates = get()
+                exchangeRates = get(),
+                coinSelectionRemoteConfig = get()
             )
         }
 
@@ -251,7 +254,8 @@ val applicationModule = applicationContext {
                 currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
-                currencyState = get()
+                currencyState = get(),
+                coinSelectionRemoteConfig = get()
             )
         }
 
@@ -437,4 +441,6 @@ val applicationModule = applicationContext {
     factory { PrivateKeyFactory() }
 
     bean { DynamicFeeCache() }
+
+    factory { CoinSelectionRemoteConfig(get()) }
 }

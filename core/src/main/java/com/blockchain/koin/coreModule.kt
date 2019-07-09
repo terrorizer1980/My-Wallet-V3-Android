@@ -135,6 +135,7 @@ val coreModule = applicationContext {
                 get(),
                 get(),
                 get(),
+                get(),
                 get()
             ) as TransactionExecutor
         }

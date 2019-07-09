@@ -1,5 +1,8 @@
 package piuk.blockchain.android.data.datamanagers;
 
+import com.blockchain.notifications.analytics.Analytics;
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig;
+
 import info.blockchain.api.data.UnspentOutputs;
 import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.balance.CryptoValue;
@@ -8,6 +11,7 @@ import info.blockchain.wallet.payload.data.LegacyAddress;
 import info.blockchain.wallet.payment.SpendableUnspentOutputs;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -41,11 +45,14 @@ public class TransferFundsDataManagerTest extends RxTest {
     @Mock private SendDataManager sendDataManager;
     @Mock(answer = Answers.RETURNS_DEEP_STUBS) private PayloadDataManager payloadDataManager;
     @Mock(answer = Answers.RETURNS_DEEP_STUBS) private DynamicFeeCache dynamicFeeCache;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS) private CoinSelectionRemoteConfig coinSelectionRemoteConfig;
+
+    private boolean useNewCoinSelection = true;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        subject = new TransferFundsDataManager(payloadDataManager, sendDataManager, dynamicFeeCache);
+        subject = new TransferFundsDataManager(payloadDataManager, sendDataManager, dynamicFeeCache, coinSelectionRemoteConfig);
     }
 
     @Test
@@ -58,14 +65,15 @@ public class TransferFundsDataManagerTest extends RxTest {
         when(dynamicFeeCache.getBtcFeeOptions().getRegularFee()).thenReturn(1L);
         when(payloadDataManager.getWallet().getLegacyAddressList()).thenReturn(legacyAddresses);
         when(payloadDataManager.getAddressBalance(anyString())).thenReturn(BigInteger.TEN);
+        when(coinSelectionRemoteConfig.getEnabled()).thenReturn(Single.just(useNewCoinSelection));
         UnspentOutputs unspentOutputs = mock(UnspentOutputs.class);
         when(unspentOutputs.getNotice()).thenReturn(null);
         when(sendDataManager.getUnspentOutputs(anyString())).thenReturn(Observable.just(unspentOutputs));
         SpendableUnspentOutputs spendableUnspentOutputs = new SpendableUnspentOutputs();
         spendableUnspentOutputs.setAbsoluteFee(BigInteger.TEN);
-        when(sendDataManager.getSpendableCoins(any(UnspentOutputs.class), any(CryptoValue.class), any(BigInteger.class)))
+        when(sendDataManager.getSpendableCoins(any(UnspentOutputs.class), any(CryptoValue.class), any(BigInteger.class), any(boolean.class)))
                 .thenReturn(spendableUnspentOutputs);
-        when(sendDataManager.getMaximumAvailable(CryptoCurrency.BTC, unspentOutputs, BigInteger.valueOf(1_000L)))
+        when(sendDataManager.getMaximumAvailable(CryptoCurrency.BTC, unspentOutputs, BigInteger.valueOf(1_000L), useNewCoinSelection))
                 .thenReturn(Pair.of(BigInteger.valueOf(1_000_000L), BigInteger.TEN));
         // Act
         TestObserver<Triple<List<PendingTransaction>, Long, Long>> testObserver =

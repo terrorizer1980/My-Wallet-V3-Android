@@ -11,6 +11,7 @@ import com.blockchain.logging.LastTxUpdater;
 import com.blockchain.network.EnvironmentUrls;
 import com.blockchain.notifications.NotificationTokenManager;
 import com.blockchain.notifications.analytics.Analytics;
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig;
 import com.blockchain.remoteconfig.RemoteConfig;
 import com.blockchain.remoteconfig.RemoteConfiguration;
 import com.blockchain.sunriver.XlmDataManager;
@@ -256,6 +257,11 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     RemoteConfig provideRemoteConfig() {
         return get(RemoteConfiguration.class);
+    }
+
+    @Provides
+    CoinSelectionRemoteConfig provideCoinSelectionRemoteConfig() {
+        return get(CoinSelectionRemoteConfig.class);
     }
 
     @Provides
