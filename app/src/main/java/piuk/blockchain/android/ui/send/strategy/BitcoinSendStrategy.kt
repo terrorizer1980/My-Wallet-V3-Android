@@ -410,9 +410,9 @@ class BitcoinSendStrategy(
      */
     @SuppressLint("CheckResult")
     private fun getSuggestedFee() {
-        val observable = feeDataManager.ethFeeOptions
-                .doOnSubscribe { feeOptions = dynamicFeeCache.ethFeeOptions!! }
-                .doOnNext { dynamicFeeCache.ethFeeOptions = it }
+        val observable = feeDataManager.btcFeeOptions
+                .doOnSubscribe { feeOptions = dynamicFeeCache.btcFeeOptions!! }
+                .doOnNext { dynamicFeeCache.btcFeeOptions = it }
 
         observable.addToCompositeDisposable(this)
             .subscribe(
@@ -526,7 +526,6 @@ class BitcoinSendStrategy(
         view.clearWarning()
 
         val feePerKb = getFeePerKbFromPriority(view.getFeePriority())
-
         calculateUnspentBtc(spendAll, amountToSendText, feePerKb)
     }
 
