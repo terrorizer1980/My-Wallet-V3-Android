@@ -65,7 +65,7 @@ class XlmSendStrategy(
     private fun isValid(memo: Memo): Boolean {
         return when {
             memo.type == "text" -> memo.value.length in 1..28
-            memo.type == "id" -> memo.value.toLongOrNull() != null ?: false
+            memo.type == "id" -> memo.value.toLongOrNull() != null
             else -> false
         }
     }
@@ -228,6 +228,7 @@ class XlmSendStrategy(
     @SuppressLint("CheckResult")
     override fun onViewReady() {
         view.setSendButtonEnabled(false)
+        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1)
 
         confirmationDetails
             .addToCompositeDisposable(this)

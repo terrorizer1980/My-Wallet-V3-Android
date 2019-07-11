@@ -125,7 +125,7 @@ interface SendView : BaseSendView {
 
     fun hideCurrencyHeader()
 
-    fun updateRequiredLabelVisibility(hide: Boolean)
+    fun updateRequiredLabelVisibility(isVisible: Boolean)
 }
 
 internal fun SendConfirmationDetails.toPaymentConfirmationDetails(): PaymentConfirmationDetails {

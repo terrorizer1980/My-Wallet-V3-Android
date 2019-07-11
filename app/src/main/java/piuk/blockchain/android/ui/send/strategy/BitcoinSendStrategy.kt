@@ -380,7 +380,7 @@ class BitcoinSendStrategy(
     }
 
     private fun resetAccountList() {
-        setReceiveHint(getAddressList().size)
+        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BTC, getAddressList().size)
     }
 
     override fun clearReceivingObject() {
@@ -392,10 +392,6 @@ class BitcoinSendStrategy(
     }
 
     private fun getAddressList(): List<ItemAccount> = walletAccountHelper.getAccountItems(CryptoCurrency.BTC)
-
-    private fun setReceiveHint(accountsCount: Int) {
-        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BTC, accountsCount)
-    }
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
         val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount()

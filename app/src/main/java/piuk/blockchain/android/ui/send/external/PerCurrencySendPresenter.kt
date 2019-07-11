@@ -259,7 +259,6 @@ internal class PerCurrencySendPresenter<View : SendView>(
 
     override fun onViewReady() {
         updateTicker()
-        view?.updateReceivingHintAndAccountDropDowns(selectedCrypto, 1)
 
         if (envSettings.environment == Environment.TESTNET) {
             selectedCrypto = CryptoCurrency.BTC
