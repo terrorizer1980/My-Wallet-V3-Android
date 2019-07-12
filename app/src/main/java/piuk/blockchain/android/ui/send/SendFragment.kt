@@ -53,6 +53,7 @@ import com.karumi.dexter.listener.single.BasePermissionListener
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoCurrency.Companion.MULTI_WALLET
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.compareTo
@@ -280,7 +281,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     private fun Spinner.setupOptions(selectedIndex: Int) {
         ArrayAdapter.createFromResource(
-            activity,
+            requireContext(),
             arrayToDisplay(selectedIndex),
             piuk.blockchain.androidcoreui.R.layout.dialog_edit_memo_spinner_item
         ).also { adapter ->
@@ -419,23 +420,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                 { presenter.onAddressTextChange(it) },
                 { Timber.e(it) })
 
-        toContainer.toArrow.setOnClickListener {
-            val currency = currencyState.cryptoCurrency
-            AccountChooserActivity.startForResult(
-                this,
-                if (currency == CryptoCurrency.BTC) {
-                    AccountMode.Bitcoin
-                } else {
-                    AccountMode.BitcoinCash
-                },
-                if (currency == CryptoCurrency.BTC) {
-                    REQUEST_CODE_BTC_RECEIVING
-                } else {
-                    REQUEST_CODE_BCH_RECEIVING
-                },
-                getString(R.string.to)
-            )
-        }
+        toContainer.toArrow.setOnClickListener { startToAccountChooser() }
     }
 
     private fun disableCryptoTextChangeListener() {
@@ -511,19 +496,26 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     }
 
     private fun handleIncomingArguments() {
-        presenter.onCurrencySelected(currencyState.cryptoCurrency)
+        if (!handleIncomingScan()) {
+            presenter.onCurrencySelected(currencyState.cryptoCurrency)
+        }
+    }
+
+    private fun handleIncomingScan(): Boolean {
         if (arguments != null) {
             val scanData = arguments!!.getString(ARGUMENT_SCAN_DATA)
             if (scanData != null) {
                 handlingActivityResult = true
                 presenter.handleURIScan(scanData)
+                return true
             }
         }
+        return false
     }
 
     private fun setupSendingView() {
-        fromContainer.fromAddressTextView.setOnClickListener { startAccountChooser() }
-        fromContainer.fromArrowImage.setOnClickListener { startAccountChooser() }
+        fromContainer.fromAddressTextView.setOnClickListener { startFromAccountChooser() }
+        fromContainer.fromArrowImage.setOnClickListener { startFromAccountChooser() }
     }
 
     override fun updateSendingAddress(label: String) {
@@ -558,22 +550,46 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         toContainer.toAddressEditTextView.setHint(hint)
     }
 
-    private fun startAccountChooser() {
+    private fun startFromAccountChooser() {
         val currency = currencyState.cryptoCurrency
-        AccountChooserActivity.startForResult(
-            this,
-            if (currency == CryptoCurrency.BTC) {
-                AccountMode.Bitcoin
-            } else {
-                AccountMode.BitcoinCashSend
-            },
-            if (currency == CryptoCurrency.BTC) {
-                REQUEST_CODE_BTC_SENDING
-            } else {
-                REQUEST_CODE_BCH_SENDING
-            },
-            getString(R.string.from)
-        )
+
+        if (currency.hasFeature(MULTI_WALLET)) {
+            AccountChooserActivity.startForResult(
+                this,
+                if (currency == CryptoCurrency.BTC) {
+                    AccountMode.Bitcoin
+                } else {
+                    AccountMode.BitcoinCashSend
+                },
+                if (currency == CryptoCurrency.BTC) {
+                    REQUEST_CODE_BTC_SENDING
+                } else {
+                    REQUEST_CODE_BCH_SENDING
+                },
+                getString(R.string.from)
+            )
+        }
+    }
+
+    private fun startToAccountChooser() {
+        val currency = currencyState.cryptoCurrency
+
+        if (currency.hasFeature(MULTI_WALLET)) {
+            AccountChooserActivity.startForResult(
+                this,
+                if (currency == CryptoCurrency.BTC) {
+                    AccountMode.Bitcoin
+                } else {
+                    AccountMode.BitcoinCash
+                },
+                if (currency == CryptoCurrency.BTC) {
+                    REQUEST_CODE_BTC_RECEIVING
+                } else {
+                    REQUEST_CODE_BCH_RECEIVING
+                },
+                getString(R.string.to)
+            )
+        }
     }
 
     fun onChangeFeeClicked() {
@@ -661,21 +677,25 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     private fun showSendingFieldDropdown() {
         fromContainer.fromArrowImage.visible()
+        fromContainer.fromArrowImage.isClickable = true
         fromContainer.fromAddressTextView.isClickable = true
     }
 
     private fun hideSendingFieldDropdown() {
         fromContainer.fromArrowImage.gone()
+        fromContainer.fromArrowImage.isClickable = false
         fromContainer.fromAddressTextView.isClickable = false
     }
 
     private fun showReceivingDropdown() {
         toContainer.toArrow.visible()
+        toContainer.toArrow.isClickable = true
         toContainer.toAddressEditTextView.isClickable = true
     }
 
     private fun hideReceivingDropdown() {
         toContainer.toArrow.gone()
+        toContainer.toArrow.isClickable = false
         toContainer.toAddressEditTextView.isClickable = false
     }
 
@@ -1186,7 +1206,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     companion object {
         const val SCAN_PRIVX = 2011
         const val ARGUMENT_SCAN_DATA = "scan_data"
-        private const val ARGUMENT_SELECTED_ACCOUNT_POSITION = "selected_account_position"
 
         private const val REQUEST_CODE_BTC_RECEIVING = 911
         private const val REQUEST_CODE_BTC_SENDING = 912
@@ -1194,11 +1213,10 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         private const val REQUEST_CODE_BCH_SENDING = 914
         private const val REQUEST_CODE_MEMO = 915
 
-        fun newInstance(scanData: String?, selectedAccountPosition: Int): SendFragment {
+        fun newInstance(scanData: String?): SendFragment {
             val fragment = SendFragment()
             fragment.arguments = Bundle().apply {
                 putString(ARGUMENT_SCAN_DATA, scanData)
-                putInt(ARGUMENT_SELECTED_ACCOUNT_POSITION, selectedAccountPosition)
             }
             return fragment
         }

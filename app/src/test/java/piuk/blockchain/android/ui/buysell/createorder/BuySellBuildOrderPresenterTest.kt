@@ -99,7 +99,8 @@ class BuySellBuildOrderPresenterTest {
                 nabuToken = mock {
                     on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
                 },
-                stringUtils = mock())
+                stringUtils = mock(),
+                coinSelectionRemoteConfig = mock())
 
         presenter.initView(view)
         presenter.onViewReady()
@@ -152,7 +153,8 @@ class BuySellBuildOrderPresenterTest {
                 nabuToken = mock {
                     on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
                 },
-                stringUtils = mock())
+                stringUtils = mock(),
+                coinSelectionRemoteConfig = mock())
 
         presenter.initView(view)
         presenter.onViewReady()
@@ -202,7 +204,8 @@ class BuySellBuildOrderPresenterTest {
                 nabuToken = mock {
                     on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
                 },
-                stringUtils = mock())
+                stringUtils = mock(),
+                coinSelectionRemoteConfig = mock())
 
         presenter.initView(view)
         presenter.onViewReady()

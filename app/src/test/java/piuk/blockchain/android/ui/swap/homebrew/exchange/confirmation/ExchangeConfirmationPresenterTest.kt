@@ -8,6 +8,7 @@ import com.blockchain.morph.exchange.mvi.Quote
 import com.blockchain.morph.exchange.service.TradeExecutionService
 import com.blockchain.morph.exchange.service.TradeTransaction
 import com.blockchain.morph.to
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.ether
@@ -47,6 +48,7 @@ class ExchangeConfirmationPresenterTest {
     private val transactionExecutor: TransactionExecutorWithoutFees = mock()
     private val tradeExecutionService: TradeExecutionService = mock()
     private val payloadDecrypt: PayloadDecrypt = mock()
+    private val analytics: Analytics = mock()
     private val view: ExchangeConfirmationView = mock()
 
     @get:Rule
@@ -66,7 +68,7 @@ class ExchangeConfirmationPresenterTest {
                 on { getFormattedString(any(), any()) } `it returns` ""
             },
             Locale.ENGLISH,
-            mock()
+            analytics
         )
         subject.initView(view)
 

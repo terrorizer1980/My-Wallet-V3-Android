@@ -33,8 +33,10 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
 
     private var progressDialog: MaterialProgressDialog? = null
 
-    override val guid: String = wallet_id.text.toString()
-    override val password: String = wallet_pass.text.toString()
+    override val guid: String
+        get() = wallet_id.text.toString()
+    override val password: String
+        get() = wallet_pass.text.toString()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

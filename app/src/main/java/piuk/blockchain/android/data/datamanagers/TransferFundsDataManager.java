@@ -1,6 +1,9 @@
 package piuk.blockchain.android.data.datamanagers;
 
 import android.support.annotation.Nullable;
+
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig;
+
 import info.blockchain.api.data.UnspentOutputs;
 import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.balance.CryptoValue;
@@ -31,14 +34,17 @@ public class TransferFundsDataManager {
     private PayloadDataManager payloadDataManager;
     private SendDataManager sendDataManager;
     private DynamicFeeCache dynamicFeeCache;
+    private CoinSelectionRemoteConfig coinSelectionRemoteConfig;
 
     @Inject
     public TransferFundsDataManager(PayloadDataManager payloadDataManager,
                                     SendDataManager sendDataManager,
-                                    DynamicFeeCache dynamicFeeCache) {
+                                    DynamicFeeCache dynamicFeeCache,
+                                    CoinSelectionRemoteConfig coinSelectionRemoteConfig) {
         this.payloadDataManager = payloadDataManager;
         this.sendDataManager = sendDataManager;
         this.dynamicFeeCache = dynamicFeeCache;
+        this.coinSelectionRemoteConfig = coinSelectionRemoteConfig;
     }
 
     /**
@@ -71,8 +77,18 @@ public class TransferFundsDataManager {
                     UnspentOutputs unspentOutputs =
                             sendDataManager.getUnspentOutputs(legacyAddress.getAddress())
                                     .blockingFirst();
+
+                    Boolean newCoinSelectionEnabled =
+                            coinSelectionRemoteConfig.getEnabled().toObservable()
+                                    .blockingFirst();
+
                     Pair<BigInteger, BigInteger> sweepableCoins =
-                            sendDataManager.getMaximumAvailable(CryptoCurrency.BTC, unspentOutputs, suggestedFeePerKb);
+                            sendDataManager.getMaximumAvailable(
+                                CryptoCurrency.BTC,
+                                unspentOutputs,
+                                suggestedFeePerKb,
+                                newCoinSelectionEnabled);
+
                     BigInteger sweepAmount = sweepableCoins.getLeft();
 
                     // Don't sweep if there are still unconfirmed funds in address
@@ -83,7 +99,8 @@ public class TransferFundsDataManager {
                                 sendDataManager.getSpendableCoins(
                                         unspentOutputs,
                                         CryptoValue.Companion.bitcoinCashFromSatoshis(sweepAmount),
-                                        suggestedFeePerKb)
+                                        suggestedFeePerKb,
+                                        newCoinSelectionEnabled)
                         );
 
                         pendingSpend.setSendingObject(new ItemAccount(

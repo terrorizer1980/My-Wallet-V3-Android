@@ -9,14 +9,16 @@ import org.amshove.kluent.`should equal`
 import org.bitcoinj.params.BitcoinMainNetParams
 import org.junit.Test
 
+private const val useNewCoinSelection = true
+
 class CoinsTest {
 
     @Test
     fun `max spendable 1`() {
         maximumSpendable(unspentOutputs(10000.satoshi()), 100)
             .also { (balance: CryptoValue, fee: CryptoValue) ->
-                balance `should equal` 9980.satoshi()
-                fee `should equal` 20.satoshi()
+                balance `should equal` 9807.satoshi()
+                fee `should equal` 193.satoshi()
             }
     }
 
@@ -24,8 +26,8 @@ class CoinsTest {
     fun `max spendable 2`() {
         maximumSpendable(unspentOutputs(10000.satoshi(), 1000.satoshi()), 100)
             .also { (balance: CryptoValue, fee: CryptoValue) ->
-                balance `should equal` 10966.satoshi()
-                fee `should equal` 34.satoshi()
+                balance `should equal` 10658.satoshi()
+                fee `should equal` 342.satoshi()
             }
     }
 
@@ -56,21 +58,21 @@ class CoinsTest {
         val unspentOutputs = unspentOutputs(10000.satoshi(), 1000.satoshi())
         maximumSpendable(unspentOutputs, 6756)
             .also { (balance: CryptoValue, fee: CryptoValue) ->
-                balance `should equal` 8702.satoshi()
-                fee `should equal` 1298.satoshi()
+                balance `should equal` 8649.satoshi()
+                fee `should equal` 1351.satoshi()
             }
         maximumSpendable(unspentOutputs, 6757)
             .also { (balance: CryptoValue, fee: CryptoValue) ->
-                balance `should equal` 8702.satoshi()
-                fee `should equal` 1298.satoshi()
+                balance `should equal` 8649.satoshi()
+                fee `should equal` 1351.satoshi()
             }
         minimumCoinsForPayment(8702.satoshi(), unspentOutputs, 6756).apply {
-            coinCount `should equal` 1
-            coinValue `should equal` 10000.satoshi()
+            coinCount `should equal` 0
+            coinValue `should equal` 0.satoshi()
         }
         minimumCoinsForPayment(8702.satoshi(), unspentOutputs, 6757).apply {
-            coinCount `should equal` 1
-            coinValue `should equal` 10000.satoshi()
+            coinCount `should equal` 0
+            coinValue `should equal` 0.satoshi()
         }
     }
 }
@@ -78,7 +80,7 @@ class CoinsTest {
 private fun maximumSpendable(
     unspentOutputs: UnspentOutputs,
     fee: Int
-) = Coins.getMaximumAvailable(unspentOutputs, fee.toBigInteger(), false)
+) = Coins.getMaximumAvailable(unspentOutputs, fee.toBigInteger(), false, useNewCoinSelection)
     .let { (balance, fee) -> CryptoValue(CryptoCurrency.BTC, balance) to CryptoValue(CryptoCurrency.BTC, fee) }
 
 private class MinCoinsResult(
@@ -102,7 +104,7 @@ private fun spendableUnspentOutputs(
     unspentOutputs: UnspentOutputs,
     value: CryptoValue,
     fee: Int
-) = Coins.getMinimumCoinsForPayment(unspentOutputs, value.amount, fee.toBigInteger(), false)
+) = Coins.getMinimumCoinsForPayment(unspentOutputs, value.amount, fee.toBigInteger(), false, useNewCoinSelection)
 
 private fun unspentOutputs(vararg values: CryptoValue): UnspentOutputs {
     return UnspentOutputs().apply {

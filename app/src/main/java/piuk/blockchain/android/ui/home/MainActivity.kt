@@ -22,7 +22,6 @@ import android.support.v7.widget.AppCompatEditText
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
@@ -646,22 +645,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         touchOutsideViews[view] = onTouchOutsideViewListener
     }
 
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        // TODO: 16/02/2018 This is currently broken, revisit in the future
-        //        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-        //            for (View view : touchOutsideViews.keySet()) {
-        //                // Notify touchOutsideViewListeners if user tapped outside a given view
-        //                Rect viewRect = new Rect();
-        //                view.getGlobalVisibleRect(viewRect);
-        //                if (!viewRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
-        //                    touchOutsideViews.get(view).onTouchOutside(view, ev);
-        //                }
-        //            }
-        //
-        //        }
-        return super.dispatchTouchEvent(ev)
-    }
-
     override fun showNavigation() {
         bottom_navigation.restoreBottomNavigation()
         bottom_navigation.isBehaviorTranslationEnabled = true
@@ -682,7 +665,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
         ViewUtils.setElevation(binding.appbarLayout, 0f)
 
-        val sendFragment = SendFragment.newInstance(scanData, selectedAccountFromFragments)
+        val sendFragment = SendFragment.newInstance(scanData)
         replaceContentFragment(sendFragment)
     }
 

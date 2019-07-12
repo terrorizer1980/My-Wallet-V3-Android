@@ -6,6 +6,7 @@ import com.blockchain.datamanagers.fees.BitcoinLikeFees
 import com.blockchain.datamanagers.fees.EthereumFees
 import com.blockchain.datamanagers.fees.XlmFees
 import com.blockchain.fees.FeeType
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.ether
@@ -61,6 +62,9 @@ class TransactionExecutorViaDataManagersTest {
     private val addressResolver: AddressResolver = mock()
     private val accountLookup: AccountLookup = mock()
     private val xlmSender: TransactionSender = mock()
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig = mock()
+
+    private val useNewCoinSelection = true
 
     @Suppress("unused")
     @get:Rule
@@ -80,8 +84,11 @@ class TransactionExecutorViaDataManagersTest {
             accountLookup,
             defaultAccountDataManager,
             ethereumAccountWrapper,
-            xlmSender
+            xlmSender,
+            coinSelectionRemoteConfig
         )
+
+        whenever(coinSelectionRemoteConfig.enabled).thenReturn(Single.just(useNewCoinSelection))
     }
 
     @Test
@@ -205,7 +212,7 @@ class TransactionExecutorViaDataManagersTest {
         val unspentOutputs = UnspentOutputs()
         whenever(sendDataManager.getUnspentOutputs("XPUB"))
             .thenReturn(Observable.just(unspentOutputs))
-        whenever(sendDataManager.getSpendableCoins(any(), any(), any()))
+        whenever(sendDataManager.getSpendableCoins(any(), any(), any(), any()))
             .thenReturn(SpendableUnspentOutputs())
         whenever(addressResolver.getChangeAddress(account))
             .thenReturn(Single.just("CHANGE"))
@@ -219,7 +226,8 @@ class TransactionExecutorViaDataManagersTest {
         verify(sendDataManager).getSpendableCoins(
             unspentOutputs,
             amount,
-            bitcoinLikeNetworkFee.regularFeePerKb
+            bitcoinLikeNetworkFee.regularFeePerKb,
+            useNewCoinSelection
         )
     }
 
@@ -234,7 +242,7 @@ class TransactionExecutorViaDataManagersTest {
         whenever(accountLookup.getAccountFromAddressOrXPub(accountReference)).thenReturn(account)
         whenever(sendDataManager.getUnspentOutputs("XPUB"))
             .thenReturn(Observable.just(unspentOutputs))
-        whenever(sendDataManager.getSpendableCoins(any(), any(), any()))
+        whenever(sendDataManager.getSpendableCoins(any(), any(), any(), any()))
             .thenReturn(SpendableUnspentOutputs())
         whenever(addressResolver.getChangeAddress(account))
             .thenReturn(Single.just("CHANGE"))
@@ -253,7 +261,8 @@ class TransactionExecutorViaDataManagersTest {
         verify(sendDataManager).getSpendableCoins(
             unspentOutputs,
             amount,
-            bitcoinLikeNetworkFee.priorityFeePerKb
+            bitcoinLikeNetworkFee.priorityFeePerKb,
+            useNewCoinSelection
         )
     }
 
@@ -269,7 +278,7 @@ class TransactionExecutorViaDataManagersTest {
         whenever(sendDataManager.getUnspentOutputs("XPUB"))
             .thenReturn(Observable.just(unspentOutputs))
         val spendable = SpendableUnspentOutputs().apply { absoluteFee = BigInteger.TEN }
-        whenever(sendDataManager.getSpendableCoins(any(), any(), any()))
+        whenever(sendDataManager.getSpendableCoins(any(), any(), any(), any()))
             .thenReturn(spendable)
         val ecKey = ECKey()
         whenever(payloadDataManager.getHDKeysForSigning(account, spendable))
@@ -318,7 +327,7 @@ class TransactionExecutorViaDataManagersTest {
         whenever(sendDataManager.getUnspentBchOutputs("XPUB"))
             .thenReturn(Observable.just(unspentOutputs))
         val spendable = SpendableUnspentOutputs().apply { absoluteFee = BigInteger.TEN }
-        whenever(sendDataManager.getSpendableCoins(any(), any(), any()))
+        whenever(sendDataManager.getSpendableCoins(any(), any(), any(), any()))
             .thenReturn(spendable)
         whenever(payloadDataManager.getAccountForXPub("XPUB"))
             .thenReturn(account)
@@ -516,7 +525,8 @@ class TransactionExecutorViaDataManagersTest {
             sendDataManager.getMaximumAvailable(
                 CryptoCurrency.BTC,
                 unspentOutputs,
-                bitcoinLikeNetworkFee.regularFeePerKb
+                bitcoinLikeNetworkFee.regularFeePerKb,
+                useNewCoinSelection
             )
         ).thenReturn(Pair.of(BigInteger.TEN, BigInteger.TEN))
         // Act
@@ -556,7 +566,8 @@ class TransactionExecutorViaDataManagersTest {
             sendDataManager.getMaximumAvailable(
                 CryptoCurrency.BTC,
                 unspentOutputs,
-                bitcoinLikeNetworkFee.priorityFeePerKb
+                bitcoinLikeNetworkFee.priorityFeePerKb,
+                useNewCoinSelection
             )
         ).thenReturn(Pair.of(BigInteger.TEN, BigInteger.TEN))
         // Act
@@ -597,7 +608,8 @@ class TransactionExecutorViaDataManagersTest {
             sendDataManager.getMaximumAvailable(
                 CryptoCurrency.BCH,
                 unspentOutputs,
-                bitcoinLikeNetworkFee.regularFeePerKb
+                bitcoinLikeNetworkFee.regularFeePerKb,
+                useNewCoinSelection
             )
         ).thenReturn(Pair.of(BigInteger.TEN, BigInteger.TEN))
         // Act
@@ -702,7 +714,7 @@ class TransactionExecutorViaDataManagersTest {
         val unspentOutputs = UnspentOutputs()
         whenever(sendDataManager.getUnspentOutputs("XPUB"))
             .thenReturn(Observable.just(unspentOutputs))
-        whenever(sendDataManager.getSpendableCoins(any(), any(), any()))
+        whenever(sendDataManager.getSpendableCoins(any(), any(), any(), any()))
             .thenReturn(SpendableUnspentOutputs().apply { absoluteFee = 500.toBigInteger() })
         // Act
         val testObserver = subject.getFeeForTransaction(amount, account, bitcoinLikeNetworkFee)
@@ -724,7 +736,8 @@ class TransactionExecutorViaDataManagersTest {
             sendDataManager.getSpendableCoins(
                 any(),
                 any(),
-                eq(bitcoinLikeNetworkFee.regularFeePerKb)
+                eq(bitcoinLikeNetworkFee.regularFeePerKb),
+                any()
             )
         ).thenReturn(SpendableUnspentOutputs().apply { absoluteFee = 500.toBigInteger() })
         // Act
@@ -747,7 +760,8 @@ class TransactionExecutorViaDataManagersTest {
             sendDataManager.getSpendableCoins(
                 any(),
                 any(),
-                eq(bitcoinLikeNetworkFee.priorityFeePerKb)
+                eq(bitcoinLikeNetworkFee.priorityFeePerKb),
+                any()
             )
         ).thenReturn(SpendableUnspentOutputs().apply { absoluteFee = 500.toBigInteger() })
         // Act
@@ -767,7 +781,7 @@ class TransactionExecutorViaDataManagersTest {
         val unspentOutputs = UnspentOutputs()
         whenever(sendDataManager.getUnspentBchOutputs("XPUB"))
             .thenReturn(Observable.just(unspentOutputs))
-        whenever(sendDataManager.getSpendableCoins(any(), any(), any()))
+        whenever(sendDataManager.getSpendableCoins(any(), any(), any(), any()))
             .thenReturn(SpendableUnspentOutputs().apply { absoluteFee = 500.toBigInteger() })
         // Act
         val testObserver = subject.getFeeForTransaction(amount, account, bitcoinLikeNetworkFee)

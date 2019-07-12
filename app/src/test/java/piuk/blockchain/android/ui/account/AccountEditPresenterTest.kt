@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.account
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.isNull
@@ -17,6 +18,7 @@ import info.blockchain.wallet.payment.SpendableUnspentOutputs
 import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import org.amshove.kluent.any
 import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.Address
@@ -81,6 +83,7 @@ class AccountEditPresenterTest {
     private val environmentSettings: EnvironmentConfig = mock()
     private val dynamicFeeCache: DynamicFeeCache = mock(defaultAnswer = Answers.RETURNS_DEEP_STUBS)
     private val currencyFormatManager: CurrencyFormatManager = mock()
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig = mock()
 
     @Before
     fun setUp() {
@@ -97,11 +100,13 @@ class AccountEditPresenterTest {
             swipeToReceiveHelper,
             dynamicFeeCache,
             environmentSettings,
-            currencyFormatManager
+            currencyFormatManager,
+            coinSelectionRemoteConfig
         )
         subject.initView(view)
         subject.accountModel = accountEditModel
 
+        whenever(coinSelectionRemoteConfig.enabled).thenReturn(Single.just(true))
         whenever(environmentSettings.bitcoinNetworkParameters).thenReturn(BitcoinMainNetParams.get())
     }
 
@@ -192,6 +197,7 @@ class AccountEditPresenterTest {
             sendDataManager.getMaximumAvailable(
                 eq(CryptoCurrency.BTC),
                 any(),
+                any(),
                 any()
             )
         ).thenReturn(sweepableCoins)
@@ -200,6 +206,7 @@ class AccountEditPresenterTest {
         whenever(spendableUnspentOutputs.consumedAmount).thenReturn(BigInteger.TEN)
         whenever(
             sendDataManager.getSpendableCoins(
+                any(),
                 any(),
                 any(),
                 any()
@@ -246,11 +253,13 @@ class AccountEditPresenterTest {
             sendDataManager.getMaximumAvailable(
                 eq(CryptoCurrency.BTC),
                 any(),
+                any(),
                 any()
             )
         ).thenReturn(sweepableCoins)
         whenever(
             sendDataManager.getSpendableCoins(
+                any(),
                 any(),
                 any(),
                 any()

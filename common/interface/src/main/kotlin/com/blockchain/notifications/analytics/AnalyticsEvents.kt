@@ -14,6 +14,7 @@ enum class AnalyticsEvents(
     ExchangeDetailConfirm("exchange_detail_confirm"),
     ExchangeDetailLocked("exchange_detail_locked"),
     ExchangeDetailOverview("exchange_detail_overview"),
+    ExchangeExecutionError("exchange_execution_error"),
     ExchangeHistory("exchange_history"),
     KycEmail("kyc_email"),
     KycAddress("kyc_address"),

@@ -148,12 +148,14 @@ class SendDataManager(
     fun getSpendableCoins(
         unspentCoins: UnspentOutputs,
         paymentAmount: CryptoValue,
-        feePerKb: BigInteger
+        feePerKb: BigInteger,
+        useNewCoinSelection: Boolean
     ): SpendableUnspentOutputs = paymentService.getSpendableCoins(
         unspentCoins,
         paymentAmount.amount,
         feePerKb,
-        paymentAmount.currency == CryptoCurrency.BCH
+        paymentAmount.currency == CryptoCurrency.BCH,
+        useNewCoinSelection
     )
 
     /**
@@ -170,11 +172,13 @@ class SendDataManager(
     fun getMaximumAvailable(
         cryptoCurrency: CryptoCurrency,
         unspentCoins: UnspentOutputs,
-        feePerKb: BigInteger
+        feePerKb: BigInteger,
+        useNewCoinSelection: Boolean
     ): Pair<BigInteger, BigInteger> = paymentService.getMaximumAvailable(
         unspentCoins,
         feePerKb,
-        cryptoCurrency == CryptoCurrency.BCH
+        cryptoCurrency == CryptoCurrency.BCH,
+        useNewCoinSelection
     )
 
     /**

@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.buysell.createorder
 
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import android.annotation.SuppressLint
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuUser
@@ -20,6 +21,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -80,7 +82,8 @@ class BuySellBuildOrderPresenter constructor(
     private val exchangeRateDataManager: ExchangeRateDataManager,
     private val stringUtils: StringUtils,
     private val nabuDataManager: NabuDataManager,
-    private val nabuToken: NabuToken
+    private val nabuToken: NabuToken,
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig
 ) : BasePresenter<BuySellBuildOrderView>() {
 
     val receiveSubject: PublishSubject<String> = PublishSubject.create()
@@ -819,31 +822,42 @@ class BuySellBuildOrderPresenter constructor(
         amountToSend: CryptoValue,
         feePerKb: BigInteger
     ): Single<BigInteger> =
-        getUnspentApiResponseBtc(xPub)
-            .map { getSuggestedAbsoluteFee(it, amountToSend, feePerKb) }
+        Observables.zip(
+            getUnspentApiResponseBtc(xPub),
+            coinSelectionRemoteConfig.enabled.toObservable()
+        )
+            .map { (unspentOutputs, newCoinSelectionEnabled) ->
+                getSuggestedAbsoluteFee(unspentOutputs, amountToSend, feePerKb, newCoinSelectionEnabled)
+            }
             .singleOrError()
 
     private fun getSuggestedAbsoluteFee(
         coins: UnspentOutputs,
         amountToSend: CryptoValue,
-        feePerKb: BigInteger
+        feePerKb: BigInteger,
+        useNewCoinSelection: Boolean
     ): BigInteger {
         val spendableCoins = sendDataManager.getSpendableCoins(
             coins,
             amountToSend,
-            feePerKb
+            feePerKb,
+            useNewCoinSelection
         )
         return spendableCoins.absoluteFee
     }
 
     private fun getBtcMaxObservable(account: Account): Observable<BigDecimal> =
-        getUnspentApiResponseBtc(account.xpub)
+        Observables.zip(
+            getUnspentApiResponseBtc(account.xpub),
+            coinSelectionRemoteConfig.enabled.toObservable()
+        )
             .addToCompositeDisposable(this)
-            .map { unspentOutputs ->
+            .map { (unspentOutputs, newCoinSelectionEnabled) ->
                 val sweepBundle = sendDataManager.getMaximumAvailable(
                     CryptoCurrency.BTC,
                     unspentOutputs,
-                    BigInteger.valueOf(feeOptions!!.regularFee * 1000)
+                    BigInteger.valueOf(feeOptions!!.regularFee * 1000),
+                    newCoinSelectionEnabled
                 )
                 val sweepableAmount =
                     BigDecimal(sweepBundle.left).divide(BigDecimal.valueOf(1e8))

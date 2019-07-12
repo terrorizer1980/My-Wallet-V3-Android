@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.support.annotation.VisibleForTesting
 import android.view.View
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.WriterException
 import info.blockchain.balance.CryptoCurrency
@@ -22,6 +23,7 @@ import info.blockchain.wallet.util.DoubleEncryptionFactory
 import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.bitcoinj.core.Base58
@@ -69,7 +71,8 @@ class AccountEditPresenter @Inject internal constructor(
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     private val dynamicFeeCache: DynamicFeeCache,
     private val environmentSettings: EnvironmentConfig,
-    private val currencyFormatManager: CurrencyFormatManager
+    private val currencyFormatManager: CurrencyFormatManager,
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig
 ) : BasePresenter<AccountEditView>() {
 
     // Visible for data binding
@@ -856,15 +859,19 @@ class AccountEditPresenter @Inject internal constructor(
     ): Observable<PendingTransaction> {
         val pendingTransaction = PendingTransaction()
 
-        return sendDataManager.getUnspentOutputs(legacyAddress!!.address)
-            .flatMap { unspentOutputs ->
+        return Observables.zip(
+            sendDataManager.getUnspentOutputs(legacyAddress!!.address),
+            coinSelectionRemoteConfig.enabled.toObservable()
+        )
+            .flatMap { (unspentOutputs, newCoinSelectionEnabled) ->
                 val suggestedFeePerKb =
                     BigInteger.valueOf(dynamicFeeCache.btcFeeOptions!!.regularFee * 1000)
 
                 val sweepableCoins = sendDataManager.getMaximumAvailable(
                     cryptoCurrency,
                     unspentOutputs,
-                    suggestedFeePerKb
+                    suggestedFeePerKb,
+                    newCoinSelectionEnabled
                 )
                 val sweepAmount = sweepableCoins.left
 
@@ -895,7 +902,8 @@ class AccountEditPresenter @Inject internal constructor(
                     unspentOutputBundle = sendDataManager.getSpendableCoins(
                         unspentOutputs,
                         CryptoValue(cryptoCurrency, sweepAmount),
-                        suggestedFeePerKb
+                        suggestedFeePerKb,
+                        newCoinSelectionEnabled
                     )
                     bigIntAmount = sweepAmount
                     bigIntFee = unspentOutputBundle!!.absoluteFee
