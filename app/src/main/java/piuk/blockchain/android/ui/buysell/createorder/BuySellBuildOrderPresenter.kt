@@ -289,7 +289,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
                         getFeeForTransaction(
                             xPub,
                             CryptoValue.bitcoinFromSatoshis(satoshis),
-                            feeOptions!!.regularFee.toBigInteger()
+                            BigInteger.valueOf(feeOptions!!.priorityFee * 1000)
                         ).map { (accounts.isEmpty()) to it }
                     }
             }
@@ -319,7 +319,7 @@ class BuySellBuildOrderPresenter @Inject constructor(
                         ),
                         totalCostFormatted = totalCost,
                         amountInSatoshis = satoshis,
-                        feePerKb = feeOptions!!.regularFee.toBigInteger(),
+                        feePerKb = BigInteger.valueOf(feeOptions!!.priorityFee * 1000),
                         absoluteFeeInSatoshis = it.second,
                         paymentFee = currencyFormatManager.getFormattedFiatValueWithSymbol(
                             paymentFeeSell.toDouble(),
