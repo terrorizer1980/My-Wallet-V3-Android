@@ -340,7 +340,7 @@ class BuySellBuildOrderPresenter constructor(
                         getFeeForTransaction(
                             xPub,
                             CryptoValue.bitcoinFromSatoshis(satoshis),
-                            feeOptions!!.regularFee.toBigInteger()
+                            BigInteger.valueOf(feeOptions!!.priorityFee * 1000)
                         ).map { (accounts.isEmpty()) to it }
                     }
             }
@@ -370,7 +370,7 @@ class BuySellBuildOrderPresenter constructor(
                         ),
                         totalCostFormatted = totalCost,
                         amountInSatoshis = satoshis,
-                        feePerKb = feeOptions!!.regularFee.toBigInteger(),
+                        feePerKb = BigInteger.valueOf(feeOptions!!.priorityFee * 1000),
                         absoluteFeeInSatoshis = it.second,
                         paymentFee = currencyFormatManager.getFormattedFiatValueWithSymbol(
                             paymentFeeSell.toDouble(),
@@ -856,7 +856,7 @@ class BuySellBuildOrderPresenter constructor(
                 val sweepBundle = sendDataManager.getMaximumAvailable(
                     CryptoCurrency.BTC,
                     unspentOutputs,
-                    BigInteger.valueOf(feeOptions!!.regularFee * 1000),
+                    BigInteger.valueOf(feeOptions!!.priorityFee * 1000),
                     newCoinSelectionEnabled
                 )
                 val sweepableAmount =
