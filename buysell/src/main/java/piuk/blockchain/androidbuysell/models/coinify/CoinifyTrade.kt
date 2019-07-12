@@ -181,7 +181,7 @@ data class CardDetails(
      * Id of the external payment. (For iSignThis, its the transaction id). The paymentId is
      * used for the integration mode: embedded mode.
      */
-    val paymentId: String,
+    val paymentId: String? = null,
     /**	Reference to the card payment. */
     val cardPaymentId: Int? = null,
     /**
@@ -282,7 +282,7 @@ class DetailsAdapter {
                 detailsJson.updateTime,
                 detailsJson.createTime
             )
-        } else if (detailsJson.paymentId != null) {
+        } else if (detailsJson.paymentId != null || detailsJson.cardPaymentId != null) {
             // Card Details
             return CardDetails(
                 detailsJson.provider,

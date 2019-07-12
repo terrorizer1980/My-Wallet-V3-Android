@@ -106,7 +106,7 @@ class CoinifyBuyConfirmationPresenter @Inject constructor(
                     val cardDetails = it.transferIn.details as CardDetails
                     view.launchCardPaymentWebView(
                         cardDetails.redirectUrl,
-                        cardDetails.paymentId,
+                        cardDetails.paymentId ?: "",
                         it.inCurrency,
                         it.inAmount
                     )

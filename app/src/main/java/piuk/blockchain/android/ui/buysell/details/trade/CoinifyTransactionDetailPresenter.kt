@@ -38,7 +38,7 @@ class CoinifyTransactionDetailPresenter @Inject constructor(
                     val details = it.transferIn.details as CardDetails
                     view.launchCardPayment(
                         details.redirectUrl,
-                        details.paymentId,
+                        details.paymentId ?: "",
                         it.inCurrency,
                         it.inAmount
                     )
