@@ -98,7 +98,7 @@ public class TransferFundsDataManager {
                         pendingSpend.setUnspentOutputBundle(
                                 sendDataManager.getSpendableCoins(
                                         unspentOutputs,
-                                        CryptoValue.Companion.bitcoinCashFromSatoshis(sweepAmount),
+                                        CryptoValue.Companion.bitcoinFromSatoshis(sweepAmount),
                                         suggestedFeePerKb,
                                         newCoinSelectionEnabled)
                         );
