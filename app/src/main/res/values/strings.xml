@@ -227,6 +227,7 @@
     <string name="verification_failed">Verification Failed</string>
 
     <string name="request">Request</string>
+    <string name="send">Send</string>
     <string name="send_payment">Send Payment</string>
     <string name="share">Share Receive Address</string>
     <string name="confirm_password">Confirm Password</string>
