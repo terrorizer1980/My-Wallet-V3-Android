@@ -160,7 +160,11 @@ interface Details
 
 data class BlockchainDetails(
     /** Either the trader's or Coinify's bitcoin address */
-    val account: String,
+    val account: String? = null,
+
+    /**	String identifying the integration method. Current possible value is (‘payment-page') */
+    val preferredIntegrationMethod: String? = null,
+
     /** The BTC transaction that sent out the BTC to the above address. Not present if unconfirmed */
     val eventData: EventData? = null
 ) : Details
@@ -181,7 +185,7 @@ data class CardDetails(
      * Id of the external payment. (For iSignThis, its the transaction id). The paymentId is
      * used for the integration mode: embedded mode.
      */
-    val paymentId: String,
+    val paymentId: String? = null,
     /**	Reference to the card payment. */
     val cardPaymentId: Int? = null,
     /**
@@ -269,6 +273,7 @@ class DetailsAdapter {
             // Blockchain Details
             return BlockchainDetails(
                 detailsJson.account.toString(),
+                null,
                 detailsJson.eventData
             )
         } else if (detailsJson.bank != null) {
@@ -282,7 +287,7 @@ class DetailsAdapter {
                 detailsJson.updateTime,
                 detailsJson.createTime
             )
-        } else if (detailsJson.paymentId != null) {
+        } else if (detailsJson.paymentId != null || detailsJson.cardPaymentId != null) {
             // Card Details
             return CardDetails(
                 detailsJson.provider,

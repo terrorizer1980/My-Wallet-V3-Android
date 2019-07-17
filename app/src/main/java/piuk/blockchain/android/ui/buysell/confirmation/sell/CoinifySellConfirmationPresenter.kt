@@ -112,7 +112,7 @@ class CoinifySellConfirmationPresenter @Inject constructor(
                                         account,
                                         spendable
                                     ),
-                                    (trade.transferIn.details as BlockchainDetails).account,
+                                    (trade.transferIn.details as BlockchainDetails).account!!,
                                     it,
                                     displayModel.absoluteFeeInSatoshis,
                                     displayModel.amountInSatoshis

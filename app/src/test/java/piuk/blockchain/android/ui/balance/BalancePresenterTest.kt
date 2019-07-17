@@ -371,7 +371,7 @@ class BalancePresenterTest {
         whenever(coinifyTrade.isSellTransaction()).thenReturn(false)
         val transferOut: Transfer = mock()
         whenever(coinifyTrade.transferOut).thenReturn(transferOut)
-        val details = BlockchainDetails("", EventData(txHash, ""))
+        val details = BlockchainDetails("", null, EventData(txHash, ""))
         whenever(transferOut.details).thenReturn(details)
         whenever(coinifyDataManager.getTrades(token)).thenReturn(Observable.just(coinifyTrade))
         // ShapeShift

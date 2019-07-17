@@ -31,6 +31,7 @@ import piuk.blockchain.androidbuysell.models.coinify.AuthRequest
 import piuk.blockchain.androidbuysell.models.coinify.Bank
 import piuk.blockchain.androidbuysell.models.coinify.BankAccount
 import piuk.blockchain.androidbuysell.models.coinify.BankDetails
+import piuk.blockchain.androidbuysell.models.coinify.BlockchainDetails
 import piuk.blockchain.androidbuysell.models.coinify.BuyFrequency
 import piuk.blockchain.androidbuysell.models.coinify.BuyFrequencyAdapter
 import piuk.blockchain.androidbuysell.models.coinify.CannotTradeReasonAdapter
@@ -253,7 +254,8 @@ class CoinifyServiceTest {
         tradeRequest.priceQuoteId `should equal to` 123456
         tradeRequest.transferIn.medium `should equal` Medium.Card
         tradeRequest.transferOut.medium `should equal` Medium.Blockchain
-        tradeRequest.transferOut.details!!.account `should equal` "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+        val details = tradeRequest.transferOut.details as BlockchainDetails
+        details.account `should equal` "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
     }
 
     @Test
@@ -293,7 +295,8 @@ class CoinifyServiceTest {
         tradeRequest.priceQuoteId `should equal to` 123456
         tradeRequest.transferIn.medium `should equal` Medium.Bank
         tradeRequest.transferOut.medium `should equal` Medium.Blockchain
-        tradeRequest.transferOut.details!!.account `should equal` "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
+        val details = tradeRequest.transferOut.details as BlockchainDetails
+        details.account `should equal` "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
     }
 
     @Test

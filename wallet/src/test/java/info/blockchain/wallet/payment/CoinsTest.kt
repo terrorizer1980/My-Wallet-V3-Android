@@ -10,6 +10,7 @@ import org.bitcoinj.params.BitcoinMainNetParams
 import org.junit.Test
 
 private const val useNewCoinSelection = true
+private const val useReplayProtection = false
 
 class CoinsTest {
 
@@ -80,7 +81,7 @@ class CoinsTest {
 private fun maximumSpendable(
     unspentOutputs: UnspentOutputs,
     fee: Int
-) = Coins.getMaximumAvailable(unspentOutputs, fee.toBigInteger(), false, useNewCoinSelection)
+) = Coins.getMaximumAvailable(unspentOutputs, fee.toBigInteger(), useReplayProtection, useNewCoinSelection)
     .let { (balance, fee) -> CryptoValue(CryptoCurrency.BTC, balance) to CryptoValue(CryptoCurrency.BTC, fee) }
 
 private class MinCoinsResult(
@@ -104,7 +105,8 @@ private fun spendableUnspentOutputs(
     unspentOutputs: UnspentOutputs,
     value: CryptoValue,
     fee: Int
-) = Coins.getMinimumCoinsForPayment(unspentOutputs, value.amount, fee.toBigInteger(), false, useNewCoinSelection)
+) = Coins.getMinimumCoinsForPayment(
+    unspentOutputs, value.amount, fee.toBigInteger(), useReplayProtection, useNewCoinSelection)
 
 private fun unspentOutputs(vararg values: CryptoValue): UnspentOutputs {
     return UnspentOutputs().apply {

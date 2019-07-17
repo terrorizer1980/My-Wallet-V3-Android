@@ -348,8 +348,9 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     private fun setupToolbar() {
         val supportActionBar = (activity as AppCompatActivity).supportActionBar
         if (supportActionBar != null) {
+
             (activity as ToolBarActivity).setupToolbar(
-                supportActionBar, R.string.request
+                supportActionBar, R.string.send
             )
         } else {
             finishPage()
