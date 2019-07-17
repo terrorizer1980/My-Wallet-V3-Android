@@ -1,3 +1,5 @@
+@file:Suppress("USELESS_CAST")
+
 package com.blockchain.koin
 
 import android.preference.PreferenceManager

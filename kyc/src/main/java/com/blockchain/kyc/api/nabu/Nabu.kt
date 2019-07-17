@@ -103,8 +103,6 @@ internal interface Nabu {
      * So do not call more than once per veriff launch.
      */
 
-    // TODO: In the case of can't process because pre-IDV-fail, this will fail with an error TBD - by me.
-    // SOme random 4xx error
     @GET(NABU_VERIFF_TOKEN)
     fun startVeriffSession(
         @Header("authorization") authorization: String
@@ -151,4 +149,10 @@ internal interface Nabu {
     fun connectWalletWithMercury(
         @Header("authorization") authorization: String
     ): Single<WalletMercuryLink>
+
+    @POST(NABU_SHARE_PIT_RECEIVE_ADDRESSES)
+    fun sharePitReceiveAddresses(
+        @Header("authorization") authorization: String,
+        @Body addressMap: Map<String, String> // Crypto symbol -> address
+    ): Completable
 }

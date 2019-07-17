@@ -186,6 +186,14 @@ class NabuService(retrofit: Retrofit) {
         sessionToken.authHeader
     ).wrapErrorMessage()
 
+    internal fun sendWalletAddressesToThePit(
+        sessionToken: NabuSessionTokenResponse,
+        addressMap: Map<String, String> // Crypto symbol -> address
+    ): Completable = service.sharePitReceiveAddresses(
+        sessionToken.authHeader,
+        addressMap
+    ).wrapErrorMessage()
+
     companion object {
         internal const val CLIENT_TYPE = "APP"
     }

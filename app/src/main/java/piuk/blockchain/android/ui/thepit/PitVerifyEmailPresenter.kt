@@ -1,26 +1,60 @@
 package piuk.blockchain.android.ui.thepit
 
+import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.nabu.NabuToken
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.subjects.PublishSubject
+import piuk.blockchain.androidcore.data.settings.Email
 import piuk.blockchain.androidcore.data.settings.EmailSyncUpdater
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
+import java.util.concurrent.TimeUnit
 
-class PitVerifyEmailPresenter(private val emailSyncUpdater: EmailSyncUpdater) : BasePresenter<PitVerifyEmailView>() {
+class PitVerifyEmailPresenter(
+    nabuToken: NabuToken,
+    private val nabu: NabuDataManager,
+    private val emailSyncUpdater: EmailSyncUpdater
+) : BasePresenter<PitVerifyEmailView>() {
+
+    private val fetchUser = nabuToken.fetchNabuToken().flatMap { nabu.getUser(it) }
 
     override fun onViewReady() {
-        compositeDisposable += resendMail.switchMapSingle {
-            emailSyncUpdater.updateEmailAndSync(it)
-        }.observeOn(AndroidSchedulers.mainThread()).subscribeBy(onError = {
-            view?.mailResentFailed()
-        }, onNext = {
-            if (it.address.isNotEmpty())
-                view?.mailResentSuccessfully()
-            else
-                view?.mailResentFailed()
-        })
+        reset()
     }
 
-    val resendMail = PublishSubject.create<String>()
+    private fun reset() {
+        // Poll for 'is verified' status (ugh!) and close this activity when it is
+        compositeDisposable += Observable.interval(5, TimeUnit.SECONDS)
+            .flatMapSingle { fetchUser }
+            .subscribeBy(
+                onNext = { if (it.emailVerified) { view?.emailVerified() } },
+                onError = { reset() }
+            )
+    }
+
+    private fun onResendFailed() {
+        view?.mailResendFailed()
+    }
+
+    private fun onResendSuccess(email: Email) {
+        if (email.address.isNotEmpty()) {
+            view?.mailResentSuccessfully()
+        } else {
+            onResendFailed()
+        }
+    }
+
+    fun resendMail(emailAddress: String) {
+        compositeDisposable += emailSyncUpdater.updateEmailAndSync(emailAddress, PIT_VERIFICATION_CONTEXT)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onError = { onResendFailed() },
+                onSuccess = { onResendSuccess(it) }
+            )
+    }
+
+    companion object {
+        const val PIT_VERIFICATION_CONTEXT = "PIT_SIGNUP"
+    }
 }

@@ -46,6 +46,8 @@ internal interface SettingsView : View {
 
     fun setTorBlocked(blocked: Boolean)
 
+    fun setPitLinkingState(isLinked: Boolean)
+
     fun setScreenshotsEnabled(enabled: Boolean)
 
     fun showDialogEmailVerification()

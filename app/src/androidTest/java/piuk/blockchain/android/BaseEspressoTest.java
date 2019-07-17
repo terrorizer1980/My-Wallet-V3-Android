@@ -1,6 +1,8 @@
 package piuk.blockchain.android;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.CallSuper;
 import android.support.test.InstrumentationRegistry;
 import android.view.MotionEvent;
@@ -8,12 +10,21 @@ import android.view.MotionEvent;
 import org.junit.After;
 import org.junit.Before;
 
+import org.mockito.Mock;
+import piuk.blockchain.androidcore.utils.DeviceIdGenerator;
 import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.UUIDGenerator;
 
 @SuppressWarnings("WeakerAccess")
 public class BaseEspressoTest {
 
+    @Mock
+    protected DeviceIdGenerator idGenerator;
+    @Mock
+    protected UUIDGenerator uuidGenerator;
+
+    private SharedPreferences store = PreferenceManager.getDefaultSharedPreferences(InstrumentationRegistry.getTargetContext());
     private SystemAnimations systemAnimations;
     protected PrefsUtil prefs;
 
@@ -21,7 +32,8 @@ public class BaseEspressoTest {
     @Before
     public void setup() {
         systemAnimations = new SystemAnimations(InstrumentationRegistry.getTargetContext());
-        prefs = new PrefsUtil(InstrumentationRegistry.getTargetContext());
+
+        prefs = new PrefsUtil(store, idGenerator, uuidGenerator);
         clearState();
         ignoreTapJacking(true);
         disableAnimations();

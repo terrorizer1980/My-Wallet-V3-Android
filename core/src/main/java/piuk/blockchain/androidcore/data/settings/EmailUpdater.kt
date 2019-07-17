@@ -16,6 +16,7 @@ interface EmailSyncUpdater {
      * Syncs changes with Nabu.
      */
     fun updateEmailAndSync(email: String): Single<Email>
+    fun updateEmailAndSync(email: String, context: String): Single<Email>
 
     /**
      * Always sends a new email, even if verified

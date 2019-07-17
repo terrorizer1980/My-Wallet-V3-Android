@@ -1,30 +1,31 @@
 package piuk.blockchain.android.ui.thepit
 
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.Toolbar
 import kotlinx.android.synthetic.main.activity_pit_verify_email_layout.*
-import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.get
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 
 class PitVerifyEmailActivity : BaseMvpActivity<PitVerifyEmailView, PitVerifyEmailPresenter>(), PitVerifyEmailView {
-    private val presenter: PitVerifyEmailPresenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pit_verify_email_layout)
+
         val toolbar = findViewById<Toolbar>(R.id.toolbar_general)
         setupToolbar(toolbar, R.string.pit_verify_email_title)
         toolbar.setNavigationOnClickListener { onBackPressed() }
+
         val email = intent.getStringExtra(ARGUMENT_EMAIL) ?: ""
         email_address.text = email
 
         send_again.setOnClickListener {
-            presenter.resendMail.onNext(email)
+            presenter.resendMail(email)
         }
 
         open_app.setOnClickListener {
@@ -36,12 +37,11 @@ class PitVerifyEmailActivity : BaseMvpActivity<PitVerifyEmailView, PitVerifyEmai
         presenter.onViewReady()
     }
 
-    override fun createPresenter(): PitVerifyEmailPresenter = presenter
+    override fun createPresenter(): PitVerifyEmailPresenter = get()
 
-    override fun getView(): PitVerifyEmailView =
-        this
+    override fun getView(): PitVerifyEmailView = this
 
-    override fun mailResentFailed() {
+    override fun mailResendFailed() {
         toast(R.string.mail_resent_failed, ToastCustom.TYPE_ERROR)
     }
 
@@ -49,14 +49,19 @@ class PitVerifyEmailActivity : BaseMvpActivity<PitVerifyEmailView, PitVerifyEmai
         toast(R.string.mail_resent_succeed, ToastCustom.TYPE_OK)
     }
 
+    override fun emailVerified() {
+        setResult(RESULT_OK)
+        finish()
+    }
+
     companion object {
         private const val ARGUMENT_EMAIL = "email"
 
-        fun start(ctx: Context, email: String) {
+        fun start(ctx: Activity, email: String, requestCode: Int) {
             val intent = Intent(ctx, PitVerifyEmailActivity::class.java).apply {
                 putExtra(ARGUMENT_EMAIL, email)
             }
-            ctx.startActivity(intent)
+            ctx.startActivityForResult(intent, requestCode)
         }
     }
 }

@@ -44,27 +44,22 @@ import piuk.blockchain.android.ui.fingerprint.FingerprintStage
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity
 import piuk.blockchain.android.util.DialogButtonCallback
-import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.annotations.Thunk
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.ui.debug.DebugOptionsBottomDialog
 import piuk.blockchain.android.ui.home.MobileNoticeDialogFragment
 
 internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(), PinEntryView {
 
     private val pinEntryPresenter: PinEntryPresenter by inject()
-    private val prefs: PersistentPrefs by inject()
-    private val appUtil: AppUtil by inject()
     private val environmentConfig: EnvironmentConfig by inject()
-    private val loginState: AccessState by inject()
 
     private val _pinBoxList = mutableListOf<ImageView>()
     override val pinBoxList: List<ImageView>
@@ -143,7 +138,7 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
             binding?.buttonSettings?.visibility = View.VISIBLE
             binding?.buttonSettings?.setOnClickListener { view ->
                 if (activity != null) {
-                    EnvironmentSwitcher(activity!!, prefs, appUtil, loginState).showDebugMenu()
+                    DebugOptionsBottomDialog.show(requireFragmentManager())
                 }
             }
         }

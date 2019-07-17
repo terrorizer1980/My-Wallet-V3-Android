@@ -112,6 +112,11 @@ interface NabuDataManager {
     fun currentToken(offlineToken: NabuOfflineTokenResponse): Single<NabuSessionTokenResponse>
 
     fun linkWalletWithMercury(offlineTokenResponse: NabuOfflineTokenResponse): Single<WalletMercuryLink>
+
+    fun shareWalletAddressesWithThePit(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        addressMap: Map<String, String> // Crypto symbol -> address
+    ): Completable
 }
 
 internal class NabuDataManagerImpl(
@@ -324,6 +329,15 @@ internal class NabuDataManagerImpl(
         authenticate(offlineTokenResponse) {
             nabuService.linkWalletWithMercury(it)
         }
+
+    override fun shareWalletAddressesWithThePit(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        addressMap: Map<String, String> // Crypto symbol -> address
+    ): Completable =
+        authenticate(offlineTokenResponse) {
+            nabuService.sendWalletAddressesToThePit(it, addressMap)
+                .toSingleDefault(Any())
+        }.ignoreElement()
 
     private fun <T> refreshOrReturnError(
         throwable: Throwable,

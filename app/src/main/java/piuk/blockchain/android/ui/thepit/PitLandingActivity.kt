@@ -37,7 +37,7 @@ class PitLandingActivity : AppCompatActivity() {
     }
 
     private fun handleSignupClick() {
-        PitPermissionsActivity.start(this)
+        PitPermissionsActivity.start(this, true)
         finish()
     }
 

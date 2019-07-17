@@ -254,13 +254,13 @@ class DashboardPresenter(
                 if (tier > 0) {
                     view.goToExchange(currency, prefs.selectedFiatCurrency)
                 } else {
-                    view.startKycFlowWithNavigator(CampaignType.Swap)
+                    view.startKycFlow(CampaignType.Swap)
                 }
             }
     }
 
     override fun startPitLinking() {
-        // TODO: Implement this!
+        view.startPitLinkingFlow()
     }
 
     override fun signupToSunRiverCampaign() {

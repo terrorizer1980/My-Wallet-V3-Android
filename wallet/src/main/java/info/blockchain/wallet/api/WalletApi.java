@@ -180,13 +180,20 @@ public class WalletApi {
                 getApiCode());
     }
 
-    public Observable<ResponseBody> updateSettings(String method, String guid, String sharedKey, String payload) {
+    public Observable<ResponseBody> updateSettings(
+            String method,
+            String guid,
+            String sharedKey,
+            String payload,
+            String context
+    ) {
         return getExplorerInstance().updateSettings(method,
                 guid,
                 sharedKey,
                 payload,
                 payload.length(),
                 "plain",
+                context,
                 getApiCode());
     }
 

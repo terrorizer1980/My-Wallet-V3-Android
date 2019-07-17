@@ -19,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.testutils.RxTest;
+import piuk.blockchain.android.thepit.PitLinking;
+import piuk.blockchain.android.thepit.PitLinkingState;
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper;
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper;
 import piuk.blockchain.android.util.StringUtils;
@@ -83,6 +85,10 @@ public class SettingsPresenterTest extends RxTest {
     private KycStatusHelper kycStatusHelper;
     @Mock
     private EmailSyncUpdater emailSyncUpdater;
+    @Mock
+    private PitLinking pitLinking;
+    @Mock
+    private PitLinkingState pitLinkState;
 
     @Before
     public void setUp() {
@@ -101,7 +107,8 @@ public class SettingsPresenterTest extends RxTest {
                 notificationTokenManager,
                 exchangeRateDataManager,
                 currencyFormatManager,
-                kycStatusHelper);
+                kycStatusHelper,
+                pitLinking);
         subject.initView(activity);
     }
 
@@ -119,12 +126,17 @@ public class SettingsPresenterTest extends RxTest {
         when(mockSettings.getEmail()).thenReturn("email");
         when(settingsDataManager.fetchSettings()).thenReturn(Observable.just(mockSettings));
         when(kycStatusHelper.getSettingsKycState2Tier()).thenReturn(Single.just(Kyc2TierState.Hidden));
+
+        when(pitLinkState.isLinked()).thenReturn(false);
+        when(pitLinking.getState()).thenReturn(Observable.just(pitLinkState));
+
         // Act
         subject.onViewReady();
         // Assert
         verify(activity).showProgressDialog(anyInt());
         verify(activity).hideProgressDialog();
         verify(activity).setUpUi();
+        verify(activity).setPitLinkingState(false);
         assertEquals(mockSettings, subject.settings);
     }
 
@@ -133,8 +145,12 @@ public class SettingsPresenterTest extends RxTest {
         // Arrange
         Settings settings = new Settings();
         when(settingsDataManager.fetchSettings()).thenReturn(Observable.error(new Throwable()));
+        when(pitLinkState.isLinked()).thenReturn(false);
+        when(pitLinking.getState()).thenReturn(Observable.just(pitLinkState));
+
         // Act
         subject.onViewReady();
+
         // Assert
         verify(activity).showProgressDialog(anyInt());
         verify(activity).hideProgressDialog();

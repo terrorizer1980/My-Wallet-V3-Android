@@ -23,6 +23,8 @@ import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
+import piuk.blockchain.android.thepit.PitLinking
+import piuk.blockchain.android.thepit.PitLinkingImpl
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
@@ -363,10 +365,6 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            PitPermissionsPresenter(nabuDataManager = get(), nabuToken = get(), settingsDataManager = get())
-        }
-
-        factory {
             ReceivePresenter(
                 prefs = get(),
                 qrCodeDataManager = get(),
@@ -407,7 +405,8 @@ val applicationModule = applicationContext {
                 /* notificationTokenManager = */ get(),
                 /* exchangeRateDataManager = */ get(),
                 /* currencyFormatManager = */ get(),
-                /* kycStatusHelper = */ get()
+                /* kycStatusHelper = */ get(),
+                /* pitLinking = */ get()
             )
         }
 
@@ -427,8 +426,29 @@ val applicationModule = applicationContext {
             )
         }
 
+        bean {
+            PitLinkingImpl(
+                nabu = get(),
+                nabuToken = get(),
+                payloadDataManager = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                xlmDataManager = get()
+            )
+        }.bind(PitLinking::class)
+
+        factory {
+            PitPermissionsPresenter(
+                nabu = get(),
+                nabuToken = get(),
+                pitLinking = get()
+            )
+        }
+
         factory {
             PitVerifyEmailPresenter(
+                nabuToken = get(),
+                nabu = get(),
                 emailSyncUpdater = get()
             )
         }

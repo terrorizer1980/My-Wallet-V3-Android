@@ -259,6 +259,10 @@ dependencies {
     androidTestImplementation(Libraries.espresso) {
         exclude group: 'javax.inject', module: 'support-annotations'
     }
+    androidTestImplementation Libraries.mockito
+    androidTestImplementation(Libraries.mockitoKotlin) {
+        ['kotlin-stdlib', 'kotlin-reflect'].each { exclude module: it }
+    }
 
     // Unit Tests
     testImplementation Libraries.junit

@@ -19,8 +19,8 @@ fun rxInit(block: RxInit.() -> Unit) =
 class RxInit : com.blockchain.testutils.RxInit() {
 
     fun main(scheduler: Scheduler) {
-        RxAndroidPlugins.setInitMainThreadSchedulerHandler { _ -> Schedulers.trampoline() }
-        RxAndroidPlugins.setMainThreadSchedulerHandler { _ -> scheduler }
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
+        RxAndroidPlugins.setMainThreadSchedulerHandler { scheduler }
     }
 
     fun mainTrampoline() {

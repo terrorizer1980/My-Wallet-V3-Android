@@ -29,11 +29,7 @@ import piuk.blockchain.android.ui.dashboard.adapter.DashboardDelegateAdapter
 import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.MainActivity.Companion.ACCOUNT_EDIT
-import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_EXCHANGE_KYC
-import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_RESUBMIT_KYC
-import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_SUNRIVER_KYC
 import piuk.blockchain.android.ui.home.MainActivity.Companion.SETTINGS_EDIT
-import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_BUY_SELL_KYC
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
@@ -45,10 +41,6 @@ import java.util.Locale
 
 class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     DashboardView {
-
-    override fun startKycFlowWithNavigator(campaignType: CampaignType) {
-        navigator().launchKyc(campaignType)
-    }
 
     override fun goToExchange(currency: CryptoCurrency?, defCurrency: String) {
         (activity as? Context)?.let {
@@ -177,14 +169,11 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     }
 
     override fun startKycFlow(campaignType: CampaignType) {
-        broadcastIntent(
-            action = when (campaignType) {
-                CampaignType.Swap -> ACTION_EXCHANGE_KYC
-                CampaignType.Sunriver -> ACTION_SUNRIVER_KYC
-                CampaignType.Resubmission -> ACTION_RESUBMIT_KYC
-                CampaignType.BuySell -> ACTION_BUY_SELL_KYC
-            }
-        )
+        navigator().launchKyc(campaignType)
+    }
+
+    override fun startPitLinkingFlow() {
+        navigator().launchThePitLinking()
     }
 
     override fun startWebsocketService() {

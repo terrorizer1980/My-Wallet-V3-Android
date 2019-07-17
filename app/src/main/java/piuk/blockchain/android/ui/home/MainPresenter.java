@@ -40,6 +40,7 @@ import piuk.blockchain.android.deeplink.DeepLinkProcessor;
 import piuk.blockchain.android.deeplink.LinkState;
 import piuk.blockchain.android.kyc.KycLinkState;
 import piuk.blockchain.android.sunriver.CampaignLinkState;
+import piuk.blockchain.android.thepit.PitLinking;
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter;
 import piuk.blockchain.android.ui.home.models.MetadataEvent;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
@@ -100,6 +101,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private DeepLinkProcessor deepLinkProcessor;
     private SunriverCampaignHelper sunriverCampaignHelper;
     private XlmDataManager xlmDataManager;
+    private PitLinking pitLinking;
 
     @Inject
     MainPresenter(PersistentPrefs prefs,
@@ -130,7 +132,8 @@ public class MainPresenter extends BasePresenter<MainView> {
                   DeepLinkProcessor deepLinkProcessor,
                   SunriverCampaignHelper sunriverCampaignHelper,
                   XlmDataManager xlmDataManager,
-                  Erc20Account paxAccount) {
+                  Erc20Account paxAccount,
+                  PitLinking pitLinking) {
 
         this.prefs = prefs;
         this.appUtil = appUtil;
@@ -161,6 +164,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.sunriverCampaignHelper = sunriverCampaignHelper;
         this.xlmDataManager = xlmDataManager;
         this.paxAccount = paxAccount;
+        this.pitLinking = pitLinking;
     }
 
     @SuppressLint("CheckResult")
@@ -591,5 +595,23 @@ public class MainPresenter extends BasePresenter<MainView> {
                         },
                         Timber::e
                 );
+    }
+
+    @SuppressLint("CheckResult")
+    public void onThePitMenuClicked() {
+        getCompositeDisposable()
+            .add(pitLinking.isPitLinked()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                isLinked -> {
+                    if(isLinked) {
+                        getView().launchThePit();
+                    } else {
+                        getView().launchThePitLinking();
+                    }
+                },
+                Timber::e
+            )
+        );
     }
 }

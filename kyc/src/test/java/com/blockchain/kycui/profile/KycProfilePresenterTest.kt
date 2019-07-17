@@ -343,7 +343,7 @@ class KycProfilePresenterTest {
         val nabuUser = NabuUser(
             firstName = "FIRST_NAME",
             lastName = "LAST_NAME",
-            email = null,
+            email = "",
             emailVerified = false,
             dob = "2000-09-05",
             mobile = null,

@@ -26,6 +26,7 @@ import piuk.blockchain.android.data.cache.DynamicFeeCache;
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager;
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager;
 import piuk.blockchain.android.deeplink.DeepLinkProcessor;
+import piuk.blockchain.android.thepit.PitLinking;
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter;
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper;
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence;
@@ -320,4 +321,7 @@ public class ApplicationModule extends KoinDaggerModule {
 
     @Provides
     FingerprintHelper providesFingerprintHelper() { return get(FingerprintHelper.class); }
+
+    @Provides
+    PitLinking providesPitLinkingEngine() { return get(PitLinking.class); }
 }

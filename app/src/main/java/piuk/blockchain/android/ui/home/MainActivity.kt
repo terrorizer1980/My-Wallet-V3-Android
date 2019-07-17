@@ -63,6 +63,7 @@ import piuk.blockchain.android.ui.send.SendFragment
 import piuk.blockchain.android.ui.settings.SettingsActivity
 import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
+import piuk.blockchain.android.ui.thepit.PitLandingActivity
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
@@ -76,7 +77,6 @@ import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import timber.log.Timber
 import javax.inject.Inject
-import java.util.Arrays
 import java.util.HashMap
 
 class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, MainView,
@@ -99,8 +99,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     private var backPressed: Long = 0
 
     private var webViewLoginDetails: WebViewLoginDetails? = null
-
-    private var initialized: Boolean = false
 
     // Fragment callbacks for currency header
     private val touchOutsideViews = HashMap<View, OnTouchOutsideViewListener>()
@@ -354,7 +352,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
                 this,
                 mainPresenter.defaultCurrency
             )
-            R.id.nav_the_pit -> handleClickOnThePitItem()
+            R.id.nav_the_pit -> presenter.onThePitMenuClicked()
             R.id.nav_addresses -> startActivityForResult(Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
             R.id.nav_buy -> presenter.routeToBuySell()
             R.id.login_web_wallet -> PairingCodeActivity.start(this)
@@ -365,9 +363,11 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         binding.drawerLayout.closeDrawers()
     }
 
-    private fun handleClickOnThePitItem() {
-        // TODO check status and handle properly
-        // PitLandingActivity.start(this)
+    override fun launchThePitLinking() {
+        PitLandingActivity.start(this)
+    }
+
+    override fun launchThePit() {
         val bottomSheetDialog =
             PitLaunchBottomDialog.newInstance(ErrorBottomDialog.Content(getString(R.string.pit_setting_title),
                 "",
@@ -408,13 +408,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
     private fun requestScan() {
 
-        val fragment = if (BuildConfig.DEBUG) {
-            // We're getting a number of 'unknowns' in the request scan analytics, and I want to know why
-            // So crash here if currentFragment is null... TODO: Don't forget to take this out!
-            currentFragment::class.simpleName ?: throw IllegalStateException("WTF?")
-        } else {
-            currentFragment::class.simpleName ?: "unknown"
-        }
+        val fragment = currentFragment::class.simpleName ?: "unknown"
 
         analytics.logEvent(object : AnalyticsEvent {
             override val event = "qr_scan_requested"
@@ -734,10 +728,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
                     bottom_navigation.currentItem = ITEM_RECEIVE
                 }
                 ACTION_BUY -> presenter.routeToBuySell()
-                ACTION_SUNRIVER_KYC -> launchKyc(CampaignType.Sunriver)
-                ACTION_EXCHANGE_KYC -> launchKyc(CampaignType.Swap)
-                ACTION_RESUBMIT_KYC -> launchKyc(CampaignType.Resubmission)
-                ACTION_BUY_SELL_KYC -> launchKyc(CampaignType.BuySell)
             }
         }
 
@@ -746,10 +736,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_SEND))
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_RECEIVE))
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_BUY))
-            broadcastManager.registerReceiver(this, IntentFilter(ACTION_EXCHANGE_KYC))
-            broadcastManager.registerReceiver(this, IntentFilter(ACTION_SUNRIVER_KYC))
-            broadcastManager.registerReceiver(this, IntentFilter(ACTION_RESUBMIT_KYC))
-            broadcastManager.registerReceiver(this, IntentFilter(ACTION_BUY_SELL_KYC))
         }
     }
 
@@ -760,10 +746,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         const val ACTION_SEND = "info.blockchain.wallet.ui.BalanceFragment.SEND"
         const val ACTION_RECEIVE = "info.blockchain.wallet.ui.BalanceFragment.RECEIVE"
         const val ACTION_BUY = "info.blockchain.wallet.ui.BalanceFragment.BUY"
-        const val ACTION_BUY_SELL_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_BUY_SELL_KYC"
-        const val ACTION_EXCHANGE_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_EXCHANGE_KYC"
-        const val ACTION_SUNRIVER_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_SUNRIVER_KYC"
-        const val ACTION_RESUBMIT_KYC = "info.blockchain.wallet.ui.BalanceFragment.ACTION_RESUBMIT_KYC"
 
         private const val REQUEST_BACKUP = 2225
 
@@ -781,33 +763,27 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         private const val ITEM_RECEIVE = 4
 
         private fun toolbarNavigationItems(): List<AHBottomNavigationItem> =
-            Arrays.asList(
-                AHBottomNavigationItem(
+            listOf(AHBottomNavigationItem(
                     R.string.toolbar_cmd_activity,
                     R.drawable.ic_vector_toolbar_activity,
                     R.color.white
-                ),
-                AHBottomNavigationItem(
+                ), AHBottomNavigationItem(
                     R.string.toolbar_cmd_swap,
                     R.drawable.ic_vector_toolbar_swap,
                     R.color.white
-                ),
-                AHBottomNavigationItem(
+                ), AHBottomNavigationItem(
                     R.string.toolbar_cmd_home,
                     R.drawable.ic_vector_toolbar_home,
                     R.color.white
-                ),
-                AHBottomNavigationItem(
+                ), AHBottomNavigationItem(
                     R.string.toolbar_cmd_send,
                     R.drawable.ic_vector_toolbar_send,
                     R.color.white
-                ),
-                AHBottomNavigationItem(
+                ), AHBottomNavigationItem(
                     R.string.toolbar_cmd_receive,
                     R.drawable.ic_vector_toolbar_receive,
                     R.color.white
-                )
-            )
+                ))
 
         fun start(context: Context, bundle: Bundle) {
             Intent(context, MainActivity::class.java).apply {

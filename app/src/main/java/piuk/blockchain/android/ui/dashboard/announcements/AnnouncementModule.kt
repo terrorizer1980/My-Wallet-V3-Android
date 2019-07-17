@@ -14,8 +14,8 @@ val dashboardAnnouncementsModule = applicationContext {
                 mainScheduler = AndroidSchedulers.mainThread()
             ).apply {
                 add(get("kycresubmission")) // Always first
-                add(get("stablecoin"))
                 add(get("pit"))
+                add(get("stablecoin"))
                 add(get("coinify"))
                 add(get("profile"))
                 add(get("claim"))
@@ -67,6 +67,7 @@ val dashboardAnnouncementsModule = applicationContext {
 
         factory("pit") {
             PitAnnouncementRule(
+                pitLink = get(),
                 dismissRecorder = get()
             ) as AnnouncementRule
         }

@@ -21,6 +21,7 @@ import org.junit.Test
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.PromptManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
+import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
@@ -77,6 +78,7 @@ class MainPresenterTest {
     private val deepLinkProcessor: DeepLinkProcessor = mock()
     private val sunriverCampaignHelper: SunriverCampaignHelper = mock()
     private val xlmDataManager: XlmDataManager = mock()
+    private val pitLinking: PitLinking = mock()
 
     @get:Rule
     val rxSchedulers = rxInit {
@@ -115,7 +117,8 @@ class MainPresenterTest {
             deepLinkProcessor,
             sunriverCampaignHelper,
             xlmDataManager,
-            paxAccount
+            paxAccount,
+            pitLinking
         )
 
         subject.initView(view)

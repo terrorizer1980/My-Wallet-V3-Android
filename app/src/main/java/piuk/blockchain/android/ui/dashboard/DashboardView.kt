@@ -34,7 +34,7 @@ interface DashboardView : View {
 
     fun startKycFlow(campaignType: CampaignType)
 
-    fun startKycFlowWithNavigator(campaignType: CampaignType)
+    fun startPitLinkingFlow()
 
     fun launchWaitlist()
 

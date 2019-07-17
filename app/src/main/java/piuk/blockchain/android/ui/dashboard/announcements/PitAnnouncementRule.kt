@@ -3,18 +3,22 @@ package piuk.blockchain.android.ui.dashboard.announcements
 import android.support.annotation.VisibleForTesting
 import io.reactivex.Single
 import piuk.blockchain.android.R
+import piuk.blockchain.android.thepit.PitLinking
 
-class PitAnnouncementRule(dismissRecorder: DismissRecorder) : AnnouncementRule {
+class PitAnnouncementRule(
+    private val pitLink: PitLinking,
+    dismissRecorder: DismissRecorder
+) : AnnouncementRule {
 
     override val dismissKey = DISMISS_KEY
     private val dismissEntry = dismissRecorder[dismissKey]
 
     override fun shouldShow(): Single<Boolean> {
-        return if (dismissEntry.isDismissed) {
-            Single.just(false)
-        } else {
-            Single.just(true)
+        if (dismissEntry.isDismissed) {
+            return Single.just(false)
         }
+
+        return pitLink.isPitLinked().map { !it }
     }
 
     override fun show(host: AnnouncementHost) {

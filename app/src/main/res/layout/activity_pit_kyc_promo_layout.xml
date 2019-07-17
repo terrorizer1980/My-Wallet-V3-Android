@@ -170,7 +170,7 @@
                     android:layout_marginTop="22dp"
                     android:layout_marginEnd="35dp"
                     android:lineSpacingExtra="6sp"
-                    android:text="@string/pit_permission_title"
+                    android:text="@string/pit_permission_app_can"
                     android:textColor="@color/pit_application_able_to"
                     android:textSize="15sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -263,15 +263,14 @@
                     android:layout_marginStart="25dp"
                     android:layout_marginTop="22dp"
                     android:lineSpacingExtra="6sp"
-                    android:text="@string/pit_permission_title"
+                    android:text="@string/pit_permission_app_cant"
                     android:textColor="@color/pit_application_not_able"
                     android:textSize="15sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/benefit_three_text"
-                    tools:layout_editor_absoluteY="67dp"
-                    tools:text="Will not be able to:" />
+                    tools:layout_editor_absoluteY="67dp"/>
 
                 <TextView
                     android:id="@+id/restriction_one_text"

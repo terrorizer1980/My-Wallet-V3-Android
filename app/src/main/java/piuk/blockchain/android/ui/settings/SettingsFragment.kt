@@ -321,6 +321,10 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         torPref.isChecked = blocked
     }
 
+    override fun setPitLinkingState(isLinked: Boolean) {
+        thePit.setValue(isLinked)
+    }
+
     override fun setScreenshotsEnabled(enabled: Boolean) {
         screenshotPref.isChecked = enabled
     }

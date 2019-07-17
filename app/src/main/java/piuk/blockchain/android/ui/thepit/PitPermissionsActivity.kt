@@ -5,26 +5,29 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_pit_kyc_promo_layout.*
-import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.get
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 
 class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermissionsView, PitPermissionsPresenter>() {
-    private val presenter: PitPermissionsPresenter by inject()
 
-    override fun createPresenter(): PitPermissionsPresenter = presenter
-
+    override fun createPresenter(): PitPermissionsPresenter = get()
     override fun getView(): PitPermissionsView = this
 
     private var loadingDialog: PitStateBottomDialog? = null
     private var errorDialog: PitStateBottomDialog? = null
 
-    private var promptForEmailVerification = false
+    private val isPitToWalletLink: Boolean by lazy {
+        intent?.extras?.getBoolean(PARAM_LINK_WALLET_TO_PIT, true) ?: true
+    }
+
+    private val pitToWalletLinkId: String? by lazy {
+        intent?.extras?.getString(PARAM_LINK_ID, null)
+    }
 
     override fun promptForEmailVerification(email: String) {
-        PitVerifyEmailActivity.start(this, email)
-        promptForEmailVerification = true
+        PitVerifyEmailActivity.start(this, email, REQUEST_VERIFY_EMAIL)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +35,17 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         setContentView(R.layout.activity_pit_kyc_promo_layout)
 
         connect_now.setOnClickListener {
-            presenter.tryToConnect.onNext(Unit)
+            doLinkClickHandler()
+        }
+        onViewReady()
+    }
+
+    private fun doLinkClickHandler() {
+        if (isPitToWalletLink) {
+            presenter.tryToConnectWalletToPit()
+        } else {
+            val linkId = pitToWalletLinkId ?: throw IllegalStateException("Link id is missing")
+            presenter.tryToConnectPitToWallet(linkId)
         }
     }
 
@@ -50,13 +63,18 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
                     0,
                     R.drawable.vector_pit_request_failure), false
                 )).apply {
-                this.onCtaClick = {
-                    presenter.tryToConnect.onNext(Unit)
-                    this.dismiss()
-                }
+                    onCtaClick = {
+                        doLinkClickHandler()
+                        dismissErrorDialog()
+                    }
             }
             errorDialog?.show(supportFragmentManager, "LoadingBottomDialog")
         }
+    }
+
+    private fun dismissErrorDialog() {
+        errorDialog?.dismiss()
+        errorDialog = null
     }
 
     override fun showLoading() {
@@ -80,12 +98,11 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         loadingDialog = null
     }
 
-    override fun onResume() {
-        super.onResume()
-        onViewReady()
-        if (promptForEmailVerification) {
-            promptForEmailVerification = false
-            presenter.checkEmailIfEmailIsVerified.onNext(Unit)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_VERIFY_EMAIL) {
+            presenter.checkEmailIsVerified()
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
@@ -100,15 +117,22 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
                     R.drawable.vector_email_verified
                 )
             ).apply {
-                onCtaClick = { presenter.tryToConnect.onNext(Unit) }
+                onCtaClick = { doLinkClickHandler() }
             }
         emailVerifiedBottomDialog.show(supportFragmentManager, "BottomDialog")
-        promptForEmailVerification = false
     }
 
     companion object {
-        fun start(ctx: Context) {
-            ctx.startActivity(Intent(ctx, PitPermissionsActivity::class.java))
+        private const val REQUEST_VERIFY_EMAIL = 7396
+        private const val PARAM_LINK_WALLET_TO_PIT = "link_wallet_to_pit"
+        private const val PARAM_LINK_ID = "link_id"
+
+        @JvmStatic
+        fun start(ctx: Context, isWalletToPit: Boolean, linkId: String? = null) {
+            Intent(ctx, PitPermissionsActivity::class.java).apply {
+                putExtra(PARAM_LINK_WALLET_TO_PIT, isWalletToPit)
+                putExtra(PARAM_LINK_ID, linkId)
+            }.run { ctx.startActivity(this) }
         }
     }
 }
