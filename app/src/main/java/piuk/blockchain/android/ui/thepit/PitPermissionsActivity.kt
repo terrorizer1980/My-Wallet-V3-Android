@@ -16,15 +16,6 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
     override fun getView(): PitPermissionsView = this
 
     private var loadingDialog: PitStateBottomDialog? = null
-    private var errorDialog: PitStateBottomDialog? = null
-
-    private val isPitToWalletLink: Boolean by lazy {
-        intent?.extras?.getBoolean(PARAM_LINK_WALLET_TO_PIT, true) ?: true
-    }
-
-    private val pitToWalletLinkId: String? by lazy {
-        intent?.extras?.getString(PARAM_LINK_ID, null)
-    }
 
     override fun promptForEmailVerification(email: String) {
         PitVerifyEmailActivity.start(this, email, REQUEST_VERIFY_EMAIL)
@@ -41,10 +32,10 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
     }
 
     private fun doLinkClickHandler() {
-        if (isPitToWalletLink) {
+        if (intent.isPitToWalletLink) {
             presenter.tryToConnectWalletToPit()
         } else {
-            val linkId = pitToWalletLinkId ?: throw IllegalStateException("Link id is missing")
+            val linkId = intent.pitToWalletLinkId ?: throw IllegalStateException("Link id is missing")
             presenter.tryToConnectPitToWallet(linkId)
         }
     }
@@ -54,27 +45,38 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
     }
 
     override fun onLinkFailed(reason: String) {
-        if (errorDialog == null) {
-            errorDialog = PitStateBottomDialog.newInstance(
-                PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(
-                    getString(R.string.pit_connection_error_title),
-                    getString(R.string.pit_connection_error_description),
-                    R.string.try_again,
-                    0,
-                    R.drawable.vector_pit_request_failure), false
-                )).apply {
-                    onCtaClick = {
-                        doLinkClickHandler()
-                        dismissErrorDialog()
-                    }
-            }
-            errorDialog?.show(supportFragmentManager, "LoadingBottomDialog")
+        PitStateBottomDialog.newInstance(
+            PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(
+                getString(R.string.pit_connection_error_title),
+                getString(R.string.pit_connection_error_description),
+                R.string.try_again,
+                0,
+                R.drawable.vector_pit_request_failure), false
+            )).apply {
+                onCtaClick = {
+                    doLinkClickHandler()
+                    dismiss()
+                }
+        }.apply {
+            show(supportFragmentManager, "LoadingBottomDialog")
         }
     }
 
-    private fun dismissErrorDialog() {
-        errorDialog?.dismiss()
-        errorDialog = null
+    override fun onPitLinked() {
+        PitStateBottomDialog.newInstance(
+            PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(
+                getString(R.string.pit_connection_success_title),
+                getString(R.string.pit_connection_success_description),
+                R.string.btn_close,
+                    0,
+                R.drawable.vector_pit_request_ok), false
+            )).apply {
+            onCtaClick = {
+                dismiss()
+            }
+        }.apply {
+            show(supportFragmentManager, "SuccessBottomDialog")
+        }
     }
 
     override fun showLoading() {
@@ -130,9 +132,17 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         @JvmStatic
         fun start(ctx: Context, isWalletToPit: Boolean, linkId: String? = null) {
             Intent(ctx, PitPermissionsActivity::class.java).apply {
-                putExtra(PARAM_LINK_WALLET_TO_PIT, isWalletToPit)
-                putExtra(PARAM_LINK_ID, linkId)
+                isPitToWalletLink = isWalletToPit
+                pitToWalletLinkId = linkId
             }.run { ctx.startActivity(this) }
         }
+
+        private var Intent.isPitToWalletLink: Boolean
+            get() = extras?.getBoolean(PARAM_LINK_WALLET_TO_PIT, true) ?: true
+            set(v) { putExtra(PARAM_LINK_WALLET_TO_PIT, v) }
+
+        private var Intent.pitToWalletLinkId: String?
+            get() = extras?.getString(PARAM_LINK_ID, null)
+            set(v) { putExtra(PARAM_LINK_ID, v) }
     }
 }

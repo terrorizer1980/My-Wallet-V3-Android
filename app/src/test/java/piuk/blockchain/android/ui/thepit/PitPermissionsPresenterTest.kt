@@ -5,14 +5,14 @@ import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.WalletMercuryLink
 import com.blockchain.nabu.NabuToken
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
+import io.reactivex.Completable
 import io.reactivex.Single
 import junit.framework.Assert.assertEquals
 import org.amshove.kluent.mock
@@ -64,8 +64,8 @@ class PitPermissionsPresenterTest {
         verify(view).promptForEmailVerification(EMAIL_ADDRESS)
         verify(view).hideLoading()
 
-        verify(view, never()).onLinkFailed(any())
-        verify(view, never()).onLinkSuccess(any())
+        verifyNoMoreInteractions(view)
+        verifyNoMoreInteractions(pitLinking)
     }
 
     @Test
@@ -85,8 +85,9 @@ class PitPermissionsPresenterTest {
         }
         verify(view).hideLoading()
 
-        verify(view, never()).promptForEmailVerification(any())
-        verify(view, never()).onLinkFailed(any())
+        verify(pitLinking).sendWalletAddressToThePit()
+
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -107,8 +108,9 @@ class PitPermissionsPresenterTest {
         }
         verify(view).hideLoading()
 
-        verify(view, never()).promptForEmailVerification(any())
-        verify(view, never()).onLinkFailed(any())
+        verify(pitLinking).sendWalletAddressToThePit()
+
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -125,9 +127,8 @@ class PitPermissionsPresenterTest {
         verify(view).hideLoading()
         verify(view).onLinkFailed(LINK_ERROR)
 
-        verify(view, never()).onLinkSuccess(any())
-        verify(view, never()).promptForEmailVerification(any())
-        verify(view, never()).showEmailVerifiedDialog()
+        verifyNoMoreInteractions(view)
+        verifyNoMoreInteractions(pitLinking)
     }
 
     @Test
@@ -152,7 +153,10 @@ class PitPermissionsPresenterTest {
             assertEquals(FORMATTED_LINK, firstValue)
         }
 
-        verify(view, never()).promptForEmailVerification(any())
+        verify(pitLinking).sendWalletAddressToThePit()
+
+        verifyNoMoreInteractions(view)
+        verifyNoMoreInteractions(pitLinking)
     }
 
     @Test
@@ -164,10 +168,8 @@ class PitPermissionsPresenterTest {
 
         verify(view).showEmailVerifiedDialog()
 
-        verify(view, never()).showLoading()
-        verify(view, never()).hideLoading()
-        verify(view, never()).promptForEmailVerification(any())
-        verify(view, never()).onLinkSuccess(any())
+        verifyNoMoreInteractions(view)
+        verifyNoMoreInteractions(pitLinking)
     }
 
     @Test
@@ -177,19 +179,47 @@ class PitPermissionsPresenterTest {
 
         presenter.checkEmailIsVerified()
 
-        verify(view, never()).showEmailVerifiedDialog()
-        verify(view, never()).onLinkSuccess(any())
-        verify(view, never()).showLoading()
-        verify(view, never()).hideLoading()
-        verify(view, never()).promptForEmailVerification(any())
+        verifyNoMoreInteractions(view)
+        verifyNoMoreInteractions(pitLinking)
+    }
+
+    @Test
+    fun `pit to wallet linking makes correct calls into view on success`() {
+        whenever(nabu.linkMercuryWithWallet(validOfflineToken, LINK_ID))
+            .thenReturn(Completable.complete())
+
+        presenter.tryToConnectPitToWallet(LINK_ID)
+
+        verify(pitLinking).sendWalletAddressToThePit()
+        verify(view).showLoading()
+        verify(view).hideLoading()
+        verify(view).onPitLinked()
+
+        verifyNoMoreInteractions(view)
+        verifyNoMoreInteractions(pitLinking)
+    }
+
+    @Test
+    fun `pit to wallet linking makes correct calls into view on failure`() {
+        whenever(nabu.linkMercuryWithWallet(validOfflineToken, LINK_ID))
+            .thenReturn(Completable.error(Throwable(LINK_ERROR)))
+
+        presenter.tryToConnectPitToWallet(LINK_ID)
+
+        verify(view).showLoading()
+        verify(view).hideLoading()
+        verify(view).onLinkFailed(LINK_ERROR)
+
+        verifyNoMoreInteractions(view)
+        verifyNoMoreInteractions(pitLinking)
     }
 
     companion object {
-        private val LINK_ID = WalletMercuryLink("0200000020")
+        private const val LINK_ID = "0200000020"
         private const val EMAIL_ADDRESS = "test@test.com"
         private const val EMAIL_ADDRESS_PLUS = "test+test@test.com"
-        private val FORMATTED_LINK = BuildConfig.PIT_URL + LINK_ID.linkId + "?email=test%40test.com"
-        private val FORMATTED_LINK_PLUS = BuildConfig.PIT_URL + LINK_ID.linkId + "?email=test%2Btest%40test.com"
+        private const val FORMATTED_LINK = BuildConfig.PIT_URL + LINK_ID + "?email=test%40test.com"
+        private const val FORMATTED_LINK_PLUS = BuildConfig.PIT_URL + LINK_ID + "?email=test%2Btest%40test.com"
         private const val LINK_ERROR = "That went well"
     }
 }

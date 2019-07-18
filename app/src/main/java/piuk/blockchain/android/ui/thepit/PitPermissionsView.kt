@@ -9,4 +9,5 @@ interface PitPermissionsView : View {
     fun promptForEmailVerification(email: String)
     fun onLinkFailed(reason: String)
     fun showEmailVerifiedDialog()
+    fun onPitLinked()
 }

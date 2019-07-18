@@ -9,7 +9,6 @@ import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SupportedDocuments
-import com.blockchain.kyc.models.nabu.WalletMercuryLink
 import com.blockchain.kyc.services.nabu.NabuService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
@@ -111,12 +110,22 @@ interface NabuDataManager {
 
     fun currentToken(offlineToken: NabuOfflineTokenResponse): Single<NabuSessionTokenResponse>
 
-    fun linkWalletWithMercury(offlineTokenResponse: NabuOfflineTokenResponse): Single<WalletMercuryLink>
+    fun linkWalletWithMercury(offlineTokenResponse: NabuOfflineTokenResponse): Single<String>
+
+    fun linkMercuryWithWallet(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        linkId: String
+    ): Completable
 
     fun shareWalletAddressesWithThePit(
         offlineTokenResponse: NabuOfflineTokenResponse,
         addressMap: Map<String, String> // Crypto symbol -> address
     ): Completable
+
+    fun fetchCryptoAddressFromThePit(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        cryptoSymbol: String
+    ): Single<String>
 }
 
 internal class NabuDataManagerImpl(
@@ -325,10 +334,19 @@ internal class NabuDataManagerImpl(
                 .singleOrError()
         }
 
-    override fun linkWalletWithMercury(offlineTokenResponse: NabuOfflineTokenResponse): Single<WalletMercuryLink> =
+    override fun linkWalletWithMercury(offlineTokenResponse: NabuOfflineTokenResponse): Single<String> =
         authenticate(offlineTokenResponse) {
             nabuService.linkWalletWithMercury(it)
         }
+
+    override fun linkMercuryWithWallet(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        linkId: String
+    ): Completable =
+        authenticate(offlineTokenResponse) {
+            nabuService.linkMercuryWithWallet(it, linkId)
+                .toSingleDefault(Any())
+        }.ignoreElement()
 
     override fun shareWalletAddressesWithThePit(
         offlineTokenResponse: NabuOfflineTokenResponse,
@@ -338,6 +356,14 @@ internal class NabuDataManagerImpl(
             nabuService.sendWalletAddressesToThePit(it, addressMap)
                 .toSingleDefault(Any())
         }.ignoreElement()
+
+    override fun fetchCryptoAddressFromThePit(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        cryptoSymbol: String
+    ): Single<String> =
+        authenticate(offlineTokenResponse) {
+            nabuService.fetchPitSendToAddressForCrypto(it, cryptoSymbol)
+        }
 
     private fun <T> refreshOrReturnError(
         throwable: Throwable,

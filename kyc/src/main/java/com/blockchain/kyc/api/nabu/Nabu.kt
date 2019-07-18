@@ -10,6 +10,8 @@ import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.OnfidoApiKey
 import com.blockchain.kyc.models.nabu.RecordCountryRequest
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
+import com.blockchain.kyc.models.nabu.SendToMercuryAddressRequest
+import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.kyc.models.nabu.SupportedDocumentsResponse
 import com.blockchain.kyc.models.nabu.TierUpdateJson
 import com.blockchain.kyc.models.nabu.TiersJson
@@ -145,14 +147,26 @@ internal interface Nabu {
         @Header("authorization") authorization: String
     ): Completable
 
-    @PUT(NABU_CONNECT_WALLET_MERCURY)
+    @PUT(NABU_CONNECT_WALLET_TO_PIT)
     fun connectWalletWithMercury(
         @Header("authorization") authorization: String
     ): Single<WalletMercuryLink>
 
-    @POST(NABU_SHARE_PIT_RECEIVE_ADDRESSES)
+    @PUT(NABU_CONNECT_PIT_TO_WALLET)
+    fun connectMercuryWithWallet(
+        @Header("authorization") authorization: String,
+        @Body linkId: WalletMercuryLink
+    ): Completable
+
+    @POST(NABU_SEND_WALLET_ADDRESSES_TO_PIT)
     fun sharePitReceiveAddresses(
         @Header("authorization") authorization: String,
         @Body addressMap: Map<String, String> // Crypto symbol -> address
     ): Completable
+
+    @PUT(NABU_FETCH_PIT_ADDRESS_FOR_WALLET)
+    fun fetchPitSendAddress(
+        @Header("authorization") authorization: String,
+        @Body cryptoCurrency: SendToMercuryAddressRequest
+    ): Single<SendToMercuryAddressResponse>
 }

@@ -2,9 +2,9 @@ package piuk.blockchain.android.ui.thepit
 
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.kyc.models.nabu.WalletMercuryLink
 import com.blockchain.nabu.NabuToken
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -23,6 +23,8 @@ class PitPermissionsPresenter(
 
     private fun linkWallet() = nabuToken.fetchNabuToken().flatMap { nabu.linkWalletWithMercury(it) }
     private fun fetchUser() = nabuToken.fetchNabuToken().flatMap { nabu.getUser(it) }
+    private fun linkPit(linkId: String) = nabuToken.fetchNabuToken()
+        .flatMapCompletable { nabu.linkMercuryWithWallet(it, linkId) }
 
     override fun onViewReady() { }
 
@@ -37,7 +39,6 @@ class PitPermissionsPresenter(
 
     fun tryToConnectWalletToPit() {
         compositeDisposable += fetchUser()
-            .doOnSubscribe { view?.showLoading() }
             .flatMap { isEmailVerified(it) }
             .doOnError { if (it is EmailNotVerifiedException) view?.promptForEmailVerification(it.email) }
             .flatMap {
@@ -48,6 +49,8 @@ class PitPermissionsPresenter(
                 ) { linkId, email, _ -> Pair(linkId, email) }
             }
             .doOnSuccess { pitLinking.sendWalletAddressToThePit() }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { view?.showLoading() }
             .doFinally { view?.hideLoading() }
             .subscribeBy(
                 onError = { if (it !is EmailNotVerifiedException) view?.onLinkFailed(it.message ?: "") },
@@ -55,8 +58,8 @@ class PitPermissionsPresenter(
             )
     }
 
-    private fun doOnWalletToPitSuccess(pair: Pair<WalletMercuryLink, String>) {
-        val linkId = pair.first.linkId
+    private fun doOnWalletToPitSuccess(pair: Pair<String, String>) {
+        val linkId = pair.first
         val email = pair.second
         val encodedEmail = URLEncoder.encode(email, "utf-8")
         val link = BuildConfig.PIT_URL + "$linkId?email=$encodedEmail"
@@ -65,9 +68,15 @@ class PitPermissionsPresenter(
     }
 
     fun tryToConnectPitToWallet(linkId: String) {
-        // TODO: The pit will send us a dynamic link, containing a link id
-        // call should be down to: /users/link-account/existing in nabu
-        // and when complete should share wallets address and pop a "linked OK" dialog
+        compositeDisposable += linkPit(linkId)
+            .doOnComplete { pitLinking.sendWalletAddressToThePit() }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { view?.showLoading() }
+            .doFinally { view?.hideLoading() }
+            .subscribeBy(
+                onError = { view?.onLinkFailed(it.message ?: "") },
+                onComplete = { view?.onPitLinked() }
+            )
     }
 
     private fun isEmailVerified(user: NabuUser): Single<String> =

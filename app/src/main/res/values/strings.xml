@@ -31,6 +31,7 @@
     <string name="no">No</string>
     <string name="polite_no">No thanks</string>
     <string name="done">Done</string>
+    <string name="btn_close">Close</string>
 
     <string name="SENT">Sent</string>
     <string name="pax_fee">PAX FEE</string>
@@ -1256,4 +1257,6 @@
     <string name="pit_email_verified_title">Email Verified.</string>
     <string name="pit_connection_error_title">Connection Error</string>
     <string name="pit_connection_error_description">We could not connect your Wallet to The PIT. Please go back to The PIT and try again.</string>
+    <string name="pit_connection_success_title">Success!</string>
+    <string name="pit_connection_success_description">You have connected your Blockchain Wallet to The PIT.</string>
 </resources>
