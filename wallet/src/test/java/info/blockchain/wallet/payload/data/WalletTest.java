@@ -45,6 +45,7 @@ WalletBase
 public final class WalletTest extends WalletApiMockedResponseTest {
 
     private NetworkParameters networkParameters = BitcoinMainNetParams.get();
+    private boolean useNewCoinSelection = true;
 
     private Wallet givenWalletFromResouce(String resourceName) {
         try {
@@ -398,23 +399,24 @@ public final class WalletTest extends WalletApiMockedResponseTest {
     public void getHDKeysForSigning() throws Exception {
         Wallet wallet = givenWalletFromResouce("wallet_body_1.txt");
 
-        /*
-        8 available Payment. [80200,70000,60000,50000,40000,30000,20000,10000]
-         */
+        // Available unspents: [8290, 4616, 5860, 3784, 2290, 13990, 8141]
         UnspentOutputs unspentOutputs = UnspentOutputs.fromJson(getResourceContent("wallet_body_1_account1_unspent.txt"));
 
         Payment payment = new Payment();
 
-        long spendAmount = 80200L + 70000L + 60000L + 50000L + 40000L + 30000L + 20000L + 10000L - Payment.DUST.longValue();
-        long feeManual = Payment.DUST.longValue();
+        long spendAmount = 40108;
 
         SpendableUnspentOutputs paymentBundle = payment
                 .getSpendableCoins(unspentOutputs,
-                        BigInteger.valueOf(spendAmount - feeManual),
-                        BigInteger.valueOf(30000L),
-                        false);
+                        BigInteger.valueOf(spendAmount),
+                        BigInteger.valueOf(1000L),
+                        false,
+                        useNewCoinSelection);
+
+        assertEquals(789, paymentBundle.getAbsoluteFee().longValue());
 
         wallet.decryptHDWallet(networkParameters, 0, "hello");
+
         List<ECKey> keyList = wallet.getHdWallets().get(0)
                 .getHDKeysForSigning(wallet.getHdWallets().get(0).getAccount(0), paymentBundle);
 

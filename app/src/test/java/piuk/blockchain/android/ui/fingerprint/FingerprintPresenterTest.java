@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import piuk.blockchain.android.R;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -58,7 +58,7 @@ public class FingerprintPresenterTest {
         // Assert
         verify(activity).setCancelButtonText(anyInt());
         verify(activity).setDescriptionText(anyInt());
-        verify(fingerprintHelper).encryptString(eq(PrefsUtil.KEY_ENCRYPTED_PIN_CODE), eq(pincode), any(FingerprintHelper.AuthCallback.class));
+        verify(fingerprintHelper).encryptString(eq(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE), eq(pincode), any(FingerprintHelper.AuthCallback.class));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class FingerprintPresenterTest {
         subject.onViewReady();
         // Assert
         verify(activity).setCancelButtonText(anyInt());
-        verify(fingerprintHelper).decryptString(eq(PrefsUtil.KEY_ENCRYPTED_PIN_CODE), eq(pincode), any(FingerprintHelper.AuthCallback.class));
+        verify(fingerprintHelper).decryptString(eq(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE), eq(pincode), any(FingerprintHelper.AuthCallback.class));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class FingerprintPresenterTest {
         verify(activity).setStatusText(anyInt());
         verify(activity).setStatusTextColor(anyInt());
         verify(activity).onAuthenticated(data);
-        verify(fingerprintHelper).storeEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE, data);
+        verify(fingerprintHelper).storeEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE, data);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class FingerprintPresenterTest {
         verify(activity).setStatusText(anyInt());
         verify(activity).setStatusTextColor(anyInt());
         verify(activity).onFatalError();
-        verify(fingerprintHelper).clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE);
+        verify(fingerprintHelper).clearEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE);
         verify(fingerprintHelper).setFingerprintUnlockEnabled(false);
     }
 
@@ -187,7 +187,7 @@ public class FingerprintPresenterTest {
         verify(activity).setDescriptionText(R.string.fingerprint_fatal_error_register_description);
         verify(activity).setStatusTextColor(anyInt());
         verify(activity).onFatalError();
-        verify(fingerprintHelper).clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE);
+        verify(fingerprintHelper).clearEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE);
         verify(fingerprintHelper).setFingerprintUnlockEnabled(false);
     }
 
@@ -211,7 +211,7 @@ public class FingerprintPresenterTest {
         verify(activity).setDescriptionText(R.string.fingerprint_fatal_error_authenticate_description);
         verify(activity).setStatusTextColor(anyInt());
         verify(activity).onFatalError();
-        verify(fingerprintHelper).clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE);
+        verify(fingerprintHelper).clearEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE);
         verify(fingerprintHelper).setFingerprintUnlockEnabled(false);
     }
 

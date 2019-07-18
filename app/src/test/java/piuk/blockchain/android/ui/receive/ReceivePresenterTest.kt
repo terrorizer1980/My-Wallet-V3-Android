@@ -46,15 +46,16 @@ import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.util.Locale
 
 class ReceivePresenterTest {
 
     private lateinit var subject: ReceivePresenter
+
     private val payloadDataManager: PayloadDataManager = mock(defaultAnswer = RETURNS_DEEP_STUBS)
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefsUtil: PersistentPrefs = mock()
     private val qrCodeDataManager: QrCodeDataManager = mock()
     private val walletAccountHelper: WalletAccountHelper = mock()
     private val activity: ReceiveView = mock()
@@ -327,14 +328,17 @@ class ReceivePresenterTest {
         val ethAccount = "0x879dBFdE84B0239feB355f55F81fb29f898C778C"
         val combinedEthModel: CombinedEthModel = mock()
         val ethResponse: EthAddressResponse = mock()
+
         whenever(ethDataStore.ethAddressResponse).thenReturn(combinedEthModel)
         whenever(combinedEthModel.getAddressResponse()).thenReturn(ethResponse)
         whenever(ethResponse.account).thenReturn(ethAccount)
         whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt()))
             .thenReturn(Observable.empty())
         whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
+
         // Act
         subject.onPaxSelected()
+
         // Assert
         verify(activity).setSelectedCurrency(CryptoCurrency.PAX)
         verify(activity).updateReceiveAddress(ethAccount)
@@ -708,7 +712,7 @@ class ReceivePresenterTest {
     @Test
     fun updateBtcTextField() {
         // Arrange
-        whenever(fiatExchangeRates.fiatUnit) `it returns` "GBP"
+        whenever(prefsUtil.selectedFiatCurrency) `it returns` "GBP"
         whenever(fiatExchangeRates.getCrypto(2.gbp(), CryptoCurrency.BTC)) `it returns` 0.5.bitcoin()
         // Act
         subject.updateBtcTextField("2.0")

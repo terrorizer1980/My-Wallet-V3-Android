@@ -1,10 +1,13 @@
 package piuk.blockchain.androidcore.data.walletoptions
 
+import com.blockchain.sunriver.XlmHorizonUrlFetcher
 import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
+import info.blockchain.wallet.api.data.UpdateType
 import info.blockchain.wallet.api.data.WalletOptions
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.androidcore.data.appversion.SemanticVersion
 import piuk.blockchain.androidcore.data.auth.AuthService
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -15,7 +18,11 @@ class WalletOptionsDataManager(
     private val walletOptionsState: WalletOptionsState,
     private val settingsDataManager: SettingsDataManager,
     private val explorerUrl: String
-) : XlmTransactionTimeoutFetcher {
+) : XlmTransactionTimeoutFetcher, XlmHorizonUrlFetcher {
+
+    override fun xlmHorizonUrl(def: String): Single<String> =
+        walletOptionsState.walletOptionsSource
+            .map { it.stellarhorizonUrl }.first(def)
 
     private val walletOptionsService by unsafeLazy {
         authService.getWalletOptions()
@@ -60,6 +67,10 @@ class WalletOptionsDataManager(
         return walletOptionsState.walletOptionsSource.value!!.comRootLink
     }
 
+    private fun xlmExchangeAddresses(): List<String> {
+        return walletOptionsState.walletOptionsSource.value?.xmlExchangeAddresses ?: emptyList()
+    }
+
     fun getWalletLink(): String {
         return walletOptionsState.walletOptionsSource.value!!.walletLink
     }
@@ -71,7 +82,7 @@ class WalletOptionsDataManager(
         initWalletOptionsReplaySubjects()
 
         return walletOptionsState.walletOptionsSource.map { options ->
-            var result = ""
+            var result: String
 
             options.mobileInfo.apply {
                 result = getLocalisedMessage(locale, this)
@@ -91,24 +102,15 @@ class WalletOptionsDataManager(
      * @param sdk The device's Android SDK version
      * @return A [Boolean] value contained within an [Observable]
      */
-    fun checkForceUpgrade(versionCode: Int, sdk: Int): Observable<Boolean> {
+    fun checkForceUpgrade(versionName: String): Observable<UpdateType> {
         initWalletOptionsReplaySubjects()
 
         return walletOptionsState.walletOptionsSource.map {
-            val androidUpgradeMap = it.androidUpgrade ?: mapOf()
-            var forceUpgrade = false
-            val minSdk = androidUpgradeMap["minSdk"] ?: 0
-            val minVersionCode = androidUpgradeMap["minVersionCode"] ?: 0
-            if (sdk < minSdk) {
-                // Can safely ignore force upgrade
-            } else {
-                if (versionCode < minVersionCode) {
-                    // Force the client to update
-                    forceUpgrade = true
-                }
-            }
-
-            return@map forceUpgrade
+            val latestApiVersion = SemanticVersion(it.androidUpdate.latestStoreVersion)
+            val currentVersion = SemanticVersion(versionName)
+            if (latestApiVersion > currentVersion) {
+                return@map it.androidUpdate.updateType
+            } else return@map UpdateType.NONE
         }
     }
 
@@ -140,4 +142,6 @@ class WalletOptionsDataManager(
         walletOptionsState.walletOptionsSource
             .map { it.xlmTransactionTimeout }
             .first(WalletOptions.XLM_DEFAULT_TIMEOUT_SECS)
+
+    fun isXlmAddressExchange(it: String): Boolean = xlmExchangeAddresses().contains(it.toUpperCase())
 }

@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.receive
 
-import android.Manifest
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.ClipData
@@ -27,23 +26,37 @@ import android.view.ViewGroup
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.single.BasePermissionListener
-import com.karumi.dexter.listener.single.CompositePermissionListener
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.alert_watch_only_spend.view.*
-import kotlinx.android.synthetic.main.fragment_receive.*
-import kotlinx.android.synthetic.main.include_amount_row.*
-import kotlinx.android.synthetic.main.include_amount_row.view.*
-import kotlinx.android.synthetic.main.include_to_row.*
-import kotlinx.android.synthetic.main.view_expanding_currency_header.*
+import kotlinx.android.synthetic.main.alert_watch_only_spend.view.confirm_cancel
+import kotlinx.android.synthetic.main.alert_watch_only_spend.view.confirm_continue
+import kotlinx.android.synthetic.main.alert_watch_only_spend.view.confirm_dont_ask_again
+import kotlinx.android.synthetic.main.fragment_receive.amount_container
+import kotlinx.android.synthetic.main.fragment_receive.button_request
+import kotlinx.android.synthetic.main.fragment_receive.currency_header
+import kotlinx.android.synthetic.main.fragment_receive.custom_keyboard
+import kotlinx.android.synthetic.main.fragment_receive.divider1
+import kotlinx.android.synthetic.main.fragment_receive.divider3
+import kotlinx.android.synthetic.main.fragment_receive.divider_to
+import kotlinx.android.synthetic.main.fragment_receive.image_qr
+import kotlinx.android.synthetic.main.fragment_receive.progressbar
+import kotlinx.android.synthetic.main.fragment_receive.scrollview
+import kotlinx.android.synthetic.main.fragment_receive.textview_receiving_address
+import kotlinx.android.synthetic.main.fragment_receive.to_container
+import kotlinx.android.synthetic.main.include_amount_row.amountCrypto
+import kotlinx.android.synthetic.main.include_amount_row.amountFiat
+import kotlinx.android.synthetic.main.include_amount_row.currencyCrypto
+import kotlinx.android.synthetic.main.include_amount_row.currencyFiat
+import kotlinx.android.synthetic.main.include_amount_row.view.amountCrypto
+import kotlinx.android.synthetic.main.include_amount_row.view.amountFiat
+import kotlinx.android.synthetic.main.include_to_row.constraint_layout_to_row
+import kotlinx.android.synthetic.main.include_to_row.toAddressTextView
+import kotlinx.android.synthetic.main.include_to_row.toArrowImage
+import kotlinx.android.synthetic.main.view_expanding_currency_header.textview_selected_currency
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.balance.BalanceFragment
@@ -67,7 +80,6 @@ import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
-import timber.log.Timber
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -157,7 +169,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         val supportActionBar = (activity as AppCompatActivity).supportActionBar
         if (supportActionBar != null) {
             (activity as ToolBarActivity).setupToolbar(
-                supportActionBar, R.string.receive_bitcoin
+                supportActionBar, R.string.request
             )
         } else {
             finishPage()
@@ -234,8 +246,8 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     private fun updateUnits() {
-        currencyCrypto.text = presenter.getCryptoUnit()
-        currencyFiat.text = presenter.getFiatUnit()
+        currencyCrypto.text = presenter.cryptoUnit
+        currencyFiat.text = presenter.fiatUnit
     }
 
     private val btcTextWatcher = object : AfterTextChangedWatcher() {
@@ -463,25 +475,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     private fun requestStoragePermissionIfNeeded() {
-        val deniedPermissionListener = SnackbarOnDeniedPermissionListener.Builder
-            .with(coordinator_layout_receive, R.string.request_write_storage_permission)
-            .withButton(android.R.string.ok) { requestStoragePermissionIfNeeded() }
-            .build()
-
-        val grantedPermissionListener = object : BasePermissionListener() {
-            override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                presenter.onShowBottomShareSheetSelected()
-            }
-        }
-
-        val compositePermissionListener =
-            CompositePermissionListener(deniedPermissionListener, grantedPermissionListener)
-
-        Dexter.withActivity(requireActivity())
-            .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            .withListener(compositePermissionListener)
-            .withErrorListener { error -> Timber.wtf("Dexter permissions error $error") }
-            .check()
+        presenter.onShowBottomShareSheetSelected()
     }
 
     override fun showWatchOnlyWarning() {

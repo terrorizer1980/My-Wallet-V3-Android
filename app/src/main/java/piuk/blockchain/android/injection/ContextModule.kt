@@ -2,19 +2,17 @@ package piuk.blockchain.android.injection
 
 import android.content.Context
 import com.blockchain.koin.KoinDaggerModule
+import com.blockchain.nabu.CurrentTier
 import dagger.Module
 import dagger.Provides
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataStore
-import piuk.blockchain.androidcore.data.contacts.datastore.ContactsMapStore
-import piuk.blockchain.androidcore.data.contacts.datastore.PendingTransactionListStore
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.shapeshift.datastore.ShapeShiftDataStore
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
-import com.blockchain.preferences.FiatCurrencyPreference
+import com.blockchain.preferences.CurrencyPrefs
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.PrefsUtil
 import javax.inject.Singleton
 
 @Module
@@ -45,16 +43,6 @@ class ContextModule(private val appContext: Context) : KoinDaggerModule() {
     }
 
     @Provides
-    fun provideContactsMapStore(): ContactsMapStore {
-        return get(ContactsMapStore::class)
-    }
-
-    @Provides
-    fun providePendingTransactionListStore(): PendingTransactionListStore {
-        return get(PendingTransactionListStore::class)
-    }
-
-    @Provides
     fun provideWalletOptionsState(): WalletOptionsState {
         return get(WalletOptionsState::class)
     }
@@ -65,17 +53,17 @@ class ContextModule(private val appContext: Context) : KoinDaggerModule() {
     }
 
     @Provides
-    fun providePrefsUtil(): PrefsUtil {
-        return get(PrefsUtil::class)
-    }
-
-    @Provides
     fun providePersistentPrefs(): PersistentPrefs {
         return get(PersistentPrefs::class)
     }
 
     @Provides
-    fun provideFiatCurrencyPreference(): FiatCurrencyPreference {
-        return get(FiatCurrencyPreference::class)
+    fun provideFiatCurrencyPreference(): CurrencyPrefs {
+        return get(CurrencyPrefs::class)
+    }
+
+    @Provides
+    fun provideCurrentTier(): CurrentTier {
+        return get(CurrentTier::class)
     }
 }

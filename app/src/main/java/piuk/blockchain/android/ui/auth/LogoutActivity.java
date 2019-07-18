@@ -19,7 +19,7 @@ import piuk.blockchain.androidbuysell.services.BuyConditions;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager;
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 
 public class LogoutActivity extends AppCompatActivity {
 
@@ -33,6 +33,8 @@ public class LogoutActivity extends AppCompatActivity {
     @Inject protected CoinifyDataManager coinifyDataManager;
     @Inject protected NabuDataManager nabuDataManager;
     @Inject protected OSUtil osUtil;
+    @Inject protected AccessState loginState;
+    @Inject protected PersistentPrefs prefs;
 
     {
         Injector.getInstance().getPresenterComponent().inject(this);
@@ -45,10 +47,8 @@ public class LogoutActivity extends AppCompatActivity {
             if (getIntent().getAction().equals(AccessState.LOGOUT_ACTION)) {
                 Intent intent = new Intent(this, WebSocketService.class);
 
-                PrefsUtil prefsUtil = new PrefsUtil(this);
-
                 //When user logs out, assume onboarding has been completed
-                prefsUtil.setValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, true);
+                prefs.setValue(PersistentPrefs.Companion.KEY_ONBOARDING_COMPLETE, true);
 
                 if (osUtil.isServiceRunning(WebSocketService.class)) {
                     stopService(intent);
@@ -69,7 +69,7 @@ public class LogoutActivity extends AppCompatActivity {
                 buyConditions.wipe();
                 walletOptionsState.wipe();
 
-                AccessState.getInstance().setIsLoggedIn(false);
+                loginState.setLoggedIn(false);
                 finishAffinity();
             }
         }

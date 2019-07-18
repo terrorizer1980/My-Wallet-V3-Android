@@ -9,7 +9,6 @@
         android:background="@drawable/selector_white"
         android:drawablePadding="8dp"
         android:drawableRight="@drawable/ic_arrow_drop_down_grey600_24dp"
-        android:fontFamily="@font/montserrat"
         android:gravity="left|center_vertical"
         android:marqueeRepeatLimit="marquee_forever"
         android:maxLines="1"

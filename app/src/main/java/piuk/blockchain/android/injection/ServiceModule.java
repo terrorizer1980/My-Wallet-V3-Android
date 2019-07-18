@@ -7,7 +7,6 @@ import info.blockchain.wallet.ApiCode;
 import info.blockchain.wallet.api.FeeApi;
 import info.blockchain.wallet.api.WalletApi;
 import info.blockchain.wallet.api.WalletExplorerEndpoints;
-import info.blockchain.wallet.contacts.Contacts;
 import info.blockchain.wallet.ethereum.EthAccountApi;
 import info.blockchain.wallet.payment.Payment;
 import info.blockchain.wallet.prices.PriceApi;
@@ -23,11 +22,6 @@ class ServiceModule extends KoinDaggerModule {
     @Provides
     SettingsManager provideSettingsManager() {
         return get(SettingsManager.class);
-    }
-
-    @Provides
-    Contacts provideContacts() {
-        return get(Contacts.class);
     }
 
     @Provides

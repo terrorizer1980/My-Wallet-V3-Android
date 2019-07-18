@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.login;
 
-import com.blockchain.android.testutils.LazyImpl;
 import info.blockchain.wallet.exceptions.DecryptionException;
 import info.blockchain.wallet.exceptions.HDWalletException;
 
@@ -65,7 +64,7 @@ public class ManualPairingPresenterTest {
         mSubject = new ManualPairingPresenter(
                 mAppUtil,
                 mAuthDataManager,
-                new LazyImpl(mPayloadDataManager),
+                mPayloadDataManager,
                 mPrefsUtil);
         mSubject.initView(mActivity);
     }

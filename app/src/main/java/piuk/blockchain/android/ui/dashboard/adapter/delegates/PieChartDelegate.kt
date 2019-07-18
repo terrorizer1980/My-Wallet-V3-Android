@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.support.annotation.StringRes
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.RecyclerView
 import android.text.Spannable
 import android.text.SpannableString
@@ -46,8 +47,6 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
-import piuk.blockchain.androidcoreui.utils.helperfunctions.CustomFont
-import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
 
 class PieChartDelegate<in T>(
     private val context: Context,
@@ -153,7 +152,7 @@ class PieChartDelegate<in T>(
     ) = PieEntry(fiatValue.toBigDecimal().toFloat(), label, this)
 
     private fun getCoinColors(empty: Boolean): List<Int> = if (empty) {
-        listOf(ContextCompat.getColor(context, R.color.primary_gray_light))
+        listOf(ContextCompat.getColor(context, R.color.primary_grey_light))
     } else {
         DashboardConfig.currencies.map {
             ContextCompat.getColor(context, it.colorRes())
@@ -163,11 +162,8 @@ class PieChartDelegate<in T>(
     private fun configureChart(empty: Boolean) {
         viewHolder?.chart?.apply {
             setDrawCenterText(true)
-            loadFont(
-                context,
-                CustomFont.MONTSERRAT_REGULAR
-            ) { setCenterTextTypeface(it) }
-            setCenterTextColor(ContextCompat.getColor(context, R.color.primary_gray_dark))
+            setCenterTextTypeface(ResourcesCompat.getFont(context, R.font.inter_medium))
+            setCenterTextColor(ContextCompat.getColor(context, R.color.primary_grey_dark))
             setCenterTextSize(16f)
 
             isDrawHoleEnabled = true
@@ -180,7 +176,7 @@ class PieChartDelegate<in T>(
             description.isEnabled = false
             setDrawEntryLabels(false)
 
-            setNoDataTextColor(ContextCompat.getColor(context, R.color.primary_gray_medium))
+            setNoDataTextColor(ContextCompat.getColor(context, R.color.primary_grey_medium))
             if (!empty) marker = ValueMarker(context, R.layout.item_pie_chart_marker)
         }
     }

@@ -67,8 +67,8 @@ class FiatValueFromStringTest {
     }
 
     @Test
-    fun `rounds up at midway - JPY`() {
-        FiatValue.fromMajorOrZero("JPY", "123.5") `should equal` 124.jpy()
+    fun `rounds down at midway - JPY`() {
+        FiatValue.fromMajorOrZero("JPY", "123.5") `should equal` 123.jpy()
     }
 
     @Test

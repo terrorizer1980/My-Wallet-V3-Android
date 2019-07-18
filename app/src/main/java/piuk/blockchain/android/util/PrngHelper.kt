@@ -30,7 +30,7 @@ class PrngHelper @Inject constructor(
             } catch (fatal: Exception) {
                 Timber.wtf(fatal)
                 context.toast(R.string.cannot_launch_app, ToastCustom.TYPE_ERROR)
-                accessState.logout(context)
+                accessState.logout()
             }
         }
     }

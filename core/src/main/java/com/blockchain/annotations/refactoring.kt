@@ -30,6 +30,7 @@ annotation class MergeCandidate(val why: String)
 annotation class SplitCandiate(val why: String)
 
 @Target(AnnotationTarget.CLASS,
+    AnnotationTarget.FIELD,
     AnnotationTarget.FUNCTION,
     AnnotationTarget.EXPRESSION,
     AnnotationTarget.PROPERTY)

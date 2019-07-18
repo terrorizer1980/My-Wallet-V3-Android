@@ -148,6 +148,16 @@ class CryptoCurrencyFormatterTest {
     }
 
     @Test
+    fun `formatWithUnit ETH rounding`() {
+        12_000_000_000L.formatWeiWithUnit() `should equal` "0.00000001 ETH"
+        15_000_000_000L.formatWeiWithUnit() `should equal` "0.00000001 ETH"
+        17_000_000_000L.formatWeiWithUnit() `should equal` "0.00000001 ETH"
+        120_000_000_000L.formatWeiWithUnit() `should equal` "0.00000012 ETH"
+        150_000_000_000L.formatWeiWithUnit() `should equal` "0.00000015 ETH"
+        170_000_000_000L.formatWeiWithUnit() `should equal` "0.00000017 ETH"
+    }
+
+    @Test
     fun `format in another locale`() {
         Locale.setDefault(Locale.FRANCE)
         CryptoValue.ZeroEth.format() `should equal` "0"

@@ -5,13 +5,13 @@ import info.blockchain.wallet.prices.data.PriceDatum
 import io.reactivex.Completable
 import io.reactivex.Single
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateService
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import timber.log.Timber
 import java.math.BigDecimal
 
 class ExchangeRateDataStore(
     private val exchangeRateService: ExchangeRateService,
-    private val prefsUtil: PrefsUtil
+    private val prefs: PersistentPrefs
 ) {
 
     // Ticker data
@@ -46,17 +46,17 @@ class ExchangeRateDataStore(
         val prefsKey = "LAST_KNOWN_${cryptoCurrency.symbol}_VALUE_FOR_CURRENCY_$currency"
 
         val lastKnown = try {
-            prefsUtil.getValue(prefsKey, "0.0").toDouble()
+            prefs.getValue(prefsKey, "0.0").toDouble()
         } catch (e: NumberFormatException) {
             Timber.e(e)
-            prefsUtil.setValue(prefsKey, "0.0")
+            prefs.setValue(prefsKey, "0.0")
             0.0
         }
 
         val lastPrice: Double? = tickerData?.get(currency)?.price
 
         if (lastPrice != null) {
-            prefsUtil.setValue("$prefsKey$currency", lastPrice.toString())
+            prefs.setValue("$prefsKey$currency", lastPrice.toString())
         }
 
         return lastPrice ?: lastKnown

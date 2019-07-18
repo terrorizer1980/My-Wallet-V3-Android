@@ -14,9 +14,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        tools:background="@color/white"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        tools:background="@color/white" />
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/dialog_icon"
@@ -36,7 +36,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="25dp"
         android:layout_marginEnd="20dp"
-        android:fontFamily="@font/montserrat_semi_bold"
+        android:fontFamily="@font/inter_medium"
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="@color/swap_error_dialog_title_text_color"
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:fontFamily="@font/montserrat_semi_bold"
+        android:fontFamily="@font/inter_medium"
         android:gravity="center_horizontal|top"
         android:paddingBottom="16dp"
         android:textColor="@color/swap_error_dialog_message_text_color"

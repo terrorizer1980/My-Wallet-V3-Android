@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.buysell.confirmation.sell
 
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.logging.LastTxUpdater
 import com.blockchain.nabu.extensions.fromIso8601ToUtc
 import com.crashlytics.android.answers.PurchaseEvent
@@ -7,6 +8,7 @@ import info.blockchain.balance.CryptoValue
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.StringUtils
@@ -35,7 +37,8 @@ class CoinifySellConfirmationPresenter @Inject constructor(
     private val sendDataManager: SendDataManager,
     private val stringUtils: StringUtils,
     private val environmentConfig: EnvironmentConfig,
-    private val lastTxUpdater: LastTxUpdater
+    private val lastTxUpdater: LastTxUpdater,
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig
 ) : BasePresenter<CoinifySellConfirmationView>() {
 
     internal var validatedSecondPassword: String? = null
@@ -88,12 +91,16 @@ class CoinifySellConfirmationPresenter @Inject constructor(
                 )
             }
             .flatMapObservable { trade ->
-                sendDataManager.getUnspentOutputs(account.xpub)
-                    .map {
+                Observables.zip(
+                    sendDataManager.getUnspentOutputs(account.xpub),
+                    coinSelectionRemoteConfig.enabled.toObservable()
+                )
+                    .map { (unspentOutputs, newCoinSelectionEnabled) ->
                         sendDataManager.getSpendableCoins(
-                            it,
+                            unspentOutputs,
                             CryptoValue.bitcoinFromSatoshis(displayModel.amountInSatoshis),
-                            displayModel.feePerKb
+                            displayModel.feePerKb,
+                            newCoinSelectionEnabled
                         )
                     }
                     .flatMap { spendable ->
@@ -105,7 +112,7 @@ class CoinifySellConfirmationPresenter @Inject constructor(
                                         account,
                                         spendable
                                     ),
-                                    (trade.transferIn.details as BlockchainDetails).account,
+                                    (trade.transferIn.details as BlockchainDetails).account!!,
                                     it,
                                     displayModel.absoluteFeeInSatoshis,
                                     displayModel.amountInSatoshis

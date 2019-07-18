@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- define the palette of colours available to the app -->
+    <!-- don't use these directly in the code/resources but -->
+    <!-- rather reference them though resources defined -->
+    <!-- in colors.xml, so we can more easily update them -->
+    <!-- in future -->
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <color name="red_000">#FFECEB</color>
+    <color name="red_100">#FFD9D6</color>
+    <color name="red_200">#FFC3BF</color>
+    <color name="red_300">#F6A7A1</color>
+    <color name="red_500">#EA5B50</color>
+    <color name="red_600">#D93B30</color>
+    <color name="red_800">#99180F</color>
+
+    <color name="orange_100">#FAE4CD</color>
+    <color name="orange_300">#FFC994</color>
+    <color name="orange_400">#FFB266</color>
+    <color name="orange_800">#B34400</color>
+
+    <color name="green_100">#D1F0DB</color>
+    <color name="green_600">#00875A</color>
+    <color name="green_800">#04593D</color>
+
+    <color name="grey_000">#F0F2F7</color>
+    <color name="grey_100">#DFE3EB</color>
+    <color name="grey_300">#B1B8C7</color>
+    <color name="grey_400">#98A1B2</color>
+    <color name="grey_600">#677185</color>
+    <color name="grey_700">#50596B</color>
+    <color name="grey_800">#353F52</color>
+    <color name="grey_900">#121D33</color>
+
+    <color name="grey_fade_400">#6605183D</color>
+
+    <color name="blue_100">#D8EBFD</color>
+    <color name="blue_200">#BBDBFC</color>
+    <color name="blue_600">#0C6CF2</color>
+    <color name="blue_800">#144699</color>
+    <color name="blue_900">#0D3578</color>
+
+    <color name="teal_200">#AEE1E6</color>
+    <color name="teal_300">#6CD0D9</color>
+    <color name="teal_500">#12A5B2</color>
+
+    <color name="btc">#FF9B22</color>
+    <color name="bch">#8DC351</color>
+    <color name="eth">#473BCB</color>
+    <color name="xlm">#000000</color>
+    <color name="pax">#00522C</color>
+
+</resources>
+
+

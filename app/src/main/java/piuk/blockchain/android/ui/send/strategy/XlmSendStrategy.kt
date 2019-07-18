@@ -22,6 +22,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.withLatestFrom
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
@@ -31,6 +32,7 @@ import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
+import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -39,6 +41,7 @@ class XlmSendStrategy(
     private val xlmDataManager: XlmDataManager,
     private val xlmFeesFetcher: XlmFeesFetcher,
     private val xlmTransactionSender: TransactionSender,
+    private val walletOptionsDataManager: WalletOptionsDataManager,
     private val fiatExchangeRates: FiatExchangeRates,
     private val sendFundsResultLocalizer: SendFundsResultLocalizer
 ) : SendStrategy<SendView>(currencyState) {
@@ -48,6 +51,26 @@ class XlmSendStrategy(
     private var memoSubject = BehaviorSubject.create<Memo>().apply {
         onNext(Memo.None)
     }
+
+    private val memoValid: Observable<Boolean>
+        get() = Observables.combineLatest(memoSubject, memoIsRequired) { memo, memoIsRequired ->
+            if (!memoIsRequired) {
+                return@combineLatest true
+            }
+            if (memo == Memo.None) {
+                false
+            } else isValid(memo)
+        }
+
+    private fun isValid(memo: Memo): Boolean {
+        return when {
+            memo.type == "text" -> memo.value.length in 1..28
+            memo.type == "id" -> memo.value.toLongOrNull() != null
+            else -> false
+        }
+    }
+
+    private var memoIsRequired = BehaviorSubject.createDefault<Boolean>(false)
     private var cryptoTextSubject = BehaviorSubject.create<CryptoValue>()
     private var continueClick = PublishSubject.create<Unit>()
     private var submitPaymentClick = PublishSubject.create<Unit>()
@@ -59,15 +82,14 @@ class XlmSendStrategy(
             addressSubject,
             xlmFeesFetcher.operationFee(FeeType.Regular).toObservable(),
             memoSubject
-        ) {
-            accountReference, value, address, fee, memo ->
-                SendDetails(
-                    from = accountReference,
-                    toAddress = address,
-                    value = value,
-                    fee = fee,
-                    memo = memo
-                )
+        ) { accountReference, value, address, fee, memo ->
+            SendDetails(
+                from = accountReference,
+                toAddress = address,
+                value = value,
+                fee = fee,
+                memo = memo
+            )
         }
 
     private val confirmationDetails: Observable<SendConfirmationDetails> =
@@ -188,6 +210,13 @@ class XlmSendStrategy(
         view.displayMemo(memo)
     }
 
+    override fun memoRequired(): Observable<Boolean> =
+        addressSubject.map {
+            walletOptionsDataManager.isXlmAddressExchange(it)
+        }.doOnNext {
+            memoIsRequired.onNext(it)
+        }
+
     override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) {}
 
     override fun onNoSecondPassword() {}
@@ -199,6 +228,7 @@ class XlmSendStrategy(
     @SuppressLint("CheckResult")
     override fun onViewReady() {
         view.setSendButtonEnabled(false)
+        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1)
 
         confirmationDetails
             .addToCompositeDisposable(this)
@@ -207,15 +237,26 @@ class XlmSendStrategy(
                 view.showPaymentDetails(details)
             }
 
+        memoIsRequired
+            .addToCompositeDisposable(this)
+            .subscribe {
+                if (it) {
+                    view?.hideInfoLink()
+                } else {
+                    view?.showInfoLink()
+                }
+            }
+
         allSendRequests
             .debounce(200, TimeUnit.MILLISECONDS)
+            .withLatestFrom(memoValid)
             .addToCompositeDisposable(this)
-            .flatMapSingle { sendDetails ->
+            .flatMapSingle { (sendDetails, validMemo) ->
                 xlmTransactionSender.dryRunSendFunds(sendDetails)
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSuccess {
-                        view.setSendButtonEnabled(it.success)
-                        if (!it.success && !sendDetails.toAddress.isEmpty()) {
+                        view.setSendButtonEnabled(it.success && validMemo)
+                        if (!it.success && sendDetails.toAddress.isNotEmpty()) {
                             autoClickAmount = it.errorValue
                             view.updateWarning(sendFundsResultLocalizer.localize(it))
                         } else {

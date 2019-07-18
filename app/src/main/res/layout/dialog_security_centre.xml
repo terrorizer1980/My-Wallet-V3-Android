@@ -38,7 +38,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:fontFamily="@font/montserrat"
                 tools:text="@string/security_centre_email_title" />
 
             <TextView
@@ -68,7 +67,8 @@
             style="@style/CustomDialogButton"
             android:layout_gravity="right"
             android:text="@string/not_now"
-            android:textColor="@color/primary_gray_dark"
+            android:contentDescription="@string/not_now"
+            android:textColor="@color/primary_grey_dark"
             android:visibility="gone"
             tools:ignore="RtlHardcoded"
             tools:visibility="visible" />

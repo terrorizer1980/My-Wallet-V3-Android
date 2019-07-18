@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.createwallet
 
+import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.content.Intent
 import com.crashlytics.android.answers.SignUpEvent
@@ -10,7 +11,7 @@ import piuk.blockchain.android.ui.recover.RecoverFundsActivity
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -22,7 +23,7 @@ import javax.inject.Inject
 
 class CreateWalletPresenter @Inject constructor(
     private val payloadDataManager: PayloadDataManager,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val appUtil: AppUtil,
     private val accessState: AccessState,
     private val prngFixer: PrngFixer
@@ -40,7 +41,7 @@ class CreateWalletPresenter @Inject constructor(
 
         if (mnemonic != null) recoveryPhrase = mnemonic
 
-        if (!recoveryPhrase.isEmpty()) {
+        if (recoveryPhrase.isNotEmpty()) {
             view.setTitleText(R.string.recover_funds)
             view.setNextText(R.string.dialog_continue)
         } else {
@@ -91,13 +92,14 @@ class CreateWalletPresenter @Inject constructor(
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun createWallet(email: String, password: String) {
         prngFixer.applyPRNGFixes()
 
         payloadDataManager.createHdWallet(password, view.getDefaultAccountName(), email)
             .doOnNext {
                 accessState.isNewlyCreated = true
-                prefsUtil.setValue(PrefsUtil.KEY_GUID, payloadDataManager.wallet!!.guid)
+                prefs.setValue(PersistentPrefs.KEY_WALLET_GUID, payloadDataManager.wallet!!.guid)
                 appUtil.sharedKey = payloadDataManager.wallet!!.sharedKey
             }
             .addToCompositeDisposable(this)
@@ -105,7 +107,7 @@ class CreateWalletPresenter @Inject constructor(
             .doOnTerminate { view.dismissProgressDialog() }
             .subscribe(
                 {
-                    prefsUtil.setValue(PrefsUtil.KEY_EMAIL, email)
+                    prefs.setValue(PersistentPrefs.KEY_EMAIL, email)
                     view.startPinEntryActivity()
                     Logging.logSignUp(
                         SignUpEvent().putSuccess(true)
@@ -122,6 +124,7 @@ class CreateWalletPresenter @Inject constructor(
             )
     }
 
+    @SuppressLint("CheckResult")
     private fun recoverWallet(email: String, password: String) {
         payloadDataManager.restoreHdWallet(
             recoveryPhrase,
@@ -130,15 +133,15 @@ class CreateWalletPresenter @Inject constructor(
             password
         ).doOnNext {
             accessState.isNewlyCreated = true
-            prefsUtil.setValue(PrefsUtil.KEY_GUID, payloadDataManager.wallet!!.guid)
+            prefs.setValue(PersistentPrefs.KEY_WALLET_GUID, payloadDataManager.wallet!!.guid)
             appUtil.sharedKey = payloadDataManager.wallet!!.sharedKey
         }.addToCompositeDisposable(this)
             .doOnSubscribe { view.showProgressDialog(R.string.restoring_wallet) }
             .doOnTerminate { view.dismissProgressDialog() }
             .subscribe(
                 {
-                    prefsUtil.setValue(PrefsUtil.KEY_EMAIL, email)
-                    prefsUtil.setValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, true)
+                    prefs.setValue(PersistentPrefs.KEY_EMAIL, email)
+                    prefs.setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, true)
                     view.startPinEntryActivity()
                     Logging.logCustom(
                         RecoverWalletEvent().putSuccess(true)

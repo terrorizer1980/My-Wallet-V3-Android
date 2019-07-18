@@ -42,13 +42,20 @@ interface BuySellBuildOrderView : View {
 
     fun updateAccountSelector(label: String)
 
-    fun startOrderConfirmation(orderType: OrderType, quote: BuyConfirmationDisplayModel)
+    fun startOrderConfirmation(
+        orderType: OrderType,
+        quote: BuyConfirmationDisplayModel,
+        cardAvailable: Boolean,
+        bankAvailable: Boolean
+    )
 
     fun showProgressDialog()
 
     fun dismissProgressDialog()
 
     fun displayFatalErrorDialog(errorMessage: String)
+
+    fun isCountrySupported(supported: Boolean)
 
     fun launchAddNewBankAccount(displayModel: SellConfirmationDisplayModel)
 

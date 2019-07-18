@@ -199,17 +199,6 @@ class SettingsDataManager(
         Observable.defer { settingsDataStore.getSettings() }
 
     /**
-     * Update the user's cryptoUnit unit preference and fetches an updated [Settings] object.
-     *
-     * @param btcUnit The user's preference for cryptoUnit unit
-     * @return An [Observable] object wrapping a [Settings] object
-     */
-    fun updateBtcUnit(btcUnit: String): Observable<Settings> =
-        rxPinning.call<ResponseBody> { settingsService.updateBtcUnit(btcUnit) }
-            .flatMap { fetchSettings() }
-            .applySchedulers()
-
-    /**
      * Update the user's fiat unit preference and fetches an updated [Settings] object.
      *
      * @param fiatUnit The user's preference for fiat unit

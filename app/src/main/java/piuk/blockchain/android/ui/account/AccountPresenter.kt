@@ -28,7 +28,7 @@ import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -46,7 +46,7 @@ class AccountPresenter @Inject internal constructor(
     private val bchDataManager: BchDataManager,
     private val metadataManager: MetadataManager,
     private val fundsDataManager: TransferFundsDataManager,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val appUtil: AppUtil,
     private val privateKeyFactory: PrivateKeyFactory,
     private val environmentSettings: EnvironmentConfig,
@@ -99,7 +99,7 @@ class AccountPresenter @Inject internal constructor(
                     if (payloadDataManager.wallet!!.isUpgraded && !triple.left.isEmpty()) {
                         view.onSetTransferLegacyFundsMenuItemVisible(true)
 
-                        if ((prefsUtil.getValue(KEY_WARN_TRANSFER_ALL, true) ||
+                        if ((prefs.getValue(KEY_WARN_TRANSFER_ALL, true) ||
                                 !isAutoPopup) &&
                             showWarningDialog
                         ) {

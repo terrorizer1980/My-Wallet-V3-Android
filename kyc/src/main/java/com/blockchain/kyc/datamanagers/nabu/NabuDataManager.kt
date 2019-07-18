@@ -23,6 +23,7 @@ import io.reactivex.SingleSource
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 interface NabuDataManager {
 
@@ -115,9 +116,9 @@ internal class NabuDataManagerImpl(
     private val retailWalletTokenService: RetailWalletTokenService,
     private val nabuTokenStore: NabuSessionTokenStore,
     private val appVersion: String,
-    private val deviceId: String,
     private val settingsDataManager: SettingsDataManager,
-    private val payloadDataManager: PayloadDataManager
+    private val payloadDataManager: PayloadDataManager,
+    private val prefs: PersistentPrefs
 ) : NabuDataManager {
 
     private val guid
@@ -150,12 +151,12 @@ internal class NabuDataManagerImpl(
     ): Single<NabuSessionTokenResponse> =
         emailSingle.flatMap {
             nabuService.getSessionToken(
-                offlineTokenResponse.userId,
-                offlineTokenResponse.token,
-                guid,
-                it,
-                deviceId,
-                appVersion
+                userId = offlineTokenResponse.userId,
+                offlineToken = offlineTokenResponse.token,
+                guid = guid,
+                email = it,
+                appVersion = appVersion,
+                deviceId = prefs.deviceId
             )
         }
 

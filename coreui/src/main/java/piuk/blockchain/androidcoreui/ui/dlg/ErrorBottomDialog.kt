@@ -21,12 +21,13 @@ import kotlinx.android.synthetic.main.error_bottom_dialog.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.utils.extensions.gone
-import java.lang.IllegalStateException
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 
-class ErrorBottomDialog : BottomSheetDialogFragment() {
+open class ErrorBottomDialog : BottomSheetDialogFragment() {
 
     @Parcelize
-    data class Content(
+    data class
+    Content(
         val title: CharSequence,
         val description: CharSequence,
         @StringRes val ctaButtonText: Int = 0,
@@ -37,10 +38,12 @@ class ErrorBottomDialog : BottomSheetDialogFragment() {
     private val analytics: Analytics by inject()
 
     private val clicksDisposable = CompositeDisposable()
+    open val layout = R.layout.error_bottom_dialog
 
     private lateinit var content: Content
 
     var onCtaClick: () -> Unit = {}
+    var onDismissClick: (() -> Unit) = { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +56,7 @@ class ErrorBottomDialog : BottomSheetDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val contextThemeWrapper = ContextThemeWrapper(activity, R.style.AppTheme)
         val themedInflater = inflater.cloneInContext(contextThemeWrapper)
-        return themedInflater.inflate(R.layout.error_bottom_dialog, container, false)
+        return themedInflater.inflate(layout, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,6 +74,7 @@ class ErrorBottomDialog : BottomSheetDialogFragment() {
         clicksDisposable += button_dismiss.throttledClicks()
             .subscribeBy(onNext = {
                 analytics.logEvent(AnalyticsEvents.SwapErrorDialogDismissClicked)
+                onDismissClick()
                 dismiss()
             })
     }
@@ -84,7 +88,10 @@ class ErrorBottomDialog : BottomSheetDialogFragment() {
 
         with(content) {
             dialog_title.text = title
-            dialog_icon.setImageResource(icon)
+            icon.takeIf { it > 0 }?.let {
+                dialog_icon.setImageResource(it)
+                dialog_icon.visible()
+            } ?: dialog_icon.gone()
 
             dialog_body.apply {
                 text = description

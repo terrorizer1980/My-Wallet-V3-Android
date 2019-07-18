@@ -14,7 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
+import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
@@ -47,11 +47,11 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     DashboardView {
 
     override fun startKycFlowWithNavigator(campaignType: CampaignType) {
-        navigator().gotoKyc(campaignType)
+        navigator().launchKyc(campaignType)
     }
 
     override fun goToExchange(currency: CryptoCurrency?, defCurrency: String) {
-        (activity as?Context)?.let {
+        (activity as? Context)?.let {
             HomebrewNavHostActivity.start(it, defCurrency, currency)
         }
     }

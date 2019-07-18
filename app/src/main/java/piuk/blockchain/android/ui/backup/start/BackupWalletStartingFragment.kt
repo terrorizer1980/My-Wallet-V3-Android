@@ -45,12 +45,12 @@ class BackupWalletStartingFragment :
                         throw IllegalStateException("This point should never be reached")
                     }
 
-                    override fun onSecondPasswordValidated(validateSecondPassword: String) {
+                    override fun onSecondPasswordValidated(validatedSecondPassword: String) {
                         val fragment = BackupWalletWordListFragment().apply {
                             arguments = Bundle().apply {
                                 putString(
                                     BackupWalletWordListFragment.ARGUMENT_SECOND_PASSWORD,
-                                    validateSecondPassword
+                                    validatedSecondPassword
                                 )
                             }
                         }

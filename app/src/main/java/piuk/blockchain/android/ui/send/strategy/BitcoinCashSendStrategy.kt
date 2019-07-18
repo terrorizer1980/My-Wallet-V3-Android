@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.serialization.JsonSerializableAccount
 import info.blockchain.api.data.UnspentOutputs
 import info.blockchain.balance.CryptoCurrency
@@ -16,6 +17,7 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import info.blockchain.wallet.util.Tools
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Observables
 import io.reactivex.subjects.PublishSubject
 import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.Address
@@ -62,6 +64,7 @@ class BitcoinCashSendStrategy(
     private val currencyFormatter: CurrencyFormatManager,
     private val exchangeRates: FiatExchangeRates,
     private val prefs: PersistentPrefs,
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
@@ -381,7 +384,7 @@ class BitcoinCashSendStrategy(
             toLabel = pending.displayableReceivingLabel!!.removeBchUri()
 
             cryptoUnit = CryptoCurrency.BCH.symbol
-            fiatUnit = exchangeRates.fiatUnit
+            fiatUnit = prefs.selectedFiatCurrency
             fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode)
 
             // -----
@@ -406,7 +409,7 @@ class BitcoinCashSendStrategy(
     }
 
     private fun resetAccountList() {
-        setReceiveHint(getAddressList().size)
+        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BCH, getAddressList().size)
     }
 
     private fun clearReceivingAddress() {
@@ -422,10 +425,6 @@ class BitcoinCashSendStrategy(
     }
 
     private fun getAddressList(): List<ItemAccount> = walletAccountHelper.getAccountItems(CryptoCurrency.BCH)
-
-    private fun setReceiveHint(accountsCount: Int) {
-        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BCH, accountsCount)
-    }
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
         val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount()
@@ -491,9 +490,10 @@ class BitcoinCashSendStrategy(
     private fun getSuggestedAbsoluteFee(
         coins: UnspentOutputs,
         amountToSend: CryptoValue,
-        feePerKb: BigInteger
+        feePerKb: BigInteger,
+        useNewCoinSelection: Boolean
     ): BigInteger {
-        val spendableCoins = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb)
+        val spendableCoins = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb, useNewCoinSelection)
         return spendableCoins.absoluteFee
     }
 
@@ -573,11 +573,14 @@ class BitcoinCashSendStrategy(
 
         val address = sendingObj.address!!
 
-        getUnspentApiResponse(address)
+        Observables.zip(
+            getUnspentApiResponse(address),
+            coinSelectionRemoteConfig.enabled.toObservable()
+        )
             .debounce(200, TimeUnit.MILLISECONDS)
             .applySchedulers()
             .subscribe(
-                { coins ->
+                { (coins, newCoinSelectionEnabled) ->
                     val amountToSend = currencyFormatter.getSatoshisFromText(
                         amountToSendText,
                         getDefaultDecimalSeparator()
@@ -594,10 +597,17 @@ class BitcoinCashSendStrategy(
                     updateFee(getSuggestedAbsoluteFee(
                         coins,
                         CryptoValue.bitcoinCashFromSatoshis(amountToSend),
-                        feePerKb
+                        feePerKb,
+                        newCoinSelectionEnabled
                     ))
 
-                    suggestedFeePayment(coins, CryptoValue.bitcoinCashFromSatoshis(amountToSend), spendAll, feePerKb)
+                    suggestedFeePayment(
+                        coins,
+                        CryptoValue.bitcoinCashFromSatoshis(amountToSend),
+                        spendAll,
+                        feePerKb,
+                        newCoinSelectionEnabled
+                    )
                 },
                 { throwable ->
                     Timber.e(throwable)
@@ -617,12 +627,18 @@ class BitcoinCashSendStrategy(
         coins: UnspentOutputs,
         amountToSend: CryptoValue,
         spendAll: Boolean,
-        feePerKb: BigInteger
+        feePerKb: BigInteger,
+        useNewCoinSelection: Boolean
     ) {
         var amount = amountToSend.amount
 
         // Calculate sweepable amount to display max available
-        val sweepBundle = sendDataManager.getMaximumAvailable(amountToSend.currency, coins, feePerKb)
+        val sweepBundle = sendDataManager.getMaximumAvailable(
+            amountToSend.currency,
+            coins,
+            feePerKb,
+            useNewCoinSelection
+        )
         val sweepableAmount = sweepBundle.left
 
         updateMaxAvailable(sweepableAmount)
@@ -632,7 +648,12 @@ class BitcoinCashSendStrategy(
             view?.updateCryptoAmount(CryptoValue(CryptoCurrency.BCH, sweepableAmount))
         }
 
-        val unspentOutputBundle = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb)
+        val unspentOutputBundle = sendDataManager.getSpendableCoins(
+            coins,
+            amountToSend,
+            feePerKb,
+            useNewCoinSelection
+        )
 
         pendingTransaction.bigIntAmount = amount
         pendingTransaction.unspentOutputBundle = unspentOutputBundle

@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.login
 
-import com.blockchain.android.testutils.LazyImpl
+import com.blockchain.android.testutils.DaggerLazyImpl
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.eq
@@ -16,7 +16,7 @@ import org.junit.Test
 import org.mockito.Mockito
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import javax.net.ssl.SSLPeerUnverifiedException
@@ -28,11 +28,11 @@ class LoginPresenterTest {
     private var appUtil: AppUtil = mock()
     private var payloadDataManager: PayloadDataManager =
         mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
-    private var prefsUtil: PrefsUtil = mock()
+    private var prefsUtil: PersistentPrefs = mock()
 
     @Before
     fun setUp() {
-        subject = LoginPresenter(appUtil, LazyImpl(payloadDataManager), prefsUtil)
+        subject = LoginPresenter(appUtil, DaggerLazyImpl(payloadDataManager), prefsUtil)
         subject.initView(view)
     }
 
@@ -55,9 +55,9 @@ class LoginPresenterTest {
         verify(appUtil).clearCredentials()
         verify(appUtil).sharedKey = sharedKey
         verifyNoMoreInteractions(appUtil)
-        verify(prefsUtil).setValue(PrefsUtil.KEY_GUID, guid)
-        verify(prefsUtil).setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true)
-        verify(prefsUtil).setValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, true)
+        verify(prefsUtil).setValue(PersistentPrefs.KEY_WALLET_GUID, guid)
+        verify(prefsUtil).setValue(PersistentPrefs.KEY_EMAIL_VERIFIED, true)
+        verify(prefsUtil).setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, true)
         verifyNoMoreInteractions(prefsUtil)
         verify(payloadDataManager).handleQrCode(qrCode)
         verify(payloadDataManager, atLeastOnce()).wallet

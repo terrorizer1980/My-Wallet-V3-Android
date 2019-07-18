@@ -37,6 +37,7 @@ public class PaymentTest extends MockedResponseTest {
     private Payment subject = new Payment();
     private NetworkParameters bitcoinMainNetParams = BitcoinMainNetParams.get();
     private NetworkParameters bitcoinCashMainNetParams = BitcoinCashMainNetParams.get();
+    private boolean useNewCoinSelection = true;
 
     private String getTestData(String file) throws Exception {
         URI uri = getClass().getClassLoader().getResource(file).toURI();
@@ -82,7 +83,7 @@ public class PaymentTest extends MockedResponseTest {
 
     private long calculateFee(int outputs, int inputs, BigInteger feePerKb) {
         // Manually calculated fee
-        long size = (outputs * 34) + (inputs * 148) + 10;//36840L
+        long size = (outputs * 34) + (inputs * 149) + 10;//36840L
         double txBytes = ((double) size / 1000.0);
         return (long) Math.ceil(feePerKb.doubleValue() * txBytes);
     }
@@ -115,7 +116,7 @@ public class PaymentTest extends MockedResponseTest {
     public void getMaximumAvailable() throws IOException {
         UnspentOutputs unspentOutputs = UnspentOutputs.fromJson(UnspentTestData.apiResponseString);
         Pair<BigInteger, BigInteger> sweepBundle = subject
-                .getMaximumAvailable(unspentOutputs, BigInteger.valueOf(30000L), false);
+                .getMaximumAvailable(unspentOutputs, BigInteger.valueOf(30000L), false, useNewCoinSelection);
 
         long feeManual = calculateFee(1, UnspentTestData.UNSPENT_OUTPUTS_COUNT, BigInteger.valueOf(30000L));
 
@@ -134,7 +135,7 @@ public class PaymentTest extends MockedResponseTest {
         long feeManual = calculateFee(outputs, inputs, BigInteger.valueOf(30000L));
         BigInteger spendAmountMinusFee = BigInteger.valueOf(spendAmount - feeManual);
         SpendableUnspentOutputs paymentBundle = subject
-                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false);
+                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false, useNewCoinSelection);
 
         assertEquals(inputs, paymentBundle.getSpendableOutputs().size());
         assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue());
@@ -153,10 +154,10 @@ public class PaymentTest extends MockedResponseTest {
         long feeManual = calculateFee(outputs, inputs, BigInteger.valueOf(30000L));
         BigInteger spendAmountMinusFee = BigInteger.valueOf(spendAmount - feeManual);
         SpendableUnspentOutputs paymentBundle = subject
-                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false);
+                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false, useNewCoinSelection);
 
         assertEquals(inputs, paymentBundle.getSpendableOutputs().size());
-        assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue());
+        assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue() - consumedAmount);
         assertEquals(consumedAmount, Math.abs(paymentBundle.getConsumedAmount().longValue()));
     }
 
@@ -172,10 +173,10 @@ public class PaymentTest extends MockedResponseTest {
         long feeManual = calculateFee(outputs, inputs, BigInteger.valueOf(30000L));
         BigInteger spendAmountMinusFee = BigInteger.valueOf(spendAmount - feeManual);
         SpendableUnspentOutputs paymentBundle = subject
-                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false);
+                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false, useNewCoinSelection);
 
         assertEquals(inputs, paymentBundle.getSpendableOutputs().size());
-        assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue());
+        assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue() - consumedAmount);
         assertEquals(consumedAmount, Math.abs(paymentBundle.getConsumedAmount().longValue()));
     }
 
@@ -190,7 +191,7 @@ public class PaymentTest extends MockedResponseTest {
         long feeManual = calculateFee(outputs, inputs, BigInteger.valueOf(30000L));
         BigInteger spendAmountMinusFee = BigInteger.valueOf(spendAmount - feeManual);
         SpendableUnspentOutputs paymentBundle = subject
-                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false);
+                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false, useNewCoinSelection);
 
         assertEquals(inputs, paymentBundle.getSpendableOutputs().size());
         assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue());
@@ -209,10 +210,10 @@ public class PaymentTest extends MockedResponseTest {
         long feeManual = calculateFee(outputs, inputs, BigInteger.valueOf(30000L));
         BigInteger spendAmountMinusFee = BigInteger.valueOf(spendAmount - feeManual);
         SpendableUnspentOutputs paymentBundle = subject
-                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false);
+                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false, useNewCoinSelection);
 
         assertEquals(inputs, paymentBundle.getSpendableOutputs().size());
-        assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue());
+        assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue() - consumedAmount);
         assertEquals(consumedAmount, Math.abs(paymentBundle.getConsumedAmount().longValue()));
     }
 
@@ -228,10 +229,10 @@ public class PaymentTest extends MockedResponseTest {
         long feeManual = calculateFee(outputs, inputs, BigInteger.valueOf(30000L));
         BigInteger spendAmountMinusFee = BigInteger.valueOf(spendAmount - feeManual);
         SpendableUnspentOutputs paymentBundle = subject
-                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false);
+                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false, useNewCoinSelection);
 
         assertEquals(inputs, paymentBundle.getSpendableOutputs().size());
-        assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue());
+        assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue() - consumedAmount);
         assertEquals(consumedAmount, Math.abs(paymentBundle.getConsumedAmount().longValue()));
     }
 
@@ -246,7 +247,7 @@ public class PaymentTest extends MockedResponseTest {
         long feeManual = calculateFee(outputs, inputs, BigInteger.valueOf(30000L));
         BigInteger spendAmountMinusFee = BigInteger.valueOf(spendAmount - feeManual);
         SpendableUnspentOutputs paymentBundle = subject
-                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false);
+                .getSpendableCoins(unspentOutputs, spendAmountMinusFee, BigInteger.valueOf(30000L), false, useNewCoinSelection);
 
         assertEquals(inputs, paymentBundle.getSpendableOutputs().size());
         assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue());
@@ -265,7 +266,8 @@ public class PaymentTest extends MockedResponseTest {
                 .getSpendableCoins(unspentOutputs,
                         BigInteger.valueOf(spendAmount),
                         BigInteger.valueOf(30000L),
-                        false);
+                        false,
+                        useNewCoinSelection);
         long feeManual = calculateFee(outputs, inputs, BigInteger.valueOf(30000L));
         assertEquals(inputs, paymentBundle.getSpendableOutputs().size());
         assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue());
@@ -286,7 +288,8 @@ public class PaymentTest extends MockedResponseTest {
                 .getSpendableCoins(unspentOutputs,
                         BigInteger.valueOf(spendAmount - feeManual),
                         BigInteger.valueOf(30000L),
-                        false);
+                        false,
+                        useNewCoinSelection);
 
         assertEquals(inputs, paymentBundle.getSpendableOutputs().size());
         assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue());
@@ -298,7 +301,8 @@ public class PaymentTest extends MockedResponseTest {
         // 8 available Payment. [80200,70000,60000,50000,40000,30000,20000,10000]
         UnspentOutputs unspentOutputs = UnspentOutputs.fromJson(UnspentTestData.apiResponseString);
 
-        long spendAmount = 80200L + 70000L + 60000L + 50000L + 40000L + 30000L + 20000L + 10000L - Payment.DUST.longValue();
+        long consumedAmount = Payment.DUST.longValue();
+        long spendAmount = 80200L + 70000L + 60000L + 50000L + 40000L + 30000L + 20000L + 10000L - consumedAmount;
         int inputs = 8; // Coins
         int outputs = 1; // No change
         long feeManual = calculateFee(outputs, inputs, BigInteger.valueOf(30000L));
@@ -307,10 +311,11 @@ public class PaymentTest extends MockedResponseTest {
                 .getSpendableCoins(unspentOutputs,
                         BigInteger.valueOf(spendAmount - feeManual),
                         BigInteger.valueOf(30000L),
-                        false);
+                        false,
+                        useNewCoinSelection);
 
         assertEquals(inputs, paymentBundle.getSpendableOutputs().size());
-        assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue());
+        assertEquals(feeManual, paymentBundle.getAbsoluteFee().longValue() - consumedAmount);
         assertEquals(Payment.DUST.longValue(), Math.abs(paymentBundle.getConsumedAmount().longValue()));
     }
 
@@ -329,7 +334,8 @@ public class PaymentTest extends MockedResponseTest {
                 .getSpendableCoins(unspentOutputs,
                         BigInteger.valueOf(spendAmount - feeManual),
                         BigInteger.valueOf(30000L),
-                        false);
+                        false,
+                        useNewCoinSelection);
 
         String toAddress = "1GYkgRtJmEp355xUtVFfHSFjFdbqjiwKmb";
         String changeAddress = "1GiEQZt9aX2XfDcj14tCC4xAWEJtq9EXW7";
@@ -360,7 +366,8 @@ public class PaymentTest extends MockedResponseTest {
                 unspentOutputs,
                 BigInteger.valueOf(spendAmount),
                 BigInteger.valueOf(30000L),
-                false);
+                false,
+                useNewCoinSelection);
 
         String toAddress = "1NNDb5uQU32CtQnBxnrfvJSjkWcREoFWe7";
         String changeAddress = "1JjHeuviHUxCRGcVXYjt3XTbX8H1qifUt2";
@@ -408,7 +415,8 @@ public class PaymentTest extends MockedResponseTest {
         SpendableUnspentOutputs paymentBundle = payment.getSpendableCoins(unspentOutputs,
                 BigInteger.valueOf(spendAmount - feeManual),
                 BigInteger.valueOf(30000L),
-                false);
+                false,
+                useNewCoinSelection);
 
         String toAddress = "1GYkgRtJmEp355xUtVFfHSFjFdbqjiwKmb";
         String changeAddress = "1GiEQZt9aX2XfDcj14tCC4xAWEJtq9EXW7";
@@ -432,13 +440,14 @@ public class PaymentTest extends MockedResponseTest {
         String unspentApiResponse = getTestData("transaction/bch_unspent_output.txt");
         UnspentOutputs unspentOutputs = UnspentOutputs.fromJson(unspentApiResponse);
 
-        BigInteger sweepable = BigInteger.valueOf(327036L);
-        BigInteger absoluteFee = BigInteger.valueOf(27);
+        BigInteger sweepable = BigInteger.valueOf(325000L);
+        BigInteger absoluteFee = BigInteger.valueOf(1000);
 
         SpendableUnspentOutputs paymentBundle = subject.getSpendableCoins(unspentOutputs,
                 sweepable,
                 absoluteFee,
-                false);
+                false,
+                useNewCoinSelection);
 
         String receiveAddress = "1JEggWq9VVaVnDmdTbYuHmJXN4icdF89Kq";
 
@@ -451,9 +460,9 @@ public class PaymentTest extends MockedResponseTest {
                 absoluteFee,
                 null);
 
-        assertEquals("0100000003cf759867fb887f188d4207f2f79582ed25ee00b9244f37a3e7555c13e1577a550000000000ffffffff5f2061d611a866145b99d75ac4d0885d399c7904b2851e443d0a19fddab86b8e0000000000ffffffff15261589a6a5d95842306db374b3a3edf77c3acfc46f77c023187b1830d5f7920100000000ffffffff017cfd0400000000001976a914bd10ab8b35f4343aa9c083d2b6217f2f33f1321288ac00000000",
+        assertEquals("0100000003cf759867fb887f188d4207f2f79582ed25ee00b9244f37a3e7555c13e1577a550000000000ffffffff5f2061d611a866145b99d75ac4d0885d399c7904b2851e443d0a19fddab86b8e0000000000ffffffff15261589a6a5d95842306db374b3a3edf77c3acfc46f77c023187b1830d5f7920100000000ffffffff0188f50400000000001976a914bd10ab8b35f4343aa9c083d2b6217f2f33f1321288ac00000000",
                 Hex.toHexString(tx.bitcoinSerialize()));
-        assertEquals("e3b0013c04cb7169037d9c38065a852ba0de24a929e87e299c2fe773e3815f5d",
+        assertEquals("6e964bc899795579f0f30c2f1834d87168a625133cb9ea13e66d35db781b13ad",
                 tx.getHashAsString());
 
         List<ECKey> keys = new ArrayList<>();
@@ -465,9 +474,9 @@ public class PaymentTest extends MockedResponseTest {
         subject.signBchTransaction(bitcoinCashMainNetParams, tx, keys);
 
         //Assert
-        assertEquals("0100000003cf759867fb887f188d4207f2f79582ed25ee00b9244f37a3e7555c13e1577a55000000006a473044022069e5f3d471baace21221038888a9594b875a3b37724e0fa1b0c5800b1fddb85d022051226d123de59e62ea17dfc11fc7beef625e977063507939997b0a44bfd702d94121034eeeae0afd407733476ec3b6d729ffaae408ffd678eeba8c4b8fd2fb4b716f87ffffffff5f2061d611a866145b99d75ac4d0885d399c7904b2851e443d0a19fddab86b8e000000006b483045022100a939cba6701f55499f4b8b8f777d820eaa626ab559a8752039b6c3717e297fc7022068d025a99b41886d6228efd0fdb57a039ec72362567cab77b792f565bd7912c841210248eb68f88e4a90df7159887c0acdb888c643d13fd2df45c3b4c45414f11d7635ffffffff15261589a6a5d95842306db374b3a3edf77c3acfc46f77c023187b1830d5f792010000006b483045022100b14958c39c42d20f52e36ba9f3fb8d6b7e97528ef5ea793bd4f108cb2d5f1cb9022002f3f9dcaca4de2f8c9a60527edcbd6e0740fd1031ee781197de46064d6f60dd412103183db6bf9edfa63716905fa267546ffd59647cc00448a7a6aa6c0c44bf4d0a87ffffffff017cfd0400000000001976a914bd10ab8b35f4343aa9c083d2b6217f2f33f1321288ac00000000",
+        assertEquals("0100000003cf759867fb887f188d4207f2f79582ed25ee00b9244f37a3e7555c13e1577a55000000006a47304402201f009ba558ce6ad647c9087c55301f0a7e8072d33b65ea9cef67047ad43f6859022033f61ee2392c5fdd2210e42d061dae87d015a6851aa1e037ae996d56fb37e2a84121034eeeae0afd407733476ec3b6d729ffaae408ffd678eeba8c4b8fd2fb4b716f87ffffffff5f2061d611a866145b99d75ac4d0885d399c7904b2851e443d0a19fddab86b8e000000006b483045022100b39497fb51dfa53be7f91a89427d9d0f19ef5df4fdc5f44fb60b1dd23a4b342e022065540347284aa470acbddb30ceed5e6670e99472d1f9751f1a8f2272c6aa1e2441210248eb68f88e4a90df7159887c0acdb888c643d13fd2df45c3b4c45414f11d7635ffffffff15261589a6a5d95842306db374b3a3edf77c3acfc46f77c023187b1830d5f792010000006a4730440220148ca25a2347bad36a6eb456ee786a3ebc87e67ece37ff10182ddd1f8c804bff02203c07a42de190b2e31df91dfbe6107dff5c622211361de262320294be9abac16b412103183db6bf9edfa63716905fa267546ffd59647cc00448a7a6aa6c0c44bf4d0a87ffffffff0188f50400000000001976a914bd10ab8b35f4343aa9c083d2b6217f2f33f1321288ac00000000",
                 Hex.toHexString(tx.bitcoinSerialize()));
-        assertEquals("e93cf0fb44ff3c3d9f2cde59d0a69a3b3daac0f7991f92bc8389f33c9a55f762",
+        assertEquals("e2481dcb811797e46c9223813d16356967163e9417086e0aca70217fdef01041",
                 tx.getHashAsString());
     }
 }

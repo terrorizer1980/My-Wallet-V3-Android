@@ -13,6 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
@@ -45,14 +47,12 @@ import com.blockchain.kyc.models.nabu.Kyc2TierState;
 import com.blockchain.kycui.navhost.KycNavHostActivity;
 import com.blockchain.kycui.navhost.models.CampaignType;
 import com.blockchain.kycui.settings.KycStatusPreference;
-import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity;
 import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.notifications.analytics.AnalyticsEvents;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.mukesh.countrypicker.fragments.CountryPicker;
 import com.mukesh.countrypicker.models.Country;
 
-import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.util.FormatsUtil;
 import info.blockchain.wallet.util.PasswordUtil;
@@ -64,7 +64,7 @@ import piuk.blockchain.android.ui.balance.BalanceFragment;
 import piuk.blockchain.android.ui.fingerprint.FingerprintDialog;
 import piuk.blockchain.android.ui.fingerprint.FingerprintStage;
 import piuk.blockchain.android.util.RootUtil;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
@@ -77,11 +77,11 @@ import javax.inject.Inject;
 import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
+import static com.blockchain.ui.urllinks.LinksKt.URL_PRIVACY_POLICY;
+import static com.blockchain.ui.urllinks.LinksKt.URL_TOS_POLICY;
 import static piuk.blockchain.android.R.string.success;
-import static piuk.blockchain.android.constants.SettingsConstantsKt.URL_PRIVACY_POLICY;
-import static piuk.blockchain.android.constants.SettingsConstantsKt.URL_TOS_POLICY;
-import static piuk.blockchain.android.ui.auth.PinEntryFragment.KEY_VALIDATING_PIN_FOR_RESULT;
-import static piuk.blockchain.android.ui.auth.PinEntryFragment.REQUEST_CODE_VALIDATE_PIN;
+import static piuk.blockchain.android.ui.auth.PinEntryFragmentKt.KEY_VALIDATING_PIN_FOR_RESULT;
+import static piuk.blockchain.android.ui.auth.PinEntryFragmentKt.REQUEST_CODE_VALIDATE_PIN;
 import static piuk.blockchain.android.ui.settings.UpdateEmailDialogKt.showUpdateEmailDialog;
 
 public class SettingsFragment extends PreferenceFragmentCompat
@@ -137,11 +137,16 @@ public class SettingsFragment extends PreferenceFragmentCompat
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         settingsPresenter.initView(this);
-        settingsPresenter.onViewReady();
 
         analytics.logEvent(AnalyticsEvents.Settings);
         Logging.INSTANCE.logContentView(new ContentViewEvent()
                 .putContentName(getClass().getSimpleName()));
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        settingsPresenter.onViewReady();
     }
 
     @SuppressLint("NewApi")
@@ -198,7 +203,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
         screenshotPref = (SwitchPreferenceCompat) findPreference("screenshots_enabled");
         screenshotPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            settingsPresenter.updatePreferences(PrefsUtil.KEY_SCREENSHOTS_ENABLED, (Boolean) newValue);
+            settingsPresenter.updatePreferences(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, (Boolean) newValue);
             return true;
         });
 
@@ -614,7 +619,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 .setTitle(R.string.select_currency)
                 .setSingleChoiceItems(currencies, selected, (dialog, which) -> {
                     String fiatUnit = currencies[which].substring(currencies[which].length() - 3);
-                    settingsPresenter.updatePreferences(PrefsUtil.KEY_SELECTED_FIAT, fiatUnit);
                     settingsPresenter.updateFiatUnit(fiatUnit);
                     dialog.dismiss();
                 })
@@ -870,8 +874,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     @Override
     public void launchKycFlow() {
-        KycNavHostActivity.start(requireContext(), CampaignType.Swap);
-        requireActivity().finish();
+        KycNavHostActivity.start(requireContext(), CampaignType.Swap, true);
     }
 
     private void setCountryFlag(TextView tvCountry, String dialCode, int flagResourceId) {

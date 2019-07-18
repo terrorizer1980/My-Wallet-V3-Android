@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.upgrade
 
-import android.content.Context
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.times
@@ -16,7 +15,7 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
 
@@ -24,7 +23,7 @@ class UpgradeWalletPresenterTest {
 
     private lateinit var subject: UpgradeWalletPresenter
     private val mockActivity: UpgradeWalletView = mock()
-    private val mockPrefs: PrefsUtil = mock()
+    private val mockPrefs: PersistentPrefs = mock()
     private val mockAppUtil: AppUtil = mock()
     private val mockAccessState: AccessState = mock()
     private val mockAuthDataManager: AuthDataManager = mock()
@@ -204,9 +203,9 @@ class UpgradeWalletPresenterTest {
         // Act
         subject.onContinueClicked()
         // Assert
-        verify(mockPrefs).setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true)
+        verify(mockPrefs).setValue(PersistentPrefs.KEY_EMAIL_VERIFIED, true)
         verifyNoMoreInteractions(mockPrefs)
-        verify(mockAccessState).setIsLoggedIn(true)
+        verify(mockAccessState).isLoggedIn = true
         verifyNoMoreInteractions(mockAccessState)
         verify(mockAppUtil).restartAppWithVerifiedPin(LauncherActivity::class.java)
         verifyNoMoreInteractions(mockAppUtil)
@@ -215,11 +214,10 @@ class UpgradeWalletPresenterTest {
     @Test
     fun onBackButtonPressed() {
         // Arrange
-        val mockContext: Context = mock()
         // Act
-        subject.onBackButtonPressed(mockContext)
+        subject.onBackButtonPressed()
         // Assert
-        verify(mockAccessState).logout(mockContext)
+        verify(mockAccessState).logout()
         verifyNoMoreInteractions(mockAccessState)
         verify(mockActivity).onBackButtonPressed()
         verifyNoMoreInteractions(mockActivity)

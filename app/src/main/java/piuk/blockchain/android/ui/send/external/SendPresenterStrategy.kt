@@ -3,7 +3,6 @@ package piuk.blockchain.android.ui.send.external
 import android.text.Editable
 import android.widget.EditText
 import com.blockchain.serialization.JsonSerializableAccount
-import com.blockchain.transactions.Memo
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.data.FeeOptions
 import piuk.blockchain.android.ui.send.DisplayFeeOptions
@@ -49,7 +48,9 @@ abstract class SendPresenterStrategy<View : piuk.blockchain.androidcoreui.ui.bas
 
     abstract fun onAddressTextChange(address: String)
 
-    abstract fun onMemoChange(memo: Memo)
+    abstract fun onMemoChange(memoText: String)
+
+    abstract fun onMemoTypeChanged(memoType: Int)
 
     abstract fun onCryptoTextChange(cryptoText: String)
 
@@ -67,3 +68,7 @@ abstract class SendPresenterStrategy<View : piuk.blockchain.androidcoreui.ui.bas
 
     fun getDefaultDecimalSeparator() = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
 }
+
+const val MEMO_TEXT_NONE = -1
+const val MEMO_TEXT_TYPE = 0
+const val MEMO_ID_TYPE = 1

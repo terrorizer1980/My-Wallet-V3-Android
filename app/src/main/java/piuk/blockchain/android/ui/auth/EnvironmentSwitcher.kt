@@ -5,16 +5,16 @@ import android.content.Context
 import android.support.v7.app.AlertDialog
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.access.AccessState
-import piuk.blockchain.android.ui.account.AccountPresenter
 import piuk.blockchain.android.util.AppRate
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.utils.AppUtil
-import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 
 internal class EnvironmentSwitcher(
     private val context: Context,
-    private val prefsUtil: PrefsUtil,
-    private val appUtil: AppUtil
+    private val prefs: PersistentPrefs,
+    private val appUtil: AppUtil,
+    private val loginState: AccessState
 ) {
 
     fun showDebugMenu() {
@@ -30,28 +30,23 @@ internal class EnvironmentSwitcher(
                     LauncherActivity::class.java
                 )
             }
+            .setPositiveButton("Randomise Device Id") { _, _ -> randomiseDeviceId() }
             .setNeutralButton(android.R.string.cancel, null)
             .create()
             .show()
     }
 
     private fun resetPrefs() {
-        with(prefsUtil) {
-            removeValue(PrefsUtil.KEY_PIN_FAILS)
-            removeValue(PrefsUtil.KEY_SECURITY_TIME_ELAPSED)
-            removeValue(PrefsUtil.KEY_SECURITY_BACKUP_NEVER)
-            removeValue(PrefsUtil.KEY_SECURITY_TWO_FA_NEVER)
-            removeValue(AccountPresenter.KEY_WARN_TRANSFER_ALL)
-            removeValue(PrefsUtil.KEY_APP_VISITS)
-            removeValue(PrefsUtil.KEY_ONBOARDING_COMPLETE)
-            removeValue(PrefsUtil.KEY_LATEST_ANNOUNCEMENT_SEEN)
-            removeValue(PrefsUtil.KEY_LATEST_ANNOUNCEMENT_DISMISSED)
-            removeValue(PrefsUtil.KEY_CURRENCY_CRYPTO_STATE)
-        }
+        prefs.clear()
 
         AppRate.reset(context)
-        AccessState.getInstance().pin = null
+        loginState.pin = null
 
         context.toast("Prefs Reset")
+    }
+
+    private fun randomiseDeviceId() {
+        prefs.qaRandomiseDeviceId = true
+        context.toast("Device ID randomisation enabled")
     }
 }

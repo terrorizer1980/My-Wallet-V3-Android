@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.home;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.blockchain.kyc.models.nabu.CampaignData;
@@ -13,7 +13,7 @@ import com.blockchain.kycui.settings.KycStatusHelper;
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper;
 import com.blockchain.kycui.sunriver.SunriverCardType;
 import com.blockchain.lockbox.data.LockboxDataManager;
-import com.blockchain.preferences.FiatCurrencyPreference;
+import com.blockchain.nabu.CurrentTier;
 import com.blockchain.sunriver.XlmDataManager;
 
 import info.blockchain.balance.CryptoCurrency;
@@ -76,7 +76,6 @@ public class MainPresenter extends BasePresenter<MainView> {
     private AccessState accessState;
     private PayloadManagerWiper payloadManagerWiper;
     private PayloadDataManager payloadDataManager;
-    private Context applicationContext;
     private SettingsDataManager settingsDataManager;
     private BuyDataManager buyDataManager;
     private DynamicFeeCache dynamicFeeCache;
@@ -96,7 +95,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private CoinifyDataManager coinifyDataManager;
     private ExchangeService exchangeService;
     private KycStatusHelper kycStatusHelper;
-    private FiatCurrencyPreference fiatCurrencyPreference;
+    private CurrentTier currentKycTier;
     private LockboxDataManager lockboxDataManager;
     private DeepLinkProcessor deepLinkProcessor;
     private SunriverCampaignHelper sunriverCampaignHelper;
@@ -108,7 +107,6 @@ public class MainPresenter extends BasePresenter<MainView> {
                   AccessState accessState,
                   PayloadManagerWiper payloadManagerWiper,
                   PayloadDataManager payloadDataManager,
-                  Context applicationContext,
                   SettingsDataManager settingsDataManager,
                   BuyDataManager buyDataManager,
                   DynamicFeeCache dynamicFeeCache,
@@ -127,7 +125,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                   CoinifyDataManager coinifyDataManager,
                   ExchangeService exchangeService,
                   KycStatusHelper kycStatusHelper,
-                  FiatCurrencyPreference fiatCurrencyPreference,
+                  CurrentTier currentKycTier,
                   LockboxDataManager lockboxDataManager,
                   DeepLinkProcessor deepLinkProcessor,
                   SunriverCampaignHelper sunriverCampaignHelper,
@@ -139,7 +137,6 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.accessState = accessState;
         this.payloadManagerWiper = payloadManagerWiper;
         this.payloadDataManager = payloadDataManager;
-        this.applicationContext = applicationContext;
         this.settingsDataManager = settingsDataManager;
         this.buyDataManager = buyDataManager;
         this.dynamicFeeCache = dynamicFeeCache;
@@ -158,7 +155,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.coinifyDataManager = coinifyDataManager;
         this.exchangeService = exchangeService;
         this.kycStatusHelper = kycStatusHelper;
-        this.fiatCurrencyPreference = fiatCurrencyPreference;
+        this.currentKycTier = currentKycTier;
         this.lockboxDataManager = lockboxDataManager;
         this.deepLinkProcessor = deepLinkProcessor;
         this.sunriverCampaignHelper = sunriverCampaignHelper;
@@ -205,7 +202,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private void checkLockboxAvailability() {
         lockboxDataManager.isLockboxAvailable()
                 .compose(RxUtil.addSingleToCompositeDisposable(this))
-                .subscribe((enabled, ignored) -> getView().displayLockbox(enabled));
+                .subscribe((enabled, ignored) -> getView().displayLockboxMenu(enabled));
     }
 
     /**
@@ -240,20 +237,14 @@ public class MainPresenter extends BasePresenter<MainView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(RxUtil.addSingleToCompositeDisposable(this))
                 .subscribe(
-                        this::setExchangeVisiblity,
+                        getView()::enableSwapButton,
                         Timber::e
                 );
     }
 
-    private void setExchangeVisiblity(boolean showExchange) {
+    private void setDebugExchangeVisiblity() {
         if (BuildConfig.DEBUG) {
-            getView().showHomebrewDebug();
-        }
-
-        if (showExchange) {
-            getView().showExchange();
-        } else {
-            getView().hideExchange();
+            getView().showHomebrewDebugMenu();
         }
     }
 
@@ -298,6 +289,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                 )
                 .subscribe(() -> {
                     checkKycStatus();
+                    setDebugExchangeVisiblity();
                     if (AppUtil.Companion.isBuySellPermitted()) {
                         initBuyService();
                     } else {
@@ -411,7 +403,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         return ethDataManager.initEthereumWallet(
                 stringUtils.getString(R.string.eth_default_account_label),
                 stringUtils.getString(R.string.pax_default_account_label)
-                )
+        )
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
                 .doOnError(throwable -> {
                     Logging.INSTANCE.logException(throwable);
@@ -467,10 +459,10 @@ public class MainPresenter extends BasePresenter<MainView> {
     void unPair() {
         getView().clearAllDynamicShortcuts();
         payloadManagerWiper.wipe();
-        accessState.logout(applicationContext);
+        accessState.logout();
         accessState.unpairWallet();
         appUtil.restartApp(LauncherActivity.class);
-        accessState.setPIN(null);
+        accessState.setPin(null);
         buyDataManager.wipe();
         ethDataManager.clearEthAccountDetails();
         paxAccount.clear();
@@ -481,7 +473,6 @@ public class MainPresenter extends BasePresenter<MainView> {
     @Override
     public void onViewDestroyed() {
         super.onViewDestroyed();
-        appUtil.deleteQR();
         dismissAnnouncementIfOnboardingCompleted();
     }
 
@@ -502,7 +493,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     String getDefaultCurrency() {
-        return fiatCurrencyPreference.getFiatCurrencyPreference();
+        return prefs.getSelectedFiatCurrency();
     }
 
     private void initBuyService() {
@@ -573,12 +564,31 @@ public class MainPresenter extends BasePresenter<MainView> {
         buyDataManager.isCoinifyAllowed()
                 .compose(RxUtil.addObservableToCompositeDisposable(this))
                 .subscribe(coinifyAllowed -> {
-
-                    if (coinifyAllowed) {
+                    if (coinifyAllowed)
                         getView().onStartBuySell();
-                    } else {
-                        getView().onStartLegacyBuySell();
-                    }
                 }, Throwable::printStackTrace);
+    }
+
+    void clearLoginState() {
+        accessState.logout();
+    }
+
+    @SuppressLint("CheckResult")
+    void startSwapOrKyc(@Nullable CryptoCurrency targetCurrency /* = null*/) {
+        currentKycTier.usersCurrentTier()
+                .compose(RxUtil.addSingleToCompositeDisposable(this))
+                .subscribe(
+                        currentTier -> {
+                            if (currentTier > 0) {
+                                getView().launchSwap(
+                                        prefs.getSelectedFiatCurrency(),
+                                        targetCurrency
+                                );
+                            } else {
+                                getView().launchKyc(CampaignType.Swap);
+                            }
+                        },
+                        Timber::e
+                );
     }
 }

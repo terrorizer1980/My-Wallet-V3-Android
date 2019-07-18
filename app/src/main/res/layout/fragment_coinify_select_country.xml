@@ -15,7 +15,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/montserrat_semi_bold"
+        android:fontFamily="@font/inter_medium"
         android:gravity="center_horizontal"
         android:text="@string/buy_sell_select_country"
         android:textSize="22sp"

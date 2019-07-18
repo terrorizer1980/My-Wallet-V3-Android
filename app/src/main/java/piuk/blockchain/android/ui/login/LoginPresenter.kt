@@ -5,7 +5,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -18,7 +18,7 @@ import javax.net.ssl.SSLPeerUnverifiedException
 class LoginPresenter @Inject constructor(
     private val appUtil: AppUtil,
     private val payloadDataManager: Lazy<PayloadDataManager>,
-    private val prefsUtil: PrefsUtil
+    private val prefs: PersistentPrefs
 ) : BasePresenter<LoginView>() {
 
     override fun onViewReady() {
@@ -37,9 +37,9 @@ class LoginPresenter @Inject constructor(
             .doOnComplete { appUtil.sharedKey = dataManager.wallet!!.sharedKey }
             .doAfterTerminate { view.dismissProgressDialog() }
             .subscribe({
-                prefsUtil.setValue(PrefsUtil.KEY_GUID, dataManager.wallet!!.guid)
-                prefsUtil.setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true)
-                prefsUtil.setValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, true)
+                prefs.setValue(PersistentPrefs.KEY_WALLET_GUID, dataManager.wallet!!.guid)
+                prefs.setValue(PersistentPrefs.KEY_EMAIL_VERIFIED, true)
+                prefs.setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, true)
                 view.startPinEntryActivity()
 
                 Logging.logCustom(

@@ -15,8 +15,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_FAQ
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_FAQ
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_balance.*
 import kotlinx.android.synthetic.main.include_no_transaction_message.*
@@ -49,20 +48,11 @@ import piuk.blockchain.androidcoreui.utils.helperfunctions.onItemSelectedListene
 class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
     BalanceView,
     TxFeedClickListener {
-    override fun startKyc(campaignType: CampaignType) {
-        navigator().gotoKyc(campaignType)
-    }
-
-    override fun swap() {
-        navigator().swap(presenter.fiatDefaultCurrency(), presenter.getCurrentCurrency())
-    }
 
     private var accountsAdapter: AccountsAdapter? = null
     private var txFeedAdapter: TxFeedAdapter? = null
 
-    @Suppress("MemberVisibilityCanBePrivate")
-
-    val balancePresenter: BalancePresenter by inject()
+    private val balancePresenter: BalancePresenter by inject()
 
     private var spacerDecoration: BottomSpacerDecoration? = null
 
@@ -359,6 +349,10 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
             LocalBroadcastManager.getInstance(this)
                 .sendBroadcast(Intent(action))
         }
+    }
+
+    override fun startSwapOrKyc(targetCurrency: CryptoCurrency) {
+        navigator().launchSwapOrKyc(targetCurrency)
     }
 
     override fun getCurrentAccountPosition() = accounts_spinner.selectedItemPosition

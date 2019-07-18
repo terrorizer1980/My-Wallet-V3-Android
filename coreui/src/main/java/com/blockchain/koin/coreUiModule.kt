@@ -1,10 +1,11 @@
+@file:Suppress("USELESS_CAST")
+
 package com.blockchain.koin
 
 import com.blockchain.logging.EventLogger
 import com.blockchain.metadata.MetadataWarningLog
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.remoteconfig.RemoteConfiguration
-import com.blockchain.remoteconfig.featureFlag
 import com.blockchain.transactions.ResourceSendFundsResultLocalizer
 import com.blockchain.transactions.SendFundsResultLocalizer
 import com.blockchain.ui.chooser.AccountChooserPresenter
@@ -16,6 +17,7 @@ import piuk.blockchain.android.ui.dashboard.AsyncDashboardDataCalculator
 import piuk.blockchain.android.ui.dashboard.BalanceUpdater
 import piuk.blockchain.android.ui.dashboard.DashboardData
 import piuk.blockchain.androidcoreui.BuildConfig
+import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import piuk.blockchain.androidcoreui.utils.logging.AnswersEventLogger
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
@@ -71,18 +73,8 @@ val coreUiModule = applicationContext {
     factory { Answers.getInstance() }
 
     factory { AnswersEventLogger(get()) as EventLogger }
-}
 
-val coreUiFeatureFlagsModule = applicationContext {
-    factory("ff_notify_coinify_users_to_kyc") {
-        get<RemoteConfig>().featureFlag("android_notify_coinify_users_to_kyc")
-    }
-
-    factory("ff_get_free_xlm_popup") {
-        get<RemoteConfig>().featureFlag("get_free_xlm_popup")
-    }
-
-    factory("ff_sunriver_has_large_backlog") {
-        get<RemoteConfig>().featureFlag("sunriver_has_large_backlog")
+    bean {
+        OverlayDetection(get())
     }
 }

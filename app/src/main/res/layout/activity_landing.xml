@@ -85,7 +85,6 @@
         android:layout_marginTop="8dp"
         android:layout_marginRight="48dp"
         android:contentDescription="@string/recover_funds"
-        android:fontFamily="@font/montserrat"
         android:gravity="center"
         android:paddingLeft="48dp"
         android:paddingRight="48dp"

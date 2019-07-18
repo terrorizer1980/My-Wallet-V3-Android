@@ -13,7 +13,6 @@
             android:id="@+id/text_view_more_info_splash_title"
             android:layout_width="match_parent"
             android:gravity="center"
-            android:fontFamily="@font/montserrat"
             android:textSize="16sp"
             android:layout_marginTop="48dp"
             android:layout_marginLeft="32dp"

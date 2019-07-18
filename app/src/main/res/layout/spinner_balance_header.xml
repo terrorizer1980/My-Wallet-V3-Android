@@ -6,15 +6,14 @@
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/montserrat"
         android:gravity="center_vertical"
         android:paddingBottom="8dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="8dp"
-        android:textColor="@color/primary_gray_medium"
+        android:textColor="@color/primary_grey_medium"
         android:textSize="16sp"
-        tools:background="@color/primary_gray_light"
+        tools:background="@color/primary_grey_light"
         tools:text="My Test Wallet" />
 
 </layout>

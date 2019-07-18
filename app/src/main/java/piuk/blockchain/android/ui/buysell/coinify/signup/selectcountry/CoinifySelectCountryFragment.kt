@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.buysell.coinify.signup.selectcountry
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -34,6 +35,7 @@ class CoinifySelectCountryFragment :
         savedInstanceState: Bundle?
     ) = container?.inflate(R.layout.fragment_coinify_select_country)
 
+    @SuppressLint("CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

@@ -26,6 +26,8 @@ import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.kycTierStart
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
+import com.blockchain.ui.urllinks.URL_CONTACT_SUPPORT
+import com.blockchain.ui.urllinks.URL_LEARN_MORE_REJECTED
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -51,8 +53,6 @@ import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier2_requir
 import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.text_tier2_state
 import kotlinx.android.synthetic.main.fragment_kyc_tier_splash.tier_available_fiat
 import org.koin.android.ext.android.inject
-import piuk.blockchain.android.constants.URL_CONTACT_SUPPORT
-import piuk.blockchain.android.constants.URL_LEARN_MORE_REJECTED
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
@@ -225,17 +225,13 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         disposable += view!!.findViewById<View>(R.id.card_tier_1)
             .throttledClicks()
             .subscribeBy(
-                onNext = {
-                    presenter.tier1Selected()
-                },
+                onNext = { presenter.tier1Selected() },
                 onError = { Timber.e(it) }
             )
         disposable += view!!.findViewById<View>(R.id.card_tier_2)
             .throttledClicks()
             .subscribeBy(
-                onNext = {
-                    presenter.tier2Selected()
-                },
+                onNext = { presenter.tier2Selected() },
                 onError = { Timber.e(it) }
             )
         disposable +=
@@ -252,30 +248,14 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             button_learn_more
                 .throttledClicks()
                 .subscribeBy(
-                    onNext = {
-                        startActivity(
-                            Intent(
-                                Intent.ACTION_VIEW, Uri.parse(
-                                    URL_LEARN_MORE_REJECTED
-                                )
-                            )
-                        )
-                    },
+                    onNext = { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(URL_LEARN_MORE_REJECTED))) },
                     onError = { Timber.e(it) }
                 )
         disposable +=
             text_contact_support
                 .throttledClicks()
                 .subscribeBy(
-                    onNext = {
-                        startActivity(
-                            Intent(
-                                Intent.ACTION_VIEW, Uri.parse(
-                                    URL_CONTACT_SUPPORT
-                                )
-                            )
-                        )
-                    },
+                    onNext = { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(URL_CONTACT_SUPPORT))) },
                     onError = { Timber.e(it) }
                 )
     }

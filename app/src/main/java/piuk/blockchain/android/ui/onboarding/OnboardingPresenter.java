@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper;
 import piuk.blockchain.androidcore.utils.PrefsUtil;
@@ -54,8 +55,9 @@ public class OnboardingPresenter extends BasePresenter<OnboardingView> {
      */
     void onEnableFingerprintClicked() {
         if (fingerprintHelper.isFingerprintAvailable()) {
-            if (accessState.getPIN() != null && !accessState.getPIN().isEmpty()) {
-                getView().showFingerprintDialog(accessState.getPIN());
+            String pin = accessState.getPin();
+            if (pin != null && !pin.isEmpty()) {
+                getView().showFingerprintDialog(pin);
             } else {
                 throw new IllegalStateException("PIN not found");
             }
@@ -75,7 +77,7 @@ public class OnboardingPresenter extends BasePresenter<OnboardingView> {
     void setFingerprintUnlockEnabled(boolean enabled) {
         fingerprintHelper.setFingerprintUnlockEnabled(enabled);
         if (!enabled) {
-            fingerprintHelper.clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE);
+            fingerprintHelper.clearEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE);
         }
     }
 
@@ -93,4 +95,13 @@ public class OnboardingPresenter extends BasePresenter<OnboardingView> {
             getView().showEmailPrompt();
         }
     }
+
+    void disableAutoLogout() {
+        accessState.setCanAutoLogout(false);
+    }
+
+    void enableAutoLogout() {
+        accessState.setCanAutoLogout(true);
+    }
+
 }

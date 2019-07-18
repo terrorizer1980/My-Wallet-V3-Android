@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.account
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.isNull
@@ -17,6 +18,7 @@ import info.blockchain.wallet.payment.SpendableUnspentOutputs
 import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import org.amshove.kluent.any
 import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.Address
@@ -53,7 +55,7 @@ import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.payments.SendDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.math.BigInteger
 import java.util.ArrayList
@@ -72,7 +74,7 @@ class AccountEditPresenterTest {
     private val payloadDataManager: PayloadDataManager = mock()
     private val bchDataManager: BchDataManager = mock()
     private val metadataManager: MetadataManager = mock()
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefsUtil: PersistentPrefs = mock()
     private val stringUtils: StringUtils = mock()
     private val accountEditModel: AccountEditModel = mock()
     private val swipeToReceiveHelper: SwipeToReceiveHelper = mock()
@@ -81,6 +83,7 @@ class AccountEditPresenterTest {
     private val environmentSettings: EnvironmentConfig = mock()
     private val dynamicFeeCache: DynamicFeeCache = mock(defaultAnswer = Answers.RETURNS_DEEP_STUBS)
     private val currencyFormatManager: CurrencyFormatManager = mock()
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig = mock()
 
     @Before
     fun setUp() {
@@ -97,11 +100,13 @@ class AccountEditPresenterTest {
             swipeToReceiveHelper,
             dynamicFeeCache,
             environmentSettings,
-            currencyFormatManager
+            currencyFormatManager,
+            coinSelectionRemoteConfig
         )
         subject.initView(view)
         subject.accountModel = accountEditModel
 
+        whenever(coinSelectionRemoteConfig.enabled).thenReturn(Single.just(true))
         whenever(environmentSettings.bitcoinNetworkParameters).thenReturn(BitcoinMainNetParams.get())
     }
 
@@ -192,6 +197,7 @@ class AccountEditPresenterTest {
             sendDataManager.getMaximumAvailable(
                 eq(CryptoCurrency.BTC),
                 any(),
+                any(),
                 any()
             )
         ).thenReturn(sweepableCoins)
@@ -202,11 +208,11 @@ class AccountEditPresenterTest {
             sendDataManager.getSpendableCoins(
                 any(),
                 any(),
+                any(),
                 any()
             )
         ).thenReturn(spendableUnspentOutputs)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn("USD")
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         whenever(sendDataManager.estimateSize(anyInt(), anyInt())).thenReturn(1337)
 
         whenever(currencyFormatManager.getFormattedSelectedCoinValue(any()))
@@ -247,11 +253,13 @@ class AccountEditPresenterTest {
             sendDataManager.getMaximumAvailable(
                 eq(CryptoCurrency.BTC),
                 any(),
+                any(),
                 any()
             )
         ).thenReturn(sweepableCoins)
         whenever(
             sendDataManager.getSpendableCoins(
+                any(),
                 any(),
                 any(),
                 any()
@@ -444,16 +452,14 @@ class AccountEditPresenterTest {
         subject.account = account
         val mockPayload: Wallet = mock(defaultAnswer = RETURNS_DEEP_STUBS)
         whenever(payloadDataManager.defaultAccountIndex).thenReturn(0)
-        whenever(mockPayload.hdWallets[0].accounts)
-            .thenReturn(listOf(account))
+        whenever(mockPayload.hdWallets[0].accounts).thenReturn(listOf(account))
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
         whenever(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.complete())
-        whenever(swipeToReceiveHelper.updateAndStoreBitcoinAddresses())
-            .thenReturn(Completable.complete())
-        whenever(swipeToReceiveHelper.updateAndStoreBitcoinCashAddresses())
-            .thenReturn(Completable.complete())
+        whenever(swipeToReceiveHelper.storeAll()).thenReturn(Completable.complete())
+
         // Act
         subject.onClickDefault(mock())
+
         // Assert
         verify(view).showProgressDialog(anyInt())
         verify(view).dismissProgressDialog()

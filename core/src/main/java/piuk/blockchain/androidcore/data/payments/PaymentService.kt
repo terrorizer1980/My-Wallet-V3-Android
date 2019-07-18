@@ -170,9 +170,10 @@ class PaymentService(
         unspentCoins: UnspentOutputs,
         paymentAmount: BigInteger,
         feePerKb: BigInteger,
-        includeReplayProtection: Boolean
+        includeReplayProtection: Boolean,
+        useNewCoinSelection: Boolean
     ): SpendableUnspentOutputs =
-        payment.getSpendableCoins(unspentCoins, paymentAmount, feePerKb, includeReplayProtection)
+        payment.getSpendableCoins(unspentCoins, paymentAmount, feePerKb, includeReplayProtection, useNewCoinSelection)
 
     /**
      * Calculates the total amount of bitcoin that can be swept from an [UnspentOutputs]
@@ -189,8 +190,14 @@ class PaymentService(
     internal fun getMaximumAvailable(
         unspentCoins: UnspentOutputs,
         feePerKb: BigInteger,
-        includeReplayProtection: Boolean
-    ): Pair<BigInteger, BigInteger> = payment.getMaximumAvailable(unspentCoins, feePerKb, includeReplayProtection)
+        includeReplayProtection: Boolean,
+        useNewCoinSelection: Boolean
+    ): Pair<BigInteger, BigInteger> = payment.getMaximumAvailable(
+        unspentCoins,
+        feePerKb,
+        includeReplayProtection,
+        useNewCoinSelection
+    )
 
     /**
      * Returns true if the `absoluteFee` is adequate for the number of inputs/outputs in the

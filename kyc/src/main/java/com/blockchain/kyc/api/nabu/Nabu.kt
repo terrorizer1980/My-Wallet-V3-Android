@@ -101,6 +101,9 @@ internal interface Nabu {
      * This is a GET, but it actually starts a veriff session on the server for historical reasons.
      * So do not call more than once per veriff launch.
      */
+
+    // TODO: In the case of can't process because pre-IDV-fail, this will fail with an error TBD - by me.
+    // SOme random 4xx error
     @GET(NABU_VERIFF_TOKEN)
     fun startVeriffSession(
         @Header("authorization") authorization: String

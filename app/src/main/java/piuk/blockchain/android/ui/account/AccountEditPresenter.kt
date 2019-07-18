@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.support.annotation.VisibleForTesting
 import android.view.View
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.WriterException
 import info.blockchain.balance.CryptoCurrency
@@ -22,6 +23,8 @@ import info.blockchain.wallet.util.DoubleEncryptionFactory
 import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.rxkotlin.Observables
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.bitcoinj.core.Base58
 import org.bitcoinj.core.ECKey
@@ -40,14 +43,13 @@ import piuk.blockchain.android.ui.zxing.Contents
 import piuk.blockchain.android.ui.zxing.encode.QRCodeEncoder
 import piuk.blockchain.android.util.LabelUtil
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.payments.SendDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -59,7 +61,7 @@ import javax.inject.Inject
 
 // TODO: This page is pretty nasty and could do with a proper refactor
 class AccountEditPresenter @Inject internal constructor(
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val stringUtils: StringUtils,
     private val payloadDataManager: PayloadDataManager,
     private val bchDataManager: BchDataManager,
@@ -69,7 +71,8 @@ class AccountEditPresenter @Inject internal constructor(
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     private val dynamicFeeCache: DynamicFeeCache,
     private val environmentSettings: EnvironmentConfig,
-    private val currencyFormatManager: CurrencyFormatManager
+    private val currencyFormatManager: CurrencyFormatManager,
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig
 ) : BasePresenter<AccountEditView>() {
 
     // Visible for data binding
@@ -199,7 +202,7 @@ class AccountEditPresenter @Inject internal constructor(
     }
 
     internal fun areLauncherShortcutsEnabled(): Boolean =
-        prefsUtil.getValue(PrefsUtil.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
+        prefs.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
 
     private fun setDefault(isDefault: Boolean) {
         if (isDefault) {
@@ -280,8 +283,7 @@ class AccountEditPresenter @Inject internal constructor(
 
     @SuppressLint("CheckResult")
     internal fun onClickTransferFunds() {
-        getPendingTransactionForLegacyAddress(cryptoCurrency, legacyAddress)
-            .addToCompositeDisposable(this)
+        compositeDisposable += getPendingTransactionForLegacyAddress(cryptoCurrency, legacyAddress)
             .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
             .doAfterTerminate { view.dismissProgressDialog() }
             .doOnError { Timber.e(it) }
@@ -316,7 +318,7 @@ class AccountEditPresenter @Inject internal constructor(
             details.toLabel = pendingTransaction.receivingAddress
         }
 
-        val fiatUnit = prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY)
+        val fiatUnit = prefs.selectedFiatCurrency
         val btcUnit = CryptoCurrency.BTC.name
 
         with(details) {
@@ -380,15 +382,14 @@ class AccountEditPresenter @Inject internal constructor(
             return
         }
 
-        sendDataManager.submitBtcPayment(
+        compositeDisposable += sendDataManager.submitBtcPayment(
             pendingTransaction!!.unspentOutputBundle!!,
             keys,
             pendingTransaction!!.receivingAddress,
             changeAddress,
             pendingTransaction!!.bigIntFee,
             pendingTransaction!!.bigIntAmount
-        ).addToCompositeDisposable(this)
-            .doAfterTerminate { view.dismissProgressDialog() }
+        ).doAfterTerminate { view.dismissProgressDialog() }
             .doOnError { Timber.e(it) }
             .subscribe(
                 {
@@ -457,7 +458,7 @@ class AccountEditPresenter @Inject internal constructor(
                 }
             }
 
-            walletSync.addToCompositeDisposable(this)
+            compositeDisposable += walletSync
                 .doOnError { Timber.e(it) }
                 .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
                 .doAfterTerminate { view.dismissProgressDialog() }
@@ -514,7 +515,7 @@ class AccountEditPresenter @Inject internal constructor(
             )
         }
 
-        walletSync.addToCompositeDisposable(this)
+        compositeDisposable += walletSync
             .doOnSubscribe { getView().showProgressDialog(R.string.please_wait) }
             .doOnError { Timber.e(it) }
             .doAfterTerminate { getView().dismissProgressDialog() }
@@ -535,10 +536,8 @@ class AccountEditPresenter @Inject internal constructor(
     }
 
     private fun updateSwipeToReceiveAddresses() {
-        swipeToReceiveHelper.updateAndStoreBitcoinAddresses()
-            .andThen(swipeToReceiveHelper.updateAndStoreBitcoinCashAddresses())
+        compositeDisposable += swipeToReceiveHelper.storeAll()
             .subscribeOn(Schedulers.computation())
-            .addToCompositeDisposable(this)
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
@@ -620,8 +619,7 @@ class AccountEditPresenter @Inject internal constructor(
     ) {
         setLegacyAddressKey(key, address)
 
-        payloadDataManager.syncPayloadWithServer()
-            .addToCompositeDisposable(this)
+        compositeDisposable += payloadDataManager.syncPayloadWithServer()
             .doOnError { Timber.e(it) }
             .subscribe(
                 {
@@ -761,7 +759,7 @@ class AccountEditPresenter @Inject internal constructor(
                 Completable.fromObservable(bchDataManager.getWalletTransactions(50, 50))
         }
 
-        walletSync.addToCompositeDisposable(this)
+        compositeDisposable += walletSync
             .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
             .doOnError { Timber.e(it) }
             .doAfterTerminate { view.dismissProgressDialog() }
@@ -835,8 +833,7 @@ class AccountEditPresenter @Inject internal constructor(
         addressCopy.add(legacyAddress)
         payloadDataManager.legacyAddresses = addressCopy
 
-        payloadDataManager.syncPayloadWithServer()
-            .addToCompositeDisposable(this)
+        compositeDisposable += payloadDataManager.syncPayloadWithServer()
             .doOnError { Timber.e(it) }
             .subscribe(
                 {
@@ -862,15 +859,19 @@ class AccountEditPresenter @Inject internal constructor(
     ): Observable<PendingTransaction> {
         val pendingTransaction = PendingTransaction()
 
-        return sendDataManager.getUnspentOutputs(legacyAddress!!.address)
-            .flatMap { unspentOutputs ->
+        return Observables.zip(
+            sendDataManager.getUnspentOutputs(legacyAddress!!.address),
+            coinSelectionRemoteConfig.enabled.toObservable()
+        )
+            .flatMap { (unspentOutputs, newCoinSelectionEnabled) ->
                 val suggestedFeePerKb =
                     BigInteger.valueOf(dynamicFeeCache.btcFeeOptions!!.regularFee * 1000)
 
                 val sweepableCoins = sendDataManager.getMaximumAvailable(
                     cryptoCurrency,
                     unspentOutputs,
-                    suggestedFeePerKb
+                    suggestedFeePerKb,
+                    newCoinSelectionEnabled
                 )
                 val sweepAmount = sweepableCoins.left
 
@@ -901,7 +902,8 @@ class AccountEditPresenter @Inject internal constructor(
                     unspentOutputBundle = sendDataManager.getSpendableCoins(
                         unspentOutputs,
                         CryptoValue(cryptoCurrency, sweepAmount),
-                        suggestedFeePerKb
+                        suggestedFeePerKb,
+                        newCoinSelectionEnabled
                     )
                     bigIntAmount = sweepAmount
                     bigIntFee = unspentOutputBundle!!.absoluteFee

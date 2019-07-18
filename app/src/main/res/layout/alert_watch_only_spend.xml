@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/watchonly_address_receive_warning"
-                android:textColor="@color/primary_gray_dark" />
+                android:textColor="@color/primary_grey_dark" />
 
         </LinearLayout>
 
@@ -57,7 +57,7 @@
                 android:id="@+id/confirm_cancel"
                 style="@style/CustomDialogButton"
                 android:text="@string/cancel"
-                android:textColor="@color/primary_gray_dark" />
+                android:textColor="@color/primary_grey_dark" />
 
             <Button
                 android:id="@+id/confirm_continue"

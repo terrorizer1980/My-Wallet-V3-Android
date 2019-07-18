@@ -127,6 +127,10 @@ data class LimitsExceeded(
     val reasonCode: String = CannotTradeReasonAdapter.LIMITS_EXCEEDED
 ) : CannotTradeReason()
 
+data class CountryNoSupported(
+    val reasonCode: String = CannotTradeReasonAdapter.COUNTRY_NOT_SUPPORTED
+) : CannotTradeReason()
+
 /**
  * Contains every possible value for custom type adapter [CannotTradeReasonAdapter].
  */
@@ -144,6 +148,7 @@ class CannotTradeReasonAdapter {
         FORCED_DELAY -> ForcedDelay(json.reasonCode, json.delayEnd!!)
         TRADE_IN_PROGRESS -> TradeInProgress(json.reasonCode, json.tradeId!!)
         LIMITS_EXCEEDED -> LimitsExceeded(json.reasonCode)
+        COUNTRY_NOT_SUPPORTED -> CountryNoSupported(json.reasonCode)
         else -> throw JsonDataException("Unknown CannotTradeReason ${json.reasonCode}, unsupported data type")
     }
 
@@ -161,11 +166,15 @@ class CannotTradeReasonAdapter {
             is LimitsExceeded -> CannotTradeReasonJson(
                 cannotTradeReason.reasonCode
             )
+            is CountryNoSupported -> CannotTradeReasonJson(
+                cannotTradeReason.reasonCode
+            )
         }
 
     internal companion object {
         internal const val FORCED_DELAY = "forced_delay"
         internal const val TRADE_IN_PROGRESS = "trade_in_progress"
         internal const val LIMITS_EXCEEDED = "limits_exceeded"
+        internal const val COUNTRY_NOT_SUPPORTED = "country_not_supported"
     }
 }

@@ -13,6 +13,7 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.balance.withMajorValueOrZero
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.util.FormatsUtil
+import io.reactivex.rxkotlin.addTo
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.send.DisplayFeeOptions
 import piuk.blockchain.android.ui.send.SendView
@@ -45,7 +46,8 @@ internal class PerCurrencySendPresenter<View : SendView>(
     private val prefs: PersistentPrefs
 ) : SendPresenter<View>() {
 
-    var selectedCrypto: CryptoCurrency = CryptoCurrency.BTC
+    private var selectedMemoType: Int = MEMO_TEXT_NONE
+    private var selectedCrypto: CryptoCurrency = CryptoCurrency.BTC
 
     override fun getFeeOptionsForDropDown(): List<DisplayFeeOptions> {
         val regular = DisplayFeeOptions(
@@ -74,6 +76,10 @@ internal class PerCurrencySendPresenter<View : SendView>(
     override fun onContinueClicked() = delegate.onContinueClicked()
 
     override fun onSpendMaxClicked() = delegate.onSpendMaxClicked()
+
+    override fun onMemoTypeChanged(memo: Int) {
+        this.selectedMemoType = memo
+    }
 
     override fun onBroadcastReceived() {
         updateTicker()
@@ -203,7 +209,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
             getDefaultDecimalSeparator()
         ).toString()
 
-        val fiatValue = FiatValue.fromMajorOrZero(exchangeRates.fiatUnit, fiat)
+        val fiatValue = FiatValue.fromMajorOrZero(prefs.selectedFiatCurrency, fiat)
         val cryptoValue = fiatValue.toCrypto(exchangeRates, selectedCrypto)
 
         view.updateCryptoAmount(cryptoValue, true)
@@ -231,7 +237,15 @@ internal class PerCurrencySendPresenter<View : SendView>(
 
     override fun onAddressTextChange(address: String) = delegate.onAddressTextChange(address)
 
-    override fun onMemoChange(memo: Memo) = delegate.onMemoChange(memo)
+    override fun onMemoChange(memoText: String) =
+        delegate.onMemoChange(Memo(memoText, getMemoTypeRawValue(selectedMemoType)))
+
+    private fun getMemoTypeRawValue(selectedMemoType: Int): String? =
+        when (selectedMemoType) {
+            MEMO_TEXT_TYPE -> "text"
+            MEMO_ID_TYPE -> "id"
+            else -> null
+        }
 
     override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) =
         delegate.spendFromWatchOnlyBIP38(pw, scanData)
@@ -245,12 +259,14 @@ internal class PerCurrencySendPresenter<View : SendView>(
 
     override fun onViewReady() {
         updateTicker()
-        view?.updateReceivingHintAndAccountDropDowns(selectedCrypto, 1)
 
         if (envSettings.environment == Environment.TESTNET) {
             selectedCrypto = CryptoCurrency.BTC
             view.hideCurrencyHeader()
         }
+        delegate.memoRequired().startWith(false).subscribe {
+            view?.updateRequiredLabelVisibility(it)
+        }.addTo(compositeDisposable)
     }
 
     override fun disableAdvancedFeeWarning() {

@@ -17,18 +17,19 @@ private object FiatFormat {
 
     operator fun get(key: Key) = cache.getOrPut(key) {
         val currencyInstance = Currency.getInstance(key.currencyCode)
-        (NumberFormat.getCurrencyInstance(key.locale) as DecimalFormat)
-            .apply {
-                decimalFormatSymbols =
-                    decimalFormatSymbols.apply {
-                        currency = currencyInstance
-                        if (!key.includeSymbol) {
-                            currencySymbol = ""
-                        }
+        val fmt = NumberFormat.getCurrencyInstance(key.locale) as DecimalFormat
+        fmt.apply {
+            decimalFormatSymbols =
+                decimalFormatSymbols.apply {
+                    currency = currencyInstance
+                    if (!key.includeSymbol) {
+                        currencySymbol = ""
                     }
-                minimumFractionDigits = currencyInstance.defaultFractionDigits
-                maximumFractionDigits = currencyInstance.defaultFractionDigits
-            }
+                }
+            minimumFractionDigits = currencyInstance.defaultFractionDigits
+            maximumFractionDigits = currencyInstance.defaultFractionDigits
+            roundingMode = RoundingMode.DOWN
+        }
     }
 }
 
@@ -50,8 +51,7 @@ data class FiatValue private constructor(
     val valueMinor: Long = value.movePointRight(maxDecimalPlaces).toLong()
 
     override fun toStringWithSymbol(locale: Locale): String =
-        FiatFormat[Key(locale, currencyCode, includeSymbol = true)]
-            .format(value)
+        FiatFormat[Key(locale, currencyCode, includeSymbol = true)].format(value)
 
     override fun toStringWithoutSymbol(locale: Locale): String =
         FiatFormat[Key(locale, currencyCode, includeSymbol = false)]
@@ -82,7 +82,7 @@ data class FiatValue private constructor(
                 currencyCode,
                 major.setScale(
                     maxDecimalPlaces(currencyCode),
-                    RoundingMode.HALF_UP
+                    RoundingMode.DOWN
                 )
             )
 

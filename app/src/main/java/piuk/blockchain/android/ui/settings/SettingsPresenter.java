@@ -2,10 +2,12 @@ package piuk.blockchain.android.ui.settings;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+
 import com.blockchain.kyc.models.nabu.NabuApiException;
 import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes;
 import com.blockchain.kycui.settings.KycStatusHelper;
 import com.blockchain.notifications.NotificationTokenManager;
+
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.PayloadManager;
 import info.blockchain.wallet.settings.SettingsManager;
@@ -25,7 +27,7 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.EmailSyncUpdater;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AndroidUtils;
@@ -42,7 +44,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     private PayloadManager payloadManager;
     private PayloadDataManager payloadDataManager;
     private StringUtils stringUtils;
-    private PrefsUtil prefsUtil;
+    private PersistentPrefs prefs;
     private AccessState accessState;
     private SwipeToReceiveHelper swipeToReceiveHelper;
     private NotificationTokenManager notificationTokenManager;
@@ -53,20 +55,20 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     Settings settings;
 
     @Inject
-    SettingsPresenter(FingerprintHelper fingerprintHelper,
-                      AuthDataManager authDataManager,
-                      SettingsDataManager settingsDataManager,
-                      EmailSyncUpdater emailUpdater,
-                      PayloadManager payloadManager,
-                      PayloadDataManager payloadDataManager,
-                      StringUtils stringUtils,
-                      PrefsUtil prefsUtil,
-                      AccessState accessState,
-                      SwipeToReceiveHelper swipeToReceiveHelper,
-                      NotificationTokenManager notificationTokenManager,
-                      ExchangeRateDataManager exchangeRateDataManager,
-                      CurrencyFormatManager currencyFormatManager,
-                      KycStatusHelper kycStatusHelper) {
+    public SettingsPresenter(FingerprintHelper fingerprintHelper,
+                             AuthDataManager authDataManager,
+                             SettingsDataManager settingsDataManager,
+                             EmailSyncUpdater emailUpdater,
+                             PayloadManager payloadManager,
+                             PayloadDataManager payloadDataManager,
+                             StringUtils stringUtils,
+                             PersistentPrefs prefs,
+                             AccessState accessState,
+                             SwipeToReceiveHelper swipeToReceiveHelper,
+                             NotificationTokenManager notificationTokenManager,
+                             ExchangeRateDataManager exchangeRateDataManager,
+                             CurrencyFormatManager currencyFormatManager,
+                             KycStatusHelper kycStatusHelper) {
 
         this.fingerprintHelper = fingerprintHelper;
         this.authDataManager = authDataManager;
@@ -75,7 +77,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         this.payloadManager = payloadManager;
         this.payloadDataManager = payloadDataManager;
         this.stringUtils = stringUtils;
-        this.prefsUtil = prefsUtil;
+        this.prefs = prefs;
         this.accessState = accessState;
         this.swipeToReceiveHelper = swipeToReceiveHelper;
         this.notificationTokenManager = notificationTokenManager;
@@ -181,7 +183,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         getView().setTorBlocked(settings.isBlockTorIps());
 
         // Screenshots
-        getView().setScreenshotsEnabled(prefsUtil.getValue(PrefsUtil.KEY_SCREENSHOTS_ENABLED, false));
+        getView().setScreenshotsEnabled(prefs.getValue(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, false));
 
         // Launcher shortcuts
         getView().setLauncherShortcutVisibility(AndroidUtils.is25orHigher());
@@ -209,7 +211,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     void setFingerprintUnlockEnabled(boolean enabled) {
         fingerprintHelper.setFingerprintUnlockEnabled(enabled);
         if (!enabled) {
-            fingerprintHelper.clearEncryptedData(PrefsUtil.KEY_ENCRYPTED_PIN_CODE);
+            fingerprintHelper.clearEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE);
         }
     }
 
@@ -224,8 +226,9 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             // No fingerprints enrolled, prompt user to add some
             getView().showNoFingerprintsAddedDialog();
         } else {
-            if (accessState.getPIN() != null && !accessState.getPIN().isEmpty()) {
-                getView().showFingerprintDialog(accessState.getPIN());
+            String pin = accessState.getPin();
+            if (pin != null && !pin.isEmpty()) {
+                getView().showFingerprintDialog(pin);
             } else {
                 throw new IllegalStateException("PIN code not found in AccessState");
             }
@@ -241,7 +244,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      */
     @NonNull
     String getFiatUnits() {
-        return prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY);
+        return prefs.getSelectedFiatCurrency();
     }
 
     /**
@@ -294,7 +297,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * @param value The value to be stored as a String
      */
     void updatePreferences(String key, String value) {
-        prefsUtil.setValue(key, value);
+        prefs.setValue(key, value);
         updateUi();
     }
 
@@ -305,7 +308,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * @param value The value to be stored as an int
      */
     void updatePreferences(String key, int value) {
-        prefsUtil.setValue(key, value);
+        prefs.setValue(key, value);
         updateUi();
     }
 
@@ -316,7 +319,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * @param value The value to be stored as a boolean
      */
     void updatePreferences(String key, boolean value) {
-        prefsUtil.setValue(key, value);
+        prefs.setValue(key, value);
         updateUi();
     }
 
@@ -483,8 +486,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * PIN code validated, take user to PIN change page
      */
     void pinCodeValidatedForChange() {
-        prefsUtil.removeValue(PrefsUtil.KEY_PIN_FAILS);
-        prefsUtil.removeValue(PrefsUtil.KEY_PIN_IDENTIFIER);
+        prefs.removeValue(PersistentPrefs.KEY_PIN_FAILS);
+        prefs.removeValue(PersistentPrefs.KEY_PIN_IDENTIFIER);
 
         getView().goToPinEntryPage();
     }
@@ -498,7 +501,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     void updatePassword(@NonNull String password, @NonNull String fallbackPassword) {
         payloadManager.setTempPassword(password);
 
-        authDataManager.createPin(password, accessState.getPIN())
+        authDataManager.createPin(password, accessState.getPin())
                 .doOnSubscribe(ignored -> getView().showProgressDialog(R.string.please_wait))
                 .doOnTerminate(() -> getView().hideProgressDialog())
                 .andThen(payloadDataManager.syncPayloadWithServer())
@@ -524,6 +527,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                         .doAfterTerminate(this::updateUi)
                         .subscribe(
                                 settings -> {
+                                    prefs.setSelectedFiatCurrency(fiatUnit);
                                     currencyFormatManager.invalidateFiatCode();
                                     this.settings = settings;
                                 },
@@ -546,7 +550,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     boolean isPushNotificationEnabled() {
-        return prefsUtil.getValue(PrefsUtil.KEY_PUSH_NOTIFICATION_ENABLED, true);
+        return prefs.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true);
     }
 
     void enablePushNotifications() {

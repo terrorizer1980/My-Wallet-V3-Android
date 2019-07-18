@@ -7,12 +7,12 @@ import org.junit.Before
 import org.junit.Test
 import piuk.blockchain.android.testutils.RxTest
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class PromptManagerTest : RxTest() {
 
     private lateinit var subject: PromptManager
-    private val mockPrefsUtil: PrefsUtil = mock()
+    private val mockPrefs: PersistentPrefs = mock()
     private val mockPayloadDataManager: PayloadDataManager = mock()
     private val mockTransactionListDataManager: TransactionListDataManager = mock()
     private val mockSettings: Settings = mock()
@@ -20,7 +20,7 @@ class PromptManagerTest : RxTest() {
     @Before
     fun setUp() {
         subject =
-            PromptManager(mockPrefsUtil, mockPayloadDataManager, mockTransactionListDataManager)
+            PromptManager(mockPrefs, mockPayloadDataManager, mockTransactionListDataManager)
     }
 
     @Test

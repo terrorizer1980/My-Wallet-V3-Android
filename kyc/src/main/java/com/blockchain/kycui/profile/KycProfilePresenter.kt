@@ -4,7 +4,6 @@ import com.blockchain.BaseKycPresenter
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuApiException
 import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes
-import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
 import com.blockchain.kyc.util.toISO8601DateString
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.profile.models.ProfileModel
@@ -36,7 +35,6 @@ class KycProfilePresenter(
     nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
     private val metadataRepository: MetadataRepository,
-    private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator,
     private val stringUtils: StringUtils
 ) : BaseKycPresenter<KycProfileView>(nabuToken) {
 
@@ -70,7 +68,6 @@ class KycProfilePresenter(
                         createUserAndStoreInMetadata()
                     }
                 }
-                .andThen(createCoinifyAccountIfNeeded(campaignType))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { view.showProgressDialog() }
                 .doOnTerminate { view.dismissProgressDialog() }
@@ -96,14 +93,6 @@ class KycProfilePresenter(
                     }
                 )
     }
-
-    private fun createCoinifyAccountIfNeeded(campaignType: CampaignType?): Completable =
-        if (campaignType != CampaignType.BuySell) {
-            Completable.complete()
-        } else {
-            nabuCoinifyAccountCreator.createCoinifyAccountIfNeeded()
-                .doOnError(Timber::e)
-        }
 
     private fun restoreDataIfPresent() {
         // Don't restore data if data already present, as it'll overwrite what the user

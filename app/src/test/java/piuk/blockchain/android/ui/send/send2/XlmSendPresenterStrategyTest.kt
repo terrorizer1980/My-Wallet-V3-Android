@@ -34,6 +34,7 @@ import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import java.util.concurrent.TimeUnit
 
 class XlmSendPresenterStrategyTest {
@@ -73,6 +74,7 @@ class XlmSendPresenterStrategyTest {
             xlmDataManager = dataManager,
             xlmFeesFetcher = feesFetcher,
             xlmTransactionSender = mock(),
+            walletOptionsDataManager = mock(),
             fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
             sendFundsResultLocalizer = mock()
         ).apply {
@@ -103,7 +105,8 @@ class XlmSendPresenterStrategyTest {
             },
             xlmTransactionSender = mock(),
             fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
-            sendFundsResultLocalizer = mock()
+            sendFundsResultLocalizer = mock(),
+            walletOptionsDataManager = mock()
         ).apply {
             initView(view)
             onCurrencySelected()
@@ -131,6 +134,7 @@ class XlmSendPresenterStrategyTest {
             mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
+            mock(),
             mock(),
             fiatExchangeRates,
             mock()
@@ -173,7 +177,7 @@ class XlmSendPresenterStrategyTest {
             mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(200.stroops())
             },
-            transactionSendDataManager,
+            transactionSendDataManager, mock(),
             mock {
                 on { getFiat(100.lumens()) } `it returns` 50.usd()
                 on { getFiat(200.stroops()) } `it returns` 0.05.usd()
@@ -237,6 +241,7 @@ class XlmSendPresenterStrategyTest {
             },
             transactionSendDataManager,
             mock(),
+            mock(),
             mock {
                 on { localize(result) } `it returns` "The warning"
             }
@@ -284,6 +289,7 @@ class XlmSendPresenterStrategyTest {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
             transactionSendDataManager,
+            mock(),
             mock(),
             mock {
                 on { localize(result) } `it returns` "The warning"
@@ -335,6 +341,7 @@ class XlmSendPresenterStrategyTest {
             },
             transactionSendDataManager,
             mock(),
+            mock(),
             mock {
                 on { localize(result) } `it returns` "The warning"
             }
@@ -384,6 +391,7 @@ class XlmSendPresenterStrategyTest {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
             transactionSendDataManager,
+            mock(),
             mock(),
             mock {
                 on { localize(result) } `it returns` "The warning"
@@ -445,7 +453,7 @@ class XlmSendPresenterStrategyTest {
             mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(150.stroops())
             },
-            transactionSendDataManager,
+            transactionSendDataManager, mock(),
             mock {
                 on { getFiat(100.lumens()) } `it returns` 50.usd()
                 on { getFiat(150.stroops()) } `it returns` 0.05.usd()
@@ -503,6 +511,7 @@ class XlmSendPresenterStrategyTest {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(150.stroops())
             },
             transactionSendDataManager,
+            mock(),
             mock {
                 on { getFiat(100.lumens()) } `it returns` 50.usd()
                 on { getFiat(150.stroops()) } `it returns` 0.05.usd()
@@ -553,6 +562,7 @@ class XlmSendPresenterStrategyTest {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
             },
             mock(),
+            mock(),
             mock {
                 on { getFiat(0.lumens()) } `it returns` 0.usd()
             },
@@ -582,7 +592,7 @@ class XlmSendPresenterStrategyTest {
             mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
             },
-            mock(),
+            mock(), mock(),
             mock {
                 on { getFiat(120.1234567.lumens()) } `it returns` 50.usd()
             },
@@ -591,8 +601,8 @@ class XlmSendPresenterStrategyTest {
             initView(view)
             processURIScanAddress(
                 "web+stellar:pay?destination=" +
-                    "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO&amount=" +
-                    "120.1234567&memo=skdjfasf&msg=pay%20me%20with%20lumens"
+                        "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO&amount=" +
+                        "120.1234567&memo=skdjfasf&msg=pay%20me%20with%20lumens"
             )
         }
         verify(view.mock).updateCryptoAmount(120.1234567.lumens())
@@ -632,7 +642,7 @@ class XlmSendPresenterStrategyTest {
             mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(200.stroops())
             },
-            transactionSendDataManager,
+            transactionSendDataManager, mock(),
             mock {
                 on { getFiat(120.1234567.lumens()) } `it returns` 99.usd()
                 on { getFiat(200.stroops()) } `it returns` 0.05.usd()
@@ -642,8 +652,8 @@ class XlmSendPresenterStrategyTest {
             initView(view)
             processURIScanAddress(
                 "web+stellar:pay?destination=" +
-                    "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO&amount=" +
-                    "120.1234567&memo=1234&memo_type=MEMO_ID&msg=pay%20me%20with%20lumens"
+                        "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO&amount=" +
+                        "120.1234567&memo=1234&memo_type=MEMO_ID&msg=pay%20me%20with%20lumens"
             )
             verify(view.mock).displayMemo(Memo("1234", type = "id"))
             onViewReady()
@@ -715,7 +725,7 @@ class XlmSendPresenterStrategyTest {
             mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(150.stroops())
             },
-            transactionSendDataManager,
+            transactionSendDataManager, mock(),
             mock {
                 on { getFiat(100.lumens()) } `it returns` 50.usd()
                 on { getFiat(150.stroops()) } `it returns` 0.05.usd()
@@ -745,6 +755,84 @@ class XlmSendPresenterStrategyTest {
         verify(view.mock).dismissProgressDialog()
         verify(view.mock).dismissConfirmationDialog()
         verify(view.mock).showTransactionSuccess(CryptoCurrency.XLM)
+    }
+
+    @Test
+    fun `test memo is required when address in on the exchangeAddresses list and info link is shown`() {
+        val view = TestSendView()
+        val walletOptionsDataManager = mock<WalletOptionsDataManager> {
+            on { isXlmAddressExchange("testAddress") } `it returns` true
+        }
+
+        val dataManager = mock<XlmDataManager> {
+            on { defaultAccount() } `it returns` Single.just(AccountReference.Xlm("The Xlm account", ""))
+            on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(199.5.lumens())
+        }
+
+        val feesFetcher = mock<XlmFeesFetcher> {
+            on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
+        }
+
+        val strategy = XlmSendStrategy(
+            currencyState = mock(),
+            xlmDataManager = dataManager,
+            xlmFeesFetcher = feesFetcher,
+            xlmTransactionSender = mock(),
+            walletOptionsDataManager = walletOptionsDataManager,
+            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            sendFundsResultLocalizer = mock()
+        ).apply {
+            initView(view)
+            onViewReady()
+        }
+
+        val observer = strategy.memoRequired().test()
+
+        strategy.onAddressTextChange("testAddress")
+
+        observer.assertValueCount(1)
+        observer.assertValue(true)
+        verify(walletOptionsDataManager).isXlmAddressExchange("testAddress")
+        verify(view.mock).showInfoLink()
+    }
+
+    @Test
+    fun `test memo is not required when address in not on the exchangeAddresses list and info link is shown`() {
+        val view = TestSendView()
+        val walletOptionsDataManager = mock<WalletOptionsDataManager> {
+            on { isXlmAddressExchange("testAddress") } `it returns` false
+        }
+
+        val dataManager = mock<XlmDataManager> {
+            on { defaultAccount() } `it returns` Single.just(AccountReference.Xlm("The Xlm account", ""))
+            on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(199.5.lumens())
+        }
+
+        val feesFetcher = mock<XlmFeesFetcher> {
+            on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
+        }
+
+        val strategy = XlmSendStrategy(
+            currencyState = mock(),
+            xlmDataManager = dataManager,
+            xlmFeesFetcher = feesFetcher,
+            xlmTransactionSender = mock(),
+            walletOptionsDataManager = walletOptionsDataManager,
+            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            sendFundsResultLocalizer = mock()
+        ).apply {
+            initView(view)
+            onViewReady()
+        }
+
+        val observer = strategy.memoRequired().test()
+
+        strategy.onAddressTextChange("testAddress")
+
+        observer.assertValueCount(1)
+        observer.assertValue(false)
+        verify(walletOptionsDataManager).isXlmAddressExchange("testAddress")
+        verify(view.mock, times(2)).showInfoLink()
     }
 }
 

@@ -96,7 +96,7 @@ class AccountDelegate<in T>(
                         setTextColor(
                             ContextCompat.getColor(
                                 itemView.context,
-                                R.color.product_gray_transferred
+                                R.color.product_grey_transferred
                             )
                         )
                     }
@@ -130,7 +130,7 @@ class AccountDelegate<in T>(
                         setTextColor(
                             ContextCompat.getColor(
                                 itemView.context,
-                                R.color.product_gray_transferred
+                                R.color.product_grey_transferred
                             )
                         )
                     }

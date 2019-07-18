@@ -97,14 +97,14 @@ class CoinifySignUpActivity : BaseMvpActivity<CoinifySignupView, CoinifySignUpPr
             in 1..49 -> {
                 signupProgressLayout.visible()
                 icon1Color = R.color.primary_blue_accent
-                icon2Color = R.color.primary_gray_light
-                icon3Color = R.color.primary_gray_light
+                icon2Color = R.color.primary_grey_light
+                icon3Color = R.color.primary_grey_light
             }
             in 50..99 -> {
                 signupProgressLayout.visible()
                 icon1Color = R.color.primary_blue_accent
                 icon2Color = R.color.primary_blue_accent
-                icon3Color = R.color.primary_gray_light
+                icon3Color = R.color.primary_grey_light
             }
             100 -> {
                 signupProgressLayout.visible()
@@ -114,9 +114,9 @@ class CoinifySignUpActivity : BaseMvpActivity<CoinifySignupView, CoinifySignUpPr
             }
             else -> {
                 signupProgressLayout.gone()
-                icon1Color = R.color.primary_gray_light
-                icon2Color = R.color.primary_gray_light
-                icon3Color = R.color.primary_gray_light
+                icon1Color = R.color.primary_grey_light
+                icon2Color = R.color.primary_grey_light
+                icon3Color = R.color.primary_grey_light
             }
         }
 

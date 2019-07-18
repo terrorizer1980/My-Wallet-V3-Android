@@ -4,11 +4,11 @@
     <item android:id="@android:id/secondaryProgress">
         <clip>
             <shape>
-                <solid android:color="@color/primary_gray_light" />
+                <solid android:color="@color/primary_grey_light" />
             </shape>
         </clip>
 
-        <color android:color="@color/primary_gray_light" />
+        <color android:color="@color/primary_grey_light" />
     </item>
     <item android:id="@android:id/progress">
         <clip>

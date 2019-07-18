@@ -27,10 +27,12 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         archivesBaseName = "blockchain-$versionName"
+
         // Flag to hide or show the Contacts feature
-        buildConfigBoolean "CONTACTS_ENABLED", false
         buildConfigBoolean "SHOW_LOCKBOX_BALANCE", false
         buildConfigBoolean "LOG_KOIN_STARTUP", false
+        buildConfigLong    "EXIT_APP_COOLDOWN_MILLIS", 2 * 1000
+
         buildConfigString "SHAPE_SHIFT_API_KEY", buildProperties.secrets['shapeShiftApiKey']
         manifestPlaceholders = [FABRIC_API_KEY: buildProperties.secrets['fabricApiKey'].string]
         resConfigs 'en',
@@ -141,6 +143,7 @@ android {
             buildConfigString "NABU_WEBSOCKET_URL", buildProperties.secrets['stagingNabuWebsocket']
             buildConfigString "HORIZON_URL", buildProperties.secrets['stagingHorizonUrl']
             buildConfigField "String", "ENVIRONMENT", '"env_staging"'
+
             versionNameSuffix '-staging'
             applicationId "piuk.blockchain.android.staging"
         }
@@ -229,6 +232,8 @@ dependencies {
     kapt Libraries.daggerKapt
     implementation Libraries.koin
     implementation Libraries.koinAndroid
+    implementation Libraries.koinAndroidArchitecture
+    
     // Views
     implementation project(":zxing")
     implementation Libraries.countryPicker
@@ -236,10 +241,21 @@ dependencies {
     implementation Libraries.circleIndicator
     implementation Libraries.charts
 
+    // Google core
+    implementation Libraries.googlePlayCore
+
+    api Libraries.appCompat
+    implementation Libraries.navigationControllerCore
+    implementation Libraries.navigationControllerFragments
+
+    api Libraries.lifecycleViewModel
+    api Libraries.lifecycleExtensions
+
     // UI/Instrumentation Tests
     androidTestImplementation(Libraries.espresso) {
         exclude group: 'javax.inject', module: 'support-annotations'
     }
+
     // Unit Tests
     testImplementation Libraries.junit
     testImplementation Libraries.mockito
@@ -249,6 +265,7 @@ dependencies {
     testImplementation(Libraries.mockitoKotlin) {
         ['kotlin-stdlib', 'kotlin-reflect'].each { exclude module: it }
     }
+
     testImplementation(Libraries.robolectric) {
         exclude group: 'com.google.guava'
         exclude group: 'com.google.protobuf'

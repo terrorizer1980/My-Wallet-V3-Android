@@ -3,16 +3,15 @@ package piuk.blockchain.android.injection;
 import android.app.NotificationManager;
 
 import com.blockchain.koin.KoinDaggerModule;
-import com.blockchain.koin.modules.MorphActivityLauncher;
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager;
 import com.blockchain.kycui.settings.KycStatusHelper;
-import com.blockchain.kycui.stablecoin.StableCoinCampaignHelper;
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper;
 import com.blockchain.lockbox.data.LockboxDataManager;
 import com.blockchain.logging.LastTxUpdater;
 import com.blockchain.network.EnvironmentUrls;
 import com.blockchain.notifications.NotificationTokenManager;
 import com.blockchain.notifications.analytics.Analytics;
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig;
 import com.blockchain.remoteconfig.RemoteConfig;
 import com.blockchain.remoteconfig.RemoteConfiguration;
 import com.blockchain.sunriver.XlmDataManager;
@@ -55,6 +54,7 @@ import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
 import piuk.blockchain.androidcore.utils.AESUtilWrapper;
 import piuk.blockchain.androidcore.utils.PrngFixer;
 import piuk.blockchain.androidcoreui.utils.AppUtil;
+import piuk.blockchain.androidcoreui.utils.OverlayDetection;
 
 import javax.inject.Named;
 
@@ -147,11 +147,6 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     NabuDataManager provideNabuDataManager() {
         return get(NabuDataManager.class);
-    }
-
-    @Provides
-    MorphActivityLauncher provideMorphActivityLauncher() {
-        return get(MorphActivityLauncher.class);
     }
 
     @Provides
@@ -265,6 +260,11 @@ public class ApplicationModule extends KoinDaggerModule {
     }
 
     @Provides
+    CoinSelectionRemoteConfig provideCoinSelectionRemoteConfig() {
+        return get(CoinSelectionRemoteConfig.class);
+    }
+
+    @Provides
     CurrencyFormatManager provideCurrencyFormatManager() {
         return get(CurrencyFormatManager.class);
     }
@@ -300,11 +300,6 @@ public class ApplicationModule extends KoinDaggerModule {
     }
 
     @Provides
-    StableCoinCampaignHelper provideStableCoinCampaignHelper() {
-        return get(StableCoinCampaignHelper.class);
-    }
-
-    @Provides
     Analytics provideEventLogger() {
         return get(Analytics.class);
     }
@@ -318,4 +313,7 @@ public class ApplicationModule extends KoinDaggerModule {
     EmailSyncUpdater provideEmailSyncUpdater() {
         return get(EmailSyncUpdater.class);
     }
+
+    @Provides
+    OverlayDetection providesOverlayDetection() { return get(OverlayDetection.class); }
 }

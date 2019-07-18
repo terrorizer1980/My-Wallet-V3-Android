@@ -268,14 +268,14 @@ class ChartsFragment : BaseFragment<ChartsView, ChartsPresenter>(), ChartsView {
             }
             axisLeft.granularity = 0.005f
             axisLeft.isGranularityEnabled = true
-            axisLeft.textColor = ContextCompat.getColor(context, R.color.primary_gray_medium)
+            axisLeft.textColor = ContextCompat.getColor(context, R.color.primary_grey_medium)
             axisRight.isEnabled = false
             xAxis.setDrawGridLines(false)
-            xAxis.textColor = ContextCompat.getColor(context, R.color.primary_gray_medium)
+            xAxis.textColor = ContextCompat.getColor(context, R.color.primary_grey_medium)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             xAxis.isGranularityEnabled = true
             setExtraOffsets(8f, 0f, 0f, 10f)
-            setNoDataTextColor(ContextCompat.getColor(context, R.color.primary_gray_medium))
+            setNoDataTextColor(ContextCompat.getColor(context, R.color.primary_grey_medium))
             loadFont(
                 context,
                 CustomFont.MONTSERRAT_LIGHT
