@@ -146,12 +146,7 @@ class BitcoinSendStrategy(
     override fun onContinueClicked() {
         view?.showProgressDialog(R.string.app_name)
 
-        // Get the destination address
-        val address = view.getReceivingAddress()
-
-        address?.let {
-                pendingTransaction.receivingAddress = address
-        }
+        checkManualAddressInput()
 
         Observable.just(validateBitcoinTransaction())
             .observeOn(AndroidSchedulers.mainThread())
@@ -329,6 +324,16 @@ class BitcoinSendStrategy(
             view.showLargeTransactionWarning()
         }
         view.showPaymentDetails(getConfirmationDetails(), null, null, true)
+    }
+
+    private fun checkManualAddressInput() {
+        val address = view.getReceivingAddress()
+        address?.let {
+            // Only if valid address so we don't override with a label
+            if (FormatsUtil.isValidBitcoinAddress(address)) {
+                pendingTransaction.receivingAddress = address
+            }
+        }
     }
 
     private fun getConfirmationDetails(): PaymentConfirmationDetails {
