@@ -149,6 +149,7 @@ internal class ExchangeFragment : Fragment() {
             ).show(fragmentManager, "BottomDialog")
         }
         exchangeButton.setOnClickListener {
+            exchangeModel.fixAsCrypto()
             activityListener.launchConfirmation()
         }
         largeValue.setOnClickListener(toggleOnClickListener)

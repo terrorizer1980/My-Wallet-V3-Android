@@ -4,9 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Camera
-
-import java.io.File
-
 import info.blockchain.wallet.payload.PayloadManagerWiper
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -17,11 +14,6 @@ class AppUtil(
     private var accessState: AccessState,
     private val prefs: PersistentPrefs
 ) {
-    // getExternalCacheDir can return null if permission for write storage not granted
-    // or if running on an emulator
-    val receiveQRFilename: String
-        get() = context.externalCacheDir.toString() + File.separator + "qr.png"
-
     val isSane: Boolean
         get() {
             val guid = prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, "")
@@ -85,17 +77,6 @@ class AppUtil(
             }
         )
         accessState.logIn()
-    }
-
-    fun deleteQR() {
-        // getExternalCacheDir can return null if permission for write storage not granted
-        // or if running on an emulator
-        context.externalCacheDir ?.let {
-            val file = File(context.externalCacheDir.toString() + File.separator + "qr.png")
-            if (file.exists()) {
-                file.delete()
-            }
-        }
     }
 
     companion object {
