@@ -71,7 +71,6 @@ import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -368,11 +367,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     }
 
     override fun launchThePit() {
-        val bottomSheetDialog =
-            PitLaunchBottomDialog.newInstance(ErrorBottomDialog.Content(getString(R.string.pit_setting_title),
-                "",
-                R.string.launch_the_pit, R.string.pit_contact_support, R.drawable.vector_pit_p))
-        bottomSheetDialog.show(supportFragmentManager, "BottomDialog")
+        PitLaunchBottomDialog.launch(this)
     }
 
     private fun showLogoutDialog() {

@@ -594,7 +594,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     public void onThePitClicked() {
         if(pitLinkState.isLinked()) {
-            // Launch the Pit launch bottom dialog?
+            getView().launchThePit();
         } else {
             getView().launchThePitLandingActivity();
         }

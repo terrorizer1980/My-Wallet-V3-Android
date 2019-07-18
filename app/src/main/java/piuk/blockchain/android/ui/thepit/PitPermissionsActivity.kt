@@ -2,11 +2,11 @@ package piuk.blockchain.android.ui.thepit
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_pit_kyc_promo_layout.*
 import org.koin.android.ext.android.get
 import piuk.blockchain.android.R
+import piuk.blockchain.android.util.launchUrlInBrowser
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 
@@ -41,7 +41,7 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
     }
 
     override fun onLinkSuccess(pitLinkingUrl: String) {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pitLinkingUrl)))
+        launchUrlInBrowser(pitLinkingUrl)
     }
 
     override fun onLinkFailed(reason: String) {

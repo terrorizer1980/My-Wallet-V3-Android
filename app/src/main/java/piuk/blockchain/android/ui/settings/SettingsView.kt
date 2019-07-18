@@ -60,6 +60,8 @@ internal interface SettingsView : View {
 
     fun launchThePitLandingActivity()
 
+    fun launchThePit()
+
     fun setLauncherShortcutVisibility(visible: Boolean)
 
     fun showWarningDialog(@StringRes message: Int)

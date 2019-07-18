@@ -218,8 +218,8 @@ class PitPermissionsPresenterTest {
         private const val LINK_ID = "0200000020"
         private const val EMAIL_ADDRESS = "test@test.com"
         private const val EMAIL_ADDRESS_PLUS = "test+test@test.com"
-        private const val FORMATTED_LINK = BuildConfig.PIT_URL + LINK_ID + "?email=test%40test.com"
-        private const val FORMATTED_LINK_PLUS = BuildConfig.PIT_URL + LINK_ID + "?email=test%2Btest%40test.com"
+        private const val FORMATTED_LINK = BuildConfig.PIT_LINKING_URL + LINK_ID + "?email=test%40test.com"
+        private const val FORMATTED_LINK_PLUS = BuildConfig.PIT_LINKING_URL + LINK_ID + "?email=test%2Btest%40test.com"
         private const val LINK_ERROR = "That went well"
     }
 }

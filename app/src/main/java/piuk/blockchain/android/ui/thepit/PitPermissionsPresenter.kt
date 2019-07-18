@@ -62,7 +62,7 @@ class PitPermissionsPresenter(
         val linkId = pair.first
         val email = pair.second
         val encodedEmail = URLEncoder.encode(email, "utf-8")
-        val link = BuildConfig.PIT_URL + "$linkId?email=$encodedEmail"
+        val link = BuildConfig.PIT_LINKING_URL + "$linkId?email=$encodedEmail"
 
         view?.onLinkSuccess(link)
     }

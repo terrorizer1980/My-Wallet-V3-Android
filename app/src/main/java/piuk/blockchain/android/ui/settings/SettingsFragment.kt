@@ -69,6 +69,7 @@ import piuk.blockchain.android.ui.auth.REQUEST_CODE_VALIDATE_PIN
 import piuk.blockchain.android.ui.settings.preferences.KycStatusPreference
 import piuk.blockchain.android.ui.settings.preferences.ThePitStatusPreference
 import piuk.blockchain.android.ui.thepit.PitLandingActivity
+import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 
 class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
@@ -197,7 +198,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                 AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
                     .setTitle(R.string.swipe_receive_hint)
                     .setMessage(R.string.swipe_receive_address_info)
-                    .setPositiveButton(android.R.string.ok) { _, i ->
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
                         settingsPresenter.storeSwipeToReceiveAddresses()
                     }
                     .setCancelable(false)
@@ -405,6 +406,10 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     override fun launchThePitLandingActivity() {
         PitLandingActivity.start(requireActivity())
+    }
+
+    override fun launchThePit() {
+        PitLaunchBottomDialog.launch(requireActivity())
     }
 
     private fun onUpdateEmailClicked() {
@@ -645,7 +650,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
             .setTitle(R.string.warning)
             .setMessage(R.string.change_password_summary)
-            .setPositiveButton(R.string.dialog_continue) { dialog, which -> showDialogChangePassword() }
+            .setPositiveButton(R.string.dialog_continue) { _, _ -> showDialogChangePassword() }
             .show()
     }
 
@@ -710,13 +715,13 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                                     .setTitle(R.string.app_name)
                                     .setMessage(R.string.weak_password)
                                     .setCancelable(false)
-                                    .setPositiveButton(R.string.yes) { dialog1, which ->
+                                    .setPositiveButton(R.string.yes) { _, _ ->
                                         newPasswordConfirmation.setText("")
                                         newPasswordConfirmation.requestFocus()
                                         newPassword.setText("")
                                         newPassword.requestFocus()
                                     }
-                                    .setNegativeButton(R.string.polite_no) { dialog1, which ->
+                                    .setNegativeButton(R.string.polite_no) { _, _ ->
                                         alertDialog.dismiss()
                                         settingsPresenter.updatePassword(
                                             newConfirmedPw,
