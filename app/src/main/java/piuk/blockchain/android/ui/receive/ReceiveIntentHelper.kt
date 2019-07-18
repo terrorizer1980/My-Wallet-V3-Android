@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.support.v4.content.FileProvider
 import android.util.Pair
 import android.webkit.MimeTypeMap
@@ -17,7 +16,6 @@ import info.blockchain.balance.CryptoCurrency
 import org.bitcoinj.uri.BitcoinURI
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.BitcoinLinkGenerator
-import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
@@ -102,8 +100,7 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
 
     @SuppressLint("SetWorldReadable")
     private fun getQrFile(): File {
-        val strFileName = appUtil.receiveQRFilename
-        val file = File(strFileName)
+        val file = File(context.filesDir, "qr.png")
         if (!file.exists()) {
             try {
                 file.createNewFile()
@@ -191,15 +188,9 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
         action = Intent.ACTION_SEND
         this.type = type
 
-        if (AndroidUtils.is23orHigher()) {
-            val uriForFile =
-                FileProvider.getUriForFile(context, "${context.packageName}.fileProvider", file)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            putExtra(Intent.EXTRA_STREAM, uriForFile)
-        } else {
-            putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file))
-            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        }
+        val uriForFile = FileProvider.getUriForFile(context, "${context.packageName}.fileProvider", file)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        putExtra(Intent.EXTRA_STREAM, uriForFile)
     }
 }
 

@@ -473,7 +473,6 @@ public class MainPresenter extends BasePresenter<MainView> {
     @Override
     public void onViewDestroyed() {
         super.onViewDestroyed();
-        appUtil.deleteQR();
         dismissAnnouncementIfOnboardingCompleted();
     }
 

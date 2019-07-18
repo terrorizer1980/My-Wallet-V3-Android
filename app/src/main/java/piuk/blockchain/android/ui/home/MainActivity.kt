@@ -212,7 +212,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             selectDrawerItem(menuItem)
             true
         }
-        appUtil.deleteQR()
         presenter.updateTicker()
 
         if (!handlingResult) {
