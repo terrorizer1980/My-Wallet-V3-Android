@@ -699,7 +699,7 @@ Cuenta creada</string>
   <string name="buy_sell_overview_pending_kyc_not_found">KYC pendiente no encontrado. Por favor, inténtelo de nuevo.</string>
   <string name="buy_sell_overview_could_not_start_kyc">No se pudo reiniciar el KYC. Por favor, inténtelo de nuevo.</string>
   <string name="buy_sell_overview_empty_list">Su historial de órdenes se mostrará aquí</string>
-  <string name="buy_sell_overview_in_review_title">Verificación de identidad 
+  <string name="buy_sell_overview_in_review_title">Verificación de identidad
 en revisión</string>
   <string name="buy_sell_overview_denied_title">Verificación de identidad
 denegada</string>
@@ -944,7 +944,7 @@ Orden creada</string>
   <string name="kyc_splash_terms_and_conditions_submit">Al pulsar en \"Enviar\", acepta los</string>
   <string name="kyc_country_selection_message_state">Cada estado tiene reglas diferentes sobre el intercambio de criptomonedas.</string>
   <string name="kyc_profile_submit">Enviar</string>
-  <string name="kyc_email_didnt_see_email">¿No ha visto el correo electrónico?</string>
+  <string name="kyc_email_didnt_see_email">¿No ha visto el correo electrónico? %1$s</string>
   <string name="kyc_email_send_again_hyperlink">Enviar de nuevo</string>
   <string name="kyc_email_email_was_resent">Se ha enviado el correo electrónico</string>
   <string name="kyc_phone_didnt_see_sms">%1$s</string>
@@ -1173,7 +1173,6 @@ Orden creada</string>
   <string name="airdrop_program_card_body">Es apto para futuros airdrops.</string>
   <string name="airdrop_program_card_button">Registrarse ahora</string>
   <string name="kyc_veriff_splash_country_supported_header">¿Mi país es compatible?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">No todos los países son compatibles en este momento. Consulte nuestro %1$s actualizado antes de continuar.</string>
   <string name="gold_level_under_review_sunriver_large_backlog">Estamos revisando su verificación Oro; una vez verificada, podrá utilizar Swap y realizar transacciones hasta su límite de nivel Oro.
 
 Tenga en cuenta que existe una lista de espera larga para los airdrops de Stellar y, desafortunadamente, no se aceptarán todas las solicitudes de XLM gratis.</string>

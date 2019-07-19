@@ -1172,7 +1172,6 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="airdrop_program_card_body">Gelecekteki airdrop\'lar için uygunsunuz.</string>
   <string name="airdrop_program_card_button">Şimdi Seçin</string>
   <string name="kyc_veriff_splash_country_supported_header">Ülkem destekleniyor mu?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Şu anda tüm ülkeler desteklenmiyor. Devam etmeden önce güncel %1$s öğesine bakın.</string>
   <string name="gold_level_under_review_sunriver_large_backlog">Altın onayı devam ediyor, onaylandığınızda Swap\'ı kullanabilecek ve Altın Seviyesi limitinde ticaret yapabileceksiniz.
 
 Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM taleplerinin tümünün başarılı olmadığını lütfen unutmayın.</string>

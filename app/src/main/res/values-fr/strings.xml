@@ -1171,7 +1171,6 @@ Commande créée</string>
   <string name="airdrop_program_card_body">Vous êtes éligible pour les futurs airdrops.</string>
   <string name="airdrop_program_card_button">Accepter maintenant</string>
   <string name="kyc_veriff_splash_country_supported_header">Mon pays est-il pris en charge ?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Tous les pays ne sont pas pris en charge pour le moment. Consultez notre mise à jour %1$s avant de continuer.</string>
   <string name="gold_level_under_review_sunriver_large_backlog">La vérification Gold est en cours. Une fois la vérification effectuée, vous pourrez utiliser la conversion et le trading jusqu’à notre plafond de niveau Gold.
 
 Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et que, malheureusement, toutes les demandes de XLM gratuits n’aboutiront pas.</string>

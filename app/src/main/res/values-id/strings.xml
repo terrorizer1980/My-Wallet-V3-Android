@@ -1174,8 +1174,7 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="airdrop_program_card_body">Anda berhak atas airdrop di masa mendatang.</string>
   <string name="airdrop_program_card_button">Ikut serta Sekarang</string>
   <string name="kyc_veriff_splash_country_supported_header">Apakah negara saya didukung?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Tidak semua negara didukung saat ini. Periksa kami terkini %1$s sebelum melanjutkan.</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Verifikasi emas sedang ditinjau, setelah diverifikasi Anda akan dapat menggunakan Swap dan menukar hingga batas Tingkat Emas kami. 
+  <string name="gold_level_under_review_sunriver_large_backlog">Verifikasi emas sedang ditinjau, setelah diverifikasi Anda akan dapat menggunakan Swap dan menukar hingga batas Tingkat Emas kami.
 
  Perlu diketahui bahwa ada daftar tunggu besar untuk airdrop Stellar dan sayangnya tidak semua aplikasi XLM gratis akan berhasil.</string>
   <string name="kyc_veriff_splash_error_silver">PERAK DIVERIFIKASI</string>
