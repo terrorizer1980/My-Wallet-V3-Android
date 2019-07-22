@@ -1170,7 +1170,6 @@ Pedido criado</string>
   <string name="airdrop_program_card_body">É elegível para futuros airdrops.</string>
   <string name="airdrop_program_card_button">Atualizar agora</string>
   <string name="kyc_veriff_splash_country_supported_header">O meu país é suportado?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Nem todos os países são suportados no momento. Verifique o nosso %1$s atualizado antes de prosseguir.</string>
   <string name="gold_level_under_review_sunriver_large_backlog">A verificação Gold está sob revisão, depois de verificado se será capaz de usar Swap e negociar com o nosso limite do Nível Gold.
 
 Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infelizmente, nem todas as aplicações para o XLM gratuito serão bem sucedidas.</string>

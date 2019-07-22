@@ -1175,8 +1175,7 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="airdrop_program_card_body">Hai i requisiti per i lanci futuri.</string>
   <string name="airdrop_program_card_button">Attivazione ora</string>
   <string name="kyc_veriff_splash_country_supported_header">Il mio paese è supportato?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Al momento non tutti i Paesi sono supportati. Controlla il nostro aggiornato %1$s prima di procedere.</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">La verifica dell\'oro è in corso di revisione, una volta verificato sarà possibile utilizzare Swap e scambiare fino al limite del livello Gold. 
+  <string name="gold_level_under_review_sunriver_large_backlog">La verifica dell\'oro è in corso di revisione, una volta verificato sarà possibile utilizzare Swap e scambiare fino al limite del livello Gold.
 
  Si prega di notare che c\'è una grande lista di attesa per i lanci stellari e sfortunatamente non tutte le applicazioni per XLM gratis avranno successo.</string>
   <string name="kyc_veriff_splash_error_silver">ARGENTO VERIFICATO</string>

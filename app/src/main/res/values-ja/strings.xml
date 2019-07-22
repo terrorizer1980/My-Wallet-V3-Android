@@ -1173,8 +1173,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="airdrop_program_card_body">あなたは将来の飛行に適格です。</string>
   <string name="airdrop_program_card_button">今すぐオプトイン</string>
   <string name="kyc_veriff_splash_country_supported_header">私の国は支えられていますか？</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">現時点では、すべての国がサポートされているわけではありません。先へ進む前に、最新の%1$sを確認してください。</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">ゴールドの検証は審査中です。一度検証されると、スワップを使用してゴールドレベルの上限までトレードアップできるようになります。 
+  <string name="gold_level_under_review_sunriver_large_backlog">ゴールドの検証は審査中です。一度検証されると、スワップを使用してゴールドレベルの上限までトレードアップできるようになります。
 
  Stellar飛行場には大きな待機リストがあり、残念ながら無料XLMのすべてのアプリケーションが成功するわけではありません。</string>
   <string name="kyc_veriff_splash_error_silver">検証された銀</string>

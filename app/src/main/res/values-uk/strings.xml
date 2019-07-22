@@ -1179,8 +1179,7 @@
   <string name="airdrop_program_card_body">Ви маєте право на майбутні аеродроми.</string>
   <string name="airdrop_program_card_button">Увімкніть зараз</string>
   <string name="kyc_veriff_splash_country_supported_header">Чи підтримується моя країна?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Наразі не всі країни підтримуються. Перевірте нашу актуальну %1$s перед тим, як продовжити.</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Перевірка золота знаходиться на розгляді, після підтвердження ви зможете використовувати Swap і торгувати до нашого ліміту Gold Level. 
+  <string name="gold_level_under_review_sunriver_large_backlog">Перевірка золота знаходиться на розгляді, після підтвердження ви зможете використовувати Swap і торгувати до нашого ліміту Gold Level.
 
  Будь ласка, майте на увазі, що існує великий список очікування для зоряних аеродромів і, на жаль, не всі програми для безкоштовного XLM будуть успішними.</string>
   <string name="kyc_veriff_splash_error_silver">СЕРЕБРЯНА ВЕРИФІКОВАНА</string>

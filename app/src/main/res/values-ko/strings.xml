@@ -1170,8 +1170,7 @@
   <string name="airdrop_program_card_body">미래의 에어 드롭을받을 자격이 있습니다.</string>
   <string name="airdrop_program_card_button">지금 가입하기</string>
   <string name="kyc_veriff_splash_country_supported_header">우리 나라가 지원됩니까?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">현재 모든 국가에서 지원되는 것은 아닙니다. 계속하기 전에 %1$s 최신 항목을 확인하십시오.</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">골드 확인이 검토 중이며, 일단 스왑을 사용하고 골드 레벨 한도까지 거래 할 수 있는지 확인하십시오. 
+  <string name="gold_level_under_review_sunriver_large_backlog">골드 확인이 검토 중이며, 일단 스왑을 사용하고 골드 레벨 한도까지 거래 할 수 있는지 확인하십시오.
 
  Stellar airdrops에 대한 대기자 명단이 많으며 무료 XLM 신청이 성공적으로 완료되는 것은 아닙니다.</string>
   <string name="kyc_veriff_splash_error_silver">은빛으로 입증 된</string>

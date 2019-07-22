@@ -91,6 +91,7 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
             R.string.kyc_veriff_splash_country_supported_subtitle,
             linksMap
         )
+
         text_supported_countries.text = countriesText
         text_supported_countries.movementMethod = LinkMovementMethod.getInstance()
 
