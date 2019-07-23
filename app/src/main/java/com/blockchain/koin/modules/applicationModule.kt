@@ -20,6 +20,7 @@ import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
+import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
@@ -312,7 +313,16 @@ val applicationModule = applicationContext {
 
         factory { KycDeepLinkHelper(get()) }
 
-        factory { DeepLinkProcessor(get(), get(), get()) }
+        factory { EmailVerificationDeepLinkHelper() }
+
+        factory {
+            DeepLinkProcessor(
+                linkHandler = get(),
+                emailVerifiedLinkHelper = get(),
+                kycDeepLinkHelper = get(),
+                sunriverDeepLinkHelper = get()
+            )
+        }
 
         factory { DeepLinkPersistence(get()) }
 

@@ -35,6 +35,10 @@ class PitVerifyEmailActivity : BaseMvpActivity<PitVerifyEmailView, PitVerifyEmai
         }
 
         presenter.onViewReady()
+
+        // We want to resend the email verification email so that the resent email verification contains the
+        // context that the user is trying to link from the Pit.
+        presenter.resendMail(email)
     }
 
     override fun createPresenter(): PitVerifyEmailPresenter = get()

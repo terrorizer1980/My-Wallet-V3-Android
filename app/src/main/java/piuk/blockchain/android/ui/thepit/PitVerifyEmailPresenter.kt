@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.androidcore.data.settings.Email
 import piuk.blockchain.androidcore.data.settings.EmailSyncUpdater
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -46,15 +47,12 @@ class PitVerifyEmailPresenter(
     }
 
     fun resendMail(emailAddress: String) {
-        compositeDisposable += emailSyncUpdater.updateEmailAndSync(emailAddress, PIT_VERIFICATION_CONTEXT)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onError = { onResendFailed() },
-                onSuccess = { onResendSuccess(it) }
-            )
-    }
-
-    companion object {
-        const val PIT_VERIFICATION_CONTEXT = "PIT_SIGNUP"
+        compositeDisposable +=
+            emailSyncUpdater.updateEmailAndSync(emailAddress, EmailVerificationDeepLinkHelper.PIT_SIGNUP)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onError = { onResendFailed() },
+                    onSuccess = { onResendSuccess(it) }
+                )
     }
 }

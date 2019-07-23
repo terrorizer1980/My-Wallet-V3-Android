@@ -57,6 +57,14 @@ class DeepLinkProcessorTest {
     }
 
     @Test
+    fun `pit email verified uri`() {
+        givenUriExpect(
+            "https://login.blockchain.com/login?deep_link_path=email_verified&context=pit_signup",
+            LinkState.EmailVerifiedDeepLink(EmailVerifiedLinkState.FromPitLinking)
+        )
+    }
+
+    @Test
     fun `general kyc uri with campaign`() {
         val url = "https://login.blockchain.com/#/open/kyc?tier=2&deep_link_path=kyc&campaign=sunriver"
         givenUriExpect(url, LinkState.KycDeepLink(
@@ -78,6 +86,7 @@ class DeepLinkProcessorTest {
 private fun givenUriExpect(uri: String, expected: LinkState) {
     DeepLinkProcessor(
         givenPendingUri(uri),
+        EmailVerificationDeepLinkHelper(),
         KycDeepLinkHelper(mock()),
         SunriverDeepLinkHelper(mock())
     ).getLink(mock())

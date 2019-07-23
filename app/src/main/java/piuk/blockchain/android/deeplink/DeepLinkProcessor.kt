@@ -11,6 +11,7 @@ import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 
 internal class DeepLinkProcessor(
     private val linkHandler: PendingLink,
+    private val emailVerifiedLinkHelper: EmailVerificationDeepLinkHelper,
     private val kycDeepLinkHelper: KycDeepLinkHelper,
     private val sunriverDeepLinkHelper: SunriverDeepLinkHelper
 ) {
@@ -18,6 +19,10 @@ internal class DeepLinkProcessor(
     fun getLink(intent: Intent): Single<LinkState> =
         linkHandler.getPendingLinks(intent)
             .map { uri ->
+                val emailVerifiedUri = emailVerifiedLinkHelper.mapUri(uri)
+                if (emailVerifiedUri != EmailVerifiedLinkState.NoUri) {
+                    return@map LinkState.EmailVerifiedDeepLink(emailVerifiedUri)
+                }
                 val sr = sunriverDeepLinkHelper.mapUri(uri)
                 if (sr !is CampaignLinkState.NoUri) {
                     return@map LinkState.SunriverDeepLink(sr)
@@ -34,6 +39,7 @@ internal class DeepLinkProcessor(
 }
 
 sealed class LinkState {
+    data class EmailVerifiedDeepLink(val link: EmailVerifiedLinkState) : LinkState()
     data class SunriverDeepLink(val link: CampaignLinkState) : LinkState()
     data class KycDeepLink(val link: KycLinkState) : LinkState()
     object NoUri : LinkState()

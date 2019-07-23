@@ -37,6 +37,7 @@ import piuk.blockchain.android.data.cache.DynamicFeeCache;
 import piuk.blockchain.android.data.datamanagers.PromptManager;
 import piuk.blockchain.android.data.rxjava.RxUtil;
 import piuk.blockchain.android.deeplink.DeepLinkProcessor;
+import piuk.blockchain.android.deeplink.EmailVerifiedLinkState;
 import piuk.blockchain.android.deeplink.LinkState;
 import piuk.blockchain.android.kyc.KycLinkState;
 import piuk.blockchain.android.sunriver.CampaignLinkState;
@@ -324,7 +325,12 @@ public class MainPresenter extends BasePresenter<MainView> {
                         .getLink(getView().getStartIntent())
                         .subscribe(
                                 linkState -> {
-                                    if (linkState instanceof LinkState.SunriverDeepLink) {
+                                    if (linkState instanceof LinkState.EmailVerifiedDeepLink) {
+                                        final EmailVerifiedLinkState state = ((LinkState.EmailVerifiedDeepLink) linkState).getLink();
+                                        if (state == EmailVerifiedLinkState.FromPitLinking) {
+                                            showThePitOrPitLinkingView();
+                                        }
+                                    } else if (linkState instanceof LinkState.SunriverDeepLink) {
                                         final CampaignLinkState campaignLinkState = ((LinkState.SunriverDeepLink) linkState).getLink();
                                         if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
                                             getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
@@ -596,21 +602,25 @@ public class MainPresenter extends BasePresenter<MainView> {
                 );
     }
 
-    @SuppressLint("CheckResult")
     public void onThePitMenuClicked() {
-        getCompositeDisposable()
-            .add(pitLinking.isPitLinked()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                isLinked -> {
-                    if(isLinked) {
-                        getView().launchThePit();
-                    } else {
-                        getView().launchThePitLinking();
-                    }
-                },
-                Timber::e
-            )
+        showThePitOrPitLinkingView();
+    }
+
+    @SuppressLint("CheckResult")
+    private void showThePitOrPitLinkingView() {
+        getCompositeDisposable().add(
+                pitLinking.isPitLinked()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                isLinked -> {
+                                    if (isLinked) {
+                                        getView().launchThePit();
+                                    } else {
+                                        getView().launchThePitLinking();
+                                    }
+                                },
+                                Timber::e
+                        )
         );
     }
 }
