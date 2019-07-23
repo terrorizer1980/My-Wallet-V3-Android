@@ -34,8 +34,14 @@ class StableCoinIntroAnnouncementRule(
             .subscribe { enabled ->
                 if (enabled) {
                     StablecoinIntroPopup.show(host, DISMISS_KEY)
+                    analytics.logEvent(
+                        PaxCardShowingAnalyticsEvent(PaxCardShowingAnalyticsEvent.ANALYTICS_OPTION_SHOWING_POPUP)
+                    )
                 } else {
                     host.showAnnouncementCard(createAnnouncementCard(host))
+                    analytics.logEvent(
+                        PaxCardShowingAnalyticsEvent(PaxCardShowingAnalyticsEvent.ANALYTICS_OPTION_SHOWING_CARD)
+                    )
                 }
             }
     }
@@ -50,7 +56,7 @@ class StableCoinIntroAnnouncementRule(
                 dismissEntry.dismiss(DismissRule.DismissForSession)
                 host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 analytics.logEvent(
-                    PaxCardAnalyticsEvent(PaxCardAnalyticsEvent.ANALYTICS_DISMISS_CLOSED)
+                    PaxCardSeenAnalyticsEvent(PaxCardSeenAnalyticsEvent.ANALYTICS_DISMISS_CLOSED)
                 )
             },
             linkFunction = {
@@ -58,7 +64,7 @@ class StableCoinIntroAnnouncementRule(
                 host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 host.startSwapOrKyc(CryptoCurrency.PAX)
                 analytics.logEvent(
-                    PaxCardAnalyticsEvent(PaxCardAnalyticsEvent.ANALYTICS_DISMISS_CTA_CLICK)
+                    PaxCardSeenAnalyticsEvent(PaxCardSeenAnalyticsEvent.ANALYTICS_DISMISS_CTA_CLICK)
                 )
             },
             prefsKey = dismissEntry.prefsKey
@@ -70,7 +76,24 @@ class StableCoinIntroAnnouncementRule(
     }
 }
 
-private class PaxCardAnalyticsEvent(val dismissBy: String) : AnalyticsEvent {
+// Sent when either the card or the popup is selected and shown.
+private class PaxCardShowingAnalyticsEvent(val optionShowing: String) : AnalyticsEvent {
+    override val event: String
+        get() = ANALYTICS_EVENT_NAME
+
+    override val params: Map<String, String>
+        get() = mapOf(ANALYTICS_OPTION_SHOWING_PARAM to optionShowing)
+
+    companion object {
+        private const val ANALYTICS_EVENT_NAME = "pax_card_showing"
+        private const val ANALYTICS_OPTION_SHOWING_PARAM = "Showing"
+        const val ANALYTICS_OPTION_SHOWING_CARD = "CARD"
+        const val ANALYTICS_OPTION_SHOWING_POPUP = "POPUP"
+    }
+}
+
+// Fired when the card/popup is dismissed to track actions
+private class PaxCardSeenAnalyticsEvent(val dismissBy: String) : AnalyticsEvent {
     override val event: String
         get() = ANALYTICS_EVENT_NAME
 
