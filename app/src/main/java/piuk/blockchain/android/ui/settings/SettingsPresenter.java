@@ -6,6 +6,8 @@ import com.blockchain.kyc.models.nabu.NabuApiException;
 import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes;
 import com.blockchain.kycui.settings.KycStatusHelper;
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.remoteconfig.FeatureFlag;
+
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.PayloadManager;
 import info.blockchain.wallet.settings.SettingsManager;
@@ -53,6 +55,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     @VisibleForTesting
     Settings settings;
     private final PitLinking pitLinking;
+    private final FeatureFlag featureFlag;
     private PitLinkingState pitLinkState = new PitLinkingState();
 
     // Show dialog "are you sure you want to disable fingerprint login?
@@ -71,7 +74,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             ExchangeRateDataManager exchangeRateDataManager,
             CurrencyFormatManager currencyFormatManager,
             KycStatusHelper kycStatusHelper,
-            PitLinking pitLinking) {
+            PitLinking pitLinking,
+            FeatureFlag featureFlag) {
 
         this.fingerprintHelper = fingerprintHelper;
         this.authDataManager = authDataManager;
@@ -88,6 +92,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         this.currencyFormatManager = currencyFormatManager;
         this.kycStatusHelper = kycStatusHelper;
         this.pitLinking = pitLinking;
+        this.featureFlag = featureFlag;
 
     }
 
@@ -111,6 +116,11 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                                 }));
 
         getCompositeDisposable().add(pitLinking.getState().subscribe(this::onPitStateUpdated));
+        getCompositeDisposable().add(featureFlag.getEnabled().subscribe(this::showPitItem));
+    }
+
+    private void showPitItem(Boolean pitEnabled) {
+        getView().isPitEnabled(pitEnabled);
     }
 
     private void onPitStateUpdated(PitLinkingState state) {

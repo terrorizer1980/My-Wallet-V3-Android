@@ -12,6 +12,7 @@ import com.blockchain.network.EnvironmentUrls;
 import com.blockchain.notifications.NotificationTokenManager;
 import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig;
+import com.blockchain.remoteconfig.FeatureFlag;
 import com.blockchain.remoteconfig.RemoteConfig;
 import com.blockchain.remoteconfig.RemoteConfiguration;
 import com.blockchain.sunriver.XlmDataManager;
@@ -154,6 +155,12 @@ public class ApplicationModule extends KoinDaggerModule {
     @Provides
     KycStatusHelper provideKycStatusHelper() {
         return get(KycStatusHelper.class);
+    }
+
+    @Provides
+    @Named("ff_pit_linking")
+    FeatureFlag providePitFeatureFlag() {
+        return get(FeatureFlag.class, "ff_pit_linking");
     }
 
     @Provides
@@ -317,11 +324,17 @@ public class ApplicationModule extends KoinDaggerModule {
     }
 
     @Provides
-    OverlayDetection providesOverlayDetection() { return get(OverlayDetection.class); }
+    OverlayDetection providesOverlayDetection() {
+        return get(OverlayDetection.class);
+    }
 
     @Provides
-    FingerprintHelper providesFingerprintHelper() { return get(FingerprintHelper.class); }
+    FingerprintHelper providesFingerprintHelper() {
+        return get(FingerprintHelper.class);
+    }
 
     @Provides
-    PitLinking providesPitLinkingEngine() { return get(PitLinking.class); }
+    PitLinking providesPitLinkingEngine() {
+        return get(PitLinking.class);
+    }
 }

@@ -369,6 +369,10 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         PitLaunchBottomDialog.launch(this)
     }
 
+    override fun setPitEnabled(enabled: Boolean) {
+        setPitVisible(enabled)
+    }
+
     private fun showLogoutDialog() {
         AlertDialog.Builder(this, R.style.AlertDialogStyle)
             .setTitle(R.string.unpair_wallet)
@@ -524,6 +528,11 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     private fun setBuyBitcoinVisible(visible: Boolean) {
         val menu = menu
         menu.findItem(R.id.nav_buy).isVisible = visible
+    }
+
+    private fun setPitVisible(visible: Boolean) {
+        val menu = menu
+        menu.findItem(R.id.nav_the_pit).isVisible = visible
     }
 
     override fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails) {

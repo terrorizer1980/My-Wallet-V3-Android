@@ -225,7 +225,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         // Check if referred from Security Centre dialog
         val intent = activity?.intent
         when {
-            intent == null -> { }
+            intent == null -> {
+            }
             intent.hasExtra(PromptManager.EXTRA_SHOW_TWO_FA_DIALOG) ->
                 showDialogTwoFA()
             intent.hasExtra(PromptManager.EXTRA_SHOW_ADD_EMAIL_DIALOG) ->
@@ -239,6 +240,10 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
             setMessage(message)
             show()
         }
+    }
+
+    override fun isPitEnabled(enabled: Boolean) {
+        thePit.isVisible = enabled
     }
 
     override fun hideProgressDialog() {
@@ -349,7 +354,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                 )
             }
             .setNegativeButton(android.R.string.cancel) { _, _ ->
-                updateFingerprintPreferenceStatus() }
+                updateFingerprintPreferenceStatus()
+            }
             .show()
     }
 
@@ -444,156 +450,156 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         }, 300)
     }
 
-        private fun showDialogMobile() {
-            if (settingsPresenter.authType != Settings.AUTH_TYPE_OFF) {
-                AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
-                    .setTitle(R.string.warning)
-                    .setMessage(R.string.disable_2fa_first)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .create()
-                    .show()
-            } else {
-                val inflater = activity!!.layoutInflater
-                val smsPickerView = inflater.inflate(R.layout.include_sms_update, null)
-                val mobileNumber = smsPickerView.findViewById<EditText>(R.id.etSms)
-                val countryTextView = smsPickerView.findViewById<TextView>(R.id.tvCountry)
-                val mobileNumberTextView = smsPickerView.findViewById<TextView>(R.id.tvSms)
-
-                val picker = CountryPicker.newInstance(getString(R.string.select_country))
-                val country = picker.getUserCountryInfo(activity!!)
-                if (country.dialCode == "+93") {
-                    setCountryFlag(countryTextView, "+1", R.drawable.flag_us)
-                } else {
-                    setCountryFlag(countryTextView, country.dialCode, country.flag)
-                }
-
-                countryTextView.setOnClickListener {
-                    picker.show(fragmentManager!!, "COUNTRY_PICKER")
-                    picker.setListener { _, _, dialCode, flagDrawableResID ->
-                        setCountryFlag(countryTextView, dialCode, flagDrawableResID)
-                        picker.dismiss()
-                    }
-                }
-
-                if (settingsPresenter.sms.isNotEmpty()) {
-                    mobileNumberTextView.text = settingsPresenter.sms
-                    mobileNumberTextView.visibility = View.VISIBLE
-                }
-
-                val alertDialogSmsBuilder = AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
-                    .setTitle(R.string.mobile)
-                    .setMessage(getString(R.string.mobile_description))
-                    .setView(smsPickerView)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.update, null)
-                    .setNegativeButton(android.R.string.cancel, null)
-
-                if (!settingsPresenter.isSmsVerified && settingsPresenter.sms.isNotEmpty()) {
-                    alertDialogSmsBuilder.setNeutralButton(R.string.verify) { dialogInterface, i ->
-                        settingsPresenter.updateSms(
-                            settingsPresenter.sms
-                        )
-                    }
-                }
-
-                val dialog = alertDialogSmsBuilder.create()
-                dialog.setOnShowListener {
-                    val positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                    positive.setOnClickListener {
-                        val sms = countryTextView.text.toString() + mobileNumber.text.toString()
-
-                        if (!FormatsUtil.isValidMobileNumber(sms)) {
-                            ToastCustom.makeText(
-                                activity,
-                                getString(R.string.invalid_mobile),
-                                ToastCustom.LENGTH_SHORT,
-                                ToastCustom.TYPE_ERROR
-                            )
-                        } else {
-                            settingsPresenter.updateSms(sms)
-                            dialog.dismiss()
-                        }
-                    }
-                }
-
-                dialog.show()
-            }
-        }
-
-        private fun showDialogGuid() {
+    private fun showDialogMobile() {
+        if (settingsPresenter.authType != Settings.AUTH_TYPE_OFF) {
             AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
-                .setTitle(R.string.app_name)
-                .setMessage(R.string.guid_to_clipboard)
-                .setCancelable(false)
-                .setPositiveButton(R.string.yes) { _, _ ->
-                    val clipboard =
-                        activity!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText("guid", guidPref!!.summary)
-                    clipboard.primaryClip = clip
-                    ToastCustom.makeText(
-                        activity,
-                        getString(R.string.copied_to_clipboard),
-                        ToastCustom.LENGTH_SHORT,
-                        ToastCustom.TYPE_GENERAL
-                    )
-                }
-                .setNegativeButton(R.string.no, null)
+                .setTitle(R.string.warning)
+                .setMessage(R.string.disable_2fa_first)
+                .setPositiveButton(android.R.string.ok, null)
+                .create()
                 .show()
-        }
+        } else {
+            val inflater = activity!!.layoutInflater
+            val smsPickerView = inflater.inflate(R.layout.include_sms_update, null)
+            val mobileNumber = smsPickerView.findViewById<EditText>(R.id.etSms)
+            val countryTextView = smsPickerView.findViewById<TextView>(R.id.tvCountry)
+            val mobileNumberTextView = smsPickerView.findViewById<TextView>(R.id.tvSms)
 
-        private fun showDialogFiatUnits() {
-            val currencies = settingsPresenter.currencyLabels
-            val strCurrency = settingsPresenter.fiatUnits
-            var selected = 0
-            for (i in currencies.indices) {
-                if (currencies[i].endsWith(strCurrency)) {
-                    selected = i
-                    break
+            val picker = CountryPicker.newInstance(getString(R.string.select_country))
+            val country = picker.getUserCountryInfo(activity!!)
+            if (country.dialCode == "+93") {
+                setCountryFlag(countryTextView, "+1", R.drawable.flag_us)
+            } else {
+                setCountryFlag(countryTextView, country.dialCode, country.flag)
+            }
+
+            countryTextView.setOnClickListener {
+                picker.show(fragmentManager!!, "COUNTRY_PICKER")
+                picker.setListener { _, _, dialCode, flagDrawableResID ->
+                    setCountryFlag(countryTextView, dialCode, flagDrawableResID)
+                    picker.dismiss()
                 }
             }
 
-            Builder(activity!!, R.style.AlertDialogStyle)
-                .setTitle(R.string.select_currency)
-                .setSingleChoiceItems(currencies, selected) { dialog, which ->
-                    val fiatUnit = currencies[which].substring(currencies[which].length - 3)
-                    settingsPresenter.updateFiatUnit(fiatUnit)
-                    dialog.dismiss()
-                }
-                .show()
-        }
+            if (settingsPresenter.sms.isNotEmpty()) {
+                mobileNumberTextView.text = settingsPresenter.sms
+                mobileNumberTextView.visibility = View.VISIBLE
+            }
 
-        override fun showDialogVerifySms() {
-            val editText = AppCompatEditText(activity!!)
-            editText.setSingleLine(true)
-
-            val dialog = AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
-                .setTitle(R.string.verify_mobile)
-                .setMessage(R.string.verify_sms_summary)
-                .setView(ViewUtils.getAlertDialogPaddedView(activity, editText))
+            val alertDialogSmsBuilder = AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
+                .setTitle(R.string.mobile)
+                .setMessage(getString(R.string.mobile_description))
+                .setView(smsPickerView)
                 .setCancelable(false)
-                .setPositiveButton(R.string.verify, null)
+                .setPositiveButton(R.string.update, null)
                 .setNegativeButton(android.R.string.cancel, null)
-                .setNeutralButton(R.string.resend) { dialogInterface, i ->
+
+            if (!settingsPresenter.isSmsVerified && settingsPresenter.sms.isNotEmpty()) {
+                alertDialogSmsBuilder.setNeutralButton(R.string.verify) { dialogInterface, i ->
                     settingsPresenter.updateSms(
                         settingsPresenter.sms
                     )
                 }
-                .create()
+            }
 
+            val dialog = alertDialogSmsBuilder.create()
             dialog.setOnShowListener {
                 val positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
                 positive.setOnClickListener {
-                    val codeS = editText.text.toString()
-                    if (codeS.isNotEmpty()) {
-                        settingsPresenter.verifySms(codeS)
+                    val sms = countryTextView.text.toString() + mobileNumber.text.toString()
+
+                    if (!FormatsUtil.isValidMobileNumber(sms)) {
+                        ToastCustom.makeText(
+                            activity,
+                            getString(R.string.invalid_mobile),
+                            ToastCustom.LENGTH_SHORT,
+                            ToastCustom.TYPE_ERROR
+                        )
+                    } else {
+                        settingsPresenter.updateSms(sms)
                         dialog.dismiss()
-                        ViewUtils.hideKeyboard(activity!!)
                     }
                 }
             }
 
             dialog.show()
         }
+    }
+
+    private fun showDialogGuid() {
+        AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
+            .setTitle(R.string.app_name)
+            .setMessage(R.string.guid_to_clipboard)
+            .setCancelable(false)
+            .setPositiveButton(R.string.yes) { _, _ ->
+                val clipboard =
+                    activity!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("guid", guidPref!!.summary)
+                clipboard.primaryClip = clip
+                ToastCustom.makeText(
+                    activity,
+                    getString(R.string.copied_to_clipboard),
+                    ToastCustom.LENGTH_SHORT,
+                    ToastCustom.TYPE_GENERAL
+                )
+            }
+            .setNegativeButton(R.string.no, null)
+            .show()
+    }
+
+    private fun showDialogFiatUnits() {
+        val currencies = settingsPresenter.currencyLabels
+        val strCurrency = settingsPresenter.fiatUnits
+        var selected = 0
+        for (i in currencies.indices) {
+            if (currencies[i].endsWith(strCurrency)) {
+                selected = i
+                break
+            }
+        }
+
+        Builder(activity!!, R.style.AlertDialogStyle)
+            .setTitle(R.string.select_currency)
+            .setSingleChoiceItems(currencies, selected) { dialog, which ->
+                val fiatUnit = currencies[which].substring(currencies[which].length - 3)
+                settingsPresenter.updateFiatUnit(fiatUnit)
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    override fun showDialogVerifySms() {
+        val editText = AppCompatEditText(activity!!)
+        editText.setSingleLine(true)
+
+        val dialog = AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
+            .setTitle(R.string.verify_mobile)
+            .setMessage(R.string.verify_sms_summary)
+            .setView(ViewUtils.getAlertDialogPaddedView(activity, editText))
+            .setCancelable(false)
+            .setPositiveButton(R.string.verify, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setNeutralButton(R.string.resend) { dialogInterface, i ->
+                settingsPresenter.updateSms(
+                    settingsPresenter.sms
+                )
+            }
+            .create()
+
+        dialog.setOnShowListener {
+            val positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+            positive.setOnClickListener {
+                val codeS = editText.text.toString()
+                if (codeS.isNotEmpty()) {
+                    settingsPresenter.verifySms(codeS)
+                    dialog.dismiss()
+                    ViewUtils.hideKeyboard(activity!!)
+                }
+            }
+        }
+
+        dialog.show()
+    }
 
     private fun showDialogChangePin() {
         val intent = Intent(activity, PinEntryActivity::class.java)
@@ -771,7 +777,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     private fun showDialogTwoFA() {
         if (settingsPresenter.authType == Settings.AUTH_TYPE_GOOGLE_AUTHENTICATOR ||
-            settingsPresenter.authType == Settings.AUTH_TYPE_YUBI_KEY) {
+            settingsPresenter.authType == Settings.AUTH_TYPE_YUBI_KEY
+        ) {
             twoStepVerificationPref.isChecked = true
             AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
                 .setTitle(R.string.warning)

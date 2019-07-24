@@ -14,6 +14,8 @@ import com.blockchain.kycui.sunriver.SunriverCampaignHelper;
 import com.blockchain.kycui.sunriver.SunriverCardType;
 import com.blockchain.lockbox.data.LockboxDataManager;
 import com.blockchain.nabu.CurrentTier;
+import com.blockchain.remoteconfig.FeatureFlag;
+import com.blockchain.remoteconfig.RemoteConfig;
 import com.blockchain.sunriver.XlmDataManager;
 
 import info.blockchain.balance.CryptoCurrency;
@@ -25,10 +27,12 @@ import info.blockchain.wallet.payload.PayloadManagerWiper;
 import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Unit;
 import piuk.blockchain.android.BuildConfig;
@@ -102,6 +106,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private DeepLinkProcessor deepLinkProcessor;
     private SunriverCampaignHelper sunriverCampaignHelper;
     private XlmDataManager xlmDataManager;
+    private final FeatureFlag pitFeatureFlag;
     private PitLinking pitLinking;
 
     @Inject
@@ -134,6 +139,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                   SunriverCampaignHelper sunriverCampaignHelper,
                   XlmDataManager xlmDataManager,
                   Erc20Account paxAccount,
+                  @Named("ff_pit_linking") FeatureFlag pitFeatureFlag,
                   PitLinking pitLinking) {
 
         this.prefs = prefs;
@@ -165,6 +171,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.sunriverCampaignHelper = sunriverCampaignHelper;
         this.xlmDataManager = xlmDataManager;
         this.paxAccount = paxAccount;
+        this.pitFeatureFlag = pitFeatureFlag;
         this.pitLinking = pitLinking;
     }
 
@@ -200,7 +207,14 @@ public class MainPresenter extends BasePresenter<MainView> {
             initMetadataElements();
 
             doPushNotifications();
+
+            checkPitAvailability();
         }
+    }
+
+    private void checkPitAvailability() {
+        getCompositeDisposable().add(pitFeatureFlag.getEnabled().subscribe(enabled ->
+                getView().setPitEnabled(enabled)));
     }
 
     @SuppressLint("CheckResult")

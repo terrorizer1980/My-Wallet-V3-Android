@@ -1,13 +1,16 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
 import android.support.annotation.VisibleForTesting
+import com.blockchain.remoteconfig.FeatureFlag
 import io.reactivex.Single
+import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.R
 import piuk.blockchain.android.thepit.PitLinking
 
 class PitAnnouncementRule(
     private val pitLink: PitLinking,
-    dismissRecorder: DismissRecorder
+    dismissRecorder: DismissRecorder,
+    private val featureFlag: FeatureFlag
 ) : AnnouncementRule {
 
     override val dismissKey = DISMISS_KEY
@@ -18,7 +21,9 @@ class PitAnnouncementRule(
             return Single.just(false)
         }
 
-        return pitLink.isPitLinked().map { !it }
+        return pitLink.isPitLinked().zipWith(featureFlag.enabled).map { (linked, enabled) ->
+            !linked && enabled
+        }
     }
 
     override fun show(host: AnnouncementHost) {

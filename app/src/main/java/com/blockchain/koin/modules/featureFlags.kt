@@ -21,7 +21,11 @@ val featureFlagsModule = applicationContext {
         get<RemoteConfig>().featureFlag("android_stablecoin_enabled")
     }
 
-    factory("ff_pit") {
-        get<RemoteConfig>().featureFlag("android_pit_enabled")
+    factory("ff_pit_linking") {
+        get<RemoteConfig>().featureFlag("pit_linking_enabled")
+    }
+
+    factory("ff_pit_announcement") {
+        get<RemoteConfig>().featureFlag("pit_show_announcement")
     }
 }

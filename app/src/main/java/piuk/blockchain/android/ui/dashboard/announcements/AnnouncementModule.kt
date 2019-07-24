@@ -68,7 +68,8 @@ val dashboardAnnouncementsModule = applicationContext {
         factory("pit") {
             PitAnnouncementRule(
                 pitLink = get(),
-                dismissRecorder = get()
+                dismissRecorder = get(),
+                featureFlag = get("ff_pit_announcement")
             ) as AnnouncementRule
         }
 

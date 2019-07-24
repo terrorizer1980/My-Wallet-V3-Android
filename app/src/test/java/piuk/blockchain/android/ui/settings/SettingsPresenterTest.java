@@ -4,6 +4,8 @@ import com.blockchain.kyc.models.nabu.Kyc2TierState;
 import com.blockchain.kyc.models.nabu.NabuApiException;
 import com.blockchain.kycui.settings.KycStatusHelper;
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.remoteconfig.FeatureFlag;
+
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.PayloadManager;
 import info.blockchain.wallet.settings.SettingsManager;
@@ -12,11 +14,13 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.testutils.RxTest;
 import piuk.blockchain.android.thepit.PitLinking;
@@ -89,6 +93,8 @@ public class SettingsPresenterTest extends RxTest {
     private PitLinking pitLinking;
     @Mock
     private PitLinkingState pitLinkState;
+    @Mock
+    private FeatureFlag featureFlag;
 
     @Before
     public void setUp() {
@@ -108,7 +114,8 @@ public class SettingsPresenterTest extends RxTest {
                 exchangeRateDataManager,
                 currencyFormatManager,
                 kycStatusHelper,
-                pitLinking);
+                pitLinking,
+                featureFlag);
         subject.initView(activity);
     }
 
@@ -129,6 +136,7 @@ public class SettingsPresenterTest extends RxTest {
 
         when(pitLinkState.isLinked()).thenReturn(false);
         when(pitLinking.getState()).thenReturn(Observable.just(pitLinkState));
+        when(featureFlag.getEnabled()).thenReturn(Single.just(true));
 
         // Act
         subject.onViewReady();
@@ -137,6 +145,7 @@ public class SettingsPresenterTest extends RxTest {
         verify(activity).hideProgressDialog();
         verify(activity).setUpUi();
         verify(activity).setPitLinkingState(false);
+        verify(activity).isPitEnabled(true);
         assertEquals(mockSettings, subject.settings);
     }
 
@@ -147,6 +156,7 @@ public class SettingsPresenterTest extends RxTest {
         when(settingsDataManager.fetchSettings()).thenReturn(Observable.error(new Throwable()));
         when(pitLinkState.isLinked()).thenReturn(false);
         when(pitLinking.getState()).thenReturn(Observable.just(pitLinkState));
+        when(featureFlag.getEnabled()).thenReturn(Single.just(false));
 
         // Act
         subject.onViewReady();
@@ -155,6 +165,7 @@ public class SettingsPresenterTest extends RxTest {
         verify(activity).showProgressDialog(anyInt());
         verify(activity).hideProgressDialog();
         verify(activity).setUpUi();
+        verify(activity).isPitEnabled(false);
         assertNotSame(settings, subject.settings);
     }
 

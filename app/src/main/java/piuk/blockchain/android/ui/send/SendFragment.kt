@@ -116,6 +116,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     private var transactionSuccessDialog: AlertDialog? = null
 
     private var handlingActivityResult = false
+    private var pitEnabled = false
     private var pitAddressState: PitAddressFieldState = PitAddressFieldState.CLEARED
 
     private val dialogHandler = Handler()
@@ -561,7 +562,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             showReceivingDropdown()
         }
 
-        if (pitAddressAvailable) {
+        if (pitAddressAvailable && pitEnabled) {
             showPitAddressIcon()
         } else {
             hidePitAddressIcon()
@@ -1256,6 +1257,13 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                 putString(ARGUMENT_SCAN_DATA, scanData)
             }
             return fragment
+        }
+    }
+
+    override fun isPitEnabled(enabled: Boolean) {
+        pitEnabled = enabled
+        if (!pitEnabled) {
+            pitAddress.gone()
         }
     }
 }

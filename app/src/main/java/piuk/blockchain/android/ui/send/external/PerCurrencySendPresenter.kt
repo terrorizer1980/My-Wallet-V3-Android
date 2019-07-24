@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
 import android.text.Editable
 import android.widget.EditText
+import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.isValidXlmQr
 import com.blockchain.transactions.Memo
@@ -13,7 +14,8 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.balance.withMajorValueOrZero
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.util.FormatsUtil
-import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.send.DisplayFeeOptions
 import piuk.blockchain.android.ui.send.SendView
@@ -43,7 +45,8 @@ internal class PerCurrencySendPresenter<View : SendView>(
     private val envSettings: EnvironmentConfig,
     private val stringUtils: StringUtils,
     private val exchangeRateFactory: ExchangeRateDataManager,
-    private val prefs: PersistentPrefs
+    private val prefs: PersistentPrefs,
+    private val pitLinkingFeatureFlag: FeatureFlag
 ) : SendPresenter<View>() {
 
     override fun onPitAddressSelected() {
@@ -272,9 +275,13 @@ internal class PerCurrencySendPresenter<View : SendView>(
             selectedCrypto = CryptoCurrency.BTC
             view.hideCurrencyHeader()
         }
-        delegate.memoRequired().startWith(false).subscribe {
+        compositeDisposable += delegate.memoRequired().startWith(false).subscribe {
             view?.updateRequiredLabelVisibility(it)
-        }.addTo(compositeDisposable)
+        }
+
+        compositeDisposable += pitLinkingFeatureFlag.enabled.subscribeBy {
+            view.isPitEnabled(it)
+        }
     }
 
     override fun disableAdvancedFeeWarning() {

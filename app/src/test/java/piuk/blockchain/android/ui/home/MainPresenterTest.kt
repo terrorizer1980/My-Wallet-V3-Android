@@ -6,6 +6,7 @@ import com.blockchain.kycui.settings.KycStatusHelper
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.nabu.CurrentTier
+import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
@@ -79,6 +80,7 @@ class MainPresenterTest {
     private val sunriverCampaignHelper: SunriverCampaignHelper = mock()
     private val xlmDataManager: XlmDataManager = mock()
     private val pitLinking: PitLinking = mock()
+    private val featureFlag: FeatureFlag = mock()
 
     @get:Rule
     val rxSchedulers = rxInit {
@@ -118,6 +120,7 @@ class MainPresenterTest {
             sunriverCampaignHelper,
             xlmDataManager,
             paxAccount,
+            featureFlag,
             pitLinking
         )
 

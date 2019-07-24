@@ -67,4 +67,6 @@ internal interface SettingsView : View {
     fun showWarningDialog(@StringRes message: Int)
 
     fun launchKycFlow()
+
+    fun isPitEnabled(enabled: Boolean)
 }

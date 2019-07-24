@@ -222,7 +222,8 @@ val applicationModule = applicationContext {
                 exchangeRates = get(),
                 stringUtils = get(),
                 envSettings = get(),
-                exchangeRateFactory = get()
+                exchangeRateFactory = get(),
+                pitLinkingFeatureFlag = get("ff_pit_linking")
             )
         }
 
@@ -441,7 +442,8 @@ val applicationModule = applicationContext {
                 /* exchangeRateDataManager = */ get(),
                 /* currencyFormatManager = */ get(),
                 /* kycStatusHelper = */ get(),
-                /* pitLinking = */ get()
+                /* pitLinking = */ get(),
+                /*featureFlag = */get("ff_pit_linking")
             )
         }
 
