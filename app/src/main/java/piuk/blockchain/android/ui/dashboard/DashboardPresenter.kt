@@ -21,6 +21,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
@@ -60,6 +61,7 @@ class DashboardPresenter(
     private val lockboxDataManager: LockboxDataManager,
     private val currentTier: CurrentTier,
     private val sunriverCampaignHelper: SunriverCampaignHelper,
+    private val pitLinking: PitLinking,
     private val announcements: AnnouncementList
 ) : BasePresenter<DashboardView>(), AnnouncementHost {
 
@@ -123,6 +125,13 @@ class DashboardPresenter(
         if (linkId.isNotEmpty()) {
             view.startPitLinkingFlow(linkId)
         }
+
+        // Wallet pit linking - update receive addresses in for the pit
+        compositeDisposable += pitLinking.isPitLinked()
+            .subscribeBy(
+                onSuccess = { if (it) pitLinking.sendWalletAddressToThePit() },
+                onError = { /* Ignore */ }
+            )
     }
 
     private fun storeSwipeToReceiveAddresses() {

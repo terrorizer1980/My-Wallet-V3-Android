@@ -370,7 +370,8 @@ val applicationModule = applicationContext {
                 lockboxDataManager = get(),
                 currentTier = get(),
                 sunriverCampaignHelper = get(),
-                announcements = get()
+                announcements = get(),
+                pitLinking = get()
             )
         }.bind(AnnouncementHost::class)
 
