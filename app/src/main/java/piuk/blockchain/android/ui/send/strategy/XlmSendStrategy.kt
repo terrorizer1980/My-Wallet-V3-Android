@@ -2,6 +2,9 @@ package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
 import com.blockchain.fees.FeeType
+import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.State
+import com.blockchain.nabu.NabuToken
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.XlmFeesFetcher
@@ -26,13 +29,16 @@ import io.reactivex.rxkotlin.withLatestFrom
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.account.PitAccount
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
+import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
+import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -43,11 +49,31 @@ class XlmSendStrategy(
     private val xlmTransactionSender: TransactionSender,
     private val walletOptionsDataManager: WalletOptionsDataManager,
     private val fiatExchangeRates: FiatExchangeRates,
-    private val sendFundsResultLocalizer: SendFundsResultLocalizer
+    private val sendFundsResultLocalizer: SendFundsResultLocalizer,
+    private val stringUtils: StringUtils,
+    private val nabuToken: NabuToken,
+    private val nabuDataManager: NabuDataManager
 ) : SendStrategy<SendView>(currencyState) {
+
+    private var pitAccount: PitAccount? = null
+
+    override fun onPitAddressSelected() {
+        pitAccount?.let {
+            view.updateReceivingAddress(it.label)
+            addressSubject.onNext(it.address)
+            addressToLabel.onNext(it.label)
+        }
+    }
+
+    override fun onPitAddressCleared() {
+        addressSubject.onNext("")
+        view.updateReceivingAddress("")
+        addressToLabel.onNext("")
+    }
 
     private val currency: CryptoCurrency by lazy { currencyState.cryptoCurrency }
     private var addressSubject = BehaviorSubject.create<String>()
+    private var addressToLabel = BehaviorSubject.createDefault("")
     private var memoSubject = BehaviorSubject.create<Memo>().apply {
         onNext(Memo.None)
     }
@@ -80,12 +106,14 @@ class XlmSendStrategy(
             xlmDataManager.defaultAccount().toObservable(),
             cryptoTextSubject,
             addressSubject,
+            addressToLabel,
             xlmFeesFetcher.operationFee(FeeType.Regular).toObservable(),
             memoSubject
-        ) { accountReference, value, address, fee, memo ->
+        ) { accountReference, value, address, addressToLabel, fee, memo ->
             SendDetails(
                 from = accountReference,
                 toAddress = address,
+                toLabel = addressToLabel,
                 value = value,
                 fee = fee,
                 memo = memo
@@ -228,7 +256,7 @@ class XlmSendStrategy(
     @SuppressLint("CheckResult")
     override fun onViewReady() {
         view.setSendButtonEnabled(false)
-        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1)
+        resetAccountList()
 
         confirmationDetails
             .addToCompositeDisposable(this)
@@ -306,5 +334,20 @@ class XlmSendStrategy(
             }
             .subscribeBy(onError =
             { Timber.e(it) })
+    }
+
+    private fun resetAccountList() {
+        compositeDisposable += nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.XLM.symbol)
+        }.applySchedulers().doOnSubscribe {
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
+        }.subscribeBy(onError = {
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
+        }) {
+            pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
+                CryptoCurrency.XLM.symbol), it.address.split(":")[0])
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1,
+                it.state == State.ACTIVE && it.address.isNotEmpty())
+        }
     }
 }

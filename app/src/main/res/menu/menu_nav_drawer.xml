@@ -23,6 +23,12 @@
             android:title="@string/drawer_addresses" />
 
         <item
+            android:id="@+id/nav_the_pit"
+            android:icon="@drawable/ic_nav_the_pit"
+            app:contentDescription="@string/item_the_pit"
+            android:title="@string/item_the_pit"/>
+
+        <item
             android:id="@+id/nav_lockbox"
             android:icon="@drawable/ic_nav_hardware"
             app:contentDescription="@string/item_lockbox"

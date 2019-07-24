@@ -103,6 +103,9 @@ class EthDataManager(
      */
     fun getEthWallet(): EthereumWallet? = ethDataStore.ethWallet
 
+    fun getDefaultEthAddress(): Single<String?> =
+        Single.just(getEthWallet()?.account?.address)
+
     /**
      * Returns a stream of [EthTransaction] objects associated with a user's ETH address specifically
      * for displaying in the transaction list. These are cached and may be empty if the account

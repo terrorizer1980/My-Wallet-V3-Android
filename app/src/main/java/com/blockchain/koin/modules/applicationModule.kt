@@ -20,9 +20,13 @@ import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
+import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
+import piuk.blockchain.android.thepit.PitLinking
+import piuk.blockchain.android.thepit.PitLinkingImpl
+import piuk.blockchain.android.thepit.ThePitDeepLinkParser
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
@@ -52,6 +56,8 @@ import piuk.blockchain.android.ui.settings.SettingsPresenter
 import piuk.blockchain.android.ui.swap.SwapStarter
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
+import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
+import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionHelper
 import piuk.blockchain.android.util.OSUtil
@@ -87,14 +93,6 @@ val applicationModule = applicationContext {
     factory { Locale.getDefault() }
 
     bean { CurrentContextAccess() }
-
-    factory {
-        FingerprintHelper(
-            applicationContext = get(),
-            prefs = get(),
-            fingerprintAuth = get()
-        )
-    }
 
     context("Payload") {
 
@@ -174,6 +172,14 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            FingerprintHelper(
+                applicationContext = get(),
+                prefs = get(),
+                fingerprintAuth = get()
+            )
+        }
+
+        factory {
             BuySellBuildOrderPresenter(
                 coinifyDataManager = get(),
                 sendDataManager = get(),
@@ -216,7 +222,8 @@ val applicationModule = applicationContext {
                 exchangeRates = get(),
                 stringUtils = get(),
                 envSettings = get(),
-                exchangeRateFactory = get()
+                exchangeRateFactory = get(),
+                pitLinkingFeatureFlag = get("ff_pit_linking")
             )
         }
 
@@ -235,7 +242,9 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 currencyFormatter = get(),
                 exchangeRates = get(),
-                coinSelectionRemoteConfig = get()
+                coinSelectionRemoteConfig = get(),
+                nabuDataManager = get(),
+                nabuToken = get()
             )
         }
 
@@ -255,7 +264,9 @@ val applicationModule = applicationContext {
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                coinSelectionRemoteConfig = get()
+                coinSelectionRemoteConfig = get(),
+                nabuToken = get(),
+                nabuDataManager = get()
             )
         }
 
@@ -271,7 +282,9 @@ val applicationModule = applicationContext {
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                currencyPrefs = get()
+                currencyPrefs = get(),
+                nabuToken = get(),
+                nabuDataManager = get()
             )
         }
 
@@ -280,10 +293,13 @@ val applicationModule = applicationContext {
                 currencyState = get(),
                 xlmDataManager = get(),
                 xlmFeesFetcher = get(),
+                stringUtils = get(),
                 walletOptionsDataManager = get(),
                 xlmTransactionSender = get(),
                 fiatExchangeRates = get(),
-                sendFundsResultLocalizer = get()
+                sendFundsResultLocalizer = get(),
+                nabuDataManager = get(),
+                nabuToken = get()
             )
         }
 
@@ -300,15 +316,39 @@ val applicationModule = applicationContext {
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                currencyPrefs = get()
+                currencyPrefs = get(),
+                nabuToken = get(),
+                nabuDataManager = get()
             )
         }
 
-        factory { SunriverDeepLinkHelper(get()) }
+        factory {
+            SunriverDeepLinkHelper(
+                linkHandler = get()
+            )
+        }
 
-        factory { KycDeepLinkHelper(get()) }
+        factory {
+            KycDeepLinkHelper(
+                linkHandler = get()
+            )
+        }
 
-        factory { DeepLinkProcessor(get(), get(), get()) }
+        factory {
+            ThePitDeepLinkParser()
+        }
+
+        factory { EmailVerificationDeepLinkHelper() }
+
+        factory {
+            DeepLinkProcessor(
+                linkHandler = get(),
+                kycDeepLinkHelper = get(),
+                sunriverDeepLinkHelper = get(),
+                emailVerifiedLinkHelper = get(),
+                thePitDeepLinkParser = get()
+            )
+        }
 
         factory { DeepLinkPersistence(get()) }
 
@@ -330,7 +370,8 @@ val applicationModule = applicationContext {
                 lockboxDataManager = get(),
                 currentTier = get(),
                 sunriverCampaignHelper = get(),
-                announcements = get()
+                announcements = get(),
+                pitLinking = get()
             )
         }.bind(AnnouncementHost::class)
 
@@ -401,7 +442,9 @@ val applicationModule = applicationContext {
                 /* notificationTokenManager = */ get(),
                 /* exchangeRateDataManager = */ get(),
                 /* currencyFormatManager = */ get(),
-                /* kycStatusHelper = */ get()
+                /* kycStatusHelper = */ get(),
+                /* pitLinking = */ get(),
+                /*featureFlag = */get("ff_pit_linking")
             )
         }
 
@@ -418,6 +461,34 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 prngFixer = get(),
                 mobileNoticeRemoteConfig = get()
+            )
+        }
+
+        bean {
+            PitLinkingImpl(
+                nabu = get(),
+                nabuToken = get(),
+                payloadDataManager = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                xlmDataManager = get()
+            )
+        }.bind(PitLinking::class)
+
+        factory {
+            PitPermissionsPresenter(
+                nabu = get(),
+                nabuToken = get(),
+                pitLinking = get(),
+                prefs = get()
+            )
+        }
+
+        factory {
+            PitVerifyEmailPresenter(
+                nabuToken = get(),
+                nabu = get(),
+                emailSyncUpdater = get()
             )
         }
     }

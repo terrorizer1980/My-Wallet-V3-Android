@@ -1,29 +1,26 @@
 package com.blockchain.ui.chooser
 
-enum class AccountMode {
+import android.os.Parcelable
+import info.blockchain.balance.CryptoCurrency
+import kotlinx.android.parcel.Parcelize
 
+sealed class AccountMode : Parcelable {
     /**
      * Show all accounts for ShapeShift, ie BTC & BCH HD accounts, Ether
      */
-    Exchange,
+    @Parcelize
+    object Exchange : AccountMode()
 
     /**
-     * Show all bitcoin accounts, including HD + legacy addresses
+     * Show all cryptoCurrency accounts, including HD + legacy addresses
+     * If hdOnly = true then show all  accounts without legacy addresses
+     * If isSend = true Show all  cash HD accounts + all legacy addresses with balances + headers
      */
-    Bitcoin,
-
-    /**
-     * Show all bitcoin accounts, no legacy addresses
-     */
-    BitcoinHdOnly,
-
-    /**
-     * Show all bitcoin cash HD accounts, but no legacy addresses
-     */
-    BitcoinCash,
-
-    /**
-     * Show all bitcoin cash HD accounts + all legacy addresses with balances + headers
-     */
-    BitcoinCashSend
+    @Parcelize
+    class CryptoAccountMode(
+        val cryptoCurrency: CryptoCurrency,
+        val hdOnly: Boolean = false,
+        val isSend: Boolean = false
+    ) :
+        AccountMode()
 }

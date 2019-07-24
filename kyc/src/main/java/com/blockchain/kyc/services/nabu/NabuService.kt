@@ -12,7 +12,10 @@ import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.RecordCountryRequest
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
+import com.blockchain.kyc.models.nabu.SendToMercuryAddressRequest
+import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.kyc.models.nabu.SupportedDocuments
+import com.blockchain.kyc.models.nabu.WalletMercuryLink
 import com.blockchain.nabu.models.NabuOfflineTokenRequest
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.nabu.models.NabuSessionTokenResponse
@@ -177,6 +180,37 @@ class NabuService(retrofit: Retrofit) {
         campaignRequest,
         campaignName,
         sessionToken.authHeader
+    ).wrapErrorMessage()
+
+    internal fun linkWalletWithMercury(
+        sessionToken: NabuSessionTokenResponse
+    ): Single<String> = service.connectWalletWithMercury(
+        sessionToken.authHeader
+    ).map { it.linkId }
+        .wrapErrorMessage()
+
+    internal fun linkMercuryWithWallet(
+        sessionToken: NabuSessionTokenResponse,
+        linkId: String
+    ): Completable = service.connectMercuryWithWallet(
+        sessionToken.authHeader,
+        WalletMercuryLink(linkId)
+    ).wrapErrorMessage()
+
+    internal fun sendWalletAddressesToThePit(
+        sessionToken: NabuSessionTokenResponse,
+        addressMap: Map<String, String> // Crypto symbol -> address
+    ): Completable = service.sharePitReceiveAddresses(
+        sessionToken.authHeader,
+        addressMap
+    ).wrapErrorMessage()
+
+    internal fun fetchPitSendToAddressForCrypto(
+        sessionToken: NabuSessionTokenResponse,
+        cryptoSymbol: String
+    ): Single<SendToMercuryAddressResponse> = service.fetchPitSendAddress(
+        sessionToken.authHeader,
+        SendToMercuryAddressRequest(cryptoSymbol)
     ).wrapErrorMessage()
 
     companion object {

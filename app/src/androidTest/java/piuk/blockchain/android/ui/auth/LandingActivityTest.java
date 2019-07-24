@@ -22,6 +22,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static java.lang.Thread.sleep;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 
 @LargeTest
@@ -43,7 +44,7 @@ public class LandingActivityTest extends BaseEspressoTest {
 
     @Test
     public void isLaunched() throws Exception {
-        assertTrue(activityRule.getActivity() != null);
+        assertNotNull(activityRule.getActivity());
     }
 
     @Test

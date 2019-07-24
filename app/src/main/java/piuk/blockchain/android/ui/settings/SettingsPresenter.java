@@ -2,11 +2,11 @@ package piuk.blockchain.android.ui.settings;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-
 import com.blockchain.kyc.models.nabu.NabuApiException;
 import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes;
 import com.blockchain.kycui.settings.KycStatusHelper;
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.remoteconfig.FeatureFlag;
 
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.PayloadManager;
@@ -17,6 +17,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.data.rxjava.RxUtil;
+import piuk.blockchain.android.thepit.PitLinking;
+import piuk.blockchain.android.thepit.PitLinkingState;
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper;
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper;
 import piuk.blockchain.android.util.StringUtils;
@@ -32,43 +34,48 @@ import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AndroidUtils;
 import timber.log.Timber;
-
 import javax.inject.Inject;
 
 public class SettingsPresenter extends BasePresenter<SettingsView> {
 
-    private FingerprintHelper fingerprintHelper;
-    private AuthDataManager authDataManager;
-    private SettingsDataManager settingsDataManager;
-    private EmailSyncUpdater emailUpdater;
-    private PayloadManager payloadManager;
-    private PayloadDataManager payloadDataManager;
-    private StringUtils stringUtils;
-    private PersistentPrefs prefs;
-    private AccessState accessState;
-    private SwipeToReceiveHelper swipeToReceiveHelper;
-    private NotificationTokenManager notificationTokenManager;
-    private ExchangeRateDataManager exchangeRateDataManager;
-    private CurrencyFormatManager currencyFormatManager;
-    private KycStatusHelper kycStatusHelper;
+    private final FingerprintHelper fingerprintHelper;
+    private final AuthDataManager authDataManager;
+    private final SettingsDataManager settingsDataManager;
+    private final EmailSyncUpdater emailUpdater;
+    private final PayloadManager payloadManager;
+    private final PayloadDataManager payloadDataManager;
+    private final StringUtils stringUtils;
+    private final PersistentPrefs prefs;
+    private final AccessState accessState;
+    private final SwipeToReceiveHelper swipeToReceiveHelper;
+    private final NotificationTokenManager notificationTokenManager;
+    private final ExchangeRateDataManager exchangeRateDataManager;
+    private final CurrencyFormatManager currencyFormatManager;
+    private final KycStatusHelper kycStatusHelper;
     @VisibleForTesting
     Settings settings;
+    private final PitLinking pitLinking;
+    private final FeatureFlag featureFlag;
+    private PitLinkingState pitLinkState = new PitLinkingState();
 
-    @Inject
-    public SettingsPresenter(FingerprintHelper fingerprintHelper,
-                             AuthDataManager authDataManager,
-                             SettingsDataManager settingsDataManager,
-                             EmailSyncUpdater emailUpdater,
-                             PayloadManager payloadManager,
-                             PayloadDataManager payloadDataManager,
-                             StringUtils stringUtils,
-                             PersistentPrefs prefs,
-                             AccessState accessState,
-                             SwipeToReceiveHelper swipeToReceiveHelper,
-                             NotificationTokenManager notificationTokenManager,
-                             ExchangeRateDataManager exchangeRateDataManager,
-                             CurrencyFormatManager currencyFormatManager,
-                             KycStatusHelper kycStatusHelper) {
+    // Show dialog "are you sure you want to disable fingerprint login?
+    public SettingsPresenter(
+            FingerprintHelper fingerprintHelper,
+            AuthDataManager authDataManager,
+            SettingsDataManager settingsDataManager,
+            EmailSyncUpdater emailUpdater,
+            PayloadManager payloadManager,
+            PayloadDataManager payloadDataManager,
+            StringUtils stringUtils,
+            PersistentPrefs prefs,
+            AccessState accessState,
+            SwipeToReceiveHelper swipeToReceiveHelper,
+            NotificationTokenManager notificationTokenManager,
+            ExchangeRateDataManager exchangeRateDataManager,
+            CurrencyFormatManager currencyFormatManager,
+            KycStatusHelper kycStatusHelper,
+            PitLinking pitLinking,
+            FeatureFlag featureFlag) {
 
         this.fingerprintHelper = fingerprintHelper;
         this.authDataManager = authDataManager;
@@ -84,6 +91,9 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         this.exchangeRateDataManager = exchangeRateDataManager;
         this.currencyFormatManager = currencyFormatManager;
         this.kycStatusHelper = kycStatusHelper;
+        this.pitLinking = pitLinking;
+        this.featureFlag = featureFlag;
+
     }
 
     @Override
@@ -104,15 +114,27 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                                     // Warn error when updating
                                     getView().showToast(R.string.settings_error_updating, ToastCustom.TYPE_ERROR);
                                 }));
+
+        getCompositeDisposable().add(pitLinking.getState().subscribe(this::onPitStateUpdated));
+        getCompositeDisposable().add(featureFlag.getEnabled().subscribe(this::showPitItem));
+    }
+
+    private void showPitItem(Boolean pitEnabled) {
+        getView().isPitEnabled(pitEnabled);
+    }
+
+    private void onPitStateUpdated(PitLinkingState state) {
+        pitLinkState = state;
+        getView().setPitLinkingState(pitLinkState.isLinked());
     }
 
     private void loadKyc2TierState() {
         getCompositeDisposable().add(
-                kycStatusHelper.getSettingsKycState2Tier()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                settingsKycState -> getView().setKycState(settingsKycState),
-                                Timber::e)
+            kycStatusHelper.getSettingsKycState2Tier()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    settingsKycState -> getView().setKycState(settingsKycState),
+                    Timber::e)
         );
     }
 
@@ -495,7 +517,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     /**
      * Updates the user's password
      *
-     * @param password         The requested new password as a {@link String}
+     * @param password         The requested new password as a String
      * @param fallbackPassword The user's current password as a fallback
      */
     void updatePassword(@NonNull String password, @NonNull String fallbackPassword) {
@@ -578,5 +600,13 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     public String[] getCurrencyLabels() {
         return exchangeRateDataManager.getCurrencyLabels();
+    }
+
+    public void onThePitClicked() {
+        if(pitLinkState.isLinked()) {
+            getView().launchThePit();
+        } else {
+            getView().launchThePitLandingActivity();
+        }
     }
 }

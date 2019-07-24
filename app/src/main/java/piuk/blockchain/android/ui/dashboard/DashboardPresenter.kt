@@ -21,6 +21,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
@@ -60,6 +61,7 @@ class DashboardPresenter(
     private val lockboxDataManager: LockboxDataManager,
     private val currentTier: CurrentTier,
     private val sunriverCampaignHelper: SunriverCampaignHelper,
+    private val pitLinking: PitLinking,
     private val announcements: AnnouncementList
 ) : BasePresenter<DashboardView>(), AnnouncementHost {
 
@@ -115,6 +117,20 @@ class DashboardPresenter(
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
+            )
+
+        // Pit linking - if we have a pit link id, and are therefore probably mid flow and returning from
+        // email verification - go to the pit permissions page to continue linking
+        val linkId = prefs.pitToWalletLinkId
+        if (linkId.isNotEmpty()) {
+            view.startPitLinkingFlow(linkId)
+        }
+
+        // Wallet pit linking - update receive addresses in for the pit
+        compositeDisposable += pitLinking.isPitLinked()
+            .subscribeBy(
+                onSuccess = { if (it) pitLinking.sendWalletAddressToThePit() },
+                onError = { /* Ignore */ }
             )
     }
 
@@ -254,9 +270,13 @@ class DashboardPresenter(
                 if (tier > 0) {
                     view.goToExchange(currency, prefs.selectedFiatCurrency)
                 } else {
-                    view.startKycFlowWithNavigator(CampaignType.Swap)
+                    view.startKycFlow(CampaignType.Swap)
                 }
             }
+    }
+
+    override fun startPitLinking() {
+        view.startPitLinkingFlow()
     }
 
     override fun signupToSunRiverCampaign() {

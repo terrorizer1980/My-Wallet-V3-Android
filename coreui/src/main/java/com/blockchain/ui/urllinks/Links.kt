@@ -30,6 +30,9 @@ const val URL_BLOCKCHAIN_GOLD_UNAVAILABLE_SUPPORT =
 const val URL_BLOCKCHAIN_KYC_SUPPORTED_COUNTRIES_LIST =
     "https://support.blockchain.com/hc/en-us/articles/360018751932"
 
+const val URL_THE_PIT_LANDING_LEARN_MORE = "https://pit.blockchain.com"
+const val URL_THE_PIT_LAUNCH_SUPPORT = "https://support.blockchain.com/"
+
 const val URL_COINIFY_POLICY = "https://coinify.com/legal"
 const val URL_TOS_POLICY = "https://blockchain.com/terms"
 const val URL_PRIVACY_POLICY = "https://blockchain.com/privacy"

@@ -1,21 +1,21 @@
-package piuk.blockchain.android.ui.settings.customprefs
+package piuk.blockchain.android.ui.settings.preferences
 
 import android.content.Context
 import android.graphics.Typeface
-import android.support.v7.preference.CheckBoxPreference
 import android.support.v7.preference.R
+import android.support.v7.preference.SwitchPreferenceCompat
 import android.util.AttributeSet
 import piuk.blockchain.androidcoreui.utils.extensions.applyFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.CustomFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
 
 @Suppress("unused")
-class CustomCheckBoxPreference @JvmOverloads constructor(
+class CustomSwitchPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.checkBoxPreferenceStyle,
+    defStyleAttr: Int = R.attr.switchPreferenceCompatStyle,
     defStyleRes: Int = 0
-) : CheckBoxPreference(context, attrs, defStyleAttr, defStyleRes) {
+) : SwitchPreferenceCompat(context, attrs, defStyleAttr, defStyleRes) {
 
     init {
         init()

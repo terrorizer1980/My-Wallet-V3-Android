@@ -78,11 +78,12 @@ internal class TransactionExecutorViaDataManagers(
             )
             CryptoCurrency.XLM -> xlmSender.sendFundsOrThrow(
                 SendDetails(
-                    sourceAccount,
-                    amount,
-                    destination,
-                    (fees as XlmFees).feeForType(feeType),
-                    memo
+                    from = sourceAccount,
+                    value = amount,
+                    toAddress = destination,
+                    toLabel = "",
+                    fee = (fees as XlmFees).feeForType(feeType),
+                    memo = memo
                 )
             ).map { it.hash!! }
             CryptoCurrency.PAX ->

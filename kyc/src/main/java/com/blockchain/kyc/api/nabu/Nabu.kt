@@ -10,11 +10,14 @@ import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.OnfidoApiKey
 import com.blockchain.kyc.models.nabu.RecordCountryRequest
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
+import com.blockchain.kyc.models.nabu.SendToMercuryAddressRequest
+import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.kyc.models.nabu.SupportedDocumentsResponse
 import com.blockchain.kyc.models.nabu.TierUpdateJson
 import com.blockchain.kyc.models.nabu.TiersJson
 import com.blockchain.kyc.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.kyc.models.nabu.VeriffToken
+import com.blockchain.kyc.models.nabu.WalletMercuryLink
 import com.blockchain.nabu.models.NabuOfflineTokenRequest
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.nabu.models.NabuSessionTokenResponse
@@ -102,8 +105,6 @@ internal interface Nabu {
      * So do not call more than once per veriff launch.
      */
 
-    // TODO: In the case of can't process because pre-IDV-fail, this will fail with an error TBD - by me.
-    // SOme random 4xx error
     @GET(NABU_VERIFF_TOKEN)
     fun startVeriffSession(
         @Header("authorization") authorization: String
@@ -145,4 +146,27 @@ internal interface Nabu {
         @Body coinifyTraderId: UpdateCoinifyTraderIdRequest,
         @Header("authorization") authorization: String
     ): Completable
+
+    @PUT(NABU_CONNECT_WALLET_TO_PIT)
+    fun connectWalletWithMercury(
+        @Header("authorization") authorization: String
+    ): Single<WalletMercuryLink>
+
+    @PUT(NABU_CONNECT_PIT_TO_WALLET)
+    fun connectMercuryWithWallet(
+        @Header("authorization") authorization: String,
+        @Body linkId: WalletMercuryLink
+    ): Completable
+
+    @POST(NABU_SEND_WALLET_ADDRESSES_TO_PIT)
+    fun sharePitReceiveAddresses(
+        @Header("authorization") authorization: String,
+        @Body addressMap: Map<String, String> // Crypto symbol -> address
+    ): Completable
+
+    @PUT(NABU_FETCH_PIT_ADDRESS_FOR_WALLET)
+    fun fetchPitSendAddress(
+        @Header("authorization") authorization: String,
+        @Body currency: SendToMercuryAddressRequest
+    ): Single<SendToMercuryAddressResponse>
 }

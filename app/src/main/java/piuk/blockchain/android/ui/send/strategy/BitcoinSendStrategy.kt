@@ -2,6 +2,9 @@ package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
+import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.State
+import com.blockchain.nabu.NabuToken
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.serialization.JsonSerializableAccount
 import info.blockchain.api.data.UnspentOutputs
@@ -17,6 +20,8 @@ import info.blockchain.wallet.util.Tools
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Observables
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.ECKey
@@ -24,6 +29,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
+import piuk.blockchain.android.ui.account.PitAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.FeeType
 import piuk.blockchain.android.ui.send.PendingTransaction
@@ -64,8 +70,32 @@ class BitcoinSendStrategy(
     private val exchangeRates: FiatExchangeRates,
     private val prefs: PersistentPrefs,
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig,
+    private val nabuDataManager: NabuDataManager,
+    private val nabuToken: NabuToken,
     currencyState: CurrencyState
 ) : SendStrategy<SendView>(currencyState) {
+
+    private var pitAccount: PitAccount? = null
+
+    override fun onPitAddressSelected() {
+        pitAccount?.let {
+            pendingTransaction.receivingObject = ItemAccount(
+                it.label,
+                null,
+                null,
+                null,
+                null,
+                it.address
+            )
+            pendingTransaction.receivingAddress = it.address
+            view.updateReceivingAddress(it.label)
+        }
+    }
+
+    override fun onPitAddressCleared() {
+        pendingTransaction.receivingObject = null
+        view.updateReceivingAddress("")
+    }
 
     override fun onCurrencySelected() {
         currencyState.cryptoCurrency = CryptoCurrency.BTC
@@ -385,7 +415,29 @@ class BitcoinSendStrategy(
     }
 
     private fun resetAccountList() {
-        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BTC, getAddressList().size)
+        compositeDisposable += nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.BTC.symbol)
+        }.applySchedulers().doOnSubscribe {
+            view.updateReceivingHintAndAccountDropDowns(
+                CryptoCurrency.BTC,
+                getAddressList().size,
+                false
+            )
+        }.subscribeBy(onError = {
+            view.updateReceivingHintAndAccountDropDowns(
+                CryptoCurrency.BTC,
+                getAddressList().size,
+                false
+            )
+        }) {
+            pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
+                CryptoCurrency.BTC.symbol), it.address)
+            view.updateReceivingHintAndAccountDropDowns(
+                CryptoCurrency.BTC,
+                getAddressList().size,
+                it.state == State.ACTIVE && it.address.isNotEmpty()
+            )
+        }
     }
 
     override fun clearReceivingObject() {
@@ -410,8 +462,8 @@ class BitcoinSendStrategy(
     @SuppressLint("CheckResult")
     private fun getSuggestedFee() {
         val observable = feeDataManager.btcFeeOptions
-                .doOnSubscribe { feeOptions = dynamicFeeCache.btcFeeOptions!! }
-                .doOnNext { dynamicFeeCache.btcFeeOptions = it }
+            .doOnSubscribe { feeOptions = dynamicFeeCache.btcFeeOptions!! }
+            .doOnNext { dynamicFeeCache.btcFeeOptions = it }
 
         observable.addToCompositeDisposable(this)
             .subscribe(
@@ -486,7 +538,7 @@ class BitcoinSendStrategy(
         // Format for display
         view.updateMaxAvailable(
             stringUtils.getString(R.string.max_available) +
-                " ${currencyFormatter.getFormattedSelectedCoinValueWithUnit(maxAvailable)}"
+                    " ${currencyFormatter.getFormattedSelectedCoinValueWithUnit(maxAvailable)}"
         )
 
         if (balanceAfterFee <= Payment.DUST) {
@@ -873,7 +925,7 @@ class BitcoinSendStrategy(
         val relativeFee = absoluteSuggestedFee.toDouble() / pendingTransaction.bigIntAmount.toDouble() * 100.0
 
         return usdValue.toBigDecimal() > SendModel.LARGE_TX_FEE.toBigDecimal() &&
-            txSize > SendModel.LARGE_TX_SIZE &&
-            relativeFee > SendModel.LARGE_TX_PERCENTAGE
+                txSize > SendModel.LARGE_TX_SIZE &&
+                relativeFee > SendModel.LARGE_TX_PERCENTAGE
     }
 }

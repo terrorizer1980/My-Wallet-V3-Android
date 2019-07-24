@@ -1,21 +1,21 @@
-package piuk.blockchain.android.ui.settings.customprefs
+package piuk.blockchain.android.ui.settings.preferences
 
 import android.content.Context
 import android.graphics.Typeface
+import android.support.v7.preference.PreferenceCategory
 import android.support.v7.preference.R
-import android.support.v7.preference.SwitchPreferenceCompat
 import android.util.AttributeSet
 import piuk.blockchain.androidcoreui.utils.extensions.applyFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.CustomFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
 
 @Suppress("unused")
-class CustomSwitchPreferenceCompat @JvmOverloads constructor(
+class CustomPreferenceCategory @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.switchPreferenceCompatStyle,
+    defStyleAttr: Int = R.attr.preferenceCategoryStyle,
     defStyleRes: Int = 0
-) : SwitchPreferenceCompat(context, attrs, defStyleAttr, defStyleRes) {
+) : PreferenceCategory(context, attrs, defStyleAttr, defStyleRes) {
 
     init {
         init()

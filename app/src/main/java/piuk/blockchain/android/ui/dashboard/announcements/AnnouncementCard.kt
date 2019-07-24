@@ -8,7 +8,8 @@ enum class AnnouncementStyle {
     ImageRight,
     Swap,
     StableCoin,
-    Sunriver
+    Sunriver,
+    ThePit
 }
 
 data class AnnouncementCard(

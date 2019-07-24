@@ -217,11 +217,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
             val currency = currencyState.cryptoCurrency
             AccountChooserActivity.startForResult(
                 this,
-                if (currency == CryptoCurrency.BTC) {
-                    AccountMode.Bitcoin
-                } else {
-                    AccountMode.BitcoinCash
-                },
+                AccountMode.CryptoAccountMode(currency),
                 if (currency == CryptoCurrency.BTC) {
                     REQUEST_CODE_RECEIVE_BITCOIN
                 } else {

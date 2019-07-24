@@ -50,6 +50,7 @@ public interface WalletExplorerEndpoints {
             @Field("payload") String payload,
             @Field("length") int length,
             @Field("format") String format,
+            @Field("context") String context,
             @Field("api_code") String apiCode);
 
     @FormUrlEncoded

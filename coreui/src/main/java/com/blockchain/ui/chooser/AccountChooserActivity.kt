@@ -30,7 +30,7 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
     private val accountChooserPresenter: AccountChooserPresenter by inject()
 
     override val accountMode: AccountMode by unsafeLazy {
-        intent.getSerializableExtra(EXTRA_CHOOSER_MODE) as AccountMode
+        intent.getParcelableExtra(EXTRA_CHOOSER_MODE) as AccountMode
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

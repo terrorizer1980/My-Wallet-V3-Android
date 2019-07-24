@@ -66,6 +66,10 @@ abstract class SendPresenterStrategy<View : piuk.blockchain.androidcoreui.ui.bas
 
     abstract fun getBitcoinFeeOptions(): FeeOptions?
 
+    abstract fun onPitAddressSelected()
+
+    abstract fun onPitAddressCleared()
+
     fun getDefaultDecimalSeparator() = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
 }
 

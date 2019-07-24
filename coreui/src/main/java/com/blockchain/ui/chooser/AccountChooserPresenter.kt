@@ -17,67 +17,47 @@ class AccountChooserPresenter @Inject constructor(
 ) : BasePresenter<AccountChooserView>() {
 
     override fun onViewReady() {
-        when (view.accountMode) {
-            AccountMode.Exchange -> loadExchangeAccounts()
-            AccountMode.Bitcoin -> loadBitcoinOnly()
-            AccountMode.BitcoinHdOnly -> loadBitcoinHdOnly()
-            AccountMode.BitcoinCash -> loadBitcoinCashOnly()
-            AccountMode.BitcoinCashSend -> loadBitcoinCashSend()
+        when (val accountMode = view.accountMode) {
+            is AccountMode.Exchange -> loadExchangeAccounts()
+            is AccountMode.CryptoAccountMode -> loadAccounts(
+                accountMode.cryptoCurrency,
+                accountMode.hdOnly,
+                accountMode.isSend
+            )
         }
     }
 
-    private fun loadBitcoinOnly() {
-        btcAccountListWithHeader(R.string.wallets)
-            .add(btcImportedListWithHeader())
-            .subscribeToUpdateList()
-    }
-
-    private fun loadBitcoinHdOnly() {
-        btcAccountListWithoutHeader()
-            .subscribeToUpdateList()
-    }
-
-    private fun loadBitcoinCashOnly() {
-        bchAccountListWithHeader(R.string.wallets)
-            .subscribeToUpdateList()
-    }
-
-    private fun loadBitcoinCashSend() {
-        bchAccountListWithHeader(R.string.wallets)
-            .add(bchImportedListWithHeader())
-            .subscribeToUpdateList()
+    private fun loadAccounts(cryptoCurrency: CryptoCurrency, hdOnly: Boolean, isSend: Boolean) {
+        if (hdOnly) {
+            accountListWithoutHeader(cryptoCurrency).subscribeToUpdateList()
+        } else if (cryptoCurrency == CryptoCurrency.BCH) {
+            if (isSend) {
+                accountListWithHeader(cryptoCurrency, R.string.wallets)
+                    .add(importedListWithHeader(cryptoCurrency))
+                    .subscribeToUpdateList()
+            } else {
+                accountListWithHeader(cryptoCurrency, R.string.wallets)
+                    .subscribeToUpdateList()
+            }
+        } else {
+            accountListWithHeader(cryptoCurrency, R.string.wallets)
+                .add(importedListWithHeader(cryptoCurrency))
+                .subscribeToUpdateList()
+        }
     }
 
     private fun loadExchangeAccounts() {
-        btcAccountListWithHeader(R.string.bitcoin)
-            .add(ethAccountWithHeader())
-            .add(bchAccountListWithHeader(R.string.bitcoin_cash))
+        accountListWithHeader(CryptoCurrency.BTC, R.string.bitcoin)
+            .add(accountListWithHeader(CryptoCurrency.ETHER, R.string.ether))
+            .add(accountListWithHeader(CryptoCurrency.BCH, R.string.bitcoin_cash))
             .subscribeToUpdateList()
     }
-
-    private fun btcAccountListWithoutHeader() =
-        accountListWithoutHeader(CryptoCurrency.BTC)
-
-    private fun btcAccountListWithHeader(@StringRes stringResourceId: Int) =
-        accountListWithHeader(CryptoCurrency.BTC, stringResourceId)
-
-    private fun bchAccountListWithHeader(@StringRes stringResourceId: Int) =
-        accountListWithHeader(CryptoCurrency.BCH, stringResourceId)
-
-    private fun btcImportedListWithHeader() =
-        importedListWithHeader(CryptoCurrency.BTC)
-
-    private fun bchImportedListWithHeader() =
-        importedListWithHeader(CryptoCurrency.BCH)
-
-    private fun ethAccountWithHeader() =
-        accountListWithHeader(CryptoCurrency.ETHER, R.string.ether)
 
     private fun importedListWithHeader(cryptoCurrency: CryptoCurrency) =
         accountHelper
             .importedList(cryptoCurrency)
             .map {
-                if (!it.isEmpty()) {
+                if (it.isNotEmpty()) {
                     prefixHeader(R.string.imported_addresses, it)
                 } else {
                     it

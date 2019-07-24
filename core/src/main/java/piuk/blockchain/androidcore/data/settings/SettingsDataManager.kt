@@ -61,6 +61,11 @@ class SettingsDataManager(
             .flatMap { fetchSettings() }
             .applySchedulers()
 
+    fun updateEmail(email: String, context: String?): Observable<Settings> =
+        rxPinning.call<ResponseBody> { settingsService.updateEmail(email, context) }
+            .flatMap { fetchSettings() }
+            .applySchedulers()
+
     /**
      * Update the user's phone number and fetches an updated [Settings] object.
      *

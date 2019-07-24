@@ -26,6 +26,7 @@ interface AnnouncementHost {
     fun signupToSunRiverCampaign()
     fun startSwapOrKyc(swapTarget: CryptoCurrency? = null)
     fun startKyc(campaignType: CampaignType)
+    fun startPitLinking()
 }
 
 interface AnnouncementRule {

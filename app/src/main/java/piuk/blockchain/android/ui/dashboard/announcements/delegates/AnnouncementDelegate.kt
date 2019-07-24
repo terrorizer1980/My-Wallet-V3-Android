@@ -27,11 +27,20 @@ sealed class AnnouncementDelegate<in T> : AdapterDelegate<T> {
         val announcement = items[position] as AnnouncementCard
 
         (holder as AnnouncementViewHolder).apply {
-            title.setText(announcement.title)
-            description.setText(announcement.description)
+            if (announcement.title > 0) {
+                title?.setText(announcement.title)
+            } else {
+                title?.gone()
+            }
+
+            if (announcement.description > 0) {
+                description?.setText(announcement.description)
+            } else {
+                description?.gone()
+            }
 
             if (announcement.image > 0) {
-                image?.setImageDrawable(ContextCompat.getDrawable(holder.title.context, announcement.image))
+                image?.setImageDrawable(ContextCompat.getDrawable(itemView.context, announcement.image))
             } else {
                 image?.gone()
             }
@@ -62,8 +71,8 @@ sealed class AnnouncementDelegate<in T> : AdapterDelegate<T> {
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
-        internal val title: TextView = itemView.textview_title
-        internal val description: TextView = itemView.textview_content
+        internal val title: TextView? = itemView.textview_title
+        internal val description: TextView? = itemView.textview_content
         internal val close: ImageView = itemView.imageview_close
         internal val link: TextView = itemView.textview_link
         internal val image: ImageView? = itemView.imageview_icon
@@ -89,6 +98,13 @@ class StableCoinAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_stablecoin))
+}
+
+class PitAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
+    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.ThePit
+
+    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_pit))
 }
 
 class SwapAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {

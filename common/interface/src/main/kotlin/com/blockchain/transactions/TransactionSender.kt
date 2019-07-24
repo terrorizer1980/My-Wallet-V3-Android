@@ -43,9 +43,18 @@ data class SendDetails(
     val from: AccountReference,
     val value: CryptoValue,
     val toAddress: String,
+    val toLabel: String = "",
     val fee: CryptoValue,
     val memo: Memo? = null
-)
+) {
+    constructor(
+        from: AccountReference,
+        value: CryptoValue,
+        toAddress: String,
+        fee: CryptoValue,
+        memo: Memo? = null
+    ) : this(from, value, toAddress, "", fee, memo)
+}
 
 data class Memo(
 

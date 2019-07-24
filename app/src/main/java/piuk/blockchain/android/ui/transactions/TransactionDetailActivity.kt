@@ -159,7 +159,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
             binding.fromSpinner.visible()
             val adapter = TransactionDetailAdapter(ArrayList(addresses))
             binding.fromAddress.text = String.format(Locale.getDefault(), "%1s Senders", addresses.size)
-            binding.fromAddress.setOnClickListener { v -> binding.fromSpinner.performClick() }
+            binding.fromAddress.setOnClickListener { binding.fromSpinner.performClick() }
             binding.fromSpinner.adapter = adapter
             binding.fromSpinner.onItemSelectedListener = null
         }

@@ -44,6 +44,10 @@ abstract class SendStrategy<View : SendView>(
 
     abstract fun onCurrencySelected()
 
+    abstract fun onPitAddressSelected()
+
+    abstract fun onPitAddressCleared()
+
     abstract fun processURIScanAddress(address: String)
 
     abstract fun handlePrivxScan(scanData: String?)

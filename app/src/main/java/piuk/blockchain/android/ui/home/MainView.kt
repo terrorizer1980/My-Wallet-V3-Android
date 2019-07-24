@@ -29,6 +29,8 @@ interface MainView : View, HomeNavigator {
 
     fun setBuySellEnabled(enabled: Boolean, useWebView: Boolean)
 
+    fun setPitEnabled(enabled: Boolean)
+
     fun showTradeCompleteMsg(txHash: String)
 
     fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails)

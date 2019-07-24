@@ -43,6 +43,10 @@ class SettingsService(private val settingsApi: SettingsManager) {
     internal fun updateEmail(email: String): Observable<ResponseBody> =
         settingsApi.updateSetting(SettingsManager.METHOD_UPDATE_EMAIL, email)
 
+    @WebRequest
+    internal fun updateEmail(email: String, context: String?): Observable<ResponseBody> =
+        settingsApi.updateSetting(SettingsManager.METHOD_UPDATE_EMAIL, email, context)
+
     /**
      * Update the user's phone number
      *

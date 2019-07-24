@@ -32,6 +32,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
+import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
@@ -62,6 +63,7 @@ class DashboardPresenterTest {
     private val rxBus: RxBus = mock()
     private val swipeToReceiveHelper: SwipeToReceiveHelper = mock()
     private val view: DashboardView = mock()
+    private val pitLinking: PitLinking = mock()
     private val currencyFormatManager: CurrencyFormatManager = mock()
     private val kycTiersQueries: KycTiersQueries = mock {
         on { isKycResubmissionRequired() } `it returns` Single.just(false)
@@ -99,6 +101,7 @@ class DashboardPresenterTest {
             lockboxDataManager,
             currentTier,
             sunriverCampaignHelper,
+            pitLinking,
             AnnouncementList(
                 mainScheduler = Schedulers.trampoline()
             )
@@ -108,6 +111,8 @@ class DashboardPresenterTest {
 
         whenever(view.locale).thenReturn(Locale.US)
         whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(1))
+        whenever(prefs.pitToWalletLinkId).thenReturn("")
+        whenever(pitLinking.isPitLinked()).thenReturn(Single.just(false))
     }
 
     @Test
@@ -772,7 +777,7 @@ class DashboardPresenterTest {
         subject.startSwapOrKyc(CryptoCurrency.ETHER)
         // Assert
         verify(view).goToExchange(CryptoCurrency.ETHER, "USD")
-        verify(view, never()).startKycFlowWithNavigator(CampaignType.Swap)
+        verify(view, never()).startKycFlow(CampaignType.Swap)
     }
 
     @Test
@@ -785,7 +790,7 @@ class DashboardPresenterTest {
         subject.startSwapOrKyc(CryptoCurrency.ETHER)
         // Assert
         verify(view, never()).goToExchange(any(), any())
-        verify(view).startKycFlowWithNavigator(CampaignType.Swap)
+        verify(view).startKycFlow(CampaignType.Swap)
     }
 
     private fun mockDependencies() {

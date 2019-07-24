@@ -75,11 +75,16 @@ public class SettingsManager {
 
     public Observable<ResponseBody> updateSetting(String method, String payload) {
         log.info("Update settings");
-        return walletApi.updateSettings(method, guid, sharedKey, payload);
+        return walletApi.updateSettings(method, guid, sharedKey, payload, null);
+    }
+
+    public Observable<ResponseBody> updateSetting(String method, String payload, String context) {
+        log.info("Update settings");
+        return walletApi.updateSettings(method, guid, sharedKey, payload, context);
     }
 
     public Observable<ResponseBody> updateSetting(String method, int payload) {
         log.info("Update settings");
-        return walletApi.updateSettings(method, guid, sharedKey, payload+"");
+        return walletApi.updateSettings(method, guid, sharedKey, payload+"", null);
     }
 }

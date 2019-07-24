@@ -26,6 +26,7 @@ import com.blockchain.ui.chooser.AccountMode
 import com.blockchain.ui.urllinks.URL_SUPPORTED_COUNTRIES
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
+import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -369,7 +370,7 @@ class BuySellBuildOrderActivity :
             it.setOnClickListener {
                 AccountChooserActivity.startForResult(
                     this,
-                    AccountMode.BitcoinHdOnly,
+                    AccountMode.CryptoAccountMode(cryptoCurrency = CryptoCurrency.BCH, hdOnly = true),
                     REQUEST_CODE_CHOOSE_ACCOUNT,
                     when (orderType) {
                         OrderType.Buy, OrderType.BuyCard, OrderType.BuyBank -> getString(R.string.from)

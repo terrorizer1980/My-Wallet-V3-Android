@@ -5,6 +5,11 @@
     <color name="nav_menu_text">@color/grey_600</color>
     <color name="nav_logo">@color/grey_800</color>
 
+    <color name="pit_text_title">@color/grey_800</color>
+    <color name="pit_text_heading">@color/blue_800</color>
+    <color name="pit_text_body">@color/grey_800</color>
+    <color name="pit_text_body_app_able_to_text">@color/green_200</color>
+
     <!-- Toasts -->
     <color name="toast_error_background">@color/red_100</color>
     <color name="toast_error_text">@color/red_800</color>
@@ -81,7 +86,7 @@
     <color name="swap_announcement_card_background">@color/grey_900</color>
 
     <!-- swap error dialog colors -->
-    <color name="swap_error_dialog_title_text_color">@color/grey_800</color>
+    <color name="info_dialog_title_text_color">@color/grey_800</color>
     <color name="swap_error_dialog_message_text_color">@color/grey_600</color>
 
     <!-- Used for hint/disclaimer/footnote text -->
@@ -130,5 +135,12 @@
     <color name="bottom_toolbar_icon_inactive">@color/grey_400</color>
 
     <color name="product_grey_transferred">#7b9eb1</color>       <!-- still used? -->
-    <color name="product_grey_transferred_50">#807b9eb1</color>  <!-- still used? -->
+    <color name="product_grey_transferred_50">#807b9eb1</color>
+    <color name="pit_card_gradient_dark">@color/black_100</color>
+    <color name="pit_card_gradient_light">@color/blue_1000</color>  <!-- still used? -->
+
+    <color name="prefs_status_background_blue">@color/blue_400</color>
+    <color name="prefs_status_background_green">@color/green_200</color>
+    <color name="pit_bottom_dialog_buttons_text_color">@color/blue_400</color>
+    <color name="pit_bottom_dialog_divider">@color/grey_100</color>
 </resources>

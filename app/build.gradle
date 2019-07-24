@@ -31,7 +31,7 @@ android {
         // Flag to hide or show the Contacts feature
         buildConfigBoolean "SHOW_LOCKBOX_BALANCE", false
         buildConfigBoolean "LOG_KOIN_STARTUP", false
-        buildConfigLong    "EXIT_APP_COOLDOWN_MILLIS", 2 * 1000
+        buildConfigLong "EXIT_APP_COOLDOWN_MILLIS", 2 * 1000
 
         buildConfigString "SHAPE_SHIFT_API_KEY", buildProperties.secrets['shapeShiftApiKey']
         manifestPlaceholders = [FABRIC_API_KEY: buildProperties.secrets['fabricApiKey'].string]
@@ -98,7 +98,7 @@ android {
         envProd {
             dimension "environment"
             manifestPlaceholders = [
-                    DYNAMIC_LINK_HOST: buildProperties.secrets['prodDynamicLink'].string,
+                    DYNAMIC_LINK_HOST  : buildProperties.secrets['prodDynamicLink'].string,
                     DYNAMIC_LINK_HOST_2: buildProperties.secrets['prodDynamicLink2'].string
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['prodExplorer']
@@ -109,12 +109,14 @@ android {
             buildConfigString "XLM_WEBSOCKET_URL", buildProperties.secrets['prodXlmWebsocket']
             buildConfigString "NABU_WEBSOCKET_URL", buildProperties.secrets['prodNabuWebsocket']
             buildConfigString "HORIZON_URL", buildProperties.secrets['prodHorizonUrl']
+            buildConfigString "PIT_LINKING_URL", buildProperties.secrets['prodPitDoLink']
+            buildConfigString "PIT_LAUNCHING_URL", buildProperties.secrets['prodPitLaunch']
             buildConfigField "String", "ENVIRONMENT", '"env_prod"'
         }
         envDev {
             dimension "environment"
             manifestPlaceholders = [
-                    DYNAMIC_LINK_HOST: buildProperties.secrets['devDynamicLink'].string,
+                    DYNAMIC_LINK_HOST  : buildProperties.secrets['devDynamicLink'].string,
                     DYNAMIC_LINK_HOST_2: buildProperties.secrets['devDynamicLink2'].string
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['devExplorer']
@@ -125,13 +127,15 @@ android {
             buildConfigString "XLM_WEBSOCKET_URL", buildProperties.secrets['devXlmWebsocket']
             buildConfigString "NABU_WEBSOCKET_URL", buildProperties.secrets['devNabuWebsocket']
             buildConfigString "HORIZON_URL", buildProperties.secrets['devHorizonUrl']
+            buildConfigString "PIT_LINKING_URL", buildProperties.secrets['devPitDoLink']
+            buildConfigString "PIT_LAUNCHING_URL", buildProperties.secrets['devPitLaunch']
             buildConfigField "String", "ENVIRONMENT", '"env_dev"'
             versionNameSuffix '-dev'
         }
         envStaging {
             dimension "environment"
             manifestPlaceholders = [
-                    DYNAMIC_LINK_HOST: buildProperties.secrets['stagingDynamicLink'].string,
+                    DYNAMIC_LINK_HOST  : buildProperties.secrets['stagingDynamicLink'].string,
                     DYNAMIC_LINK_HOST_2: buildProperties.secrets['stagingDynamicLink2'].string
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['stagingExplorer']
@@ -142,6 +146,8 @@ android {
             buildConfigString "XLM_WEBSOCKET_URL", buildProperties.secrets['stagingXlmWebsocket']
             buildConfigString "NABU_WEBSOCKET_URL", buildProperties.secrets['stagingNabuWebsocket']
             buildConfigString "HORIZON_URL", buildProperties.secrets['stagingHorizonUrl']
+            buildConfigString "PIT_LINKING_URL", buildProperties.secrets['stagingPitDoLink']
+            buildConfigString "PIT_LAUNCHING_URL", buildProperties.secrets['stagingPitLaunch']
             buildConfigField "String", "ENVIRONMENT", '"env_staging"'
 
             versionNameSuffix '-staging'
@@ -150,7 +156,7 @@ android {
         envTestnet {
             dimension "environment"
             manifestPlaceholders = [
-                    DYNAMIC_LINK_HOST: buildProperties.secrets['testnetDynamicLink'].string,
+                    DYNAMIC_LINK_HOST  : buildProperties.secrets['testnetDynamicLink'].string,
                     DYNAMIC_LINK_HOST_2: buildProperties.secrets['testnetDynamicLink2'].string
             ]
             buildConfigString "EXPLORER_URL", buildProperties.secrets['testnetExplorer']
@@ -161,6 +167,8 @@ android {
             buildConfigString "XLM_WEBSOCKET_URL", buildProperties.secrets['testnetXlmWebsocket']
             buildConfigString "NABU_WEBSOCKET_URL", buildProperties.secrets['testnetNabuWebsocket']
             buildConfigString "HORIZON_URL", buildProperties.secrets['testnetHorizonUrl']
+            buildConfigString "PIT_LINKING_URL", buildProperties.secrets['testnetPitDoLink']
+            buildConfigString "PIT_LAUNCHING_URL", buildProperties.secrets['testnetPitLaunch']
             buildConfigField "String", "ENVIRONMENT", '"env_testnet"'
             versionNameSuffix '-testnet'
         }
@@ -233,7 +241,7 @@ dependencies {
     implementation Libraries.koin
     implementation Libraries.koinAndroid
     implementation Libraries.koinAndroidArchitecture
-    
+
     // Views
     implementation project(":zxing")
     implementation Libraries.countryPicker
@@ -254,6 +262,10 @@ dependencies {
     // UI/Instrumentation Tests
     androidTestImplementation(Libraries.espresso) {
         exclude group: 'javax.inject', module: 'support-annotations'
+    }
+    androidTestImplementation Libraries.mockito
+    androidTestImplementation(Libraries.mockitoKotlin) {
+        ['kotlin-stdlib', 'kotlin-reflect'].each { exclude module: it }
     }
 
     // Unit Tests

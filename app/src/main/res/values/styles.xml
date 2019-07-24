@@ -161,22 +161,6 @@
         <item name="android:orientation">horizontal</item>
     </style>
 
-    <!--<style name="ContactsHeader">-->
-        <!--<item name="android:layout_width">match_parent</item>-->
-        <!--<item name="android:layout_height">wrap_content</item>-->
-        <!--<item name="android:padding">16dp</item>-->
-        <!--<item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Subhead</item>-->
-        <!--<item name="android:textColor">@color/primary_gray_medium</item>-->
-    <!--</style>-->
-
-    <!--<style name="ContactsDetail">-->
-        <!--<item name="android:layout_width">match_parent</item>-->
-        <!--<item name="android:layout_height">wrap_content</item>-->
-        <!--<item name="android:padding">16dp</item>-->
-        <!--<item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>-->
-        <!--<item name="android:textColor">@color/primary_gray_medium</item>-->
-    <!--</style>-->
-
     <style name="TransactionDetailHeader">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -348,6 +332,34 @@
     <style name="SwitchGreen" parent="Theme.AppCompat.Light">
         <item name="colorSwitchThumbNormal">@color/product_green_medium</item>
         <item name="colorAccent">@color/product_green_medium</item>
+    </style>
+
+    <style name="BaseCenteredText">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="PitTitleText" parent="BaseCenteredText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/pit_text_title</item>
+        <item name="android:layout_marginStart">39dp</item>
+        <item name="android:layout_marginEnd">38dp</item>
+    </style>
+
+    <style name="PitHeadingText" parent="BaseCenteredText">
+        <item name="android:fontFamily">@font/inter_bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/pit_text_heading</item>
+        <item name="android:layout_marginStart">88dp</item>
+        <item name="android:layout_marginEnd">87dp</item>
+    </style>
+
+    <style name="PitBodyText" parent="BaseCenteredText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/pit_text_body</item>
+        <item name="android:layout_marginStart">48dp</item>
+        <item name="android:layout_marginEnd">48dp</item>
+        <item name="android:layout_marginTop">11dp</item>
     </style>
 
 </resources>
