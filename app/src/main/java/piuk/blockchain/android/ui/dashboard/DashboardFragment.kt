@@ -172,8 +172,8 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
         navigator().launchKyc(campaignType)
     }
 
-    override fun startPitLinkingFlow() {
-        navigator().launchThePitLinking()
+    override fun startPitLinkingFlow(linkId: String) {
+        navigator().launchThePitLinking(linkId)
     }
 
     override fun startWebsocketService() {

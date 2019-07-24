@@ -26,7 +26,7 @@ interface HomeNavigator {
 
     fun launchKyc(campaignType: CampaignType)
 
-    fun launchThePitLinking()
+    fun launchThePitLinking(linkId: String = "")
     fun launchThePit()
 
     fun gotoSendFor(cryptoCurrency: CryptoCurrency)

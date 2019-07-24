@@ -26,6 +26,7 @@ import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.thepit.PitLinkingImpl
+import piuk.blockchain.android.thepit.ThePitDeepLinkParser
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
@@ -320,18 +321,31 @@ val applicationModule = applicationContext {
             )
         }
 
-        factory { SunriverDeepLinkHelper(get()) }
+        factory {
+            SunriverDeepLinkHelper(
+                linkHandler = get()
+            )
+        }
 
-        factory { KycDeepLinkHelper(get()) }
+        factory {
+            KycDeepLinkHelper(
+                linkHandler = get()
+            )
+        }
+
+        factory {
+            ThePitDeepLinkParser()
+        }
 
         factory { EmailVerificationDeepLinkHelper() }
 
         factory {
             DeepLinkProcessor(
                 linkHandler = get(),
-                emailVerifiedLinkHelper = get(),
                 kycDeepLinkHelper = get(),
-                sunriverDeepLinkHelper = get()
+                sunriverDeepLinkHelper = get(),
+                emailVerifiedLinkHelper = get(),
+                thePitDeepLinkParser = get()
             )
         }
 
@@ -462,7 +476,8 @@ val applicationModule = applicationContext {
             PitPermissionsPresenter(
                 nabu = get(),
                 nabuToken = get(),
-                pitLinking = get()
+                pitLinking = get(),
+                prefs = get()
             )
         }
 

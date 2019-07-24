@@ -1215,15 +1215,6 @@
     <!-- The Pit linking -->
     <string name="pit_announcement_description">It\'s time to Level Up to a better crypto exchange. First 100,000 traders to sign up will trade free for 30 days.</string>
     <string name="pit_announcement_introducing_link">Check it out</string>
-    <string name="pit_landing_learn_more"><annotation link="pit_info">Learn more.</annotation></string>
-    <string name="pit_landing_title">Level up to our new exchange for unlimited trading in the most desired cryptocurrency pairs.</string>
-    <string name="pit_landing_heading_1">Fast and Liquid</string>
-    <string name="pit_landing_body_1">We combined an ultra fast matching engine with deep liquidity so you can react quickly and with precision.</string>
-    <string name="pit_landing_heading_2">Easy to Use"</string>
-    <string name="pit_landing_body_2">No instructional manual required! The PIT is refreshingly simple, fun, and lightning fast.</string>
-    <string name="pit_landing_heading_3">Blockchain Connect</string>
-    <string name="pit_landing_body_3">The only exchange seamlessly integrated with your secure digital wallet.</string>
-    <string name="pit_landing_signup_btn">Sign Up Now</string>
     <string name="pit_logo_content_descr">The Pit Logo</string>
     <string name="pit_slogan_kyc_promo">The only Exchange that connects to your Wallet.</string>
     <string name="pit_thunder_kyc_promo">Lightning Fast Trades</string>

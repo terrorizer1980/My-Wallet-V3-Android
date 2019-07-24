@@ -108,6 +108,7 @@ class DashboardPresenterTest {
 
         whenever(view.locale).thenReturn(Locale.US)
         whenever(currentTier.usersCurrentTier()).thenReturn(Single.just(1))
+        whenever(prefs.pitToWalletLinkId).thenReturn("")
     }
 
     @Test

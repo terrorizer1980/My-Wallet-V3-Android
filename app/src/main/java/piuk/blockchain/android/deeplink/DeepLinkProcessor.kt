@@ -8,12 +8,14 @@ import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.kyc.KycLinkState
 import piuk.blockchain.android.sunriver.CampaignLinkState
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
+import piuk.blockchain.android.thepit.ThePitDeepLinkParser
 
 internal class DeepLinkProcessor(
     private val linkHandler: PendingLink,
     private val emailVerifiedLinkHelper: EmailVerificationDeepLinkHelper,
     private val kycDeepLinkHelper: KycDeepLinkHelper,
-    private val sunriverDeepLinkHelper: SunriverDeepLinkHelper
+    private val sunriverDeepLinkHelper: SunriverDeepLinkHelper,
+    private val thePitDeepLinkParser: ThePitDeepLinkParser
 ) {
 
     fun getLink(intent: Intent): Single<LinkState> =
@@ -31,6 +33,10 @@ internal class DeepLinkProcessor(
                 if (kyc != KycLinkState.NoUri) {
                     return@map LinkState.KycDeepLink(kyc)
                 }
+                val linkId = thePitDeepLinkParser.mapUri(uri)
+                if (linkId != null) {
+                    return@map LinkState.ThePitDeepLink(linkId)
+                }
                 LinkState.NoUri
             }
             .switchIfEmpty(Maybe.just(LinkState.NoUri))
@@ -42,5 +48,7 @@ sealed class LinkState {
     data class EmailVerifiedDeepLink(val link: EmailVerifiedLinkState) : LinkState()
     data class SunriverDeepLink(val link: CampaignLinkState) : LinkState()
     data class KycDeepLink(val link: KycLinkState) : LinkState()
+    data class ThePitDeepLink(val linkId: String) : LinkState()
+
     object NoUri : LinkState()
 }

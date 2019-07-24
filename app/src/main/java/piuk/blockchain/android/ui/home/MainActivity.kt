@@ -63,7 +63,7 @@ import piuk.blockchain.android.ui.send.SendFragment
 import piuk.blockchain.android.ui.settings.SettingsActivity
 import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
-import piuk.blockchain.android.ui.thepit.PitLandingActivity
+import piuk.blockchain.android.ui.thepit.PitPermissionsActivity
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
@@ -361,8 +361,8 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         binding.drawerLayout.closeDrawers()
     }
 
-    override fun launchThePitLinking() {
-        PitLandingActivity.start(this)
+    override fun launchThePitLinking(linkId: String) {
+        PitPermissionsActivity.start(this, linkId)
     }
 
     override fun launchThePit() {

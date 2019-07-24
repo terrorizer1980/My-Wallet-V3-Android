@@ -68,8 +68,8 @@ import piuk.blockchain.android.ui.auth.KEY_VALIDATING_PIN_FOR_RESULT
 import piuk.blockchain.android.ui.auth.REQUEST_CODE_VALIDATE_PIN
 import piuk.blockchain.android.ui.settings.preferences.KycStatusPreference
 import piuk.blockchain.android.ui.settings.preferences.ThePitStatusPreference
-import piuk.blockchain.android.ui.thepit.PitLandingActivity
 import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
+import piuk.blockchain.android.ui.thepit.PitPermissionsActivity
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 
 class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
@@ -405,7 +405,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun launchThePitLandingActivity() {
-        PitLandingActivity.start(requireActivity())
+        PitPermissionsActivity.start(requireActivity())
     }
 
     override fun launchThePit() {

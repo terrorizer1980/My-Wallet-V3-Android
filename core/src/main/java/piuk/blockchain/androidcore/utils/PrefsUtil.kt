@@ -59,6 +59,15 @@ class PrefsUtil(
 
         set(crypto) = setValue(KEY_SELECTED_CRYPTO, crypto.name)
 
+    // From ThePitLinkingPrefs
+    override var pitToWalletLinkId: String
+        get() = getValue(KEY_PIT_LINKING_LINK_ID, "")
+        set(v) = setValue(KEY_PIT_LINKING_LINK_ID, v)
+
+    override fun clearPitToWalletLinkId() {
+        removeValue(KEY_PIT_LINKING_LINK_ID)
+    }
+
     override fun getValue(name: String): String? =
         store.getString(name, null)
 
@@ -142,6 +151,8 @@ class PrefsUtil(
         const val KEY_LOGGED_OUT = "logged_out"
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         const val KEY_SELECTED_CRYPTO = "KEY_CURRENCY_CRYPTO_STATE"
+
+        private const val KEY_PIT_LINKING_LINK_ID = "pit_wallet_link_id"
 
         // For QA:
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

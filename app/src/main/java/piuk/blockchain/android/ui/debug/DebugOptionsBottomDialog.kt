@@ -40,6 +40,8 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
         btn_reset_wallet.setOnClickListener { onResetWallet() }
         btn_reset_announce.setOnClickListener { onResetAnnounce() }
         btn_reset_prefs.setOnClickListener { onResetPrefs() }
+
+        btn_store_linkId.setOnClickListener { prefs.pitToWalletLinkId = "11111111-2222-3333-4444-55556666677" }
     }
 
     private fun onRndDeviceId() {

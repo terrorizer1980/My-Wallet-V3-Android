@@ -3,6 +3,8 @@ package piuk.blockchain.android.ui.thepit
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.nabu.NabuToken
+import com.blockchain.preferences.ThePitLinkingPrefs
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
@@ -18,7 +20,8 @@ import java.util.concurrent.TimeUnit
 class PitPermissionsPresenter(
     private val nabu: NabuDataManager,
     private val nabuToken: NabuToken,
-    private val pitLinking: PitLinking
+    private val pitLinking: PitLinking,
+    private val prefs: ThePitLinkingPrefs
 ) : BasePresenter<PitPermissionsView>() {
 
     private fun linkWallet() = nabuToken.fetchNabuToken().flatMap { nabu.linkWalletWithMercury(it) }
@@ -27,6 +30,11 @@ class PitPermissionsPresenter(
         .flatMapCompletable { nabu.linkMercuryWithWallet(it, linkId) }
 
     override fun onViewReady() { }
+
+    override fun onViewDestroyed() {
+        prefs.clearPitToWalletLinkId()
+        super.onViewDestroyed()
+    }
 
     fun checkEmailIsVerified() {
         compositeDisposable += fetchUser()
@@ -68,13 +76,25 @@ class PitPermissionsPresenter(
     }
 
     fun tryToConnectPitToWallet(linkId: String) {
-        compositeDisposable += linkPit(linkId)
+        compositeDisposable += fetchUser()
+            .flatMap { isEmailVerified(it) }
+            .doOnError {
+                if (it is EmailNotVerifiedException) {
+                    prefs.pitToWalletLinkId = linkId
+                    view?.promptForEmailVerification(it.email)
+                }
+            }
+            .flatMapCompletable {
+                linkPit(linkId)
+                .mergeWith(Completable.timer(2, TimeUnit.SECONDS))
+            }
             .doOnComplete { pitLinking.sendWalletAddressToThePit() }
+            .doOnComplete { prefs.clearPitToWalletLinkId() }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view?.showLoading() }
             .doFinally { view?.hideLoading() }
             .subscribeBy(
-                onError = { view?.onLinkFailed(it.message ?: "") },
+                onError = { if (it !is EmailNotVerifiedException) view?.onLinkFailed(it.message ?: "") },
                 onComplete = { view?.onPitLinked() }
             )
     }

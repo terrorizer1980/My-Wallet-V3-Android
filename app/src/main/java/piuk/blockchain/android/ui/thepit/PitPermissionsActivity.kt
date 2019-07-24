@@ -130,9 +130,9 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         private const val PARAM_LINK_ID = "link_id"
 
         @JvmStatic
-        fun start(ctx: Context, isWalletToPit: Boolean, linkId: String? = null) {
+        fun start(ctx: Context, linkId: String? = null) {
             Intent(ctx, PitPermissionsActivity::class.java).apply {
-                isPitToWalletLink = isWalletToPit
+                isPitToWalletLink = linkId.isNullOrEmpty().not()
                 pitToWalletLinkId = linkId
             }.run { ctx.startActivity(this) }
         }

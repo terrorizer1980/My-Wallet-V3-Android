@@ -321,41 +321,61 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private void checkForPendingLinks() {
         getCompositeDisposable().add(
-                deepLinkProcessor
-                        .getLink(getView().getStartIntent())
-                        .subscribe(
-                                linkState -> {
-                                    if (linkState instanceof LinkState.EmailVerifiedDeepLink) {
-                                        final EmailVerifiedLinkState state = ((LinkState.EmailVerifiedDeepLink) linkState).getLink();
-                                        if (state == EmailVerifiedLinkState.FromPitLinking) {
-                                            showThePitOrPitLinkingView();
-                                        }
-                                    } else if (linkState instanceof LinkState.SunriverDeepLink) {
-                                        final CampaignLinkState campaignLinkState = ((LinkState.SunriverDeepLink) linkState).getLink();
-                                        if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
-                                            getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
-                                        } else if (campaignLinkState instanceof CampaignLinkState.Data) {
-                                            registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
-                                        }
-                                    } else if (linkState instanceof LinkState.KycDeepLink) {
-                                        final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
-                                        final KycLinkState kycLinkState = deepLink.getLink();
-                                        if (kycLinkState instanceof KycLinkState.Resubmit) {
-                                            getView().launchKyc(CampaignType.Resubmission);
-                                        } else if (kycLinkState instanceof KycLinkState.EmailVerified) {
-                                            getView().launchKyc(CampaignType.Swap);
-                                        } else if (kycLinkState instanceof KycLinkState.General) {
-                                            final CampaignData data = ((KycLinkState.General) kycLinkState).getCampaignData();
-                                            if (data != null) {
-                                                registerForCampaign(data);
-                                            } else {
-                                                getView().launchKyc(CampaignType.Swap);
-                                            }
-                                        }
-                                    }
-                                }, Timber::e
-                        )
-        );
+            deepLinkProcessor
+                .getLink(getView().getStartIntent())
+                .subscribe(
+                    linkState -> {
+                        if (linkState instanceof LinkState.SunriverDeepLink) {
+                            handleSunriverDeepLink(linkState);
+                        } else if (linkState instanceof LinkState.EmailVerifiedDeepLink) {
+                            handleEmailVerifiedDeepLink(linkState);
+                        } else if (linkState instanceof LinkState.KycDeepLink) {
+                            handleKycDeepLink(linkState);
+                        } else if (linkState instanceof LinkState.ThePitDeepLink) {
+                            handleThePitDeepLink(linkState);
+                        }
+                    }, Timber::e
+                )
+            );
+    }
+
+    private void handleSunriverDeepLink(LinkState linkState) {
+        final CampaignLinkState campaignLinkState = ((LinkState.SunriverDeepLink) linkState).getLink();
+        if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
+            getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
+        } else if (campaignLinkState instanceof CampaignLinkState.Data) {
+            registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
+        }
+    }
+
+    private void handleKycDeepLink(LinkState linkState) {
+        final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
+        final KycLinkState kycLinkState = deepLink.getLink();
+
+        if (kycLinkState instanceof KycLinkState.Resubmit) {
+            getView().launchKyc(CampaignType.Resubmission);
+        } else if (kycLinkState instanceof KycLinkState.EmailVerified) {
+            getView().launchKyc(CampaignType.Swap);
+        } else if (kycLinkState instanceof KycLinkState.General) {
+            final CampaignData data = ((KycLinkState.General) kycLinkState).getCampaignData();
+            if (data != null) {
+                registerForCampaign(data);
+            } else {
+                getView().launchKyc(CampaignType.Swap);
+            }
+        }
+    }
+
+    private void handleThePitDeepLink(LinkState linkState) {
+        LinkState.ThePitDeepLink pitLink = (LinkState.ThePitDeepLink) linkState;
+        getView().launchThePitLinking(pitLink.getLinkId());
+    }
+
+    private void handleEmailVerifiedDeepLink(LinkState linkState) {
+        final EmailVerifiedLinkState state = ((LinkState.EmailVerifiedDeepLink) linkState).getLink();
+        if (state == EmailVerifiedLinkState.FromPitLinking) {
+            showThePitOrPitLinkingView(prefs.getPitToWalletLinkId());
+        }
     }
 
     private void registerForCampaign(CampaignData data) {
@@ -444,20 +464,20 @@ public class MainPresenter extends BasePresenter<MainView> {
      */
     private Completable feesCompletable() {
         return feeDataManager.getBtcFeeOptions()
-                .doOnNext(btcFeeOptions -> dynamicFeeCache.setBtcFeeOptions(btcFeeOptions))
-                .ignoreElements()
-                .onErrorComplete()
-                .andThen(feeDataManager.getEthFeeOptions()
-                        .doOnNext(ethFeeOptions -> dynamicFeeCache.setEthFeeOptions(ethFeeOptions))
-                        .ignoreElements()
-                        .onErrorComplete()
-                )
-                .andThen(feeDataManager.getBchFeeOptions()
-                        .doOnNext(bchFeeOptions -> dynamicFeeCache.setBchFeeOptions(bchFeeOptions))
-                        .ignoreElements()
-                        .onErrorComplete()
-                )
-                .subscribeOn(Schedulers.io());
+            .doOnNext(btcFeeOptions -> dynamicFeeCache.setBtcFeeOptions(btcFeeOptions))
+            .ignoreElements()
+            .onErrorComplete()
+            .andThen(feeDataManager.getEthFeeOptions()
+                    .doOnNext(ethFeeOptions -> dynamicFeeCache.setEthFeeOptions(ethFeeOptions))
+                    .ignoreElements()
+                    .onErrorComplete()
+            )
+            .andThen(feeDataManager.getBchFeeOptions()
+                    .doOnNext(bchFeeOptions -> dynamicFeeCache.setBchFeeOptions(bchFeeOptions))
+                    .ignoreElements()
+                    .onErrorComplete()
+            )
+            .subscribeOn(Schedulers.io());
     }
 
     private Completable exchangeRateCompletable() {
@@ -603,24 +623,24 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     public void onThePitMenuClicked() {
-        showThePitOrPitLinkingView();
+        showThePitOrPitLinkingView("");
     }
 
     @SuppressLint("CheckResult")
-    private void showThePitOrPitLinkingView() {
+    private void showThePitOrPitLinkingView(String linkId) {
         getCompositeDisposable().add(
-                pitLinking.isPitLinked()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                isLinked -> {
-                                    if (isLinked) {
-                                        getView().launchThePit();
-                                    } else {
-                                        getView().launchThePitLinking();
-                                    }
-                                },
-                                Timber::e
-                        )
+            pitLinking.isPitLinked()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    isLinked -> {
+                        if (isLinked) {
+                            getView().launchThePit();
+                        } else {
+                            getView().launchThePitLinking(linkId);
+                        }
+                    },
+                    Timber::e
+                )
         );
     }
 }

@@ -6,6 +6,7 @@ import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.nabu.NabuToken
+import com.blockchain.preferences.ThePitLinkingPrefs
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.times
@@ -38,6 +39,7 @@ class PitPermissionsPresenterTest {
     private val nabu: NabuDataManager = mock()
     private val nabuToken: NabuToken = mock()
     private val pitLinking: PitLinking = mock()
+    private val prefs: ThePitLinkingPrefs = mock()
     private val view = mock<PitPermissionsView>()
 
     private val nabuUser: NabuUser = mock()
@@ -47,14 +49,20 @@ class PitPermissionsPresenterTest {
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
         whenever(nabu.getUser(validOfflineToken)).thenReturn(Single.just(nabuUser))
 
-        presenter = PitPermissionsPresenter(nabu, nabuToken, pitLinking).also {
+        presenter = PitPermissionsPresenter(
+            nabu,
+            nabuToken,
+            pitLinking,
+            prefs
+        ).also {
             it.initView(view)
             it.onViewReady()
         }
     }
 
+    // wallet to pit linking
     @Test
-    fun `when mail is not verified, view should prompt for verification`() {
+    fun `w2p - when mail is not verified, view should prompt for verification`() {
         whenever(nabuUser.emailVerified).thenReturn(false)
         whenever(nabuUser.email).thenReturn(EMAIL_ADDRESS)
 
@@ -69,7 +77,7 @@ class PitPermissionsPresenterTest {
     }
 
     @Test
-    fun `when mail is verified, there are no errors, the view should receive a formatted link - simple address `() {
+    fun `w2p - when mail is verified, there are no errors, the view should receive a formatted link - simple addr`() {
         whenever(nabuUser.emailVerified).thenReturn(true)
         whenever(nabuUser.email).thenReturn(EMAIL_ADDRESS)
 
@@ -91,7 +99,7 @@ class PitPermissionsPresenterTest {
     }
 
     @Test
-    fun `when mail is verified, there are no errors, the view should receive a formatted link - extended address `() {
+    fun `w2p - when mail is verified, there are no errors, the view should receive a formatted link - extended addr`() {
         // AKA check for URI encoding
         whenever(nabuUser.emailVerified).thenReturn(true)
         whenever(nabuUser.email).thenReturn(EMAIL_ADDRESS_PLUS)
@@ -113,8 +121,9 @@ class PitPermissionsPresenterTest {
         verifyNoMoreInteractions(view)
     }
 
+    // Wallet to pit linking
     @Test
-    fun `when the call to link fails an error should be reported`() {
+    fun `w2p - when the call to link fails an error should be reported`() {
         whenever(nabuUser.emailVerified).thenReturn(true)
         whenever(nabuUser.email).thenReturn(EMAIL_ADDRESS)
 
@@ -132,7 +141,7 @@ class PitPermissionsPresenterTest {
     }
 
     @Test
-    fun `when the first call to link fails it should be possible to retry`() {
+    fun `w2p - when the first call to link fails it should be possible to retry`() {
         whenever(nabuUser.emailVerified).thenReturn(true)
         whenever(nabuUser.email).thenReturn(EMAIL_ADDRESS)
 
@@ -159,6 +168,7 @@ class PitPermissionsPresenterTest {
         verifyNoMoreInteractions(pitLinking)
     }
 
+    // Email verification check
     @Test
     fun `verified check calls back into view if email is verified`() {
         whenever(nabuUser.emailVerified).thenReturn(true)
@@ -183,8 +193,12 @@ class PitPermissionsPresenterTest {
         verifyNoMoreInteractions(pitLinking)
     }
 
+    // PIT to wallet linking
     @Test
-    fun `pit to wallet linking makes correct calls into view on success`() {
+    fun `p2w - linking makes correct calls into view on success`() {
+        whenever(nabuUser.emailVerified).thenReturn(true)
+        whenever(nabuUser.email).thenReturn(EMAIL_ADDRESS)
+
         whenever(nabu.linkMercuryWithWallet(validOfflineToken, LINK_ID))
             .thenReturn(Completable.complete())
 
@@ -194,13 +208,35 @@ class PitPermissionsPresenterTest {
         verify(view).showLoading()
         verify(view).hideLoading()
         verify(view).onPitLinked()
+        verify(prefs).clearPitToWalletLinkId()
 
         verifyNoMoreInteractions(view)
         verifyNoMoreInteractions(pitLinking)
+        verifyNoMoreInteractions(prefs)
     }
 
     @Test
-    fun `pit to wallet linking makes correct calls into view on failure`() {
+    fun `p2w - if email not verified, link id should be persisted and view should prompt for verification`() {
+        whenever(nabuUser.emailVerified).thenReturn(false)
+        whenever(nabuUser.email).thenReturn(EMAIL_ADDRESS)
+
+        presenter.tryToConnectPitToWallet(LINK_ID)
+
+        verify(view).showLoading()
+        verify(view).promptForEmailVerification(EMAIL_ADDRESS)
+        verify(view).hideLoading()
+        verify(prefs).pitToWalletLinkId = LINK_ID
+
+        verifyNoMoreInteractions(view)
+        verifyNoMoreInteractions(pitLinking)
+        verifyNoMoreInteractions(prefs)
+    }
+
+    @Test
+    fun `p2w - errors correctly reported on failure`() {
+        whenever(nabuUser.emailVerified).thenReturn(true)
+        whenever(nabuUser.email).thenReturn(EMAIL_ADDRESS)
+
         whenever(nabu.linkMercuryWithWallet(validOfflineToken, LINK_ID))
             .thenReturn(Completable.error(Throwable(LINK_ERROR)))
 
@@ -212,6 +248,7 @@ class PitPermissionsPresenterTest {
 
         verifyNoMoreInteractions(view)
         verifyNoMoreInteractions(pitLinking)
+        verifyNoMoreInteractions(prefs)
     }
 
     companion object {

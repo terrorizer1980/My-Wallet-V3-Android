@@ -1,9 +1,11 @@
 package piuk.blockchain.androidcore.utils
 
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.preferences.ThePitLinkingPrefs
 
 interface PersistentPrefs :
-    CurrencyPrefs {
+    CurrencyPrefs,
+    ThePitLinkingPrefs {
     val isLoggedOut: Boolean
     var isOnboardingComplete: Boolean
 

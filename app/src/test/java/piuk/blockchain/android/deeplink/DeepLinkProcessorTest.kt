@@ -17,6 +17,7 @@ import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.kyc.KycLinkState
 import piuk.blockchain.android.sunriver.CampaignLinkState
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
+import piuk.blockchain.android.thepit.ThePitDeepLinkParser
 
 @Config(sdk = [23], constants = BuildConfig::class, application = BlockchainTestApplication::class)
 @RunWith(RobolectricTestRunner::class)
@@ -81,14 +82,27 @@ class DeepLinkProcessorTest {
             )
         )
     }
+
+    @Test
+    fun `pit to wallet linking`() {
+        givenUriExpect(
+            "https://wallet-frontend-v4.dev.blockchain.info/#/open/link-account?link_id=$LINK_ID",
+            LinkState.ThePitDeepLink(LINK_ID)
+        )
+    }
+
+    companion object {
+        private const val LINK_ID = "11111111-2222-3333-4444-555555556666"
+    }
 }
 
 private fun givenUriExpect(uri: String, expected: LinkState) {
     DeepLinkProcessor(
-        givenPendingUri(uri),
-        EmailVerificationDeepLinkHelper(),
-        KycDeepLinkHelper(mock()),
-        SunriverDeepLinkHelper(mock())
+        linkHandler = givenPendingUri(uri),
+        emailVerifiedLinkHelper = EmailVerificationDeepLinkHelper(),
+        kycDeepLinkHelper = KycDeepLinkHelper(mock()),
+        sunriverDeepLinkHelper = SunriverDeepLinkHelper(mock()),
+        thePitDeepLinkParser = ThePitDeepLinkParser()
     ).getLink(mock())
         .test()
         .assertNoErrors()
