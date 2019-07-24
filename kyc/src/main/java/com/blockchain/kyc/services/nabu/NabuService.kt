@@ -13,6 +13,7 @@ import com.blockchain.kyc.models.nabu.RecordCountryRequest
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressRequest
+import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.models.nabu.WalletMercuryLink
 import com.blockchain.nabu.models.NabuOfflineTokenRequest
@@ -207,11 +208,10 @@ class NabuService(retrofit: Retrofit) {
     internal fun fetchPitSendToAddressForCrypto(
         sessionToken: NabuSessionTokenResponse,
         cryptoSymbol: String
-    ): Single<String> = service.fetchPitSendAddress(
+    ): Single<SendToMercuryAddressResponse> = service.fetchPitSendAddress(
         sessionToken.authHeader,
         SendToMercuryAddressRequest(cryptoSymbol)
-    ).map { it.address }
-        .wrapErrorMessage()
+    ).wrapErrorMessage()
 
     companion object {
         internal const val CLIENT_TYPE = "APP"

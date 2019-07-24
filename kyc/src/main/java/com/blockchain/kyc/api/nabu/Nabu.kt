@@ -167,6 +167,6 @@ internal interface Nabu {
     @PUT(NABU_FETCH_PIT_ADDRESS_FOR_WALLET)
     fun fetchPitSendAddress(
         @Header("authorization") authorization: String,
-        @Body cryptoCurrency: SendToMercuryAddressRequest
+        @Body currency: SendToMercuryAddressRequest
     ): Single<SendToMercuryAddressResponse>
 }

@@ -240,7 +240,9 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 currencyFormatter = get(),
                 exchangeRates = get(),
-                coinSelectionRemoteConfig = get()
+                coinSelectionRemoteConfig = get(),
+                nabuDataManager = get(),
+                nabuToken = get()
             )
         }
 
@@ -260,7 +262,9 @@ val applicationModule = applicationContext {
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                coinSelectionRemoteConfig = get()
+                coinSelectionRemoteConfig = get(),
+                nabuToken = get(),
+                nabuDataManager = get()
             )
         }
 
@@ -276,7 +280,9 @@ val applicationModule = applicationContext {
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                currencyPrefs = get()
+                currencyPrefs = get(),
+                nabuToken = get(),
+                nabuDataManager = get()
             )
         }
 
@@ -285,10 +291,13 @@ val applicationModule = applicationContext {
                 currencyState = get(),
                 xlmDataManager = get(),
                 xlmFeesFetcher = get(),
+                stringUtils = get(),
                 walletOptionsDataManager = get(),
                 xlmTransactionSender = get(),
                 fiatExchangeRates = get(),
-                sendFundsResultLocalizer = get()
+                sendFundsResultLocalizer = get(),
+                nabuDataManager = get(),
+                nabuToken = get()
             )
         }
 
@@ -305,7 +314,9 @@ val applicationModule = applicationContext {
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                currencyPrefs = get()
+                currencyPrefs = get(),
+                nabuToken = get(),
+                nabuDataManager = get()
             )
         }
 

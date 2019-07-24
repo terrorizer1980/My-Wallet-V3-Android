@@ -16,7 +16,7 @@ interface SendView : BaseSendView {
 
     fun setSelectedCurrency(cryptoCurrency: CryptoCurrency)
 
-    fun updateReceivingHintAndAccountDropDowns(currency: CryptoCurrency, listSize: Int)
+    fun updateReceivingHintAndAccountDropDowns(currency: CryptoCurrency, listSize: Int, pitAddressAvailable: Boolean)
 
     // Update field
     fun updateSendingAddress(label: String)
@@ -131,7 +131,7 @@ interface SendView : BaseSendView {
 internal fun SendConfirmationDetails.toPaymentConfirmationDetails(): PaymentConfirmationDetails {
     return PaymentConfirmationDetails().also {
         it.fromLabel = from.label
-        it.toLabel = to
+        it.toLabel = if (toLabel.isBlank()) to else toLabel
 
         it.cryptoUnit = amount.symbol()
         it.cryptoAmount = amount.toStringWithoutSymbol()

@@ -2,6 +2,9 @@ package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
+import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.State
+import com.blockchain.nabu.NabuToken
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.serialization.JsonSerializableAccount
 import info.blockchain.balance.CryptoCurrency
@@ -12,6 +15,7 @@ import info.blockchain.wallet.ethereum.data.Erc20AddressResponse
 import info.blockchain.wallet.util.FormatsUtil
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import org.web3j.crypto.RawTransaction
@@ -20,6 +24,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
+import piuk.blockchain.android.ui.account.PitAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.util.StringUtils
@@ -34,6 +39,7 @@ import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
+import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import timber.log.Timber
 import java.math.BigDecimal
@@ -52,9 +58,25 @@ class PaxSendStrategy(
     private val exchangeRates: FiatExchangeRates,
     private val stringUtils: StringUtils,
     private val currencyPrefs: CurrencyPrefs,
+    private val nabuDataManager: NabuDataManager,
+    private val nabuToken: NabuToken,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
+
+    private var pitAccount: PitAccount? = null
+
+    override fun onPitAddressSelected() {
+        pitAccount?.let {
+            pendingTx.receivingAddress = it.address
+            view.updateReceivingAddress(it.label)
+        }
+    }
+
+    override fun onPitAddressCleared() {
+        pendingTx.receivingAddress = ""
+        view.updateReceivingAddress("")
+    }
 
     private val walletName = stringUtils.getString(R.string.pax_wallet_name)
 
@@ -110,8 +132,19 @@ class PaxSendStrategy(
     }
 
     private fun resetAccountList() {
-        val addressList = walletAccountHelper.getAccountItems(CryptoCurrency.PAX)
-        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, addressList.size)
+        compositeDisposable += nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.PAX.symbol)
+        }.applySchedulers().doOnSubscribe {
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
+        }.subscribeBy(onError = {
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
+        }) {
+            pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
+                CryptoCurrency.PAX.symbol), it.address)
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX,
+                1,
+                it.state == State.ACTIVE && it.address.isNotEmpty())
+        }
     }
 
     override fun processURIScanAddress(address: String) {

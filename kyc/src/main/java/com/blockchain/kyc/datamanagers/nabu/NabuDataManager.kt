@@ -8,6 +8,7 @@ import com.blockchain.kyc.models.nabu.NabuStateResponse
 import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
+import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.services.nabu.NabuService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
@@ -125,7 +126,7 @@ interface NabuDataManager {
     fun fetchCryptoAddressFromThePit(
         offlineTokenResponse: NabuOfflineTokenResponse,
         cryptoSymbol: String
-    ): Single<String>
+    ): Single<SendToMercuryAddressResponse>
 }
 
 internal class NabuDataManagerImpl(
@@ -360,7 +361,7 @@ internal class NabuDataManagerImpl(
     override fun fetchCryptoAddressFromThePit(
         offlineTokenResponse: NabuOfflineTokenResponse,
         cryptoSymbol: String
-    ): Single<String> =
+    ): Single<SendToMercuryAddressResponse> =
         authenticate(offlineTokenResponse) {
             nabuService.fetchPitSendToAddressForCrypto(it, cryptoSymbol)
         }

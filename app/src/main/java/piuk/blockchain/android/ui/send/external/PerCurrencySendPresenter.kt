@@ -46,6 +46,14 @@ internal class PerCurrencySendPresenter<View : SendView>(
     private val prefs: PersistentPrefs
 ) : SendPresenter<View>() {
 
+    override fun onPitAddressSelected() {
+        delegate.onPitAddressSelected()
+    }
+
+    override fun onPitAddressCleared() {
+        delegate.onPitAddressCleared()
+    }
+
     private var selectedMemoType: Int = MEMO_TEXT_NONE
     private var selectedCrypto: CryptoCurrency = CryptoCurrency.BTC
 

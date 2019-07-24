@@ -116,6 +116,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     private var transactionSuccessDialog: AlertDialog? = null
 
     private var handlingActivityResult = false
+    private var pitAddressState: PitAddressFieldState = PitAddressFieldState.CLEARED
 
     private val dialogHandler = Handler()
     private val dialogRunnable = Runnable {
@@ -123,6 +124,20 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             if (isShowing && activity != null && !activity!!.isFinishing) {
                 dismiss()
             }
+        }
+    }
+
+    private val onPitClickListener = View.OnClickListener {
+        if (pitAddressState == PitAddressFieldState.CLEARED) {
+            pitAddressState = PitAddressFieldState.FILLED
+            pitAddress.setImageResource(R.drawable.vector_dismiss_pit_address)
+            presenter.onPitAddressSelected()
+            toContainer.toAddressEditTextView.isEnabled = false
+        } else {
+            pitAddressState = PitAddressFieldState.CLEARED
+            pitAddress.setImageResource(R.drawable.vector_pit_send_address)
+            presenter.onPitAddressCleared()
+            toContainer.toAddressEditTextView.isEnabled = true
         }
     }
 
@@ -175,6 +190,9 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                 showSnackbar(R.string.check_connectivity_exit, Snackbar.LENGTH_LONG)
             }
         }
+
+        pitAddress.setOnClickListener(onPitClickListener)
+
         max.setOnClickListener { presenter.onSpendMaxClicked() }
 
         info_link.setOnClickListener { MinBalanceExplanationDialog().show(fragmentManager, "Dialog") }
@@ -374,7 +392,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         handlingActivityResult = true
 
         if (resultCode != Activity.RESULT_OK) return
-
+        resetPitAddressState()
         when (requestCode) {
             MainActivity.SCAN_URI -> presenter.handleURIScan(data?.getStringExtra(CaptureActivity.SCAN_RESULT))
             SCAN_PRIVX -> presenter.handlePrivxScan(data?.getStringExtra(CaptureActivity.SCAN_RESULT))
@@ -384,6 +402,13 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             REQUEST_CODE_BCH_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    private fun resetPitAddressState() {
+        pitAddressState = PitAddressFieldState.CLEARED
+        pitAddress.setImageResource(R.drawable.vector_pit_send_address)
+        presenter.onPitAddressCleared()
+        toContainer.toAddressEditTextView.isEnabled = true
     }
 
     private fun unpackAccountResult(intent: Intent?): JsonSerializableAccount? =
@@ -523,7 +548,11 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         fromContainer.fromAddressTextView.text = label
     }
 
-    override fun updateReceivingHintAndAccountDropDowns(currency: CryptoCurrency, listSize: Int) {
+    override fun updateReceivingHintAndAccountDropDowns(
+        currency: CryptoCurrency,
+        listSize: Int,
+        pitAddressAvailable: Boolean
+    ) {
         if (listSize == 1) {
             hideReceivingDropdown()
             hideSendingFieldDropdown()
@@ -531,6 +560,13 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             showSendingFieldDropdown()
             showReceivingDropdown()
         }
+
+        if (pitAddressAvailable) {
+            showPitAddressIcon()
+        } else {
+            hidePitAddressIcon()
+        }
+
         val hint: Int = if (listSize > 1) {
             when (currencyState.cryptoCurrency) {
                 CryptoCurrency.BTC -> R.string.to_field_helper
@@ -557,11 +593,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         if (currency.hasFeature(MULTI_WALLET)) {
             AccountChooserActivity.startForResult(
                 this,
-                if (currency == CryptoCurrency.BTC) {
-                    AccountMode.Bitcoin
-                } else {
-                    AccountMode.BitcoinCashSend
-                },
+                AccountMode.CryptoAccountMode(cryptoCurrency = currency, isSend = true),
                 if (currency == CryptoCurrency.BTC) {
                     REQUEST_CODE_BTC_SENDING
                 } else {
@@ -578,11 +610,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         if (currency.hasFeature(MULTI_WALLET)) {
             AccountChooserActivity.startForResult(
                 this,
-                if (currency == CryptoCurrency.BTC) {
-                    AccountMode.Bitcoin
-                } else {
-                    AccountMode.BitcoinCash
-                },
+                AccountMode.CryptoAccountMode(cryptoCurrency = currency, isSend = false),
                 if (currency == CryptoCurrency.BTC) {
                     REQUEST_CODE_BTC_RECEIVING
                 } else {
@@ -698,6 +726,14 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         toContainer.toArrow.gone()
         toContainer.toArrow.isClickable = false
         toContainer.toAddressEditTextView.isClickable = false
+    }
+
+    private fun hidePitAddressIcon() {
+        toContainer.pitAddress.gone()
+    }
+
+    private fun showPitAddressIcon() {
+        toContainer.pitAddress.visible()
     }
 
     override fun updateReceivingAddress(address: String) {
@@ -1246,3 +1282,7 @@ private fun Memo?.describeType(resources: Resources) =
             else -> null
         }
     }
+
+enum class PitAddressFieldState {
+    FILLED, CLEARED
+}

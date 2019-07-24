@@ -209,15 +209,15 @@ class ExchangeConfirmationPresenterTest {
                 memo
             )
         ).thenReturn(
-            Single.error<String>(
+            Single.error(
                 SendException(
                     SendFundsResult(
                         SendDetails(
-                            fromAccount,
-                            1.lumens(),
-                            "SERVER_DEPOSIT_ADDRESS",
-                            1.lumens(),
-                            memo
+                            from = fromAccount,
+                            value = 1.lumens(),
+                            toAddress = "SERVER_DEPOSIT_ADDRESS",
+                            fee = 1.lumens(),
+                            memo = memo
                         ),
                         99,
                         null,
