@@ -411,7 +411,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun launchThePitLandingActivity() {
-        PitPermissionsActivity.start(requireActivity())
+        PitPermissionsActivity.start(requireActivity(), "")
     }
 
     override fun launchThePit() {

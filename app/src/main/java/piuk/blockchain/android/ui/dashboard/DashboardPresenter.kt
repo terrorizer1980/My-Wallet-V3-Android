@@ -200,19 +200,19 @@ class DashboardPresenter(
     private fun updateAllBalances() {
         balanceUpdateDisposable.clear()
         val data = dashboardBalanceCalculator.getPieChartData(balanceFilter.distinctUntilChanged())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext {
-                    Logging.logCustom(
-                        BalanceLoadedEvent(
-                            hasBtcBalance = !it.bitcoin.displayable.isZero,
-                            hasBchBalance = !it.bitcoinCash.displayable.isZero,
-                            hasEthBalance = !it.ether.displayable.isZero,
-                            hasXlmBalance = !it.lumen.displayable.isZero,
-                            hasPaxBalance = !it.usdPax.displayable.isZero
-                        )
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext {
+                Logging.logCustom(
+                    BalanceLoadedEvent(
+                        hasBtcBalance = !it.bitcoin.displayable.isZero,
+                        hasBchBalance = !it.bitcoinCash.displayable.isZero,
+                        hasEthBalance = !it.ether.displayable.isZero,
+                        hasXlmBalance = !it.lumen.displayable.isZero,
+                        hasPaxBalance = !it.usdPax.displayable.isZero
                     )
-                    cachedData = it
-                }
+                )
+                cachedData = it
+            }
             .doOnNext { view.startWebsocketService() }
 
         balanceUpdateDisposable += Observables.combineLatest(data, shouldDisplayLockboxMessage().cache().toObservable())
