@@ -114,6 +114,7 @@ class DashboardPresenter(
             .doOnSuccess { updateAllBalances() }
             .doOnSuccess { announcements.checkLatest(this, compositeDisposable) }
             .doOnSuccess { storeSwipeToReceiveAddresses() }
+            .doOnSuccess { updatePitAddressesForthePit() }
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
@@ -125,7 +126,9 @@ class DashboardPresenter(
         if (linkId.isNotEmpty()) {
             view.startPitLinkingFlow(linkId)
         }
+    }
 
+    private fun updatePitAddressesForthePit() {
         // Wallet pit linking - update receive addresses in for the pit
         compositeDisposable += pitLinking.isPitLinked()
             .subscribeBy(
