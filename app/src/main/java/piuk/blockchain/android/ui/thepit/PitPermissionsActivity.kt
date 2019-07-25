@@ -3,6 +3,7 @@ package piuk.blockchain.android.ui.thepit
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.blockchain.ui.urllinks.URL_THE_PIT_LANDING_LEARN_MORE
 import kotlinx.android.synthetic.main.activity_pit_kyc_promo_layout.*
 import org.koin.android.ext.android.get
 import piuk.blockchain.android.R
@@ -27,6 +28,9 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
 
         connect_now.setOnClickListener {
             doLinkClickHandler()
+        }
+        learn_more.setOnClickListener {
+            launchUrlInBrowser(URL_THE_PIT_LANDING_LEARN_MORE)
         }
         onViewReady()
     }
@@ -53,10 +57,10 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
                 0,
                 R.drawable.vector_pit_request_failure), false
             )).apply {
-                onCtaClick = {
-                    doLinkClickHandler()
-                    dismiss()
-                }
+            onCtaClick = {
+                doLinkClickHandler()
+                dismiss()
+            }
         }.apply {
             show(supportFragmentManager, "LoadingBottomDialog")
         }
@@ -68,7 +72,7 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
                 getString(R.string.pit_connection_success_title),
                 getString(R.string.pit_connection_success_description),
                 R.string.btn_close,
-                    0,
+                0,
                 R.drawable.vector_pit_request_ok), false
             )).apply {
             onCtaClick = {
@@ -139,10 +143,14 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
 
         private var Intent.isPitToWalletLink: Boolean
             get() = extras?.getBoolean(PARAM_LINK_WALLET_TO_PIT, true) ?: true
-            set(v) { putExtra(PARAM_LINK_WALLET_TO_PIT, v) }
+            set(v) {
+                putExtra(PARAM_LINK_WALLET_TO_PIT, v)
+            }
 
         private var Intent.pitToWalletLinkId: String?
             get() = extras?.getString(PARAM_LINK_ID, null)
-            set(v) { putExtra(PARAM_LINK_ID, v) }
+            set(v) {
+                putExtra(PARAM_LINK_ID, v)
+            }
     }
 }
