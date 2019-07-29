@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.blockchain.ui.urllinks.URL_THE_PIT_LANDING_LEARN_MORE
 import kotlinx.android.synthetic.main.activity_pit_kyc_promo_layout.*
+import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.get
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.launchUrlInBrowser
@@ -25,6 +26,9 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pit_kyc_promo_layout)
+
+        setupToolbar(toolbar_general, R.string.the_pit_title)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         connect_now.setOnClickListener {
             doLinkClickHandler()
@@ -152,5 +156,10 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
             set(v) {
                 putExtra(PARAM_LINK_ID, v)
             }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }

@@ -1221,16 +1221,16 @@
     <string name="pit_security_kyc_promo"><![CDATA[Liquid & Reliable]]></string>
     <string name="pit_built_kyc_promo">Built by Blockchain.com</string>
     <string name="pit_dollar_kyc_promo">Low Fees</string>
-    <string name="pit_permission_app_can">This application will be able to:</string>
-    <string name="pit_permission_app_cant">This application will be not able to:</string>
+    <string name="pit_permission_app_can">The PIT will be able to:</string>
+    <string name="pit_permission_app_cant">The PIT will not be able to:</string>
     <string name="pit_permission_subtitle">Will not be able to:</string>
-    <string name="pit_permission_1">Facilitate crypto transfers between accounts</string>
+    <string name="pit_permission_1">Exchange crypto addresses so you don’t have to copy and paste</string>
     <string name="pit_permission_2">Share your Gold or Silver Level status</string>
     <string name="pit_permission_3">Add your linked banks</string>
     <string name="pit_permission_4">View your wallet password</string>
     <string name="pit_connect_now">Connect Now</string>
 
-    <string name="pit_setting_title">The Pit</string>
+    <string name="the_pit_title">The PIT</string>
     <string name="pit_setting_connect">Connect</string>
     <string name="pit_setting_connected">Connected</string>
     <string name="launch_the_pit">Launch The Pit</string>

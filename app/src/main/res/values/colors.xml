@@ -10,7 +10,7 @@
     <color name="swap_error_dialog_primary_button_background">#10ADE4</color>
 
     <color name="pit_application_able_to">@color/green_200</color>
-    <color name="pit_application_not_able">@color/red_500</color>
+    <color name="pit_application_not_able">@color/red_900</color>
     <color name="benefits_text_color">@color/grey_800</color>
 
     <color name="mobile_notice_dialog_title">@color/grey_800</color>

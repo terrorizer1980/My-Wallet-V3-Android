@@ -26,7 +26,7 @@ class PitLaunchBottomDialog : ErrorBottomDialog() {
         fun launch(activity: FragmentActivity) {
             newInstance(
                 Content(
-                    activity.getString(R.string.pit_setting_title),
+                    activity.getString(R.string.the_pit_title),
                     "",
                     R.string.launch_the_pit,
                     R.string.pit_contact_support,
