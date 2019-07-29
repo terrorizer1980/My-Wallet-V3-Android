@@ -18,7 +18,7 @@
             android:title="@string/mobile" />
         <piuk.blockchain.android.ui.settings.preferences.ThePitStatusPreference
             android:key="the_pit"
-            android:title="The Pit" />
+            android:title="The PIT" />
     </piuk.blockchain.android.ui.settings.preferences.CustomPreferenceCategory>
 
     <piuk.blockchain.android.ui.settings.preferences.CustomPreferenceCategory
