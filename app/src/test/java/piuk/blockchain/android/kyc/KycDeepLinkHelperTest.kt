@@ -50,7 +50,8 @@ class KycDeepLinkHelperTest {
 
     @Test
     fun `extract that it is an email verified deeplink`() {
-        KycDeepLinkHelper(givenPendingUri("https://login.blockchain.com/login?deep_link_path=email_verified"))
+        val url = "https://login.blockchain.com/login?deep_link_path=email_verified&context=kyc"
+        KycDeepLinkHelper(givenPendingUri(url))
             .getLink(mock())
             .test()
             .assertNoErrors()

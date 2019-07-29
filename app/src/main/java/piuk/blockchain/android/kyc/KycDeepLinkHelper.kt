@@ -28,7 +28,10 @@ class KycDeepLinkHelper(
         val name = uriWithoutFragment.getQueryParameter("deep_link_path")
         return when (name) {
             "verification" -> KycLinkState.Resubmit
-            "email_verified" -> KycLinkState.EmailVerified
+            "email_verified" -> {
+                val name = uriWithoutFragment.getQueryParameter("context")?.toLowerCase()
+                return if (KYC_CONTEXT.equals(name)) KycLinkState.EmailVerified else KycLinkState.NoUri
+            }
             "kyc" -> {
                 val campaign = uriWithoutFragment.getQueryParameter("campaign")
                 val campaignData = if (!campaign.isNullOrEmpty()) CampaignData(campaign, false) else null
@@ -36,6 +39,10 @@ class KycDeepLinkHelper(
             }
             else -> KycLinkState.NoUri
         }
+    }
+
+    companion object {
+        const val KYC_CONTEXT = "kyc"
     }
 }
 
