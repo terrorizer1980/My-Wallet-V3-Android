@@ -1,15 +1,16 @@
 <vector android:height="24dp" android:viewportHeight="48"
     android:viewportWidth="48" android:width="24dp"
-    xmlns:aapt="http://schemas.android.com/aapt" xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <path android:fillColor="#2219CC" android:pathData="M24,47.9831C37.2548,47.9831 48,37.2417 48,23.9915C48,10.7414 37.2548,0 24,0C10.7452,0 0,10.7414 0,23.9915C0,37.2417 10.7452,47.9831 24,47.9831Z"/>
     <path android:pathData="M44.593,36.3094L38.8473,19.5356L18.5083,19.8576V47.3564C19.8134,47.6613 21.1693,47.8646 22.5422,47.9494C22.5591,47.9494 22.593,47.9494 22.61,47.9494C22.7964,47.9663 22.9998,47.9663 23.1863,47.9832C23.2371,47.9832 23.271,47.9832 23.3219,47.9832C23.5422,47.9832 23.7625,48.0002 23.9998,48.0002C32.7456,47.9832 40.4066,43.3069 44.593,36.3094Z">
-        <aapt:attr name="android:fillColor">
-            <gradient android:endX="24.9663" android:endY="27.7861"
-                android:startX="38.0147" android:startY="47.6493" android:type="linear">
-                <item android:color="#006332FF" android:offset="0.1914"/>
-                <item android:color="#FF1200D4" android:offset="0.9203"/>
-            </gradient>
-        </aapt:attr>
+        <!-- Gradient not supported in API level 19 -->
+        <!--<aapt:attr name="android:fillColor">-->
+            <!--<gradient android:endX="24.9663" android:endY="27.7861"-->
+                <!--android:startX="38.0147" android:startY="47.6493" android:type="linear">-->
+                <!--<item android:color="#006332FF" android:offset="0.1914"/>-->
+                <!--<item android:color="#FF1200D4" android:offset="0.9203"/>-->
+            <!--</gradient>-->
+        <!--</aapt:attr>-->
     </path>
     <path android:fillColor="#4AE5FF" android:pathData="M28.4918,11.9956H10.4918L7.8816,41.7648C11.4579,45.0009 16.0172,47.1697 21.068,47.7965L23.0341,25.4146C22.5765,25.1096 22.2884,24.5844 22.2884,23.9914C22.2884,23.0426 23.0511,22.2801 24.0002,22.2801C24.9494,22.2801 25.7121,23.0426 25.7121,23.9914C25.7121,24.6691 25.3053,25.2621 24.729,25.5332L23.8138,35.9872H26.3901C33.0172,35.9872 38.8646,30.6162 39.4409,23.9914C40.0172,17.3666 35.1189,11.9956 28.4918,11.9956Z"/>
 </vector>
