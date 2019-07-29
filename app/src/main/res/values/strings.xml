@@ -1249,5 +1249,5 @@
     <string name="pit_connection_error_title">Connection Error</string>
     <string name="pit_connection_error_description">We could not connect your Wallet to The PIT. Please go back to The PIT and try again.</string>
     <string name="pit_connection_success_title">Success!</string>
-    <string name="pit_connection_success_description">You have connected your Blockchain Wallet to The PIT.</string>
+    <string name="pit_connection_success_description">You have connected your Blockchain Wallet to The PIT. Go back and finish signing up!</string>
 </resources>
