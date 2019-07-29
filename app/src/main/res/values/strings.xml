@@ -1233,7 +1233,7 @@
     <string name="the_pit_title">The PIT</string>
     <string name="pit_setting_connect">Connect</string>
     <string name="pit_setting_connected">Connected</string>
-    <string name="launch_the_pit">Launch The Pit</string>
+    <string name="launch_the_pit">Launch The PIT</string>
     <string name="pit_contact_support">Contact Support</string>
     <string name="pit_loading_dialog_title">Taking You To The PIT</string>
     <string name="pit_loading_dialog_description">A new window should open within 10 seconds.</string>

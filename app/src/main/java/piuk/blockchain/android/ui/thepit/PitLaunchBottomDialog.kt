@@ -30,7 +30,7 @@ class PitLaunchBottomDialog : ErrorBottomDialog() {
                     "",
                     R.string.launch_the_pit,
                     R.string.pit_contact_support,
-                    R.drawable.vector_pit_p
+                    R.drawable.vector_pit_logo
                 )
             ).apply {
                 onCtaClick = { activity.launchUrlInBrowser(BuildConfig.PIT_LAUNCHING_URL) }
