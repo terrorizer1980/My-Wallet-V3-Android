@@ -37,10 +37,10 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
 
     private fun doLinkClickHandler() {
         if (intent.isPitToWalletLink) {
-            presenter.tryToConnectWalletToPit()
-        } else {
             val linkId = intent.pitToWalletLinkId ?: throw IllegalStateException("Link id is missing")
             presenter.tryToConnectPitToWallet(linkId)
+        } else {
+            presenter.tryToConnectWalletToPit()
         }
     }
 
