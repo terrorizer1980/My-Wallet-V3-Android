@@ -69,7 +69,7 @@ class PitLinkingImpl(
 
     private fun NabuUser.toLinkingState(): PitLinkingState {
         return PitLinkingState(
-            isLinked = userName != null,
+            isLinked = settings != null,
             emailVerified = emailVerified,
             email = email
         )

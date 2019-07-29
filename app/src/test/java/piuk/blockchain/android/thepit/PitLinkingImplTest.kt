@@ -3,6 +3,7 @@ package piuk.blockchain.android.thepit
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.annotations.CommonCode
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.NabuSettings
 import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.nabu.NabuToken
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
@@ -29,7 +30,8 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 
 @CommonCode("Also exists in kyc/test/TestHelper.kt")
-val validOfflineToken get() = NabuOfflineTokenResponse("userId", "lifetimeToken")
+val validOfflineToken
+    get() = NabuOfflineTokenResponse("userId", "lifetimeToken")
 
 class PitLinkingImplTest {
 
@@ -67,7 +69,7 @@ class PitLinkingImplTest {
     @Test
     fun `fetch user data on subscribe, user is linked`() {
         // Arrange
-        whenever(nabuUser.userName).thenReturn(USER_NAME)
+        whenever(nabuUser.settings).thenReturn(NabuSettings(true))
         whenever(nabu.getUser(validOfflineToken)).thenReturn(Single.just(nabuUser))
 
         // Act
@@ -101,7 +103,7 @@ class PitLinkingImplTest {
     @Test
     fun `two subscriptions with isPitLinked() helper function`() {
         // Arrange
-        whenever(nabuUser.userName).thenReturn(USER_NAME)
+        whenever(nabuUser.settings).thenReturn(NabuSettings(true))
         whenever(nabu.getUser(validOfflineToken)).thenReturn(Single.just(nabuUser))
 
         // Act
