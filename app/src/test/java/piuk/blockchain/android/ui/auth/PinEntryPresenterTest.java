@@ -67,7 +67,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static piuk.blockchain.android.ui.auth.PinEntryFragmentKt.KEY_VALIDATING_PIN_FOR_RESULT;
 
-@Config(sdk = 23, constants = BuildConfig.class, application = BlockchainTestApplication.class)
+@Config(sdk = 23,  application = BlockchainTestApplication.class)
 @RunWith(RobolectricTestRunner.class)
 public class PinEntryPresenterTest {
 

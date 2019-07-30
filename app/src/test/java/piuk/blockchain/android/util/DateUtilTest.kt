@@ -8,11 +8,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import piuk.blockchain.android.BlockchainTestApplication
-import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import java.text.SimpleDateFormat
 
-@Config(sdk = [23], constants = BuildConfig::class, application = BlockchainTestApplication::class)
+@Config(sdk = [23], application = BlockchainTestApplication::class)
 @RunWith(RobolectricTestRunner::class)
 class DateUtilTest {
 

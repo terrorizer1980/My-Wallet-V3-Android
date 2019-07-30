@@ -11,9 +11,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import piuk.blockchain.android.BlockchainTestApplication
-import piuk.blockchain.android.BuildConfig
 
-@Config(sdk = [23], constants = BuildConfig::class, application = BlockchainTestApplication::class)
+@Config(sdk = [23], application = BlockchainTestApplication::class)
 @RunWith(RobolectricTestRunner::class)
 class SunriverDeepLinkHelperTest {
 
