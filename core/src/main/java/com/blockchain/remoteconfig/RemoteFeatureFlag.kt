@@ -20,7 +20,7 @@ class RemoteConfiguration(private val remoteConfig: FirebaseRemoteConfig) :
     RemoteConfig {
 
     private val configuration: Single<FirebaseRemoteConfig> =
-        Single.just(remoteConfig.fetch(if (BuildConfig.DEBUG) 0L else 43200L))
+        Single.just(remoteConfig.fetch(if (BuildConfig.DEBUG) 0L else 14400L))
             .cache()
             .doOnSuccess { remoteConfig.activateFetched() }
             .doOnError { Timber.e(it, "Failed to load Firebase Remote Config") }
