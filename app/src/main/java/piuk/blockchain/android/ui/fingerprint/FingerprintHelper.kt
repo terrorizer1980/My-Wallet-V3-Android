@@ -8,14 +8,13 @@ import com.mtramin.rxfingerprint.data.FingerprintResult
 import io.reactivex.disposables.CompositeDisposable
 import piuk.blockchain.android.data.fingerprint.FingerprintAuth
 import piuk.blockchain.androidcore.injection.PresenterScope
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import java.io.UnsupportedEncodingException
-import javax.inject.Inject
 
 @PresenterScope
-class FingerprintHelper @Inject constructor(
+class FingerprintHelper constructor(
     private val applicationContext: Context,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val fingerprintAuth: FingerprintAuth
 ) {
 
@@ -44,13 +43,13 @@ class FingerprintHelper @Inject constructor(
      * Returns true if the user has previously enabled fingerprint login
      */
     fun isFingerprintUnlockEnabled(): Boolean =
-        isFingerprintAvailable() && prefsUtil.getValue(PrefsUtil.KEY_FINGERPRINT_ENABLED, false)
+        isFingerprintAvailable() && prefs.getValue(PersistentPrefs.KEY_FINGERPRINT_ENABLED, false)
 
     /**
      * Store whether or not fingerprint login has been successfully set up
      */
     fun setFingerprintUnlockEnabled(enabled: Boolean) {
-        prefsUtil.setValue(PrefsUtil.KEY_FINGERPRINT_ENABLED, enabled)
+        prefs.setValue(PersistentPrefs.KEY_FINGERPRINT_ENABLED, enabled)
     }
 
     /**
@@ -66,7 +65,7 @@ class FingerprintHelper @Inject constructor(
      */
     fun storeEncryptedData(key: String, data: String) = try {
         val base64 = Base64.encodeToString(data.toByteArray(charset("UTF-8")), Base64.DEFAULT)
-        prefsUtil.setValue(key, base64)
+        prefs.setValue(key, base64)
         true
     } catch (e: UnsupportedEncodingException) {
         false
@@ -80,7 +79,7 @@ class FingerprintHelper @Inject constructor(
      * @return A [String] wrapping the saved String, or null if not found
      */
     fun getEncryptedData(key: String): String? {
-        val encryptedData = prefsUtil.getValue(key, "")
+        val encryptedData = prefs.getValue(key, "")
         if (!encryptedData.isEmpty()) {
             return try {
                 String(Base64.decode(encryptedData.toByteArray(charset("UTF-8")), Base64.DEFAULT))
@@ -98,7 +97,7 @@ class FingerprintHelper @Inject constructor(
      * @param key The key of the data to be stored
      */
     fun clearEncryptedData(key: String) {
-        prefsUtil.removeValue(key)
+        prefs.removeValue(key)
     }
 
     /**

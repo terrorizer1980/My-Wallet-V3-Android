@@ -30,8 +30,9 @@ allprojects {
         maven { url "https://jitpack.io" }
         maven { url 'https://maven.fabric.io/public' }
         maven { url 'https://onfido.bintray.com/maven/' }
-        // Veriff
-        maven { url "http://dl.bintray.com/argo/sdk" }
+
+        maven { url "http://dl.bintray.com/argo/sdk" } // probity
+        maven { url "https://cdn.veriff.me/android/" } // veriff
         jcenter()
     }
     configurations.all {

@@ -3,7 +3,9 @@ package com.blockchain.kycui.address
 import com.blockchain.BaseKycPresenter
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.Scope
+import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
 import com.blockchain.kycui.address.models.AddressModel
+import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.nabu.NabuToken
 import io.reactivex.Completable
 import io.reactivex.Maybe
@@ -34,7 +36,8 @@ class KycHomeAddressPresenter(
     nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
     private val tier2Decision: Tier2Decision,
-    private val phoneVerificationQuery: PhoneVerificationQuery
+    private val phoneVerificationQuery: PhoneVerificationQuery,
+    private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator
 ) : BaseKycPresenter<KycHomeAddressView>(nabuToken) {
 
     val countryCodeSingle: Single<SortedMap<String, String>> by unsafeLazy {
@@ -113,7 +116,7 @@ class KycHomeAddressPresenter(
         val countryCode: String
     )
 
-    internal fun onContinueClicked() {
+    internal fun onContinueClicked(campaignType: CampaignType? = null) {
         compositeDisposable += view.address
             .firstOrError()
             .flatMap { address ->
@@ -123,9 +126,9 @@ class KycHomeAddressPresenter(
             }
             .flatMap { (verified, countryCode) ->
                 (if (verified) {
-                    Completable.complete()
+                    createCoinifyAccountIfNeeded(campaignType)
                 } else {
-                    updateNabuData()
+                    updateNabuData().andThen(createCoinifyAccountIfNeeded(campaignType))
                 }).andThen(Single.just(verified to countryCode))
             }
             .map { (verified, countryCode) ->
@@ -159,6 +162,14 @@ class KycHomeAddressPresenter(
             )
     }
 
+    private fun createCoinifyAccountIfNeeded(campaignType: CampaignType?): Completable =
+        if (campaignType != CampaignType.BuySell) {
+            Completable.complete()
+        } else {
+            nabuCoinifyAccountCreator.createCoinifyAccountIfNeeded()
+                .doOnError(Timber::e)
+        }
+
     private fun addAddress(address: AddressModel): Completable = fetchOfflineToken
         .flatMapCompletable {
             nabuDataManager.addAddress(
@@ -190,15 +201,15 @@ class KycHomeAddressPresenter(
         if (addressModel.country.equals("US", ignoreCase = true)) {
             view.setButtonEnabled(
                 !addressModel.firstLine.isEmpty() &&
-                    !addressModel.city.isEmpty() &&
-                    !addressModel.state.isEmpty() &&
-                    !addressModel.postCode.isEmpty()
+                        !addressModel.city.isEmpty() &&
+                        !addressModel.state.isEmpty() &&
+                        !addressModel.postCode.isEmpty()
             )
         } else {
             view.setButtonEnabled(
                 !addressModel.firstLine.isEmpty() &&
-                    !addressModel.city.isEmpty() &&
-                    !addressModel.state.isEmpty()
+                        !addressModel.city.isEmpty() &&
+                        !addressModel.state.isEmpty()
             )
         }
     }
@@ -209,8 +220,8 @@ class KycHomeAddressPresenter(
 
     private fun AddressModel.containsData(): Boolean =
         !firstLine.isEmpty() ||
-            !secondLine.isNullOrEmpty() ||
-            !city.isEmpty() ||
-            !state.isEmpty() ||
-            !postCode.isEmpty()
+                !secondLine.isNullOrEmpty() ||
+                !city.isEmpty() ||
+                !state.isEmpty() ||
+                !postCode.isEmpty()
 }

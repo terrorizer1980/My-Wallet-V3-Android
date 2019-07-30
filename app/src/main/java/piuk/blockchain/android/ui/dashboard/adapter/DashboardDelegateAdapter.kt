@@ -8,13 +8,16 @@ import piuk.blockchain.android.ui.dashboard.BalanceFilter
 import piuk.blockchain.android.ui.dashboard.PieChartsState
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.AssetPriceCardDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.HeaderDelegate
-import piuk.blockchain.android.ui.dashboard.adapter.delegates.ImageLeftAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.adapter.delegates.ImageRightAnnouncementDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.delegates.ImageLeftAnnouncementDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.delegates.ImageRightAnnouncementDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.OnboardingDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.PieChartDelegate
-import piuk.blockchain.android.ui.dashboard.adapter.delegates.StableCoinAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.adapter.delegates.SunriverAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.adapter.delegates.SwapAnnouncementDelegate
+
+import piuk.blockchain.android.ui.dashboard.announcements.delegates.PitAnnouncementDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.delegates.StableCoinAnnouncementDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.delegates.SunriverAnnouncementDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.delegates.SwapAnnouncementDelegate
+
 /**
  * @param context The Activity/Fragment [Context]
  * @param assetSelector A callback for getting the selected coin from the asset balance card
@@ -38,6 +41,7 @@ class DashboardDelegateAdapter(
         delegatesManager.addAdapterDelegate(ImageRightAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(SunriverAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(StableCoinAnnouncementDelegate())
+        delegatesManager.addAdapterDelegate(PitAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(HeaderDelegate())
         delegatesManager.addAdapterDelegate(SwapAnnouncementDelegate())
         delegatesManager.addAdapterDelegate(onboardingDelegate)

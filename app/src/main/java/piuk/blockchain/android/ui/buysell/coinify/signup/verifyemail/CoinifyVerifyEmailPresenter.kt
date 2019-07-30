@@ -4,6 +4,7 @@ import android.support.annotation.VisibleForTesting
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
@@ -41,7 +42,7 @@ class CoinifyVerifyEmailPresenter @Inject constructor(
     private var verifiedEmailAddress: String? = null
 
     override fun onViewReady() {
-        settingsDataManager.fetchSettings()
+        compositeDisposable += settingsDataManager.fetchSettings()
             .delay(300, TimeUnit.MILLISECONDS, Schedulers.computation())
             .applySchedulers()
             .addToCompositeDisposable(this)
@@ -66,7 +67,7 @@ class CoinifyVerifyEmailPresenter @Inject constructor(
     }
 
     private fun resendVerificationLink(emailAddress: String) {
-        settingsDataManager.updateEmail(emailAddress)
+        compositeDisposable += settingsDataManager.updateEmail(emailAddress)
             .applySchedulers()
             .addToCompositeDisposable(this)
             .subscribeBy(
@@ -79,7 +80,7 @@ class CoinifyVerifyEmailPresenter @Inject constructor(
     }
 
     private fun pollForEmailVerified() {
-        Observable.interval(10, TimeUnit.SECONDS, Schedulers.io())
+        compositeDisposable += Observable.interval(10, TimeUnit.SECONDS, Schedulers.io())
             .flatMap { settingsDataManager.fetchSettings() }
             .applySchedulers()
             .addToCompositeDisposable(this)

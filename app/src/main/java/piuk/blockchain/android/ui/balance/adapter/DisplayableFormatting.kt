@@ -35,8 +35,8 @@ private fun transferredFormatting(tx: Displayable) =
         ),
         directionColour = getColorForConfirmations(
             tx,
-            R.color.product_gray_transferred_50,
-            R.color.product_gray_transferred
+            R.color.product_grey_transferred_50,
+            R.color.product_grey_transferred
         )
     )
 

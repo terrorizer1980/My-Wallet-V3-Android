@@ -32,18 +32,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.Spinner
 import com.blockchain.annotations.CommonCode
 import com.blockchain.balance.errorIcon
 import com.blockchain.koin.injectActivity
 import com.blockchain.serialization.JsonSerializableAccount
-import com.blockchain.sunriver.ui.MemoEditDialog
 import com.blockchain.sunriver.ui.MinBalanceExplanationDialog
 import com.blockchain.transactions.Memo
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
-import com.blockchain.ui.dialoglinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import com.blockchain.ui.password.SecondPasswordHandler
+import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionGrantedResponse
@@ -51,6 +53,7 @@ import com.karumi.dexter.listener.single.BasePermissionListener
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoCurrency.Companion.MULTI_WALLET
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.compareTo
@@ -73,6 +76,8 @@ import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
 import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity
+import piuk.blockchain.android.ui.send.external.MEMO_ID_TYPE
+import piuk.blockchain.android.ui.send.external.MEMO_TEXT_TYPE
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import piuk.blockchain.android.ui.send.external.SendPresenter
 import piuk.blockchain.android.ui.zxing.CaptureActivity
@@ -86,12 +91,12 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
+import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
-import piuk.blockchain.androidcoreui.utils.extensions.visible
-import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.toast
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -101,7 +106,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     NumericKeyboardCallback {
 
     private val appUtil: AppUtil by inject()
-
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
     private val currencyState: CurrencyState by inject()
@@ -112,6 +116,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     private var transactionSuccessDialog: AlertDialog? = null
 
     private var handlingActivityResult = false
+    private var pitEnabled = false
+    private var pitAddressState: PitAddressFieldState = PitAddressFieldState.CLEARED
 
     private val dialogHandler = Handler()
     private val dialogRunnable = Runnable {
@@ -119,6 +125,20 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             if (isShowing && activity != null && !activity!!.isFinishing) {
                 dismiss()
             }
+        }
+    }
+
+    private val onPitClickListener = View.OnClickListener {
+        if (pitAddressState == PitAddressFieldState.CLEARED) {
+            pitAddressState = PitAddressFieldState.FILLED
+            pitAddress.setImageResource(R.drawable.vector_dismiss_pit_address)
+            presenter.onPitAddressSelected()
+            toContainer.toAddressEditTextView.isEnabled = false
+        } else {
+            pitAddressState = PitAddressFieldState.CLEARED
+            pitAddress.setImageResource(R.drawable.vector_pit_send_address)
+            presenter.onPitAddressCleared()
+            toContainer.toAddressEditTextView.isEnabled = true
         }
     }
 
@@ -143,11 +163,11 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
             with(activity as MainActivity) {
                 setOnTouchOutsideViewListener(currency_header,
-                object : OnTouchOutsideViewListener {
-                    override fun onTouchOutside(view: View, event: MotionEvent) {
-                        currency_header.close()
-                    }
-                })
+                    object : OnTouchOutsideViewListener {
+                        override fun onTouchOutside(view: View, event: MotionEvent) {
+                            currency_header.close()
+                        }
+                    })
             }
         }
 
@@ -161,6 +181,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         setupCryptoTextField()
         setupFiatTextField()
         setupFeesView()
+        setUpMemoEdittext()
+        setUpSpinner()
 
         buttonContinue.setOnClickListener {
             if (ConnectivityStatus.hasConnectivity(activity)) {
@@ -169,6 +191,9 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                 showSnackbar(R.string.check_connectivity_exit, Snackbar.LENGTH_LONG)
             }
         }
+
+        pitAddress.setOnClickListener(onPitClickListener)
+
         max.setOnClickListener { presenter.onSpendMaxClicked() }
 
         info_link.setOnClickListener { MinBalanceExplanationDialog().show(fragmentManager, "Dialog") }
@@ -215,6 +240,14 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
+    override fun updateRequiredLabelVisibility(isVisible: Boolean) {
+        if (isVisible) {
+            required_label?.visible()
+        } else {
+            required_label?.gone()
+        }
+    }
+
     private fun setCustomKeypad() {
         keyboard.setCallback(this)
         keyboard.setDecimalSeparator(presenter.getDefaultDecimalSeparator())
@@ -233,6 +266,59 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     private fun closeKeypad() {
         keyboard.setNumpadVisibility(View.GONE)
+    }
+
+    private val memoEditText: EditText?
+        get() = memo_text_edit
+
+    private fun setUpSpinner() {
+        memo_type_spinner.apply {
+            setupOptions(0)
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(parent: AdapterView<*>, spinner: View, pos: Int, id: Long) {
+                    val newMemoType = if (pos == 0) MEMO_TEXT_TYPE else MEMO_ID_TYPE
+                    presenter.onMemoTypeChanged(newMemoType)
+                    if (pos == 0)
+                        memoEditText?.inputType = InputType.TYPE_CLASS_TEXT
+                    else
+                        memoEditText?.inputType = InputType.TYPE_CLASS_NUMBER
+                    post {
+                        if (memoEditText?.hasFocus() == true) {
+                            memoEditText?.requestFocus()
+                            memoEditText?.setText("")
+                        }
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {
+                }
+            }
+            setSelection(0)
+        }
+    }
+
+    private fun Spinner.setupOptions(selectedIndex: Int) {
+        ArrayAdapter.createFromResource(
+            requireContext(),
+            arrayToDisplay(selectedIndex),
+            piuk.blockchain.androidcoreui.R.layout.dialog_edit_memo_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            this.adapter = adapter
+        }
+    }
+
+    private fun arrayToDisplay(selectedIndex: Int): Int {
+        val manualArraySize =
+            view?.resources?.getStringArray(piuk.blockchain.androidcoreui.R.array.xlm_memo_types_manual) ?: return 0
+        return if (selectedIndex < manualArraySize.size) {
+            piuk.blockchain.androidcoreui.R.array.xlm_memo_types_manual
+        } else {
+            piuk.blockchain.androidcoreui.R.array.xlm_memo_types_all
+        }
     }
 
     private fun isKeyboardVisible(): Boolean = keyboard.isVisible
@@ -281,8 +367,9 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     private fun setupToolbar() {
         val supportActionBar = (activity as AppCompatActivity).supportActionBar
         if (supportActionBar != null) {
+
             (activity as ToolBarActivity).setupToolbar(
-                supportActionBar, R.string.send_bitcoin
+                supportActionBar, R.string.send
             )
         } else {
             finishPage()
@@ -306,7 +393,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         handlingActivityResult = true
 
         if (resultCode != Activity.RESULT_OK) return
-
+        resetPitAddressState()
         when (requestCode) {
             MainActivity.SCAN_URI -> presenter.handleURIScan(data?.getStringExtra(CaptureActivity.SCAN_RESULT))
             SCAN_PRIVX -> presenter.handlePrivxScan(data?.getStringExtra(CaptureActivity.SCAN_RESULT))
@@ -314,9 +401,15 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             REQUEST_CODE_BTC_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
             REQUEST_CODE_BCH_SENDING -> presenter.selectSendingAccount(unpackAccountResult(data))
             REQUEST_CODE_BCH_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
-            REQUEST_CODE_MEMO -> presenter.onMemoChange(MemoEditDialog.toMemo(data))
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    private fun resetPitAddressState() {
+        pitAddressState = PitAddressFieldState.CLEARED
+        pitAddress.setImageResource(R.drawable.vector_pit_send_address)
+        presenter.onPitAddressCleared()
+        toContainer.toAddressEditTextView.isEnabled = true
     }
 
     private fun unpackAccountResult(intent: Intent?): JsonSerializableAccount? =
@@ -349,29 +442,12 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                     presenter.clearReceivingObject()
                 }
             }
-            .skip(1)
             .map { it.toString() }
             .subscribe(
                 { presenter.onAddressTextChange(it) },
                 { Timber.e(it) })
 
-        toContainer.toArrow.setOnClickListener {
-            val currency = currencyState.cryptoCurrency
-            AccountChooserActivity.startForResult(
-                this,
-                if (currency == CryptoCurrency.BTC) {
-                    AccountMode.Bitcoin
-                } else {
-                    AccountMode.BitcoinCash
-                },
-                if (currency == CryptoCurrency.BTC) {
-                    REQUEST_CODE_BTC_RECEIVING
-                } else {
-                    REQUEST_CODE_BCH_RECEIVING
-                },
-                getString(R.string.to)
-            )
-        }
+        toContainer.toArrow.setOnClickListener { startToAccountChooser() }
     }
 
     private fun disableCryptoTextChangeListener() {
@@ -447,26 +523,37 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     }
 
     private fun handleIncomingArguments() {
-        presenter.onCurrencySelected(currencyState.cryptoCurrency)
+        if (!handleIncomingScan()) {
+            presenter.onCurrencySelected(currencyState.cryptoCurrency)
+        }
+    }
+
+    private fun handleIncomingScan(): Boolean {
         if (arguments != null) {
             val scanData = arguments!!.getString(ARGUMENT_SCAN_DATA)
             if (scanData != null) {
                 handlingActivityResult = true
                 presenter.handleURIScan(scanData)
+                return true
             }
         }
+        return false
     }
 
     private fun setupSendingView() {
-        fromContainer.fromAddressTextView.setOnClickListener { startAccountChooser() }
-        fromContainer.fromArrowImage.setOnClickListener { startAccountChooser() }
+        fromContainer.fromAddressTextView.setOnClickListener { startFromAccountChooser() }
+        fromContainer.fromArrowImage.setOnClickListener { startFromAccountChooser() }
     }
 
     override fun updateSendingAddress(label: String) {
         fromContainer.fromAddressTextView.text = label
     }
 
-    override fun updateReceivingHintAndAccountDropDowns(currency: CryptoCurrency, listSize: Int) {
+    override fun updateReceivingHintAndAccountDropDowns(
+        currency: CryptoCurrency,
+        listSize: Int,
+        pitAddressAvailable: Boolean
+    ) {
         if (listSize == 1) {
             hideReceivingDropdown()
             hideSendingFieldDropdown()
@@ -474,6 +561,13 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             showSendingFieldDropdown()
             showReceivingDropdown()
         }
+
+        if (pitAddressAvailable && pitEnabled) {
+            showPitAddressIcon()
+        } else {
+            hidePitAddressIcon()
+        }
+
         val hint: Int = if (listSize > 1) {
             when (currencyState.cryptoCurrency) {
                 CryptoCurrency.BTC -> R.string.to_field_helper
@@ -494,22 +588,38 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         toContainer.toAddressEditTextView.setHint(hint)
     }
 
-    private fun startAccountChooser() {
+    private fun startFromAccountChooser() {
         val currency = currencyState.cryptoCurrency
-        AccountChooserActivity.startForResult(
-            this,
-            if (currency == CryptoCurrency.BTC) {
-                AccountMode.Bitcoin
-            } else {
-                AccountMode.BitcoinCashSend
-            },
-            if (currency == CryptoCurrency.BTC) {
-                REQUEST_CODE_BTC_SENDING
-            } else {
-                REQUEST_CODE_BCH_SENDING
-            },
-            getString(R.string.from)
-        )
+
+        if (currency.hasFeature(MULTI_WALLET)) {
+            AccountChooserActivity.startForResult(
+                this,
+                AccountMode.CryptoAccountMode(cryptoCurrency = currency, isSend = true),
+                if (currency == CryptoCurrency.BTC) {
+                    REQUEST_CODE_BTC_SENDING
+                } else {
+                    REQUEST_CODE_BCH_SENDING
+                },
+                getString(R.string.from)
+            )
+        }
+    }
+
+    private fun startToAccountChooser() {
+        val currency = currencyState.cryptoCurrency
+
+        if (currency.hasFeature(MULTI_WALLET)) {
+            AccountChooserActivity.startForResult(
+                this,
+                AccountMode.CryptoAccountMode(cryptoCurrency = currency, isSend = false),
+                if (currency == CryptoCurrency.BTC) {
+                    REQUEST_CODE_BTC_RECEIVING
+                } else {
+                    REQUEST_CODE_BCH_RECEIVING
+                },
+                getString(R.string.to)
+            )
+        }
     }
 
     fun onChangeFeeClicked() {
@@ -597,22 +707,34 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     private fun showSendingFieldDropdown() {
         fromContainer.fromArrowImage.visible()
+        fromContainer.fromArrowImage.isClickable = true
         fromContainer.fromAddressTextView.isClickable = true
     }
 
     private fun hideSendingFieldDropdown() {
         fromContainer.fromArrowImage.gone()
+        fromContainer.fromArrowImage.isClickable = false
         fromContainer.fromAddressTextView.isClickable = false
     }
 
     private fun showReceivingDropdown() {
         toContainer.toArrow.visible()
+        toContainer.toArrow.isClickable = true
         toContainer.toAddressEditTextView.isClickable = true
     }
 
     private fun hideReceivingDropdown() {
         toContainer.toArrow.gone()
+        toContainer.toArrow.isClickable = false
         toContainer.toAddressEditTextView.isClickable = false
+    }
+
+    private fun hidePitAddressIcon() {
+        toContainer.pitAddress.gone()
+    }
+
+    private fun showPitAddressIcon() {
+        toContainer.pitAddress.visible()
     }
 
     override fun updateReceivingAddress(address: String) {
@@ -660,6 +782,14 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         textviewFeeAbsolute.setOnClickListener { spinnerPriority.performClick() }
         textviewFeeType.setText(R.string.fee_options_regular)
         textviewFeeTime.setText(R.string.fee_options_regular_time)
+    }
+
+    private fun setUpMemoEdittext() {
+        memo_text_edit.addTextChangedListener(object : AfterTextChangedWatcher() {
+            override fun afterTextChanged(p0: Editable?) {
+                presenter.onMemoChange(p0?.toString() ?: return)
+            }
+        })
     }
 
     override fun enableFeeDropdown() {
@@ -711,17 +841,11 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
 
     override fun showMemo() {
-        memo.visible()
-        memo.setOnClickListener {
-            MemoEditDialog.create(lastMemo).also { dialog ->
-                dialog.setTargetFragment(this, REQUEST_CODE_MEMO)
-                dialog.show(fragmentManager, "Dialog")
-            }
-        }
+        memo_container.visible()
     }
 
     override fun hideMemo() {
-        memo.gone()
+        memo_container.gone()
     }
 
     override fun displayMemo(usersMemo: Memo) {
@@ -1021,7 +1145,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         edittextCustomFee.textChanges()
             .skip(1)
             .map { it.toString() }
-            .doOnNext { buttonContinue.isEnabled = !it.isEmpty() && it != "0" }
+            .doOnNext { buttonContinue.isEnabled = it.isNotEmpty() && it != "0" }
             .filter { !it.isEmpty() }
             .map { it.toLong() }
             .onErrorReturnItem(0L)
@@ -1120,7 +1244,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     companion object {
         const val SCAN_PRIVX = 2011
         const val ARGUMENT_SCAN_DATA = "scan_data"
-        private const val ARGUMENT_SELECTED_ACCOUNT_POSITION = "selected_account_position"
 
         private const val REQUEST_CODE_BTC_RECEIVING = 911
         private const val REQUEST_CODE_BTC_SENDING = 912
@@ -1128,13 +1251,19 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         private const val REQUEST_CODE_BCH_SENDING = 914
         private const val REQUEST_CODE_MEMO = 915
 
-        fun newInstance(scanData: String?, selectedAccountPosition: Int): SendFragment {
+        fun newInstance(scanData: String?): SendFragment {
             val fragment = SendFragment()
             fragment.arguments = Bundle().apply {
                 putString(ARGUMENT_SCAN_DATA, scanData)
-                putInt(ARGUMENT_SELECTED_ACCOUNT_POSITION, selectedAccountPosition)
             }
             return fragment
+        }
+    }
+
+    override fun isPitEnabled(enabled: Boolean) {
+        pitEnabled = enabled
+        if (!pitEnabled) {
+            pitAddress.gone()
         }
     }
 }
@@ -1161,3 +1290,7 @@ private fun Memo?.describeType(resources: Resources) =
             else -> null
         }
     }
+
+enum class PitAddressFieldState {
+    FILLED, CLEARED
+}

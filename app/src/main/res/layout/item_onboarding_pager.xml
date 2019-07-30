@@ -40,7 +40,6 @@
                         style="@style/TextAppearance.AppCompat.Subhead"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/montserrat"
                         android:text="@string/onboarding_current_price"
                         android:textColor="@color/primary_blue_accent" />
 
@@ -49,7 +48,6 @@
                         style="@style/TextAppearance.AppCompat.Subhead"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/montserrat"
                         android:textColor="@color/primary_blue_accent"
                         tools:text="1 BTC = $1 240.13" />
 
@@ -58,10 +56,9 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/montserrat"
                         android:paddingTop="4dp"
                         android:text="@string/onboarding_buy_content"
-                        android:textColor="@color/primary_gray_dark" />
+                        android:textColor="@color/primary_grey_dark" />
                 </LinearLayout>
 
                 <TextView
@@ -72,7 +69,6 @@
                     android:layout_below="@+id/layout_main"
                     android:layout_toEndOf="@+id/iv_icon"
                     android:layout_toRightOf="@+id/iv_icon"
-                    android:fontFamily="@font/montserrat"
                     android:gravity="center_horizontal|bottom"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"

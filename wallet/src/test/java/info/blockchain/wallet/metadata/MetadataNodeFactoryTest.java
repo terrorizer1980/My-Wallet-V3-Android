@@ -81,11 +81,6 @@ public final class MetadataNodeFactoryTest {
             }
 
             @Override
-            public String getDeviceId() {
-                return "DeviceId";
-            }
-
-            @Override
             public String getAppVersion() {
                 return null;
             }

@@ -2,6 +2,9 @@ package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
 import com.blockchain.fees.FeeType
+import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.State
+import com.blockchain.nabu.NabuToken
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.XlmFeesFetcher
@@ -22,15 +25,20 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.withLatestFrom
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.account.PitAccount
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
+import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
+import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
+import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -39,15 +47,56 @@ class XlmSendStrategy(
     private val xlmDataManager: XlmDataManager,
     private val xlmFeesFetcher: XlmFeesFetcher,
     private val xlmTransactionSender: TransactionSender,
+    private val walletOptionsDataManager: WalletOptionsDataManager,
     private val fiatExchangeRates: FiatExchangeRates,
-    private val sendFundsResultLocalizer: SendFundsResultLocalizer
+    private val sendFundsResultLocalizer: SendFundsResultLocalizer,
+    private val stringUtils: StringUtils,
+    private val nabuToken: NabuToken,
+    private val nabuDataManager: NabuDataManager
 ) : SendStrategy<SendView>(currencyState) {
+
+    private var pitAccount: PitAccount? = null
+
+    override fun onPitAddressSelected() {
+        pitAccount?.let {
+            view.updateReceivingAddress(it.label)
+            addressSubject.onNext(it.address)
+            addressToLabel.onNext(it.label)
+        }
+    }
+
+    override fun onPitAddressCleared() {
+        addressSubject.onNext("")
+        view.updateReceivingAddress("")
+        addressToLabel.onNext("")
+    }
 
     private val currency: CryptoCurrency by lazy { currencyState.cryptoCurrency }
     private var addressSubject = BehaviorSubject.create<String>()
+    private var addressToLabel = BehaviorSubject.createDefault("")
     private var memoSubject = BehaviorSubject.create<Memo>().apply {
         onNext(Memo.None)
     }
+
+    private val memoValid: Observable<Boolean>
+        get() = Observables.combineLatest(memoSubject, memoIsRequired) { memo, memoIsRequired ->
+            if (!memoIsRequired) {
+                return@combineLatest true
+            }
+            if (memo == Memo.None) {
+                false
+            } else isValid(memo)
+        }
+
+    private fun isValid(memo: Memo): Boolean {
+        return when {
+            memo.type == "text" -> memo.value.length in 1..28
+            memo.type == "id" -> memo.value.toLongOrNull() != null
+            else -> false
+        }
+    }
+
+    private var memoIsRequired = BehaviorSubject.createDefault<Boolean>(false)
     private var cryptoTextSubject = BehaviorSubject.create<CryptoValue>()
     private var continueClick = PublishSubject.create<Unit>()
     private var submitPaymentClick = PublishSubject.create<Unit>()
@@ -57,17 +106,18 @@ class XlmSendStrategy(
             xlmDataManager.defaultAccount().toObservable(),
             cryptoTextSubject,
             addressSubject,
+            addressToLabel,
             xlmFeesFetcher.operationFee(FeeType.Regular).toObservable(),
             memoSubject
-        ) {
-            accountReference, value, address, fee, memo ->
-                SendDetails(
-                    from = accountReference,
-                    toAddress = address,
-                    value = value,
-                    fee = fee,
-                    memo = memo
-                )
+        ) { accountReference, value, address, addressToLabel, fee, memo ->
+            SendDetails(
+                from = accountReference,
+                toAddress = address,
+                toLabel = addressToLabel,
+                value = value,
+                fee = fee,
+                memo = memo
+            )
         }
 
     private val confirmationDetails: Observable<SendConfirmationDetails> =
@@ -188,6 +238,13 @@ class XlmSendStrategy(
         view.displayMemo(memo)
     }
 
+    override fun memoRequired(): Observable<Boolean> =
+        addressSubject.map {
+            walletOptionsDataManager.isXlmAddressExchange(it)
+        }.doOnNext {
+            memoIsRequired.onNext(it)
+        }
+
     override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) {}
 
     override fun onNoSecondPassword() {}
@@ -199,6 +256,7 @@ class XlmSendStrategy(
     @SuppressLint("CheckResult")
     override fun onViewReady() {
         view.setSendButtonEnabled(false)
+        resetAccountList()
 
         confirmationDetails
             .addToCompositeDisposable(this)
@@ -207,15 +265,26 @@ class XlmSendStrategy(
                 view.showPaymentDetails(details)
             }
 
+        memoIsRequired
+            .addToCompositeDisposable(this)
+            .subscribe {
+                if (it) {
+                    view?.hideInfoLink()
+                } else {
+                    view?.showInfoLink()
+                }
+            }
+
         allSendRequests
             .debounce(200, TimeUnit.MILLISECONDS)
+            .withLatestFrom(memoValid)
             .addToCompositeDisposable(this)
-            .flatMapSingle { sendDetails ->
+            .flatMapSingle { (sendDetails, validMemo) ->
                 xlmTransactionSender.dryRunSendFunds(sendDetails)
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSuccess {
-                        view.setSendButtonEnabled(it.success)
-                        if (!it.success && !sendDetails.toAddress.isEmpty()) {
+                        view.setSendButtonEnabled(it.success && validMemo)
+                        if (!it.success && sendDetails.toAddress.isNotEmpty()) {
                             autoClickAmount = it.errorValue
                             view.updateWarning(sendFundsResultLocalizer.localize(it))
                         } else {
@@ -265,5 +334,20 @@ class XlmSendStrategy(
             }
             .subscribeBy(onError =
             { Timber.e(it) })
+    }
+
+    private fun resetAccountList() {
+        compositeDisposable += nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.XLM.symbol)
+        }.applySchedulers().doOnSubscribe {
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
+        }.subscribeBy(onError = {
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
+        }) {
+            pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
+                CryptoCurrency.XLM.symbol), it.address.split(":")[0])
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1,
+                it.state == State.ACTIVE && it.address.isNotEmpty())
+        }
     }
 }

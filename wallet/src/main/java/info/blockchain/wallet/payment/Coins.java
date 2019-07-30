@@ -13,7 +13,10 @@ import org.spongycastle.util.encoders.Hex;
 
 import retrofit2.Call;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,7 +51,21 @@ class Coins {
      */
     public static Pair<BigInteger, BigInteger> getMaximumAvailable(UnspentOutputs coins,
                                                                    BigInteger feePerKb,
-                                                                   boolean addReplayProtection) {
+                                                                   boolean addReplayProtection,
+                                                                   boolean useNewCoinSelection) {
+        if (useNewCoinSelection) {
+            CoinSortingMethod coinSortingMethod = null;
+
+            if (addReplayProtection) {
+                coinSortingMethod = new ReplayProtection(getPlaceholderDustInput());
+            }
+
+            SpendableUnspentOutputs selection =
+                    new CoinSelection(coins.getUnspentOutputs(), feePerKbToFeePerByte(feePerKb))
+                            .selectAll(coinSortingMethod);
+
+            return Pair.of(selection.getSpendableBalance(), selection.getAbsoluteFee());
+        }
 
         BigInteger sweepBalance = BigInteger.ZERO;
 
@@ -144,7 +161,20 @@ class Coins {
     public static SpendableUnspentOutputs getMinimumCoinsForPayment(UnspentOutputs coins,
                                                                     BigInteger paymentAmount,
                                                                     BigInteger feePerKb,
-                                                                    boolean addReplayProtection) {
+                                                                    boolean addReplayProtection,
+                                                                    boolean useNewCoinSelection) {
+        if (useNewCoinSelection) {
+            CoinSortingMethod coinSortingMethod;
+
+            if (addReplayProtection) {
+                coinSortingMethod = new ReplayProtection(getPlaceholderDustInput());
+            } else {
+                coinSortingMethod = DescentDraw.INSTANCE;
+            }
+
+            return new CoinSelection(coins.getUnspentOutputs(), feePerKbToFeePerByte(feePerKb))
+                    .select(paymentAmount, coinSortingMethod);
+        }
 
         log.info("Select the minimum number of outputs necessary for payment");
         List<UnspentOutput> spendWorthyList = new ArrayList<>();
@@ -285,5 +315,11 @@ class Coins {
         dust.setValue(Payment.DUST);
         dust.setForceInclude(true);
         return dust;
+    }
+
+    private static BigInteger feePerKbToFeePerByte(BigInteger feePerKb) {
+        return new BigDecimal(feePerKb)
+                .divide(BigDecimal.valueOf(1000L), 0, RoundingMode.CEILING)
+                .toBigIntegerExact();
     }
 }

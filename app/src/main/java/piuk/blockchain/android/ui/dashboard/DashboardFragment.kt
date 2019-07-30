@@ -14,7 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.morph.ui.homebrew.exchange.host.HomebrewNavHostActivity
+import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
@@ -29,11 +29,7 @@ import piuk.blockchain.android.ui.dashboard.adapter.DashboardDelegateAdapter
 import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.MainActivity.Companion.ACCOUNT_EDIT
-import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_EXCHANGE_KYC
-import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_RESUBMIT_KYC
-import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_SUNRIVER_KYC
 import piuk.blockchain.android.ui.home.MainActivity.Companion.SETTINGS_EDIT
-import piuk.blockchain.android.ui.home.MainActivity.Companion.ACTION_BUY_SELL_KYC
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
@@ -46,12 +42,8 @@ import java.util.Locale
 class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     DashboardView {
 
-    override fun startKycFlowWithNavigator(campaignType: CampaignType) {
-        navigator().gotoKyc(campaignType)
-    }
-
     override fun goToExchange(currency: CryptoCurrency?, defCurrency: String) {
-        (activity as?Context)?.let {
+        (activity as? Context)?.let {
             HomebrewNavHostActivity.start(it, defCurrency, currency)
         }
     }
@@ -177,14 +169,11 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     }
 
     override fun startKycFlow(campaignType: CampaignType) {
-        broadcastIntent(
-            action = when (campaignType) {
-                CampaignType.Swap -> ACTION_EXCHANGE_KYC
-                CampaignType.Sunriver -> ACTION_SUNRIVER_KYC
-                CampaignType.Resubmission -> ACTION_RESUBMIT_KYC
-                CampaignType.BuySell -> ACTION_BUY_SELL_KYC
-            }
-        )
+        navigator().launchKyc(campaignType)
+    }
+
+    override fun startPitLinkingFlow(linkId: String) {
+        navigator().launchThePitLinking(linkId)
     }
 
     override fun startWebsocketService() {

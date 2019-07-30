@@ -170,7 +170,7 @@ class CoinifyTradeCompleteListenerTest {
         val transferOut: Transfer = mock()
         whenever(coinifyTrade.transferOut).thenReturn(transferOut)
         val txHash = "TX_HASH"
-        val details = BlockchainDetails("", EventData(txHash, ""))
+        val details = BlockchainDetails("", null, EventData(txHash, ""))
         whenever(transferOut.details).thenReturn(details)
         whenever(coinifyDataManager.getTrades(token)).thenReturn(Observable.just(coinifyTrade))
         whenever(metadataManager.saveToMetadata(any(), any())).thenReturn(Completable.complete())

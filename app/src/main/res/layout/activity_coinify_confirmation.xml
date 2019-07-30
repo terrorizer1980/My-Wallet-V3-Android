@@ -150,7 +150,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/montserrat_semi_bold"
+                android:fontFamily="@font/inter_medium"
                 android:text="@string/buy_sell_confirmation_total_cost"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_view_payment_fee_title" />
@@ -161,7 +161,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/montserrat_semi_bold"
+                android:fontFamily="@font/inter_medium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_view_payment_fee_detail"
                 tools:text="206.00 GBP" />
@@ -189,7 +189,7 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="8dp"
                 android:text="@string/buy_sell_confirmation_bank_rate_disclaimer"
-                android:textColor="@color/primary_gray_light"
+                android:textColor="@color/primary_grey_light"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toTopOf="@id/text_view_time_remaining"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -209,34 +209,35 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="1.0"
+                tools:visibility="gone" />
 
             <Button
                 android:id="@+id/button_card"
                 style="@style/ButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="32dp"
+                android:layout_marginStart="32dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginRight="@dimen/buy_sell_payment_button_margin"
+                android:layout_marginEnd="@dimen/buy_sell_payment_button_margin"
                 android:layout_marginBottom="16dp"
                 android:text="@string/buy_sell_confirmation_card"
                 android:textSize="@dimen/buy_sell_payment_button_text_size"
                 android:theme="@style/ButtonBlueTheme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/button_bank"
+                app:layout_constraintHorizontal_chainStyle="spread"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintVertical_bias="1.0"
-                tools:visibility="gone" />
+                app:layout_goneMarginEnd="32dp" />
 
             <Button
                 android:id="@+id/button_bank"
                 style="@style/ButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/buy_sell_payment_button_margin"
+                android:layout_marginStart="@dimen/buy_sell_payment_button_margin"
                 android:layout_marginTop="16dp"
-                android:layout_marginRight="32dp"
+                android:layout_marginEnd="32dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/buy_sell_confirmation_bank"
                 android:textSize="@dimen/buy_sell_payment_button_text_size"
@@ -244,7 +245,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/button_card"
-                app:layout_constraintVertical_bias="1.0"
                 tools:visibility="gone" />
 
         </android.support.constraint.ConstraintLayout>

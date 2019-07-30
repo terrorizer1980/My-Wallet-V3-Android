@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.constraint.ConstraintSet
@@ -20,17 +21,23 @@ import android.view.animation.AlphaAnimation
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
+import com.blockchain.ui.chooser.AccountChooserActivity
+import com.blockchain.ui.chooser.AccountMode
+import com.blockchain.ui.urllinks.URL_SUPPORTED_COUNTRIES
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
+import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.no_sell_available_layout.*
 import kotlinx.android.synthetic.main.toolbar_general.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.confirmation.buy.CoinifyBuyConfirmationActivity
 import piuk.blockchain.android.ui.buysell.confirmation.sell.CoinifySellConfirmationActivity.Companion.REQUEST_CODE_CONFIRM_MAKE_SELL_PAYMENT
 import piuk.blockchain.android.ui.buysell.createorder.models.BuyConfirmationDisplayModel
@@ -38,8 +45,6 @@ import piuk.blockchain.android.ui.buysell.createorder.models.OrderType
 import piuk.blockchain.android.ui.buysell.createorder.models.SellConfirmationDisplayModel
 import piuk.blockchain.android.ui.buysell.payment.bank.accountoverview.BankAccountSelectionActivity
 import piuk.blockchain.android.ui.buysell.payment.bank.addaccount.AddBankAccountActivity
-import com.blockchain.ui.chooser.AccountChooserActivity
-import com.blockchain.ui.chooser.AccountMode
 import piuk.blockchain.android.util.extensions.MemorySafeSubscription
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.currency.toSafeDouble
@@ -54,6 +59,7 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.disableSoftKeyboard
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import piuk.blockchain.androidcoreui.utils.extensions.gone
+import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.invisibleIf
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -63,7 +69,6 @@ import timber.log.Timber
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_buy_sell_build_order.button_review_order as buttonReviewOrder
 import kotlinx.android.synthetic.main.activity_buy_sell_build_order.buysell_constraint_layout as constraintLayout
 import kotlinx.android.synthetic.main.activity_buy_sell_build_order.buysell_keyboard as keyboard
@@ -83,8 +88,12 @@ class BuySellBuildOrderActivity :
     MemorySafeSubscription,
     NumericKeyboardCallback {
 
-    @Inject
-    lateinit var presenter: BuySellBuildOrderPresenter
+    override fun isCountrySupported(supported: Boolean) {
+        scrollView.goneIf(!supported)
+        no_sell_available_container.goneIf(supported)
+    }
+
+    private val presenter: BuySellBuildOrderPresenter by inject()
     override val locale: Locale = Locale.getDefault()
     override val compositeDisposable = CompositeDisposable()
     private val orderTypeInitializer =
@@ -104,16 +113,12 @@ class BuySellBuildOrderActivity :
     }
     private var hasShownFatalError = false
 
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buy_sell_build_order)
         require(intent.hasExtra(EXTRA_ORDER_TYPE)) {
             "You must pass an order type to the Activity. " +
-                "Please start this Activity via the provided static factory method."
+                    "Please start this Activity via the provided static factory method."
         }
 
         val (title, label) = when (orderType) {
@@ -148,8 +153,12 @@ class BuySellBuildOrderActivity :
             .subscribeBy(onNext = {
                 closeKeyPad()
                 presenter.onConfirmClicked()
-            })
+            }).addTo(compositeDisposable)
 
+        scrollView.gone()
+        button_learn_more.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(URL_SUPPORTED_COUNTRIES)))
+        }
         onViewReady()
     }
 
@@ -162,12 +171,19 @@ class BuySellBuildOrderActivity :
         clearEditTexts()
     }
 
-    override fun startOrderConfirmation(orderType: OrderType, quote: BuyConfirmationDisplayModel) {
+    override fun startOrderConfirmation(
+        orderType: OrderType,
+        quote: BuyConfirmationDisplayModel,
+        cardAvailable: Boolean,
+        bankAvailable: Boolean
+    ) {
         CoinifyBuyConfirmationActivity.startForResult(
             this,
             CoinifyBuyConfirmationActivity.REQUEST_CODE_CONFIRM_BUY_ORDER,
             orderType,
-            quote
+            quote,
+            cardAvailable && orderType == OrderType.Buy,
+            bankAvailable && orderType == OrderType.Buy
         )
     }
 
@@ -290,7 +306,7 @@ class BuySellBuildOrderActivity :
         val spannable = getFormattedLimit(status)
 
         spannable.setSpan(
-            ForegroundColorSpan(getResolvedColor(R.color.primary_gray_medium)),
+            ForegroundColorSpan(getResolvedColor(R.color.primary_grey_medium)),
             0,
             start,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -304,7 +320,7 @@ class BuySellBuildOrderActivity :
         )
 
         spannable.setSpan(
-            ForegroundColorSpan(getResolvedColor(R.color.primary_gray_medium)),
+            ForegroundColorSpan(getResolvedColor(R.color.primary_grey_medium)),
             end,
             text.length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -354,7 +370,7 @@ class BuySellBuildOrderActivity :
             it.setOnClickListener {
                 AccountChooserActivity.startForResult(
                     this,
-                    AccountMode.BitcoinHdOnly,
+                    AccountMode.CryptoAccountMode(cryptoCurrency = CryptoCurrency.BCH, hdOnly = true),
                     REQUEST_CODE_CHOOSE_ACCOUNT,
                     when (orderType) {
                         OrderType.Buy, OrderType.BuyCard, OrderType.BuyBank -> getString(R.string.from)

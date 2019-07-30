@@ -26,16 +26,17 @@ import java.math.BigInteger
 
 private val basePerOperationFee = CryptoValue.lumensFromStroop(100.toBigInteger())
 
-internal class HorizonProxy(url: String) {
+internal class HorizonProxy {
 
-    private val server = Server(url)
+    private var server = Server("")
 
-    init {
+    fun update(url: String) {
         if (url.contains("test")) {
             Network.useTestNetwork()
         } else {
             Network.usePublicNetwork()
         }
+        server = Server(url)
     }
 
     fun fees(): CryptoValue? = try {

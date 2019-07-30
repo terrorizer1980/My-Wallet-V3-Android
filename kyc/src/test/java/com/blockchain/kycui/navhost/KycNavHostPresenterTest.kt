@@ -114,7 +114,7 @@ class KycNavHostPresenterTest {
                     NabuUser(
                         firstName = "FIRST_NAME",
                         lastName = "LAST_NAME",
-                        email = null,
+                        email = "",
                         emailVerified = false,
                         dob = null,
                         mobile = null,
@@ -155,7 +155,7 @@ class KycNavHostPresenterTest {
                     NabuUser(
                         firstName = "FIRST_NAME",
                         lastName = "LAST_NAME",
-                        email = null,
+                        email = "",
                         emailVerified = false,
                         dob = null,
                         mobile = null,
@@ -195,7 +195,7 @@ class KycNavHostPresenterTest {
                     NabuUser(
                         firstName = "FIRST_NAME",
                         lastName = "LAST_NAME",
-                        email = null,
+                        email = "",
                         emailVerified = false,
                         dob = null,
                         mobile = null,
@@ -236,7 +236,7 @@ class KycNavHostPresenterTest {
                     NabuUser(
                         firstName = "FIRST_NAME",
                         lastName = "LAST_NAME",
-                        email = null,
+                        email = "",
                         emailVerified = false,
                         dob = null,
                         mobile = null,
@@ -271,7 +271,7 @@ class KycNavHostPresenterTest {
                     NabuUser(
                         firstName = "FIRST_NAME",
                         lastName = "LAST_NAME",
-                        email = null,
+                        email = "",
                         emailVerified = true,
                         dob = null,
                         mobile = null,
@@ -306,7 +306,7 @@ class KycNavHostPresenterTest {
                     NabuUser(
                         firstName = "FIRST_NAME",
                         lastName = "LAST_NAME",
-                        email = null,
+                        email = "",
                         emailVerified = true,
                         dob = null,
                         mobile = null,
@@ -342,7 +342,7 @@ class KycNavHostPresenterTest {
                     NabuUser(
                         firstName = "FIRST_NAME",
                         lastName = "LAST_NAME",
-                        email = null,
+                        email = "",
                         emailVerified = true,
                         dob = null,
                         mobile = null,
@@ -374,7 +374,7 @@ class KycNavHostPresenterTest {
         val nabuUser = NabuUser(
             firstName = "firstName",
             lastName = "lastName",
-            email = null,
+            email = "",
             emailVerified = false,
             dob = null,
             mobile = null,
@@ -407,7 +407,7 @@ class KycNavHostPresenterTest {
         val nabuUser = NabuUser(
             firstName = "firstName",
             lastName = "lastName",
-            email = null,
+            email = "",
             emailVerified = false,
             dob = null,
             mobile = "mobile",
@@ -438,7 +438,7 @@ class KycNavHostPresenterTest {
         val nabuUser = NabuUser(
             firstName = "firstName",
             lastName = "lastName",
-            email = null,
+            email = "",
             emailVerified = false,
             dob = null,
             mobile = "mobile",
@@ -470,7 +470,7 @@ class KycNavHostPresenterTest {
         val nabuUser = NabuUser(
             firstName = "firstName",
             lastName = "lastName",
-            email = null,
+            email = "",
             emailVerified = false,
             mobile = "mobile",
             dob = null,
@@ -500,7 +500,7 @@ class KycNavHostPresenterTest {
         val nabuUser = NabuUser(
             firstName = "firstName",
             lastName = "lastName",
-            email = null,
+            email = "",
             emailVerified = false,
             mobile = "mobile",
             dob = null,

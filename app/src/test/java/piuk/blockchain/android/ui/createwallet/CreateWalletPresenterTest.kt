@@ -15,7 +15,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.recover.RecoverFundsActivity
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -28,7 +28,7 @@ class CreateWalletPresenterTest {
     private var accessState: AccessState = mock()
     private var payloadDataManager: PayloadDataManager =
         mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
-    private var prefsUtil: PrefsUtil = mock()
+    private var prefsUtil: PersistentPrefs = mock()
     private var prngFixer: PrngFixer = mock()
 
     @Before
@@ -146,8 +146,8 @@ class CreateWalletPresenterTest {
         observer.assertNoErrors()
 
         verify(view).showProgressDialog(any())
-        verify(prefsUtil).setValue(PrefsUtil.KEY_EMAIL, email)
-        verify(prefsUtil).setValue(PrefsUtil.KEY_GUID, guid)
+        verify(prefsUtil).setValue(PersistentPrefs.KEY_EMAIL, email)
+        verify(prefsUtil).setValue(PersistentPrefs.KEY_WALLET_GUID, guid)
         verify(accessState).isNewlyCreated = true
         verify(appUtil).sharedKey = sharedKey
         verify(view).startPinEntryActivity()
@@ -180,9 +180,9 @@ class CreateWalletPresenterTest {
         observer.assertNoErrors()
 
         verify(view).showProgressDialog(any())
-        verify(prefsUtil).setValue(PrefsUtil.KEY_EMAIL, email)
-        verify(prefsUtil).setValue(PrefsUtil.KEY_ONBOARDING_COMPLETE, true)
-        verify(prefsUtil).setValue(PrefsUtil.KEY_GUID, guid)
+        verify(prefsUtil).setValue(PersistentPrefs.KEY_EMAIL, email)
+        verify(prefsUtil).setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, true)
+        verify(prefsUtil).setValue(PersistentPrefs.KEY_WALLET_GUID, guid)
         verify(accessState).isNewlyCreated = true
         verify(appUtil).sharedKey = sharedKey
         verify(view).startPinEntryActivity()

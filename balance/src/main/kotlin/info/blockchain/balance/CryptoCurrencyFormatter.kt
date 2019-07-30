@@ -1,6 +1,7 @@
 package info.blockchain.balance
 
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Locale
@@ -92,4 +93,5 @@ private fun createCryptoDecimalFormat(locale: Locale, maxDigits: Int) =
     (NumberFormat.getInstance(locale) as DecimalFormat).apply {
         minimumFractionDigits = 1
         maximumFractionDigits = maxDigits
+        roundingMode = RoundingMode.DOWN
     }

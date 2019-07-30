@@ -73,6 +73,13 @@ interface Money {
         val minor: String,
         val majorAndMinor: String
     )
+
+    fun formatOrSymbolForZero() =
+        if (isZero) {
+            symbol()
+        } else {
+            toStringWithSymbol()
+        }
 }
 
 class ComparisonException(

@@ -44,7 +44,7 @@ import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
 import piuk.blockchain.androidcore.data.transactions.models.Displayable
 import piuk.blockchain.androidcore.data.transactions.models.Erc20Displayable
 import piuk.blockchain.androidcore.data.transactions.models.EthDisplayable
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.math.BigInteger
 import java.util.Arrays
@@ -55,7 +55,7 @@ class TransactionDetailPresenterTest {
 
     private lateinit var subject: TransactionDetailPresenter
     private val transactionHelper: TransactionHelper = mock()
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefsUtil: PersistentPrefs = mock()
     private val payloadDataManager: PayloadDataManager = mock()
     private val stringUtils: StringUtils = mock()
     private val transactionListDataManager: TransactionListDataManager = mock()
@@ -74,8 +74,7 @@ class TransactionDetailPresenterTest {
 
     @Before
     fun setUp() {
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn(PrefsUtil.DEFAULT_CURRENCY)
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
 
         Locale.setDefault(Locale("EN", "US"))
         subject = TransactionDetailPresenter(
@@ -226,7 +225,7 @@ class TransactionDetailPresenterTest {
             "txMoved_hash"
         )
         verify(view).setTransactionType(TransactionSummary.Direction.TRANSFERRED, false)
-        verify(view).setTransactionColour(R.color.product_gray_transferred_50)
+        verify(view).setTransactionColour(R.color.product_grey_transferred_50)
         verify(view).setDescription(null)
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
@@ -283,7 +282,7 @@ class TransactionDetailPresenterTest {
             "txMoved_hash"
         )
         verify(view).setTransactionType(TransactionSummary.Direction.TRANSFERRED, false)
-        verify(view).setTransactionColour(R.color.product_gray_transferred_50)
+        verify(view).setTransactionColour(R.color.product_grey_transferred_50)
         verify(view).setDescription(null)
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
@@ -443,7 +442,7 @@ class TransactionDetailPresenterTest {
         verify(view).setDate(any())
         verify(view).setToAddresses(any())
         verify(view).setFromAddress(any())
-        verify(view).setFee("0.00000155 ETH")
+        verify(view).setFee("0.00000154 ETH")
         verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
         verify(view).updateFeeFieldVisibility(any())
@@ -520,8 +519,7 @@ class TransactionDetailPresenterTest {
         whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(any())).thenReturn("Value when transferred: ")
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY))
-            .thenReturn("USD")
+        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         // Act
         val observer = subject.getTransactionValueString("USD", displayable).test()
         // Assert
@@ -734,7 +732,7 @@ class TransactionDetailPresenterTest {
         // Act
         subject.setTransactionColor(displayable)
         // Assert
-        verify(view).setTransactionColour(R.color.product_gray_transferred_50)
+        verify(view).setTransactionColour(R.color.product_grey_transferred_50)
         verifyNoMoreInteractions(view)
     }
 
@@ -748,7 +746,7 @@ class TransactionDetailPresenterTest {
         // Act
         subject.setTransactionColor(displayable)
         // Assert
-        verify(view).setTransactionColour(R.color.product_gray_transferred)
+        verify(view).setTransactionColour(R.color.product_grey_transferred)
         verifyNoMoreInteractions(view)
     }
 

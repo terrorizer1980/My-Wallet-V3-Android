@@ -3,7 +3,6 @@ package piuk.blockchain.android.ui.login;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
-import dagger.Lazy;
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.exceptions.DecryptionException;
 import info.blockchain.wallet.exceptions.HDWalletException;
@@ -16,7 +15,7 @@ import piuk.blockchain.android.R;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
@@ -27,7 +26,6 @@ import piuk.blockchain.androidcoreui.utils.logging.PairingMethod;
 import retrofit2.Response;
 import timber.log.Timber;
 
-import javax.inject.Inject;
 import java.io.IOException;
 
 public class ManualPairingPresenter extends BasePresenter<ManualPairingView> {
@@ -36,23 +34,23 @@ public class ManualPairingPresenter extends BasePresenter<ManualPairingView> {
     static final String KEY_AUTH_REQUIRED = "authorization_required";
 
     private String sessionId;
-    private AppUtil appUtil;
-    private AuthDataManager authDataManager;
-    private final Lazy<PayloadDataManager> payloadDataManager;
-    private final PrefsUtil prefsUtil;
+    private final AppUtil appUtil;
+    private final AuthDataManager authDataManager;
+    private final PayloadDataManager payloadDataManager;
+    private final PersistentPrefs prefs;
+
     @VisibleForTesting
     boolean waitingForAuth = false;
 
-    @Inject
-    ManualPairingPresenter(AppUtil appUtil,
+    public ManualPairingPresenter(AppUtil appUtil,
                            AuthDataManager authDataManager,
-                           Lazy<PayloadDataManager> payloadDataManager,
-                           PrefsUtil prefsUtil) {
+                           PayloadDataManager payloadDataManager,
+                           PersistentPrefs prefs) {
 
         this.appUtil = appUtil;
         this.authDataManager = authDataManager;
         this.payloadDataManager = payloadDataManager;
-        this.prefsUtil = prefsUtil;
+        this.prefs = prefs;
     }
 
     @Override
@@ -66,9 +64,9 @@ public class ManualPairingPresenter extends BasePresenter<ManualPairingView> {
             String guid = getView().getGuid();
             String password = getView().getPassword();
 
-            if (guid == null || guid.isEmpty()) {
+            if (guid.isEmpty()) {
                 showErrorToast(R.string.invalid_guid);
-            } else if (password == null || password.isEmpty()) {
+            } else if (password.isEmpty()) {
                 showErrorToast(R.string.invalid_password);
             } else {
                 verifyPassword(password, guid);
@@ -179,33 +177,32 @@ public class ManualPairingPresenter extends BasePresenter<ManualPairingView> {
     }
 
     private void attemptDecryptPayload(String password, String payload) {
-        PayloadDataManager manager = payloadDataManager.get();
         getCompositeDisposable().add(
-                manager.initializeFromPayload(payload, password)
-                        .doOnComplete(() -> {
-                            prefsUtil.setValue(PrefsUtil.KEY_GUID, manager.getWallet().getGuid());
-                            appUtil.setSharedKey(manager.getWallet().getSharedKey());
-                            prefsUtil.setValue(PrefsUtil.KEY_EMAIL_VERIFIED, true);
-                        })
-                        .subscribe(() -> {
-                                    getView().goToPinPage();
-                                    Logging.INSTANCE.logCustom(new PairingEvent()
-                                            .putMethod(PairingMethod.MANUAL)
-                                            .putSuccess(true));
-                                },
-                                throwable -> {
-                                    Logging.INSTANCE.logCustom(new PairingEvent()
-                                            .putMethod(PairingMethod.MANUAL)
-                                            .putSuccess(false));
+            payloadDataManager.initializeFromPayload(payload, password)
+                .doOnComplete(() -> {
+                    prefs.setValue(PersistentPrefs.KEY_WALLET_GUID, payloadDataManager.getWallet().getGuid());
+                    appUtil.setSharedKey(payloadDataManager.getWallet().getSharedKey());
+                    prefs.setValue(PersistentPrefs.KEY_EMAIL_VERIFIED, true);
+                })
+                .subscribe(() -> {
+                    getView().goToPinPage();
+                    Logging.INSTANCE.logCustom(new PairingEvent()
+                        .putMethod(PairingMethod.MANUAL)
+                        .putSuccess(true));
+                },
+                throwable -> {
+                    Logging.INSTANCE.logCustom(new PairingEvent()
+                        .putMethod(PairingMethod.MANUAL)
+                        .putSuccess(false));
 
-                                    if (throwable instanceof HDWalletException) {
-                                        showErrorToast(R.string.pairing_failed);
-                                    } else if (throwable instanceof DecryptionException) {
-                                        showErrorToast(R.string.invalid_password);
-                                    } else {
-                                        showErrorToastAndRestartApp(R.string.auth_failed);
-                                    }
-                                }));
+                    if (throwable instanceof HDWalletException) {
+                        showErrorToast(R.string.pairing_failed);
+                    } else if (throwable instanceof DecryptionException) {
+                        showErrorToast(R.string.invalid_password);
+                    } else {
+                        showErrorToastAndRestartApp(R.string.auth_failed);
+                    }
+                }));
     }
 
     private void showCheckEmailDialog() {

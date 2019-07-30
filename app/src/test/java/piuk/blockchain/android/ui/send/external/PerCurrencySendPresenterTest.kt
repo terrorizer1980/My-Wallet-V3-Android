@@ -3,8 +3,11 @@ package piuk.blockchain.android.ui.send.external
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.Single
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.any
 import org.amshove.kluent.mock
@@ -37,7 +40,8 @@ class PerCurrencySendPresenterTest {
             exchangeRates = mock(),
             stringUtils = mock(),
             envSettings = mock(),
-            exchangeRateFactory = exchangeRateFactory
+            exchangeRateFactory = exchangeRateFactory,
+            pitLinkingFeatureFlag = mock()
         ).apply {
             initView(view)
             handleURIScan("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4")
@@ -70,8 +74,8 @@ class PerCurrencySendPresenterTest {
             exchangeRates = mock(),
             stringUtils = mock(),
             envSettings = envSettings,
-            exchangeRateFactory = exchangeRateFactory
-
+            exchangeRateFactory = exchangeRateFactory,
+            pitLinkingFeatureFlag = mock()
         ).apply {
             initView(view)
             handleURIScan("1FBPzxps6kGyk2exqLvz7cRMi2odtLEVQ")
@@ -108,8 +112,8 @@ class PerCurrencySendPresenterTest {
             exchangeRates = mock(),
             stringUtils = mock(),
             envSettings = envSettings,
-            exchangeRateFactory = exchangeRateFactory
-
+            exchangeRateFactory = exchangeRateFactory,
+            pitLinkingFeatureFlag = mock()
         ).apply {
             initView(view)
             handleURIScan("nope_nope_nope")
@@ -120,5 +124,93 @@ class PerCurrencySendPresenterTest {
         verify(etherStrategy, never()).processURIScanAddress(any())
         verify(xlmStrategy, never()).processURIScanAddress(any())
         verify(erc20Strategy, never()).processURIScanAddress(any())
+    }
+
+    @Test
+    fun `memo required should start with false and then get the strategy exposed value`() {
+        val btcStrategy: SendStrategy<SendView> = mock()
+        whenever(btcStrategy.memoRequired()).thenReturn(Observable.just(true))
+        val view: SendView = mock()
+
+        PerCurrencySendPresenter(
+            btcStrategy = btcStrategy,
+            bchStrategy = mock(),
+            etherStrategy = mock(),
+            xlmStrategy = mock(),
+            paxStrategy = mock(),
+            prefs = mock(),
+            exchangeRates = mock(),
+            stringUtils = mock(),
+            envSettings = mock(),
+            exchangeRateFactory = mock {
+                on { updateTickers() } `it returns` Completable.complete()
+            },
+            pitLinkingFeatureFlag = mock {
+                on { enabled } `it returns` Single.just(true)
+            }
+        ).apply {
+            initView(view)
+            onViewReady()
+        }
+        verify(view).updateRequiredLabelVisibility(false)
+        verify(view).updateRequiredLabelVisibility(true)
+    }
+
+    @Test
+    fun `when pit is enabled the correct value should propagated to the view`() {
+        val btcStrategy: SendStrategy<SendView> = mock()
+        whenever(btcStrategy.memoRequired()).thenReturn(Observable.just(true))
+        val view: SendView = mock()
+
+        PerCurrencySendPresenter(
+            btcStrategy = btcStrategy,
+            bchStrategy = mock(),
+            etherStrategy = mock(),
+            xlmStrategy = mock(),
+            paxStrategy = mock(),
+            prefs = mock(),
+            exchangeRates = mock(),
+            stringUtils = mock(),
+            envSettings = mock(),
+            exchangeRateFactory = mock {
+                on { updateTickers() } `it returns` Completable.complete()
+            },
+            pitLinkingFeatureFlag = mock {
+                on { enabled } `it returns` Single.just(true)
+            }
+        ).apply {
+            initView(view)
+            onViewReady()
+        }
+        verify(view).isPitEnabled(true)
+    }
+
+    @Test
+    fun `when pit is disabled the correct value should propagated to the view`() {
+        val btcStrategy: SendStrategy<SendView> = mock()
+        whenever(btcStrategy.memoRequired()).thenReturn(Observable.just(true))
+        val view: SendView = mock()
+
+        PerCurrencySendPresenter(
+            btcStrategy = btcStrategy,
+            bchStrategy = mock(),
+            etherStrategy = mock(),
+            xlmStrategy = mock(),
+            paxStrategy = mock(),
+            prefs = mock(),
+            exchangeRates = mock(),
+            stringUtils = mock(),
+            envSettings = mock(),
+            exchangeRateFactory = mock {
+                on { updateTickers() } `it returns` Completable.complete()
+            },
+            pitLinkingFeatureFlag = mock {
+                on { enabled } `it returns` Single.just(false)
+            }
+        ).apply {
+            initView(view)
+            onViewReady()
+        }
+        verify(view).isPitEnabled(false)
     }
 }

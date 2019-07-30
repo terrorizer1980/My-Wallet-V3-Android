@@ -57,15 +57,17 @@ public class Payment {
 
     public Pair<BigInteger, BigInteger> getMaximumAvailable(@NonNull UnspentOutputs unspentCoins,
                                                             @NonNull BigInteger feePerKb,
-                                                            boolean addReplayProtection) {
-        return Coins.getMaximumAvailable(unspentCoins, feePerKb, addReplayProtection);
+                                                            boolean addReplayProtection,
+                                                            boolean useNewCoinSelection) {
+        return Coins.getMaximumAvailable(unspentCoins, feePerKb, addReplayProtection, useNewCoinSelection);
     }
 
     public SpendableUnspentOutputs getSpendableCoins(@NonNull UnspentOutputs unspentCoins,
                                                      @NonNull BigInteger paymentAmount,
                                                      @NonNull BigInteger feePerKb,
-                                                     boolean addReplayProtection) {
-        return Coins.getMinimumCoinsForPayment(unspentCoins, paymentAmount, feePerKb, addReplayProtection);
+                                                     boolean addReplayProtection,
+                                                     boolean useNewCoinSelection) {
+        return Coins.getMinimumCoinsForPayment(unspentCoins, paymentAmount, feePerKb, addReplayProtection, useNewCoinSelection);
     }
 
     ///////////////////////////////////////////////////////////////////////////

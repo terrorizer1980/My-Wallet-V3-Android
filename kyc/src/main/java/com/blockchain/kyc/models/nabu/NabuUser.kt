@@ -10,8 +10,8 @@ import kotlin.math.max
 data class NabuUser(
     val firstName: String?,
     val lastName: String?,
-    val email: String?,
-    val emailVerified: Boolean?,
+    val email: String = "",
+    val emailVerified: Boolean = false,
     val dob: String?,
     val mobile: String?,
     val mobileVerified: Boolean,
@@ -27,8 +27,12 @@ data class NabuUser(
      * ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
      */
     val updatedAt: String? = null,
+    val settings: NabuSettings? = null,
     val tags: Map<String, Map<String, String>>? = null,
-    val tiers: Tiers? = null
+    val userName: String? = null,
+    val tiers: Tiers? = null,
+    val walletGuid: String? = null
+    // val depositAddresses":{  },  // Not sure what format these have yet. TODO: Find out
 ) : JsonSerializable {
     val tierInProgress
         get() =

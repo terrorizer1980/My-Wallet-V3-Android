@@ -11,18 +11,18 @@ import org.junit.Test
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.ui.send.PendingTransaction
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class BackupWalletCompletedPresenterTest {
 
     private lateinit var subject: BackupWalletCompletedPresenter
     private val view: BackupWalletCompletedView = mock()
     private val transferFundsDataManager: TransferFundsDataManager = mock()
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefs: PersistentPrefs = mock()
 
     @Before
     fun setUp() {
-        subject = BackupWalletCompletedPresenter(transferFundsDataManager, prefsUtil)
+        subject = BackupWalletCompletedPresenter(transferFundsDataManager, prefs)
         subject.initView(view)
     }
 
@@ -30,13 +30,13 @@ class BackupWalletCompletedPresenterTest {
     fun `onViewReady set backup date`() {
         // Arrange
         val date = 1499181978000L
-        whenever(prefsUtil.getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L))
+        whenever(prefs.getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L))
             .thenReturn(date)
         // Act
         subject.onViewReady()
         // Assert
-        verify(prefsUtil).getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L)
-        verifyNoMoreInteractions(prefsUtil)
+        verify(prefs).getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L)
+        verifyNoMoreInteractions(prefs)
         verify(view).showLastBackupDate(date)
         verifyNoMoreInteractions(view)
     }
@@ -44,13 +44,13 @@ class BackupWalletCompletedPresenterTest {
     @Test
     fun `onViewReady hide backup date`() {
         // Arrange
-        whenever(prefsUtil.getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L))
+        whenever(prefs.getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L))
             .thenReturn(0L)
         // Act
         subject.onViewReady()
         // Assert
-        verify(prefsUtil).getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L)
-        verifyNoMoreInteractions(prefsUtil)
+        verify(prefs).getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L)
+        verifyNoMoreInteractions(prefs)
         verify(view).hideLastBackupDate()
         verifyNoMoreInteractions(view)
     }

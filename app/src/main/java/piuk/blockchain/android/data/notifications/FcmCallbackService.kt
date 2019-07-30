@@ -4,6 +4,7 @@ import android.app.LauncherActivity
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import com.blockchain.annotations.BurnCandidate
 import com.blockchain.notifications.NotificationsUtil
 import com.blockchain.notifications.R
 import com.blockchain.notifications.models.NotificationPayload
@@ -13,15 +14,14 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 import timber.log.Timber
 
 class FcmCallbackService : FirebaseMessagingService() {
 
     private val notificationManager: NotificationManager by inject()
-    private val prefsUtil: PrefsUtil by inject()
     private val rxBus: RxBus by inject()
+    private val accessState: AccessState by inject()
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         // Check if message contains a data payload.
@@ -37,7 +37,7 @@ class FcmCallbackService : FirebaseMessagingService() {
 
     private fun sendNotification(payload: NotificationPayload) {
         if (ApplicationLifeCycle.getInstance().isForeground &&
-            AccessState.getInstance().isLoggedIn
+            accessState.isLoggedIn
         ) {
             sendForegroundNotification(payload)
         } else {
@@ -73,17 +73,11 @@ class FcmCallbackService : FirebaseMessagingService() {
 
     /**
      * Redirects the user to the [MainActivity] which will then launch the balance fragment by
-     * default. If notification is from an accepted Contact, [MainActivity] will then launch
-     * [piuk.blockchain.android.ui.contacts.list.ContactsListActivity] once startup checks
-     * have finished.
+     * default.
      */
     private fun sendForegroundNotification(payload: NotificationPayload) {
         val notifyIntent = Intent(applicationContext, MainActivity::class.java)
-        if (payload.type != null &&
-            payload.type == NotificationPayload.NotificationType.CONTACT_REQUEST
-        ) {
-            prefsUtil.setValue(PrefsUtil.KEY_CONTACTS_NOTIFICATION, true)
-        }
+
         val intent = PendingIntent.getActivity(
             applicationContext,
             0,
@@ -124,6 +118,7 @@ class FcmCallbackService : FirebaseMessagingService() {
 
     companion object {
 
+        @BurnCandidate("Contacts are gone. Remove this")
         const val EXTRA_CONTACT_ACCEPTED = "contact_accepted"
         const val ID_BACKGROUND_NOTIFICATION = 1337
         const val ID_FOREGROUND_NOTIFICATION = 1338

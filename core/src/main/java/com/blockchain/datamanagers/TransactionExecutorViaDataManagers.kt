@@ -7,6 +7,7 @@ import com.blockchain.datamanagers.fees.NetworkFees
 import com.blockchain.datamanagers.fees.XlmFees
 import com.blockchain.datamanagers.fees.feeForType
 import com.blockchain.fees.FeeType
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendDetails
 import com.blockchain.transactions.TransactionSender
@@ -21,6 +22,7 @@ import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payment.SpendableUnspentOutputs
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import org.bitcoinj.core.ECKey
 import org.web3j.crypto.RawTransaction
@@ -42,7 +44,8 @@ internal class TransactionExecutorViaDataManagers(
     private val accountLookup: AccountLookup,
     private val defaultAccountDataManager: DefaultAccountDataManager,
     private val ethereumAccountWrapper: EthereumAccountWrapper,
-    private val xlmSender: TransactionSender
+    private val xlmSender: TransactionSender,
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig
 ) : TransactionExecutor {
 
     override fun executeTransaction(
@@ -75,11 +78,12 @@ internal class TransactionExecutorViaDataManagers(
             )
             CryptoCurrency.XLM -> xlmSender.sendFundsOrThrow(
                 SendDetails(
-                    sourceAccount,
-                    amount,
-                    destination,
-                    (fees as XlmFees).feeForType(feeType),
-                    memo
+                    from = sourceAccount,
+                    value = amount,
+                    toAddress = destination,
+                    toLabel = "",
+                    fee = (fees as XlmFees).feeForType(feeType),
+                    memo = memo
                 )
             ).map { it.hash!! }
             CryptoCurrency.PAX ->
@@ -175,28 +179,34 @@ internal class TransactionExecutorViaDataManagers(
         feePerKb: BigInteger
     ): Single<CryptoValue> =
         getUnspentOutputs(account.xpub, amount.currency)
-            .map { getSuggestedAbsoluteFee(it, amount, feePerKb) }
+            .zipWith(coinSelectionRemoteConfig.enabled)
+            .map { (unspentOutputs, newCoinSelectionEnabled) ->
+                getSuggestedAbsoluteFee(unspentOutputs, amount, feePerKb, newCoinSelectionEnabled)
+            }
             .map { CryptoValue(amount.currency, it) }
 
     private fun getSuggestedAbsoluteFee(
         coins: UnspentOutputs,
         amountToSend: CryptoValue,
-        feePerKb: BigInteger
+        feePerKb: BigInteger,
+        useNewCoinSelection: Boolean
     ): BigInteger =
-        sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb).absoluteFee
+        sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb, useNewCoinSelection).absoluteFee
 
     private fun AccountReference.BitcoinLike.getMaximumSpendable(
         fees: BitcoinLikeFees,
         feeType: FeeType
     ): Single<CryptoValue> =
         getUnspentOutputs(xpub, cryptoCurrency)
-            .map {
+            .zipWith(coinSelectionRemoteConfig.enabled)
+            .map { (unspentOutputs, newCoinSelectionEnabled) ->
                 CryptoValue(
                     cryptoCurrency,
                     sendDataManager.getMaximumAvailable(
                         cryptoCurrency,
-                        it,
-                        fees.feeForType(feeType)
+                        unspentOutputs,
+                        fees.feeForType(feeType),
+                        newCoinSelectionEnabled
                     ).left
                 )
             }
@@ -317,8 +327,11 @@ internal class TransactionExecutorViaDataManagers(
         amount: CryptoValue,
         feePerKb: BigInteger
     ): Single<SpendableUnspentOutputs> = getUnspentOutputs(address, amount.currency)
+        .zipWith(coinSelectionRemoteConfig.enabled)
         .subscribeOn(Schedulers.io())
-        .map { sendDataManager.getSpendableCoins(it, amount, feePerKb) }
+        .map { (unspentOutputs, newCoinSelectionEnabled) ->
+            sendDataManager.getSpendableCoins(unspentOutputs, amount, feePerKb, newCoinSelectionEnabled)
+        }
 
     private fun getUnspentOutputs(
         address: String,

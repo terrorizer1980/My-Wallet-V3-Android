@@ -61,6 +61,11 @@ class SettingsDataManager(
             .flatMap { fetchSettings() }
             .applySchedulers()
 
+    fun updateEmail(email: String, context: String?): Observable<Settings> =
+        rxPinning.call<ResponseBody> { settingsService.updateEmail(email, context) }
+            .flatMap { fetchSettings() }
+            .applySchedulers()
+
     /**
      * Update the user's phone number and fetches an updated [Settings] object.
      *
@@ -197,17 +202,6 @@ class SettingsDataManager(
 
     private fun attemptFetchSettingsFromMemory(): Observable<Settings> =
         Observable.defer { settingsDataStore.getSettings() }
-
-    /**
-     * Update the user's cryptoUnit unit preference and fetches an updated [Settings] object.
-     *
-     * @param btcUnit The user's preference for cryptoUnit unit
-     * @return An [Observable] object wrapping a [Settings] object
-     */
-    fun updateBtcUnit(btcUnit: String): Observable<Settings> =
-        rxPinning.call<ResponseBody> { settingsService.updateBtcUnit(btcUnit) }
-            .flatMap { fetchSettings() }
-            .applySchedulers()
 
     /**
      * Update the user's fiat unit preference and fetches an updated [Settings] object.

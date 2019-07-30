@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.injection.Injector;
 import piuk.blockchain.android.ui.fingerprint.FingerprintDialog;
 import piuk.blockchain.android.ui.fingerprint.FingerprintStage;
 import piuk.blockchain.android.ui.home.MainActivity;
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence;
-import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity;
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog;
 import timber.log.Timber;
@@ -29,6 +29,7 @@ public class OnboardingActivity extends BaseMvpActivity<OnboardingView, Onboardi
      * completed some other time, but the user hasn't verified their email yet.
      */
     public static final String EXTRAS_EMAIL_ONLY = "email_only";
+    public static final String EXTRAS_OPTION_TO_DISMISS = "has_option_for_dismiss";
 
     @Inject
     OnboardingPresenter onboardingPresenter;
@@ -57,8 +58,12 @@ public class OnboardingActivity extends BaseMvpActivity<OnboardingView, Onboardi
     @Override
     protected void onResume() {
         super.onResume();
-        if (emailLaunched) {
+        boolean canBeDismissed = getPageIntent().getBooleanExtra(EXTRAS_OPTION_TO_DISMISS, true);
+
+        if (emailLaunched && canBeDismissed) {
             startMainActivity();
+        } else if (emailLaunched) {
+            finish();
         }
     }
 
@@ -84,7 +89,7 @@ public class OnboardingActivity extends BaseMvpActivity<OnboardingView, Onboardi
             dismissDialog();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, EmailPromptFragment.newInstance(getPresenter().getEmail()))
+                    .replace(R.id.content_frame, EmailPromptFragment.Companion.newInstance(getPresenter().getEmail(), getPageIntent().getBooleanExtra(EXTRAS_OPTION_TO_DISMISS, true)))
                     .commit();
         }
     }
@@ -139,7 +144,7 @@ public class OnboardingActivity extends BaseMvpActivity<OnboardingView, Onboardi
 
     @Override
     public void onVerifyEmailClicked() {
-        AccessState.getInstance().disableAutoLogout();
+        getPresenter().disableAutoLogout();
         emailLaunched = true;
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_APP_EMAIL);
@@ -178,7 +183,7 @@ public class OnboardingActivity extends BaseMvpActivity<OnboardingView, Onboardi
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == EMAIL_CLIENT_REQUEST) {
-            AccessState.getInstance().enableAutoLogout();
+            getPresenter().enableAutoLogout();
         }
     }
 }

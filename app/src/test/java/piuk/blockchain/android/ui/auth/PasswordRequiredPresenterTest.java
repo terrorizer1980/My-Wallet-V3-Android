@@ -22,6 +22,7 @@ import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager;
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.PrefsUtil;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AppUtil;
@@ -58,7 +59,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     private PasswordRequiredPresenter subject;
     @Mock private PasswordRequiredActivity activity;
     @Mock private AppUtil appUtil;
-    @Mock private PrefsUtil prefsUtil;
+    @Mock private PersistentPrefs prefs;
     @Mock private AuthDataManager authDataManager;
     @Mock private BuyDataManager buyDataManager;
     @Mock private CoinifyDataManager coinifyDataManager;
@@ -69,7 +70,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
         MockitoAnnotations.initMocks(this);
 
         subject = new PasswordRequiredPresenter(appUtil,
-                prefsUtil,
+                prefs,
                 authDataManager,
                 payloadDataManager,
                 buyDataManager,
@@ -84,7 +85,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedNoPassword() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("");
         when(activity.getPassword()).thenReturn("");
         // Act
         subject.onContinueClicked();
@@ -100,7 +101,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedCorrectPassword() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -118,8 +119,8 @@ public class PasswordRequiredPresenterTest extends RxTest {
         subject.onContinueClicked();
         // Assert
         verify(activity).goToPinPage();
-        verify(prefsUtil).setValue(anyString(), anyString());
-        verify(prefsUtil).setValue(anyString(), anyBoolean());
+        verify(prefs).setValue(anyString(), anyString());
+        verify(prefs).setValue(anyString(), anyBoolean());
         verify(appUtil).setSharedKey(anyString());
     }
 
@@ -131,7 +132,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedCorrectPasswordTwoFa() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -157,7 +158,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedPairingFailure() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
         when(authDataManager.getEncryptedPayload(anyString(), anyString()))
                 .thenReturn(Observable.error(new Throwable()));
@@ -182,7 +183,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedCreateFailure() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -209,7 +210,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedDecryptionFailure() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -238,7 +239,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedHDWalletExceptionFailure() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -266,7 +267,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedFatalErrorClearData() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -295,7 +296,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedFatalError() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString()))
@@ -318,7 +319,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedEncryptedPayloadFailure() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -342,7 +343,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedWaitingForAuthRequired() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -370,7 +371,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedWaitingForAuthSuccess() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -396,7 +397,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedWaitingForAuthEmailTimerError() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -426,7 +427,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedWaitingForAuthFailure() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
 
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
@@ -454,7 +455,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
     @Test
     public void onContinueClickedWaitingForAuthCountdownComplete() {
         // Arrange
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn("1234567890");
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn("1234567890");
         when(activity.getPassword()).thenReturn("1234567890");
         when(authDataManager.getSessionId(anyString())).thenReturn(Observable.just("1234567890"));
         ResponseBody responseBody = ResponseBody.create(MediaType.parse("application/json"), KEY_AUTH_REQUIRED_JSON);
@@ -493,7 +494,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
         String guid = "GUID";
         String password = "PASSWORD";
         String code = "123456";
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn(guid);
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn(guid);
         when(authDataManager.submitTwoFactorCode(sessionId, guid, code))
                 .thenReturn(Observable.error(new Throwable()));
         // Act
@@ -513,7 +514,7 @@ public class PasswordRequiredPresenterTest extends RxTest {
         String guid = "GUID";
         String password = "PASSWORD";
         String code = "123456";
-        when(prefsUtil.getValue(PrefsUtil.KEY_GUID, "")).thenReturn(guid);
+        when(prefs.getValue(PersistentPrefs.Companion.KEY_WALLET_GUID, "")).thenReturn(guid);
         when(authDataManager.submitTwoFactorCode(sessionId, guid, code))
                 .thenReturn(Observable.just(ResponseBody.create(MediaType.parse("application/json"), TWO_FA_RESPONSE)));
         when(payloadDataManager.initializeFromPayload(anyString(), eq(password))).thenReturn(Completable.complete());

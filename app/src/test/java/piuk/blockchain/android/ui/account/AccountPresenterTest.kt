@@ -43,7 +43,7 @@ import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import java.math.BigInteger
@@ -63,7 +63,7 @@ class AccountPresenterTest {
     private val bchDataManager: BchDataManager = mock()
     private val metadataManager: MetadataManager = mock()
     private val fundsDataManager: TransferFundsDataManager = mock()
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefs: PersistentPrefs = mock()
     private val appUtil: AppUtil = mock()
     private val environmentSettings: EnvironmentConfig = mock()
     private val privateKeyFactory = PrivateKeyFactory()
@@ -79,7 +79,7 @@ class AccountPresenterTest {
             bchDataManager,
             metadataManager,
             fundsDataManager,
-            prefsUtil,
+            prefs,
             appUtil,
             privateKeyFactory,
             environmentSettings,
@@ -119,7 +119,7 @@ class AccountPresenterTest {
         val mockPayload = mock(Wallet::class.java)
         whenever(mockPayload.isUpgraded).thenReturn(true)
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
-        whenever(prefsUtil.getValue(KEY_WARN_TRANSFER_ALL, true)).thenReturn(true)
+        whenever(prefs.getValue(KEY_WARN_TRANSFER_ALL, true)).thenReturn(true)
         // Act
         subject.checkTransferableLegacyFunds(false, true)
         // Assert
@@ -138,7 +138,7 @@ class AccountPresenterTest {
         val mockPayload = mock(Wallet::class.java)
         whenever(mockPayload.isUpgraded).thenReturn(true)
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
-        whenever(prefsUtil.getValue(KEY_WARN_TRANSFER_ALL, true)).thenReturn(true)
+        whenever(prefs.getValue(KEY_WARN_TRANSFER_ALL, true)).thenReturn(true)
         // Act
         subject.checkTransferableLegacyFunds(false, false)
         // Assert

@@ -2,6 +2,10 @@ package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
+import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.State
+import com.blockchain.nabu.NabuToken
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.serialization.JsonSerializableAccount
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -10,6 +14,7 @@ import info.blockchain.wallet.ethereum.EthereumAccount
 import info.blockchain.wallet.util.FormatsUtil
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 
@@ -18,7 +23,9 @@ import org.web3j.utils.Convert
 
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.cache.DynamicFeeCache
+import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
+import piuk.blockchain.android.ui.account.PitAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.PendingTransaction
 import piuk.blockchain.android.ui.send.SendView
@@ -34,6 +41,7 @@ import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
+import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import timber.log.Timber
@@ -52,9 +60,34 @@ class EtherSendStrategy(
     private val feeDataManager: FeeDataManager,
     private val currencyFormatter: CurrencyFormatManager,
     private val exchangeRates: FiatExchangeRates,
+    private val currencyPrefs: CurrencyPrefs,
+    private val nabuDataManager: NabuDataManager,
+    private val nabuToken: NabuToken,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
+
+    private var pitAccount: PitAccount? = null
+
+    override fun onPitAddressSelected() {
+        pitAccount?.let {
+            pendingTransaction.receivingObject = ItemAccount(
+                it.label,
+                null,
+                null,
+                null,
+                null,
+                it.address
+            )
+            pendingTransaction.receivingAddress = it.address
+            view.updateReceivingAddress(it.label)
+        }
+    }
+
+    override fun onPitAddressCleared() {
+        pendingTransaction.receivingObject = null
+        view.updateReceivingAddress("")
+    }
 
     override fun onCurrencySelected() {
         currencyState.cryptoCurrency = CryptoCurrency.ETHER
@@ -117,8 +150,19 @@ class EtherSendStrategy(
     }
 
     private fun resetAccountList() {
-        val addressList = walletAccountHelper.getAccountItems(CryptoCurrency.ETHER)
-        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.ETHER, addressList.size)
+        compositeDisposable += nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.ETHER.symbol)
+        }.applySchedulers().doOnSubscribe {
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.ETHER, 1, false)
+        }.subscribeBy(onError = {
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.ETHER, 1, false)
+        }) {
+            pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
+                CryptoCurrency.ETHER.symbol), it.address)
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.ETHER,
+                1,
+                it.state == State.ACTIVE && it.address.isNotEmpty())
+        }
     }
 
     override fun processURIScanAddress(address: String) {
@@ -140,7 +184,7 @@ class EtherSendStrategy(
             .subscribe(
                 { (validated, errorMessage) ->
                     when {
-                    //  Checks if second pw needed then -> onNoSecondPassword()
+                        //  Checks if second pw needed then -> onNoSecondPassword()
                         validated -> view.showSecondPasswordDialog()
                         errorMessage == R.string.eth_support_contract_not_allowed -> view.showEthContractSnackbar()
                         else -> view.showSnackbar(errorMessage, Snackbar.LENGTH_LONG)
@@ -252,7 +296,7 @@ class EtherSendStrategy(
             toLabel = pendingTransaction.displayableReceivingLabel ?: throw IllegalStateException("No receive label")
 
             cryptoUnit = CryptoCurrency.ETHER.symbol
-            fiatUnit = exchangeRates.fiatUnit
+            fiatUnit = currencyPrefs.selectedFiatCurrency
             fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode)
 
             var ethAmount = Convert.fromWei(pendingTransaction.bigIntAmount.toString(), Convert.Unit.ETHER)
@@ -282,7 +326,7 @@ class EtherSendStrategy(
         }
     }
 
-    override fun clearReceivingObject() { }
+    override fun clearReceivingObject() {}
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
         val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount()
@@ -419,10 +463,11 @@ class EtherSendStrategy(
             )
     }
 
-    override fun handlePrivxScan(scanData: String?) { }
+    override fun handlePrivxScan(scanData: String?) {}
 
     @SuppressLint("CheckResult")
-    override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) { }
+    override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) {
+    }
 
     private fun isValidAmount(bAmount: BigInteger?): Boolean {
         return (bAmount != null && bAmount > BigInteger.ZERO)

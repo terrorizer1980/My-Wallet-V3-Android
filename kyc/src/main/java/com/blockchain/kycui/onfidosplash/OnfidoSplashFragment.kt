@@ -193,7 +193,7 @@ class OnfidoSplashFragment : BaseFragment<OnfidoSplashView, OnfidoSplashPresente
             ContextThemeWrapper(requireActivity(), R.style.AppTheme).theme
         )?.run {
             DrawableCompat.wrap(this)
-            DrawableCompat.setTint(this, getResolvedColor(R.color.primary_gray_medium))
+            DrawableCompat.setTint(this, getResolvedColor(R.color.primary_grey_medium))
             this@setLeftDrawable.setCompoundDrawablesWithIntrinsicBounds(this, null, null, null)
         }
     }

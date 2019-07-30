@@ -11,13 +11,10 @@ import piuk.blockchain.android.ui.auth.PinEntryActivity
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.ui.home.SecurityPromptDialog
 import piuk.blockchain.android.ui.settings.SettingsActivity
-import piuk.blockchain.android.ui.settings.SettingsFragment
-import piuk.blockchain.android.ui.settings.SettingsFragment.EXTRA_SHOW_ADD_EMAIL_DIALOG
 import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.injection.PresenterScope
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.PrefsUtil
 import javax.inject.Inject
 
 typealias PromptDlgFactory = (Context) -> SecurityPromptDialog
@@ -56,43 +53,43 @@ class PromptManager @Inject constructor(
     }
 
     private fun isFirstRun(): Boolean {
-        return prefs.getValue(PrefsUtil.KEY_APP_VISITS, 0) == 0
+        return prefs.getValue(PersistentPrefs.KEY_APP_VISITS, 0) == 0
     }
 
     private fun getAppVisitCount(): Int {
-        return prefs.getValue(PrefsUtil.KEY_APP_VISITS, 0)
+        return prefs.getValue(PersistentPrefs.KEY_APP_VISITS, 0)
     }
 
     private fun getGuid(): String {
-        return prefs.getValue(PrefsUtil.KEY_GUID, "")
+        return prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, "")
     }
 
     private fun getIfNeverPrompt2Fa(): Boolean {
-        return prefs.getValue(PrefsUtil.KEY_SECURITY_TWO_FA_NEVER, false)
+        return prefs.getValue(PersistentPrefs.KEY_SECURITY_TWO_FA_NEVER, false)
     }
 
     private fun getTimeOfLastSecurityPrompt(): Long {
-        return prefs.getValue(PrefsUtil.KEY_SECURITY_TIME_ELAPSED, 0L)
+        return prefs.getValue(PersistentPrefs.KEY_SECURITY_TIME_ELAPSED, 0L)
     }
 
     private fun storeTimeOfLastSecurityPrompt() {
-        prefs.setValue(PrefsUtil.KEY_SECURITY_TIME_ELAPSED, System.currentTimeMillis())
+        prefs.setValue(PersistentPrefs.KEY_SECURITY_TIME_ELAPSED, System.currentTimeMillis())
     }
 
     private fun neverPrompt2Fa() {
-        prefs.setValue(PrefsUtil.KEY_SECURITY_TWO_FA_NEVER, true)
+        prefs.setValue(PersistentPrefs.KEY_SECURITY_TWO_FA_NEVER, true)
     }
 
     private fun getIfNeverPromptBackup(): Boolean {
-        return prefs.getValue(PrefsUtil.KEY_SECURITY_BACKUP_NEVER, false)
+        return prefs.getValue(PersistentPrefs.KEY_SECURITY_BACKUP_NEVER, false)
     }
 
     private fun setBackupCompleted() {
-        prefs.setValue(PrefsUtil.KEY_SECURITY_BACKUP_NEVER, true)
+        prefs.setValue(PersistentPrefs.KEY_SECURITY_BACKUP_NEVER, true)
     }
 
     private fun hasTransactions(): Boolean {
-        return !transactionListDataManager.getTransactionList().isEmpty()
+        return transactionListDataManager.getTransactionList().isNotEmpty()
     }
 
     private fun isRooted(): Boolean {
@@ -204,7 +201,7 @@ class PromptManager @Inject constructor(
                 neverPrompt2Fa()
             }
             val bundle = Bundle()
-            bundle.putBoolean(SettingsFragment.EXTRA_SHOW_TWO_FA_DIALOG, true)
+            bundle.putBoolean(EXTRA_SHOW_TWO_FA_DIALOG, true)
             SettingsActivity.start(context, bundle)
         }
 
@@ -246,7 +243,9 @@ class PromptManager @Inject constructor(
     }
 
     companion object {
-
         private const val ONE_MONTH = 28 * 24 * 60 * 60 * 1000L
+
+        const val EXTRA_SHOW_ADD_EMAIL_DIALOG = "show_add_email_dialog"
+        const val EXTRA_SHOW_TWO_FA_DIALOG = "show_two_fa_dialog"
     }
 }

@@ -22,8 +22,8 @@ interface SecondPasswordHandler {
 
     fun validateExtended(listener: ResultListenerEx)
 
-    fun validate(listener: SecondPasswordHandler.ResultListener) {
-        validate(object : SecondPasswordHandler.ResultListenerEx, SecondPasswordHandler.ResultListener by listener {
+    fun validate(listener: ResultListener) {
+        validate(object : ResultListenerEx, ResultListener by listener {
             override fun onCancelled() {}
         })
     }

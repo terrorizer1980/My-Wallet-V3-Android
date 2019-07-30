@@ -27,6 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class NabuDataManagerTest {
 
@@ -36,7 +37,8 @@ class NabuDataManagerTest {
     private val nabuTokenStore: NabuSessionTokenStore = mock()
     private val settingsDataManager: SettingsDataManager = mock()
     private val payloadDataManager: PayloadDataManager = mock()
-    private val appVersion = "6.14.0"
+    private val prefs: PersistentPrefs = mock()
+    private val appVersion = "6.23.2"
     private val deviceId = "DEVICE_ID"
     private val email = "EMAIL"
     private val guid = "GUID"
@@ -56,9 +58,9 @@ class NabuDataManagerTest {
             tokenService,
             nabuTokenStore,
             appVersion,
-            deviceId,
             settingsDataManager,
-            payloadDataManager
+            payloadDataManager,
+            prefs
         )
     }
 
@@ -130,14 +132,15 @@ class NabuDataManagerTest {
         val sessionTokenResponse = getEmptySessionToken()
         whenever(
             nabuService.getSessionToken(
-                offlineToken.userId,
-                offlineToken.token,
-                guid,
-                email,
-                deviceId,
-                appVersion
+                userId = offlineToken.userId,
+                offlineToken = offlineToken.token,
+                guid = guid,
+                email = email,
+                deviceId = deviceId,
+                appVersion = appVersion
             )
         ).thenReturn(Single.just(sessionTokenResponse))
+        whenever(prefs.deviceId).thenReturn(deviceId)
         // Act
         val testObserver = subject.getSessionToken(offlineToken).test()
         // Assert
@@ -145,12 +148,12 @@ class NabuDataManagerTest {
         testObserver.assertNoErrors()
         testObserver.assertValue(sessionTokenResponse)
         verify(nabuService).getSessionToken(
-            offlineToken.userId,
-            offlineToken.token,
-            guid,
-            email,
-            deviceId,
-            appVersion
+            userId = offlineToken.userId,
+            offlineToken = offlineToken.token,
+            guid = guid,
+            email = email,
+            deviceId = deviceId,
+            appVersion = appVersion
         )
     }
 

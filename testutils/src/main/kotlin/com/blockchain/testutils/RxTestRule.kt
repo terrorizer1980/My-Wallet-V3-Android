@@ -14,7 +14,7 @@ fun rxInit(block: RxInit.() -> Unit) =
 open class RxInit {
 
     fun computation(scheduler: Scheduler) {
-        RxJavaPlugins.setComputationSchedulerHandler { _ -> scheduler }
+        RxJavaPlugins.setComputationSchedulerHandler { scheduler }
     }
 
     fun computationTrampoline() {

@@ -15,6 +15,14 @@ class MoneyFormattingTests {
     }
 
     @Test
+    fun `FiatValue formatted as Money with rounding`() {
+        val money: Money = 1.695.cad()
+
+        money.toStringWithSymbol(Locale.CANADA) `should equal` "$1.69"
+        money.toStringWithoutSymbol(Locale.CANADA) `should equal` "1.69"
+    }
+
+    @Test
     fun `FiatValue JPY formatted as Money`() {
         val money: Money = 123.jpy()
         money.symbol(Locale.US) `should equal` "JPY"

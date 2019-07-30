@@ -28,6 +28,7 @@ import piuk.blockchain.androidbuysell.services.CoinifyService
 import piuk.blockchain.androidcore.data.auth.AuthService
 import piuk.blockchain.androidcore.injection.PresenterScope
 import com.blockchain.utils.Optional
+import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import javax.inject.Inject
 
@@ -225,15 +226,14 @@ class CoinifyDataManager @Inject constructor(
         offlineToken: String,
         inCurrency: String? = null,
         outCurrency: String? = null
-    ): Observable<PaymentMethod> =
+    ): Observable<List<PaymentMethod>> =
         authenticate(offlineToken) {
             coinifyService.getPaymentMethods(
                 inCurrency = inCurrency,
                 outCurrency = outCurrency,
                 accessToken = it.accessToken
             )
-        }.flattenAsObservable { it }
-            .applySchedulers()
+        }.applySchedulers().toObservable()
 
     /**
      * Creates a new trade with Coinify and returns a [CoinifyTrade] object wrapped in a [Single].
@@ -321,6 +321,9 @@ class CoinifyDataManager @Inject constructor(
             ).toSingle { Any() }
         }.ignoreElement()
             .applySchedulers()
+
+    fun getSupportedCountries(): Single<Map<String, CountrySupport>> =
+        coinifyService.getSupportedCountries().applySchedulers()
 
     /**
      * Adds the specified [BankAccount] object to the list of [BankAccount] objects associated

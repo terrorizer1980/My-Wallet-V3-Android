@@ -23,6 +23,6 @@ class KycTiersQueries(
                 tiers.tiers[user].state == KycTierState.None
             }
 
-    fun isKycResumbissionRequired(): Single<Boolean> =
+    fun isKycResubmissionRequired(): Single<Boolean> =
         nabuDataProvider.getUser().map { it.isMarkedForResubmission }
 }

@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.swipetoreceive
 
+import android.support.annotation.VisibleForTesting
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.toUri
 import info.blockchain.api.data.Balance
@@ -14,14 +15,14 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import timber.log.Timber
 import java.math.BigInteger
 
 class SwipeToReceiveHelper(
     private val payloadDataManager: PayloadDataManager,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val ethDataManager: EthDataManager,
     private val bchDataManager: BchDataManager,
     private val stringUtils: StringUtils,
@@ -67,6 +68,7 @@ class SwipeToReceiveHelper(
      * account name in SharedPrefs. Only stores addresses if enabled in SharedPrefs. This should be
      * called on a Computation thread as it can take up to 2 seconds on a mid-range device.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun updateAndStoreBitcoinAddresses(): Completable =
         Completable.fromCallable { storeBitcoinAddresses() }
 
@@ -99,6 +101,7 @@ class SwipeToReceiveHelper(
      * account name in SharedPrefs. Only stores addresses if enabled in SharedPrefs. This should be
      * called on a Computation thread as it can take up to 2 seconds on a mid-range device.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun updateAndStoreBitcoinCashAddresses(): Completable =
         Completable.fromCallable { storeBitcoinCashAddresses() }
 
@@ -106,17 +109,20 @@ class SwipeToReceiveHelper(
      * Stores the user's ETH address locally in SharedPrefs. Only stores addresses if enabled in
      * SharedPrefs.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun storeEthAddress(): Completable = if (getIfSwipeEnabled()) {
         Maybe.fromCallable { ethDataManager.getEthWallet()?.account?.address }
             .doOnSuccess {
                 it?.let { store(KEY_SWIPE_RECEIVE_ETH_ADDRESS, it) }
                     ?: Timber.e("ETH Wallet was null when attempting to store ETH address")
             }
+            .doOnError { Timber.e("Error fetching ETH account when attempting to store ETH address") }
             .ignoreElement()
     } else {
         Completable.complete()
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun storeXlmAddress(): Completable = if (getIfSwipeEnabled()) {
         xlmDataManager.defaultAccount()
             .doOnSuccess { store(KEY_SWIPE_RECEIVE_XLM_ADDRESS, it.toUri()) }
@@ -169,7 +175,7 @@ class SwipeToReceiveHelper(
      * return an empty list.
      */
     fun getBitcoinReceiveAddresses(): List<String> {
-        val addressString = prefsUtil.getValue(KEY_SWIPE_RECEIVE_BTC_ADDRESSES, "")
+        val addressString = prefs.getValue(KEY_SWIPE_RECEIVE_BTC_ADDRESSES, "")
         return when {
             addressString.isEmpty() -> emptyList()
             else -> addressString.split(",").dropLastWhile { it.isEmpty() }
@@ -181,7 +187,7 @@ class SwipeToReceiveHelper(
      * Bitcoin Cash. Can return an empty list.
      */
     fun getBitcoinCashReceiveAddresses(): List<String> {
-        val addressString = prefsUtil.getValue(KEY_SWIPE_RECEIVE_BCH_ADDRESSES, "")
+        val addressString = prefs.getValue(KEY_SWIPE_RECEIVE_BCH_ADDRESSES, "")
         return when {
             addressString.isEmpty() -> emptyList()
             else -> addressString.split(",").dropLastWhile { it.isEmpty() }
@@ -196,25 +202,23 @@ class SwipeToReceiveHelper(
     /**
      * Returns the previously stored Ethereum address or null if not stored
      */
-    fun getEthReceiveAddress(): String? =
-        prefsUtil.getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS, null)
+    fun getEthReceiveAddress(): String = prefs.getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS) ?: ""
 
     fun getXlmReceiveAddressSingle(): Single<String> = Single.just(getXlmReceiveAddress())
 
-    fun getXlmReceiveAddress(): String? =
-        prefsUtil.getValue(KEY_SWIPE_RECEIVE_XLM_ADDRESS, null)
+    fun getXlmReceiveAddress(): String = prefs.getValue(KEY_SWIPE_RECEIVE_XLM_ADDRESS) ?: ""
 
-    fun getPaxReceiveAddress(): String? = getEthReceiveAddress()
+    fun getPaxReceiveAddress(): String = getEthReceiveAddress()
 
     /**
      * Returns the Bitcoin account name associated with the receive addresses.
      */
-    fun getBitcoinAccountName(): String = prefsUtil.getValue(KEY_SWIPE_RECEIVE_BTC_ACCOUNT_NAME, "")
+    fun getBitcoinAccountName(): String = prefs.getValue(KEY_SWIPE_RECEIVE_BTC_ACCOUNT_NAME, "")
 
     /**
      * Returns the Bitcoin Cash account name associated with the receive addresses.
      */
-    fun getBitcoinCashAccountName(): String = prefsUtil.getValue(
+    fun getBitcoinCashAccountName(): String = prefs.getValue(
         KEY_SWIPE_RECEIVE_BCH_ACCOUNT_NAME,
         stringUtils.getString(R.string.bch_default_account_label)
     )
@@ -229,7 +233,7 @@ class SwipeToReceiveHelper(
     fun getPaxAccountName(): String = stringUtils.getString(R.string.pax_default_account_label)
 
     private fun getIfSwipeEnabled(): Boolean =
-        prefsUtil.getValue(PrefsUtil.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
+        prefs.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
 
     private fun getBalanceOfBtcAddresses(addresses: List<String>): Observable<LinkedHashMap<String, Balance>> =
         payloadDataManager.getBalanceOfAddresses(addresses)
@@ -240,16 +244,16 @@ class SwipeToReceiveHelper(
             .applySchedulers()
 
     private fun store(key: String, data: String) {
-        prefsUtil.setValue(key, data)
+        prefs.setValue(key, data)
     }
 
     fun clearStoredData() {
-        prefsUtil.removeValue(KEY_SWIPE_RECEIVE_BTC_ADDRESSES)
-        prefsUtil.removeValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS)
-        prefsUtil.removeValue(KEY_SWIPE_RECEIVE_BCH_ADDRESSES)
-        prefsUtil.removeValue(KEY_SWIPE_RECEIVE_XLM_ADDRESS)
-        prefsUtil.removeValue(KEY_SWIPE_RECEIVE_BTC_ACCOUNT_NAME)
-        prefsUtil.removeValue(KEY_SWIPE_RECEIVE_BCH_ACCOUNT_NAME)
+        prefs.removeValue(KEY_SWIPE_RECEIVE_BTC_ADDRESSES)
+        prefs.removeValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS)
+        prefs.removeValue(KEY_SWIPE_RECEIVE_BCH_ADDRESSES)
+        prefs.removeValue(KEY_SWIPE_RECEIVE_XLM_ADDRESS)
+        prefs.removeValue(KEY_SWIPE_RECEIVE_BTC_ACCOUNT_NAME)
+        prefs.removeValue(KEY_SWIPE_RECEIVE_BCH_ACCOUNT_NAME)
     }
 
     internal companion object {

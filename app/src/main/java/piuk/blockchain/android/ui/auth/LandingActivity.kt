@@ -11,6 +11,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.data.connectivity.ConnectivityStatus
 import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.createwallet.CreateWalletActivity
+import piuk.blockchain.android.ui.debug.DebugOptionsBottomDialog
 import piuk.blockchain.android.ui.login.LoginActivity
 import piuk.blockchain.android.ui.recover.RecoverFundsActivity
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
@@ -69,7 +70,7 @@ class LandingActivity : BaseMvpActivity<LandingView, LandingPresenter>(), Landin
     override fun showDebugMenu() {
         buttonSettings.visible()
         buttonSettings.setOnClickListener {
-            EnvironmentSwitcher(this, prefsUtil, appUtil).showDebugMenu()
+            DebugOptionsBottomDialog.show(supportFragmentManager)
         }
     }
 

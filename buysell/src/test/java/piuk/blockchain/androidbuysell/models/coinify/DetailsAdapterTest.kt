@@ -55,7 +55,7 @@ class DetailsAdapterTest {
         details `should be instance of` BlockchainDetails::class
         details as BlockchainDetails
         details.account `should be instance of` String::class.java
-        details.account `should equal to` "16yaQgjFfViVyekj6XKNyTzX7Mu4bqmBMQ"
+        details.account!! `should equal to` "16yaQgjFfViVyekj6XKNyTzX7Mu4bqmBMQ"
     }
 
     companion object {

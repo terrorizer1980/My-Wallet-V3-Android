@@ -14,11 +14,11 @@ class FiatValueFromMajorTests {
     }
 
     @Test
-    fun `from major GBP - rounds up midway`() {
+    fun `from major GBP - rounds down above midway`() {
         FiatValue.fromMajor(
             "GBP",
             1.235.toBigDecimal()
-        ) `should equal` 1.24.gbp()
+        ) `should equal` 1.23.gbp()
     }
 
     @Test

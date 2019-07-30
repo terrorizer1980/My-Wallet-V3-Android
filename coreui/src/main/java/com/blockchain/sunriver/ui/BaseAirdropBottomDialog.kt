@@ -9,10 +9,8 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.airdrop_bottom_dialog.*
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.visible
@@ -44,46 +42,41 @@ abstract class BaseAirdropBottomDialog(
     ): View {
         val contextThemeWrapper = ContextThemeWrapper(activity, R.style.AppTheme)
         val themedInflater = inflater.cloneInContext(contextThemeWrapper)
-        val view = themedInflater.inflate(layout, container, false)
-        view.findViewById<TextView>(R.id.dialog_title).setText(content.title)
-        view.findViewById<TextView>(R.id.dialog_body).setText(content.description)
-        view.findViewById<Button>(R.id.button_cta)
-            .apply {
+        return themedInflater.inflate(layout, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        dialog_title.setText(content.title)
+        dialog_body.setText(content.description)
+        button_cta.apply {
                 if (content.ctaButtonText != 0) {
                     setText(content.ctaButtonText)
-                    setOnClickListener {
-                        ctaButtonClick()
-                    }
+                    setOnClickListener { ctaButtonClick() }
                     visible()
                 } else {
                     gone()
                 }
             }
-        view.findViewById<TextView>(R.id.button_dismiss).apply {
+
+        button_dismiss.apply {
             if (content.dismissText != 0) {
                 setText(content.dismissText)
-                setOnClickListener {
-                    dismissButtonClick()
-                }
+                setOnClickListener { dismissButtonClick() }
                 visible()
             } else {
                 gone()
             }
         }
-        listOf(R.id.xlm_icon)
-            .forEach { id ->
-                view.findViewById<View>(id)
-                    .setOnClickListener {
-                        xlmLogoClick()
-                    }
-            }
+
+        img_icon.setOnClickListener { iconClick() }
         content.iconDrawable?.let {
-            view.findViewById<ImageView>(R.id.xlm_icon).setImageResource(it)
+            img_icon.setImageResource(it)
         }
-        return view
     }
 
-    abstract fun xlmLogoClick()
+    abstract fun iconClick()
 
     abstract fun ctaButtonClick()
 

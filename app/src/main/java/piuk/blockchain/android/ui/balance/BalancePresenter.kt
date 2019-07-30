@@ -1,10 +1,7 @@
 package piuk.blockchain.android.ui.balance
 
 import android.support.annotation.VisibleForTesting
-import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.nabu.CurrentTier
 import com.blockchain.notifications.models.NotificationPayload
-import com.blockchain.preferences.FiatCurrencyPreference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.formatWithUnit
@@ -23,7 +20,6 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
-import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
@@ -41,7 +37,7 @@ import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.base.UiState
@@ -52,11 +48,10 @@ class BalancePresenter(
     private val transactionListDataManager: TransactionListDataManager,
     private val ethDataManager: EthDataManager,
     private val paxAccount: Erc20Account,
-    private val swipeToReceiveHelper: SwipeToReceiveHelper,
     internal val payloadDataManager: PayloadDataManager,
     private val buyDataManager: BuyDataManager,
     private val stringUtils: StringUtils,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val rxBus: RxBus,
     private val currencyState: CurrencyState,
     private val shapeShiftDataManager: ShapeShiftDataManager,
@@ -65,9 +60,7 @@ class BalancePresenter(
     private val environmentSettings: EnvironmentConfig,
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager,
-    private val fiatExchangeRates: FiatExchangeRates,
-    private val fiatCurrencyPreference: FiatCurrencyPreference,
-    private val currentTier: CurrentTier
+    private val fiatExchangeRates: FiatExchangeRates
 ) : BasePresenter<BalanceView>() {
 
     @VisibleForTesting
@@ -95,14 +88,8 @@ class BalancePresenter(
             view.disableCurrencyHeader()
         }
 
-        compositeDisposable += exchangePaxRequested.switchMap {
-            currentTier.usersCurrentTier().toObservable()
-        }.subscribe {
-            if (it > 0) {
-                view.swap()
-            } else {
-                view.startKyc(CampaignType.Swap)
-            }
+        compositeDisposable += exchangePaxRequested.subscribe {
+            view.startSwapOrKyc(currencyState.cryptoCurrency)
         }
     }
 
@@ -197,7 +184,6 @@ class BalancePresenter(
     internal fun updateTransactionsListCompletable(account: ItemAccount): Completable {
         return Completable.fromObservable(
             transactionListDataManager.fetchTransactions(account, 50, 0)
-                .doAfterTerminate(this::storeSwipeReceiveAddresses)
                 .map { txs ->
                     Observable.zip(
                         getShapeShiftTxNotesObservable(),
@@ -359,10 +345,10 @@ class BalancePresenter(
     private fun getShapeShiftTxNotesObservable() =
         shapeShiftDataManager.getTradesList()
             .addToCompositeDisposable(this)
-            .map {
+            .map { list ->
                 val mutableMap: MutableMap<String, String> = mutableMapOf()
 
-                for (trade in it) {
+                for (trade in list) {
                     trade.hashIn?.let {
                         mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_to))
                     }
@@ -378,9 +364,9 @@ class BalancePresenter(
     private fun getCoinifyTxNotesObservable() =
         tokenSingle.flatMap { coinifyDataManager.getTrades(it).toList() }
             .addToCompositeDisposable(this)
-            .map {
+            .map { list ->
                 val mutableMap: MutableMap<String, String> = mutableMapOf()
-                for (trade in it) {
+                for (trade in list) {
                     val transfer = if (trade.isSellTransaction()) {
                         trade.transferIn.details as BlockchainDetails
                     } else {
@@ -402,17 +388,8 @@ class BalancePresenter(
             .doOnError { Timber.e(it) }
             .onErrorReturn { mutableMapOf() }
 
-    private fun storeSwipeReceiveAddresses() {
-        compositeDisposable +=
-            swipeToReceiveHelper.storeAll()
-                .subscribeOn(Schedulers.computation())
-                .subscribe(
-                    { /* No-op */ },
-                    { Timber.e(it) })
-    }
     // endregion
 
-    // region Helper methods
     private fun CryptoValue.getFiatDisplayString(): String =
         fiatExchangeRates.getFiat(this).toStringWithSymbol()
 
@@ -425,14 +402,7 @@ class BalancePresenter(
         }
 
     internal fun areLauncherShortcutsEnabled() =
-        prefsUtil.getValue(PrefsUtil.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
+        prefs.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
 
     internal fun getCurrentCurrency() = currencyState.cryptoCurrency
-
-    fun fiatDefaultCurrency(): String =
-        fiatCurrencyPreference.fiatCurrencyPreference
-
-    fun tierLever(): Observable<Int> =
-        currentTier.usersCurrentTier().toObservable()
-    // endregion
 }

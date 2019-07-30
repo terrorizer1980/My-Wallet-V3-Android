@@ -31,7 +31,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.transactions.models.Displayable
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
@@ -44,7 +44,7 @@ import kotlin.collections.HashMap
 
 class TransactionDetailPresenter constructor(
     private val transactionHelper: TransactionHelper,
-    prefsUtil: PrefsUtil,
+    prefs: PersistentPrefs,
     private val payloadDataManager: PayloadDataManager,
     private val stringUtils: StringUtils,
     private val transactionListDataManager: TransactionListDataManager,
@@ -55,7 +55,7 @@ class TransactionDetailPresenter constructor(
     private val xlmDataManager: XlmDataManager
 ) : BasePresenter<TransactionDetailView>() {
 
-    private val fiatType: String = prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY)
+    private val fiatType = prefs.selectedFiatCurrency
 
     @VisibleForTesting
     lateinit var displayable: Displayable
@@ -171,14 +171,14 @@ class TransactionDetailPresenter constructor(
             xlmDataManager.defaultAccount()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onSuccess = {
+                    onSuccess = { account ->
                         var fromAddress = displayable.inputsMap.keys.first()
                         var toAddress = displayable.outputsMap.keys.first()
-                        if (fromAddress == it.accountId) {
-                            fromAddress = it.label
+                        if (fromAddress == account.accountId) {
+                            fromAddress = account.label
                         }
-                        if (toAddress == it.accountId) {
-                            toAddress = it.label
+                        if (toAddress == account.accountId) {
+                            toAddress = account.label
                         }
 
                         view?.let {

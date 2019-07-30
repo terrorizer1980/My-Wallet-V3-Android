@@ -4,13 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Camera
-
-import java.io.File
-
 import info.blockchain.wallet.payload.PayloadManagerWiper
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.PrefsUtil
 
 class AppUtil(
     private val context: Context,
@@ -18,28 +14,23 @@ class AppUtil(
     private var accessState: AccessState,
     private val prefs: PersistentPrefs
 ) {
-    // getExternalCacheDir can return null if permission for write storage not granted
-    // or if running on an emulator
-    val receiveQRFilename: String
-        get() = context.externalCacheDir.toString() + File.separator + "qr.png"
-
     val isSane: Boolean
         get() {
-            val guid = prefs.getValue(PrefsUtil.KEY_GUID, "")
+            val guid = prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, "")
 
             if (!guid.matches(REGEX_UUID.toRegex())) {
                 return false
             }
 
-            val encryptedPassword = prefs.getValue(PrefsUtil.KEY_ENCRYPTED_PASSWORD, "")
-            val pinID = prefs.getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "")
+            val encryptedPassword = prefs.getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, "")
+            val pinID = prefs.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")
 
             return !(encryptedPassword.isEmpty() || pinID.isEmpty())
         }
 
     var sharedKey: String
-        get() = prefs.getValue(PrefsUtil.KEY_SHARED_KEY, "")
-        set(sharedKey) = prefs.setValue(PrefsUtil.KEY_SHARED_KEY, sharedKey)
+        get() = prefs.getValue(PersistentPrefs.KEY_SHARED_KEY, "")
+        set(sharedKey) = prefs.setValue(PersistentPrefs.KEY_SHARED_KEY, sharedKey)
 
     val packageManager: PackageManager
         get() = context.packageManager
@@ -85,16 +76,7 @@ class AppUtil(
                 putExtra("verified", true)
             }
         )
-        AccessState.getInstance().logIn()
-    }
-
-    fun deleteQR() {
-        // getExternalCacheDir can return null if permission for write storage not granted
-        // or if running on an emulator
-        val file = File(context.externalCacheDir.toString() + File.separator + "qr.png")
-        if (file.exists()) {
-            file.delete()
-        }
+        accessState.logIn()
     }
 
     companion object {

@@ -2,13 +2,13 @@ package piuk.blockchain.android.ui.home
 
 import android.content.Intent
 import android.support.annotation.StringRes
-import com.blockchain.kycui.navhost.models.CampaignType
+import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.data.datamanagers.PromptDlgFactory
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
-interface MainView : View {
+interface MainView : View, HomeNavigator {
 
     @Deprecated("Used for processing deep links. Find a way to get rid of this")
     fun getStartIntent(): Intent
@@ -29,6 +29,8 @@ interface MainView : View {
 
     fun setBuySellEnabled(enabled: Boolean, useWebView: Boolean)
 
+    fun setPitEnabled(enabled: Boolean)
+
     fun showTradeCompleteMsg(txHash: String)
 
     fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails)
@@ -39,21 +41,17 @@ interface MainView : View {
 
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
 
-    fun showExchange()
+    fun showHomebrewDebugMenu()
 
-    fun hideExchange()
+    fun enableSwapButton(isEnabled: Boolean)
+
+    fun displayLockboxMenu(lockboxAvailable: Boolean)
 
     fun showTestnetWarning()
 
-    fun onStartLegacyBuySell()
-
     fun onStartBuySell()
 
-    fun showHomebrewDebug()
-
-    fun displayLockbox(lockboxAvailable: Boolean)
-
-    fun launchKyc(campaignType: CampaignType)
+    fun launchSwap(defCurrency: String, targetCrypto: CryptoCurrency? = null)
 
     fun refreshDashboard()
 

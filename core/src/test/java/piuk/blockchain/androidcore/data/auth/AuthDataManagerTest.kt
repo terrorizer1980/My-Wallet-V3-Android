@@ -20,14 +20,14 @@ import org.mockito.ArgumentMatchers.anyString
 import piuk.blockchain.android.testutils.RxTest
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.AESUtilWrapper
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
 import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
 class AuthDataManagerTest : RxTest() {
 
-    private val prefsUtil: PrefsUtil = mock()
+    private val prefsUtil: PersistentPrefs = mock()
     private val authService: AuthService = mock()
     private val accessState: AccessState = mock()
     private val aesUtilWrapper: AESUtilWrapper = mock()
@@ -107,8 +107,8 @@ class AuthDataManagerTest : RxTest() {
         val plaintextPassword = "PLAINTEXT_PASSWORD"
         val status = Status()
         status.success = decryptionKey
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "")).thenReturn(key)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_ENCRYPTED_PASSWORD, ""))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")).thenReturn(key)
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, ""))
             .thenReturn(encryptedPassword)
         whenever(authService.validateAccess(key, pin))
             .thenReturn(Observable.just(Response.success(status)))
@@ -125,8 +125,8 @@ class AuthDataManagerTest : RxTest() {
         verify(accessState).pin = pin
         verify(accessState).isNewlyCreated = false
         verifyNoMoreInteractions(accessState)
-        verify(prefsUtil).getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "")
-        verify(prefsUtil).getValue(PrefsUtil.KEY_ENCRYPTED_PASSWORD, "")
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, "")
         verifyNoMoreInteractions(prefsUtil)
         verify(authService).validateAccess(key, pin)
         verifyNoMoreInteractions(authService)
@@ -151,8 +151,8 @@ class AuthDataManagerTest : RxTest() {
         val decryptionKey = "DECRYPTION_KEY"
         val status = Status()
         status.success = decryptionKey
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "")).thenReturn(key)
-        whenever(prefsUtil.getValue(PrefsUtil.KEY_ENCRYPTED_PASSWORD, ""))
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")).thenReturn(key)
+        whenever(prefsUtil.getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, ""))
             .thenReturn(encryptedPassword)
         whenever(authService.validateAccess(key, pin))
             .thenReturn(
@@ -171,8 +171,8 @@ class AuthDataManagerTest : RxTest() {
         // Assert
         verify(accessState).pin = pin
         verifyNoMoreInteractions(accessState)
-        verify(prefsUtil).getValue(PrefsUtil.KEY_PIN_IDENTIFIER, "")
-        verify(prefsUtil).getValue(PrefsUtil.KEY_ENCRYPTED_PASSWORD, "")
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")
+        verify(prefsUtil).getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, "")
         verifyNoMoreInteractions(prefsUtil)
         verify(authService).validateAccess(key, pin)
         verifyNoMoreInteractions(authService)
@@ -238,11 +238,8 @@ class AuthDataManagerTest : RxTest() {
             eq(AESUtil.PIN_PBKDF2_ITERATIONS)
         )
         verifyNoMoreInteractions(aesUtilWrapper)
-        verify(prefsUtil).setValue(PrefsUtil.KEY_ENCRYPTED_PASSWORD, encryptedPassword)
-        verify(prefsUtil).setValue(
-            eq(PrefsUtil.KEY_PIN_IDENTIFIER),
-            anyString()
-        )
+        verify(prefsUtil).setValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, encryptedPassword)
+        verify(prefsUtil).setValue(eq(PersistentPrefs.KEY_PIN_IDENTIFIER), anyString())
         verifyNoMoreInteractions(prefsUtil)
         observer.assertComplete()
         observer.assertNoErrors()

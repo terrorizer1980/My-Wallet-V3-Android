@@ -59,6 +59,9 @@ dependencies {
     // Logging
     api Libraries.timber
 
+    // Firebase
+    implementation Libraries.firebaseConfig
+
     // Unit Test dependencies
     testImplementation Libraries.json
     testImplementation Libraries.junit

@@ -15,11 +15,17 @@ internal class SettingsEmailAndSyncUpdater(
             .toJustEmail()
     }
 
-    override fun updateEmailAndSync(email: String): Single<Email> {
+    override fun updateEmailAndSync(email: String): Single<Email> =
+        doUpdateEmailAndSync(email, null)
+
+    override fun updateEmailAndSync(email: String, context: String): Single<Email> =
+        doUpdateEmailAndSync(email, context)
+
+    private fun doUpdateEmailAndSync(email: String, context: String?): Single<Email> {
         return email()
             .flatMap { existing ->
                 if (!existing.verified || existing.address != email) {
-                    settingsDataManager.updateEmail(email)
+                    settingsDataManager.updateEmail(email, context)
                         .flatMapSingle { settings ->
                             nabuUserSync
                                 .syncUser()

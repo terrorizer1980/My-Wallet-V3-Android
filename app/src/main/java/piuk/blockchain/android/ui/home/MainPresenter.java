@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.home;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.blockchain.kyc.models.nabu.CampaignData;
@@ -13,7 +13,9 @@ import com.blockchain.kycui.settings.KycStatusHelper;
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper;
 import com.blockchain.kycui.sunriver.SunriverCardType;
 import com.blockchain.lockbox.data.LockboxDataManager;
-import com.blockchain.preferences.FiatCurrencyPreference;
+import com.blockchain.nabu.CurrentTier;
+import com.blockchain.remoteconfig.FeatureFlag;
+import com.blockchain.remoteconfig.RemoteConfig;
 import com.blockchain.sunriver.XlmDataManager;
 
 import info.blockchain.balance.CryptoCurrency;
@@ -25,10 +27,12 @@ import info.blockchain.wallet.payload.PayloadManagerWiper;
 import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import kotlin.Unit;
 import piuk.blockchain.android.BuildConfig;
@@ -37,9 +41,11 @@ import piuk.blockchain.android.data.cache.DynamicFeeCache;
 import piuk.blockchain.android.data.datamanagers.PromptManager;
 import piuk.blockchain.android.data.rxjava.RxUtil;
 import piuk.blockchain.android.deeplink.DeepLinkProcessor;
+import piuk.blockchain.android.deeplink.EmailVerifiedLinkState;
 import piuk.blockchain.android.deeplink.LinkState;
 import piuk.blockchain.android.kyc.KycLinkState;
 import piuk.blockchain.android.sunriver.CampaignLinkState;
+import piuk.blockchain.android.thepit.PitLinking;
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter;
 import piuk.blockchain.android.ui.home.models.MetadataEvent;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
@@ -76,7 +82,6 @@ public class MainPresenter extends BasePresenter<MainView> {
     private AccessState accessState;
     private PayloadManagerWiper payloadManagerWiper;
     private PayloadDataManager payloadDataManager;
-    private Context applicationContext;
     private SettingsDataManager settingsDataManager;
     private BuyDataManager buyDataManager;
     private DynamicFeeCache dynamicFeeCache;
@@ -96,11 +101,13 @@ public class MainPresenter extends BasePresenter<MainView> {
     private CoinifyDataManager coinifyDataManager;
     private ExchangeService exchangeService;
     private KycStatusHelper kycStatusHelper;
-    private FiatCurrencyPreference fiatCurrencyPreference;
+    private CurrentTier currentKycTier;
     private LockboxDataManager lockboxDataManager;
     private DeepLinkProcessor deepLinkProcessor;
     private SunriverCampaignHelper sunriverCampaignHelper;
     private XlmDataManager xlmDataManager;
+    private final FeatureFlag pitFeatureFlag;
+    private PitLinking pitLinking;
 
     @Inject
     MainPresenter(PersistentPrefs prefs,
@@ -108,7 +115,6 @@ public class MainPresenter extends BasePresenter<MainView> {
                   AccessState accessState,
                   PayloadManagerWiper payloadManagerWiper,
                   PayloadDataManager payloadDataManager,
-                  Context applicationContext,
                   SettingsDataManager settingsDataManager,
                   BuyDataManager buyDataManager,
                   DynamicFeeCache dynamicFeeCache,
@@ -127,19 +133,20 @@ public class MainPresenter extends BasePresenter<MainView> {
                   CoinifyDataManager coinifyDataManager,
                   ExchangeService exchangeService,
                   KycStatusHelper kycStatusHelper,
-                  FiatCurrencyPreference fiatCurrencyPreference,
+                  CurrentTier currentKycTier,
                   LockboxDataManager lockboxDataManager,
                   DeepLinkProcessor deepLinkProcessor,
                   SunriverCampaignHelper sunriverCampaignHelper,
                   XlmDataManager xlmDataManager,
-                  Erc20Account paxAccount) {
+                  Erc20Account paxAccount,
+                  @Named("ff_pit_linking") FeatureFlag pitFeatureFlag,
+                  PitLinking pitLinking) {
 
         this.prefs = prefs;
         this.appUtil = appUtil;
         this.accessState = accessState;
         this.payloadManagerWiper = payloadManagerWiper;
         this.payloadDataManager = payloadDataManager;
-        this.applicationContext = applicationContext;
         this.settingsDataManager = settingsDataManager;
         this.buyDataManager = buyDataManager;
         this.dynamicFeeCache = dynamicFeeCache;
@@ -158,12 +165,14 @@ public class MainPresenter extends BasePresenter<MainView> {
         this.coinifyDataManager = coinifyDataManager;
         this.exchangeService = exchangeService;
         this.kycStatusHelper = kycStatusHelper;
-        this.fiatCurrencyPreference = fiatCurrencyPreference;
+        this.currentKycTier = currentKycTier;
         this.lockboxDataManager = lockboxDataManager;
         this.deepLinkProcessor = deepLinkProcessor;
         this.sunriverCampaignHelper = sunriverCampaignHelper;
         this.xlmDataManager = xlmDataManager;
         this.paxAccount = paxAccount;
+        this.pitFeatureFlag = pitFeatureFlag;
+        this.pitLinking = pitLinking;
     }
 
     @SuppressLint("CheckResult")
@@ -198,14 +207,21 @@ public class MainPresenter extends BasePresenter<MainView> {
             initMetadataElements();
 
             doPushNotifications();
+
+            checkPitAvailability();
         }
+    }
+
+    private void checkPitAvailability() {
+        getCompositeDisposable().add(pitFeatureFlag.getEnabled().subscribe(enabled ->
+                getView().setPitEnabled(enabled)));
     }
 
     @SuppressLint("CheckResult")
     private void checkLockboxAvailability() {
         lockboxDataManager.isLockboxAvailable()
                 .compose(RxUtil.addSingleToCompositeDisposable(this))
-                .subscribe((enabled, ignored) -> getView().displayLockbox(enabled));
+                .subscribe((enabled, ignored) -> getView().displayLockboxMenu(enabled));
     }
 
     /**
@@ -240,20 +256,14 @@ public class MainPresenter extends BasePresenter<MainView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(RxUtil.addSingleToCompositeDisposable(this))
                 .subscribe(
-                        this::setExchangeVisiblity,
+                        getView()::enableSwapButton,
                         Timber::e
                 );
     }
 
-    private void setExchangeVisiblity(boolean showExchange) {
+    private void setDebugExchangeVisiblity() {
         if (BuildConfig.DEBUG) {
-            getView().showHomebrewDebug();
-        }
-
-        if (showExchange) {
-            getView().showExchange();
-        } else {
-            getView().hideExchange();
+            getView().showHomebrewDebugMenu();
         }
     }
 
@@ -298,6 +308,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                 )
                 .subscribe(() -> {
                     checkKycStatus();
+                    setDebugExchangeVisiblity();
                     if (AppUtil.Companion.isBuySellPermitted()) {
                         initBuyService();
                     } else {
@@ -324,36 +335,61 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private void checkForPendingLinks() {
         getCompositeDisposable().add(
-                deepLinkProcessor
-                        .getLink(getView().getStartIntent())
-                        .subscribe(
-                                linkState -> {
-                                    if (linkState instanceof LinkState.SunriverDeepLink) {
-                                        final CampaignLinkState campaignLinkState = ((LinkState.SunriverDeepLink) linkState).getLink();
-                                        if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
-                                            getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
-                                        } else if (campaignLinkState instanceof CampaignLinkState.Data) {
-                                            registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
-                                        }
-                                    } else if (linkState instanceof LinkState.KycDeepLink) {
-                                        final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
-                                        final KycLinkState kycLinkState = deepLink.getLink();
-                                        if (kycLinkState instanceof KycLinkState.Resubmit) {
-                                            getView().launchKyc(CampaignType.Resubmission);
-                                        } else if (kycLinkState instanceof KycLinkState.EmailVerified) {
-                                            getView().launchKyc(CampaignType.Swap);
-                                        } else if (kycLinkState instanceof KycLinkState.General) {
-                                            final CampaignData data = ((KycLinkState.General) kycLinkState).getCampaignData();
-                                            if (data != null) {
-                                                registerForCampaign(data);
-                                            } else {
-                                                getView().launchKyc(CampaignType.Swap);
-                                            }
-                                        }
-                                    }
-                                }, Timber::e
-                        )
-        );
+            deepLinkProcessor
+                .getLink(getView().getStartIntent())
+                .subscribe(
+                    linkState -> {
+                        if (linkState instanceof LinkState.SunriverDeepLink) {
+                            handleSunriverDeepLink(linkState);
+                        } else if (linkState instanceof LinkState.EmailVerifiedDeepLink) {
+                            handleEmailVerifiedDeepLink(linkState);
+                        } else if (linkState instanceof LinkState.KycDeepLink) {
+                            handleKycDeepLink(linkState);
+                        } else if (linkState instanceof LinkState.ThePitDeepLink) {
+                            handleThePitDeepLink(linkState);
+                        }
+                    }, Timber::e
+                )
+            );
+    }
+
+    private void handleSunriverDeepLink(LinkState linkState) {
+        final CampaignLinkState campaignLinkState = ((LinkState.SunriverDeepLink) linkState).getLink();
+        if (campaignLinkState instanceof CampaignLinkState.WrongUri) {
+            getView().displayDialog(R.string.sunriver_invalid_url_title, R.string.sunriver_invalid_url_message);
+        } else if (campaignLinkState instanceof CampaignLinkState.Data) {
+            registerForCampaign(((CampaignLinkState.Data) campaignLinkState).getCampaignData());
+        }
+    }
+
+    private void handleKycDeepLink(LinkState linkState) {
+        final LinkState.KycDeepLink deepLink = (LinkState.KycDeepLink) linkState;
+        final KycLinkState kycLinkState = deepLink.getLink();
+
+        if (kycLinkState instanceof KycLinkState.Resubmit) {
+            getView().launchKyc(CampaignType.Resubmission);
+        } else if (kycLinkState instanceof KycLinkState.EmailVerified) {
+            getView().launchKyc(CampaignType.Swap);
+        } else if (kycLinkState instanceof KycLinkState.General) {
+            final CampaignData data = ((KycLinkState.General) kycLinkState).getCampaignData();
+            if (data != null) {
+                registerForCampaign(data);
+            } else {
+                getView().launchKyc(CampaignType.Swap);
+            }
+        }
+    }
+
+    private void handleThePitDeepLink(LinkState linkState) {
+        LinkState.ThePitDeepLink pitLink = (LinkState.ThePitDeepLink) linkState;
+        getView().launchThePitLinking(pitLink.getLinkId());
+    }
+
+    private void handleEmailVerifiedDeepLink(LinkState linkState) {
+        final EmailVerifiedLinkState state = ((LinkState.EmailVerifiedDeepLink) linkState).getLink();
+        if (state == EmailVerifiedLinkState.FromPitLinking) {
+            showThePitOrPitLinkingView(prefs.getPitToWalletLinkId());
+        }
     }
 
     private void registerForCampaign(CampaignData data) {
@@ -411,7 +447,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         return ethDataManager.initEthereumWallet(
                 stringUtils.getString(R.string.eth_default_account_label),
                 stringUtils.getString(R.string.pax_default_account_label)
-                )
+        )
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
                 .doOnError(throwable -> {
                     Logging.INSTANCE.logException(throwable);
@@ -442,20 +478,20 @@ public class MainPresenter extends BasePresenter<MainView> {
      */
     private Completable feesCompletable() {
         return feeDataManager.getBtcFeeOptions()
-                .doOnNext(btcFeeOptions -> dynamicFeeCache.setBtcFeeOptions(btcFeeOptions))
-                .ignoreElements()
-                .onErrorComplete()
-                .andThen(feeDataManager.getEthFeeOptions()
-                        .doOnNext(ethFeeOptions -> dynamicFeeCache.setEthFeeOptions(ethFeeOptions))
-                        .ignoreElements()
-                        .onErrorComplete()
-                )
-                .andThen(feeDataManager.getBchFeeOptions()
-                        .doOnNext(bchFeeOptions -> dynamicFeeCache.setBchFeeOptions(bchFeeOptions))
-                        .ignoreElements()
-                        .onErrorComplete()
-                )
-                .subscribeOn(Schedulers.io());
+            .doOnNext(btcFeeOptions -> dynamicFeeCache.setBtcFeeOptions(btcFeeOptions))
+            .ignoreElements()
+            .onErrorComplete()
+            .andThen(feeDataManager.getEthFeeOptions()
+                    .doOnNext(ethFeeOptions -> dynamicFeeCache.setEthFeeOptions(ethFeeOptions))
+                    .ignoreElements()
+                    .onErrorComplete()
+            )
+            .andThen(feeDataManager.getBchFeeOptions()
+                    .doOnNext(bchFeeOptions -> dynamicFeeCache.setBchFeeOptions(bchFeeOptions))
+                    .ignoreElements()
+                    .onErrorComplete()
+            )
+            .subscribeOn(Schedulers.io());
     }
 
     private Completable exchangeRateCompletable() {
@@ -467,10 +503,10 @@ public class MainPresenter extends BasePresenter<MainView> {
     void unPair() {
         getView().clearAllDynamicShortcuts();
         payloadManagerWiper.wipe();
-        accessState.logout(applicationContext);
+        accessState.logout();
         accessState.unpairWallet();
         appUtil.restartApp(LauncherActivity.class);
-        accessState.setPIN(null);
+        accessState.setPin(null);
         buyDataManager.wipe();
         ethDataManager.clearEthAccountDetails();
         paxAccount.clear();
@@ -481,7 +517,6 @@ public class MainPresenter extends BasePresenter<MainView> {
     @Override
     public void onViewDestroyed() {
         super.onViewDestroyed();
-        appUtil.deleteQR();
         dismissAnnouncementIfOnboardingCompleted();
     }
 
@@ -502,7 +537,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     String getDefaultCurrency() {
-        return fiatCurrencyPreference.getFiatCurrencyPreference();
+        return prefs.getSelectedFiatCurrency();
     }
 
     private void initBuyService() {
@@ -573,12 +608,53 @@ public class MainPresenter extends BasePresenter<MainView> {
         buyDataManager.isCoinifyAllowed()
                 .compose(RxUtil.addObservableToCompositeDisposable(this))
                 .subscribe(coinifyAllowed -> {
-
-                    if (coinifyAllowed) {
+                    if (coinifyAllowed)
                         getView().onStartBuySell();
-                    } else {
-                        getView().onStartLegacyBuySell();
-                    }
                 }, Throwable::printStackTrace);
+    }
+
+    void clearLoginState() {
+        accessState.logout();
+    }
+
+    @SuppressLint("CheckResult")
+    void startSwapOrKyc(@Nullable CryptoCurrency targetCurrency /* = null*/) {
+        currentKycTier.usersCurrentTier()
+                .compose(RxUtil.addSingleToCompositeDisposable(this))
+                .subscribe(
+                        currentTier -> {
+                            if (currentTier > 0) {
+                                getView().launchSwap(
+                                        prefs.getSelectedFiatCurrency(),
+                                        targetCurrency
+                                );
+                            } else {
+                                getView().launchKyc(CampaignType.Swap);
+                            }
+                        },
+                        Timber::e
+                );
+    }
+
+    public void onThePitMenuClicked() {
+        showThePitOrPitLinkingView("");
+    }
+
+    @SuppressLint("CheckResult")
+    private void showThePitOrPitLinkingView(String linkId) {
+        getCompositeDisposable().add(
+            pitLinking.isPitLinked()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    isLinked -> {
+                        if (isLinked) {
+                            getView().launchThePit();
+                        } else {
+                            getView().launchThePitLinking(linkId);
+                        }
+                    },
+                    Timber::e
+                )
+        );
     }
 }

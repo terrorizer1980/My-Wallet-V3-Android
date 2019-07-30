@@ -4,6 +4,7 @@ import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.cad
 import com.blockchain.testutils.ether
 import com.blockchain.testutils.usd
+import com.blockchain.testutils.usdPax
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.mock
 import org.junit.Test
@@ -39,7 +40,7 @@ class ExchangeViewStateValidityTest {
                 fromFiat = 11.usd(),
                 latestQuote = Quote(
                     fix = Fix.BASE_FIAT,
-                    from = Quote.Value(cryptoValue = mock(), fiatValue = 11.usd()),
+                    from = Quote.Value(cryptoValue = 5.ether(), fiatValue = 11.usd()),
                     to = mock()
                 )
             )
@@ -54,7 +55,7 @@ class ExchangeViewStateValidityTest {
                 toCrypto = 12.ether(),
                 latestQuote = Quote(
                     fix = Fix.COUNTER_CRYPTO,
-                    from = Quote.Value(cryptoValue = mock(), fiatValue = mock()),
+                    from = Quote.Value(cryptoValue = 1.bitcoin(), fiatValue = mock()),
                     to = Quote.Value(cryptoValue = 12.ether(), fiatValue = mock())
                 )
             )
@@ -69,8 +70,8 @@ class ExchangeViewStateValidityTest {
                 toFiat = 13.usd(),
                 latestQuote = Quote(
                     fix = Fix.COUNTER_FIAT,
-                    from = mock(),
-                    to = Quote.Value(cryptoValue = mock(), fiatValue = 13.usd())
+                    from = Quote.Value(cryptoValue = 1.ether(), fiatValue = mock()),
+                    to = Quote.Value(cryptoValue = 1.bitcoin(), fiatValue = 13.usd())
                 )
             )
             .assertValid()
@@ -244,6 +245,40 @@ class ExchangeViewStateValidityTest {
                     from = Quote.Value(cryptoValue = 10.ether(), fiatValue = 90.cad()),
                     to = mock()
                 )
+            )
+            .assertValid()
+    }
+
+    @Test
+    fun `is not valid when swapping PAX with ETH transaction in flight`() {
+        givenExchangeState()
+            .copy(
+                maxTradeLimit = 100.cad(),
+                fix = Fix.BASE_CRYPTO,
+                fromCrypto = 10.usdPax(),
+                latestQuote = Quote(
+                    fix = Fix.BASE_CRYPTO,
+                    from = Quote.Value(cryptoValue = 10.usdPax(), fiatValue = 90.cad()),
+                    to = mock()
+                ),
+                hasEthTransactionPending = true
+            )
+            .assertNotValid(QuoteValidity.HasTransactionInFlight)
+    }
+
+    @Test
+    fun `is valid when swapping BTC with ETH transaction in flight`() {
+        givenExchangeState()
+            .copy(
+                maxTradeLimit = 100.cad(),
+                fix = Fix.BASE_CRYPTO,
+                fromCrypto = 10.bitcoin(),
+                latestQuote = Quote(
+                    fix = Fix.BASE_CRYPTO,
+                    from = Quote.Value(cryptoValue = 10.bitcoin(), fiatValue = 90.cad()),
+                    to = mock()
+                ),
+                hasEthTransactionPending = true
             )
             .assertValid()
     }

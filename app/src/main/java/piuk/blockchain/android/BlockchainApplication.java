@@ -3,7 +3,6 @@ package piuk.blockchain.android;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
 import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatDelegate;
 import com.blockchain.koin.KoinStarter;
@@ -30,7 +29,7 @@ import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.connectivity.ConnectionEvent;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
-import piuk.blockchain.androidcore.utils.PrefsUtil;
+import piuk.blockchain.androidcore.utils.PersistentPrefs;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle;
 import piuk.blockchain.androidcoreui.BuildConfig;
@@ -60,8 +59,6 @@ public class BlockchainApplication extends Application implements FrameworkInter
     protected Lazy<Retrofit> retrofitExplorer;
 
     @Inject
-    PrefsUtil prefsUtil;
-    @Inject
     RxBus rxBus;
     @Inject
     EnvironmentConfig environmentSettings;
@@ -71,6 +68,10 @@ public class BlockchainApplication extends Application implements FrameworkInter
     CurrentContextAccess currentContextAccess;
     @Inject
     AppUtil appUtils;
+    @Inject
+    AccessState loginState;
+    @Inject
+    PersistentPrefs prefs;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -108,7 +109,7 @@ public class BlockchainApplication extends Application implements FrameworkInter
 
         RxJavaPlugins.setErrorHandler(throwable -> Timber.tag(RX_ERROR_TAG).e(throwable));
 
-        AccessState.getInstance().initAccessState(this, prefsUtil, rxBus, LogoutActivity.class);
+        loginState.setLogoutActivity(LogoutActivity.class);
 
         // Apply PRNG fixes on app start if needed
         prngHelper.applyPRNGFixes();
@@ -137,6 +138,12 @@ public class BlockchainApplication extends Application implements FrameworkInter
 
         // Report Google Play Services availability
         Logging.INSTANCE.logCustom(new AppLaunchEvent(isGooglePlayServicesAvailable(this)));
+
+        // Set screen shots to enabled in staging builds, to simplify automation and QA processes
+        prefs.setValue(
+                PersistentPrefs.KEY_SCREENSHOTS_ENABLED,
+                environmentSettings.shouldShowDebugMenu()
+        );
 
         rxBus.register(ConnectionEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -177,14 +184,6 @@ public class BlockchainApplication extends Application implements FrameworkInter
     @Override
     public String getDevice() {
         return "android";
-    }
-
-    @Override
-    public String getDeviceId() {
-        return Settings.Secure.getString(
-                getContentResolver(),
-                Settings.Secure.ANDROID_ID
-        );
     }
 
     @Override

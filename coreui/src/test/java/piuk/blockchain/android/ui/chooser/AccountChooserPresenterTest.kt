@@ -70,7 +70,7 @@ class AccountChooserPresenterTest {
     @Test
     fun `onViewReady mode bitcoin`() {
         // Arrange
-        whenever(activity.accountMode).thenReturn(AccountMode.Bitcoin)
+        whenever(activity.accountMode).thenReturn(AccountMode.CryptoAccountMode(CryptoCurrency.BTC))
         val itemAccount0 = getItemAccount01()
         val itemAccount1 = getItemAccount01()
         val itemAccount2 = getItemAccount01()
@@ -92,7 +92,8 @@ class AccountChooserPresenterTest {
     @Test
     fun `onViewReady mode bitcoin HD only`() {
         // Arrange
-        whenever(activity.accountMode).thenReturn(AccountMode.BitcoinHdOnly)
+        whenever(activity.accountMode).thenReturn(AccountMode.CryptoAccountMode(cryptoCurrency = CryptoCurrency.BTC,
+            hdOnly = true))
         val itemAccount0 = getItemAccount01()
         val itemAccount1 = getItemAccount01()
         val itemAccount2 = getItemAccount01()
@@ -111,7 +112,7 @@ class AccountChooserPresenterTest {
     @Test
     fun `onViewReady mode bitcoin cash`() {
         // Arrange
-        whenever(activity.accountMode).thenReturn(AccountMode.BitcoinCash)
+        whenever(activity.accountMode).thenReturn(AccountMode.CryptoAccountMode(cryptoCurrency = CryptoCurrency.BCH))
         val itemAccount0 = getItemAccount01()
         val itemAccount1 = getItemAccount01()
         val itemAccount2 = getItemAccount01()
@@ -130,7 +131,8 @@ class AccountChooserPresenterTest {
     @Test
     fun `onViewReady mode bitcoin cash send`() {
         // Arrange
-        whenever(activity.accountMode).thenReturn(AccountMode.BitcoinCashSend)
+        whenever(activity.accountMode).thenReturn(AccountMode.CryptoAccountMode(cryptoCurrency = CryptoCurrency.BCH,
+            isSend = true))
         val itemAccount0 = getItemAccount01()
         val itemAccount1 = getItemAccount01()
         val itemAccount2 = getItemAccount01()

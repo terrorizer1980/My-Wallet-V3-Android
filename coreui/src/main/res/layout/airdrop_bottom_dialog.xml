@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -19,7 +20,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/xlm_icon"
+        android:id="@+id/img_icon"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginTop="38dp"
@@ -34,13 +35,12 @@
         android:id="@+id/dialog_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/montserrat"
         android:textColor="@color/xlm_dialog_text_title"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/xlm_icon"
+        app:layout_constraintTop_toBottomOf="@+id/img_icon"
         tools:text="@string/get_free_xlm" />
 
     <TextView
@@ -50,7 +50,6 @@
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/montserrat"
         android:gravity="center"
         android:textColor="@color/xlm_dialog_text_body"
         android:textSize="14sp"
@@ -68,6 +67,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
+        android:contentDescription="@string/get_free_xlm"
         android:theme="@style/LightBlueButtonTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

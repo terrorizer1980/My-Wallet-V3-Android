@@ -8,7 +8,7 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.charts.models.ChartDatumDto
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
 import javax.inject.Inject
@@ -17,7 +17,7 @@ import kotlin.properties.Delegates
 class ChartsPresenter @Inject constructor(
     private val chartsDataManager: ChartsDataManager,
     private val exchangeRateFactory: ExchangeRateDataManager,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val currencyFormatManager: CurrencyFormatManager
 ) : BasePresenter<ChartsView>() {
 
@@ -85,8 +85,7 @@ class ChartsPresenter @Inject constructor(
         )
     }
 
-    private fun getFiatCurrency() =
-        prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY)
+    private fun getFiatCurrency() = prefs.selectedFiatCurrency
 
     private fun getCurrencySymbol() =
         currencyFormatManager.getFiatSymbol(getFiatCurrency(), view.locale)

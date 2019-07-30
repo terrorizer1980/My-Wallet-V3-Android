@@ -13,6 +13,7 @@ data class SendConfirmationDetails(
 ) {
     val from: AccountReference = sendDetails.from
     val to: String = sendDetails.toAddress
+    val toLabel: String = sendDetails.toLabel
     val amount: CryptoValue = sendDetails.value
 
     val total = amount + fees

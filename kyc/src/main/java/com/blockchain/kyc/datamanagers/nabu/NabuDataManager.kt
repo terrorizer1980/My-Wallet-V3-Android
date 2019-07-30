@@ -8,6 +8,7 @@ import com.blockchain.kyc.models.nabu.NabuStateResponse
 import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
+import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.services.nabu.NabuService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
@@ -23,6 +24,7 @@ import io.reactivex.SingleSource
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 interface NabuDataManager {
 
@@ -108,6 +110,23 @@ interface NabuDataManager {
     fun invalidateToken()
 
     fun currentToken(offlineToken: NabuOfflineTokenResponse): Single<NabuSessionTokenResponse>
+
+    fun linkWalletWithMercury(offlineTokenResponse: NabuOfflineTokenResponse): Single<String>
+
+    fun linkMercuryWithWallet(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        linkId: String
+    ): Completable
+
+    fun shareWalletAddressesWithThePit(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        addressMap: Map<String, String> // Crypto symbol -> address
+    ): Completable
+
+    fun fetchCryptoAddressFromThePit(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        cryptoSymbol: String
+    ): Single<SendToMercuryAddressResponse>
 }
 
 internal class NabuDataManagerImpl(
@@ -115,9 +134,9 @@ internal class NabuDataManagerImpl(
     private val retailWalletTokenService: RetailWalletTokenService,
     private val nabuTokenStore: NabuSessionTokenStore,
     private val appVersion: String,
-    private val deviceId: String,
     private val settingsDataManager: SettingsDataManager,
-    private val payloadDataManager: PayloadDataManager
+    private val payloadDataManager: PayloadDataManager,
+    private val prefs: PersistentPrefs
 ) : NabuDataManager {
 
     private val guid
@@ -150,12 +169,12 @@ internal class NabuDataManagerImpl(
     ): Single<NabuSessionTokenResponse> =
         emailSingle.flatMap {
             nabuService.getSessionToken(
-                offlineTokenResponse.userId,
-                offlineTokenResponse.token,
-                guid,
-                it,
-                deviceId,
-                appVersion
+                userId = offlineTokenResponse.userId,
+                offlineToken = offlineTokenResponse.token,
+                guid = guid,
+                email = it,
+                appVersion = appVersion,
+                deviceId = prefs.deviceId
             )
         }
 
@@ -314,6 +333,37 @@ internal class NabuDataManagerImpl(
             nabuTokenStore.getAccessToken()
                 .map { (it as Optional.Some).element }
                 .singleOrError()
+        }
+
+    override fun linkWalletWithMercury(offlineTokenResponse: NabuOfflineTokenResponse): Single<String> =
+        authenticate(offlineTokenResponse) {
+            nabuService.linkWalletWithMercury(it)
+        }
+
+    override fun linkMercuryWithWallet(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        linkId: String
+    ): Completable =
+        authenticate(offlineTokenResponse) {
+            nabuService.linkMercuryWithWallet(it, linkId)
+                .toSingleDefault(Any())
+        }.ignoreElement()
+
+    override fun shareWalletAddressesWithThePit(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        addressMap: Map<String, String> // Crypto symbol -> address
+    ): Completable =
+        authenticate(offlineTokenResponse) {
+            nabuService.sendWalletAddressesToThePit(it, addressMap)
+                .toSingleDefault(Any())
+        }.ignoreElement()
+
+    override fun fetchCryptoAddressFromThePit(
+        offlineTokenResponse: NabuOfflineTokenResponse,
+        cryptoSymbol: String
+    ): Single<SendToMercuryAddressResponse> =
+        authenticate(offlineTokenResponse) {
+            nabuService.fetchPitSendToAddressForCrypto(it, cryptoSymbol)
         }
 
     private fun <T> refreshOrReturnError(

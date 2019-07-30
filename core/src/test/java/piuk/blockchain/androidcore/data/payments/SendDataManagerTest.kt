@@ -30,6 +30,7 @@ class SendDataManagerTest {
     private val mockPaymentService: PaymentService = mock()
     private val mockLastTxUpdater: LastTxUpdater = mock()
     private val mockRxBus: RxBus = mock()
+    private val useNewCoinSelection = false
 
     @get:Rule
     val initSchedulers = rxInit {
@@ -238,13 +239,13 @@ class SendDataManagerTest {
         val payment = 1.bitcoin()
         val fee = 1.toBigInteger()
         val outputs = SpendableUnspentOutputs()
-        whenever(mockPaymentService.getSpendableCoins(unspent, payment.amount, fee, false))
+        whenever(mockPaymentService.getSpendableCoins(unspent, payment.amount, fee, false, useNewCoinSelection))
             .thenReturn(outputs)
         // Act
-        val result = subject.getSpendableCoins(unspent, payment, fee)
+        val result = subject.getSpendableCoins(unspent, payment, fee, useNewCoinSelection)
         // Assert
         result shouldEqual outputs
-        verify(mockPaymentService).getSpendableCoins(unspent, payment.amount, fee, false)
+        verify(mockPaymentService).getSpendableCoins(unspent, payment.amount, fee, false, useNewCoinSelection)
         verifyNoMoreInteractions(mockPaymentService)
     }
 
@@ -255,13 +256,13 @@ class SendDataManagerTest {
         val payment = 1.bitcoinCash()
         val fee = 1.toBigInteger()
         val outputs = SpendableUnspentOutputs()
-        whenever(mockPaymentService.getSpendableCoins(unspent, payment.amount, fee, true))
+        whenever(mockPaymentService.getSpendableCoins(unspent, payment.amount, fee, true, useNewCoinSelection))
             .thenReturn(outputs)
         // Act
-        val result = subject.getSpendableCoins(unspent, payment, fee)
+        val result = subject.getSpendableCoins(unspent, payment, fee, useNewCoinSelection)
         // Assert
         result shouldEqual outputs
-        verify(mockPaymentService).getSpendableCoins(unspent, payment.amount, fee, true)
+        verify(mockPaymentService).getSpendableCoins(unspent, payment.amount, fee, true, useNewCoinSelection)
         verifyNoMoreInteractions(mockPaymentService)
     }
 
@@ -271,13 +272,13 @@ class SendDataManagerTest {
         val unspent = UnspentOutputs()
         val fee = 1.toBigInteger()
         val sweepable = Pair.of(1.toBigInteger(), 1.toBigInteger())
-        whenever(mockPaymentService.getMaximumAvailable(unspent, fee, false))
+        whenever(mockPaymentService.getMaximumAvailable(unspent, fee, false, useNewCoinSelection))
             .thenReturn(sweepable)
         // Act
-        val result = subject.getMaximumAvailable(CryptoCurrency.BTC, unspent, fee)
+        val result = subject.getMaximumAvailable(CryptoCurrency.BTC, unspent, fee, useNewCoinSelection)
         // Assert
         result shouldEqual sweepable
-        verify(mockPaymentService).getMaximumAvailable(unspent, fee, false)
+        verify(mockPaymentService).getMaximumAvailable(unspent, fee, false, useNewCoinSelection)
         verifyNoMoreInteractions(mockPaymentService)
     }
 
@@ -287,13 +288,13 @@ class SendDataManagerTest {
         val unspent = UnspentOutputs()
         val fee = 1.toBigInteger()
         val sweepable = Pair.of(1.toBigInteger(), 1.toBigInteger())
-        whenever(mockPaymentService.getMaximumAvailable(unspent, fee, true))
+        whenever(mockPaymentService.getMaximumAvailable(unspent, fee, true, useNewCoinSelection))
             .thenReturn(sweepable)
         // Act
-        val result = subject.getMaximumAvailable(CryptoCurrency.BCH, unspent, fee)
+        val result = subject.getMaximumAvailable(CryptoCurrency.BCH, unspent, fee, useNewCoinSelection)
         // Assert
         result shouldEqual sweepable
-        verify(mockPaymentService).getMaximumAvailable(unspent, fee, true)
+        verify(mockPaymentService).getMaximumAvailable(unspent, fee, true, useNewCoinSelection)
         verifyNoMoreInteractions(mockPaymentService)
     }
 

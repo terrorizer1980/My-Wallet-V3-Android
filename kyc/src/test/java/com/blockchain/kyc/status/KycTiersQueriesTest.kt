@@ -91,7 +91,7 @@ class KycTiersQueriesResubmissionTest {
             tier1State = KycTierState.Verified,
             tier2State = KycTierState.Pending
         ) then {
-            isKycResumbissionRequired()
+            isKycResubmissionRequired()
         } `should be` false
     }
 
@@ -101,7 +101,7 @@ class KycTiersQueriesResubmissionTest {
             tier1State = KycTierState.Verified,
             tier2State = KycTierState.Pending
         ) then {
-            isKycResumbissionRequired()
+            isKycResubmissionRequired()
         } `should be` true
     }
 }
@@ -139,7 +139,7 @@ private fun emptyNabuUser() =
     NabuUser(
         firstName = null,
         lastName = null,
-        email = null,
+        email = "",
         emailVerified = false,
         dob = null,
         mobile = null,

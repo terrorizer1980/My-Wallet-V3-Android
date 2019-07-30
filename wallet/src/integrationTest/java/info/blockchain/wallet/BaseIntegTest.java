@@ -59,11 +59,6 @@ public abstract class BaseIntegTest {
             }
 
             @Override
-            public String getDeviceId() {
-                return "DeviceId";
-            }
-
-            @Override
             public String getAppVersion() {
                 return "1.0";
             }

@@ -22,3 +22,7 @@ fun calloutToExternalSupportLinkDlg(ctx: Context, supportUrl: String) {
         .setNegativeButton(android.R.string.cancel, null)
         .show()
 }
+
+fun Context.launchUrlInBrowser(uri: String) {
+    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
+}

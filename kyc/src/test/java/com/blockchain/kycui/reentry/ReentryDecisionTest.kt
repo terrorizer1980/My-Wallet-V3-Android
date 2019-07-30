@@ -186,7 +186,7 @@ class ReentryDecisionTest {
         NabuUser(
             firstName = null,
             lastName = null,
-            email = null,
+            email = "",
             emailVerified = false,
             dob = null,
             mobile = null,

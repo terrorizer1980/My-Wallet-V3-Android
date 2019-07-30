@@ -25,7 +25,7 @@ class CoinifyTradeRequest private constructor(
         fun cardBuy(priceQuoteId: Int, receiveAddress: String): CoinifyTradeRequest =
             CoinifyTradeRequest(
                 priceQuoteId,
-                SimpleTransfer(Medium.Card),
+                SimpleTransfer(Medium.Card, BlockchainDetails(preferredIntegrationMethod = "payment-page")),
                 SimpleTransfer(Medium.Blockchain, BlockchainDetails(receiveAddress))
             )
 

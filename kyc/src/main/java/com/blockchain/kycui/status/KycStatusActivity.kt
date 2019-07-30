@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.constraint.ConstraintSet
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
+import com.blockchain.activities.StartSwap
 import com.blockchain.extensions.px
 import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kycui.navhost.models.CampaignType
@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.activity_kyc_status.toolbar_kyc as toolBar
 class KycStatusActivity : BaseMvpActivity<KycStatusView, KycStatusPresenter>(), KycStatusView {
 
     private val presenter: KycStatusPresenter by inject()
+    private val swapStarter: StartSwap by inject()
     private val campaignType by unsafeLazy { intent.getSerializableExtra(EXTRA_CAMPAIGN_TYPE) as CampaignType }
     private var progressDialog: MaterialProgressDialog? = null
 
@@ -55,8 +56,7 @@ class KycStatusActivity : BaseMvpActivity<KycStatusView, KycStatusPresenter>(), 
     }
 
     override fun startExchange() {
-        LocalBroadcastManager.getInstance(this)
-            .sendBroadcast(Intent(HOMEBREW_LAUNCHER_INTENT))
+        swapStarter.startSwapActivity(this)
         finish()
     }
 
@@ -184,8 +184,6 @@ class KycStatusActivity : BaseMvpActivity<KycStatusView, KycStatusPresenter>(), 
 
     companion object {
 
-        internal const val HOMEBREW_LAUNCHER_INTENT =
-            "info.blockchain.wallet.ui.BalanceFragment.ACTION_EXCHANGE"
         private const val EXTRA_CAMPAIGN_TYPE =
             "info.blockchain.wallet.ui.BalanceFragment.EXTRA_CAMPAIGN_TYPE"
 

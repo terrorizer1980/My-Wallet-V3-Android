@@ -32,6 +32,7 @@ import piuk.blockchain.androidbuysell.models.coinify.Subscription
 import piuk.blockchain.androidbuysell.models.coinify.TradeState
 import piuk.blockchain.androidbuysell.services.ExchangeService
 import com.blockchain.nabu.extensions.fromIso8601ToUtc
+import io.reactivex.rxkotlin.plusAssign
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatUtil
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.utils.extensions.toSerialisedString
@@ -97,7 +98,7 @@ class CoinifyOverviewPresenter @Inject constructor(
     }
 
     internal fun refreshTransactionList() {
-        tradesSingle
+        compositeDisposable += tradesSingle
             .toList()
             .doOnSuccess { updateMetadataAsNeeded(it) }
             .toObservable()
@@ -114,7 +115,7 @@ class CoinifyOverviewPresenter @Inject constructor(
     }
 
     internal fun onBuySelected() {
-        kycReviewsSingle
+        compositeDisposable += kycReviewsSingle
             .doOnSubscribe { view.displayProgressDialog() }
             .doAfterTerminate { view.dismissProgressDialog() }
             .subscribeBy(
@@ -132,7 +133,7 @@ class CoinifyOverviewPresenter @Inject constructor(
     }
 
     internal fun onTransactionSelected(transactionId: Int) {
-        tradesSingle
+        compositeDisposable += tradesSingle
             .doOnSubscribe { view.displayProgressDialog() }
             .filter { it.id == transactionId }
             .firstOrError()
@@ -152,7 +153,7 @@ class CoinifyOverviewPresenter @Inject constructor(
     }
 
     internal fun onCompleteKycSelected() {
-        tokenSingle
+        compositeDisposable += tokenSingle
             .flatMap { token ->
                 coinifyDataManager.getTrader(token)
                     .flatMap { coinifyDataManager.getKycReviews(token) }
@@ -174,7 +175,7 @@ class CoinifyOverviewPresenter @Inject constructor(
     }
 
     internal fun onRestartKycSelected() {
-        tokenSingle
+        compositeDisposable += tokenSingle
             .flatMap { coinifyDataManager.startKycReview(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -189,7 +190,7 @@ class CoinifyOverviewPresenter @Inject constructor(
     }
 
     internal fun onSubscriptionClicked(subscriptionId: Int) {
-        Single.zip(
+        compositeDisposable += Single.zip(
             recurringBuySingle,
             tradesSingle
                 .filter { it.tradeSubscriptionId == subscriptionId }
@@ -239,7 +240,7 @@ class CoinifyOverviewPresenter @Inject constructor(
                         )
                     if (dateString != null) {
                         dateString += "${stringUtils.getString(R.string.buy_sell_recurring_order_duration_until)} " +
-                            "$dateString"
+                                "$dateString"
                     }
                     val displayModel = RecurringTradeDisplayModel(
                         amountString = stringUtils.getFormattedString(
@@ -284,7 +285,7 @@ class CoinifyOverviewPresenter @Inject constructor(
     }
 
     private fun checkKycStatus() {
-        Single.zip(
+        compositeDisposable += Single.zip(
             kycReviewsSingle,
             traderSellLimitSingle,
             BiFunction { kycReviews: List<KycResponse>, sellLimit: Pair<Double, String> -> kycReviews to sellLimit }
@@ -294,15 +295,15 @@ class CoinifyOverviewPresenter @Inject constructor(
                     val limitString =
                         currencyFormatUtil.formatFiatWithSymbol(sellLimits.first, sellLimits.second, view.locale)
                     val statusCard: KycStatus? = when {
-                    // Unlikely to see this result - after supplying docs status will be pending
-                    // otherwise we will go straight to overview
+                        // Unlikely to see this result - after supplying docs status will be pending
+                        // otherwise we will go straight to overview
                         kycReviews.any { it.state == ReviewState.Reviewing } -> KycStatus.InReview(limitString)
                         kycReviews.any { it.state == ReviewState.Pending } ||
-                            kycReviews.any { it.state == ReviewState.DocumentsRequested } ->
+                                kycReviews.any { it.state == ReviewState.DocumentsRequested } ->
                             KycStatus.NotYetCompleted(limitString)
                         kycReviews.any { it.state == ReviewState.Failed } ||
-                            kycReviews.any { it.state == ReviewState.Rejected } ||
-                            kycReviews.any { it.state == ReviewState.Expired } -> KycStatus.Denied(
+                                kycReviews.any { it.state == ReviewState.Rejected } ||
+                                kycReviews.any { it.state == ReviewState.Expired } -> KycStatus.Denied(
                             limitString
                         )
                         else -> null
@@ -319,7 +320,7 @@ class CoinifyOverviewPresenter @Inject constructor(
     }
 
     private fun checkSubscriptionStatus() {
-        Single.zip(
+        compositeDisposable += Single.zip(
             recurringBuySingle,
             tradesSingle
                 .filter { it.tradeSubscriptionId != null }
@@ -399,7 +400,7 @@ class CoinifyOverviewPresenter @Inject constructor(
     }
 
     private fun updateMetadataAsNeeded(trades: List<CoinifyTrade>) {
-        exchangeService.getExchangeMetaData()
+        compositeDisposable += exchangeService.getExchangeMetaData()
             .map {
                 val list = it.coinify!!.trades ?: mutableListOf()
                 for (tradeData in list) {
@@ -569,13 +570,13 @@ class CoinifyOverviewPresenter @Inject constructor(
 
     private fun CoinifyTrade.isAwaitingTransferIn(): Boolean =
         (!this.isSellTransaction() &&
-            this.state == TradeState.AwaitingTransferIn &&
-            this.transferIn.medium == Medium.Bank)
+                this.state == TradeState.AwaitingTransferIn &&
+                this.transferIn.medium == Medium.Bank)
 
     private fun CoinifyTrade.isAwaitingCardPayment(): Boolean =
         (!this.isSellTransaction() &&
-            this.state == TradeState.AwaitingTransferIn &&
-            this.transferIn.medium == Medium.Card)
+                this.state == TradeState.AwaitingTransferIn &&
+                this.transferIn.medium == Medium.Card)
 
     /**
      * See https://github.com/blockchain/bitcoin-exchange-client/blob/master/src/trade.js#L318

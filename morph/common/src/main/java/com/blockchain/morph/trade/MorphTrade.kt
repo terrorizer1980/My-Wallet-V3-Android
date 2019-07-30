@@ -4,7 +4,7 @@ interface MorphTrade {
 
     val timestamp: Long
 
-    val status: MorphTrade.Status
+    val status: Status
 
     val hashOut: String?
 

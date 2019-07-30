@@ -6,6 +6,7 @@ import com.blockchain.transactions.Memo
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.api.data.FeeOptions
+import io.reactivex.Observable
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -43,6 +44,10 @@ abstract class SendStrategy<View : SendView>(
 
     abstract fun onCurrencySelected()
 
+    abstract fun onPitAddressSelected()
+
+    abstract fun onPitAddressCleared()
+
     abstract fun processURIScanAddress(address: String)
 
     abstract fun handlePrivxScan(scanData: String?)
@@ -62,6 +67,8 @@ abstract class SendStrategy<View : SendView>(
     open fun onMemoChange(memo: Memo) {}
 
     abstract fun onCryptoTextChange(cryptoText: String)
+
+    open fun memoRequired(): Observable<Boolean> = Observable.just(false)
 
     abstract fun spendFromWatchOnlyBIP38(pw: String, scanData: String)
 

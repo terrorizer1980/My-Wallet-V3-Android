@@ -13,7 +13,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/primary_gray_lightest"
+        android:background="@color/primary_grey_lightest"
         android:orientation="vertical">
 
         <LinearLayout
@@ -31,7 +31,6 @@
                 style="@style/Base.DialogWindowTitle.AppCompat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/montserrat"
                 android:gravity="center_horizontal"
                 android:text="@string/your_transactions"
                 android:textColor="@color/primary_navy_medium"
@@ -42,10 +41,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/montserrat"
                 android:gravity="center_horizontal"
                 android:text="@string/transaction_occur_when_bitcoin"
-                android:textColor="@color/primary_gray_dark"
+                android:textColor="@color/primary_grey_dark"
                 android:textSize="14sp" />
 
             <Button

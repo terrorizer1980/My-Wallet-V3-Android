@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="8dp"
                 android:text="@string/buy_sell_confirmation_bank_rate_disclaimer"
-                android:textColor="@color/primary_gray_light"
+                android:textColor="@color/primary_grey_light"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toTopOf="@id/text_view_sell_time_remaining"
                 app:layout_constraintEnd_toEndOf="parent"

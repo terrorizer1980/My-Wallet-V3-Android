@@ -2,6 +2,7 @@
 
     <style name="AppTheme.MainActivity">
         <!-- Only exists to prevent issues with pre-21 devices, see values-v21 -->
+
     </style>
 
     <style name="NoDisplay" parent="Theme.AppCompat.Light.NoActionBar">
@@ -53,7 +54,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:textCursorDrawable">@null</item>
         <item name="android:inputType">textPassword</item>
-        <item name="android:textColor">@color/primary_gray_medium</item>
+        <item name="android:textColor">@color/primary_grey_medium</item>
     </style>
 
     <style name="PasswordChangeDialogEditTextLayout">
@@ -102,7 +103,6 @@
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/selector_accent_blue</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="SpinnerWhite">
@@ -114,14 +114,13 @@
     </style>
 
     <style name="RecoveryPhraseEditText">
-        <item name="android:fontFamily">@font/montserrat</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">42dp</item>
         <item name="android:gravity">center</item>
         <item name="android:inputType">textNoSuggestions</item>
         <item name="android:maxLines">1</item>
         <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:textColor">@color/primary_gray_dark</item>
+        <item name="android:textColor">@color/primary_grey_dark</item>
         <item name="android:textColorHint">@color/product_gray_hint</item>
     </style>
 
@@ -162,31 +161,13 @@
         <item name="android:orientation">horizontal</item>
     </style>
 
-    <style name="ContactsHeader">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Subhead</item>
-        <item name="android:textColor">@color/primary_gray_medium</item>
-        <item name="android:fontFamily">@font/montserrat</item>
-    </style>
-
-    <style name="ContactsDetail">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
-        <item name="android:textColor">@color/primary_gray_medium</item>
-    </style>
-
     <style name="TransactionDetailHeader">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:textColor">@color/product_gray_headers</item>
+        <item name="android:textColor">@color/product_grey_headers</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="OnboardingHeader">
@@ -197,7 +178,6 @@
         <item name="android:textSize">24sp</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Headline</item>
         <item name="android:textColor">@color/primary_navy_medium</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="OnBoardingDetail">
@@ -208,8 +188,7 @@
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
-        <item name="android:textColor">@color/primary_gray_medium</item>
-        <item name="android:fontFamily">@font/montserrat_light</item>
+        <item name="android:textColor">@color/primary_grey_medium</item>
     </style>
 
     <style name="OnBoardingEmail">
@@ -221,7 +200,7 @@
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Body1</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:fontFamily">@font/montserrat_semi_bold</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
     </style>
 
     <style name="CryptoCurrencySelectorTextView">
@@ -237,13 +216,11 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="DashboardCoinTitle">
-        <item name="android:textColor">@color/primary_gray_dark</item>
+        <item name="android:textColor">@color/primary_grey_dark</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="DashboardCoinTitle.LayoutMatchParentWidth">
@@ -256,11 +233,10 @@
     </style>
 
     <style name="DashboardCoinAmounts">
-        <item name="android:textColor">@color/primary_gray_dark</item>
+        <item name="android:textColor">@color/primary_grey_dark</item>
         <item name="android:textSize">12sp</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
-        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="DashboardCoinAmounts.LayoutMatchParentWidth">
@@ -278,8 +254,112 @@
         <item name="android:paddingTop">5dp</item>
     </style>
 
-    <style name="NavDrawerTextAppearance" parent="Widget.Design.NavigationView">
-        <item name="android:fontFamily">@font/montserrat</item>
+
+    <style name="ExchangeBitcoinTitle">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/primary_grey_dark</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="EditTextNumberField">
+        <item name="android:background">@null</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:imeOptions">actionDone</item>
+        <item name="android:inputType">numberDecimal|number</item>
+        <item name="android:maxLength">17</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:selectAllOnFocus">true</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="ConfirmPaymentTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textColor">@color/primary_grey_dark</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="ConfirmPaymentField">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:gravity">right</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="ExchangeTextViewButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/primary_blue_accent</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TradeConfirmationTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:textColor">@color/product_grey_headers</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TradeConfirmationAmount">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:gravity">right</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="SwitchGreen" parent="Theme.AppCompat.Light">
+        <item name="colorSwitchThumbNormal">@color/product_green_medium</item>
+        <item name="colorAccent">@color/product_green_medium</item>
+    </style>
+
+    <style name="BaseCenteredText">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="PitTitleText" parent="BaseCenteredText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/pit_text_title</item>
+        <item name="android:layout_marginStart">39dp</item>
+        <item name="android:layout_marginEnd">38dp</item>
+    </style>
+
+    <style name="PitHeadingText" parent="BaseCenteredText">
+        <item name="android:fontFamily">@font/inter_bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/pit_text_heading</item>
+        <item name="android:layout_marginStart">88dp</item>
+        <item name="android:layout_marginEnd">87dp</item>
+    </style>
+
+    <style name="PitBodyText" parent="BaseCenteredText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/pit_text_body</item>
+        <item name="android:layout_marginStart">48dp</item>
+        <item name="android:layout_marginEnd">48dp</item>
+        <item name="android:layout_marginTop">11dp</item>
     </style>
 
 </resources>

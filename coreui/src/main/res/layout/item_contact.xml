@@ -25,7 +25,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ellipsize="marquee"
-                android:fontFamily="@font/montserrat"
                 android:singleLine="true"
                 android:textAppearance="?attr/textAppearanceListItemSmall"
                 tools:text="Adam Bennett" />
@@ -35,7 +34,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:fontFamily="@font/montserrat"
                 android:minWidth="48dp"
                 android:paddingLeft="16dp"
                 tools:text="(Pending)" />
@@ -60,7 +58,7 @@
             android:layout_marginLeft="16dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:tint="@color/primary_gray_light"
+            android:tint="@color/primary_grey_light"
             android:visibility="visible"
             app:srcCompat="@drawable/vector_more" />
 

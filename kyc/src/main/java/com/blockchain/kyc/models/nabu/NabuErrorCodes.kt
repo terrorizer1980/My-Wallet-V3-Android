@@ -7,6 +7,11 @@ enum class NabuErrorStatusCodes(val code: Int) {
     TokenExpired(401),
 
     /**
+     * The device has failed pre-IDV checking and further attempts at Gold will be rejected
+     */
+    PreIDVCheckFailed(406),
+
+    /**
      * Conflict. The user's data you're trying to save already exists.
      */
     AlreadyRegistered(409),
@@ -19,7 +24,7 @@ enum class NabuErrorStatusCodes(val code: Int) {
     companion object {
 
         fun fromErrorCode(code: Int): NabuErrorStatusCodes =
-            NabuErrorStatusCodes.values().firstOrNull { it.code == code } ?: Unknown
+            values().firstOrNull { it.code == code } ?: Unknown
     }
 }
 
@@ -110,7 +115,7 @@ enum class NabuErrorCodes(val code: Int) {
     companion object {
 
         fun fromErrorCode(code: Int): NabuErrorCodes =
-            NabuErrorCodes.values().firstOrNull { it.code == code } ?: Unknown
+            values().firstOrNull { it.code == code } ?: Unknown
     }
 }
 
@@ -136,6 +141,6 @@ enum class NabuErrorTypes(val type: String) {
     companion object {
 
         fun fromErrorStatus(type: String): NabuErrorTypes =
-            NabuErrorTypes.values().firstOrNull { it.type == type } ?: Unknown
+            values().firstOrNull { it.type == type } ?: Unknown
     }
 }

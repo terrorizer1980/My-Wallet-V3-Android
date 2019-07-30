@@ -2,6 +2,10 @@ package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
+import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.State
+import com.blockchain.nabu.NabuToken
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.serialization.JsonSerializableAccount
 import info.blockchain.api.data.UnspentOutputs
 import info.blockchain.balance.CryptoCurrency
@@ -16,6 +20,9 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import info.blockchain.wallet.util.Tools
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Observables
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.Address
@@ -24,6 +31,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
+import piuk.blockchain.android.ui.account.PitAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.PendingTransaction
 import piuk.blockchain.android.ui.send.SendView
@@ -62,9 +70,34 @@ class BitcoinCashSendStrategy(
     private val currencyFormatter: CurrencyFormatManager,
     private val exchangeRates: FiatExchangeRates,
     private val prefs: PersistentPrefs,
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig,
+    private val nabuDataManager: NabuDataManager,
+    private val nabuToken: NabuToken,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
+
+    private var pitAccount: PitAccount? = null
+
+    override fun onPitAddressSelected() {
+        pitAccount?.let {
+            pendingTransaction.receivingObject = ItemAccount(
+                it.label,
+                null,
+                null,
+                null,
+                null,
+                it.address
+            )
+            pendingTransaction.receivingAddress = it.address
+            view.updateReceivingAddress(it.label)
+        }
+    }
+
+    override fun onPitAddressCleared() {
+        pendingTransaction.receivingObject = null
+        view.updateReceivingAddress("")
+    }
 
     override fun onCurrencySelected() {
         currencyState.cryptoCurrency = CryptoCurrency.BCH
@@ -251,7 +284,8 @@ class BitcoinCashSendStrategy(
                 it.node.serializePubB58(environmentSettings.bitcoinCashNetworkParameters) == account.xpub
             } ?: throw HDWalletException("No matching private key found for ${account.xpub}")
 
-            Observable.just(bchDataManager.getHDKeysForSigning(
+            Observable.just(
+                bchDataManager.getHDKeysForSigning(
                     acc,
                     pendingTransaction.unspentOutputBundle!!.spendableOutputs
                 )
@@ -349,12 +383,12 @@ class BitcoinCashSendStrategy(
         address?.let {
             // Only if valid address so we don't override with a label
             if (FormatsUtil.isValidBitcoinCashAddress(
-                environmentSettings.bitcoinCashNetworkParameters,
-                address
-            ) ||
+                    environmentSettings.bitcoinCashNetworkParameters,
+                    address
+                ) ||
                 FormatsUtil.isValidBitcoinAddress(address)
             )
-            pendingTransaction.receivingAddress = address
+                pendingTransaction.receivingAddress = address
         }
     }
 
@@ -366,8 +400,8 @@ class BitcoinCashSendStrategy(
             )
         ) {
             environmentSettings.bitcoinCashNetworkParameters.bech32AddressPrefix +
-                environmentSettings.bitcoinCashNetworkParameters.bech32AddressSeparator.toChar() +
-                cashAddress
+                    environmentSettings.bitcoinCashNetworkParameters.bech32AddressSeparator.toChar() +
+                    cashAddress
         } else {
             cashAddress
         }
@@ -381,7 +415,7 @@ class BitcoinCashSendStrategy(
             toLabel = pending.displayableReceivingLabel!!.removeBchUri()
 
             cryptoUnit = CryptoCurrency.BCH.symbol
-            fiatUnit = exchangeRates.fiatUnit
+            fiatUnit = prefs.selectedFiatCurrency
             fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode)
 
             // -----
@@ -406,7 +440,27 @@ class BitcoinCashSendStrategy(
     }
 
     private fun resetAccountList() {
-        setReceiveHint(getAddressList().size)
+        compositeDisposable += nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.BCH.symbol)
+        }.applySchedulers().doOnSubscribe {
+            view.updateReceivingHintAndAccountDropDowns(
+                CryptoCurrency.BCH,
+                getAddressList().size,
+                false
+            )
+        }.subscribeBy(onError = {
+            view.updateReceivingHintAndAccountDropDowns(
+                CryptoCurrency.BCH,
+                getAddressList().size,
+                false
+            )
+        }) {
+            pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
+                CryptoCurrency.BCH.symbol), it.address)
+            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BCH,
+                getAddressList().size,
+                it.state == State.ACTIVE && it.address.isNotEmpty())
+        }
     }
 
     private fun clearReceivingAddress() {
@@ -422,10 +476,6 @@ class BitcoinCashSendStrategy(
     }
 
     private fun getAddressList(): List<ItemAccount> = walletAccountHelper.getAccountItems(CryptoCurrency.BCH)
-
-    private fun setReceiveHint(accountsCount: Int) {
-        view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BCH, accountsCount)
-    }
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
         val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount()
@@ -491,9 +541,10 @@ class BitcoinCashSendStrategy(
     private fun getSuggestedAbsoluteFee(
         coins: UnspentOutputs,
         amountToSend: CryptoValue,
-        feePerKb: BigInteger
+        feePerKb: BigInteger,
+        useNewCoinSelection: Boolean
     ): BigInteger {
-        val spendableCoins = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb)
+        val spendableCoins = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb, useNewCoinSelection)
         return spendableCoins.absoluteFee
     }
 
@@ -514,7 +565,7 @@ class BitcoinCashSendStrategy(
         // Format for display
         view.updateMaxAvailable(
             stringUtils.getString(R.string.max_available) +
-                " ${currencyFormatter.getFormattedSelectedCoinValueWithUnit(maxAvailable)}"
+                    " ${currencyFormatter.getFormattedSelectedCoinValueWithUnit(maxAvailable)}"
         )
 
         if (balanceAfterFee <= Payment.DUST) {
@@ -573,11 +624,14 @@ class BitcoinCashSendStrategy(
 
         val address = sendingObj.address!!
 
-        getUnspentApiResponse(address)
+        Observables.zip(
+            getUnspentApiResponse(address),
+            coinSelectionRemoteConfig.enabled.toObservable()
+        )
             .debounce(200, TimeUnit.MILLISECONDS)
             .applySchedulers()
             .subscribe(
-                { coins ->
+                { (coins, newCoinSelectionEnabled) ->
                     val amountToSend = currencyFormatter.getSatoshisFromText(
                         amountToSendText,
                         getDefaultDecimalSeparator()
@@ -594,10 +648,17 @@ class BitcoinCashSendStrategy(
                     updateFee(getSuggestedAbsoluteFee(
                         coins,
                         CryptoValue.bitcoinCashFromSatoshis(amountToSend),
-                        feePerKb
+                        feePerKb,
+                        newCoinSelectionEnabled
                     ))
 
-                    suggestedFeePayment(coins, CryptoValue.bitcoinCashFromSatoshis(amountToSend), spendAll, feePerKb)
+                    suggestedFeePayment(
+                        coins,
+                        CryptoValue.bitcoinCashFromSatoshis(amountToSend),
+                        spendAll,
+                        feePerKb,
+                        newCoinSelectionEnabled
+                    )
                 },
                 { throwable ->
                     Timber.e(throwable)
@@ -617,12 +678,18 @@ class BitcoinCashSendStrategy(
         coins: UnspentOutputs,
         amountToSend: CryptoValue,
         spendAll: Boolean,
-        feePerKb: BigInteger
+        feePerKb: BigInteger,
+        useNewCoinSelection: Boolean
     ) {
         var amount = amountToSend.amount
 
         // Calculate sweepable amount to display max available
-        val sweepBundle = sendDataManager.getMaximumAvailable(amountToSend.currency, coins, feePerKb)
+        val sweepBundle = sendDataManager.getMaximumAvailable(
+            amountToSend.currency,
+            coins,
+            feePerKb,
+            useNewCoinSelection
+        )
         val sweepableAmount = sweepBundle.left
 
         updateMaxAvailable(sweepableAmount)
@@ -632,7 +699,12 @@ class BitcoinCashSendStrategy(
             view?.updateCryptoAmount(CryptoValue(CryptoCurrency.BCH, sweepableAmount))
         }
 
-        val unspentOutputBundle = sendDataManager.getSpendableCoins(coins, amountToSend, feePerKb)
+        val unspentOutputBundle = sendDataManager.getSpendableCoins(
+            coins,
+            amountToSend,
+            feePerKb,
+            useNewCoinSelection
+        )
 
         pendingTransaction.bigIntAmount = amount
         pendingTransaction.unspentOutputBundle = unspentOutputBundle

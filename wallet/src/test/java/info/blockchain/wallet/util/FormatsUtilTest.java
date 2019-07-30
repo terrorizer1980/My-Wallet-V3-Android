@@ -64,11 +64,6 @@ public final class FormatsUtilTest {
             }
 
             @Override
-            public String getDeviceId() {
-                return "DeviceId";
-            }
-
-            @Override
             public String getAppVersion() {
                 return null;
             }

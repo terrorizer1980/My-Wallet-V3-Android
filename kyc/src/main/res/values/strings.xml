@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- General -->
     <string name="kyc_non_specific_server_error">Error, please try again</string>
 
@@ -116,10 +116,9 @@
 
     <!-- Veriff Splash -->
     <string name="kyc_veriff_splash_country_supported_header">Is my country supported?</string>
-    <string name="kyc_veriff_splash_country_supported_subtitle">Not all countries are supported at this time. Check our up to date %1$s before proceeding.</string>
-    <string name="kyc_veriff_splash_list_of_countries">list of countries</string>
-    <string name="kyc_veriff_splash_list_of_countries_url">https://support.blockchain.com/hc/en-us/articles/360018751932</string>
+    <string name="kyc_veriff_splash_country_supported_subtitle">Not all countries are supported at this time. Check our up to date <annotation link="country_list">list of countries</annotation> before proceeding.</string>
     <string name="kyc_veriff_splash_title">@string/kyc_documents_needed</string>
+    <string name="kyc_veriff_splash_error_silver">SILVER VERIFIED</string>
     <string name="kyc_veriff_splash_header">@string/kyc_onfido_splash_header</string>
     <string name="kyc_veriff_splash_subtitle">You’ll need 1 of the ID types below to continue.</string>
     <string name="kyc_veriff_splash_enable_camera_title">Also, enable your camera!</string>
@@ -251,4 +250,11 @@
     <string name="requires_email_name_date_of_birth_and_address">Requires Email, Name, Date of Birth and Address</string>
     <string name="requires_silver_level_govt_id_and_a_selfie">Requires Silver level, Govt. ID and a Portrait Photo</string>
     <string name="learn_more">Learn More</string>
+    <string name="kyc_gold_unavailable_text_support">If you want to learn more about our verification process visit our <annotation link="gold_error">Support Center</annotation>.</string>
+    <string name="kyc_gold_unavailable_text_line_2">If you\'re Silver verified you can trade your crypto in Swap.</string>
+    <string name="kyc_gold_unavailable_text_line_1">We\'re sorry we can\'t verify you for Gold. This can be for a number of reasons, for example your country might not be supported right now.</string>
+    <string name="kyc_gold_unavailable_text_title">Gold Unavailable at This Time</string>
+    <string name="kyc_gold_unavailable_goto_swap">Start Trading</string>
+    <string name="gold_unavailable">Gold Unavailable</string>
+    <string name="veriff_identify">Veriff Identify</string>
 </resources>

@@ -9,7 +9,7 @@ import info.blockchain.balance.format
 import info.blockchain.balance.formatWithUnit
 import org.web3j.utils.Convert
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.utils.PrefsUtil
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.helperfunctions.InvalidatableLazy
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -25,13 +25,13 @@ import java.util.Locale
 class CurrencyFormatManager(
     private val currencyState: CurrencyState,
     private val exchangeRateDataManager: ExchangeRateDataManager,
-    private val prefsUtil: PrefsUtil,
+    private val prefs: PersistentPrefs,
     private val currencyFormatUtil: CurrencyFormatUtil,
     private val locale: Locale
 ) {
 
     private val invalidatable = InvalidatableLazy {
-        prefsUtil.getValue(PrefsUtil.KEY_SELECTED_FIAT, PrefsUtil.DEFAULT_CURRENCY)
+        prefs.selectedFiatCurrency
     }
 
     /**

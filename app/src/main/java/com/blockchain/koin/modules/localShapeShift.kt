@@ -1,7 +1,7 @@
 package com.blockchain.koin.modules
 
 import org.koin.dsl.module.applicationContext
-import com.blockchain.morph.ui.detail.TradeDetailPresenter
+import piuk.blockchain.android.ui.swap.detail.TradeDetailPresenter
 
 /**
  * Will move to ShapeShift module with these classes

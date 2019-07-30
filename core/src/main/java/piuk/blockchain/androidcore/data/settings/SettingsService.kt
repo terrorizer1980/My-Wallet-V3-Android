@@ -43,6 +43,10 @@ class SettingsService(private val settingsApi: SettingsManager) {
     internal fun updateEmail(email: String): Observable<ResponseBody> =
         settingsApi.updateSetting(SettingsManager.METHOD_UPDATE_EMAIL, email)
 
+    @WebRequest
+    internal fun updateEmail(email: String, context: String?): Observable<ResponseBody> =
+        settingsApi.updateSetting(SettingsManager.METHOD_UPDATE_EMAIL, email, context)
+
     /**
      * Update the user's phone number
      *
@@ -113,16 +117,6 @@ class SettingsService(private val settingsApi: SettingsManager) {
     @WebRequest
     internal fun updateTwoFactor(authType: Int): Observable<ResponseBody> =
         settingsApi.updateSetting(SettingsManager.METHOD_UPDATE_AUTH_TYPE, authType)
-
-    /**
-     * Update the user's btc unit preference
-     *
-     * @param btcUnit The user's preference for btc unit
-     * @return A [ResponseBody] containing the response from the server
-     */
-    @WebRequest
-    internal fun updateBtcUnit(btcUnit: String): Observable<ResponseBody> =
-        settingsApi.updateSetting(SettingsManager.METHOD_UPDATE_BTC_CURRENCY, btcUnit)
 
     /**
      * Update the user's fiat unit preference

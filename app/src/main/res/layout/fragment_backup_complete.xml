@@ -22,7 +22,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/montserrat"
                 android:text="@string/backup_header_complete"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
@@ -31,7 +30,7 @@
                 android:id="@+id/subheading_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/primary_gray_dark"
+                android:textColor="@color/primary_grey_dark"
                 android:textSize="12sp"
                 tools:text="Last backup: Sept 08, 2016" />
 
@@ -60,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/backup_lost_mnemonic"
-        android:textColor="@color/primary_gray_dark"
+        android:textColor="@color/primary_grey_dark"
         android:textSize="12sp" />
 
     <android.support.v7.widget.AppCompatButton
