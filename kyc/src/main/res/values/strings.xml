@@ -116,7 +116,7 @@
 
     <!-- Veriff Splash -->
     <string name="kyc_veriff_splash_country_supported_header">Is my country supported?</string>
-    <string name="kyc_veriff_splash_country_supported_subtitle">Not all countries are supported at this time. Check our up to date <annotation link="country_list">list of countries</annotation> before proceeding.</string>
+    <string name="kyc_veriff_splash_country_supported_subheader">Not all countries are supported at this time. Check our up to date <annotation link="country_list">list of countries</annotation> before proceeding.</string>
     <string name="kyc_veriff_splash_title">@string/kyc_documents_needed</string>
     <string name="kyc_veriff_splash_error_silver">SILVER VERIFIED</string>
     <string name="kyc_veriff_splash_header">@string/kyc_onfido_splash_header</string>

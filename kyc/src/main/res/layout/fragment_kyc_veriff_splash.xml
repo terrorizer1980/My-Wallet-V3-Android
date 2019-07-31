@@ -36,9 +36,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:contentDescription="@string/kyc_veriff_splash_country_supported_subtitle"
+                android:contentDescription="@string/kyc_veriff_splash_country_supported_subheader"
                 android:lineSpacingExtra="5sp"
-                android:text="@string/kyc_veriff_splash_country_supported_subtitle"
+                android:text="@string/kyc_veriff_splash_country_supported_subheader"
                 app:layout_constraintEnd_toEndOf="@+id/text_view_country_supported_header"
                 app:layout_constraintStart_toStartOf="@+id/text_view_country_supported_header"
                 app:layout_constraintTop_toBottomOf="@+id/text_view_country_supported_header" />

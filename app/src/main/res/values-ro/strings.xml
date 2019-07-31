@@ -1190,8 +1190,7 @@
   <string name="airdrop_program_card_body">Ești eligibil pentru viitoarele licurici.</string>
   <string name="airdrop_program_card_button">Înscrie-te acum</string>
   <string name="kyc_veriff_splash_country_supported_header">Țara mea este sprijinită?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Nu toate țările sunt acceptate în acest moment. Verificați actualizarea %1$s înainte de a continua.</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Verificarea aurului este în curs de revizuire, o dată verificată, veți putea utiliza Schimb și tranzacționați până la limita de nivel Gold. 
+  <string name="gold_level_under_review_sunriver_large_backlog">Verificarea aurului este în curs de revizuire, o dată verificată, veți putea utiliza Schimb și tranzacționați până la limita de nivel Gold.
 
  Vă rugăm să fiți conștienți de faptul că există o mare listă de așteptare pentru fanii Stelare și, din păcate, nu toate aplicațiile XLM gratuite vor avea succes.</string>
   <string name="kyc_veriff_splash_error_silver">SILVER VERIFICAT</string>

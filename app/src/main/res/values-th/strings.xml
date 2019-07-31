@@ -1170,8 +1170,7 @@
   <string name="airdrop_program_card_body">คุณมีสิทธิ์ได้รับ airdrops ในอนาคต</string>
   <string name="airdrop_program_card_button">เข้าร่วมทันที</string>
   <string name="kyc_veriff_splash_country_supported_header">ประเทศของฉันรองรับหรือไม่</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">ไม่รองรับทุกประเทศในขณะนี้ ตรวจสอบ %1$s ก่อนดำเนินการต่อ</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">การตรวจสอบทองอยู่ในระหว่างการตรวจสอบเมื่อตรวจสอบแล้วคุณจะสามารถใช้ Swap และแลกเปลี่ยนได้ถึงระดับโกลด์ของเรา 
+  <string name="gold_level_under_review_sunriver_large_backlog">การตรวจสอบทองอยู่ในระหว่างการตรวจสอบเมื่อตรวจสอบแล้วคุณจะสามารถใช้ Swap และแลกเปลี่ยนได้ถึงระดับโกลด์ของเรา
 
  โปรดทราบว่ามีรายการรอขนาดใหญ่สำหรับ Stellar airdrops และน่าเสียดายที่แอปพลิเคชันทั้งหมดสำหรับ XLM ฟรีจะประสบความสำเร็จ</string>
   <string name="kyc_veriff_splash_error_silver">ยืนยันเงินแล้ว</string>

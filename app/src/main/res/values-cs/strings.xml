@@ -1176,8 +1176,7 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="airdrop_program_card_body">Jste způsobilý pro budoucí výsadky.</string>
   <string name="airdrop_program_card_button">Opt-in Now</string>
   <string name="kyc_veriff_splash_country_supported_header">Je moje země podporována?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">V tuto chvíli nejsou podporovány všechny země. Než budete pokračovat, zkontrolujte náš aktuální %1$s .</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Ověření zlata je předmětem kontroly, jakmile budete ověřeni, budete moci použít Swap a obchod až do našeho limitu Gold Level. 
+  <string name="gold_level_under_review_sunriver_large_backlog">Ověření zlata je předmětem kontroly, jakmile budete ověřeni, budete moci použít Swap a obchod až do našeho limitu Gold Level.
 
  Vezměte prosím na vědomí, že je zde velký pořadník pro hvězdné airdrops a bohužel ne všechny aplikace pro volný XLM budou úspěšné.</string>
   <string name="kyc_veriff_splash_error_silver">SILVER VERIFIED</string>

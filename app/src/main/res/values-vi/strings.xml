@@ -1169,7 +1169,6 @@ Lệnh đã được tạo</string>
   <string name="airdrop_program_card_body">Bạn đủ điều kiện cho các airdrop trong tương lai.</string>
   <string name="airdrop_program_card_button">Chọn tham gia ngay</string>
   <string name="kyc_veriff_splash_country_supported_header">Quốc gia của tôi có được hỗ trợ không?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Không phải tất cả quốc gia đều được hỗ trợ tại thời điểm này. Hãy kiểm tra để đảm bảo bạn đã cập nhật %1$s trước khi tiếp tục.</string>
   <string name="gold_level_under_review_sunriver_large_backlog">Đang xem xét xác minh Vàng, sau khi xác minh, bạn sẽ có thể sử dụng Trao đổi và giao dịch đến giới hạn Mức Vàng.
 
 Xin lưu ý rằng có một danh sách rất dài đang chờ để nhận airdrop Stellar và không phải tất cả đơn đăng ký nhận XLM miễn phí đều sẽ thành công.</string>

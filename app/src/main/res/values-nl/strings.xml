@@ -1172,8 +1172,7 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="airdrop_program_card_body">Je komt in aanmerking voor toekomstige luchtlandingen.</string>
   <string name="airdrop_program_card_button">Meld u nu aan</string>
   <string name="kyc_veriff_splash_country_supported_header">Wordt mijn land ondersteund?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Niet alle landen worden op dit moment ondersteund. Bekijk onze up-to-date %1$s voordat u doorgaat.</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Gouden verificatie wordt momenteel beoordeeld, eenmaal geverifieerd, kunt u Swap en trade gebruiken tot onze Gold Level-limiet. 
+  <string name="gold_level_under_review_sunriver_large_backlog">Gouden verificatie wordt momenteel beoordeeld, eenmaal geverifieerd, kunt u Swap en trade gebruiken tot onze Gold Level-limiet.
 
  Let op: er is een grote wachtlijst voor Stellar Airdrops en helaas zullen niet alle applicaties voor gratis XLM succesvol zijn.</string>
   <string name="kyc_veriff_splash_error_silver">ZILVER GEVERIFIEERD</string>

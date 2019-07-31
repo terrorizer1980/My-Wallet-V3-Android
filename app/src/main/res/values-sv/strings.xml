@@ -1189,8 +1189,7 @@
   <string name="airdrop_program_card_body">Du är berättigad till framtida airdrops.</string>
   <string name="airdrop_program_card_button">Anmäl dig nu</string>
   <string name="kyc_veriff_splash_country_supported_header">Stöds mitt land?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Inte alla länder stöds vid denna tidpunkt. Kolla vårt aktuella %1$s innan du fortsätter.</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Guldbekräftelse är under granskning, en gång verifierad kan du använda Byt och handla upp till vår Guldnivågräns. 
+  <string name="gold_level_under_review_sunriver_large_backlog">Guldbekräftelse är under granskning, en gång verifierad kan du använda Byt och handla upp till vår Guldnivågräns.
 
  Var vänlig medveten om att det finns en stor väntelista för Stellar airdrops och tyvärr inte alla ansökningar om gratis XLM kommer att bli framgångsrika.</string>
   <string name="kyc_veriff_splash_error_silver">SILVER VERIFIED</string>

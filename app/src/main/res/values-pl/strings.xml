@@ -1175,8 +1175,7 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="airdrop_program_card_body">Masz prawo do przyszłych zrzutów.</string>
   <string name="airdrop_program_card_button">Zapisz się teraz</string>
   <string name="kyc_veriff_splash_country_supported_header">Czy mój kraj jest wspierany?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Obecnie nie wszystkie kraje są obsługiwane. Sprawdź nasze aktualne %1$s przed kontynuowaniem.</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Weryfikacja złota jest w trakcie przeglądu, po zweryfikowaniu będziesz mógł użyć Swapu i handlować do naszego limitu poziomu złota. 
+  <string name="gold_level_under_review_sunriver_large_backlog">Weryfikacja złota jest w trakcie przeglądu, po zweryfikowaniu będziesz mógł użyć Swapu i handlować do naszego limitu poziomu złota.
 
  Należy pamiętać, że istnieje duża lista oczekujących na zrzuty gwiezdne i niestety nie wszystkie aplikacje na bezpłatny XLM będą skuteczne.</string>
   <string name="kyc_veriff_splash_error_silver">SREBRNY WERYFIKOWANY</string>

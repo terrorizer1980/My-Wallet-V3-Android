@@ -1175,7 +1175,6 @@
   <string name="airdrop_program_card_body">Вы имеете право на участие в будущих раздачах.</string>
   <string name="airdrop_program_card_button">Зарегистрируйтесь сейчас</string>
   <string name="kyc_veriff_splash_country_supported_header">Поддерживается ли моя страна?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">В настоящее время не все страны поддерживаются. Проверьте наш актуальный %1$s прежде чем продолжить.</string>
   <string name="gold_level_under_review_sunriver_large_backlog">Проверка Золотого статуса находится на рассмотрении, после проверки вы сможете использовать Swap и торговать до нашего предела для Золотого статуса.
 
 Имейте в виду, что есть большой список ожидания для раздачи Stellar, и, к сожалению, не все приложения для бесплатного XLM будут работать.</string>

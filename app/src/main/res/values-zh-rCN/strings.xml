@@ -1177,8 +1177,7 @@
   <string name="airdrop_program_card_body">你有资格参加未来的空投。</string>
   <string name="airdrop_program_card_button">现在选择加入</string>
   <string name="kyc_veriff_splash_country_supported_header">我国是否受到支持？</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">目前并非所有国家都受到支持。在继续之前检查我们的最新%1$s 。</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">黄金验证正在审核中，一旦经过验证，您将能够使用掉期交易并达到我们的黄金级别限制。 
+  <string name="gold_level_under_review_sunriver_large_backlog">黄金验证正在审核中，一旦经过验证，您将能够使用掉期交易并达到我们的黄金级别限制。
 
 请注意，Stellar空投有很多等待名单，遗憾的是，并非所有免费XLM申请都会成功。</string>
   <string name="kyc_veriff_splash_error_silver">银验证</string>

@@ -1172,7 +1172,6 @@ wurde gestartet!</string>
   <string name="airdrop_program_card_body">Sie sind für zukünftige Airdrops berechtigt.</string>
   <string name="airdrop_program_card_button">Jetzt anmelden</string>
   <string name="kyc_veriff_splash_country_supported_header">Wird mein Land unterstützt?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Derzeit werden nicht alle Länder unterstützt. Überprüfen Sie unsere aktuellen %1$s, bevor Sie fortfahren.</string>
   <string name="gold_level_under_review_sunriver_large_backlog">Die Bestätigung für Gold wird überprüft. Sobald die Überprüfung abgeschlossen ist, können Sie Swap verwenden und bis zu unserem Goldlevel-Limit handeln.
 
 Bitte beachten Sie, dass es eine große Warteliste für Stellar Airdrops gibt und leider nicht alle Anträge auf kostenloses XLM erfolgreich sein werden.</string>

@@ -1188,8 +1188,7 @@
   <string name="airdrop_program_card_body">Anda layak untuk airdrops masa depan.</string>
   <string name="airdrop_program_card_button">Opt-in Sekarang</string>
   <string name="kyc_veriff_splash_country_supported_header">Adakah negara saya disokong?</string>
-  <string name="kyc_veriff_splash_country_supported_subtitle">Tidak semua negara disokong pada masa ini. Semak kami sehingga tarikh %1$s sebelum meneruskan.</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Pengesahan emas sedang diteliti, setelah disahkan, anda akan dapat menggunakan Swap dan berdagang sehingga batas Tahap Emas kami. 
+  <string name="gold_level_under_review_sunriver_large_backlog">Pengesahan emas sedang diteliti, setelah disahkan, anda akan dapat menggunakan Swap dan berdagang sehingga batas Tahap Emas kami.
 
  Harap maklum ada senarai tunggu yang besar untuk siaran udara Stellar dan sayangnya tidak semua aplikasi untuk XLM percuma akan berjaya.</string>
   <string name="kyc_veriff_splash_error_silver">SILVER VERIFIED</string>

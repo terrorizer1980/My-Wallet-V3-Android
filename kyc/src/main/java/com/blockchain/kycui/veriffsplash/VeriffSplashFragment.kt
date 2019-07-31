@@ -88,7 +88,7 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
 
         // On the content view:
         val countriesText = stringUtils.getStringWithMappedLinks(
-            R.string.kyc_veriff_splash_country_supported_subtitle,
+            R.string.kyc_veriff_splash_country_supported_subheader,
             linksMap
         )
 
