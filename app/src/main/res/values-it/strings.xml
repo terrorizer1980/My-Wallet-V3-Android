@@ -685,12 +685,12 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="lockbox_landing_get_yours_button">Acquista ora</string>
   <string name="lockbox_landing_already_owned_title">Ne possiedi già uno?</string>
   <string name="lockbox_landing_already_owned_message">Dal tuo computer, accedi a blockchain.com e connetti il ​​tuo lockbox.</string>
-  <string name="lockbox_landing_learn_more">Vuoi saperne di più? Tocca qui per visitare 
+  <string name="lockbox_landing_learn_more">Vuoi saperne di più? Tocca qui per visitare
  %1$s</string>
   <string name="lockbox_landing_coming_soon_title">Saldi in arrivo</string>
   <string name="lockbox_landing_coming_soon_message">Al momento non siamo in grado di visualizzare il saldo del tuo Lockbox. Non preoccuparti, i tuoi fondi sono al sicuro. A breve aggiungeremo questa funzionalità. Mentre aspetti, puoi controllare il tuo saldo sul web.</string>
   <string name="lockbox_landing_coming_soon_button">Controlla il mio equilibrio</string>
-  <string name="coinify_account_created_success">Successo! 
+  <string name="coinify_account_created_success">Successo!
  Account creato</string>
   <string name="buy_sell_launcher_error">Errore nel recupero dei dati di acquisto / vendita</string>
   <string name="buy_sell_buy">Acquisti</string>
@@ -699,11 +699,11 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="buy_sell_overview_pending_kyc_not_found">In attesa di KYC non trovato, riprova più tardi.</string>
   <string name="buy_sell_overview_could_not_start_kyc">Impossibile riavviare KYC, riprova più tardi.</string>
   <string name="buy_sell_overview_empty_list">La cronologia degli ordini verrà mostrata qui</string>
-  <string name="buy_sell_overview_in_review_title">Verifica dell\'identità 
+  <string name="buy_sell_overview_in_review_title">Verifica dell\'identità
  in revisione</string>
-  <string name="buy_sell_overview_denied_title">Verifica dell\'identità 
+  <string name="buy_sell_overview_denied_title">Verifica dell\'identità
  negato</string>
-  <string name="buy_sell_overview_pending_title">Identità completa 
+  <string name="buy_sell_overview_pending_title">Identità completa
  verifica</string>
   <string name="buy_sell_overview_in_review_button">Acquista ora con la carta</string>
   <string name="buy_sell_overview_denied_button">Prova di nuovo</string>
@@ -738,7 +738,7 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="buy_sell_detail_bank_disclaimer">La ricezione di fondi sul tuo conto bancario richiede in genere da 2 a 3 giorni lavorativi.</string>
   <string name="buy_sell_detail_refund_message">Coinify ha annullato questo ordine di vendita e ti ha inviato un\'email con le istruzioni su come ottenere il rimborso dei fondi.</string>
   <string name="buy_sell_details_whats_next">Qual\'è il prossimo?</string>
-  <string name="buy_sell_awaiting_funds_description">Invia %1$s a Coinify nelle prossime 48 ore. 
+  <string name="buy_sell_awaiting_funds_description">Invia %1$s a Coinify nelle prossime 48 ore.
 
  I fondi di invio del conto bancario devono essere nello stesso nome dell\'ID emesso dal governo. Altrimenti sarà respinto.</string>
   <string name="buy_sell_awaiting_funds_already_sent">Ho già inviato i fondi a Coinify</string>
@@ -815,7 +815,7 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="buy_sell_confirmation_you_will_receive">Credito totale dovuto</string>
   <string name="buy_sell_confirmation_btc_to_receive_description">%1$s BTC verrà inviato direttamente dal tuo portafoglio Blockchain a Coinify dopo aver premuto Invia.</string>
   <string name="buy_sell_confirmation_sell_rate_disclaimer">Accetto che Coinify elaborerà il mio ordine al completamento della transazione bitcoin e che bitcoin sarà scambiato al tasso di cambio disponibile al momento, che potrebbe differire dalla tariffa visualizzata.</string>
-  <string name="buy_sell_card_payment_success_title">Successo! 
+  <string name="buy_sell_card_payment_success_title">Successo!
  Ordine creato</string>
   <string name="buy_sell_card_payment_success_message">I fondi dovrebbero raggiungere il tuo account entro 3 giorni.</string>
   <string name="buy_sell_card_order_created_title">Ordine creato</string>
@@ -988,7 +988,6 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="kyc_veriff_splash_id_card">Carta di identità nazionale</string>
   <string name="kyc_veriff_splash_residence_permit">Carta di soggiorno</string>
   <string name="kyc_veriff_splash_continue">Continua</string>
-  <string name="kyc_help_dialog_need_some_help">\@ String / need_some_help</string>
   <string name="kyc_help_dialog_need_some_help_body">Il nostro team di supporto Blockchain ha scritto Guide di assistenza spiegando perché dobbiamo verificare la tua identità.</string>
   <string name="kyc_help_dialog_read_now">Leggi ora</string>
   <string name="kyc_help_dialog_read_now_url">https://blockchain.zendesk.com/hc/en-us/categories/360001135512-Identity-Verification</string>
@@ -1111,10 +1110,10 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="morph_refunded_title">Scaduto</string>
   <string name="morph_step_number">Step %1$s di 3</string>
   <string name="morph_confirm">Confermare</string>
-  <string name="morph_success_dlg_text">Successo! Il tuo scambio ha 
+  <string name="morph_success_dlg_text">Successo! Il tuo scambio ha
  stato avviato!</string>
   <string name="morph_success_for_first_gold_pax_trade_title">Il tuo scambio è stato avviato!</string>
-  <string name="morph_success_for_first_gold_pax_trade_description">Ancora meglio, dal momento che hai bisogno di ETH per fare trading su USD PAX, abbiamo appena trasferito un numero sufficiente di ETH nel tuo Wallet per coprire le tue prime 3 transazioni 
+  <string name="morph_success_for_first_gold_pax_trade_description">Ancora meglio, dal momento che hai bisogno di ETH per fare trading su USD PAX, abbiamo appena trasferito un numero sufficiente di ETH nel tuo Wallet per coprire le tue prime 3 transazioni
  🙌</string>
   <string name="morph_success_dlg_button">Visualizza i dettagli dell\'ordine</string>
   <string name="morph_order_id_title">ID ordine</string>
@@ -1153,10 +1152,8 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="homebrew_confirmation_error_fetching_fee">Errore nel prelevamento della tassa</string>
   <string name="under_limit">Sotto il limite</string>
   <string name="over_limit">Oltre il limite</string>
-  <string name="morph_help_dialog_need_some_help">\@ String / need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">Il nostro team di supporto Blockchain è pronto a rispondere a qualsiasi domanda tu abbia.</string>
   <string name="morph_help_dialog_view_swap_limit">Visualizza il mio limite di swap</string>
-  <string name="morph_help_dialog_contact_support">\@ String / CONTACT_SUPPORT</string>
   <string name="toolbar_cmd_home">Casa</string>
   <string name="toolbar_cmd_send">Inviare</string>
   <string name="toolbar_cmd_receive">Richiesta</string>
@@ -1175,7 +1172,8 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="airdrop_program_card_body">Hai i requisiti per i lanci futuri.</string>
   <string name="airdrop_program_card_button">Attivazione ora</string>
   <string name="kyc_veriff_splash_country_supported_header">Il mio paese è supportato?</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">La verifica dell\'oro è in corso di revisione, una volta verificato sarà possibile utilizzare Swap e scambiare fino al limite del livello Gold.
+  <string name="kyc_veriff_splash_country_supported_subtitle">Al momento non tutti i Paesi sono supportati. Controlla il nostro aggiornato %1$s prima di procedere.</string>
+  <string name="gold_level_under_review_sunriver_large_backlog">La verifica dell\'oro è in corso di revisione, una volta verificato sarà possibile utilizzare Swap e scambiare fino al limite del livello Gold. 
 
  Si prega di notare che c\'è una grande lista di attesa per i lanci stellari e sfortunatamente non tutte le applicazioni per XLM gratis avranno successo.</string>
   <string name="kyc_veriff_splash_error_silver">ARGENTO VERIFICATO</string>
@@ -1186,4 +1184,63 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="kyc_gold_unavailable_goto_swap">Inizia a fare trading</string>
   <string name="gold_unavailable">Oro non disponibile</string>
   <string name="veriff_identify">Identificare Veriff</string>
+  <string name="more_info_needed">Altre informazioni necessarie</string>
+  <string name="coinify_kyc_body">Per continuare a utilizzare Compra e vendi, devi aggiornare il tuo profilo. Una volta completato, sbloccherai anche limiti di trading più alti in Swap.</string>
+  <string name="coinify_kyc_cta">Aggiorna ora</string>
+  <string name="coinify_kyc_dismiss">Per saperne di più</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">Dollari USA digitali</string>
+  <string name="pax_intro_popup_text">Presentazione di USD PAX, una criptovaluta sicura e stabile che puoi utilizzare per conservare il valore. 1 PAX equivale a 1 USD ..</string>
+  <string name="pax_intro_popup_cta_btn">Ottieni USD PAX ora</string>
+  <string name="buy_sell_error_country_not_supported">Al momento il tuo Paese non è supportato per l\'acquisto / la vendita. Stiamo lavorando per aggiungere presto supporto a più aree.</string>
+  <string name="no_sell_available_message">Purtroppo comprare e vendere non è disponibile nel tuo stato. Stiamo lavorando duramente per riportarlo al più presto.</string>
+  <string name="send">Inviare</string>
+  <string name="item_the_pit">Fossa</string>
+  <string name="btn_close">Vicino</string>
+  <string name="sunriver_announcement_stellar_claim_title">Richiedi il tuo Stellar (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">Sembra che tu abbia iniziato a verificare il tuo 
+ identità ma non è finita. Riprendi da dove eri rimasto. 
+</string>
+  <string name="sunriver_announcement_stellar_claim_cta">Continua la verifica</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">XLM è in arrivo</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">Abbiamo verificato con successo 
+ la tua identità. 
+</string>
+  <string name="pit_announcement_description">È tempo di salire di livello per un migliore scambio di criptovalute. I primi 100.000 trader a registrarsi verranno scambiati gratuitamente per 30 giorni.</string>
+  <string name="pit_announcement_introducing_link">Controlla</string>
+  <string name="pit_logo_content_descr">Il logo Pit</string>
+  <string name="pit_slogan_kyc_promo">L\'unico scambio che si collega al tuo portafoglio.</string>
+  <string name="pit_thunder_kyc_promo">Commerci fulminei</string>
+  <string name="pit_security_kyc_promo"><![CDATA[Liquido e affidabile]]></string>
+  <string name="pit_built_kyc_promo">Costruito da Blockchain.com</string>
+  <string name="pit_dollar_kyc_promo">Commissioni basse</string>
+  <string name="pit_permission_app_can">Questa applicazione sarà in grado di:</string>
+  <string name="pit_permission_app_cant">Questa applicazione non sarà in grado di:</string>
+  <string name="pit_permission_subtitle">Non sarò in grado di:</string>
+  <string name="pit_permission_1">Facilitare i trasferimenti crittografici tra account</string>
+  <string name="pit_permission_2">Condividi il tuo stato di livello Oro o Argento</string>
+  <string name="pit_permission_3">Aggiungi le tue banche collegate</string>
+  <string name="pit_permission_4">Visualizza la password del tuo portafoglio</string>
+  <string name="pit_connect_now">Connetti ora</string>
+  <string name="pit_setting_title">Fossa</string>
+  <string name="pit_setting_connect">Collegare</string>
+  <string name="pit_setting_connected">Collegato</string>
+  <string name="launch_the_pit">Avvia The Pit</string>
+  <string name="pit_contact_support">Contatta il supporto</string>
+  <string name="pit_loading_dialog_title">Portandoti al box</string>
+  <string name="pit_loading_dialog_description">Una nuova finestra dovrebbe aprirsi entro 10 secondi.</string>
+  <string name="pit_verify_email_title">Verifica la tua email</string>
+  <string name="pit_verify_email_description">Ti abbiamo appena inviato un\'email di verifica. Il tuo indirizzo email deve essere verificato prima di poterti connettere a The PIT.</string>
+  <string name="pit_open_email_app">Apri l\'app e-mail</string>
+  <string name="pit_did_not_get_email">Non hai ricevuto l\'email?</string>
+  <string name="pit_send_again">Invia di nuovo</string>
+  <string name="mail_resent_succeed">Email inviata. Controlla la tua casella di posta per continuare.</string>
+  <string name="mail_resent_failed">Qualcosa è andato storto. Si prega di toccare Invia di nuovo.</string>
+  <string name="pit_email_verified_description">Sei pronto per connettere il tuo Blockchain Wallet a The PIT.</string>
+  <string name="pit_email_verified_title">Email verificata.</string>
+  <string name="pit_connection_error_title">Errore di connessione</string>
+  <string name="pit_connection_error_description">Non è stato possibile connettere il tuo portafoglio a The PIT. Torna a The PIT e riprova.</string>
+  <string name="pit_connection_success_title">Successo!</string>
+  <string name="pit_connection_success_description">Hai collegato il tuo Portafoglio Blockchain a The PIT.</string>
+  <string name="pit_default_account_label">Il mio indirizzo PIT %1$s</string>
 </resources>

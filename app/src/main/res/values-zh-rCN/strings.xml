@@ -121,7 +121,7 @@
   <string name="licenses">许可</string>
   <string name="email_chooser">发送邮件…</string>
   <string name="about">Blockchain钱包 %1$s
-©%2$s Blockchain卢森堡股份公司
+©%2$s Blockchain卢森堡股份公司 
  版权所有</string>
   <string name="merchant_download">免费商家App</string>
   <string name="password_or_wipe">使用密码进入或忘记此钱包</string>
@@ -244,7 +244,7 @@
   <string name="privx_required">需要私钥</string>
   <string name="watch_only_spend_instructions">此操作需要比特币地址 %1$s的私钥。请扫描二维码。</string>
   <string name="invalid_private_key">无效私钥</string>
-  <string name="watch_only_import_warning">您将导入一个只看地址,这个地址（或公钥脚本）存储在钱包中当没有对应的私钥。这意味着资金只有你拥有存储在其他地方的私钥时才能被支出，如果您没有私钥，请不要指导任何人向该地址发送资金。
+  <string name="watch_only_import_warning">您将导入一个只看地址,这个地址（或公钥脚本）存储在钱包中当没有对应的私钥。这意味着资金只有你拥有存储在其他地方的私钥时才能被支出，如果您没有私钥，请不要指导任何人向该地址发送资金。 
 
 这些选项仅推荐高级用户使用。继续？
     </string>
@@ -948,7 +948,7 @@
   <string name="kyc_splash_terms_and_conditions_submit">点击确认即表示您同意Blockchain的</string>
   <string name="kyc_country_selection_message_state">每个州对加密货币的交易都有不同的规定。</string>
   <string name="kyc_profile_submit">提交</string>
-  <string name="kyc_email_didnt_see_email">没有收到电子邮件？ %1$s</string>
+  <string name="kyc_email_didnt_see_email">没有收到电子邮件？</string>
   <string name="kyc_email_send_again_hyperlink">重新发送</string>
   <string name="kyc_email_email_was_resent">邮件已重新发送</string>
   <string name="kyc_phone_didnt_see_sms">1</string>
@@ -1157,10 +1157,8 @@
   <string name="homebrew_confirmation_error_fetching_fee">提取费用出错</string>
   <string name="under_limit">在极限下</string>
   <string name="over_limit">过量</string>
-  <string name="morph_help_dialog_need_some_help">\@字符串/ need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">我们的区块链支持团队随时准备回答您的任何问题。</string>
   <string name="morph_help_dialog_view_swap_limit">查看我的交换限额</string>
-  <string name="morph_help_dialog_contact_support">\@字符串/ contact_support</string>
   <string name="toolbar_cmd_home">家</string>
   <string name="toolbar_cmd_send">发送</string>
   <string name="toolbar_cmd_receive">请求</string>
@@ -1179,7 +1177,8 @@
   <string name="airdrop_program_card_body">你有资格参加未来的空投。</string>
   <string name="airdrop_program_card_button">现在选择加入</string>
   <string name="kyc_veriff_splash_country_supported_header">我国是否受到支持？</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">黄金验证正在审核中，一旦经过验证，您将能够使用掉期交易并达到我们的黄金级别限制。
+  <string name="kyc_veriff_splash_country_supported_subtitle">目前并非所有国家都受到支持。在继续之前检查我们的最新%1$s 。</string>
+  <string name="gold_level_under_review_sunriver_large_backlog">黄金验证正在审核中，一旦经过验证，您将能够使用掉期交易并达到我们的黄金级别限制。 
 
 请注意，Stellar空投有很多等待名单，遗憾的是，并非所有免费XLM申请都会成功。</string>
   <string name="kyc_veriff_splash_error_silver">银验证</string>
@@ -1190,4 +1189,61 @@
   <string name="kyc_gold_unavailable_goto_swap">开始交易</string>
   <string name="gold_unavailable">黄金不可用</string>
   <string name="veriff_identify">Veriff识别</string>
+  <string name="more_info_needed">需更多信息</string>
+  <string name="coinify_kyc_body">要继续使用买入 &amp; 卖出，您需要更新个人资料。完成后，您还可以在 Swap 中解锁更高额的交易权限。 </string>
+  <string name="coinify_kyc_cta">立即更新</string>
+  <string name="coinify_kyc_dismiss">了解更多</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">数字美元</string>
+  <string name="pax_intro_popup_text">推出 USD PAX，一种安全稳定的加密货币资产，可用于存储价值。 1 PAX等于1美元。</string>
+  <string name="pax_intro_popup_cta_btn">立即获得 USD PAX</string>
+  <string name="buy_sell_error_country_not_supported">目前您所在的国家/地区不支持买入/卖出。我们正在努力尽快为更多地区增加支持。</string>
+  <string name="no_sell_available_message">很抱歉，目前您所在的地区无法购买 &amp; 售出。我们正努力尽快开通该业务。</string>
+  <string name="send">发送</string>
+  <string name="item_the_pit">PIT</string>
+  <string name="btn_close">关闭</string>
+  <string name="sunriver_announcement_stellar_claim_title">领取您的恒星币 (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">似乎您已经开始验证身份，但并未完成。请从上次停止的地方继续。
+    </string>
+  <string name="sunriver_announcement_stellar_claim_cta">继续验证</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">您的恒星币即将到账</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">验证身份成功。
+....</string>
+  <string name="pit_announcement_description">是时候升级使用更好的加密货币交易平台了。前100,000名注册交易者将可免费交易30 天。</string>
+  <string name="pit_announcement_introducing_link">查看</string>
+  <string name="pit_logo_content_descr">PIT 商标</string>
+  <string name="pit_slogan_kyc_promo">连接到您的钱包的唯一交易平台。</string>
+  <string name="pit_thunder_kyc_promo">闪电般快速交易</string>
+  <string name="pit_security_kyc_promo"><![CDATA[流动 & 安全可靠]]></string>
+  <string name="pit_built_kyc_promo">由 Blockchain.com 打造</string>
+  <string name="pit_dollar_kyc_promo">费用少</string>
+  <string name="pit_permission_app_can">该应用将能够：</string>
+  <string name="pit_permission_app_cant">该应用将不能：</string>
+  <string name="pit_permission_subtitle">将不能：</string>
+  <string name="pit_permission_1">促进帐户之间的加密货币传输</string>
+  <string name="pit_permission_2">分享您的金级或银级身份</string>
+  <string name="pit_permission_3">添加您的关联银行</string>
+  <string name="pit_permission_4">查看您的电子钱包密码</string>
+  <string name="pit_connect_now">立即连接</string>
+  <string name="pit_setting_title">PIT</string>
+  <string name="pit_setting_connect">连接</string>
+  <string name="pit_setting_connected">已连接</string>
+  <string name="launch_the_pit">启动 PIT</string>
+  <string name="pit_contact_support">联系技术支持</string>
+  <string name="pit_loading_dialog_title">跳转至 PIT 交易平台 </string>
+  <string name="pit_loading_dialog_description">10秒内打开新窗口。</string>
+  <string name="pit_verify_email_title">验证您的邮件</string>
+  <string name="pit_verify_email_description">我们刚向您发送了一封验证电子邮件。您需要先验证电子邮箱地址，才能连接到 PIT。</string>
+  <string name="pit_open_email_app">打开电子邮箱应用程序</string>
+  <string name="pit_did_not_get_email">没有收到电子邮件？</string>
+  <string name="pit_send_again">再次发送</string>
+  <string name="mail_resent_succeed">已发送邮件。查看您的收件箱继续。</string>
+  <string name="mail_resent_failed">出错了。请刷新重试。</string>
+  <string name="pit_email_verified_description">您已完成所有设置，准备将 Blockchain Wallet 连接到 PIT。</string>
+  <string name="pit_email_verified_title">电子邮箱已通过验证</string>
+  <string name="pit_connection_error_title">连接错误</string>
+  <string name="pit_connection_error_description">无法将您的钱包连接到 PIT。请返回 PIT 交易平台重试。</string>
+  <string name="pit_connection_success_title">成功！</string>
+  <string name="pit_connection_success_description">您已将 Blockchain Wallet 连接到 PIT。</string>
+  <string name="pit_default_account_label">我的 PIT %1$s 地址</string>
 </resources>

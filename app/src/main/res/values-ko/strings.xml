@@ -274,10 +274,10 @@
   <string name="amount">금액</string>
   <string name="recommended_fee">거래 수수료는 비트코인 채굴 네트워크가 얼마나 빨리 귀하 거래를 확인해 줄것인지에 대해 영향을 미치며 현 네트워크 조건에 따라 달라집니다. 이 거래에 대한 이번 수수료는 아래를 추천합니다.</string>
   <string name="not_now">지금은 싫어요</string>
-  <string name="high_fee_not_necessary_info">아주 높은 수수료 %1$s를 제시했습니다. 
+  <string name="high_fee_not_necessary_info">아주 높은 수수료 %1$s를 제시했습니다.
 
 수수료를 %2$s로 내려도 다음 ~10분 이내(1 블록)에 거래 확인을 받을 수 있습니다.</string>
-  <string name="low_fee_suggestion">아주 낮은 수수료 %1$s를 제시했습니다. 
+  <string name="low_fee_suggestion">아주 낮은 수수료 %1$s를 제시했습니다.
 
 거래가 막히거나 확인이 안될 수 있습니다. 다음 1 시간 (6 블록)이내에 거래 승인이 될 확률을 높이려면 거래 수수료를 적어도 %2$s 이상으로 하기를 권합니다.</string>
   <string name="raise_fee">수수료 올리기</string>
@@ -343,7 +343,7 @@
   <string name="sms_verified">휴대 장치 번호 확인됨</string>
   <string name="preferences">사용자 선택</string>
   <string name="two_fa_summary">2-단계 인증이 되게 해서 지갑 보안 성을 높이세요.</string>
-  <string name="two_fa_description">2-단계 인증이 되게 해서 지갑 보안 성을 높이세요. 휴대폰 번호를 지갑 보안에 쓰는 것을 선택할 수 있습니다. 웹 브라우저를 통해 지갑 접근 시 이 코드가 요청됩니다. 
+  <string name="two_fa_description">2-단계 인증이 되게 해서 지갑 보안 성을 높이세요. 휴대폰 번호를 지갑 보안에 쓰는 것을 선택할 수 있습니다. 웹 브라우저를 통해 지갑 접근 시 이 코드가 요청됩니다.
 
 대신 다른 인증 방법을 쓰려면, %1$s에서 웹 지갑에 로그인 하세요</string>
   <string name="rate_title">블록체인 지갑 평가</string>
@@ -680,12 +680,12 @@
   <string name="lockbox_landing_get_yours_button">지금 구입</string>
   <string name="lockbox_landing_already_owned_title">이미 소유하고 계신가요?</string>
   <string name="lockbox_landing_already_owned_message">컴퓨터에서 blockchain.com에 로그인하고 lockbox를 연결하십시오.</string>
-  <string name="lockbox_landing_learn_more">더 배우고 싶습니까? 방문하려면 여기를 누르십시오. 
+  <string name="lockbox_landing_learn_more">더 배우고 싶습니까? 방문하려면 여기를 누르십시오.
  %1$s</string>
   <string name="lockbox_landing_coming_soon_title">곧 출시 될 잔액</string>
   <string name="lockbox_landing_coming_soon_message">현재 귀하의 Lockbox 잔액을 표시 할 수 없습니다. 돈은 안전합니다. 걱정 마세요. 곧이 기능을 추가 할 예정입니다. 기다리는 동안 웹에서 잔액을 확인할 수 있습니다.</string>
   <string name="lockbox_landing_coming_soon_button">내 잔액 확인</string>
-  <string name="coinify_account_created_success">성공! 
+  <string name="coinify_account_created_success">성공!
  생성 된 계정</string>
   <string name="buy_sell_launcher_error">구매 / 판매 데이터를 가져 오는 중 오류가 발생했습니다.</string>
   <string name="buy_sell_buy">사기</string>
@@ -694,11 +694,11 @@
   <string name="buy_sell_overview_pending_kyc_not_found">대기중인 KYC를 찾을 수 없습니다. 나중에 다시 시도하십시오.</string>
   <string name="buy_sell_overview_could_not_start_kyc">KYC를 다시 시작할 수 없습니다. 나중에 다시 시도하십시오.</string>
   <string name="buy_sell_overview_empty_list">주문 내역이 여기에 표시됩니다.</string>
-  <string name="buy_sell_overview_in_review_title">신원 확인 
+  <string name="buy_sell_overview_in_review_title">신원 확인
  복습 중</string>
-  <string name="buy_sell_overview_denied_title">신원 확인 
+  <string name="buy_sell_overview_denied_title">신원 확인
  부정한</string>
-  <string name="buy_sell_overview_pending_title">완전한 정체성 
+  <string name="buy_sell_overview_pending_title">완전한 정체성
  확인</string>
   <string name="buy_sell_overview_in_review_button">카드로 지금 구입하십시오.</string>
   <string name="buy_sell_overview_denied_button">[%key:try_again%]</string>
@@ -733,7 +733,7 @@
   <string name="buy_sell_detail_bank_disclaimer">은행 계좌로 입금하는 데 보통 2 ~ 3 일이 걸립니다.</string>
   <string name="buy_sell_detail_refund_message">Coinify는이 판매 주문을 취소하고 환불받는 방법에 대한 지침이 담긴 이메일을 보냈습니다.</string>
   <string name="buy_sell_details_whats_next">무엇 향후 계획?</string>
-  <string name="buy_sell_awaiting_funds_description">다음 48 시간 내에 %1$s 을 보내어 Coinify하십시오. 
+  <string name="buy_sell_awaiting_funds_description">다음 48 시간 내에 %1$s 을 보내어 Coinify하십시오.
 
  은행 계좌 송금 자금은 정부 발급 신분증과 동일한 이름이어야합니다. 그렇지 않으면 거부됩니다.</string>
   <string name="buy_sell_awaiting_funds_already_sent">이미 코니 화에 자금을 보냈습니다.</string>
@@ -810,7 +810,7 @@
   <string name="buy_sell_confirmation_you_will_receive">총 크레딧</string>
   <string name="buy_sell_confirmation_btc_to_receive_description">%1$s 제출을 누르면 BTC가 Blockchain 지갑에서 Coinify로 바로 전송됩니다.</string>
   <string name="buy_sell_confirmation_sell_rate_disclaimer">코이 니 파이는 비트 코인 거래가 완료되면 주문을 처리하고 해당 비트 코인은 표시된 환율과 다를 수있는 해당 환율로 거래 될 것입니다.</string>
-  <string name="buy_sell_card_payment_success_title">성공! 
+  <string name="buy_sell_card_payment_success_title">성공!
  주문 생성 됨</string>
   <string name="buy_sell_card_payment_success_message">3 일 이내에 계좌에 금액이 입금되어야합니다.</string>
   <string name="buy_sell_card_order_created_title">주문 생성 됨</string>
@@ -983,7 +983,6 @@
   <string name="kyc_veriff_splash_id_card">국가 ID 카드</string>
   <string name="kyc_veriff_splash_residence_permit">영주권</string>
   <string name="kyc_veriff_splash_continue">잇다</string>
-  <string name="kyc_help_dialog_need_some_help">\@ 문자열 / need_some_help</string>
   <string name="kyc_help_dialog_need_some_help_body">Blockchain Support 팀은 귀하의 신분을 확인해야하는 이유를 설명하는 도움말 안내서를 작성했습니다.</string>
   <string name="kyc_help_dialog_read_now">지금 읽어라</string>
   <string name="kyc_help_dialog_read_now_url">https://blockchain.zendesk.com/hc/en-us/categories/360001135512-Identity-Verification</string>
@@ -1106,10 +1105,10 @@
   <string name="morph_refunded_title">만료 됨</string>
   <string name="morph_step_number">3 단계 중 %1$s 단계</string>
   <string name="morph_confirm">확인</string>
-  <string name="morph_success_dlg_text">성공! 귀하의 거래소는 
+  <string name="morph_success_dlg_text">성공! 귀하의 거래소는
  시작되었습니다!</string>
   <string name="morph_success_for_first_gold_pax_trade_title">Exchange가 시작되었습니다!</string>
-  <string name="morph_success_for_first_gold_pax_trade_description">더 좋은 점은 USD PAX 거래를하기 위해 ETH가 필요하기 때문에 처음 3 건의 거래를 처리하기 위해 월렛에 충분한 ETH를 송금했습니다. 
+  <string name="morph_success_for_first_gold_pax_trade_description">더 좋은 점은 USD PAX 거래를하기 위해 ETH가 필요하기 때문에 처음 3 건의 거래를 처리하기 위해 월렛에 충분한 ETH를 송금했습니다.
  🙌</string>
   <string name="morph_success_dlg_button">주문 내역보기</string>
   <string name="morph_order_id_title">주문 아이디</string>
@@ -1148,10 +1147,8 @@
   <string name="homebrew_confirmation_error_fetching_fee">오류를 가져 오는 중 오류가 발생했습니다.</string>
   <string name="under_limit">한도 미만</string>
   <string name="over_limit">한도 초과</string>
-  <string name="morph_help_dialog_need_some_help">\@ 문자열 / need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">Blockchain Support 팀은 귀하의 질문에 답하기 위해 대기 중입니다.</string>
   <string name="morph_help_dialog_view_swap_limit">내 스왑 한도보기</string>
-  <string name="morph_help_dialog_contact_support">\@ string / contact_support</string>
   <string name="toolbar_cmd_home">집</string>
   <string name="toolbar_cmd_send">보내다</string>
   <string name="toolbar_cmd_receive">의뢰</string>
@@ -1170,7 +1167,8 @@
   <string name="airdrop_program_card_body">미래의 에어 드롭을받을 자격이 있습니다.</string>
   <string name="airdrop_program_card_button">지금 가입하기</string>
   <string name="kyc_veriff_splash_country_supported_header">우리 나라가 지원됩니까?</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">골드 확인이 검토 중이며, 일단 스왑을 사용하고 골드 레벨 한도까지 거래 할 수 있는지 확인하십시오.
+  <string name="kyc_veriff_splash_country_supported_subtitle">현재 모든 국가에서 지원되는 것은 아닙니다. 계속하기 전에 %1$s 최신 항목을 확인하십시오.</string>
+  <string name="gold_level_under_review_sunriver_large_backlog">골드 확인이 검토 중이며, 일단 스왑을 사용하고 골드 레벨 한도까지 거래 할 수 있는지 확인하십시오. 
 
  Stellar airdrops에 대한 대기자 명단이 많으며 무료 XLM 신청이 성공적으로 완료되는 것은 아닙니다.</string>
   <string name="kyc_veriff_splash_error_silver">은빛으로 입증 된</string>
@@ -1181,4 +1179,63 @@
   <string name="kyc_gold_unavailable_goto_swap">거래 시작</string>
   <string name="gold_unavailable">골드를 사용할 수 없음</string>
   <string name="veriff_identify">Veriff Identify</string>
+  <string name="more_info_needed">추가 정보 필요</string>
+  <string name="coinify_kyc_body">구매 및 판매를 계속 사용하려면 프로필을 업데이트해야합니다. 완료되면 스왑에서 더 높은 거래 한도를 확보 할 수 있습니다.</string>
+  <string name="coinify_kyc_cta">지금 업데이트</string>
+  <string name="coinify_kyc_dismiss">더 알아보기</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">디지털 미국 달러</string>
+  <string name="pax_intro_popup_text">안전하고 안정적인 암호 자산 인 USD PAX를 도입하여 가치를 쌓을 수 있습니다. 1 PAX는 1 USD와 같습니다.</string>
+  <string name="pax_intro_popup_cta_btn">USD PAX 지금 가져 오기</string>
+  <string name="buy_sell_error_country_not_supported">귀하의 국가는 현재 구매 / 판매가 지원되지 않습니다. 우리는 곧 더 많은 분야에 지원을 추가하기 위해 노력하고 있습니다.</string>
+  <string name="no_sell_available_message">불행히도 구매 및 판매는 귀하의 주에서 가능하지 않습니다. 우리는 최대한 빨리 그것을 되돌리기 위해 열심히 노력하고 있습니다.</string>
+  <string name="send">보내다</string>
+  <string name="item_the_pit">구덩이</string>
+  <string name="btn_close">닫기</string>
+  <string name="sunriver_announcement_stellar_claim_title">귀하의 스텔라 (XLM) 주장</string>
+  <string name="sunriver_announcement_stellar_claim_message">네가 그걸 확인하기 시작한 것 같아. 
+ 신원은 끝내지 않았다. 네가 그만 뒀던 곳을 골라라. 
+</string>
+  <string name="sunriver_announcement_stellar_claim_cta">확인 계속하기</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">XLM이 진행 중입니다.</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">우리는 성공적으로 확인했다. 
+ 너의 정체성. 
+</string>
+  <string name="pit_announcement_description">더 나은 암호 교환으로 레벨 업 할 때입니다. 첫 10 만명의 상인이 30 일 동안 무료로 거래됩니다.</string>
+  <string name="pit_announcement_introducing_link">확인 해봐</string>
+  <string name="pit_logo_content_descr">구덩이 로고</string>
+  <string name="pit_slogan_kyc_promo">월렛에 연결하는 유일한 Exchange입니다.</string>
+  <string name="pit_thunder_kyc_promo">번개 빠른 무역</string>
+  <string name="pit_security_kyc_promo"><![CDATA[액체 및 신뢰성]]></string>
+  <string name="pit_built_kyc_promo">Blockchain.com에서 제작</string>
+  <string name="pit_dollar_kyc_promo">저비용</string>
+  <string name="pit_permission_app_can">이 응용 프로그램은 다음을 수행 할 수 있습니다.</string>
+  <string name="pit_permission_app_cant">이 응용 프로그램은 다음 작업을 수행 할 수 없습니다.</string>
+  <string name="pit_permission_subtitle">할 수 없을 것이다:</string>
+  <string name="pit_permission_1">계정 간 암호화 전송 촉진</string>
+  <string name="pit_permission_2">골드 또는 실버 등급 상태 공유</string>
+  <string name="pit_permission_3">연결된 은행 추가</string>
+  <string name="pit_permission_4">지갑 암호보기</string>
+  <string name="pit_connect_now">지금 연결</string>
+  <string name="pit_setting_title">구덩이</string>
+  <string name="pit_setting_connect">잇다</string>
+  <string name="pit_setting_connected">연결됨</string>
+  <string name="launch_the_pit">The Pit를 시작하십시오.</string>
+  <string name="pit_contact_support">연락처 지원</string>
+  <string name="pit_loading_dialog_title">PIT로 데려다주는</string>
+  <string name="pit_loading_dialog_description">새 창이 10 초 이내에 열립니다.</string>
+  <string name="pit_verify_email_title">귀하의 이메일 확인</string>
+  <string name="pit_verify_email_description">방금 확인 메일을 보냈습니다. PIT에 연결하기 전에 귀하의 이메일 주소를 확인해야합니다.</string>
+  <string name="pit_open_email_app">전자 메일 응용 프로그램 열기</string>
+  <string name="pit_did_not_get_email">이메일을받지 못했습니까?</string>
+  <string name="pit_send_again">다시 보내기</string>
+  <string name="mail_resent_succeed">이메일이 전송되었습니다. 계속하려면받은 편지함을 확인하십시오.</string>
+  <string name="mail_resent_failed">문제가 발생했습니다. 다시 보내기를 누릅니다.</string>
+  <string name="pit_email_verified_description">Blockchain Wallet을 PIT에 연결하도록 설정되었습니다.</string>
+  <string name="pit_email_verified_title">이메일 확인 됨.</string>
+  <string name="pit_connection_error_title">연결 오류</string>
+  <string name="pit_connection_error_description">월렛을 PIT에 연결할 수 없습니다. The PIT로 돌아가서 다시 시도하십시오.</string>
+  <string name="pit_connection_success_title">성공!</string>
+  <string name="pit_connection_success_description">Blockchain Wallet을 The PIT에 연결했습니다.</string>
+  <string name="pit_default_account_label">내 PIT %1$s 주소</string>
 </resources>

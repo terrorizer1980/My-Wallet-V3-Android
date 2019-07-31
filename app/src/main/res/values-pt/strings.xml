@@ -1151,7 +1151,6 @@ Pedido criado</string>
   <string name="morph_help_dialog_need_some_help">@string/need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">A nossa Equipa de Suporte Blockchain está à disposição para responder qualquer pergunta que tiver.</string>
   <string name="morph_help_dialog_view_swap_limit">Ver o meu limite no Swap</string>
-  <string name="morph_help_dialog_contact_support">@string/contact_support</string>
   <string name="toolbar_cmd_home">Página Inicial</string>
   <string name="toolbar_cmd_send">Enviar</string>
   <string name="toolbar_cmd_receive">Pedir</string>
@@ -1170,6 +1169,7 @@ Pedido criado</string>
   <string name="airdrop_program_card_body">É elegível para futuros airdrops.</string>
   <string name="airdrop_program_card_button">Atualizar agora</string>
   <string name="kyc_veriff_splash_country_supported_header">O meu país é suportado?</string>
+  <string name="kyc_veriff_splash_country_supported_subtitle">Nem todos os países são suportados no momento. Verifique o nosso %1$s atualizado antes de prosseguir.</string>
   <string name="gold_level_under_review_sunriver_large_backlog">A verificação Gold está sob revisão, depois de verificado se será capaz de usar Swap e negociar com o nosso limite do Nível Gold.
 
 Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infelizmente, nem todas as aplicações para o XLM gratuito serão bem sucedidas.</string>
@@ -1189,4 +1189,55 @@ Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infe
   <string name="pax_intro_popup_title">Dólares americanos digitais</string>
   <string name="pax_intro_popup_text">Apresentamos o USD PAX, um ativo de criptografia seguro e estável que poderá usar para aumentar o valor. 1 PAX é igual a 1 USD.</string>
   <string name="pax_intro_popup_cta_btn">Obtenha USD PAX agora</string>
+  <string name="buy_sell_error_country_not_supported">O seu país não é suportado para compra/venda neste momento. Estamos a trabalhar para adicionar suporte a mais áreas em breve.</string>
+  <string name="no_sell_available_message">Infelizmente, comprar e vender não está disponível no seu estado. Estamos a trabalhar duro para trazê-lo de volta o mais rápido possível.</string>
+  <string name="send">Enviar</string>
+  <string name="item_the_pit">The Pit</string>
+  <string name="btn_close">Fechar</string>
+  <string name="sunriver_announcement_stellar_claim_title">Reivindique seu Stellar (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">Parece que começou a verificar a sua 
+        identidade, mas não terminou. Continue de onde parou.
+    </string>
+  <string name="sunriver_announcement_stellar_claim_cta">Continuar a verificação</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">O seu XLM está a caminho</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">Verificamos a sua identidade 
+         com sucesso.
+    </string>
+  <string name="pit_announcement_description">É hora de subir de Nível para uma melhor troca de crypto. Os primeiros 100.000 negociantes a se cadastrar irão negociar gratuitamente por 30 dias.</string>
+  <string name="pit_announcement_introducing_link">Confira</string>
+  <string name="pit_logo_content_descr">Logotipo do The Pit</string>
+  <string name="pit_slogan_kyc_promo">A única Troca que se liga ao seu Wallet.</string>
+  <string name="pit_thunder_kyc_promo">Negociações Rápidas Relâmpago</string>
+  <string name="pit_security_kyc_promo"><![CDATA[Líquido e Confiável]]></string>
+  <string name="pit_built_kyc_promo">Criado por Blockchain.com</string>
+  <string name="pit_dollar_kyc_promo">Taxas baixas</string>
+  <string name="pit_permission_app_can">Esta aplicação será capaz de:</string>
+  <string name="pit_permission_app_cant">Esta aplicação não será capaz de:</string>
+  <string name="pit_permission_subtitle">Não será capaz de:</string>
+  <string name="pit_permission_1">Facilitar transferências de crypto entre contas</string>
+  <string name="pit_permission_2">Partilhe o seu estado de Nível Gold ou Silver</string>
+  <string name="pit_permission_3">Adicione os seus bancos vinculados</string>
+  <string name="pit_permission_4">Ver a palavra-passe do seu wallet</string>
+  <string name="pit_connect_now">Ligue agora</string>
+  <string name="pit_setting_title">The Pit</string>
+  <string name="pit_setting_connect">Ligar</string>
+  <string name="pit_setting_connected">Ligado</string>
+  <string name="launch_the_pit">Lançar The PIT</string>
+  <string name="pit_contact_support">Contatar suporte</string>
+  <string name="pit_loading_dialog_title">Leva ao The PIT</string>
+  <string name="pit_loading_dialog_description">Uma nova janela deve abrir dentro de 10 segundos.</string>
+  <string name="pit_verify_email_title">Verifique o seu email</string>
+  <string name="pit_verify_email_description">Acabamos de enviar-lhe um email de verificação. O seu endereço de email precisa ser verificado antes que possa se ligar ao The PIT.</string>
+  <string name="pit_open_email_app">Abra a aplicação de email</string>
+  <string name="pit_did_not_get_email">Não recebeu o email?</string>
+  <string name="pit_send_again">Envie novamente</string>
+  <string name="mail_resent_succeed">E-mail enviado. Verifique a sua caixa de entrada para continuar.</string>
+  <string name="mail_resent_failed">Algo deu errado. Toque em Enviar novamente.</string>
+  <string name="pit_email_verified_description">Está tudo pronto para ligar o seu Blockchain Wallet ao The PIT.</string>
+  <string name="pit_email_verified_title">Email verificado.</string>
+  <string name="pit_connection_error_title">Erro de ligação</string>
+  <string name="pit_connection_error_description">Não conseguimos ligar o seu Wallet ao The PIT. Volte para o The PIT e tente novamente.</string>
+  <string name="pit_connection_success_title">Sucesso!</string>
+  <string name="pit_connection_success_description">Ligou o seu Blockchain Wallet ao The PIT.</string>
+  <string name="pit_default_account_label">Endereço %1$s Meu PIT</string>
 </resources>

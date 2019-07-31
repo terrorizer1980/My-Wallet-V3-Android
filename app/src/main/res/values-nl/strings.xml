@@ -685,12 +685,12 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="lockbox_landing_get_yours_button">Koop nu</string>
   <string name="lockbox_landing_already_owned_title">Heb je er al een?</string>
   <string name="lockbox_landing_already_owned_message">Log vanaf uw computer in op blockchain.com en sluit uw lockbox aan.</string>
-  <string name="lockbox_landing_learn_more">Wilt u meer weten? Tik hier om te bezoeken 
+  <string name="lockbox_landing_learn_more">Wilt u meer weten? Tik hier om te bezoeken
  %1$s</string>
   <string name="lockbox_landing_coming_soon_title">Saldi komen binnenkort</string>
   <string name="lockbox_landing_coming_soon_message">We kunnen je Lockbox-saldo momenteel niet weergeven. Maak je geen zorgen, je geld is veilig. We zullen deze functie binnenkort toevoegen. Terwijl u wacht, kunt u uw saldo op internet controleren.</string>
   <string name="lockbox_landing_coming_soon_button">Controleer mijn balans</string>
-  <string name="coinify_account_created_success">Succes! 
+  <string name="coinify_account_created_success">Succes!
  Account aangemaakt</string>
   <string name="buy_sell_launcher_error">Fout bij ophalen van koop / verkoopgegevens</string>
   <string name="buy_sell_buy">Kopen</string>
@@ -699,11 +699,11 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="buy_sell_overview_pending_kyc_not_found">In afwachting van KYC niet gevonden, probeer het later opnieuw.</string>
   <string name="buy_sell_overview_could_not_start_kyc">Kon KYC niet opnieuw starten, probeer het later opnieuw.</string>
   <string name="buy_sell_overview_empty_list">Je bestelgeschiedenis wordt hier weergegeven</string>
-  <string name="buy_sell_overview_in_review_title">Identiteit verificatie 
+  <string name="buy_sell_overview_in_review_title">Identiteit verificatie
  in beoordeling</string>
-  <string name="buy_sell_overview_denied_title">Identiteit verificatie 
+  <string name="buy_sell_overview_denied_title">Identiteit verificatie
  ontkend</string>
-  <string name="buy_sell_overview_pending_title">Volledige identiteit 
+  <string name="buy_sell_overview_pending_title">Volledige identiteit
  verificatie</string>
   <string name="buy_sell_overview_in_review_button">Koop nu met kaart</string>
   <string name="buy_sell_overview_denied_button">Probeer opnieuw</string>
@@ -738,7 +738,7 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="buy_sell_detail_bank_disclaimer">Het ontvangen van geld op uw bankrekening duurt meestal tussen de 2 en 3 werkdagen.</string>
   <string name="buy_sell_detail_refund_message">Coinify heeft deze verkooporder geannuleerd en u een e-mail gestuurd met instructies voor het terugbetalen van uw geld.</string>
   <string name="buy_sell_details_whats_next">Wat is het volgende?</string>
-  <string name="buy_sell_awaiting_funds_description">Stuur %1$s naar Coinify binnen de komende 48 uur. 
+  <string name="buy_sell_awaiting_funds_description">Stuur %1$s naar Coinify binnen de komende 48 uur.
 
  Het verzenden van geld op bankrekening moet op dezelfde naam staan ​​als uw door de overheid uitgegeven identiteitsbewijs. Anders wordt het afgewezen.</string>
   <string name="buy_sell_awaiting_funds_already_sent">Ik heb het geld al naar Coinify gestuurd</string>
@@ -815,7 +815,7 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="buy_sell_confirmation_you_will_receive">Totaal krediet verschuldigd</string>
   <string name="buy_sell_confirmation_btc_to_receive_description">%1$s BTC wordt direct vanuit je Blockchain-portemonnee naar Coinify verzonden zodra je op Submit drukt.</string>
   <string name="buy_sell_confirmation_sell_rate_disclaimer">Ik aanvaard dat Coinify mijn bestelling verwerkt zodra de bitcoin-transactie is voltooid en dat Bitcoin tegen de beschikbare wisselkoers op dat moment wordt verhandeld, wat kan afwijken van de weergegeven koers.</string>
-  <string name="buy_sell_card_payment_success_title">Succes! 
+  <string name="buy_sell_card_payment_success_title">Succes!
  Bestelling aangemaakt</string>
   <string name="buy_sell_card_payment_success_message">Fondsen moeten binnen 3 dagen uw account bereiken.</string>
   <string name="buy_sell_card_order_created_title">Bestelling aangemaakt</string>
@@ -988,7 +988,6 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="kyc_veriff_splash_id_card">Nationale identiteitskaart</string>
   <string name="kyc_veriff_splash_residence_permit">Verblijfsvergunning</string>
   <string name="kyc_veriff_splash_continue">Doorgaan met</string>
-  <string name="kyc_help_dialog_need_some_help">\@ String / need_some_help</string>
   <string name="kyc_help_dialog_need_some_help_body">Ons ondersteuningsteam voor Blockchain heeft hulpgidsen geschreven waarin wordt uitgelegd waarom we je identiteit moeten verifiëren.</string>
   <string name="kyc_help_dialog_read_now">Lees nu</string>
   <string name="kyc_help_dialog_read_now_url">https://blockchain.zendesk.com/hc/en-us/categories/360001135512-Identity-Verification</string>
@@ -1111,10 +1110,10 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="morph_refunded_title">Verlopen</string>
   <string name="morph_step_number">Stap %1$s van 3</string>
   <string name="morph_confirm">Bevestigen</string>
-  <string name="morph_success_dlg_text">Succes! Uw uitwisseling heeft 
+  <string name="morph_success_dlg_text">Succes! Uw uitwisseling heeft
  begonnen!</string>
   <string name="morph_success_for_first_gold_pax_trade_title">Uw Exchange is gestart!</string>
-  <string name="morph_success_for_first_gold_pax_trade_description">Nog beter, omdat je ETH nodig hebt om USD PAX-transacties te doen, hebben we genoeg ETH in je Wallet gelicht om je eerste 3 transacties te dekken 
+  <string name="morph_success_for_first_gold_pax_trade_description">Nog beter, omdat je ETH nodig hebt om USD PAX-transacties te doen, hebben we genoeg ETH in je Wallet gelicht om je eerste 3 transacties te dekken
  🙌</string>
   <string name="morph_success_dlg_button">Bekijk details van de bestelling</string>
   <string name="morph_order_id_title">Order ID</string>
@@ -1153,10 +1152,8 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="homebrew_confirmation_error_fetching_fee">Fout bij ophalen van kosten</string>
   <string name="under_limit">Onder limiet</string>
   <string name="over_limit">Over de grens</string>
-  <string name="morph_help_dialog_need_some_help">\@ String / need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">Ons Blockchain-ondersteuningsteam staat klaar om al je vragen te beantwoorden.</string>
   <string name="morph_help_dialog_view_swap_limit">Bekijk mijn swap-limiet</string>
-  <string name="morph_help_dialog_contact_support">\@ String / CONTACT_SUPPORT</string>
   <string name="toolbar_cmd_home">Huis</string>
   <string name="toolbar_cmd_send">Sturen</string>
   <string name="toolbar_cmd_receive">Verzoek</string>
@@ -1175,7 +1172,8 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="airdrop_program_card_body">Je komt in aanmerking voor toekomstige luchtlandingen.</string>
   <string name="airdrop_program_card_button">Meld u nu aan</string>
   <string name="kyc_veriff_splash_country_supported_header">Wordt mijn land ondersteund?</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Gouden verificatie wordt momenteel beoordeeld, eenmaal geverifieerd, kunt u Swap en trade gebruiken tot onze Gold Level-limiet.
+  <string name="kyc_veriff_splash_country_supported_subtitle">Niet alle landen worden op dit moment ondersteund. Bekijk onze up-to-date %1$s voordat u doorgaat.</string>
+  <string name="gold_level_under_review_sunriver_large_backlog">Gouden verificatie wordt momenteel beoordeeld, eenmaal geverifieerd, kunt u Swap en trade gebruiken tot onze Gold Level-limiet. 
 
  Let op: er is een grote wachtlijst voor Stellar Airdrops en helaas zullen niet alle applicaties voor gratis XLM succesvol zijn.</string>
   <string name="kyc_veriff_splash_error_silver">ZILVER GEVERIFIEERD</string>
@@ -1186,4 +1184,63 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="kyc_gold_unavailable_goto_swap">Begin met handelen</string>
   <string name="gold_unavailable">Goud niet beschikbaar</string>
   <string name="veriff_identify">Veriff Identify</string>
+  <string name="more_info_needed">Meer info nodig</string>
+  <string name="coinify_kyc_body">Als je Kopen &amp; Verkopen wilt blijven gebruiken, moet je je profiel bijwerken. Eenmaal voltooid, ontgrendel je ook hogere handelslimieten in Swap.</string>
+  <string name="coinify_kyc_cta">Update nu</string>
+  <string name="coinify_kyc_dismiss">Kom meer te weten</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">Digitale Amerikaanse dollars</string>
+  <string name="pax_intro_popup_text">Introductie van USD PAX, een veilige en stabiele crypto-asset die u kunt gebruiken om waarde te behouden. 1 PAX is gelijk aan 1 USD ..</string>
+  <string name="pax_intro_popup_cta_btn">Ontvang nu USD PAX</string>
+  <string name="buy_sell_error_country_not_supported">Uw land wordt momenteel niet ondersteund voor kopen / verkopen. We werken eraan om binnenkort meer gebieden te ondersteunen.</string>
+  <string name="no_sell_available_message">Helaas is kopen en verkopen niet beschikbaar in jouw staat. We werken er hard aan om het zo snel mogelijk terug te brengen.</string>
+  <string name="send">Sturen</string>
+  <string name="item_the_pit">De put</string>
+  <string name="btn_close">Dichtbij</string>
+  <string name="sunriver_announcement_stellar_claim_title">Claim je sterren (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">Het lijkt erop dat je je bent begonnen te verifiëren 
+ identiteit maar is niet voltooid. Ga verder waar je was gebleven. 
+</string>
+  <string name="sunriver_announcement_stellar_claim_cta">Verificatie voortzetten</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">Uw XLM is onderweg</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">We hebben met succes geverifieerd 
+ uw identiteit. 
+</string>
+  <string name="pit_announcement_description">Het is tijd om een level omhoog te gaan naar een betere crypto-uitwisseling. De eerste 100.000 handelaren die zich aanmelden, zullen 30 dagen gratis handelen.</string>
+  <string name="pit_announcement_introducing_link">Bekijken</string>
+  <string name="pit_logo_content_descr">Het pit-logo</string>
+  <string name="pit_slogan_kyc_promo">De enige Exchange die verbinding maakt met uw Wallet.</string>
+  <string name="pit_thunder_kyc_promo">Bliksemsnelle transacties</string>
+  <string name="pit_security_kyc_promo"><![CDATA[Vloeibaar en betrouwbaar]]></string>
+  <string name="pit_built_kyc_promo">Gebouwd door Blockchain.com</string>
+  <string name="pit_dollar_kyc_promo">Lage tarieven</string>
+  <string name="pit_permission_app_can">Deze applicatie zal in staat zijn om:</string>
+  <string name="pit_permission_app_cant">Deze applicatie kan niet:</string>
+  <string name="pit_permission_subtitle">Zal niet in staat zijn om:</string>
+  <string name="pit_permission_1">Faciliteer crypto-transfers tussen accounts</string>
+  <string name="pit_permission_2">Deel uw Gold of Silver Level-status</string>
+  <string name="pit_permission_3">Voeg uw gelinkte banken toe</string>
+  <string name="pit_permission_4">Bekijk uw portefeuillewachtwoord</string>
+  <string name="pit_connect_now">Verbind nu</string>
+  <string name="pit_setting_title">De put</string>
+  <string name="pit_setting_connect">Aansluiten</string>
+  <string name="pit_setting_connected">Verbonden</string>
+  <string name="launch_the_pit">Start The Pit</string>
+  <string name="pit_contact_support">Contact opnemen met ondersteuning</string>
+  <string name="pit_loading_dialog_title">Je naar de PIT brengen</string>
+  <string name="pit_loading_dialog_description">Een nieuw venster zou binnen 10 seconden moeten openen.</string>
+  <string name="pit_verify_email_title">Controleer je email</string>
+  <string name="pit_verify_email_description">We hebben u zojuist een verificatie-e-mail gestuurd. Uw e-mailadres moet worden geverifieerd voordat u verbinding kunt maken met The PIT.</string>
+  <string name="pit_open_email_app">Open de e-mailapp</string>
+  <string name="pit_did_not_get_email">Heb je de e-mail niet gekregen?</string>
+  <string name="pit_send_again">Opnieuw versturen</string>
+  <string name="mail_resent_succeed">Email verzonden. Controleer uw inbox om door te gaan.</string>
+  <string name="mail_resent_failed">Er is iets fout gegaan. Tik opnieuw op Verzenden.</string>
+  <string name="pit_email_verified_description">Je bent helemaal klaar om je Blockchain-portemonnee te verbinden met The PIT.</string>
+  <string name="pit_email_verified_title">Email geverifieerd.</string>
+  <string name="pit_connection_error_title">Verbindingsfout</string>
+  <string name="pit_connection_error_description">We konden uw Wallet niet verbinden met The PIT. Ga terug naar The PIT en probeer het opnieuw.</string>
+  <string name="pit_connection_success_title">Succes!</string>
+  <string name="pit_connection_success_description">Je hebt je Blockchain-portemonnee verbonden met The PIT.</string>
+  <string name="pit_default_account_label">Mijn PIT %1$s adres</string>
 </resources>

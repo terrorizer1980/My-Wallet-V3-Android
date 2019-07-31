@@ -685,12 +685,12 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="lockbox_landing_get_yours_button">Şimdi satın al</string>
   <string name="lockbox_landing_already_owned_title">Zaten bir tane var mı?</string>
   <string name="lockbox_landing_already_owned_message">Bilgisayarınızdan blockchain.com\'a giriş yapın ve kilit kutunuzu bağlayın.</string>
-  <string name="lockbox_landing_learn_more">Daha fazla öğrenmek ister misiniz? Ziyaret etmek için buraya dokunun 
+  <string name="lockbox_landing_learn_more">Daha fazla öğrenmek ister misiniz? Ziyaret etmek için buraya dokunun
  %1$s</string>
   <string name="lockbox_landing_coming_soon_title">Yakında Dengeler</string>
   <string name="lockbox_landing_coming_soon_message">Şu anda Lockbox hesabınızı görüntüleyemiyoruz. Endişelenme, paranız güvende. Bu özelliği yakında ekleyeceğiz. Beklerken, bakiyenizi web üzerinde kontrol edebilirsiniz.</string>
   <string name="lockbox_landing_coming_soon_button">Dengemi kontrol et</string>
-  <string name="coinify_account_created_success">Başarı! 
+  <string name="coinify_account_created_success">Başarı!
  Hesap oluşturuldu</string>
   <string name="buy_sell_launcher_error">Satın alma / satış verileri alınırken hata oluştu</string>
   <string name="buy_sell_buy">Al</string>
@@ -699,11 +699,11 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="buy_sell_overview_pending_kyc_not_found">KYC bulunamadı, lütfen daha sonra tekrar deneyin.</string>
   <string name="buy_sell_overview_could_not_start_kyc">KYC yeniden başlatılamadı, lütfen daha sonra tekrar deneyin.</string>
   <string name="buy_sell_overview_empty_list">Sipariş geçmişiniz burada gösterilecek</string>
-  <string name="buy_sell_overview_in_review_title">Kimlik doğrulama 
+  <string name="buy_sell_overview_in_review_title">Kimlik doğrulama
  incelemede</string>
-  <string name="buy_sell_overview_denied_title">Kimlik doğrulama 
+  <string name="buy_sell_overview_denied_title">Kimlik doğrulama
  inkar</string>
-  <string name="buy_sell_overview_pending_title">Tam kimlik 
+  <string name="buy_sell_overview_pending_title">Tam kimlik
  doğrulama</string>
   <string name="buy_sell_overview_in_review_button">Şimdi kartla satın alın</string>
   <string name="buy_sell_overview_denied_button">Tekrar dene</string>
@@ -738,7 +738,7 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="buy_sell_detail_bank_disclaimer">Banka hesabınıza para almak genellikle 2 ila 3 iş günü sürer.</string>
   <string name="buy_sell_detail_refund_message">Coinify bu satış siparişini iptal etti ve size paranızın nasıl iade edileceğine ilişkin talimatları içeren bir e-posta gönderdi.</string>
   <string name="buy_sell_details_whats_next">Sıradaki ne?</string>
-  <string name="buy_sell_awaiting_funds_description">Önümüzdeki 48 saat içinde %1$s öğesini Coinify\'a gönderin. 
+  <string name="buy_sell_awaiting_funds_description">Önümüzdeki 48 saat içinde %1$s öğesini Coinify\'a gönderin.
 
  Banka hesabı gönderme fonları, devlet tarafından verilmiş kimlik belgenizin adıyla aynı olmalıdır. Aksi takdirde reddedilecektir.</string>
   <string name="buy_sell_awaiting_funds_already_sent">Zaten paraları Coinify\'a gönderdim.</string>
@@ -815,7 +815,7 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="buy_sell_confirmation_you_will_receive">Toplam kredi borcu</string>
   <string name="buy_sell_confirmation_btc_to_receive_description">Gönder düğmesine bastığınızda %1$s BTC doğrudan Blockchain cüzdanınızdan Coinify\'a gönderilecektir.</string>
   <string name="buy_sell_confirmation_sell_rate_disclaimer">Coinify\'ın siparişimi, bitcoin işleminin tamamlanması üzerine işleme koyduğunu ve o zamanki mevcut fiyattan farklı olabilen, mevcut döviz kuru üzerinden işlem göreceğini kabul ediyorum.</string>
-  <string name="buy_sell_card_payment_success_title">Başarı! 
+  <string name="buy_sell_card_payment_success_title">Başarı!
  Sipariş oluşturuldu</string>
   <string name="buy_sell_card_payment_success_message">Fonlar hesabınıza 3 gün içinde ulaşmalıdır.</string>
   <string name="buy_sell_card_order_created_title">Sipariş oluşturuldu</string>
@@ -1172,6 +1172,7 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="airdrop_program_card_body">Gelecekteki airdrop\'lar için uygunsunuz.</string>
   <string name="airdrop_program_card_button">Şimdi Seçin</string>
   <string name="kyc_veriff_splash_country_supported_header">Ülkem destekleniyor mu?</string>
+  <string name="kyc_veriff_splash_country_supported_subtitle">Şu anda tüm ülkeler desteklenmiyor. Devam etmeden önce güncel %1$s öğesine bakın.</string>
   <string name="gold_level_under_review_sunriver_large_backlog">Altın onayı devam ediyor, onaylandığınızda Swap\'ı kullanabilecek ve Altın Seviyesi limitinde ticaret yapabileceksiniz.
 
 Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM taleplerinin tümünün başarılı olmadığını lütfen unutmayın.</string>
@@ -1183,4 +1184,60 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
   <string name="kyc_gold_unavailable_goto_swap">Ticarete Başlayın</string>
   <string name="gold_unavailable">Altın Kullanılamaz</string>
   <string name="veriff_identify">Veriff Tanımla</string>
+  <string name="more_info_needed">Daha Fazla Bilgi Gerekli</string>
+  <string name="coinify_kyc_body">Alım-Satım özelliğini kullanmyı sürdürmek için profilinizi güncellemeniz gerekir. Tamamladıktan sonra Swap\'ta daha yüksek ticaret limitine sahip olacaksınız.</string>
+  <string name="coinify_kyc_cta">Şimdi güncelle</string>
+  <string name="coinify_kyc_dismiss">Daha Fazlasını Öğren</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">Dijital ABD Doları</string>
+  <string name="pax_intro_popup_text">Varlıklarınızı saklamak için kullanacağınız güvenli ve dengeli bir kripto değer USD PAX ile tanışın. 1 PAX 1 USD\'ye eşittir.</string>
+  <string name="pax_intro_popup_cta_btn">Hemen USD PAX alın</string>
+  <string name="buy_sell_error_country_not_supported">Şu anda ülkeniz için alım/satım desteği veremiyoruz. Çok yakında daha fazla bölgeye destek verebilmek için çalışıyoruz.</string>
+  <string name="no_sell_available_message">Bulunduğunuz yerde ne yazık ki alım-satım yapmak mümkün değildir. Alım-satım imkanını ülkenizde başlatmak için çalışmalarımıza devam ediyoruz.</string>
+  <string name="send">Göndermek</string>
+  <string name="item_the_pit">PIT</string>
+  <string name="btn_close">Kapat</string>
+  <string name="sunriver_announcement_stellar_claim_title">Stellar Talep Edin (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">Görünüşe göre kimliğinizi doğrulamaya çalıştınız ama hiç bitmedi. Kaldığınız yerden devam edin.</string>
+  <string name="sunriver_announcement_stellar_claim_cta">Doğrulamaya Devam Et</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">XLM\'niz yolda</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">Kimlik doğrulamanız başarılı.</string>
+  <string name="pit_announcement_description">Daha iyi bir kripto borsası deneyimine hazır olun. İlk 100,000 kullanıcı 30 gün boyunca ücretsiz işlem yapacak!</string>
+  <string name="pit_announcement_introducing_link">Şimdi Göz Atın</string>
+  <string name="pit_logo_content_descr">PIT logosu</string>
+  <string name="pit_slogan_kyc_promo">Cüzdanınıza bağlanabilen tek borsa.</string>
+  <string name="pit_thunder_kyc_promo">Yıldırım hızında işlemler</string>
+  <string name="pit_security_kyc_promo"><![CDATA[Likit ve Güvenilir]]></string>
+  <string name="pit_built_kyc_promo">Blockchain.com tarafından geliştirildi</string>
+  <string name="pit_dollar_kyc_promo">Düşük İşlem Ücretleri</string>
+  <string name="pit_permission_app_can">Bu uygulama şunları yapabilecek:</string>
+  <string name="pit_permission_app_cant">Bu uygulama şunları yapamayacak:</string>
+  <string name="pit_permission_subtitle">Şunları yapamayacak:</string>
+  <string name="pit_permission_1">Hesaplar arasında kripto transferini kolaylaştırın</string>
+  <string name="pit_permission_2">Gold &amp; Silver Seviyenizi Paylaşın</string>
+  <string name="pit_permission_3">Bağlı bankalarınızı ekleyin</string>
+  <string name="pit_permission_4">Cüzdan şifrenizi görüntüleyin</string>
+  <string name="pit_connect_now">Şimdi Bağlanın</string>
+  <string name="pit_setting_title">PIT</string>
+  <string name="pit_setting_connect">Bağlan </string>
+  <string name="pit_setting_connected">Bağlı</string>
+  <string name="launch_the_pit">PIT\'i başlatın</string>
+  <string name="pit_contact_support">Destek İle İletişime Geçin</string>
+  <string name="pit_loading_dialog_title">Şu an PIT\'e yönlendiriliyorsunuz</string>
+  <string name="pit_loading_dialog_description">10 saniye içinde yeni bir pencere açılmalıdır.</string>
+  <string name="pit_verify_email_title">Eposta adresinizi doğrulayın</string>
+  <string name="pit_verify_email_description">Az önce size bir doğrulama e-postası gönderdik. PIT\'e bağlanmadan önce e-posta adresinizin doğrulanması gerekiyor.</string>
+  <string name="pit_open_email_app">E-posta Uygulamasını Aç</string>
+  <string name="pit_did_not_get_email">E-postayı alamadınız mı?</string>
+  <string name="pit_send_again">Tekrar gönderin</string>
+  <string name="mail_resent_succeed">E-posta gönderildi. Devam etmek için gelen kutunuzu kontrol edin.</string>
+  <string name="mail_resent_failed">Bir şeyler yanlış gitti. Tekrar göndermek için dokunun.</string>
+  <string name="pit_email_verified_description">Blockchain Cüzdanınızı PIT\'e bağlamaya tamamen hazırsınız.</string>
+  <string name="pit_email_verified_title">E-posta Doğrulandı.</string>
+  <string name="pit_connection_error_title">Bağlantı hatası</string>
+  <string name="pit_connection_error_description">Cüzdanınızı PIT\'e bağlayamadık. Lütfen The PIT\'e geri dönün ve tekrar deneyin.</string>
+  <string name="pit_connection_success_title">Başarı!</string>
+  <string name="pit_connection_success_description">Blockchain Cüzdanınızı PIT\'e bağladınız.</string>
+  <string name="pit_default_account_label">PIT %1$s Adresim</string>
+  <string name="the_pit_title">PIT </string>
 </resources>

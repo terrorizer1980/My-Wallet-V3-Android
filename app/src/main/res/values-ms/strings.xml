@@ -120,8 +120,8 @@
   <string name="rate_us">Beri penilaian kepada kami</string>
   <string name="licenses">Lesen</string>
   <string name="email_chooser">Menghantar e-mel…</string>
-  <string name="about">Wallet Blockchain %1$s 
- © %2$s Blockchain Luxembourg SA 
+  <string name="about">Wallet Blockchain %1$s
+ © %2$s Blockchain Luxembourg SA
  Hak cipta terpelihara.</string>
   <string name="merchant_download">Aplikasi Merchant percuma</string>
   <string name="password_or_wipe">Masukkan kata laluan anda atau lupa dompet ini</string>
@@ -245,27 +245,27 @@
   <string name="privx_required">Kunci peribadi diperlukan</string>
   <string name="watch_only_spend_instructions">Tindakan ini memerlukan kunci peribadi untuk alamat Bitcoin %1$s . Sila imbas kod QR.</string>
   <string name="invalid_private_key">Kunci peribadi tidak sah</string>
-  <string name="watch_only_import_warning">Anda akan mengimport alamat yang tidak boleh dibelanjakan, alamat (atau skrip utama awam) 
- disimpan dalam dompet tanpa kunci persendirian yang sepadan. Ini 
- bermaksud dana boleh dibelanjakan SAHAJA jika anda mempunyai kunci peribadi yang disimpan di tempat lain. Jika anda berbuat demikian 
- tidak mempunyai kunci peribadi yang tersimpan, TIDAK memberi arahan kepada sesiapa sahaja untuk menghantar bitcoin kepada yang tidak boleh dibelanjakan 
- alamat. 
+  <string name="watch_only_import_warning">Anda akan mengimport alamat yang tidak boleh dibelanjakan, alamat (atau skrip utama awam)
+ disimpan dalam dompet tanpa kunci persendirian yang sepadan. Ini
+ bermaksud dana boleh dibelanjakan SAHAJA jika anda mempunyai kunci peribadi yang disimpan di tempat lain. Jika anda berbuat demikian
+ tidak mempunyai kunci peribadi yang tersimpan, TIDAK memberi arahan kepada sesiapa sahaja untuk menghantar bitcoin kepada yang tidak boleh dibelanjakan
+ alamat.
 
- Pilihan ini disarankan untuk pengguna canggih sahaja. Teruskan? 
+ Pilihan ini disarankan untuk pengguna canggih sahaja. Teruskan?
 </string>
   <string name="scan_private_key">Imbas kekunci persendirian</string>
   <string name="private_key_successfully_imported">Kunci peribadi berjaya diimport.</string>
   <string name="private_key_not_matching_address">NOTA: Kunci peribadi yang diimbas tidak sesuai dengan alamat yang tidak dapat dibelanjakan anda. Untuk membelanjakan wang anda dari alamat ini, sila imbas kunci persendirian yang betul.</string>
   <string name="watch_only">Lihat sahaja</string>
-  <string name="extended_public_key_description">Jika anda seorang peniaga, tunjukkan xPub anda dan gunakan 
- Aplikasi Pedagang Blockchain untuk menerima dana dengan selamat dan secara peribadi. 
+  <string name="extended_public_key_description">Jika anda seorang peniaga, tunjukkan xPub anda dan gunakan
+ Aplikasi Pedagang Blockchain untuk menerima dana dengan selamat dan secara peribadi.
 
- Simpan xPub anda secara peribadi. 
- Seseorang yang mempunyai akses ke xPub anda akan dapat melihat semua dana dan urus niaga anda. 
+ Simpan xPub anda secara peribadi.
+ Seseorang yang mempunyai akses ke xPub anda akan dapat melihat semua dana dan urus niaga anda.
 </string>
   <string name="extended_public_key_description_bch_only">Simpan xPub anda secara peribadi. Seseorang yang mempunyai akses ke xPub anda akan dapat melihat semua dana dan urus niaga anda.</string>
-  <string name="watch_only_description">Ini adalah alamat yang tidak boleh dibelanjakan. Untuk membelanjakan dana anda dari 
- dompet ini, sila imbas kunci peribadi anda. 
+  <string name="watch_only_description">Ini adalah alamat yang tidak boleh dibelanjakan. Untuk membelanjakan dana anda dari
+ dompet ini, sila imbas kunci peribadi anda.
 </string>
   <string name="success">Kejayaan</string>
   <string name="default_label">Lalai</string>
@@ -289,10 +289,10 @@
   <string name="amount">Jumlah</string>
   <string name="recommended_fee">Yuran transaksi mempengaruhi seberapa cepat rangkaian perlombongan Bitcoin akan mengesahkan transaksi anda, dan bergantung pada keadaan rangkaian semasa. Kami mengesyorkan bayaran di bawah untuk transaksi ini pada masa ini.</string>
   <string name="not_now">bukan sekarang</string>
-  <string name="high_fee_not_necessary_info">Anda menetapkan yuran transaksi yang luar biasa sebanyak %1$s . 
+  <string name="high_fee_not_necessary_info">Anda menetapkan yuran transaksi yang luar biasa sebanyak %1$s .
 
  Walaupun anda menurunkan yuran ke %2$s , anda boleh mengharapkan transaksi untuk mengesahkan dalam masa ~ 10 minit seterusnya (1 blok).</string>
-  <string name="low_fee_suggestion">Anda menetapkan yuran transaksi yang sangat kecil %1$s . 
+  <string name="low_fee_suggestion">Anda menetapkan yuran transaksi yang sangat kecil %1$s .
 
  Transaksi anda mungkin terjebak dan mungkin tidak pernah mengesahkan. Untuk meningkatkan kemungkinan transaksi anda untuk mengesahkan dalam masa kira-kira sejam (6 blok), kami amat mengesyorkan bayaran tidak kurang dari %2$s .</string>
   <string name="raise_fee">Naikkan yuran</string>
@@ -358,7 +358,7 @@
   <string name="sms_verified">Nombor mudah alih disahkan</string>
   <string name="preferences">Keutamaan</string>
   <string name="two_fa_summary">Lindungi dompet anda daripada akses tanpa kebenaran dengan membolehkan Pengesahan 2 Langkah.</string>
-  <string name="two_fa_description">Lindungi dompet anda daripada akses tanpa kebenaran dengan membolehkan Pengesahan 2 Langkah. Anda boleh memilih untuk menggunakan nombor telefon bimbit anda untuk mendapatkan dompet anda. Kod ini akan diminta apabila anda cuba mengakses dompet anda melalui penyemak imbas web. 
+  <string name="two_fa_description">Lindungi dompet anda daripada akses tanpa kebenaran dengan membolehkan Pengesahan 2 Langkah. Anda boleh memilih untuk menggunakan nombor telefon bimbit anda untuk mendapatkan dompet anda. Kod ini akan diminta apabila anda cuba mengakses dompet anda melalui penyemak imbas web.
 
  Untuk menggunakan kaedah pengesahan yang lain, sila log masuk ke dompet web kami di %1$s</string>
   <string name="rate_title">Rate Wallet Blockchain</string>
@@ -376,7 +376,7 @@
   <string name="pairing_code_show_qr">Tunjukkan kod QR</string>
   <string name="pairing_code_hide_qr">Sembunyikan kod QR</string>
   <string name="pairing_code_warning_1">Simpan kod ini tersembunyi sehingga anda siap.</string>
-  <string name="pairing_code_warning_2">Simpan kod ini selamat! 
+  <string name="pairing_code_warning_2">Simpan kod ini selamat!
  Jangan berkongsi dengan orang lain.</string>
   <string name="email_request_subject_eth">Permintaan pembayaran Ether</string>
   <string name="email_request_subject_bch">Permintaan pembayaran Bitcoin Cash</string>
@@ -395,9 +395,9 @@
   <string name="forget_wallet">Lupakan dompet</string>
   <string name="forget_wallet_warning">Ini akan memadamkan semua data dompet pada peranti ini. Sila sahkan bahawa anda mempunyai maklumat dompet anda yang disimpan di tempat lain jika tidak ada bitcoin di dompet ini akan tidak dapat diakses !!</string>
   <string name="api_fail">Jaringan tidak dapat dicapai. Sila cuba sebentar lagi.</string>
-  <string name="large_tx_warning">Ini adalah transaksi bitcoin yang besar. Dompet anda perlu 
- menyatukan banyak bayaran yang lebih kecil yang anda terima pada masa lalu. Ini memerlukan yang relatif 
- yuran yang tinggi untuk disahkan dengan cepat. 
+  <string name="large_tx_warning">Ini adalah transaksi bitcoin yang besar. Dompet anda perlu
+ menyatukan banyak bayaran yang lebih kecil yang anda terima pada masa lalu. Ini memerlukan yang relatif
+ yuran yang tinggi untuk disahkan dengan cepat.
 </string>
   <string name="go_back">Pergi balik</string>
   <string name="accept_higher_fee">Terima bayaran yang lebih tinggi</string>
@@ -450,7 +450,7 @@
   <string name="backup_word_mismatch">Kata tidak sepadan</string>
   <string name="backup_done">DONE</string>
   <string name="backup_lost_mnemonic">Hilang frasa sandaran 12 perkataan anda?</string>
-  <string name="fingerprint_prompt">Gunakan cap jari anda untuk akses lebih cepat dan lebih mudah ke dompet anda. 
+  <string name="fingerprint_prompt">Gunakan cap jari anda untuk akses lebih cepat dan lebih mudah ke dompet anda.
 
  Sahkan cap jari untuk meneruskan</string>
   <string name="fingerprint_description">Sahkan cap jari untuk meneruskan</string>
@@ -542,7 +542,7 @@
   <string name="eth_support_contract_not_allowed">Alamat kontrak tidak disokong.</string>
   <string name="eth_support_only_eth">Pada masa ini kami hanya menyokong ETH - anda tidak boleh menerima token ke alamat ini</string>
   <string name="eth_unconfirmed_wait">Sila tunggu sehingga urus niaga sebelumnya mengesahkan</string>
-  <string name="eth_transaction_complete">Urus niaga lengkap! Transaksi dan baki anda akan dikemas kini tidak lama lagi, ini boleh mengambil masa beberapa minit. 
+  <string name="eth_transaction_complete">Urus niaga lengkap! Transaksi dan baki anda akan dikemas kini tidak lama lagi, ini boleh mengambil masa beberapa minit.
 </string>
   <string name="dashboard_title">Papan Pemuka</string>
   <string name="dashboard_time_span_day">Hari</string>
@@ -685,9 +685,9 @@
   <string name="cannot_launch_app">Wallet Blockchain tidak dapat dijalankan pada peranti ini.</string>
   <string name="exit">Keluar</string>
   <string name="screen_overlay_warning">Hamparan skrin dikesan!</string>
-  <string name="screen_overlay_note">Aplikasi yang menggunakan lapisan skrin mempunyai keupayaan untuk menipu anda 
- untuk mengetuk objek yang tidak kelihatan dan berpotensi mencuri dana. Ambil perhatian bahawa amaran ini juga akan dicetuskan oleh aplikasi dimming skrin. Sekiranya anda yakin di sana 
- tidak ada ancaman yang anda boleh teruskan. 
+  <string name="screen_overlay_note">Aplikasi yang menggunakan lapisan skrin mempunyai keupayaan untuk menipu anda
+ untuk mengetuk objek yang tidak kelihatan dan berpotensi mencuri dana. Ambil perhatian bahawa amaran ini juga akan dicetuskan oleh aplikasi dimming skrin. Sekiranya anda yakin di sana
+ tidak ada ancaman yang anda boleh teruskan.
 </string>
   <string name="dialog_continue">Terus</string>
   <string name="insufficient_funds_with_max">Dana yang tidak mencukupi, paling banyak yang anda boleh hantar adalah %1$s</string>
@@ -701,12 +701,12 @@
   <string name="lockbox_landing_get_yours_button">Beli sekarang</string>
   <string name="lockbox_landing_already_owned_title">Sudah sendiri?</string>
   <string name="lockbox_landing_already_owned_message">Dari komputer anda, log masuk ke blokchain.com dan sambungkan kotak kunci anda.</string>
-  <string name="lockbox_landing_learn_more">Ingin mengetahui lebih lanjut? Ketik sini untuk melawat 
+  <string name="lockbox_landing_learn_more">Ingin mengetahui lebih lanjut? Ketik sini untuk melawat
  %1$s</string>
   <string name="lockbox_landing_coming_soon_title">Baki Akan Datang</string>
   <string name="lockbox_landing_coming_soon_message">Kami tidak dapat memaparkan baki Peti Masuk anda pada masa ini. Jangan risau, dana anda selamat. Kami akan menambah ciri ini tidak lama lagi. Semasa anda menunggu, anda boleh menyemak baki anda di web.</string>
   <string name="lockbox_landing_coming_soon_button">Semak baki saya</string>
-  <string name="coinify_account_created_success">Kejayaan! 
+  <string name="coinify_account_created_success">Kejayaan!
  Akaun Dicipta</string>
   <string name="buy_sell_launcher_error">Ralat mengambil data beli / jual</string>
   <string name="buy_sell_buy">Beli</string>
@@ -715,11 +715,11 @@
   <string name="buy_sell_overview_pending_kyc_not_found">Menunggu KYC tidak dijumpai, sila cuba lagi kemudian.</string>
   <string name="buy_sell_overview_could_not_start_kyc">Tidak dapat memulakan KYC, sila cuba lagi kemudian.</string>
   <string name="buy_sell_overview_empty_list">Sejarah pesanan anda akan dipaparkan di sini</string>
-  <string name="buy_sell_overview_in_review_title">Pengesahan identiti 
+  <string name="buy_sell_overview_in_review_title">Pengesahan identiti
  dalam semakan</string>
-  <string name="buy_sell_overview_denied_title">Pengesahan identiti 
+  <string name="buy_sell_overview_denied_title">Pengesahan identiti
  ditolak</string>
-  <string name="buy_sell_overview_pending_title">Identiti lengkap 
+  <string name="buy_sell_overview_pending_title">Identiti lengkap
  pengesahan</string>
   <string name="buy_sell_overview_in_review_button">Beli sekarang dengan kad</string>
   <string name="buy_sell_overview_denied_button">Cuba lagi</string>
@@ -754,7 +754,7 @@
   <string name="buy_sell_detail_bank_disclaimer">Menerima dana ke dalam akaun bank anda biasanya mengambil masa antara 2 hingga 3 hari bekerja.</string>
   <string name="buy_sell_detail_refund_message">Coinify telah membatalkan pesanan menjual ini dan menghantar e-mel kepada anda tentang arahan bagaimana untuk mendapatkan dana anda dikembalikan.</string>
   <string name="buy_sell_details_whats_next">Apa yang akan datang?</string>
-  <string name="buy_sell_awaiting_funds_description">Hantar %1$s ke Coinify dalam masa 48 jam akan datang. 
+  <string name="buy_sell_awaiting_funds_description">Hantar %1$s ke Coinify dalam masa 48 jam akan datang.
 
  Akaun bank yang menghantar dana perlu mempunyai nama yang sama dengan ID kerajaan yang dikeluarkan. Jika tidak, ia akan ditolak.</string>
   <string name="buy_sell_awaiting_funds_already_sent">Saya telah menghantar dana ke Coinify</string>
@@ -831,7 +831,7 @@
   <string name="buy_sell_confirmation_you_will_receive">Jumlah kredit yang terhutang</string>
   <string name="buy_sell_confirmation_btc_to_receive_description">%1$s BTC akan dihantar terus dari dompet Blockchain anda ke Coinify apabila anda menekan Hantar.</string>
   <string name="buy_sell_confirmation_sell_rate_disclaimer">Saya menerima bahawa Coinify akan memproses pesanan saya setelah selesai transaksi bitcoin, dan bitcoin itu akan didagangkan pada kadar pertukaran yang ada pada masa itu, yang mungkin berbeza dari kadar yang dipaparkan.</string>
-  <string name="buy_sell_card_payment_success_title">Kejayaan! 
+  <string name="buy_sell_card_payment_success_title">Kejayaan!
  Pesanan Dibuat</string>
   <string name="buy_sell_card_payment_success_message">Dana harus mencapai akaun anda dalam masa 3 hari.</string>
   <string name="buy_sell_card_order_created_title">Pesanan Dibuat</string>
@@ -1004,7 +1004,6 @@
   <string name="kyc_veriff_splash_id_card">Kad ID Kebangsaan</string>
   <string name="kyc_veriff_splash_residence_permit">Kad Residence</string>
   <string name="kyc_veriff_splash_continue">Teruskan</string>
-  <string name="kyc_help_dialog_need_some_help">\@ string / need_some_help</string>
   <string name="kyc_help_dialog_need_some_help_body">Pasukan Sokongan Blockchain kami telah menulis Panduan Bantuan yang menjelaskan mengapa kami perlu mengesahkan identiti anda.</string>
   <string name="kyc_help_dialog_read_now">Baca Sekarang</string>
   <string name="kyc_help_dialog_read_now_url">https://blockchain.zendesk.com/hc/en-us/categories/360001135512-Identity-Verification</string>
@@ -1127,10 +1126,10 @@
   <string name="morph_refunded_title">Tamat tempoh</string>
   <string name="morph_step_number">Langkah %1$s daripada 3</string>
   <string name="morph_confirm">Sahkan</string>
-  <string name="morph_success_dlg_text">Kejayaan! Pertukaran anda ada 
+  <string name="morph_success_dlg_text">Kejayaan! Pertukaran anda ada
  telah bermula!</string>
   <string name="morph_success_for_first_gold_pax_trade_title">Pertukaran anda telah dimulakan!</string>
-  <string name="morph_success_for_first_gold_pax_trade_description">Lebih baik lagi, kerana anda memerlukan ETH untuk membuat dagangan USD PAX, kami hanya cukup berpaut ETH ke dalam Wallet anda untuk menutup transaksi 3 pertama anda 
+  <string name="morph_success_for_first_gold_pax_trade_description">Lebih baik lagi, kerana anda memerlukan ETH untuk membuat dagangan USD PAX, kami hanya cukup berpaut ETH ke dalam Wallet anda untuk menutup transaksi 3 pertama anda
  ظ</string>
   <string name="morph_success_dlg_button">Lihat Butiran Pesanan</string>
   <string name="morph_order_id_title">ID Pesanan</string>
@@ -1169,10 +1168,8 @@
   <string name="homebrew_confirmation_error_fetching_fee">Ralat mengambil yuran</string>
   <string name="under_limit">Di bawah had</string>
   <string name="over_limit">Lebih had</string>
-  <string name="morph_help_dialog_need_some_help">\@ string / need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">Pasukan Sokongan Blockchain kami berdiri untuk menjawab sebarang soalan yang anda miliki.</string>
   <string name="morph_help_dialog_view_swap_limit">Lihat Had Pertukaran Saya</string>
-  <string name="morph_help_dialog_contact_support">\@ string / contact_support</string>
   <string name="toolbar_cmd_home">Rumah</string>
   <string name="toolbar_cmd_send">Hantar</string>
   <string name="toolbar_cmd_receive">Permintaan</string>
@@ -1191,7 +1188,8 @@
   <string name="airdrop_program_card_body">Anda layak untuk airdrops masa depan.</string>
   <string name="airdrop_program_card_button">Opt-in Sekarang</string>
   <string name="kyc_veriff_splash_country_supported_header">Adakah negara saya disokong?</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Pengesahan emas sedang diteliti, setelah disahkan, anda akan dapat menggunakan Swap dan berdagang sehingga batas Tahap Emas kami.
+  <string name="kyc_veriff_splash_country_supported_subtitle">Tidak semua negara disokong pada masa ini. Semak kami sehingga tarikh %1$s sebelum meneruskan.</string>
+  <string name="gold_level_under_review_sunriver_large_backlog">Pengesahan emas sedang diteliti, setelah disahkan, anda akan dapat menggunakan Swap dan berdagang sehingga batas Tahap Emas kami. 
 
  Harap maklum ada senarai tunggu yang besar untuk siaran udara Stellar dan sayangnya tidak semua aplikasi untuk XLM percuma akan berjaya.</string>
   <string name="kyc_veriff_splash_error_silver">SILVER VERIFIED</string>
@@ -1202,4 +1200,63 @@
   <string name="kyc_gold_unavailable_goto_swap">Mula Berdagang</string>
   <string name="gold_unavailable">Emas tidak tersedia</string>
   <string name="veriff_identify">Veriff Kenal pasti</string>
+  <string name="more_info_needed">Maklumat Lanjut Diperlukan</string>
+  <string name="coinify_kyc_body">Untuk terus menggunakan Beli &amp; Jual, anda perlu mengemas kini profil anda. Setelah selesai, anda juga akan membuka kunci had perdagangan yang lebih tinggi dalam Pertukaran.</string>
+  <string name="coinify_kyc_cta">Mengemas kini sekarang</string>
+  <string name="coinify_kyc_dismiss">Ketahui lebih lanjut</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">Dolar AS Digital</string>
+  <string name="pax_intro_popup_text">Memperkenalkan USD PAX, aset crypto yang selamat dan stabil yang boleh anda gunakan untuk nilai staore. 1 PAX sama dengan 1 USD ..</string>
+  <string name="pax_intro_popup_cta_btn">Dapatkan USD PAX Sekarang</string>
+  <string name="buy_sell_error_country_not_supported">Negara anda tidak disokong untuk membeli / jual pada masa ini. Kami sedang berusaha untuk menambah sokongan ke lebih banyak kawasan tidak lama lagi.</string>
+  <string name="no_sell_available_message">Malangnya beli &amp; jual tidak tersedia di negeri anda. Kami berusaha keras untuk membawanya semula secepat mungkin.</string>
+  <string name="send">Hantar</string>
+  <string name="item_the_pit">Pit itu</string>
+  <string name="btn_close">Tutup</string>
+  <string name="sunriver_announcement_stellar_claim_title">Tuntut Bintang Anda (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">Nampaknya anda mula mengesahkan anda 
+ identiti tetapi tidak selesai. Ambil tempat yang anda tinggalkan. 
+</string>
+  <string name="sunriver_announcement_stellar_claim_cta">Teruskan Pengesahan</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">XLM anda sedang dalam perjalanan</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">Kami telah berjaya mengesahkannya 
+ identiti anda. 
+</string>
+  <string name="pit_announcement_description">Ia adalah masa untuk Tahap Sehingga pertukaran crypto yang lebih baik. Pertama 100,000 pedagang untuk mendaftar akan berdagang percuma selama 30 hari.</string>
+  <string name="pit_announcement_introducing_link">Semak ia</string>
+  <string name="pit_logo_content_descr">Logo Pit</string>
+  <string name="pit_slogan_kyc_promo">Satu-satunya Exchange yang menghubungkan ke Wallet anda.</string>
+  <string name="pit_thunder_kyc_promo">Dagangan Lightning Fast</string>
+  <string name="pit_security_kyc_promo"><![CDATA[Cecair & Boleh Dipercayai]]></string>
+  <string name="pit_built_kyc_promo">Dibina oleh Blockchain.com</string>
+  <string name="pit_dollar_kyc_promo">Yuran Rendah</string>
+  <string name="pit_permission_app_can">Permohonan ini akan dapat:</string>
+  <string name="pit_permission_app_cant">Permohonan ini tidak akan dapat:</string>
+  <string name="pit_permission_subtitle">Tidak akan dapat:</string>
+  <string name="pit_permission_1">Memudahkan pemindahan kripto antara akaun</string>
+  <string name="pit_permission_2">Kongsi status Tahap Emas atau Perak anda</string>
+  <string name="pit_permission_3">Tambah bank yang dipautkan</string>
+  <string name="pit_permission_4">Lihat kata laluan dompet anda</string>
+  <string name="pit_connect_now">Sambung Sekarang</string>
+  <string name="pit_setting_title">Pit itu</string>
+  <string name="pit_setting_connect">Sambungkan</string>
+  <string name="pit_setting_connected">Disambungkan</string>
+  <string name="launch_the_pit">Pelancaran Pit</string>
+  <string name="pit_contact_support">Sokongan Kenalan</string>
+  <string name="pit_loading_dialog_title">Mengambil Anda ke PIT</string>
+  <string name="pit_loading_dialog_description">Tetingkap baru perlu dibuka dalam masa 10 saat.</string>
+  <string name="pit_verify_email_title">Sahkan E-mel anda</string>
+  <string name="pit_verify_email_description">Kami hanya menghantar e-mel pengesahan kepada anda. Alamat e-mel anda perlu disahkan sebelum anda boleh menyambung ke PIT.</string>
+  <string name="pit_open_email_app">Buka Apl E-mel</string>
+  <string name="pit_did_not_get_email">Tidak mendapat email?</string>
+  <string name="pit_send_again">Hantar semula</string>
+  <string name="mail_resent_succeed">Emel dihantar. Semak peti masuk anda untuk meneruskan.</string>
+  <string name="mail_resent_failed">Ada yang salah. Sila ketik Hantar Lagi.</string>
+  <string name="pit_email_verified_description">Anda bersedia untuk menyambung Wallet Blockchain anda ke PIT.</string>
+  <string name="pit_email_verified_title">E-mel Disahkan.</string>
+  <string name="pit_connection_error_title">Ralat Sambungan</string>
+  <string name="pit_connection_error_description">Kami tidak dapat menyambung Wallet anda ke PIT. Sila kembali ke The PIT dan cuba lagi.</string>
+  <string name="pit_connection_success_title">Kejayaan!</string>
+  <string name="pit_connection_success_description">Anda telah menyambungkan Wallet Blockchain anda ke PIT.</string>
+  <string name="pit_default_account_label">PIT saya %1$s Alamat</string>
 </resources>

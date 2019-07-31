@@ -688,7 +688,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="lockbox_landing_coming_soon_title">残っている残高</string>
   <string name="lockbox_landing_coming_soon_message">現時点ではロックボックスの残高は表示されません。あなたの資金は安全です、心配しないでください。すぐにこの機能を追加します。あなたが待っている間、ウェブ上の残高を確認することができます。</string>
   <string name="lockbox_landing_coming_soon_button">私の残高を確認する</string>
-  <string name="coinify_account_created_success">成功！ 
+  <string name="coinify_account_created_success">成功！
 アカウントが作成されました</string>
   <string name="buy_sell_launcher_error">購入/販売データの取得中にエラーが発生しました</string>
   <string name="buy_sell_buy">購入</string>
@@ -736,7 +736,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="buy_sell_detail_bank_disclaimer">銀行口座への入金は、通常2〜3営業日かかります。</string>
   <string name="buy_sell_detail_refund_message">Coinifyはこの売り注文を取り消し、あなたの資金を払い戻す方法に関する指示をメールでお送りしました。</string>
   <string name="buy_sell_details_whats_next">次は何ですか？</string>
-  <string name="buy_sell_awaiting_funds_description">次の48時間以内に%1$sを送信してCoinifyしてください。 
+  <string name="buy_sell_awaiting_funds_description">次の48時間以内に%1$sを送信してCoinifyしてください。
 
 銀行口座振替の資金は、政府が発行したIDと同じ名前である必要があります。それ以外の場合は拒否されます。</string>
   <string name="buy_sell_awaiting_funds_already_sent">私はすでにCoinifyに資金を送っています</string>
@@ -813,7 +813,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="buy_sell_confirmation_you_will_receive">総拠出額</string>
   <string name="buy_sell_confirmation_btc_to_receive_description">%1$s Submitを押すとBTCがBlockchainウォレットからCoinifyに直接送信されます。</string>
   <string name="buy_sell_confirmation_sell_rate_disclaimer">ビットコイン取引の完了時にCoinifyが注文を処理し、そのビットコインはその時点で利用可能な為替レートで取引されることに同意します。これは表示レートと異なる場合があります。</string>
-  <string name="buy_sell_card_payment_success_title">成功！ 
+  <string name="buy_sell_card_payment_success_title">成功！
 オーダーが作成されました</string>
   <string name="buy_sell_card_payment_success_message">3日以内に口座に振り込む必要があります。</string>
   <string name="buy_sell_card_order_created_title">オーダーが作成されました</string>
@@ -986,7 +986,6 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="kyc_veriff_splash_id_card">国民IDカード</string>
   <string name="kyc_veriff_splash_residence_permit">在留カード</string>
   <string name="kyc_veriff_splash_continue">持続する</string>
-  <string name="kyc_help_dialog_need_some_help">\@ string / need_some_help</string>
   <string name="kyc_help_dialog_need_some_help_body">ブロックチェーンサポートチームは、なぜあなたの身元を確認する必要があるのかを説明するヘルプガイドを作成しました。</string>
   <string name="kyc_help_dialog_read_now">今すぐ読む</string>
   <string name="kyc_help_dialog_read_now_url">https://blockchain.zendesk.com/hc/en-us/categories/360001135512- ID-Validation</string>
@@ -1112,7 +1111,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="morph_success_dlg_text">成功！あなたの交換は持っています
 始めました！</string>
   <string name="morph_success_for_first_gold_pax_trade_title">あなたの交換は開始されました！</string>
-  <string name="morph_success_for_first_gold_pax_trade_description">さらに良いことに、USD PAX取引を行うにはETHが必要なので、最初の3つの取引をカバーするのに十分なETHをWalletに投入しました。 
+  <string name="morph_success_for_first_gold_pax_trade_description">さらに良いことに、USD PAX取引を行うにはETHが必要なので、最初の3つの取引をカバーするのに十分なETHをWalletに投入しました。
  🙌</string>
   <string name="morph_success_dlg_button">注文の詳細を見る</string>
   <string name="morph_order_id_title">注文ID</string>
@@ -1151,10 +1150,8 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="homebrew_confirmation_error_fetching_fee">料金取得エラー</string>
   <string name="under_limit">限界以下</string>
   <string name="over_limit">限度を超えて</string>
-  <string name="morph_help_dialog_need_some_help">\@ string / need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">私たちのブロックチェーンサポートチームはあなたからの質問に答えるために待機しています。</string>
   <string name="morph_help_dialog_view_swap_limit">私のスワップ制限を見る</string>
-  <string name="morph_help_dialog_contact_support">\@ string / contact_support</string>
   <string name="toolbar_cmd_home">ホーム</string>
   <string name="toolbar_cmd_send">送る</string>
   <string name="toolbar_cmd_receive">要求</string>
@@ -1173,7 +1170,8 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="airdrop_program_card_body">あなたは将来の飛行に適格です。</string>
   <string name="airdrop_program_card_button">今すぐオプトイン</string>
   <string name="kyc_veriff_splash_country_supported_header">私の国は支えられていますか？</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">ゴールドの検証は審査中です。一度検証されると、スワップを使用してゴールドレベルの上限までトレードアップできるようになります。
+  <string name="kyc_veriff_splash_country_supported_subtitle">現時点では、すべての国がサポートされているわけではありません。先へ進む前に、最新の%1$sを確認してください。</string>
+  <string name="gold_level_under_review_sunriver_large_backlog">ゴールドの検証は審査中です。一度検証されると、スワップを使用してゴールドレベルの上限までトレードアップできるようになります。 
 
  Stellar飛行場には大きな待機リストがあり、残念ながら無料XLMのすべてのアプリケーションが成功するわけではありません。</string>
   <string name="kyc_veriff_splash_error_silver">検証された銀</string>
@@ -1184,4 +1182,63 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="kyc_gold_unavailable_goto_swap">取引を開始する</string>
   <string name="gold_unavailable">利用できない金</string>
   <string name="veriff_identify">ベリフ識別</string>
+  <string name="more_info_needed">さらに情報が必要</string>
+  <string name="coinify_kyc_body">Buy＆Sellを使い続けるには、プロフィールを更新する必要があります。完了すると、Swapの上限取引のロックも解除されます。</string>
+  <string name="coinify_kyc_cta">今すぐアップデート</string>
+  <string name="coinify_kyc_dismiss">もっと詳しく知る</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">デジタル米ドル</string>
+  <string name="pax_intro_popup_text">安全性と安定性に優れた暗号資産であるUSD PAXを紹介して、価値を安定させることができます。 1 PAXは1 USDに相当します。</string>
+  <string name="pax_intro_popup_cta_btn">今USD PAXを入手</string>
+  <string name="buy_sell_error_country_not_supported">現時点ではあなたの国では売買がサポートされていません。私たちはまもなくより多くの分野への支援を追加するために取り組んでいます。</string>
+  <string name="no_sell_available_message">残念ながら、あなたの状態では売買することはできません。我々はできるだけ早くそれを取り戻すために一生懸命働いています。</string>
+  <string name="send">送る</string>
+  <string name="item_the_pit">ピット</string>
+  <string name="btn_close">閉じる</string>
+  <string name="sunriver_announcement_stellar_claim_title">星を主張する（XLM）</string>
+  <string name="sunriver_announcement_stellar_claim_message">確認を開始したようです
+アイデンティティだが終わらなかった。中断したところからピックアップします。 
+</string>
+  <string name="sunriver_announcement_stellar_claim_cta">確認を続ける</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">あなたのXLMは進行中です</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">確認しました
+あなたのアイデンティティ
+</string>
+  <string name="pit_announcement_description">レベルアップして、より良い暗号交換を行いましょう。最初にサインアップした10万人のトレーダーが30日間無料でトレードします。</string>
+  <string name="pit_announcement_introducing_link">見てみな</string>
+  <string name="pit_logo_content_descr">ピットロゴ</string>
+  <string name="pit_slogan_kyc_promo">あなたの財布に接続する唯一の取引所。</string>
+  <string name="pit_thunder_kyc_promo">超高速トレード</string>
+  <string name="pit_security_kyc_promo"><![CDATA[リキッド＆信頼性]]></string>
+  <string name="pit_built_kyc_promo">Blockchain.comによって構築された</string>
+  <string name="pit_dollar_kyc_promo">低料金</string>
+  <string name="pit_permission_app_can">このアプリケーションはできるようになります：</string>
+  <string name="pit_permission_app_cant">このアプリケーションはできません。</string>
+  <string name="pit_permission_subtitle">できない：</string>
+  <string name="pit_permission_1">アカウント間の暗号転送を促進する</string>
+  <string name="pit_permission_2">ゴールドまたはシルバーレベルのステータスを共有する</string>
+  <string name="pit_permission_3">リンクされた銀行を追加する</string>
+  <string name="pit_permission_4">ウォレットのパスワードを表示する</string>
+  <string name="pit_connect_now">今すぐ接続</string>
+  <string name="pit_setting_title">ピット</string>
+  <string name="pit_setting_connect">接続する</string>
+  <string name="pit_setting_connected">接続済み</string>
+  <string name="launch_the_pit">ピットを起動</string>
+  <string name="pit_contact_support">サポート問い合わせ先</string>
+  <string name="pit_loading_dialog_title">PITに連れて行く</string>
+  <string name="pit_loading_dialog_description">新しいウィンドウが10秒以内に開きます。</string>
+  <string name="pit_verify_email_title">あなたの電子メールを確認します</string>
+  <string name="pit_verify_email_description">確認メールを送信しました。 PITに接続する前に、あなたのEメールアドレスを確認する必要があります。</string>
+  <string name="pit_open_email_app">メールアプリを開く</string>
+  <string name="pit_did_not_get_email">メールが届きませんでしたか。</string>
+  <string name="pit_send_again">もう一度送信</string>
+  <string name="mail_resent_succeed">メールを送信しました。受信トレイをチェックして続行してください。</string>
+  <string name="mail_resent_failed">何か問題がありました。もう一度送信をタップしてください。</string>
+  <string name="pit_email_verified_description">Blockchain WalletをThe PITに接続する準備が整いました。</string>
+  <string name="pit_email_verified_title">メールを確認しました。</string>
+  <string name="pit_connection_error_title">接続エラー</string>
+  <string name="pit_connection_error_description">あなたの財布をThe PITに接続することはできませんでした。 The PITに戻ってもう一度やり直してください。</string>
+  <string name="pit_connection_success_title">成功！</string>
+  <string name="pit_connection_success_description">ブロックチェーンウォレットをPITに接続しました。</string>
+  <string name="pit_default_account_label">私のPIT %1$s住所</string>
 </resources>

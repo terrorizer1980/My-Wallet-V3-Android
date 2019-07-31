@@ -1150,10 +1150,8 @@
   <string name="homebrew_confirmation_error_fetching_fee">เกิดข้อผิดพลาดในการเรียกค่าธรรมเนียม</string>
   <string name="under_limit">ต่ำกว่าขีด จำกัด</string>
   <string name="over_limit">เกินขีด จำกัด</string>
-  <string name="morph_help_dialog_need_some_help">\@ สตริง / need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">ทีมสนับสนุน Blockchain ของเราพร้อมที่จะตอบทุกคำถามที่คุณมี</string>
   <string name="morph_help_dialog_view_swap_limit">ดูการ จำกัด การแลกเปลี่ยนของฉัน</string>
-  <string name="morph_help_dialog_contact_support">\@ สตริง / contact_support</string>
   <string name="toolbar_cmd_home">บ้าน</string>
   <string name="toolbar_cmd_send">ส่ง</string>
   <string name="toolbar_cmd_receive">ขอร้อง</string>
@@ -1172,7 +1170,8 @@
   <string name="airdrop_program_card_body">คุณมีสิทธิ์ได้รับ airdrops ในอนาคต</string>
   <string name="airdrop_program_card_button">เข้าร่วมทันที</string>
   <string name="kyc_veriff_splash_country_supported_header">ประเทศของฉันรองรับหรือไม่</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">การตรวจสอบทองอยู่ในระหว่างการตรวจสอบเมื่อตรวจสอบแล้วคุณจะสามารถใช้ Swap และแลกเปลี่ยนได้ถึงระดับโกลด์ของเรา
+  <string name="kyc_veriff_splash_country_supported_subtitle">ไม่รองรับทุกประเทศในขณะนี้ ตรวจสอบ %1$s ก่อนดำเนินการต่อ</string>
+  <string name="gold_level_under_review_sunriver_large_backlog">การตรวจสอบทองอยู่ในระหว่างการตรวจสอบเมื่อตรวจสอบแล้วคุณจะสามารถใช้ Swap และแลกเปลี่ยนได้ถึงระดับโกลด์ของเรา 
 
  โปรดทราบว่ามีรายการรอขนาดใหญ่สำหรับ Stellar airdrops และน่าเสียดายที่แอปพลิเคชันทั้งหมดสำหรับ XLM ฟรีจะประสบความสำเร็จ</string>
   <string name="kyc_veriff_splash_error_silver">ยืนยันเงินแล้ว</string>
@@ -1183,4 +1182,63 @@
   <string name="kyc_gold_unavailable_goto_swap">เริ่มการซื้อขาย</string>
   <string name="gold_unavailable">ทองไม่พร้อมใช้งาน</string>
   <string name="veriff_identify">Veriff Identify</string>
+  <string name="more_info_needed">ต้องการข้อมูลเพิ่มเติม</string>
+  <string name="coinify_kyc_body">ในการใช้ซื้อและขายต่อไปคุณจะต้องอัปเดตโปรไฟล์ของคุณ เมื่อเสร็จแล้วคุณจะปลดล็อคข้อ จำกัด การซื้อขายที่สูงขึ้นใน Swap</string>
+  <string name="coinify_kyc_cta">อัปเดตทันที</string>
+  <string name="coinify_kyc_dismiss">เรียนรู้เพิ่มเติม</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">ดอลลาร์สหรัฐดิจิตอล</string>
+  <string name="pax_intro_popup_text">ขอแนะนำ USD PAX ซึ่งเป็นสินทรัพย์ crypto ที่ปลอดภัยและมีเสถียรภาพที่คุณสามารถใช้เพื่อเก็บค่า 1 PAX เท่ากับ 1 USD ..</string>
+  <string name="pax_intro_popup_cta_btn">รับ USD PAX ทันที</string>
+  <string name="buy_sell_error_country_not_supported">ประเทศของคุณไม่รองรับการซื้อ / ขายในเวลานี้ เรากำลังดำเนินการเพื่อเพิ่มการสนับสนุนในพื้นที่อื่น ๆ ในไม่ช้า</string>
+  <string name="no_sell_available_message">น่าเสียดายที่การซื้อและขายไม่พร้อมให้บริการในรัฐของคุณ เรากำลังทำงานอย่างหนักเพื่อนำมันกลับมาโดยเร็วที่สุด</string>
+  <string name="send">ส่ง</string>
+  <string name="item_the_pit">พิท</string>
+  <string name="btn_close">ปิด</string>
+  <string name="sunriver_announcement_stellar_claim_title">รับสิทธิ์ Stellar ของคุณ (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">ดูเหมือนว่าคุณจะเริ่มการตรวจสอบของคุณ 
+ ตัวตน แต่ยังไม่จบ เลือกสถานที่ที่คุณไป 
+</string>
+  <string name="sunriver_announcement_stellar_claim_cta">ดำเนินการยืนยันต่อ</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">XLM ของคุณกำลังจะมา</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">เราได้ตรวจสอบเรียบร้อยแล้ว 
+ ตัวตนของคุณ 
+</string>
+  <string name="pit_announcement_description">ถึงเวลาที่จะยกระดับการแลกเปลี่ยน crypto ที่ดีขึ้น ผู้ค้า 100,000 รายแรกที่ลงทะเบียนจะทำการซื้อขายฟรีเป็นเวลา 30 วัน</string>
+  <string name="pit_announcement_introducing_link">ลองดูสิ</string>
+  <string name="pit_logo_content_descr">โลโก้ The Pit</string>
+  <string name="pit_slogan_kyc_promo">แลกเปลี่ยนเดียวที่เชื่อมต่อกับกระเป๋าเงินของคุณ</string>
+  <string name="pit_thunder_kyc_promo">การซื้อขายที่รวดเร็วของ Lightning</string>
+  <string name="pit_security_kyc_promo"><![CDATA[ของเหลวและเชื่อถือได้]]></string>
+  <string name="pit_built_kyc_promo">สร้างโดย Blockchain.com</string>
+  <string name="pit_dollar_kyc_promo">ค่าธรรมเนียมต่ำ</string>
+  <string name="pit_permission_app_can">แอปพลิเคชันนี้จะสามารถ:</string>
+  <string name="pit_permission_app_cant">แอปพลิเคชันนี้จะไม่สามารถ:</string>
+  <string name="pit_permission_subtitle">จะไม่สามารถ:</string>
+  <string name="pit_permission_1">อำนวยความสะดวกในการถ่ายโอนการเข้ารหัสลับระหว่างบัญชี</string>
+  <string name="pit_permission_2">แบ่งปันสถานะระดับทองหรือสีเงินของคุณ</string>
+  <string name="pit_permission_3">เพิ่มธนาคารที่เชื่อมโยงของคุณ</string>
+  <string name="pit_permission_4">ดูรหัสผ่านกระเป๋าเงินของคุณ</string>
+  <string name="pit_connect_now">เชื่อมต่อเลย</string>
+  <string name="pit_setting_title">พิท</string>
+  <string name="pit_setting_connect">ต่อ</string>
+  <string name="pit_setting_connected">เกี่ยวข้อง</string>
+  <string name="launch_the_pit">เปิดตัว The Pit</string>
+  <string name="pit_contact_support">ติดต่อฝ่ายสนับสนุน</string>
+  <string name="pit_loading_dialog_title">พาคุณไปที่ PIT</string>
+  <string name="pit_loading_dialog_description">หน้าต่างใหม่ควรเปิดภายใน 10 วินาที</string>
+  <string name="pit_verify_email_title">ยืนยันอีเมลของคุณ</string>
+  <string name="pit_verify_email_description">เราเพิ่งส่งอีเมลยืนยันถึงคุณ ที่อยู่อีเมลของคุณจะต้องได้รับการยืนยันก่อนจึงจะสามารถเชื่อมต่อกับ PIT</string>
+  <string name="pit_open_email_app">เปิดแอปอีเมล</string>
+  <string name="pit_did_not_get_email">ไม่ได้รับอีเมลใช่ไหม</string>
+  <string name="pit_send_again">ส่งอีกครั้ง</string>
+  <string name="mail_resent_succeed">ส่งอีเมลแล้ว ตรวจสอบกล่องจดหมายของคุณเพื่อดำเนินการต่อ</string>
+  <string name="mail_resent_failed">บางอย่างผิดพลาด. กรุณาแตะส่งอีกครั้ง</string>
+  <string name="pit_email_verified_description">คุณพร้อมที่จะเชื่อมต่อ Blockchain Wallet กับ The PIT แล้ว</string>
+  <string name="pit_email_verified_title">ยืนยันอีเมลแล้ว</string>
+  <string name="pit_connection_error_title">การเชื่อมต่อล้มเหลว</string>
+  <string name="pit_connection_error_description">เราไม่สามารถเชื่อมต่อ Wallet ของคุณกับ The PIT โปรดกลับไปที่ The PIT แล้วลองอีกครั้ง</string>
+  <string name="pit_connection_success_title">ที่ประสบความสำเร็จ!</string>
+  <string name="pit_connection_success_description">คุณได้เชื่อมต่อ Blockchain Wallet ของคุณกับ The PIT</string>
+  <string name="pit_default_account_label">ที่อยู่ PIT %1$s</string>
 </resources>

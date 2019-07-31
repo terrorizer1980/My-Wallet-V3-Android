@@ -1151,7 +1151,6 @@ Lệnh đã được tạo</string>
   <string name="morph_help_dialog_need_some_help">@string/need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">Nhóm Hỗ trợ Blockchain của chúng tôi luôn sẵn sàng trả lời mọi câu hỏi của bạn.</string>
   <string name="morph_help_dialog_view_swap_limit">Xem Giới hạn Trao đổi của tôi</string>
-  <string name="morph_help_dialog_contact_support">@string/contact_support</string>
   <string name="toolbar_cmd_home">Trang chủ</string>
   <string name="toolbar_cmd_send">Gửi</string>
   <string name="toolbar_cmd_receive">Yêu cầu</string>
@@ -1170,6 +1169,7 @@ Lệnh đã được tạo</string>
   <string name="airdrop_program_card_body">Bạn đủ điều kiện cho các airdrop trong tương lai.</string>
   <string name="airdrop_program_card_button">Chọn tham gia ngay</string>
   <string name="kyc_veriff_splash_country_supported_header">Quốc gia của tôi có được hỗ trợ không?</string>
+  <string name="kyc_veriff_splash_country_supported_subtitle">Không phải tất cả quốc gia đều được hỗ trợ tại thời điểm này. Hãy kiểm tra để đảm bảo bạn đã cập nhật %1$s trước khi tiếp tục.</string>
   <string name="gold_level_under_review_sunriver_large_backlog">Đang xem xét xác minh Vàng, sau khi xác minh, bạn sẽ có thể sử dụng Trao đổi và giao dịch đến giới hạn Mức Vàng.
 
 Xin lưu ý rằng có một danh sách rất dài đang chờ để nhận airdrop Stellar và không phải tất cả đơn đăng ký nhận XLM miễn phí đều sẽ thành công.</string>
@@ -1181,4 +1181,63 @@ Xin lưu ý rằng có một danh sách rất dài đang chờ để nhận aird
   <string name="kyc_gold_unavailable_goto_swap">Bắt đầu giao dịch</string>
   <string name="gold_unavailable">Vàng không có sẵn</string>
   <string name="veriff_identify">Xác minh danh tính</string>
+  <string name="more_info_needed">Cần Thêm Thông tin</string>
+  <string name="coinify_kyc_body">Để tiếp tục sử dụng chức năng Mua &amp; Bán, bạn sẽ cần cập nhật hồ sơ của mình. Sau khi hoàn thành, bạn cũng sẽ mở khóa các giới hạn giao dịch cao hơn trong Trao đổi.</string>
+  <string name="coinify_kyc_cta">Cập nhật ngay</string>
+  <string name="coinify_kyc_dismiss">Tìm hiểu thêm</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">Đôla Mỹ kỹ thuật số</string>
+  <string name="pax_intro_popup_text">Giới thiệu USD PAX, tài sản tiền kỹ thuật số an toàn và ổn định mà bạn có thể sử dụng để lưu trữ giá trị. 1 PAX bằng 1 USD.</string>
+  <string name="pax_intro_popup_cta_btn">Nhận USD PAX ngay</string>
+  <string name="buy_sell_error_country_not_supported">Quốc gia của bạn hiện không được hỗ trợ mua/bán. Chúng tôi đang làm việc để sớm hỗ trợ thêm nhiều lĩnh vực.</string>
+  <string name="no_sell_available_message">Rất tiếc, mua &amp; bán hiện không khả dụng tại tiểu bang của bạn. Chúng tôi đang làm việc chăm chỉ để tiếp tục cung cấp dịch vụ này trong thời gian sớm nhất.</string>
+  <string name="send">Gửi</string>
+  <string name="item_the_pit">The Pit</string>
+  <string name="btn_close">Đóng</string>
+  <string name="sunriver_announcement_stellar_claim_title">Nhận Stellar (XLM) của bạn</string>
+  <string name="sunriver_announcement_stellar_claim_message">Dường như bạn đã bắt đầu xác minh danh tính của mình
+        nhưng chưa hoàn tất. Hãy chọn điểm mà bạn đã bỏ dở.
+    </string>
+  <string name="sunriver_announcement_stellar_claim_cta">Tiếp tục Xác minh</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">XLM của bạn đang được chuyển</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">Chúng tôi đã xác minh danh tính
+        của bạn thành công.
+    </string>
+  <string name="pit_announcement_description">Đã đến lúc nâng sàn giao dịch tiền kỹ thuật số của bạn lên cấp độ tốt hơn. 100.000 người giao dịch đầu tiên đăng ký sẽ được phép giao dịch miễn phí trong 30 ngày.</string>
+  <string name="pit_announcement_introducing_link">Hãy kiểm tra</string>
+  <string name="pit_logo_content_descr">Logo The Pit</string>
+  <string name="pit_slogan_kyc_promo">Sàn giao dịch duy nhất kết nối với Ví của bạn.</string>
+  <string name="pit_thunder_kyc_promo">Giao dịch nhanh như chớp</string>
+  <string name="pit_security_kyc_promo"><![CDATA[Lưu động & Đáng tin cậy]]></string>
+  <string name="pit_built_kyc_promo">Được xây dựng bởi Blockchain.com</string>
+  <string name="pit_dollar_kyc_promo">Mức phí thấp</string>
+  <string name="pit_permission_app_can">Ứng dụng này sẽ có thể:</string>
+  <string name="pit_permission_app_cant">Ứng dụng này sẽ không thể:</string>
+  <string name="pit_permission_subtitle">Sẽ không thể:</string>
+  <string name="pit_permission_1">Hỗ trợ chuyển tiền kỹ thuật số giữa các tài khoản</string>
+  <string name="pit_permission_2">Chia sẻ trạng thái Cấp độ Vàng hoặc Bạc của bạn</string>
+  <string name="pit_permission_3">Thêm ngân hàng được liên kết của bạn</string>
+  <string name="pit_permission_4">Xem mật khẩu ví của bạn</string>
+  <string name="pit_connect_now">Kết nối ngay</string>
+  <string name="pit_setting_title">The Pit</string>
+  <string name="pit_setting_connect">Kết nối</string>
+  <string name="pit_setting_connected">Đã kết nối</string>
+  <string name="launch_the_pit">Khởi chạy The Pit</string>
+  <string name="pit_contact_support">Liên hệ Hỗ trợ</string>
+  <string name="pit_loading_dialog_title">Đưa bạn đến với The PIT</string>
+  <string name="pit_loading_dialog_description">Một cửa sổ mới sẽ mở trong vòng 10 giây.</string>
+  <string name="pit_verify_email_title">Xác minh Email của Bạn</string>
+  <string name="pit_verify_email_description">Chúng tôi vừa gửi cho bạn email xác minh. Địa chỉ email của bạn cần được xác minh trước khi bạn có thể kết nối với The PIT.</string>
+  <string name="pit_open_email_app">Mở Ứng dụng Email</string>
+  <string name="pit_did_not_get_email">Bạn chưa nhận được email?</string>
+  <string name="pit_send_again">Gửi lại</string>
+  <string name="mail_resent_succeed">Email đã được gửi. Hãy kiểm tra hộp thư đến của bạn để tiếp tục.</string>
+  <string name="mail_resent_failed">Đã xảy ra lỗi. Vui lòng nhấn Gửi lại.</string>
+  <string name="pit_email_verified_description">Bạn đã hoàn tất cả bước để kết nối Ví Blockchain với The PIT.</string>
+  <string name="pit_email_verified_title">Email đã được xác minh.</string>
+  <string name="pit_connection_error_title">Lỗi kết nối</string>
+  <string name="pit_connection_error_description">Chúng tôi không thể kết nối Ví của bạn với The PIT. Vui lòng quay lại The PIT và thử lại.</string>
+  <string name="pit_connection_success_title">Thành công!</string>
+  <string name="pit_connection_success_description">Bạn đã kết nối Ví Blockchain của mình với The PIT.</string>
+  <string name="pit_default_account_label">Địa chỉ PIT %1$s của tôi</string>
 </resources>
