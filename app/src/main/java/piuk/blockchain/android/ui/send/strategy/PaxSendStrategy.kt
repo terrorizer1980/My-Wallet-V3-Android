@@ -22,6 +22,7 @@ import org.web3j.crypto.RawTransaction
 import org.web3j.utils.Convert
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.cache.DynamicFeeCache
+import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import piuk.blockchain.android.ui.account.PitAccount
@@ -60,6 +61,7 @@ class PaxSendStrategy(
     private val currencyPrefs: CurrencyPrefs,
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
+    private val pitLinking: PitLinking,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
@@ -132,19 +134,20 @@ class PaxSendStrategy(
     }
 
     private fun resetAccountList() {
-        compositeDisposable += nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.PAX.symbol)
-        }.applySchedulers().doOnSubscribe {
-            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
-        }.subscribeBy(onError = {
-            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
-        }) {
-            pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
-                CryptoCurrency.PAX.symbol), it.address)
-            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX,
-                1,
-                it.state == State.ACTIVE && it.address.isNotEmpty())
-        }
+        compositeDisposable += pitLinking.isPitLinked().filter { it }.flatMapSingle { nabuToken.fetchNabuToken() }
+            .flatMap {
+                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.PAX.symbol)
+            }.applySchedulers().doOnSubscribe {
+                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
+            }.subscribeBy(onError = {
+                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
+            }) {
+                pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
+                    CryptoCurrency.PAX.symbol), it.address)
+                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX,
+                    1,
+                    it.state == State.ACTIVE && it.address.isNotEmpty())
+            }
     }
 
     override fun processURIScanAddress(address: String) {

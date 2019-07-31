@@ -244,7 +244,8 @@ val applicationModule = applicationContext {
                 exchangeRates = get(),
                 coinSelectionRemoteConfig = get(),
                 nabuDataManager = get(),
-                nabuToken = get()
+                nabuToken = get(),
+                pitLinking = get()
             )
         }
 
@@ -266,7 +267,8 @@ val applicationModule = applicationContext {
                 currencyState = get(),
                 coinSelectionRemoteConfig = get(),
                 nabuToken = get(),
-                nabuDataManager = get()
+                nabuDataManager = get(),
+                pitLinking = get()
             )
         }
 
@@ -284,7 +286,8 @@ val applicationModule = applicationContext {
                 currencyState = get(),
                 currencyPrefs = get(),
                 nabuToken = get(),
-                nabuDataManager = get()
+                nabuDataManager = get(),
+                pitLinking = get()
             )
         }
 
@@ -299,7 +302,8 @@ val applicationModule = applicationContext {
                 fiatExchangeRates = get(),
                 sendFundsResultLocalizer = get(),
                 nabuDataManager = get(),
-                nabuToken = get()
+                nabuToken = get(),
+                pitLinking = get()
             )
         }
 
@@ -318,7 +322,8 @@ val applicationModule = applicationContext {
                 currencyState = get(),
                 currencyPrefs = get(),
                 nabuToken = get(),
-                nabuDataManager = get()
+                nabuDataManager = get(),
+                pitLinking = get()
             )
         }
 

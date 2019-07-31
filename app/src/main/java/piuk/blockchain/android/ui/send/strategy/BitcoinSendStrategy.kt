@@ -27,6 +27,7 @@ import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.ECKey
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.cache.DynamicFeeCache
+import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import piuk.blockchain.android.ui.account.PitAccount
@@ -69,6 +70,7 @@ class BitcoinSendStrategy(
     private val currencyFormatter: CurrencyFormatManager,
     private val exchangeRates: FiatExchangeRates,
     private val prefs: PersistentPrefs,
+    private val pitLinking: PitLinking,
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig,
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
@@ -415,7 +417,9 @@ class BitcoinSendStrategy(
     }
 
     private fun resetAccountList() {
-        compositeDisposable += nabuToken.fetchNabuToken().flatMap {
+        compositeDisposable += pitLinking.isPitLinked().filter { it }.flatMapSingle {
+            nabuToken.fetchNabuToken()
+        }.flatMap {
             nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.BTC.symbol)
         }.applySchedulers().doOnSubscribe {
             view.updateReceivingHintAndAccountDropDowns(
