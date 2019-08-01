@@ -7,33 +7,23 @@ import android.os.Handler
 import android.support.v7.app.AlertDialog
 import android.view.MotionEvent
 import kotlinx.android.synthetic.main.activity_landing.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.connectivity.ConnectivityStatus
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.createwallet.CreateWalletActivity
 import piuk.blockchain.android.ui.debug.DebugOptionsBottomDialog
 import piuk.blockchain.android.ui.login.LoginActivity
 import piuk.blockchain.android.ui.recover.RecoverFundsActivity
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
-import javax.inject.Inject
 
 @Suppress("MemberVisibilityCanBePrivate")
 class LandingActivity : BaseMvpActivity<LandingView, LandingPresenter>(), LandingView {
 
-    @Inject
-    lateinit var landingPresenter: LandingPresenter
-    @Inject
-    lateinit var appUtil: AppUtil
-    @Inject
-    lateinit var overlayDetection: OverlayDetection
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
+    private val landingPresenter: LandingPresenter by inject()
+    private val overlayDetection: OverlayDetection by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

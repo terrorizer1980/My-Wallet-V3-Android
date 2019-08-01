@@ -7,10 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import piuk.blockchain.android.data.websocket.WebSocketService;
 import piuk.blockchain.android.ui.account.AccountActivity;
 import piuk.blockchain.android.ui.account.AccountEditActivity;
-import piuk.blockchain.android.ui.auth.LandingActivity;
-import piuk.blockchain.android.ui.auth.LogoutActivity;
 import piuk.blockchain.android.ui.auth.PasswordRequiredActivity;
-import piuk.blockchain.android.ui.auth.PinEntryActivity;
 import piuk.blockchain.android.ui.backup.completed.BackupWalletCompletedFragment;
 import piuk.blockchain.android.ui.backup.start.BackupWalletStartingFragment;
 import piuk.blockchain.android.ui.backup.transfer.ConfirmFundsTransferDialogFragment;
@@ -43,7 +40,6 @@ import piuk.blockchain.android.ui.pairingcode.PairingCodeActivity;
 import piuk.blockchain.android.ui.receive.ReceiveQrActivity;
 import piuk.blockchain.android.ui.recover.RecoverFundsActivity;
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity;
-import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity;
 import piuk.blockchain.androidcore.injection.PresenterScope;
 
 /**
@@ -62,8 +58,6 @@ public interface PresenterComponent {
 
     void inject(@NotNull LoginActivity loginActivity);
 
-    void inject(@NotNull UpgradeWalletActivity upgradeWalletActivity);
-
     void inject(@NotNull CreateWalletActivity createWalletActivity);
 
     void inject(@NotNull BackupWalletStartingFragment backupWalletStartingFragment);
@@ -80,8 +74,6 @@ public interface PresenterComponent {
 
     void inject(@NotNull PasswordRequiredActivity passwordRequiredActivity);
 
-    void inject(@NotNull MainActivity mainActivity);
-
     void inject(@NotNull PinEntryFragment pinEntryFragment);
 
     void inject(@NotNull AccountEditActivity accountEditActivity);
@@ -96,17 +88,11 @@ public interface PresenterComponent {
 
     void inject(@NotNull PairingCodeActivity pairingCodeActivity);
 
-    void inject(@NotNull LandingActivity landingActivity);
-
     void inject(@NotNull TradeDetailActivity tradeDetailActivity);
 
     void inject(@NotNull ChartsActivity chartsActivity);
 
     void inject(@NotNull ChartsFragment chartsFragment);
-
-    void inject(@NotNull LogoutActivity logoutActivity);
-
-    void inject(@NotNull PinEntryActivity pinEntryActivity);
 
     void inject(@NotNull SSLVerifyActivity sslVerifyActivity);
 

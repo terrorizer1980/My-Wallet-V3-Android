@@ -48,7 +48,6 @@ import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.PromptDlgFactory
 import piuk.blockchain.android.databinding.ActivityMainBinding
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.account.AccountActivity
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.ui.balance.BalanceFragment
@@ -61,8 +60,8 @@ import piuk.blockchain.android.ui.pairingcode.PairingCodeActivity
 import piuk.blockchain.android.ui.receive.ReceiveFragment
 import piuk.blockchain.android.ui.send.SendFragment
 import piuk.blockchain.android.ui.settings.SettingsActivity
-import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
+import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.thepit.PitPermissionsActivity
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
@@ -75,8 +74,6 @@ import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import timber.log.Timber
-import javax.inject.Inject
-import java.util.HashMap
 
 class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, MainView,
     ConfirmPaymentDialog.OnConfirmDialogInteractionListener {
@@ -86,8 +83,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
     private var handlingResult = false
 
-    @Inject
-    internal lateinit var mainPresenter: MainPresenter
+    private val mainPresenter: MainPresenter by inject()
 
     private val appUtil: AppUtil by inject()
     private val analytics: Analytics by inject()
@@ -146,10 +142,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
     private val menu: Menu
         get() = binding.navigationView.menu
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -561,16 +553,14 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     }
 
     override fun showTestnetWarning() {
-        if (activity != null) {
-            val snack = Snackbar.make(
-                binding.coordinatorLayout,
-                R.string.testnet_warning,
-                Snackbar.LENGTH_SHORT
-            )
-            val view = snack.view
-            view.setBackgroundColor(ContextCompat.getColor(this, R.color.product_red_medium))
-            snack.show()
-        }
+        val snack = Snackbar.make(
+            binding.coordinatorLayout,
+            R.string.testnet_warning,
+            Snackbar.LENGTH_SHORT
+        )
+        val view = snack.view
+        view.setBackgroundColor(ContextCompat.getColor(this, R.color.product_red_medium))
+        snack.show()
     }
 
     override fun enableSwapButton(isEnabled: Boolean) {
@@ -767,26 +757,26 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
         private fun toolbarNavigationItems(): List<AHBottomNavigationItem> =
             listOf(AHBottomNavigationItem(
-                    R.string.toolbar_cmd_activity,
-                    R.drawable.ic_vector_toolbar_activity,
-                    R.color.white
-                ), AHBottomNavigationItem(
-                    R.string.toolbar_cmd_swap,
-                    R.drawable.ic_vector_toolbar_swap,
-                    R.color.white
-                ), AHBottomNavigationItem(
-                    R.string.toolbar_cmd_home,
-                    R.drawable.ic_vector_toolbar_home,
-                    R.color.white
-                ), AHBottomNavigationItem(
-                    R.string.toolbar_cmd_send,
-                    R.drawable.ic_vector_toolbar_send,
-                    R.color.white
-                ), AHBottomNavigationItem(
-                    R.string.toolbar_cmd_receive,
-                    R.drawable.ic_vector_toolbar_receive,
-                    R.color.white
-                ))
+                R.string.toolbar_cmd_activity,
+                R.drawable.ic_vector_toolbar_activity,
+                R.color.white
+            ), AHBottomNavigationItem(
+                R.string.toolbar_cmd_swap,
+                R.drawable.ic_vector_toolbar_swap,
+                R.color.white
+            ), AHBottomNavigationItem(
+                R.string.toolbar_cmd_home,
+                R.drawable.ic_vector_toolbar_home,
+                R.color.white
+            ), AHBottomNavigationItem(
+                R.string.toolbar_cmd_send,
+                R.drawable.ic_vector_toolbar_send,
+                R.color.white
+            ), AHBottomNavigationItem(
+                R.string.toolbar_cmd_receive,
+                R.drawable.ic_vector_toolbar_receive,
+                R.color.white
+            ))
 
         fun start(context: Context, bundle: Bundle) {
             Intent(context, MainActivity::class.java).apply {

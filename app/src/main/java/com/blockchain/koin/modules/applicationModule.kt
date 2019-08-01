@@ -17,6 +17,7 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.data.cache.DynamicFeeCache
+import piuk.blockchain.android.data.datamanagers.PromptManager
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
@@ -29,6 +30,7 @@ import piuk.blockchain.android.thepit.PitLinkingImpl
 import piuk.blockchain.android.thepit.ThePitDeepLinkParser
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
+import piuk.blockchain.android.ui.auth.LandingPresenter
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.PinEntryPresenter
 import piuk.blockchain.android.ui.balance.BalancePresenter
@@ -38,6 +40,7 @@ import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
+import piuk.blockchain.android.ui.home.MainPresenter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.login.ManualPairingPresenter
 import piuk.blockchain.android.ui.onboarding.OnBoardingStarter
@@ -60,6 +63,7 @@ import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
 import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionHelper
+import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
 import piuk.blockchain.android.util.StringUtils
@@ -71,6 +75,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.DateUtil
+import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import java.util.Locale
 
 val applicationModule = applicationContext {
@@ -180,6 +185,46 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            PromptManager(get(), get(), get())
+        }
+
+        factory {
+            MainPresenter(
+                prefs = get(),
+                appUtil = get(),
+                accessState = get(),
+                payloadManagerWiper = get(),
+                payloadDataManager = get(),
+                settingsDataManager = get(),
+                coinifyDataManager = get(),
+                buyDataManager = get(),
+                dynamicFeeCache = get(),
+                exchangeService = get(),
+                stringUtils = get(),
+                exchangeRateFactory = get(),
+                rxBus = get(),
+                feeDataManager = get(),
+                promptManager = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                currencyState = get(),
+                walletOptionsDataManager = get(),
+                metadataManager = get(),
+                shapeShiftDataManager = get(),
+                environmentSettings = get(),
+                kycStatusHelper = get(),
+                currentKycTier = get(),
+                lockboxDataManager = get(),
+                deepLinkProcessor = get(),
+                sunriverCampaignHelper = get(),
+                xlmDataManager = get(),
+                paxAccount = get(),
+                pitFeatureFlag = get("ff_pit_linking"),
+                pitLinking = get()
+            )
+        }
+
+        factory {
             BuySellBuildOrderPresenter(
                 coinifyDataManager = get(),
                 sendDataManager = get(),
@@ -193,6 +238,17 @@ val applicationModule = applicationContext {
                 nabuToken = get(),
                 nabuDataManager = get(),
                 coinSelectionRemoteConfig = get()
+            )
+        }
+
+        factory {
+            UpgradeWalletPresenter(
+                prefs = get(),
+                appUtil = get(),
+                accessState = get(),
+                stringUtils = get(),
+                authDataManager = get(),
+                payloadDataManager = get()
             )
         }
 
@@ -469,6 +525,17 @@ val applicationModule = applicationContext {
             )
         }
 
+        factory {
+            LandingPresenter(
+                environmentSettings = get(),
+                promptManager = get()
+            )
+        }
+
+        factory {
+            PromptManager(prefs = get(), payloadDataManager = get(), transactionListDataManager = get())
+        }
+
         bean {
             PitLinkingImpl(
                 nabu = get(),
@@ -500,6 +567,10 @@ val applicationModule = applicationContext {
 
     factory {
         FirebaseMobileNoticeRemoteConfig(remoteConfig = get()) as MobileNoticeRemoteConfig
+    }
+
+    factory {
+        OverlayDetection(prefs = get())
     }
 
     factory {
