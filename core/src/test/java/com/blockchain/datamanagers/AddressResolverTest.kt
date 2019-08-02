@@ -63,7 +63,7 @@ class AddressResolverTest {
     @Test
     fun `resolve Ether test`() {
         val ethereumAccount: EthereumAccount = mock {
-            on { checksumAddress } `it returns` "0xETHAddress"
+            on { address } `it returns` "0xETHAddress"
         }
         val reference = AccountReference.Ethereum("", "")
         val accountLookup: AccountLookup = mock {
