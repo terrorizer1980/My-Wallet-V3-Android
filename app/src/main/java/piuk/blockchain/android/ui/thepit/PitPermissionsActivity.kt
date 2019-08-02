@@ -162,4 +162,9 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         onBackPressed()
         return true
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        presenter?.clearLinkPrefs()
+    }
 }
