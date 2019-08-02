@@ -57,6 +57,7 @@ import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.send.strategy.PaxSendStrategy
 import piuk.blockchain.android.ui.settings.SettingsPresenter
 import piuk.blockchain.android.ui.swap.SwapStarter
+import piuk.blockchain.android.ui.swapintro.SwapIntroPresenter
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
@@ -213,14 +214,15 @@ val applicationModule = applicationContext {
                 shapeShiftDataManager = get(),
                 environmentSettings = get(),
                 kycStatusHelper = get(),
-                currentKycTier = get(),
                 lockboxDataManager = get(),
                 deepLinkProcessor = get(),
                 sunriverCampaignHelper = get(),
                 xlmDataManager = get(),
                 paxAccount = get(),
                 pitFeatureFlag = get("ff_pit_linking"),
-                pitLinking = get()
+                pitLinking = get(),
+                nabuDataManager = get(),
+                nabuToken = get()
             )
         }
 
@@ -397,6 +399,10 @@ val applicationModule = applicationContext {
 
         factory {
             ThePitDeepLinkParser()
+        }
+
+        factory {
+            SwapIntroPresenter(prefs = get())
         }
 
         factory { EmailVerificationDeepLinkHelper() }

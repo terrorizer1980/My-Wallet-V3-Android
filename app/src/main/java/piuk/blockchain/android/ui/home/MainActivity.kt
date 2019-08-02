@@ -61,6 +61,7 @@ import piuk.blockchain.android.ui.receive.ReceiveFragment
 import piuk.blockchain.android.ui.send.SendFragment
 import piuk.blockchain.android.ui.settings.SettingsActivity
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
+import piuk.blockchain.android.ui.swapintro.SwapIntroFragment
 import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.thepit.PitPermissionsActivity
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
@@ -273,6 +274,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             f is SendFragment -> f.onBackPressed()
             f is ReceiveFragment -> f.onBackPressed()
             f is DashboardFragment -> f.onBackPressed()
+            f is SwapIntroFragment -> f.onBackPressed()
             else -> {
                 // Switch to balance fragment - it's not clear, though,
                 // how we can ever wind up here...
@@ -687,8 +689,22 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         toolbar_general.title = ""
     }
 
+    override fun launchKycIntro() {
+        val swapIntroFragment = SwapIntroFragment.newInstance()
+        replaceContentFragment(swapIntroFragment)
+    }
+
     override fun onStartBuySell() {
         BuySellLauncherActivity.start(this)
+    }
+
+    override fun launchSwapIntro() {
+        setCurrentTabItem(ITEM_SWAP)
+
+        ViewUtils.setElevation(binding.appbarLayout, 0f)
+
+        val swapIntroFragment = SwapIntroFragment.newInstance()
+        replaceContentFragment(swapIntroFragment)
     }
 
     private fun replaceContentFragment(fragment: Fragment) {

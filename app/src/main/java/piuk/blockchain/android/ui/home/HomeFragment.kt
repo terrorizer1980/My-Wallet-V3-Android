@@ -25,6 +25,7 @@ interface HomeNavigator {
     fun launchSwapOrKyc(targetCurrency: CryptoCurrency? = null)
 
     fun launchKyc(campaignType: CampaignType)
+    fun launchKycIntro()
 
     fun launchThePitLinking(linkId: String = "")
     fun launchThePit()

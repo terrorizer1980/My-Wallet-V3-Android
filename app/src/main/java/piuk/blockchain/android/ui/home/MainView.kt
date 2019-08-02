@@ -53,6 +53,8 @@ interface MainView : View, HomeNavigator {
 
     fun launchSwap(defCurrency: String, targetCrypto: CryptoCurrency? = null)
 
+    fun launchSwapIntro()
+
     fun refreshDashboard()
 
     fun displayDialog(@StringRes title: Int, @StringRes message: Int)

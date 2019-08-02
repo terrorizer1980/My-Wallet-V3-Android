@@ -20,4 +20,5 @@
     <color name="pit_email_veriff_description">@color/grey_800</color>
     <color name="pit_email_veriff_address">@color/blue_500</color>
     <color name="pit_open_mail_app_background">@color/blue_600</color>
+    <color name="swap_intro_title">@color/blue_500</color>
 </resources>

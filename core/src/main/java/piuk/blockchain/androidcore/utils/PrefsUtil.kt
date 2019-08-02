@@ -46,7 +46,9 @@ class PrefsUtil(
     // From CurrencyPrefs
     override var selectedFiatCurrency: String
         get() = getValue(KEY_SELECTED_FIAT, DEFAULT_FIAT_CURRENCY)
-        set(fiat) { setValue(KEY_SELECTED_FIAT, fiat) }
+        set(fiat) {
+            setValue(KEY_SELECTED_FIAT, fiat)
+        }
 
     override var selectedCryptoCurrency: CryptoCurrency
         get() =
@@ -56,7 +58,6 @@ class PrefsUtil(
                 removeValue(KEY_SELECTED_CRYPTO)
                 DEFAULT_CRYPTO_CURRENCY
             }
-
         set(crypto) = setValue(KEY_SELECTED_CRYPTO, crypto.name)
 
     // From ThePitLinkingPrefs
@@ -67,6 +68,11 @@ class PrefsUtil(
     override fun clearPitToWalletLinkId() {
         removeValue(KEY_PIT_LINKING_LINK_ID)
     }
+
+    // From Onboarding
+    override var swapIntroCompleted: Boolean
+        get() = getValue(KEY_SWAP_INTRO_COMPLETED, false)
+        set(v) = setValue(KEY_SWAP_INTRO_COMPLETED, v)
 
     override fun getValue(name: String): String? =
         store.getString(name, null)
@@ -153,6 +159,8 @@ class PrefsUtil(
         const val KEY_SELECTED_CRYPTO = "KEY_CURRENCY_CRYPTO_STATE"
 
         private const val KEY_PIT_LINKING_LINK_ID = "pit_wallet_link_id"
+
+        private const val KEY_SWAP_INTRO_COMPLETED = "key_swap_intro_completed"
 
         // For QA:
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

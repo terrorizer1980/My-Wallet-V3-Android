@@ -1250,4 +1250,18 @@
     <string name="pit_connection_error_description">We could not connect your Wallet to The PIT. Please go back to The PIT and try again.</string>
     <string name="pit_connection_success_title">Success!</string>
     <string name="pit_connection_success_description">You have connected your Blockchain Wallet to The PIT. Go back and finish signing up!</string>
+
+    <!-- Swap intro -->
+    <string name="swap_intro_title">Swap</string>
+    <string name="swap_intro_title_page_one">Welcome to Swap!</string>
+    <string name="swap_intro_title_page_two">Real-time Exchange Rates</string>
+    <string name="swap_intro_title_page_three">100% On-Chain</string>
+    <string name="swap_intro_title_page_four">You Control Your Key</string>
+    <string name="swap_intro_title_page_five">Manage Risk Better</string>
+    <string name="swap_intro_description_page_one">The easiest way to exchange one crypto for another without leaving your wallet.</string>
+    <string name="swap_intro_description_page_two">Access competitive crypto prices right at your fingertips.</string>
+    <string name="swap_intro_description_page_three">All Swap trades are confirmed and settled directly on-chain.</string>
+    <string name="swap_intro_description_page_four">With Swap your crypto is safe, secure, and your keys are always intact.</string>
+    <string name="swap_intro_description_page_five">Introducing Digital Dollars (USDp) to de-risk your crypto investment or lock-in gains.</string>
+    <string name="swap_intro_get_started">Get Started</string>
 </resources>

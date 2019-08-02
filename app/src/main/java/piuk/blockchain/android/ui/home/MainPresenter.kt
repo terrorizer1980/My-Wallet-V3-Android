@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.home
 
+import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.CampaignData
 import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kyc.models.nabu.NabuApiException
@@ -9,7 +10,7 @@ import com.blockchain.kycui.settings.KycStatusHelper
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
-import com.blockchain.nabu.CurrentTier
+import com.blockchain.nabu.NabuToken
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
 import info.blockchain.balance.CryptoCurrency
@@ -63,9 +64,8 @@ import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.SecondPasswordEvent
 import timber.log.Timber
-import javax.inject.Inject
 
-class MainPresenter @Inject internal constructor(
+class MainPresenter internal constructor(
     private val prefs: PersistentPrefs,
     private val appUtil: AppUtil,
     private val accessState: AccessState,
@@ -89,14 +89,15 @@ class MainPresenter @Inject internal constructor(
     private val coinifyDataManager: CoinifyDataManager,
     private val exchangeService: ExchangeService,
     private val kycStatusHelper: KycStatusHelper,
-    private val currentKycTier: CurrentTier,
     private val lockboxDataManager: LockboxDataManager,
     private val deepLinkProcessor: DeepLinkProcessor,
     private val sunriverCampaignHelper: SunriverCampaignHelper,
     private val xlmDataManager: XlmDataManager,
     private val paxAccount: Erc20Account,
     private val pitFeatureFlag: FeatureFlag,
-    private val pitLinking: PitLinking
+    private val pitLinking: PitLinking,
+    private val nabuToken: NabuToken,
+    private val nabuDataManager: NabuDataManager
 ) : BasePresenter<MainView>() {
 
     internal val currentServerUrl: String
@@ -336,10 +337,10 @@ class MainPresenter @Inject internal constructor(
             stringUtils.getString(R.string.eth_default_account_label),
             stringUtils.getString(R.string.pax_default_account_label)
         ).doOnError { throwable ->
-                Logging.logException(throwable)
-                // TODO: 21/02/2018 Reload or disable?
-                Timber.e(throwable, "Failed to load eth wallet")
-            }
+            Logging.logException(throwable)
+            // TODO: 21/02/2018 Reload or disable?
+            Timber.e(throwable, "Failed to load eth wallet")
+        }
     }
 
     private fun shapeShiftCompletable(): Completable =
@@ -481,15 +482,23 @@ class MainPresenter @Inject internal constructor(
     }
 
     internal fun startSwapOrKyc(targetCurrency: CryptoCurrency? /* = null*/) {
-        compositeDisposable += currentKycTier.usersCurrentTier()
-            .subscribeBy(onError = { it.printStackTrace() }, onSuccess = { currentTier ->
-                if (currentTier > 0) {
+        val nabuUser = nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.getUser(it)
+        }
+        compositeDisposable += nabuUser
+            .subscribeBy(onError = { it.printStackTrace() }, onSuccess = { nabuUser ->
+                if (nabuUser.tiers?.current ?: 0 > 0) {
                     view.launchSwap(
                         prefs.selectedFiatCurrency,
                         targetCurrency
                     )
                 } else {
-                    view.launchKyc(CampaignType.Swap)
+                    if (nabuUser.kycState == KycState.Rejected ||
+                        nabuUser.kycState == KycState.UnderReview ||
+                        prefs.swapIntroCompleted)
+                        view.launchKyc(CampaignType.Swap)
+                    else
+                        view.launchSwapIntro()
                 }
             })
     }
