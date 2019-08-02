@@ -12,6 +12,7 @@ import com.blockchain.kyc.models.nabu.RecordCountryRequest
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressRequest
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
+import com.blockchain.kyc.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.kyc.models.nabu.SupportedDocumentsResponse
 import com.blockchain.kyc.models.nabu.TierUpdateJson
 import com.blockchain.kyc.models.nabu.TiersJson
@@ -161,7 +162,7 @@ internal interface Nabu {
     @POST(NABU_SEND_WALLET_ADDRESSES_TO_PIT)
     fun sharePitReceiveAddresses(
         @Header("authorization") authorization: String,
-        @Body addressMap: Map<String, String> // Crypto symbol -> address
+        @Body addresses: SendWithdrawalAddressesRequest
     ): Completable
 
     @PUT(NABU_FETCH_PIT_ADDRESS_FOR_WALLET)

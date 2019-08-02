@@ -92,10 +92,8 @@ class PitLinkingImpl(
             fetchAddressMap()
         )
         .subscribeOn(Schedulers.computation())
-        .map { nabu.shareWalletAddressesWithThePit(it.first, it.second) }
-        .subscribeBy(
-            onError = { Timber.e("Unable to send local addresses to the pit: $it") }
-        )
+        .flatMapCompletable { nabu.shareWalletAddressesWithThePit(it.first, it.second) }
+        .subscribeBy(onError = { Timber.e("Unable to send local addresses to the pit: $it") })
     }
 
     private fun fetchAddressMap(): Single<HashMap<String, String>> =

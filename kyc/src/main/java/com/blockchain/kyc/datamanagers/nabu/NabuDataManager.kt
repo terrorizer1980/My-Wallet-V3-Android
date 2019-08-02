@@ -9,6 +9,7 @@ import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
+import com.blockchain.kyc.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.services.nabu.NabuService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
@@ -354,7 +355,7 @@ internal class NabuDataManagerImpl(
         addressMap: Map<String, String> // Crypto symbol -> address
     ): Completable =
         authenticate(offlineTokenResponse) {
-            nabuService.sendWalletAddressesToThePit(it, addressMap)
+            nabuService.sendWalletAddressesToThePit(it, SendWithdrawalAddressesRequest(addressMap))
                 .toSingleDefault(Any())
         }.ignoreElement()
 

@@ -14,6 +14,7 @@ import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressRequest
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
+import com.blockchain.kyc.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.models.nabu.WalletMercuryLink
 import com.blockchain.nabu.models.NabuOfflineTokenRequest
@@ -199,10 +200,10 @@ class NabuService(retrofit: Retrofit) {
 
     internal fun sendWalletAddressesToThePit(
         sessionToken: NabuSessionTokenResponse,
-        addressMap: Map<String, String> // Crypto symbol -> address
+        request: SendWithdrawalAddressesRequest
     ): Completable = service.sharePitReceiveAddresses(
         sessionToken.authHeader,
-        addressMap
+        request
     ).wrapErrorMessage()
 
     internal fun fetchPitSendToAddressForCrypto(
