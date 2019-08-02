@@ -501,6 +501,7 @@ class MainPresenter internal constructor(
     }
 
     internal fun startSwapOrKyc(targetCurrency: CryptoCurrency? /* = null*/) {
+        val hideSwapIntro = true
         val nabuUser = nabuToken.fetchNabuToken().flatMap {
             nabuDataManager.getUser(it)
         }
@@ -514,7 +515,7 @@ class MainPresenter internal constructor(
                 } else {
                     if (nabuUser.kycState == KycState.Rejected ||
                         nabuUser.kycState == KycState.UnderReview ||
-                        prefs.swapIntroCompleted)
+                        prefs.swapIntroCompleted || hideSwapIntro)
                         view.launchKyc(CampaignType.Swap)
                     else
                         view.launchSwapIntro()
