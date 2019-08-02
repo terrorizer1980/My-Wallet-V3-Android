@@ -315,25 +315,32 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     }
 
     private fun doScanInput(strResult: String) {
-        if (FormatsUtil.isValidBitcoinAddress(strResult)) {
-            AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                .setTitle(R.string.confirm_currency)
-                .setMessage(R.string.confirm_currency_message)
-                .setCancelable(true)
-                .setPositiveButton(R.string.bitcoin_cash) { _, _ ->
-                    presenter.setCryptoCurrency(CryptoCurrency.BCH)
-                    startSendFragment(strResult)
-                }
-                .setNegativeButton(R.string.bitcoin) { _, _ ->
-                    presenter.setCryptoCurrency(CryptoCurrency.BTC)
-                    startSendFragment(strResult)
-                }
-                .create()
-                .show()
-        } else {
-            startSendFragment(strResult)
+        when {
+            strResult.isBTCorBCHAddress() -> disambiguateBTCandBCHQrScans(strResult)
+            strResult.isHttpUri() -> presenter.handlePossibleDeepLink(strResult)
+            else -> startSendFragment(strResult)
         }
     }
+
+    private fun disambiguateBTCandBCHQrScans(uri: String) {
+        AlertDialog.Builder(this, R.style.AlertDialogStyle)
+            .setTitle(R.string.confirm_currency)
+            .setMessage(R.string.confirm_currency_message)
+            .setCancelable(true)
+            .setPositiveButton(R.string.bitcoin_cash) { _, _ ->
+                presenter.setCryptoCurrency(CryptoCurrency.BCH)
+                startSendFragment(uri)
+            }
+            .setNegativeButton(R.string.bitcoin) { _, _ ->
+                presenter.setCryptoCurrency(CryptoCurrency.BTC)
+                startSendFragment(uri)
+            }
+            .create()
+            .show()
+    }
+
+    private fun String.isHttpUri(): Boolean = startsWith("http")
+    private fun String.isBTCorBCHAddress(): Boolean = FormatsUtil.isValidBitcoinAddress(this)
 
     private fun selectDrawerItem(menuItem: MenuItem) {
         when (menuItem.itemId) {

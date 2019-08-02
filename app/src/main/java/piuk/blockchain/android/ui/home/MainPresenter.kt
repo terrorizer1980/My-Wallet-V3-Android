@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.home
 
+import android.net.Uri
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.CampaignData
 import com.blockchain.kyc.models.nabu.KycState
@@ -234,16 +235,34 @@ class MainPresenter internal constructor(
             })
     }
 
+    fun handlePossibleDeepLink(url: String) {
+        try {
+            val link = Uri.parse(url).getQueryParameter("link") ?: return
+            compositeDisposable += deepLinkProcessor.getLink(link)
+                .subscribeBy(
+                    onError = { Timber.e(it) },
+                    onSuccess = { dispatchDeepLink(it) }
+                )
+        } catch (t: Throwable) {
+            Timber.d("Invalid link cannot be processed - ignoring")
+        }
+    }
+
     private fun checkForPendingLinks() {
         compositeDisposable += deepLinkProcessor.getLink(view.getStartIntent())
-            .subscribeBy(onError = { Timber.e(it) }, onSuccess = { linkState ->
-                when (linkState) {
-                    is LinkState.SunriverDeepLink -> handleSunriverDeepLink(linkState)
-                    is LinkState.EmailVerifiedDeepLink -> handleEmailVerifiedDeepLink(linkState)
-                    is LinkState.KycDeepLink -> handleKycDeepLink(linkState)
-                    is LinkState.ThePitDeepLink -> handleThePitDeepLink(linkState)
-                }
-            })
+            .subscribeBy(
+                onError = { Timber.e(it) },
+                onSuccess = { dispatchDeepLink(it) }
+            )
+    }
+
+    private fun dispatchDeepLink(linkState: LinkState) {
+        when (linkState) {
+            is LinkState.SunriverDeepLink -> handleSunriverDeepLink(linkState)
+            is LinkState.EmailVerifiedDeepLink -> handleEmailVerifiedDeepLink(linkState)
+            is LinkState.KycDeepLink -> handleKycDeepLink(linkState)
+            is LinkState.ThePitDeepLink -> handleThePitDeepLink(linkState)
+        }
     }
 
     private fun handleSunriverDeepLink(linkState: LinkState.SunriverDeepLink) {
