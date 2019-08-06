@@ -55,6 +55,7 @@ class PieChartDelegate<in T>(
 ) : AdapterDelegate<T> {
 
     private var viewHolder: PieChartViewHolder? = null
+    private var currentChartState: PieChartsState? = null
 
     override fun isForViewType(items: List<T>, position: Int): Boolean =
         items[position] is PieChartsState
@@ -75,10 +76,16 @@ class PieChartDelegate<in T>(
         viewHolder = holder as PieChartViewHolder
     }
 
-    internal fun updateChartState(pieChartsState: PieChartsState) = when (pieChartsState) {
-        is PieChartsState.Data -> renderData(pieChartsState)
-        PieChartsState.Error -> renderError()
-        PieChartsState.Loading -> renderLoading()
+    internal fun updateChartState(pieChartsState: PieChartsState) {
+        if (currentChartState == pieChartsState) {
+            return
+        }
+        currentChartState = pieChartsState
+        when (pieChartsState) {
+            is PieChartsState.Data -> renderData(pieChartsState)
+            PieChartsState.Error -> renderError()
+            PieChartsState.Loading -> renderLoading()
+        }
     }
 
     private fun renderLoading() {
