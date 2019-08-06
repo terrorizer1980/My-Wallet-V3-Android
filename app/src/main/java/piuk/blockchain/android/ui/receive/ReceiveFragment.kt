@@ -152,7 +152,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         setupLayout()
         setCustomKeypad()
 
-        scrollview?.post { scrollview.scrollTo(0, 0) }
+        scrollview?.post { scrollview?.scrollTo(0, 0) }
 
         currency_header.setSelectionListener { currency ->
             when (currency) {

@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatDelegate;
 import com.blockchain.koin.KoinStarter;
+import com.blockchain.logging.CrashLogger;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
+import com.google.android.play.core.missingsplits.MissingSplitsManagerFactory;
 import dagger.Lazy;
 import info.blockchain.wallet.BlockchainFramework;
 import info.blockchain.wallet.FrameworkInterface;
@@ -72,6 +74,8 @@ public class BlockchainApplication extends Application implements FrameworkInter
     AccessState loginState;
     @Inject
     PersistentPrefs prefs;
+    @Inject
+    CrashLogger crashLogger;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -84,13 +88,13 @@ public class BlockchainApplication extends Application implements FrameworkInter
 
     @Override
     public void onCreate() {
-        super.onCreate();
-        if (BuildConfig.USE_CRASHLYTICS) {
-            // Init crash reporting
-            Fabric.with(this, new Crashlytics(), new Answers());
-        } else {
-            Fabric.with(this, new Answers());
+        if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits()) {
+            // Skip rest of the initialization to prevent the app from crashing.
+            return;
         }
+
+        super.onCreate();
+
         // Init Timber
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
@@ -101,6 +105,9 @@ public class BlockchainApplication extends Application implements FrameworkInter
         Injector.getInstance().init(this);
         // Inject into Application
         Injector.getInstance().getAppComponent().inject(this);
+
+        crashLogger.init(this);
+        crashLogger.userLanguageLocale(getResources().getConfiguration().locale.getLanguage());
 
         // Pass objects to JAR
         BlockchainFramework.init(this);

@@ -2,6 +2,8 @@
 
 package com.blockchain.koin
 
+import com.blockchain.CrashLoggerImpl
+import com.blockchain.logging.CrashLogger
 import com.blockchain.logging.EventLogger
 import com.blockchain.metadata.MetadataWarningLog
 import com.blockchain.remoteconfig.RemoteConfig
@@ -77,4 +79,8 @@ val coreUiModule = applicationContext {
     bean {
         OverlayDetection(get())
     }
+
+    bean {
+        CrashLoggerImpl(BuildConfig.DEBUG)
+    }.bind(CrashLogger::class)
 }

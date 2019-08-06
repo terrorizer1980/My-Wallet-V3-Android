@@ -948,7 +948,7 @@
   <string name="kyc_splash_terms_and_conditions_submit">点击确认即表示您同意Blockchain的</string>
   <string name="kyc_country_selection_message_state">每个州对加密货币的交易都有不同的规定。</string>
   <string name="kyc_profile_submit">提交</string>
-  <string name="kyc_email_didnt_see_email">没有收到电子邮件？</string>
+  <string name="kyc_email_didnt_see_email">没有收到电子邮件？%1$s</string>
   <string name="kyc_email_send_again_hyperlink">重新发送</string>
   <string name="kyc_email_email_was_resent">邮件已重新发送</string>
   <string name="kyc_phone_didnt_see_sms">1</string>

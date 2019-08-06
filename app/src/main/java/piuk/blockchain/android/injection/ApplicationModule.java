@@ -7,6 +7,7 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataManager;
 import com.blockchain.kycui.settings.KycStatusHelper;
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper;
 import com.blockchain.lockbox.data.LockboxDataManager;
+import com.blockchain.logging.CrashLogger;
 import com.blockchain.logging.LastTxUpdater;
 import com.blockchain.network.EnvironmentUrls;
 import com.blockchain.notifications.NotificationTokenManager;
@@ -337,4 +338,7 @@ public class ApplicationModule extends KoinDaggerModule {
     PitLinking providesPitLinkingEngine() {
         return get(PitLinking.class);
     }
+
+    @Provides
+    CrashLogger providesCrashLogger() { return get(CrashLogger.class); }
 }
