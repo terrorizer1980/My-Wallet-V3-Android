@@ -714,6 +714,9 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         replaceContentFragment(swapIntroFragment)
     }
 
+    override fun shouldIgnoreDeepLinking() =
+        (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0
+
     private fun replaceContentFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
         val transaction = fragmentManager.beginTransaction()

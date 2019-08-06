@@ -250,6 +250,7 @@ class MainPresenter internal constructor(
 
     private fun checkForPendingLinks() {
         compositeDisposable += deepLinkProcessor.getLink(view.getStartIntent())
+            .filter { !view.shouldIgnoreDeepLinking() }
             .subscribeBy(
                 onError = { Timber.e(it) },
                 onSuccess = { dispatchDeepLink(it) }
@@ -515,7 +516,8 @@ class MainPresenter internal constructor(
                 } else {
                     if (nabuUser.kycState == KycState.Rejected ||
                         nabuUser.kycState == KycState.UnderReview ||
-                        prefs.swapIntroCompleted || hideSwapIntro)
+                        prefs.swapIntroCompleted || hideSwapIntro
+                    )
                         view.launchKyc(CampaignType.Swap)
                     else
                         view.launchSwapIntro()

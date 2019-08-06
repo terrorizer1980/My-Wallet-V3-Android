@@ -119,13 +119,6 @@ class DashboardPresenter(
                 { /* No-op */ },
                 { Timber.e(it) }
             )
-
-        // Pit linking - if we have a pit link id, and are therefore probably mid flow and returning from
-        // email verification - go to the pit permissions page to continue linking
-        val linkId = prefs.pitToWalletLinkId
-        if (linkId.isNotEmpty()) {
-            view.startPitLinkingFlow(linkId)
-        }
     }
 
     private fun updatePitAddressesForthePit() {

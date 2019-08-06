@@ -57,5 +57,7 @@ interface MainView : View, HomeNavigator {
 
     fun refreshDashboard()
 
+    fun shouldIgnoreDeepLinking(): Boolean
+
     fun displayDialog(@StringRes title: Int, @StringRes message: Int)
 }
