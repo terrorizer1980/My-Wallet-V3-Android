@@ -39,12 +39,12 @@ class CoinifyApiException private constructor(message: String) : Throwable(messa
     companion object {
 
         @SuppressLint("SyntheticAccessor")
-        fun fromResponseBody(response: Response<*>): CoinifyApiException {
+        fun fromResponseBody(response: Response<*>?): CoinifyApiException {
             val moshi = Moshi.Builder().build()
             val adapter = moshi.adapter(CoinifyErrorResponse::class.java)
-            val coinifyErrorResponse = adapter.fromJson(response.errorBody()!!.string())!!
+            val coinifyErrorResponse = adapter.fromJson(response?.errorBody()!!.string())!!
 
-            val httpErrorCode = response.code()
+            val httpErrorCode = response?.code() ?: 0
             val error = coinifyErrorResponse.error
             val errorDescription = coinifyErrorResponse.errorDescription
             val errorUri = coinifyErrorResponse.errorUri

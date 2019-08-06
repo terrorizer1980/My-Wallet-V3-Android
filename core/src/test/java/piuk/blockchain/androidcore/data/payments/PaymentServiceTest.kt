@@ -17,7 +17,7 @@ import info.blockchain.wallet.payment.SpendableUnspentOutputs
 import io.reactivex.Single
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should equal`
@@ -154,7 +154,7 @@ class PaymentServiceTest {
         val mockCall = mock<Call<ResponseBody>>()
         val response = Response.error<ResponseBody>(
             500,
-            ResponseBody.create(MediaType.parse("application/json"), "{}")
+            ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
         )
         whenever(mockCall.execute()).thenReturn(response)
         whenever(payment.publishSimpleTransaction(mockTx)).thenReturn(mockCall)
@@ -343,7 +343,7 @@ class PaymentServiceTest {
         val mockCall: Call<ResponseBody> = mock()
         val response = Response.error<ResponseBody>(
             500,
-            ResponseBody.create(MediaType.parse("application/json"), "{}")
+            ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
         )
         whenever(mockCall.execute()).thenReturn(response)
         whenever(payment.publishTransactionWithSecret(CryptoCurrency.BCH, mockTx, "SECRET"))

@@ -7,7 +7,7 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
 import org.junit.Before
 import org.junit.Test
@@ -63,7 +63,7 @@ class PairingCodePresenterTest {
                 any()
             )
         ).thenReturn(Observable.just(bitmap))
-        val body = ResponseBody.create(MediaType.parse("application/text"), "asdasdasd")
+        val body = ResponseBody.create(("application/text").toMediaTypeOrNull(), "asdasdasd")
         whenever(mockAuthDataManager.getPairingEncryptionPassword(any()))
             .thenReturn(Observable.just(body))
         // Act

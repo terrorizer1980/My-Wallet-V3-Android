@@ -206,8 +206,10 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
             )
         }
         recyclerview?.apply {
-            removeItemDecoration(spacerDecoration)
-            addItemDecoration(spacerDecoration)
+            spacerDecoration?.let {
+                removeItemDecoration(it)
+                addItemDecoration(it)
+            }
         }
     }
 

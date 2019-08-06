@@ -75,7 +75,7 @@ class CoinifySignUpActivity : BaseMvpActivity<CoinifySignupView, CoinifySignUpPr
         }
 
         setupToolbar(title)
-        onProgressUpdate(currentFragment)
+        onProgressUpdate(currentFragment ?: return)
     }
 
     override fun onProgressUpdate(currentFragment: Fragment) {

@@ -52,9 +52,9 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
 
     private val toolbar by unsafeLazy { findViewById<Toolbar>(R.id.toolbar_general) }
     private val navHostFragment by unsafeLazy { supportFragmentManager.findFragmentById(R.id.nav_host) }
-    private val navController by unsafeLazy { findNavController(navHostFragment) }
+    private val navController by unsafeLazy { findNavController(navHostFragment!!) }
     private val currentFragment: Fragment?
-        get() = navHostFragment.childFragmentManager.findFragmentById(R.id.nav_host)
+        get() = navHostFragment?.childFragmentManager?.findFragmentById(R.id.nav_host)
 
     private val defaultCurrency by unsafeLazy { intent.getStringExtra(EXTRA_DEFAULT_CURRENCY) }
 
@@ -73,8 +73,8 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
 
         val args = ExchangeFragment.bundleArgs(defaultCurrency)
         compositeDisposable += allAccountList.allAccounts()
-            .map {
-                accounts -> accounts.first { it.cryptoCurrency == preselectedToCurrency }
+            .map { accounts ->
+                accounts.first { it.cryptoCurrency == preselectedToCurrency }
             }.subscribeBy { exchangeViewModel.initWithPreselectedCurrency(it.cryptoCurrency) }
 
         navController.navigate(R.id.exchangeFragment, args)

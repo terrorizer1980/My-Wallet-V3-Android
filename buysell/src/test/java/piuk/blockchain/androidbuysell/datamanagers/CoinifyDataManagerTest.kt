@@ -4,7 +4,6 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
 import io.reactivex.Single
-import okhttp3.MediaType
 import okhttp3.ResponseBody
 import org.amshove.kluent.mock
 import org.junit.Before
@@ -19,6 +18,7 @@ import piuk.blockchain.androidbuysell.repositories.AccessTokenStore
 import piuk.blockchain.androidbuysell.services.CoinifyService
 import piuk.blockchain.androidcore.data.auth.AuthService
 import com.blockchain.utils.Optional
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import retrofit2.Response
 
 class CoinifyDataManagerTest : RxTest() {
@@ -45,7 +45,7 @@ class CoinifyDataManagerTest : RxTest() {
             .thenReturn(Observable.just(Optional.Some(invalidStoredResponse)))
         // Initial response - unauthenticated
         val responseBody =
-            ResponseBody.create(MediaType.parse("application/json"), UNAUTHENTICATED_JSON)
+            ResponseBody.create(("application/json").toMediaTypeOrNull(), UNAUTHENTICATED_JSON)
         whenever(coinifyService.getTrader(accessToken = invalidToken))
             .thenReturn(
                 Single.error(

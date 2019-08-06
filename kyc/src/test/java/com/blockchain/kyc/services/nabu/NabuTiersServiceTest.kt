@@ -93,7 +93,7 @@ class NabuTiersServiceTest {
                     )
                 )
             )
-        server.urlRequested `should equal to` "/$NABU_KYC_TIERS"
+        server.urlRequested!! `should equal to` "/$NABU_KYC_TIERS"
     }
 
     @Test
@@ -108,7 +108,7 @@ class NabuTiersServiceTest {
             .assertComplete()
             .assertNoErrors()
         server.takeRequest().apply {
-            path `should equal to` "/$NABU_KYC_TIERS"
+            path!! `should equal to` "/$NABU_KYC_TIERS"
             body.toString() `should equal to` """[text={"selectedTier":1}]"""
             headers.get("authorization") `should equal` "Bearer Token1"
         }

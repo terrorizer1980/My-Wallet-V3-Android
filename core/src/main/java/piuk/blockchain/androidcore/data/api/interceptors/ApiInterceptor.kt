@@ -18,15 +18,15 @@ class ApiInterceptor : Interceptor {
 
         var requestLog = String.format(
             "Sending request of type %s to %s with headers %s",
-            request.method(),
-            request.url(),
-            request.headers()
+            request.method,
+            request.url,
+            request.headers
         )
 
-        if (request.method().equals("post", ignoreCase = true) ||
-            request.method().equals("put", ignoreCase = true)
+        if (request.method.equals("post", ignoreCase = true) ||
+            request.method.equals("put", ignoreCase = true)
         ) {
-            requestLog = "\n$requestLog\n${requestBodyToString(request.body())}"
+            requestLog = "\n$requestLog\n${requestBodyToString(request.body)}"
         }
 
         Timber.v("Request:\n$requestLog")
@@ -37,20 +37,20 @@ class ApiInterceptor : Interceptor {
         val responseLog = String.format(
             Locale.ENGLISH,
             "Received response from %s in %.1fms%n%s",
-            response.request().url(),
+            response.request.url,
             (endTime - startTime) / 1e6,
-            response.headers()
+            response.headers
         )
 
-        val bodyString = response.body()!!.string()
-        if (response.code() == 200 || response.code() == 201 || response.code() == 101) {
-            Timber.v("Response: ${response.code()}\n$responseLog\n$bodyString")
+        val bodyString = response.body!!.string()
+        if (response.code == 200 || response.code == 201 || response.code == 101) {
+            Timber.v("Response: ${response.code}\n$responseLog\n$bodyString")
         } else {
-            Timber.e("Response: ${response.code()}\n$responseLog\n$bodyString")
+            Timber.e("Response: ${response.code}\n$responseLog\n$bodyString")
         }
 
         return response.newBuilder()
-            .body(ResponseBody.create(response.body()!!.contentType(), bodyString))
+            .body(ResponseBody.create(response.body!!.contentType(), bodyString))
             .build()
     }
 

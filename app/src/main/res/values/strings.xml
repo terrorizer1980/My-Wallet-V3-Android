@@ -1204,7 +1204,7 @@
     <string name="over_limit">Over limit</string>
 
     <!-- Help -->
-    <string name="morph_help_dialog_need_some_help" translatable="false">@string/need_some_help</string>
+     <string name="morph_help_dialog_need_some_help" translatable="false">@string/need_some_help</string>
     <string name="morph_help_dialog_need_some_help_body">Our Blockchain Support Team is standing by to answer any questions you have.</string>
     <string name="morph_help_dialog_view_swap_limit">View My Swap Limit</string>
     <string name="morph_help_dialog_contact_support" translatable="false">@string/contact_support</string>

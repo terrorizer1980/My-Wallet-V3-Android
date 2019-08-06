@@ -63,7 +63,7 @@ class OnfidoServiceTest {
         applicant.id `should equal to` "6a29732d-4561-4760-a2e3-a244ad324ba2"
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$APPLICANTS"
+        request.path!! `should equal to` "/$APPLICANTS"
         // Check Header
         request.headers.get("Authorization") `should equal` "Token token=$apiToken"
     }

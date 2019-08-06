@@ -178,10 +178,10 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
 
             HANDLER.postDelayed({
                 activity?.let {
-                    if (it.isFinishing.not() && !isPaused) {
+                    if (it.isFinishing.not() && !isPaused && fingerprintDialog != null) {
                         it.supportFragmentManager
                             .beginTransaction()
-                            .add(fingerprintDialog, FingerprintDialog.TAG)
+                            .add(fingerprintDialog!!, FingerprintDialog.TAG)
                             .commitAllowingStateLoss()
                     }
                 } ?: run { fingerprintDialog = null }

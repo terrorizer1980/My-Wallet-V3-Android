@@ -133,7 +133,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         }
 
     private val currentFragment: Fragment
-        get() = supportFragmentManager.findFragmentById(R.id.content_frame)
+        get() = supportFragmentManager.findFragmentById(R.id.content_frame)!!
 
     internal val activity: Context
         get() = this

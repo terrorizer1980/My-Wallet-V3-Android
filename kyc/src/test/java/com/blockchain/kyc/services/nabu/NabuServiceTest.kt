@@ -82,7 +82,7 @@ class NabuServiceTest {
         token `should equal to` "d753109e-23jd-42bd-82f1-cc904702asdfkjf"
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_INITIAL_AUTH"
+        request.path!! `should equal to` "/$NABU_INITIAL_AUTH"
     }
 
     @Test
@@ -121,7 +121,7 @@ class NabuServiceTest {
             "jYmM1MmUifQ.UzawGRtKsYX96vGhm_Hv8yXWFDqrIpeZt4eH2p6Eelk"
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_SESSION_TOKEN?userId=$userId"
+        request.path!! `should equal to` "/$NABU_SESSION_TOKEN?userId=$userId"
         // Check Header
         request.headers.get("authorization") `should equal` offlineToken
         request.headers.get("X-WALLET-GUID") `should equal` guid
@@ -156,7 +156,7 @@ class NabuServiceTest {
         testObserver.assertNoErrors()
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_USERS_CURRENT"
+        request.path!! `should equal to` "/$NABU_USERS_CURRENT"
         // Check Body
         val requestString = request.requestToString()
         val adapter = moshi.adapter(NabuBasicUser::class.java)
@@ -197,7 +197,7 @@ class NabuServiceTest {
             }
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_USERS_CURRENT"
+        request.path!! `should equal to` "/$NABU_USERS_CURRENT"
         // Check Header
         request.headers.get("authorization") `should equal` getEmptySessionToken().authHeader
     }
@@ -225,7 +225,7 @@ class NabuServiceTest {
         nabuUser.kycState `should equal` KycState.None
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_UPDATE_WALLET_INFO"
+        request.path!! `should equal to` "/$NABU_UPDATE_WALLET_INFO"
         // Check Header
         request.headers.get("authorization") `should equal` getEmptySessionToken().authHeader
     }
@@ -260,7 +260,7 @@ class NabuServiceTest {
         testObserver.assertNoErrors()
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_PUT_ADDRESS"
+        request.path!! `should equal to` "/$NABU_PUT_ADDRESS"
         // Check Body
         val requestString = request.requestToString()
         val adapter = moshi.adapter(AddAddressRequest::class.java)
@@ -301,7 +301,7 @@ class NabuServiceTest {
         testObserver.assertNoErrors()
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_RECORD_COUNTRY"
+        request.path!! `should equal to` "/$NABU_RECORD_COUNTRY"
         // Check Body
         val requestString = request.requestToString()
         val adapter = moshi.adapter(RecordCountryRequest::class.java)
@@ -337,7 +337,7 @@ class NabuServiceTest {
         apiKey `should equal to` "123abc"
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_ONFIDO_API_KEY"
+        request.path!! `should equal to` "/$NABU_ONFIDO_API_KEY"
         // Check Header
         request.headers.get("authorization") `should equal` getEmptySessionToken().authHeader
     }
@@ -367,7 +367,7 @@ class NabuServiceTest {
         val mobileVerificationRequest = adapter.fromJson(requestString)!!
         mobileVerificationRequest.applicantId `should equal to` appplicantId
         // Check URL
-        request.path `should equal to` "/$NABU_SUBMIT_VERIFICATION"
+        request.path!! `should equal to` "/$NABU_SUBMIT_VERIFICATION"
         // Check Header
         request.headers.get("authorization") `should equal` getEmptySessionToken().authHeader
     }
@@ -391,7 +391,7 @@ class NabuServiceTest {
         countryList[0].code `should equal to` "AUT"
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_COUNTRIES?scope=kyc"
+        request.path!! `should equal to` "/$NABU_COUNTRIES?scope=kyc"
     }
 
     @Test
@@ -413,7 +413,7 @@ class NabuServiceTest {
         countryList[0].code `should equal to` "AUT"
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_COUNTRIES"
+        request.path!! `should equal to` "/$NABU_COUNTRIES"
     }
 
     @Test
@@ -489,7 +489,7 @@ class NabuServiceTest {
         stateList[0].code `should equal to` "US-AL"
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_COUNTRIES/US/$NABU_STATES?scope=kyc"
+        request.path!! `should equal to` "/$NABU_COUNTRIES/US/$NABU_STATES?scope=kyc"
     }
 
     @Test
@@ -517,7 +517,7 @@ class NabuServiceTest {
         supportedDocuments `should contain` SupportedDocuments.PASSPORT
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$NABU_SUPPORTED_DOCUMENTS/$countryCode"
+        request.path!! `should equal to` "/$NABU_SUPPORTED_DOCUMENTS/$countryCode"
         // Check Header
         request.headers.get("authorization") `should equal` getEmptySessionToken().authHeader
     }
@@ -544,7 +544,7 @@ class NabuServiceTest {
         val jwt = adapter.fromJson(requestString)!!
         jwt.jwt `should equal to` "jwt"
         // Check URL
-        request.path `should equal to` "/$NABU_RECOVER_USER/${offlineToken.userId}"
+        request.path!! `should equal to` "/$NABU_RECOVER_USER/${offlineToken.userId}"
         request.headers.get("authorization") `should equal` "Bearer ${offlineToken.token}"
     }
 
@@ -579,7 +579,7 @@ class NabuServiceTest {
             newUser `should equal to` true
         }
         // Check URL
-        request.path `should equal to` "/$NABU_REGISTER_CAMPAIGN"
+        request.path!! `should equal to` "/$NABU_REGISTER_CAMPAIGN"
         request.headers.get("authorization") `should equal` getEmptySessionToken().authHeader
     }
 

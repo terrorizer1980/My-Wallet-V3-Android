@@ -23,7 +23,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
 import org.amshove.kluent.`should throw`
 import org.amshove.kluent.any
@@ -299,7 +299,7 @@ class KycProfilePresenterTest {
         ).thenReturn(Completable.complete())
         val responseBody =
             ResponseBody.create(
-                MediaType.parse("application/json"),
+                ("application/json").toMediaTypeOrNull(),
                 "{}"
             )
         whenever(

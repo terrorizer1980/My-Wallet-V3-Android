@@ -18,7 +18,6 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
-import okhttp3.MediaType
 import okhttp3.ResponseBody
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.mock
@@ -31,6 +30,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import com.blockchain.android.testutils.rxInit
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.math.BigInteger
@@ -702,7 +702,7 @@ class PayloadDataManagerTest {
     @Test
     fun registerMdid() {
         // Arrange
-        val responseBody = ResponseBody.create(MediaType.parse("application/json"), "{}")
+        val responseBody = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
         whenever(payloadService.registerMdid()).thenReturn(Observable.just(responseBody))
         // Act
         val testObserver = subject.registerMdid().test()
@@ -716,7 +716,7 @@ class PayloadDataManagerTest {
     @Test
     fun unregisterMdid() {
         // Arrange
-        val responseBody = ResponseBody.create(MediaType.parse("application/json"), "{}")
+        val responseBody = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
         whenever(payloadService.unregisterMdid()).thenReturn(Observable.just(responseBody))
         // Act
         val testObserver = subject.unregisterMdid().test()

@@ -11,8 +11,8 @@ import info.blockchain.wallet.crypto.AESUtil
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
 import io.reactivex.Observable
 import junit.framework.TestCase.assertTrue
-import okhttp3.MediaType
 import okhttp3.ResponseBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Test
@@ -85,7 +85,7 @@ class AuthDataManagerTest : RxTest() {
         val sessionId = "SESSION_ID"
         val guid = "GUID"
         val code = "123456"
-        val responseBody = ResponseBody.create(MediaType.parse("application/json"), "{}")
+        val responseBody = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
         whenever(authService.submitTwoFactorCode(sessionId, guid, code))
             .thenReturn(Observable.just(responseBody))
         // Act
@@ -160,7 +160,7 @@ class AuthDataManagerTest : RxTest() {
                     Response.error(
                         500,
                         ResponseBody.create(
-                            MediaType.parse("application/json"),
+                            ("application/json").toMediaTypeOrNull(),
                             "{}"
                         )
                     )
@@ -261,7 +261,7 @@ class AuthDataManagerTest : RxTest() {
                 Response.error(
                     500,
                     ResponseBody.create(
-                        MediaType.parse("application/json"),
+                        ("application/json").toMediaTypeOrNull(),
                         "{}"
                     )
                 )
@@ -330,7 +330,7 @@ class AuthDataManagerTest : RxTest() {
         val sessionId = "SESSION_ID"
         val guid = "GUID"
         val responseBody = ResponseBody.create(
-            MediaType.parse("application/json"),
+            ("application/json").toMediaTypeOrNull(),
             ERROR_BODY
         )
         whenever(authService.getEncryptedPayload(guid, sessionId))
@@ -362,7 +362,7 @@ class AuthDataManagerTest : RxTest() {
     companion object {
 
         private const val ERROR_BODY = "{\n" +
-            "\t\"authorization_required\": \"true\"\n" +
-            "}"
+                "\t\"authorization_required\": \"true\"\n" +
+                "}"
     }
 }
