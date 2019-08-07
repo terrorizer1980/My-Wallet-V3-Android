@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.upgrade
 
+import com.blockchain.logging.CrashLogger
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.times
@@ -29,6 +30,7 @@ class UpgradeWalletPresenterTest {
     private val mockAuthDataManager: AuthDataManager = mock()
     private val mockPayloadDataManager: PayloadDataManager = mock()
     private val mockStringUtils: StringUtils = mock()
+    private val crashLogger: CrashLogger = mock()
 
     @Before
     fun setUp() {
@@ -39,7 +41,8 @@ class UpgradeWalletPresenterTest {
             mockAccessState,
             mockAuthDataManager,
             mockPayloadDataManager,
-            mockStringUtils
+            mockStringUtils,
+            crashLogger
         )
         subject.initView(mockActivity)
     }

@@ -8,6 +8,7 @@ import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.settings.KycStatusHelper
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.lockbox.data.LockboxDataManager
+import com.blockchain.logging.CrashLogger
 import com.blockchain.nabu.NabuToken
 import com.blockchain.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.remoteconfig.FeatureFlag
@@ -85,6 +86,7 @@ class MainPresenterTest {
     private val xlmDataManager: XlmDataManager = mock()
     private val pitLinking: PitLinking = mock()
     private val featureFlag: FeatureFlag = mock()
+    private val crashLogger: CrashLogger = mock()
     private val nabuDatamanager: NabuDataManager = mock()
 
     private val nabuToken: NabuToken = mock {
@@ -143,7 +145,8 @@ class MainPresenterTest {
             featureFlag,
             pitLinking,
             nabuToken,
-            nabuDatamanager
+            nabuDatamanager,
+            crashLogger
         )
 
         subject.initView(view)

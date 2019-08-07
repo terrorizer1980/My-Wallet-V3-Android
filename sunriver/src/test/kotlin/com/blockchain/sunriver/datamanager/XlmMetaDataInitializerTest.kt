@@ -1,7 +1,7 @@
 package com.blockchain.sunriver.datamanager
 
+import com.blockchain.logging.CrashLogger
 import com.blockchain.metadata.MetadataRepository
-import com.blockchain.metadata.MetadataWarningLog
 import com.blockchain.serialization.fromMoshiJson
 import com.blockchain.wallet.DefaultLabels
 import com.blockchain.wallet.Seed
@@ -24,19 +24,19 @@ import org.junit.Test
 
 class XlmMetaDataInitializerTest {
 
-    private val log: MetadataWarningLog = mock()
+    private val crashLogger: CrashLogger = mock()
 
     @Test
     fun `no interactions before subscribe`() {
         val defaultLabels = mock<DefaultLabels>()
         val repository = mock<MetadataRepository>()
         val seedAccess = mock<SeedAccess>()
-        val metadataWarningLog = mock<MetadataWarningLog>()
+
         XlmMetaDataInitializer(
             defaultLabels,
             repository,
             seedAccess,
-            metadataWarningLog
+            crashLogger
         ).apply {
             initWalletMaybePrompt
             initWalletMaybe
@@ -44,7 +44,6 @@ class XlmMetaDataInitializerTest {
         verifyZeroInteractions(defaultLabels)
         verifyZeroInteractions(repository)
         verifyZeroInteractions(seedAccess)
-        verifyZeroInteractions(metadataWarningLog)
     }
 
     @Test
@@ -68,7 +67,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenSeedFor(mnemonic = "illness spike retreat truth genius clock brain pass fit cave bargain toe"),
-            log
+            crashLogger
         )
             .initWalletMaybe
             .test()
@@ -105,7 +104,7 @@ class XlmMetaDataInitializerTest {
             givenSeedPresentOnlyWithSecondPasswordFor(
                 mnemonic = "illness spike retreat truth genius clock brain pass fit cave bargain toe"
             ),
-            log
+            crashLogger
         )
             .initWalletMaybePrompt
             .test()
@@ -143,7 +142,7 @@ class XlmMetaDataInitializerTest {
                 mnemonic = "resource asthma orphan phone ice canvas " +
                     "fire useful arch jewel impose vague theory cushion top"
             ),
-            log
+            crashLogger
         )
             .initWalletMaybe
             .test()
@@ -178,7 +177,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenSeedFor(mnemonic = "illness spike retreat truth genius clock brain pass fit cave bargain toe"),
-            log
+            crashLogger
         )
             .initWalletMaybe
             .test()
@@ -213,7 +212,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenNoSeed(),
-            log
+            crashLogger
         )
             .initWalletMaybePrompt
             .test()
@@ -243,7 +242,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenSeedFor(mnemonic = "illness spike retreat truth genius clock brain pass fit cave bargain toe"),
-            log
+            crashLogger
         )
             .initWalletMaybe
             .test()
@@ -262,7 +261,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenNoSeed(),
-            log
+            crashLogger
         )
             .initWalletMaybe
             .test()
@@ -285,7 +284,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenNoSeed(),
-            log
+            crashLogger
         )
             .initWalletMaybePrompt
             .test()
@@ -319,7 +318,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenNoSeed(),
-            log
+            crashLogger
         )
             .initWalletMaybe
             .test()
@@ -359,7 +358,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenSeedFor(mnemonic = "illness spike retreat truth genius clock brain pass fit cave bargain toe"),
-            log
+            crashLogger
         )
             .initWalletMaybe
             .test()
@@ -399,7 +398,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenSeedFor(mnemonic = "illness spike retreat truth genius clock brain pass fit cave bargain toe"),
-            log
+            crashLogger
         )
             .initWalletMaybe
             .test()
@@ -438,7 +437,7 @@ class XlmMetaDataInitializerTest {
                 mnemonic = "bench hurt jump file august wise shallow faculty impulse spring exact slush " +
                     "thunder author capable act festival slice deposit sauce coconut afford frown better"
             ),
-            log
+            crashLogger
         )
             .initWalletMaybe
             .test()
@@ -476,7 +475,7 @@ class XlmMetaDataInitializerTest {
                 mnemonic = "cable spray genius state float twenty onion head street palace net private " +
                     "method loan turn phrase state blanket interest dry amazing dress blast tube"
             ),
-            log
+            crashLogger
         )
             .initWalletMaybe
             .test()
@@ -486,7 +485,7 @@ class XlmMetaDataInitializerTest {
 
         repository.assertNothingSaved()
         repository.assertLoaded()
-        verify(log).logWarning("Xlm metadata expected did not match that loaded")
+        verify(crashLogger).logException(any())
         assertSingleMetaDataLoad(repository)
     }
 
@@ -511,7 +510,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenNoSeed(),
-            log
+            crashLogger
         )
 
         (1..2).forEach {
@@ -557,7 +556,7 @@ class XlmMetaDataInitializerTest {
             givenDefaultXlmLabel("My Lumen Wallet"),
             repository,
             givenSeedFor(mnemonic = "illness spike retreat truth genius clock brain pass fit cave bargain toe"),
-            log
+            crashLogger
         )
 
         (1..5).forEach {
@@ -576,7 +575,7 @@ class XlmMetaDataInitializerTest {
     }
 
     private fun assertNoWarnings() {
-        verify(log, never()).logWarning(any())
+        verify(crashLogger, never()).logException(any())
     }
 }
 

@@ -286,7 +286,7 @@ class PayloadServiceTest {
         // Arrange
         val txHash = "TX_HASH"
         val note = "NOTE"
-        whenever(mockPayloadManager.payload.txNotes).thenReturn(mutableMapOf())
+        whenever(mockPayloadManager.payload?.txNotes).thenReturn(mutableMapOf())
         whenever(mockPayloadManager.save()).thenReturn(true)
         // Act
         val testObserver = subject.updateTransactionNotes(txHash, note).test()

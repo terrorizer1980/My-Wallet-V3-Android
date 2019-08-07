@@ -1213,7 +1213,11 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             "pax_faq" to Uri.parse(URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ)
         )
 
-        val body = stringUtils.getStringWithMappedLinks(R.string.pax_need_more_eth_error_body, linksMap)
+        val body = stringUtils.getStringWithMappedLinks(
+            R.string.pax_need_more_eth_error_body,
+            linksMap,
+            requireActivity()
+        )
 
         ErrorBottomDialog.newInstance(
             ErrorBottomDialog.Content(

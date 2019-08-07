@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.blockchain.logging.CrashLogger;
 import info.blockchain.wallet.api.Environment;
 import info.blockchain.wallet.api.data.UpdateType;
 import info.blockchain.wallet.exceptions.AccountLockedException;
@@ -35,7 +36,6 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import piuk.blockchain.android.BlockchainTestApplication;
-import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
@@ -51,7 +51,7 @@ import piuk.blockchain.android.util.DialogButtonCallback;
 import piuk.blockchain.android.util.StringUtils;
 
 import static io.reactivex.Observable.just;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -97,6 +97,8 @@ public class PinEntryPresenterTest {
     private PrngFixer prngFixer;
     @Mock
     private MobileNoticeRemoteConfig mobileNoticeRemoteConfig;
+    @Mock
+    private CrashLogger crashLogger;
 
     @Before
     public void setUp() {
@@ -118,7 +120,9 @@ public class PinEntryPresenterTest {
                 walletOptionsDataManager,
                 environmentSettings,
                 prngFixer,
-                mobileNoticeRemoteConfig);
+                mobileNoticeRemoteConfig,
+                crashLogger
+        );
         subject.initView(activity);
     }
 
@@ -132,7 +136,7 @@ public class PinEntryPresenterTest {
         // Act
         subject.onViewReady();
         // Assert
-        assertEquals(true, subject.isForValidatingPinForResult());
+        assertTrue(subject.isForValidatingPinForResult());
     }
 
     @Test
@@ -140,14 +144,14 @@ public class PinEntryPresenterTest {
         // Arrange
         when(environmentSettings.getEnvironment()).thenReturn(Environment.PRODUCTION);
         when(activity.getPageIntent()).thenReturn(new Intent());
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_FAILS, 0)).thenReturn(4);
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_FAILS, 0)).thenReturn(4);
         when(payloadManager.getWallet()).thenReturn(mock(Wallet.class));
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, "")).thenReturn("");
-        when(fingerprintHelper.getEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE)).thenReturn("");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")).thenReturn("");
+        when(fingerprintHelper.getEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE)).thenReturn("");
         // Act
         subject.onViewReady();
         // Assert
-        assertEquals(true, subject.allowExit());
+        assertTrue(subject.allowExit());
         //noinspection WrongConstant
         verify(activity).showToast(anyInt(), anyString());
         verify(activity).showMaxAttemptsDialog();
@@ -157,10 +161,10 @@ public class PinEntryPresenterTest {
     public void checkFingerprintStatusShouldShowDialog() {
         // Arrange
         subject.setForValidatingPinForResult(false);
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, "")).thenReturn("1234");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")).thenReturn("1234");
         when(fingerprintHelper.isFingerprintUnlockEnabled()).thenReturn(true);
-        when(fingerprintHelper.getEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE)).thenReturn(null);
-        when(fingerprintHelper.getEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE)).thenReturn("");
+        when(fingerprintHelper.getEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE)).thenReturn(null);
+        when(fingerprintHelper.getEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE)).thenReturn("");
         // Act
         subject.checkFingerprintStatus();
         // Assert
@@ -180,11 +184,11 @@ public class PinEntryPresenterTest {
     @Test
     public void canShowFingerprintDialog() {
         // Arrange
-        subject.setMCanShowFingerprintDialog(true);
+        subject.setCanShowFingerprintDialog(true);
         // Act
         boolean value = subject.canShowFingerprintDialog();
         // Assert
-        assertEquals(true, value);
+        assertTrue(value);
     }
 
     @Test
@@ -197,24 +201,24 @@ public class PinEntryPresenterTest {
         // Assert
         verify(authDataManager).validatePin(pincode);
         verify(activity).getPinBoxList();
-        assertEquals(false, subject.canShowFingerprintDialog());
+        assertFalse(subject.canShowFingerprintDialog());
     }
 
     @Test
     public void onDeleteClicked() {
         // Arrange
-        subject.setMUserEnteredPin("1234");
+        subject.setUserEnteredPin("1234");
         // Act
         subject.onDeleteClicked();
         // Assert
-        assertEquals("123", subject.getMUserEnteredPin());
+        assertEquals("123", subject.getUserEnteredPin());
         verify(activity).getPinBoxList();
     }
 
     @Test
     public void padClickedPinAlreadyFourDigits() {
         // Arrange
-        subject.setMUserEnteredPin("0000");
+        subject.setUserEnteredPin("0000");
         // Act
         subject.onPadClicked("0");
         // Assert
@@ -224,23 +228,23 @@ public class PinEntryPresenterTest {
     @Test
     public void padClickedAllZeros() {
         // Arrange
-        subject.setMUserEnteredPin("000");
+        subject.setUserEnteredPin("000");
         // Act
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, "")).thenReturn("");
-        when(fingerprintHelper.getEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE)).thenReturn("");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")).thenReturn("");
+        when(fingerprintHelper.getEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE)).thenReturn("");
         subject.onPadClicked("0");
         // Assert
         verify(activity).clearPinBoxes();
         //noinspection WrongConstant
         verify(activity).showToast(anyInt(), anyString());
-        assertEquals("", subject.getMUserEnteredPin());
-        assertEquals(null, subject.getMUserEnteredConfirmationPin());
+        assertEquals("", subject.getUserEnteredPin());
+        assertNull(subject.getUserEnteredConfirmationPin());
     }
 
     @Test
     public void padClickedShowCommonPinWarning() {
         // Arrange
-        subject.setMUserEnteredPin("123");
+        subject.setUserEnteredPin("123");
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("");
         // Act
         subject.onPadClicked("4");
@@ -251,7 +255,7 @@ public class PinEntryPresenterTest {
     @Test
     public void padClickedShowCommonPinWarningAndClickRetry() {
         // Arrange
-        subject.setMUserEnteredPin("123");
+        subject.setUserEnteredPin("123");
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("");
         doAnswer(invocation -> {
             ((DialogButtonCallback) invocation.getArguments()[0]).onPositiveClicked();
@@ -262,14 +266,14 @@ public class PinEntryPresenterTest {
         // Assert
         verify(activity).showCommonPinWarning(any(DialogButtonCallback.class));
         verify(activity).clearPinBoxes();
-        assertEquals("", subject.getMUserEnteredPin());
-        assertEquals(null, subject.getMUserEnteredConfirmationPin());
+        assertEquals("", subject.getUserEnteredPin());
+        assertNull(subject.getUserEnteredConfirmationPin());
     }
 
     @Test
     public void padClickedShowCommonPinWarningAndClickContinue() {
         // Arrange
-        subject.setMUserEnteredPin("123");
+        subject.setUserEnteredPin("123");
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("");
         doAnswer(invocation -> {
             ((DialogButtonCallback) invocation.getArguments()[0]).onNegativeClicked();
@@ -279,14 +283,14 @@ public class PinEntryPresenterTest {
         subject.onPadClicked("4");
         // Assert
         verify(activity).showCommonPinWarning(any(DialogButtonCallback.class));
-        assertEquals("", subject.getMUserEnteredPin());
-        assertEquals("1234", subject.getMUserEnteredConfirmationPin());
+        assertEquals("", subject.getUserEnteredPin());
+        assertEquals("1234", subject.getUserEnteredConfirmationPin());
     }
 
     @Test
     public void padClickedShowPinReuseWarning() {
         // Arrange
-        subject.setMUserEnteredPin("258");
+        subject.setUserEnteredPin("258");
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("");
         when(accessState.getPin()).thenReturn("2580");
         // Act
@@ -301,8 +305,8 @@ public class PinEntryPresenterTest {
     @Test
     public void padClickedVerifyPinValidateCalled() {
         // Arrange
-        subject.setMUserEnteredPin("133");
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, ""))
+        subject.setUserEnteredPin("133");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, ""))
                 .thenReturn("1234567890");
         when(authDataManager.validatePin(anyString())).thenReturn(just(""));
         // Act
@@ -316,9 +320,9 @@ public class PinEntryPresenterTest {
     @Test
     public void padClickedVerifyPinForResultReturnsValidPassword() {
         // Arrange
-        subject.setMUserEnteredPin("133");
+        subject.setUserEnteredPin("133");
         subject.setForValidatingPinForResult(true);
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, ""))
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, ""))
                 .thenReturn("1234567890");
         when(authDataManager.validatePin(anyString())).thenReturn(just(""));
         // Act
@@ -334,8 +338,8 @@ public class PinEntryPresenterTest {
     @Test
     public void padClickedVerifyPinValidateCalledReturnsErrorIncrementsFailureCount() {
         // Arrange
-        subject.setMUserEnteredPin("133");
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, ""))
+        subject.setUserEnteredPin("133");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, ""))
                 .thenReturn("1234567890");
         when(authDataManager.validatePin(anyString()))
                 .thenReturn(Observable.error(new InvalidCredentialsException()));
@@ -355,8 +359,8 @@ public class PinEntryPresenterTest {
     @Test
     public void padClickedVerifyPinValidateCalledReturnsServerError() {
         // Arrange
-        subject.setMUserEnteredPin("133");
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, ""))
+        subject.setUserEnteredPin("133");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, ""))
                 .thenReturn("1234567890");
         when(authDataManager.validatePin(anyString()))
                 .thenReturn(Observable.error(new ServerConnectionException()));
@@ -374,8 +378,8 @@ public class PinEntryPresenterTest {
     @Test
     public void padClickedVerifyPinValidateCalledReturnsTimeout() {
         // Arrange
-        subject.setMUserEnteredPin("133");
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, ""))
+        subject.setUserEnteredPin("133");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, ""))
                 .thenReturn("1234567890");
         when(authDataManager.validatePin(anyString()))
                 .thenReturn(Observable.error(new SocketTimeoutException()));
@@ -393,8 +397,8 @@ public class PinEntryPresenterTest {
     @Test
     public void padClickedVerifyPinValidateCalledReturnsInvalidCipherText() {
         // Arrange
-        subject.setMUserEnteredPin("133");
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, ""))
+        subject.setUserEnteredPin("133");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, ""))
                 .thenReturn("1234567890");
         when(authDataManager.validatePin(anyString())).thenReturn(just(""));
         when(payloadManager.initializeAndDecrypt(anyString(), anyString(), anyString()))
@@ -410,15 +414,15 @@ public class PinEntryPresenterTest {
         verify(prefsUtil).setValue(anyString(), anyInt());
         //noinspection WrongConstant
         verify(activity).showToast(anyInt(), anyString());
-        verify(accessState).setPin(null);
+        verify(accessState).clearPin();
         verify(appUtil).clearCredentialsAndRestart(LauncherActivity.class);
     }
 
     @Test
     public void padClickedVerifyPinValidateCalledReturnsGenericException() {
         // Arrange
-        subject.setMUserEnteredPin("133");
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, ""))
+        subject.setUserEnteredPin("133");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, ""))
                 .thenReturn("1234567890");
         when(authDataManager.validatePin(anyString())).thenReturn(just(""));
         when(payloadManager.initializeAndDecrypt(anyString(), anyString(), anyString()))
@@ -440,30 +444,32 @@ public class PinEntryPresenterTest {
     @Test
     public void padClickedCreatePinCreateSuccessful() {
         // Arrange
-        subject.setMUserEnteredPin("133");
-        subject.setMUserEnteredConfirmationPin("1337");
+        subject.setUserEnteredPin("133");
+        subject.setUserEnteredConfirmationPin("1337");
         when(payloadManager.getTempPassword()).thenReturn("temp password");
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, "")).thenReturn("");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")).thenReturn("");
         when(authDataManager.createPin(anyString(), anyString())).thenReturn(Completable.complete());
         when(authDataManager.validatePin(anyString())).thenReturn(just("password"));
+        when(accessState.getPin()).thenReturn("1337");
         // Act
         subject.onPadClicked("7");
         // Assert
         verify(activity, times(2)).showProgressDialog(anyInt(), isNull());
         verify(authDataManager).createPin(anyString(), anyString());
-        verify(fingerprintHelper).clearEncryptedData(PersistentPrefs.Companion.KEY_ENCRYPTED_PIN_CODE);
+        verify(fingerprintHelper).clearEncryptedData(PersistentPrefs.KEY_ENCRYPTED_PIN_CODE);
         verify(fingerprintHelper).setFingerprintUnlockEnabled(false);
     }
 
     @Test
     public void padClickedCreatePinCreateFailed() {
         // Arrange
-        subject.setMUserEnteredPin("133");
-        subject.setMUserEnteredConfirmationPin("1337");
+        subject.setUserEnteredPin("133");
+        subject.setUserEnteredConfirmationPin("1337");
         when(payloadManager.getTempPassword()).thenReturn("temp password");
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, "")).thenReturn("");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")).thenReturn("");
         when(authDataManager.createPin(anyString(), anyString()))
                 .thenReturn(Completable.error(new Throwable()));
+        when(accessState.getPin()).thenReturn("");
         // Act
         subject.onPadClicked("7");
         // Assert
@@ -478,23 +484,25 @@ public class PinEntryPresenterTest {
     @Test
     public void padClickedCreatePinWritesNewConfirmationValue() {
         // Arrange
-        subject.setMUserEnteredPin("133");
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, "")).thenReturn("");
+        subject.setUserEnteredPin("133");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")).thenReturn("");
         when(authDataManager.createPin(anyString(), anyString())).thenReturn(Completable.complete());
+        when(accessState.getPin()).thenReturn("");
         // Act
         subject.onPadClicked("7");
         // Assert
-        assertEquals("1337", subject.getMUserEnteredConfirmationPin());
-        assertEquals("", subject.getMUserEnteredPin());
+        assertEquals("1337", subject.getUserEnteredConfirmationPin());
+        assertEquals("", subject.getUserEnteredPin());
     }
 
     @Test
     public void padClickedCreatePinMismatched() {
         // Arrange
-        subject.setMUserEnteredPin("133");
-        subject.setMUserEnteredConfirmationPin("1234");
-        when(prefsUtil.getValue(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER, "")).thenReturn("");
+        subject.setUserEnteredPin("133");
+        subject.setUserEnteredConfirmationPin("1234");
+        when(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")).thenReturn("");
         when(authDataManager.createPin(anyString(), anyString())).thenReturn(Completable.complete());
+        when(accessState.getPin()).thenReturn("");
         // Act
         subject.onPadClicked("7");
         // Assert
@@ -511,7 +519,7 @@ public class PinEntryPresenterTest {
         subject.clearPinBoxes();
         // Assert
         verify(activity).clearPinBoxes();
-        assertEquals("", subject.getMUserEnteredPin());
+        assertEquals("", subject.getUserEnteredPin());
     }
 
     @Test
@@ -531,7 +539,7 @@ public class PinEntryPresenterTest {
         //noinspection WrongConstant
         verify(activity).showToast(anyInt(), anyString());
         verify(prefsUtil, times(2)).removeValue(anyString());
-        verify(accessState).setPin(null);
+        verify(accessState).clearPin();
         verify(activity).restartPageAndClearTop();
     }
 
@@ -774,7 +782,7 @@ public class PinEntryPresenterTest {
         verify(payloadManager, atLeastOnce()).getWallet();
         verify(stringUtils).getString(anyInt());
         verify(activity).dismissProgressDialog();
-        assertEquals(true, subject.getMCanShowFingerprintDialog());
+        assertTrue(subject.getCanShowFingerprintDialog());
     }
 
     @SuppressLint("VisibleForTests")
@@ -798,7 +806,7 @@ public class PinEntryPresenterTest {
         verify(appUtil).setSharedKey(anyString());
         verify(activity).goToUpgradeWalletActivity();
         verify(activity).dismissProgressDialog();
-        assertEquals(true, subject.getMCanShowFingerprintDialog());
+        assertTrue(subject.getCanShowFingerprintDialog());
     }
 
     @SuppressLint("VisibleForTests")
@@ -822,7 +830,7 @@ public class PinEntryPresenterTest {
         verify(appUtil).setSharedKey(anyString());
         verify(appUtil).restartAppWithVerifiedPin(LauncherActivity.class);
         verify(activity).dismissProgressDialog();
-        assertEquals(true, subject.getMCanShowFingerprintDialog());
+        assertTrue(subject.getCanShowFingerprintDialog());
     }
 
     @Test
@@ -866,7 +874,7 @@ public class PinEntryPresenterTest {
         // Act
         boolean creatingNewPin = subject.isCreatingNewPin();
         // Assert
-        assertEquals(true, creatingNewPin);
+        assertTrue(creatingNewPin);
     }
 
     @Test
@@ -876,17 +884,7 @@ public class PinEntryPresenterTest {
         // Act
         boolean creatingNewPin = subject.isCreatingNewPin();
         // Assert
-        assertEquals(false, creatingNewPin);
-    }
-
-    @Test
-    public void getAppUtil() {
-        // Arrange
-
-        // Act
-        AppUtil util = subject.getAppUtil();
-        // Assert
-        assertEquals(util, appUtil);
+        assertFalse(creatingNewPin);
     }
 
     @Test

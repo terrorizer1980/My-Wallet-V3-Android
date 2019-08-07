@@ -7,8 +7,6 @@ import android.support.multidex.MultiDex;
 import android.support.v7.app.AppCompatDelegate;
 import com.blockchain.koin.KoinStarter;
 import com.blockchain.logging.CrashLogger;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.security.ProviderInstaller;
@@ -17,7 +15,6 @@ import dagger.Lazy;
 import info.blockchain.wallet.BlockchainFramework;
 import info.blockchain.wallet.FrameworkInterface;
 import info.blockchain.wallet.api.Environment;
-import io.fabric.sdk.android.Fabric;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.plugins.RxJavaPlugins;
 import org.bitcoinj.core.NetworkParameters;
@@ -88,6 +85,7 @@ public class BlockchainApplication extends Application implements FrameworkInter
 
     @Override
     public void onCreate() {
+
         if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits()) {
             // Skip rest of the initialization to prevent the app from crashing.
             return;

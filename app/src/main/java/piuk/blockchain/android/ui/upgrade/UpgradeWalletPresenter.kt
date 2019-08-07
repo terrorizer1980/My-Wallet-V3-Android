@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.upgrade
 
+import com.blockchain.logging.CrashLogger
 import info.blockchain.wallet.util.PasswordUtil
 import io.reactivex.rxkotlin.plusAssign
 import piuk.blockchain.android.R
@@ -21,7 +22,8 @@ internal class UpgradeWalletPresenter constructor(
     private val accessState: AccessState,
     private val authDataManager: AuthDataManager,
     private val payloadDataManager: PayloadDataManager,
-    private val stringUtils: StringUtils
+    private val stringUtils: StringUtils,
+    private val crashLogger: CrashLogger
 ) : BasePresenter<UpgradeWalletView>() {
 
     override fun onViewReady() {
@@ -69,8 +71,8 @@ internal class UpgradeWalletPresenter constructor(
         compositeDisposable += payloadDataManager.upgradeV2toV3(
             secondPassword,
             stringUtils.getString(R.string.default_wallet_name))
-            .doOnSubscribe { ignored -> view.onUpgradeStarted() }
-            .doOnError { ignored -> accessState.isNewlyCreated = false }
+            .doOnSubscribe { view.onUpgradeStarted() }
+            .doOnError { accessState.isNewlyCreated = false }
             .doOnComplete { accessState.isNewlyCreated = true }
             .subscribe(
                 {
@@ -79,7 +81,7 @@ internal class UpgradeWalletPresenter constructor(
                 },
                 { throwable ->
                     Logging.logCustom(WalletUpgradeEvent(false))
-                    Logging.logException(throwable)
+                    crashLogger.logException(throwable)
                     view.onUpgradeFailed()
                 })
     }

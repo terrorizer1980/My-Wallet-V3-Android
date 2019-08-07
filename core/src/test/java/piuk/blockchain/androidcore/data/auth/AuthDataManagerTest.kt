@@ -1,5 +1,6 @@
 package piuk.blockchain.androidcore.data.auth
 
+import com.blockchain.logging.CrashLogger
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
@@ -32,6 +33,8 @@ class AuthDataManagerTest : RxTest() {
     private val accessState: AccessState = mock()
     private val aesUtilWrapper: AESUtilWrapper = mock()
     private val prngHelper: PrngFixer = mock()
+    private val crashLogger: CrashLogger = mock()
+
     private lateinit var subject: AuthDataManager
 
     @Before
@@ -41,7 +44,8 @@ class AuthDataManagerTest : RxTest() {
             authService,
             accessState,
             aesUtilWrapper,
-            prngHelper
+            prngHelper,
+            crashLogger
         )
     }
 
@@ -106,6 +110,7 @@ class AuthDataManagerTest : RxTest() {
         val decryptionKey = "DECRYPTION_KEY"
         val plaintextPassword = "PLAINTEXT_PASSWORD"
         val status = Status()
+
         status.success = decryptionKey
         whenever(prefsUtil.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")).thenReturn(key)
         whenever(prefsUtil.getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, ""))
@@ -119,10 +124,12 @@ class AuthDataManagerTest : RxTest() {
                 AESUtil.PIN_PBKDF2_ITERATIONS
             )
         ).thenReturn(plaintextPassword)
+
         // Act
         val observer = subject.validatePin(pin).test()
+
         // Assert
-        verify(accessState).pin = pin
+        verify(accessState).setPin(pin)
         verify(accessState).isNewlyCreated = false
         verifyNoMoreInteractions(accessState)
         verify(prefsUtil).getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")
@@ -169,7 +176,7 @@ class AuthDataManagerTest : RxTest() {
         // Act
         val observer = subject.validatePin(pin).test()
         // Assert
-        verify(accessState).pin = pin
+        verify(accessState).setPin(pin)
         verifyNoMoreInteractions(accessState)
         verify(prefsUtil).getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")
         verify(prefsUtil).getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, "")
@@ -187,15 +194,18 @@ class AuthDataManagerTest : RxTest() {
         // Arrange
         val password = "PASSWORD"
         val pin = "123"
+
         // Act
         val observer = subject.createPin(password, pin).test()
+
         // Assert
         verifyZeroInteractions(accessState)
         verifyZeroInteractions(prefsUtil)
         verifyZeroInteractions(authService)
         verifyZeroInteractions(aesUtilWrapper)
+
         observer.assertNotComplete()
-        observer.assertError(Throwable::class.java)
+        observer.assertError(IllegalArgumentException::class.java)
     }
 
     @Test
@@ -222,7 +232,7 @@ class AuthDataManagerTest : RxTest() {
         // Act
         val observer = subject.createPin(password, pin).test()
         // Assert
-        verify(accessState).pin = pin
+        verify(accessState).setPin(pin)
         verifyNoMoreInteractions(accessState)
         verify(prngHelper).applyPRNGFixes()
         verifyNoMoreInteractions(prngHelper)
@@ -270,7 +280,7 @@ class AuthDataManagerTest : RxTest() {
         // Act
         val observer = subject.createPin(password, pin).test()
         // Assert
-        verify(accessState).pin = pin
+        verify(accessState).setPin(pin)
         verifyNoMoreInteractions(accessState)
         verify(prngHelper).applyPRNGFixes()
         verifyNoMoreInteractions(prngHelper)

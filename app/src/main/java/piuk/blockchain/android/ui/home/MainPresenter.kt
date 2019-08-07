@@ -11,6 +11,7 @@ import com.blockchain.kycui.settings.KycStatusHelper
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
+import com.blockchain.logging.CrashLogger
 import com.blockchain.nabu.NabuToken
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
@@ -98,7 +99,8 @@ class MainPresenter internal constructor(
     private val pitFeatureFlag: FeatureFlag,
     private val pitLinking: PitLinking,
     private val nabuToken: NabuToken,
-    private val nabuDataManager: NabuDataManager
+    private val nabuDataManager: NabuDataManager,
+    private val crashLogger: CrashLogger
 ) : BasePresenter<MainView>() {
 
     internal val currentServerUrl: String
@@ -346,7 +348,7 @@ class MainPresenter internal constructor(
     private fun bchCompletable(): Completable {
         return bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
             .doOnError { throwable ->
-                Logging.logException(throwable)
+                crashLogger.logException(throwable)
                 // TODO: 21/02/2018 Reload or disable?
                 Timber.e(throwable, "Failed to load bch wallet")
             }
@@ -357,26 +359,26 @@ class MainPresenter internal constructor(
             stringUtils.getString(R.string.eth_default_account_label),
             stringUtils.getString(R.string.pax_default_account_label)
         ).doOnError { throwable ->
-            Logging.logException(throwable)
+            crashLogger.logException(throwable)
             // TODO: 21/02/2018 Reload or disable?
             Timber.e(throwable, "Failed to load eth wallet")
         }
     }
 
-    private fun shapeShiftCompletable(): Completable =
-        shapeShiftDataManager.initShapeshiftTradeData()
+    private fun shapeShiftCompletable(): Completable {
+        return shapeShiftDataManager.initShapeshiftTradeData()
             .onErrorComplete()
             .doOnError { throwable ->
-                Logging.logException(throwable)
+                crashLogger.logException(throwable)
                 // TODO: 21/02/2018 Reload or disable?
                 Timber.e(throwable, "Failed to load shape shift trades")
             }
-
-    private fun logException(throwable: Throwable) {
-        Logging.logException(throwable)
-        view.showMetadataNodeFailure()
     }
 
+    private fun logException(throwable: Throwable) {
+        crashLogger.logException(throwable)
+        view.showMetadataNodeFailure()
+    }
     /**
      * All of these calls are allowed to fail here, we're just caching them in advance because we
      * can.
@@ -408,7 +410,7 @@ class MainPresenter internal constructor(
         accessState.logout()
         accessState.unpairWallet()
         appUtil.restartApp(LauncherActivity::class.java)
-        accessState.pin = null
+        accessState.clearPin()
         buyDataManager.wipe()
         ethDataManager.clearEthAccountDetails()
         paxAccount.clear()

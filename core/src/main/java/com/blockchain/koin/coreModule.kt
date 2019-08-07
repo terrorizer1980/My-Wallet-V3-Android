@@ -251,7 +251,16 @@ val coreModule = applicationContext {
 
         factory { CurrencyFormatManager(get(), get(), get(), get(), get()) }
 
-        factory { AuthDataManager(get(), get(), get(), get(), get()) }
+        factory {
+            AuthDataManager(
+                prefs = get(),
+                authService = get(),
+                accessState = get(),
+                aesUtilWrapper = get(),
+                prngHelper = get(),
+                crashLogger = get()
+            )
+        }
 
         factory { LastTxUpdateDateOnSettingsService(get()) as LastTxUpdater }
 
@@ -308,7 +317,8 @@ val coreModule = applicationContext {
         AccessStateImpl(
             context = get(),
             prefs = get(),
-            rxBus = get()
+            rxBus = get(),
+            crashLogger = get()
         )
     }.bind(AccessState::class)
 

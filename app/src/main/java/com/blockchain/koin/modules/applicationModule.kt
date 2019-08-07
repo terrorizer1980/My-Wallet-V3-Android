@@ -44,6 +44,7 @@ import piuk.blockchain.android.ui.home.MainPresenter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.login.ManualPairingPresenter
 import piuk.blockchain.android.ui.onboarding.OnBoardingStarter
+import piuk.blockchain.android.ui.onboarding.OnboardingPresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.SendView
@@ -151,7 +152,8 @@ val applicationModule = applicationContext {
                 xlmDataManager = get(),
                 environmentSettings = get(),
                 exchangeRates = get(),
-                paxAccount = get("pax")
+                paxAccount = get("pax"),
+                crashLogger = get()
             )
         }
 
@@ -222,7 +224,8 @@ val applicationModule = applicationContext {
                 pitFeatureFlag = get("ff_pit_linking"),
                 pitLinking = get(),
                 nabuDataManager = get(),
-                nabuToken = get()
+                nabuToken = get(),
+                crashLogger = get()
             )
         }
 
@@ -250,7 +253,8 @@ val applicationModule = applicationContext {
                 accessState = get(),
                 stringUtils = get(),
                 authDataManager = get(),
-                payloadDataManager = get()
+                payloadDataManager = get(),
+                crashLogger = get()
             )
         }
 
@@ -417,6 +421,14 @@ val applicationModule = applicationContext {
             )
         }
 
+        factory {
+            OnboardingPresenter(
+                fingerprintHelper = get(),
+                accessState = get(),
+                settingsDataManager = get()
+                )
+        }
+
         factory { DeepLinkPersistence(get()) }
 
         factory { ConfirmPaymentPresenter() }
@@ -517,17 +529,18 @@ val applicationModule = applicationContext {
 
         factory {
             PinEntryPresenter(
-                mAuthDataManager = get(),
+                authDataManager = get(),
                 appUtil = get(),
                 prefs = get(),
-                mPayloadDataManager = get(),
-                mStringUtils = get(),
-                mFingerprintHelper = get(),
-                mAccessState = get(),
+                payloadDataManager = get(),
+                stringUtils = get(),
+                fingerprintHelper = get(),
+                accessState = get(),
                 walletOptionsDataManager = get(),
                 environmentSettings = get(),
                 prngFixer = get(),
-                mobileNoticeRemoteConfig = get()
+                mobileNoticeRemoteConfig = get(),
+                crashLogger = get()
             )
         }
 

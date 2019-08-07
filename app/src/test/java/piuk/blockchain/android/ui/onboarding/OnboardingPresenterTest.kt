@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.onboarding
 
-import android.content.Intent
 import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
@@ -14,7 +13,6 @@ import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
-import piuk.blockchain.android.ui.onboarding.OnboardingActivity.EXTRAS_EMAIL_ONLY
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -30,25 +28,26 @@ class OnboardingPresenterTest {
 
     @Before
     fun setUp() {
-        subject = OnboardingPresenter(mockFingerprintHelper, mockAccessState, mockSettingsDataManager)
+        subject = OnboardingPresenter(
+            mockFingerprintHelper,
+            mockAccessState,
+            mockSettingsDataManager
+        )
         subject.initView(mockActivity)
     }
 
     @Test
     fun onViewReadySettingsFailureEmailOnly() {
         // Arrange
-        val intent: Intent = mock()
-        whenever(intent.getBooleanExtra(EXTRAS_EMAIL_ONLY, false)).thenReturn(true)
-        whenever(intent.hasExtra(EXTRAS_EMAIL_ONLY)).thenReturn(true)
-        whenever(mockActivity.pageIntent).thenReturn(intent)
+        whenever(mockActivity.isEmailOnly).thenReturn(true)
         whenever(mockSettingsDataManager.getSettings()).thenReturn(Observable.error { Throwable() })
         // Act
         subject.onViewReady()
         // Assert
         verify(mockSettingsDataManager).getSettings()
         verifyNoMoreInteractions(mockSettingsDataManager)
-        verify(mockActivity).pageIntent
         verify(mockActivity).showEmailPrompt()
+        verify(mockActivity).isEmailOnly
         verifyNoMoreInteractions(mockActivity)
     }
 
@@ -58,6 +57,7 @@ class OnboardingPresenterTest {
         val mockSettings: Settings = mock()
         whenever(mockSettingsDataManager.getSettings()).thenReturn(Observable.just(mockSettings))
         whenever(mockFingerprintHelper.isHardwareDetected()).thenReturn(true)
+
         // Act
         subject.onViewReady()
         // Assert
@@ -65,8 +65,8 @@ class OnboardingPresenterTest {
         verifyNoMoreInteractions(mockSettingsDataManager)
         verify(mockFingerprintHelper).isHardwareDetected()
         verifyNoMoreInteractions(mockFingerprintHelper)
-        verify(mockActivity).pageIntent
         verify(mockActivity).showFingerprintPrompt()
+        verify(mockActivity).isEmailOnly
         verifyNoMoreInteractions(mockActivity)
     }
 
@@ -83,8 +83,8 @@ class OnboardingPresenterTest {
         verifyNoMoreInteractions(mockSettingsDataManager)
         verify(mockFingerprintHelper).isHardwareDetected()
         verifyNoMoreInteractions(mockFingerprintHelper)
-        verify(mockActivity).pageIntent
         verify(mockActivity).showEmailPrompt()
+        verify(mockActivity).isEmailOnly
         verifyNoMoreInteractions(mockActivity)
     }
 
@@ -111,7 +111,7 @@ class OnboardingPresenterTest {
     fun onEnableFingerprintClickedNoPinFound() {
         // Arrange
         whenever(mockFingerprintHelper.isFingerprintAvailable()).thenReturn(true)
-        whenever(mockAccessState.pin).thenReturn(null)
+        whenever(mockAccessState.pin).thenReturn("")
         // Act
         subject.onEnableFingerprintClicked()
         // Assert
@@ -182,7 +182,7 @@ class OnboardingPresenterTest {
         val email = "EMAIL"
         subject.email = email
         // Act
-        val result = subject.getEmail()
+        val result = subject.email
         // Assert
         result shouldEqual email
     }

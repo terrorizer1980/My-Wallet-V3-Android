@@ -348,7 +348,7 @@ class EthDataManager(
 
                 if (ethWallet == null || ethWallet.account == null || !ethWallet.account.isCorrect) {
                     try {
-                        val masterKey = payloadManager.payload.hdWallets[0].masterKey
+                        val masterKey = payloadManager.payload?.hdWallets?.get(0)?.masterKey
                         ethWallet = EthereumWallet(masterKey, defaultLabel, defaultPaxLabel)
                         needsSave = true
                     } catch (e: HDWalletException) {

@@ -93,6 +93,7 @@ public class PayloadManager {
         this.balanceManagerBch = balanceManagerBch;
     }
 
+    @Nullable
     public Wallet getPayload() {
         return walletBaseBody != null ? walletBaseBody.getWalletBody() : null;
     }

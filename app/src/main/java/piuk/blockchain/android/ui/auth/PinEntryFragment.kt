@@ -52,9 +52,11 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.debug.DebugOptionsBottomDialog
 import piuk.blockchain.android.ui.home.MobileNoticeDialogFragment
+import piuk.blockchain.androidcoreui.utils.AppUtil
 
 internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(), PinEntryView {
 
@@ -256,10 +258,15 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
                 .setPositiveButton(R.string.exit) { dialog, whichButton -> presenter.clearLoginState() }
                 .setNegativeButton(R.string.logout) { dialog, which ->
                     presenter.clearLoginState()
-                    presenter.appUtil.restartApp(LauncherActivity::class.java)
+                    restartApp()
                 }
                 .show()
         }
+    }
+
+    fun restartApp() {
+        val appUtil: AppUtil = get()
+        appUtil.restartApp(LauncherActivity::class.java)
     }
 
     override fun clearPinBoxes() {
@@ -329,7 +336,7 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
                 .setView(ViewUtils.getAlertDialogPaddedView(context, password))
                 .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel) { dialog, whichButton ->
-                    presenter.appUtil.restartApp(LauncherActivity::class.java)
+                    restartApp()
                 }
                 .setPositiveButton(android.R.string.ok) { dialog, whichButton ->
                     val pw = password.text.toString()
@@ -574,7 +581,6 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
 
     companion object {
         private const val KEY_SHOW_SWIPE_HINT = "show_swipe_hint"
-        private val PIN_LENGTH = 4
         private val HANDLER = Handler()
 
         fun newInstance(showSwipeHint: Boolean): PinEntryFragment {
