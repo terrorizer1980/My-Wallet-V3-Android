@@ -103,6 +103,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import timber.log.Timber
+import java.lang.NullPointerException
 import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -227,7 +228,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
         setSelectedCurrency(currencyState.cryptoCurrency)
 
-        if (!handlingActivityResult) presenter.onResume()
+        if (!handlingActivityResult)
+            presenter.onResume()
 
         handlingActivityResult = false
 
@@ -409,7 +411,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         if (resultCode != Activity.RESULT_OK) return
         resetPitAddressState()
         when (requestCode) {
-            MainActivity.SCAN_URI -> presenter.handleURIScan(data?.getStringExtra(CaptureActivity.SCAN_RESULT))
             SCAN_PRIVX -> presenter.handlePrivxScan(data?.getStringExtra(CaptureActivity.SCAN_RESULT))
             REQUEST_CODE_BTC_SENDING -> presenter.selectSendingAccount(unpackAccountResult(data))
             REQUEST_CODE_BTC_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
@@ -452,7 +453,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         // chooses to edit address populated via QR
         toContainer.toAddressEditTextView.textChanges()
             .doOnNext {
-                if (activity!!.currentFocus === toContainer.toAddressEditTextView) {
+                if (requireActivity().currentFocus === toContainer.toAddressEditTextView) {
                     presenter.clearReceivingObject()
                 }
             }
@@ -544,10 +545,10 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     private fun handleIncomingScan(): Boolean {
         if (arguments != null) {
-            val scanData = arguments!!.getString(ARGUMENT_SCAN_DATA)
+            val scanData = arguments.scanData
             if (scanData != null) {
                 handlingActivityResult = true
-                presenter.handleURIScan(scanData)
+                presenter.handleURIScan(scanData, currencyState.cryptoCurrency)
                 return true
             }
         }
@@ -1189,7 +1190,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
-    internal fun startBitPayTimer(expiryDateGmt: Date) {
+    private fun startBitPayTimer(expiryDateGmt: Date) {
         val calendar = Calendar.getInstance()
         val timeZone = calendar.timeZone
         val offset = timeZone.getOffset(expiryDateGmt.time)
@@ -1354,7 +1355,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     companion object {
         const val SCAN_PRIVX = 2011
-        const val ARGUMENT_SCAN_DATA = "scan_data"
+        private const val ARGUMENT_SCAN_DATA = "scan_data"
 
         private const val REQUEST_CODE_BTC_RECEIVING = 911
         private const val REQUEST_CODE_BTC_SENDING = 912
@@ -1362,13 +1363,17 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         private const val REQUEST_CODE_BCH_SENDING = 914
         private const val REQUEST_CODE_MEMO = 915
 
-        fun newInstance(scanData: String?): SendFragment {
+        fun newInstance(scanUri: String?): SendFragment {
             val fragment = SendFragment()
             fragment.arguments = Bundle().apply {
-                putString(ARGUMENT_SCAN_DATA, scanData)
+                scanData = scanUri
             }
             return fragment
         }
+
+        private var Bundle?.scanData: String?
+            get() = this?.getString(ARGUMENT_SCAN_DATA)
+            set(v) = this?.putString(ARGUMENT_SCAN_DATA, v) ?: throw NullPointerException()
     }
 
     override fun isPitEnabled(enabled: Boolean) {

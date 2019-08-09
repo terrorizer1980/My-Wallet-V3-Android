@@ -134,7 +134,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
         delegate.onCurrencySelected()
     }
 
-    override fun handleURIScan(untrimmedscanData: String?) {
+    override fun handleURIScan(untrimmedscanData: String, defaultCurrency: CryptoCurrency) {
         if (untrimmedscanData == null)
             return
 
@@ -212,7 +212,13 @@ internal class PerCurrencySendPresenter<View : SendView>(
                     when (selectedCrypto) {
                         CryptoCurrency.ETHER -> onCurrencySelected(CryptoCurrency.ETHER)
                         CryptoCurrency.PAX -> onCurrencySelected(CryptoCurrency.PAX)
-                        else -> onCurrencySelected(CryptoCurrency.ETHER) // Default to ETH
+                        else -> {
+                            if (defaultCurrency in listOf(CryptoCurrency.ETHER, CryptoCurrency.PAX)) {
+                                onCurrencySelected(defaultCurrency)
+                            } else {
+                                onCurrencySelected(CryptoCurrency.ETHER) // Default to ETH
+                            }
+                        }
                     }
 
                     address = scanData
