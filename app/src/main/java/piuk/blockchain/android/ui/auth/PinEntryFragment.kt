@@ -37,7 +37,6 @@ import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.connectivity.ConnectivityStatus
 import piuk.blockchain.android.databinding.FragmentPinEntryBinding
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.customviews.PinEntryKeypad
 import piuk.blockchain.android.ui.fingerprint.FingerprintDialog
 import piuk.blockchain.android.ui.fingerprint.FingerprintStage
@@ -80,10 +79,6 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
         get() = presenter.isForValidatingPinForResult
 
     private val compositeDisposable = CompositeDisposable()
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

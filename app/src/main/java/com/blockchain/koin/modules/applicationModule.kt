@@ -49,6 +49,7 @@ import piuk.blockchain.android.ui.onboarding.OnBoardingStarter
 import piuk.blockchain.android.ui.onboarding.OnboardingPresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
+import piuk.blockchain.android.ui.recover.RecoverFundsPresenter
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.PerCurrencySendPresenter
 import piuk.blockchain.android.ui.send.external.SendPresenter
@@ -626,4 +627,6 @@ val applicationModule = applicationContext {
     bean { DynamicFeeCache() }
 
     factory { CoinSelectionRemoteConfig(get()) }
+
+    factory { RecoverFundsPresenter() }
 }

@@ -74,11 +74,7 @@ public interface PresenterComponent {
 
     void inject(@NotNull PasswordRequiredActivity passwordRequiredActivity);
 
-    void inject(@NotNull PinEntryFragment pinEntryFragment);
-
     void inject(@NotNull AccountEditActivity accountEditActivity);
-
-    void inject(@NotNull RecoverFundsActivity recoverFundsActivity);
 
     void inject(@NotNull OnboardingActivity onboardingActivity);
 
