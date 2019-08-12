@@ -213,7 +213,7 @@ class MainPresenterTest {
 
         // Assert
         verify(view, never()).launchSwap("USD", CryptoCurrency.ETHER)
-        verify(view).launchKyc(CampaignType.Swap)
-        verify(view, never()).launchSwapIntro()
+        verify(view, never()).launchKyc(CampaignType.Swap)
+        verify(view).launchSwapIntro()
     }
 }

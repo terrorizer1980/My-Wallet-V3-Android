@@ -17,8 +17,8 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 import java.util.Locale
 
-internal class RecoverFundsActivity
-    : BaseMvpActivity<RecoverFundsView, RecoverFundsPresenter>(),
+internal class RecoverFundsActivity :
+    BaseMvpActivity<RecoverFundsView, RecoverFundsPresenter>(),
     RecoverFundsView {
 
     private var progressDialog: MaterialProgressDialog? = null
@@ -56,7 +56,8 @@ internal class RecoverFundsActivity
         return true
     }
 
-    override fun startLogoutTimer() { /* No-op */ }
+    override fun startLogoutTimer() { /* No-op */
+    }
 
     override fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
         ToastCustom.makeText(this, getString(message), ToastCustom.LENGTH_SHORT, toastType)

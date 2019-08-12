@@ -374,6 +374,7 @@ class MainPresenter internal constructor(
         crashLogger.logException(throwable)
         view.showMetadataNodeFailure()
     }
+
     /**
      * All of these calls are allowed to fail here, we're just caching them in advance because we
      * can.
@@ -499,7 +500,6 @@ class MainPresenter internal constructor(
     }
 
     internal fun startSwapOrKyc(targetCurrency: CryptoCurrency? /* = null*/) {
-        val hideSwapIntro = true
         val nabuUser = nabuToken.fetchNabuToken().flatMap {
             nabuDataManager.getUser(it)
         }
@@ -513,7 +513,7 @@ class MainPresenter internal constructor(
                 } else {
                     if (nabuUser.kycState == KycState.Rejected ||
                         nabuUser.kycState == KycState.UnderReview ||
-                        prefs.swapIntroCompleted || hideSwapIntro
+                        prefs.swapIntroCompleted
                     )
                         view.launchKyc(CampaignType.Swap)
                     else
