@@ -80,11 +80,7 @@ class AppUtil(
     }
 
     companion object {
-
         private const val REGEX_UUID =
             "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-
-        val isBuySellPermitted: Boolean
-            get() = AndroidUtils.is19orHigher()
     }
 }

@@ -75,15 +75,6 @@ public class BlockchainApplication extends Application implements FrameworkInter
     CrashLogger crashLogger;
 
     @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-
-        if (!AndroidUtils.is21orHigher()) {
-            MultiDex.install(base);
-        }
-    }
-
-    @Override
     public void onCreate() {
 
         if (MissingSplitsManagerFactory.create(this).disableAppIfMissingRequiredSplits()) {

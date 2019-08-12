@@ -260,45 +260,14 @@ class BalancePresenterTest {
     }
 
     @Test
-    fun `onGetBitcoinClicked API less than 19 canBuy returns true`() {
-        // Arrange
-        whenever(buyDataManager.canBuy).thenReturn(Observable.just(true))
-        whenever(view.shouldShowBuy()).thenReturn(false)
-        // Act
-        subject.onGetBitcoinClicked()
-        // Assert
-        verify(buyDataManager).canBuy
-        verifyNoMoreInteractions(buyDataManager)
-        verify(view).shouldShowBuy()
-        verify(view).startReceiveFragmentBtc()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `onGetBitcoinClicked API less than 19 canBuy returns false`() {
-        // Arrange
-        whenever(buyDataManager.canBuy).thenReturn(Observable.just(false))
-        whenever(view.shouldShowBuy()).thenReturn(false)
-        // Act
-        subject.onGetBitcoinClicked()
-        // Assert
-        verify(buyDataManager).canBuy
-        verifyNoMoreInteractions(buyDataManager)
-        verify(view).startReceiveFragmentBtc()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
     fun `onGetBitcoinClicked canBuy returns true`() {
         // Arrange
         whenever(buyDataManager.canBuy).thenReturn(Observable.just(true))
-        whenever(view.shouldShowBuy()).thenReturn(true)
         // Act
         subject.onGetBitcoinClicked()
         // Assert
         verify(buyDataManager).canBuy
         verifyNoMoreInteractions(buyDataManager)
-        verify(view).shouldShowBuy()
         verify(view).startBuyActivity()
         verifyNoMoreInteractions(view)
     }
@@ -307,7 +276,6 @@ class BalancePresenterTest {
     fun `onGetBitcoinClicked canBuy returns false`() {
         // Arrange
         whenever(buyDataManager.canBuy).thenReturn(Observable.just(false))
-        whenever(view.shouldShowBuy()).thenReturn(true)
         // Act
         subject.onGetBitcoinClicked()
         // Assert

@@ -246,7 +246,7 @@ class BalancePresenter(
             buyDataManager.canBuy
                 .subscribe(
                     {
-                        if (it && view.shouldShowBuy()) {
+                        if (it) {
                             view.startBuyActivity()
                         } else {
                             view.startReceiveFragmentBtc()

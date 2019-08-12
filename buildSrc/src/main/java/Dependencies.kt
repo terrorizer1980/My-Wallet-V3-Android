@@ -3,7 +3,7 @@
 object Versions {
 
     // Release info
-    const val minSdk = 19
+    const val minSdk = 21
     const val targetSdk = 28
     const val compileSdk = 27
     const val versionCode = 466
@@ -80,7 +80,7 @@ object Versions {
 
     // Third Party SDKs
     const val onfido = "4.3.0"
-    const val veriff = "2.3.5"
+    const val veriff = "2.4.2"
     const val probity = "1.0.0"
 
     // Logging

@@ -17,7 +17,6 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import piuk.blockchain.androidcoreui.ui.base.BaseDialogFragment
 import piuk.blockchain.androidcoreui.ui.base.UiState
-import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 
@@ -57,10 +56,8 @@ class ConfirmPaymentDialog : BaseDialogFragment<ConfirmPaymentView, ConfirmPayme
         dialog.window!!.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
-        if (AndroidUtils.is21orHigher()) {
-            dialog.window!!.statusBarColor =
-                ContextCompat.getColor(activity!!, R.color.primary_navy_dark)
-        }
+        dialog.window!!.statusBarColor =
+            ContextCompat.getColor(activity!!, R.color.primary_navy_dark)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -10,8 +10,6 @@ import java.util.Locale
 
 interface DashboardView : View {
 
-    val shouldShowBuy: Boolean
-
     val locale: Locale
 
     fun updatePieChartState(chartsState: PieChartsState)

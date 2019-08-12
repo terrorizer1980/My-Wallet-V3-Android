@@ -26,7 +26,6 @@ import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -117,11 +116,7 @@ class KycMobileEntryFragment : BaseFragment<KycMobileEntryView, KycMobileEntryPr
     }
 
     override fun preFillPhoneNumber(phoneNumber: String) {
-        val formattedNumber = if (AndroidUtils.is21orHigher()) {
-            PhoneNumberUtils.formatNumber(phoneNumber, Locale.getDefault().isO3Country)
-        } else {
-            PhoneNumberUtils.formatNumber(phoneNumber)
-        }
+        val formattedNumber = PhoneNumberUtils.formatNumber(phoneNumber, Locale.getDefault().isO3Country)
         editTextPhoneNumber.setText(formattedNumber)
     }
 

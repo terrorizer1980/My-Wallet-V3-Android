@@ -144,8 +144,6 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
         currency_header?.close()
     }
 
-    override fun shouldShowBuy() = AndroidUtils.is19orHigher()
-
     override fun setupAccountsAdapter(accountsList: List<ItemAccount>) {
         if (accountsAdapter == null) {
             accountsAdapter = AccountsAdapter(
@@ -269,11 +267,7 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
             CryptoCurrency.BTC -> {
                 button_get_bitcoin.setText(R.string.onboarding_get_bitcoin)
                 button_get_bitcoin.setOnClickListener {
-                    if (shouldShowBuy()) {
-                        presenter.onGetBitcoinClicked()
-                    } else {
-                        navigator().gotoReceiveFor(CryptoCurrency.BTC)
-                    }
+                    presenter.onGetBitcoinClicked()
                 }
                 description.setText(R.string.transaction_occur_when_bitcoin)
                 pax_no_transactions.gone()

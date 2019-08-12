@@ -214,12 +214,7 @@ class MainPresenter internal constructor(
             .subscribe({
                 checkKycStatus()
                 setDebugExchangeVisiblity()
-                if (AppUtil.isBuySellPermitted) {
-                    initBuyService()
-                } else {
-                    view.setBuySellEnabled(enabled = false, useWebView = false)
-                }
-
+                initBuyService()
                 rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
 
                 checkForPendingLinks()
