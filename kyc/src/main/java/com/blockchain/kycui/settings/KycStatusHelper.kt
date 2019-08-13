@@ -8,7 +8,7 @@ import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.UserState
 import com.blockchain.kyc.services.nabu.TierService
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction

@@ -4,7 +4,7 @@ import com.blockchain.BaseKycPresenter
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuApiException
 import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.veriff.VeriffApplicantAndToken

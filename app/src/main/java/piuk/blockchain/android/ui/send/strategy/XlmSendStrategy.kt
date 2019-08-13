@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import com.blockchain.fees.FeeType
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.State
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.XlmFeesFetcher

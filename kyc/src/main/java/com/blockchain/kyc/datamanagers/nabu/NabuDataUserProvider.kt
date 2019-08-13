@@ -1,7 +1,7 @@
 package com.blockchain.kyc.datamanagers.nabu
 
 import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import io.reactivex.Single
 
 interface NabuDataUserProvider {

@@ -17,9 +17,9 @@ import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.kyc.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.models.nabu.WalletMercuryLink
-import com.blockchain.nabu.models.NabuOfflineTokenRequest
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.NabuSessionTokenResponse
+import com.blockchain.swap.nabu.models.NabuOfflineTokenRequest
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.NabuSessionTokenResponse
 import com.blockchain.veriff.VeriffApplicantAndToken
 import io.reactivex.Completable
 import io.reactivex.Single

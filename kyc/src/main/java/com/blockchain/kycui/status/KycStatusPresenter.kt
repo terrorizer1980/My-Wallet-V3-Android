@@ -4,7 +4,7 @@ import com.blockchain.BaseKycPresenter
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kycui.settings.KycStatusHelper
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.notifications.NotificationTokenManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign

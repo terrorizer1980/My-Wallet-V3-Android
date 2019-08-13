@@ -1,8 +1,8 @@
 package com.blockchain.kycui.invalidcountry
 
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.mapToMetadata
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.mapToMetadata
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

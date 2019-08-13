@@ -9,9 +9,9 @@ import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.UserState
 import com.blockchain.kyc.util.toISO8601DateString
 import com.blockchain.metadata.MetadataRepository
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.metadata.NabuCredentialsMetadata
-import com.blockchain.nabu.models.mapFromMetadata
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.metadata.NabuCredentialsMetadata
+import com.blockchain.swap.nabu.models.mapFromMetadata
 import com.blockchain.testutils.date
 import com.blockchain.validOfflineToken
 import com.blockchain.validOfflineTokenMetadata

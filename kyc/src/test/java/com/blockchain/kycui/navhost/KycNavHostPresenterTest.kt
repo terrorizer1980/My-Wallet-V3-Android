@@ -14,7 +14,7 @@ import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.reentry.ReentryDecision
 import com.blockchain.kycui.reentry.ReentryDecisionKycNavigator
 import com.blockchain.kycui.reentry.ReentryPoint
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.sunriver.SunriverCampaignSignUp
 import com.blockchain.validOfflineToken
 import com.nhaarman.mockito_kotlin.any

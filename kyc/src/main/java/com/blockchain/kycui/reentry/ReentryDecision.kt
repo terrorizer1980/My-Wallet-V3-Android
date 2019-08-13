@@ -4,7 +4,7 @@ import androidx.navigation.NavDirections
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kycui.navhost.toProfileModel
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import io.reactivex.Single
 import piuk.blockchain.kyc.BuildConfig
 import piuk.blockchain.kyc.KycNavXmlDirections

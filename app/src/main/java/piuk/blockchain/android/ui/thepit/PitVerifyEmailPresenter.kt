@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.thepit
 
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign

@@ -3,7 +3,7 @@ package com.blockchain.kyc.services.nabu
 import com.blockchain.kyc.api.nabu.Nabu
 import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.UpdateCoinifyTraderIdRequest
-import com.blockchain.nabu.Authenticator
+import com.blockchain.swap.nabu.Authenticator
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single

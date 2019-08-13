@@ -10,19 +10,19 @@ import com.blockchain.koin.modules.appProperties
 import com.blockchain.koin.modules.applicationModule
 import com.blockchain.koin.modules.environmentModule
 import com.blockchain.koin.modules.featureFlagsModule
-import com.blockchain.koin.modules.homeBrewModule
 import com.blockchain.koin.modules.keys
 import com.blockchain.koin.modules.localShapeShift
 import com.blockchain.koin.modules.morphUiModule
 import com.blockchain.koin.modules.moshiModule
 import com.blockchain.koin.modules.nabuUrlModule
 import com.blockchain.koin.modules.serviceModule
-import com.blockchain.koin.modules.shapeShiftModule
+import com.blockchain.swap.koin.shapeShiftModule
 import com.blockchain.koin.modules.urls
 import com.blockchain.koin.modules.xlmModule
 import com.blockchain.lockbox.koin.lockboxModule
 import com.blockchain.network.modules.apiModule
 import com.blockchain.notifications.koin.notificationModule
+import com.blockchain.swap.koin.swapModule
 import org.koin.android.ext.android.startKoin
 import org.koin.log.Logger
 import org.koin.standalone.StandAloneContext
@@ -51,7 +51,7 @@ object KoinStarter {
                 coreUiModule,
                 dashboardAnnouncementsModule,
                 environmentModule,
-                homeBrewModule,
+                swapModule,
                 kycCoinifyModule,
                 kycModule,
                 kycNabuModule,

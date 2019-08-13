@@ -11,7 +11,7 @@ import com.blockchain.kycui.navhost.KycProgressListener
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.navigate
-import com.blockchain.nabu.StartBuySell
+import com.blockchain.swap.nabu.StartBuySell
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks

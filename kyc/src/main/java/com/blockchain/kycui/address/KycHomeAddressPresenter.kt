@@ -6,7 +6,7 @@ import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
 import com.blockchain.kycui.address.models.AddressModel
 import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single

@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.buysell.confirmation.sell
 
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.logging.LastTxUpdater
-import com.blockchain.nabu.extensions.fromIso8601ToUtc
+import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.crashlytics.android.answers.PurchaseEvent
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Observable

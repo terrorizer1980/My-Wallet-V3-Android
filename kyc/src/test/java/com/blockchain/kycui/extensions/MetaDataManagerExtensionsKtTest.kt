@@ -2,7 +2,7 @@ package com.blockchain.kycui.extensions
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.exceptions.MetadataNotFoundException
-import com.blockchain.nabu.metadata.NabuCredentialsMetadata
+import com.blockchain.swap.nabu.metadata.NabuCredentialsMetadata
 import com.blockchain.serialization.toMoshiJson
 import com.google.common.base.Optional
 import com.nhaarman.mockito_kotlin.whenever

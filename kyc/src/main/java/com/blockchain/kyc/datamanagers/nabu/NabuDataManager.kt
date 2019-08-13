@@ -13,9 +13,9 @@ import com.blockchain.kyc.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.services.nabu.NabuService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.NabuSessionTokenResponse
-import com.blockchain.nabu.stores.NabuSessionTokenStore
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.NabuSessionTokenResponse
+import com.blockchain.swap.nabu.stores.NabuSessionTokenStore
 import com.blockchain.utils.Optional
 import com.blockchain.veriff.VeriffApplicantAndToken
 import info.blockchain.wallet.exceptions.ApiException

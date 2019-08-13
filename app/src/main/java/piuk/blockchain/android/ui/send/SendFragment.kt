@@ -39,7 +39,7 @@ import android.widget.Spinner
 import com.blockchain.annotations.CommonCode
 import com.blockchain.balance.errorIcon
 import com.blockchain.koin.injectActivity
-import com.blockchain.nabu.extensions.fromIso8601ToUtc
+import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.ui.MinBalanceExplanationDialog
 import com.blockchain.transactions.Memo

@@ -12,7 +12,7 @@ import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.UserState
 import com.blockchain.kyc.models.nabu.tiers
 import com.blockchain.kyc.services.nabu.TierService
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.validOfflineToken
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.wallet.api.data.Settings

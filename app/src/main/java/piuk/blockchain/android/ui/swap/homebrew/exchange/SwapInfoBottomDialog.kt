@@ -8,7 +8,7 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.blockchain.nabu.StartKyc
+import com.blockchain.swap.nabu.StartKyc
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks

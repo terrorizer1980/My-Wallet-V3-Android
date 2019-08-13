@@ -12,7 +12,7 @@ import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.profile.models.ProfileModel
 import com.blockchain.kycui.reentry.KycNavigator
 import com.blockchain.kycui.reentry.ReentryDecision
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.sunriver.SunriverCampaignSignUp
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers

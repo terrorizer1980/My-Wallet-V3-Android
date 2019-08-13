@@ -6,7 +6,7 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.datamanagers.onfido.OnfidoDataManager
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.models.onfido.ApplicantResponse
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.validOfflineToken
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.times

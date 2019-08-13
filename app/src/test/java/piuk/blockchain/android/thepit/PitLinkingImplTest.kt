@@ -5,8 +5,8 @@ import com.blockchain.annotations.CommonCode
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuSettings
 import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.sunriver.XlmDataManager
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.argumentCaptor

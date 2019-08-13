@@ -46,7 +46,7 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager
+import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState

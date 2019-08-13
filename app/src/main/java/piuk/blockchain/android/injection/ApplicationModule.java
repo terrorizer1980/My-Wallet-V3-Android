@@ -52,7 +52,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.payments.SendDataManager;
 import piuk.blockchain.androidcore.data.settings.EmailSyncUpdater;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
-import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager;
+import com.blockchain.swap.shapeshift.ShapeShiftDataManager;
 import piuk.blockchain.androidcore.data.transactions.TransactionListStore;
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager;
 import piuk.blockchain.androidcore.utils.AESUtilWrapper;

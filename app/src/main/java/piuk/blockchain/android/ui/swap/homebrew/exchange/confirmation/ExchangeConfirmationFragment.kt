@@ -15,8 +15,8 @@ import com.blockchain.balance.colorRes
 import com.blockchain.koin.injectActivity
 import com.blockchain.kycui.navhost.KycNavHostActivity
 import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.morph.exchange.mvi.ExchangeViewState
-import com.blockchain.morph.exchange.mvi.Quote
+import com.blockchain.swap.common.exchange.mvi.ExchangeViewState
+import com.blockchain.swap.nabu.service.Quote
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeModel
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeViewModelProvider
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewHostActivityListener

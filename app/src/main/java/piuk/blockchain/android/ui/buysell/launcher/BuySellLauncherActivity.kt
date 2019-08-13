@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.status.KycStatusActivity
-import com.blockchain.nabu.StartBuySell
-import com.blockchain.nabu.StartKycForBuySell
+import com.blockchain.swap.nabu.StartBuySell
+import com.blockchain.swap.nabu.StartKycForBuySell
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import org.koin.android.ext.android.get

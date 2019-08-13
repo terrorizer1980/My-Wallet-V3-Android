@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements.popups
 
 import android.os.Bundle
-import com.blockchain.nabu.StartKycAirdrop
+import com.blockchain.swap.nabu.StartKycAirdrop
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost

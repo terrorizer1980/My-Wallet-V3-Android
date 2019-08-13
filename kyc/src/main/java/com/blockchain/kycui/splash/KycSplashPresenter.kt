@@ -6,7 +6,7 @@ import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.reentry.KycNavigator
 import com.blockchain.kycui.settings.KycStatusHelper
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import info.blockchain.wallet.exceptions.ApiException
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

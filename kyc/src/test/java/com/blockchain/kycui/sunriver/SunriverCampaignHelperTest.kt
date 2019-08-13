@@ -6,8 +6,8 @@ import com.blockchain.kyc.models.nabu.CampaignData
 import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.UserState
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify

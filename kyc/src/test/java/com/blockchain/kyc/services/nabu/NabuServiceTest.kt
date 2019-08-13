@@ -26,7 +26,7 @@ import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.models.nabu.UserState
 import com.blockchain.kyc.models.nabu.UserStateAdapter
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.testutils.MockedRetrofitTest
 import com.blockchain.testutils.getStringFromResource
 import com.blockchain.testutils.mockWebServerInit

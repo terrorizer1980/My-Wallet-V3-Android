@@ -5,7 +5,8 @@ import io.reactivex.Observable
 import com.blockchain.data.datastores.PersistentStore
 import com.blockchain.utils.Optional
 
-class SettingsMemoryStore : SettingsStore, PersistentStore<Settings> {
+class SettingsMemoryStore : SettingsStore,
+    PersistentStore<Settings> {
 
     private var settings: Optional<Settings> = Optional.None
 

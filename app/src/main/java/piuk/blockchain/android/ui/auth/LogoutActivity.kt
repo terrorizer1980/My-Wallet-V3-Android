@@ -15,7 +15,7 @@ import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.services.BuyConditions
 import piuk.blockchain.androidcore.data.access.AccessState
-import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager
+import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 

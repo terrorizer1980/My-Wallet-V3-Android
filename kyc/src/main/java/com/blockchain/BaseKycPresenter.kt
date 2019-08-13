@@ -1,6 +1,6 @@
 package com.blockchain
 
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.base.View

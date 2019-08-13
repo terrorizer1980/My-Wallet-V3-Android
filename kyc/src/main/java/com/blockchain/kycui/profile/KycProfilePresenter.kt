@@ -8,11 +8,11 @@ import com.blockchain.kyc.util.toISO8601DateString
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.profile.models.ProfileModel
 import com.blockchain.metadata.MetadataRepository
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.metadata.NabuCredentialsMetadata
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.mapFromMetadata
-import com.blockchain.nabu.models.mapToMetadata
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.metadata.NabuCredentialsMetadata
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.mapFromMetadata
+import com.blockchain.swap.nabu.models.mapToMetadata
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single

@@ -1,8 +1,8 @@
 package com.blockchain.kycui.address
 
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.nabu.CurrentTier
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.CurrentTier
+import com.blockchain.swap.nabu.NabuToken
 import io.reactivex.Single
 
 internal class CurrentTierAdapter(

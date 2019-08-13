@@ -15,9 +15,9 @@ import com.blockchain.kycui.complete.ApplicationCompleteFragment
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.navhost.models.KycStep
 import com.blockchain.kycui.splash.KycSplashFragment
-import com.blockchain.nabu.StartKyc
-import com.blockchain.nabu.StartKycAirdrop
-import com.blockchain.nabu.StartKycForBuySell
+import com.blockchain.swap.nabu.StartKyc
+import com.blockchain.swap.nabu.StartKycAirdrop
+import com.blockchain.swap.nabu.StartKycForBuySell
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy

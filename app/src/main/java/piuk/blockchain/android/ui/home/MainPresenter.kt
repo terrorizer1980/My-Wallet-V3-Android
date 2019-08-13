@@ -12,7 +12,7 @@ import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.kycui.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
 import info.blockchain.balance.CryptoCurrency
@@ -56,7 +56,7 @@ import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
-import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager
+import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers

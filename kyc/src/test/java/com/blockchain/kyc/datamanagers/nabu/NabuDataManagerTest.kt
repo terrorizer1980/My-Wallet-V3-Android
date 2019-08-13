@@ -10,8 +10,8 @@ import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.models.wallet.RetailJwtResponse
 import com.blockchain.kyc.services.nabu.NabuService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.stores.NabuSessionTokenStore
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.stores.NabuSessionTokenStore
 import com.blockchain.utils.Optional
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify

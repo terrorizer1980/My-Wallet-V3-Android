@@ -7,7 +7,7 @@ import com.blockchain.balance.drawableResFilled
 import com.blockchain.kycui.navhost.models.CampaignType
 import com.blockchain.kycui.sunriver.SunriverCampaignHelper
 import com.blockchain.lockbox.data.LockboxDataManager
-import com.blockchain.nabu.CurrentTier
+import com.blockchain.swap.nabu.CurrentTier
 import com.blockchain.sunriver.ui.BaseAirdropBottomDialog
 import com.blockchain.sunriver.ui.ClaimFreeCryptoSuccessDialog
 import info.blockchain.balance.CryptoCurrency

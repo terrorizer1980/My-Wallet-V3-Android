@@ -1,8 +1,8 @@
 package com.blockchain.kycui.address
 
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.EthEligibility
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.EthEligibility
 import io.reactivex.Single
 
 class EligibilityForFreeEthAdapter(

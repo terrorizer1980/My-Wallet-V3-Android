@@ -1,9 +1,9 @@
 package com.blockchain.kycui.extensions
 
 import com.blockchain.exceptions.MetadataNotFoundException
-import com.blockchain.nabu.metadata.NabuCredentialsMetadata
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.mapFromMetadata
+import com.blockchain.swap.nabu.metadata.NabuCredentialsMetadata
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.mapFromMetadata
 import com.blockchain.serialization.fromMoshiJson
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers

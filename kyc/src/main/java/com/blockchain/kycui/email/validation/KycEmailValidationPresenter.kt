@@ -1,6 +1,6 @@
 package com.blockchain.kycui.email.validation
 
-import com.blockchain.nabu.NabuUserSync
+import com.blockchain.swap.nabu.NabuUserSync
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

@@ -3,8 +3,8 @@ package com.blockchain.kycui.invalidcountry
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kycui.countryselection.util.CountryDisplayModel
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.mapToMetadata
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.mapToMetadata
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever

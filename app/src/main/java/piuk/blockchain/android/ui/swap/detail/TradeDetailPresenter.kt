@@ -2,9 +2,9 @@ package piuk.blockchain.android.ui.swap.detail
 
 import android.content.res.Resources
 import com.blockchain.morph.CoinPair
-import com.blockchain.morph.trade.MorphTrade
-import com.blockchain.morph.trade.MorphTradeDataManager
-import com.blockchain.morph.trade.MorphTradeStatus
+import com.blockchain.swap.common.trade.MorphTrade
+import com.blockchain.swap.common.trade.MorphTradeDataManager
+import com.blockchain.swap.common.trade.MorphTradeStatus
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.formatWithUnit
 import io.reactivex.Observable

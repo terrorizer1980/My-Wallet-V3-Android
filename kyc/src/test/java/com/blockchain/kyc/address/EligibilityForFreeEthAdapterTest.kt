@@ -5,7 +5,7 @@ import com.blockchain.getBlankNabuUser
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.Tiers
 import com.blockchain.kycui.address.EligibilityForFreeEthAdapter
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.validOfflineToken
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Single
