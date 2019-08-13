@@ -135,27 +135,12 @@ class NabuService(retrofit: Retrofit) {
         sessionToken.authHeader
     ).wrapErrorMessage()
 
-    internal fun getOnfidoApiKey(
-        sessionToken: NabuSessionTokenResponse
-    ): Single<String> = service.getOnfidoApiKey(
-        sessionToken.authHeader
-    ).map { it.key }
-        .wrapErrorMessage()
-
     internal fun startVeriffSession(
         sessionToken: NabuSessionTokenResponse
     ): Single<VeriffApplicantAndToken> = service.startVeriffSession(
         sessionToken.authHeader
     ).map { VeriffApplicantAndToken(it.applicantId, it.token) }
         .wrapErrorMessage()
-
-    internal fun submitOnfidoVerification(
-        sessionToken: NabuSessionTokenResponse,
-        applicantId: String
-    ): Completable = service.submitVerification(
-        ApplicantIdRequest(applicantId),
-        sessionToken.authHeader
-    ).wrapErrorMessage()
 
     internal fun submitVeriffVerification(
         sessionToken: NabuSessionTokenResponse

@@ -7,7 +7,6 @@ import com.blockchain.kyc.models.nabu.NabuCountryResponse
 import com.blockchain.kyc.models.nabu.NabuJwt
 import com.blockchain.kyc.models.nabu.NabuStateResponse
 import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.kyc.models.nabu.OnfidoApiKey
 import com.blockchain.kyc.models.nabu.RecordCountryRequest
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressRequest
@@ -95,11 +94,6 @@ internal interface Nabu {
         @Body recordCountryRequest: RecordCountryRequest,
         @Header("authorization") authorization: String
     ): Completable
-
-    @GET(NABU_ONFIDO_API_KEY)
-    fun getOnfidoApiKey(
-        @Header("authorization") authorization: String
-    ): Single<OnfidoApiKey>
 
     /**
      * This is a GET, but it actually starts a veriff session on the server for historical reasons.

@@ -7,8 +7,8 @@ import com.blockchain.activities.StartOnboarding
 import com.blockchain.activities.StartSwap
 import com.blockchain.balance.TotalBalance
 import com.blockchain.balance.plus
-import com.blockchain.kycui.settings.KycStatusHelper
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing

@@ -1018,7 +1018,7 @@
   <string name="unlock">解锁</string>
   <string name="by_completing_gold_level_you_will_be_eligible_to_participate_in_our_airdrop_program">完成金级要求后，您将自动获得我们的空投计划资格。</string>
   <string name="airdrop_learn_more_url">https://support.blockchain.com/hc/en-us/categories/360001126692-Airdrop-Program</string>
-  <string name="tier_x_in_review">Blockchain 支持团队正在审核您的 1 验证</string>
+  <string name="tier_x_in_review">Blockchain 支持团队正在审核您的%1$s验证</string>
   <string name="requires_silver_level_govt_id_and_a_selfie">需银级、电话号码、政府颁发的身份证以及人像照片</string>
   <string name="bch_default_account_label">我的Bitcoin Cash Wallet</string>
   <string name="xlm_default_account_label">我的 Stellar Wallet</string>

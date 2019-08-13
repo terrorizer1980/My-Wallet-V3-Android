@@ -6,10 +6,10 @@ import com.blockchain.kyc.models.nabu.CampaignData
 import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kyc.models.nabu.NabuApiException
 import com.blockchain.kyc.models.nabu.NabuErrorCodes
-import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.kycui.settings.KycStatusHelper
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
-import com.blockchain.kycui.sunriver.SunriverCardType
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
 import com.blockchain.swap.nabu.NabuToken

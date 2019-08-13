@@ -82,7 +82,7 @@ internal class NabuCoinifyAccountService(
             coinifyDataManager.getEmailTokenAndSignUp(
                 payloadDataManager.guid,
                 payloadDataManager.sharedKey,
-                user.email ?: "",
+                user.email,
                 currencyState.fiatUnit,
                 countryCode,
                 partnerId

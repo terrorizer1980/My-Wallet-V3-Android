@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import com.blockchain.kyc.models.nabu.NabuApiException;
 import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes;
-import com.blockchain.kycui.settings.KycStatusHelper;
+import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
 import com.blockchain.notifications.NotificationTokenManager;
 import com.blockchain.remoteconfig.FeatureFlag;
 
@@ -34,7 +34,6 @@ import piuk.blockchain.androidcoreui.ui.base.BasePresenter;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.AndroidUtils;
 import timber.log.Timber;
-import javax.inject.Inject;
 
 public class SettingsPresenter extends BasePresenter<SettingsView> {
 

@@ -118,7 +118,7 @@ sealed class UserState {
     object Blocked : UserState()
 }
 
-internal class KycStateAdapter {
+class KycStateAdapter {
 
     @FromJson
     fun fromJson(input: String): KycState = when (input) {
@@ -151,7 +151,7 @@ internal class KycStateAdapter {
     }
 }
 
-internal class UserStateAdapter {
+class UserStateAdapter {
 
     @FromJson
     fun fromJson(input: String): UserState = when (input) {

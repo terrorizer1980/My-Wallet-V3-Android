@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.buysell.coinify.launcher
 
 import com.blockchain.kyc.models.nabu.Kyc2TierState
-import com.blockchain.kycui.settings.KycStatusHelper
+import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify

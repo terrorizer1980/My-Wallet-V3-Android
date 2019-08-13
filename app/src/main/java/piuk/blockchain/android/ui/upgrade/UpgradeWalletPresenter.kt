@@ -52,7 +52,7 @@ internal class UpgradeWalletPresenter constructor(
                 val currentPassword = payloadDataManager.tempPassword
                 payloadDataManager.tempPassword = secondPassword
 
-                compositeDisposable += authDataManager.createPin(currentPassword!!, accessState.pin!!)
+                compositeDisposable += authDataManager.createPin(currentPassword!!, accessState.pin)
                     .andThen(payloadDataManager.syncPayloadWithServer())
                     .doOnError { payloadDataManager.tempPassword = currentPassword }
                     .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }

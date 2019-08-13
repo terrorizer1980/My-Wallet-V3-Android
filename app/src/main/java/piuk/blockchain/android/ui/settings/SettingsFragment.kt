@@ -34,8 +34,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 
 import com.blockchain.kyc.models.nabu.Kyc2TierState
-import com.blockchain.kycui.navhost.KycNavHostActivity
-import com.blockchain.kycui.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.crashlytics.android.answers.ContentViewEvent

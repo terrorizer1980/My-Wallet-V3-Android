@@ -2,9 +2,9 @@ package piuk.blockchain.android.ui.dashboard.announcements
 
 import android.support.annotation.VisibleForTesting
 import com.blockchain.kyc.status.KycTiersQueries
-import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
-import com.blockchain.kycui.sunriver.SunriverCardType
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCardType
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.rxkotlin.plusAssign

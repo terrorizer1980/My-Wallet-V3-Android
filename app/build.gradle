@@ -3,9 +3,11 @@ apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'com.novoda.build-properties'
 apply from: '../quality/jacocoApp.gradle'
 apply from: '../quality/ktlint.gradle'
+
 
 buildProperties {
     secrets {
@@ -229,9 +231,15 @@ dependencies {
     implementation project(':sunriver')
     implementation project(':lockbox')
 
+    api project(':buysell')
+    api project(':coreui')
+    api project(':notifications')
+    api project(':nabu')
+    implementation project(':veriff')
+
     implementation Libraries.multidex
     // Utils
-    implementation Libraries.yearclass
+
     // Dagger
     kapt Libraries.daggerKapt
     implementation Libraries.koin
@@ -254,6 +262,23 @@ dependencies {
 
     api Libraries.lifecycleViewModel
     api Libraries.lifecycleExtensions
+
+    implementation(Libraries.googlePlayServicesBase) {
+        exclude group: 'com.android.support'
+    }
+    implementation Libraries.googlePlaces
+
+    // Utils
+    implementation Libraries.libPhoneNumber
+    implementation Libraries.yearclass
+
+    // Navigation
+    implementation Libraries.navigationControllerCore
+    implementation Libraries.navigationControllerFragments
+    // RxJava
+    implementation Libraries.rxReplayShare
+    // Custom Views
+    implementation Libraries.materialDatePicker
 
     // UI/Instrumentation Tests
     androidTestImplementation(Libraries.espresso) {
@@ -278,6 +303,7 @@ dependencies {
         exclude group: 'com.google.guava'
         exclude group: 'com.google.protobuf'
     }
+
     // For AS running of robolectric
     testImplementation Libraries.testRunner
     testImplementation Libraries.testRules

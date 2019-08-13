@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.settings;
 
 import com.blockchain.kyc.models.nabu.Kyc2TierState;
 import com.blockchain.kyc.models.nabu.NabuApiException;
-import com.blockchain.kycui.settings.KycStatusHelper;
+import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
 import com.blockchain.notifications.NotificationTokenManager;
 import com.blockchain.remoteconfig.FeatureFlag;
 

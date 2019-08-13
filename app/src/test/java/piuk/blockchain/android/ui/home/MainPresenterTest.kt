@@ -4,9 +4,9 @@ import com.blockchain.android.testutils.rxInit
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.Tiers
-import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.kycui.settings.KycStatusHelper
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
 import com.blockchain.swap.nabu.NabuToken

@@ -28,4 +28,12 @@ val featureFlagsModule = applicationContext {
     factory("ff_pit_announcement") {
         get<RemoteConfig>().featureFlag("pit_show_announcement")
     }
+
+    factory("ff_sms_verification") {
+        get<RemoteConfig>().featureFlag("android_sms_verification")
+    }
+
+    factory("sunriver") {
+        get<RemoteConfig>().featureFlag("android_sunriver_airdrop_enabled")
+    }
 }

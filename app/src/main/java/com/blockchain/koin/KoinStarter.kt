@@ -28,6 +28,8 @@ import org.koin.log.Logger
 import org.koin.standalone.StandAloneContext
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.ui.dashboard.announcements.dashboardAnnouncementsModule
+import piuk.blockchain.android.ui.kyc.koin.kycUiModule
+import piuk.blockchain.android.ui.kyc.koin.kycUiNabuModule
 import timber.log.Timber
 
 object KoinStarter {
@@ -54,7 +56,9 @@ object KoinStarter {
                 swapModule,
                 kycCoinifyModule,
                 kycModule,
+                kycUiModule,
                 kycNabuModule,
+                kycUiNabuModule,
                 localShapeShift,
                 lockboxModule,
                 morphUiModule,

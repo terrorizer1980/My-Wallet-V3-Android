@@ -67,18 +67,18 @@ interface NabuDataManager {
         notifyWhenAvailable: Boolean
     ): Completable
 
-    fun getOnfidoApiKey(
-        offlineTokenResponse: NabuOfflineTokenResponse
-    ): Single<String>
+//    fun getOnfidoApiKey(
+//        offlineTokenResponse: NabuOfflineTokenResponse
+//    ): Single<String>
 
     fun startVeriffSession(
         offlineTokenResponse: NabuOfflineTokenResponse
     ): Single<VeriffApplicantAndToken>
 
-    fun submitOnfidoVerification(
-        offlineTokenResponse: NabuOfflineTokenResponse,
-        applicantId: String
-    ): Completable
+//    fun submitOnfidoVerification(
+//        offlineTokenResponse: NabuOfflineTokenResponse,
+//        applicantId: String
+//    ): Completable
 
     fun submitVeriffVerification(
         offlineTokenResponse: NabuOfflineTokenResponse
@@ -245,25 +245,11 @@ internal class NabuDataManagerImpl(
         ).toSingleDefault(Any())
     }.ignoreElement()
 
-    override fun getOnfidoApiKey(
-        offlineTokenResponse: NabuOfflineTokenResponse
-    ): Single<String> = authenticate(offlineTokenResponse) {
-        nabuService.getOnfidoApiKey(it)
-    }
-
     override fun startVeriffSession(
         offlineTokenResponse: NabuOfflineTokenResponse
     ): Single<VeriffApplicantAndToken> = authenticate(offlineTokenResponse) {
         nabuService.startVeriffSession(it)
     }
-
-    override fun submitOnfidoVerification(
-        offlineTokenResponse: NabuOfflineTokenResponse,
-        applicantId: String
-    ): Completable = authenticate(offlineTokenResponse) {
-        nabuService.submitOnfidoVerification(it, applicantId)
-            .toSingleDefault(Any())
-    }.ignoreElement()
 
     override fun submitVeriffVerification(
         offlineTokenResponse: NabuOfflineTokenResponse

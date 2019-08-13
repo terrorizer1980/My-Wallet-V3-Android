@@ -79,7 +79,6 @@ object Versions {
     const val materialDatePicker = "3.6.4"
 
     // Third Party SDKs
-    const val onfido = "4.3.0"
     const val veriff = "2.4.2"
     const val probity = "1.0.0"
 
@@ -200,7 +199,6 @@ object Libraries {
     const val materialDatePicker = "com.wdullaer:materialdatetimepicker:${Versions.materialDatePicker}"
 
     // Third Party SDKs
-    const val onfido = "com.onfido.sdk.capture:onfido-capture-sdk:${Versions.onfido}"
     const val veriff = "com.veriff:veriff-library:${Versions.veriff}"
     const val probity = "io.probity.sdk:collector:${Versions.probity}"
 
