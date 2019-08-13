@@ -35,6 +35,8 @@ interface SendView : BaseSendView {
 
     fun updateReceivingAddress(address: String)
 
+    fun hidePitAddressIcon()
+
     fun updateFeeAmount(feeCrypto: CryptoValue, feeFiat: FiatValue)
 
     fun clearFeeAmount()

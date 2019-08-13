@@ -744,7 +744,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         toContainer.toAddressEditTextView.isClickable = false
     }
 
-    private fun hidePitAddressIcon() {
+    override fun hidePitAddressIcon() {
         toContainer.pitAddress.gone()
     }
 
