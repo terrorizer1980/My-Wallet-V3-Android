@@ -3,9 +3,8 @@ package piuk.blockchain.android.ui.backup.wordlist
 import piuk.blockchain.android.ui.backup.wordlist.BackupWalletWordListFragment.Companion.ARGUMENT_SECOND_PASSWORD
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
-import javax.inject.Inject
 
-class BackupWalletWordListPresenter @Inject constructor(
+class BackupWalletWordListPresenter(
     private val backupWalletUtil: BackupWalletUtil
 ) : BasePresenter<BackupWalletWordListView>() {
 

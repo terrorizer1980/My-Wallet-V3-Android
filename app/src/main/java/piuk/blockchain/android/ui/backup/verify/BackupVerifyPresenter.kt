@@ -12,9 +12,8 @@ import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
-import javax.inject.Inject
 
-class BackupVerifyPresenter @Inject constructor(
+class BackupVerifyPresenter(
     private val payloadDataManager: PayloadDataManager,
     private val prefs: PersistentPrefs,
     private val backupWalletUtil: BackupWalletUtil

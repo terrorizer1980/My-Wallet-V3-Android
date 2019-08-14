@@ -21,9 +21,8 @@ import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.util.Locale
-import javax.inject.Inject
 
-class AddAddressPresenter @Inject constructor(
+class AddAddressPresenter constructor(
     private val coinifyDataManager: CoinifyDataManager,
     private val exchangeService: ExchangeService,
     private val buyDataManager: BuyDataManager
@@ -100,8 +99,8 @@ class AddAddressPresenter @Inject constructor(
     }
 
     private fun isDataValid(): Boolean {
-        require(!view.iban.isEmpty()) { }
-        require(!view.bic.isEmpty()) { }
+        require(view.iban.isNotEmpty()) { }
+        require(view.bic.isNotEmpty()) { }
 
         if (view.accountHolderName.isEmpty()) {
             view.showToast(R.string.buy_sell_add_address_name_empty, ToastCustom.TYPE_ERROR)

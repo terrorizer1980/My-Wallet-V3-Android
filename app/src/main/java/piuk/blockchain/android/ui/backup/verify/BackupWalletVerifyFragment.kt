@@ -9,27 +9,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import kotlinx.android.synthetic.main.fragment_backup_wallet_verify.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.backup.completed.BackupWalletCompletedFragment
 import piuk.blockchain.android.ui.backup.start.BackupWalletStartingFragment
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
-import javax.inject.Inject
 
 class BackupWalletVerifyFragment : BaseFragment<BackupVerifyView, BackupVerifyPresenter>(),
     BackupVerifyView {
 
-    @Inject
-    lateinit var backupVerifyPresenter: BackupVerifyPresenter
+    private val backupVerifyPresenter: BackupVerifyPresenter by inject()
 
     private var progressDialog: MaterialProgressDialog? = null
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

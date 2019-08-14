@@ -19,9 +19,8 @@ import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.RecoverWalletEvent
 import timber.log.Timber
-import javax.inject.Inject
 
-class CreateWalletPresenter @Inject constructor(
+class CreateWalletPresenter(
     private val payloadDataManager: PayloadDataManager,
     private val prefs: PersistentPrefs,
     private val appUtil: AppUtil,

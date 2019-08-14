@@ -7,8 +7,8 @@ import android.support.v7.app.AlertDialog
 import android.view.inputmethod.EditorInfo
 import com.blockchain.ui.countryselection.CountryDialog
 import io.reactivex.Single
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.confirmation.sell.CoinifySellConfirmationActivity
 import piuk.blockchain.android.ui.buysell.createorder.models.SellConfirmationDisplayModel
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
@@ -19,7 +19,6 @@ import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import java.util.Locale
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_add_address.button_confirm as buttonConfirm
 import kotlinx.android.synthetic.main.activity_add_address.edit_text_city as editTextCity
 import kotlinx.android.synthetic.main.activity_add_address.edit_text_country as editTextCountry
@@ -30,8 +29,7 @@ import kotlinx.android.synthetic.main.toolbar_general.toolbar_general as toolBar
 
 class AddAddressActivity : BaseMvpActivity<AddAddressView, AddAddressPresenter>(), AddAddressView {
 
-    @Inject
-    lateinit var presenter: AddAddressPresenter
+    private val presenter: AddAddressPresenter by inject()
     override val locale: Locale = Locale.getDefault()
     override val iban: String by unsafeLazy { intent.getStringExtra(EXTRA_IBAN) }
     override val bic: String by unsafeLazy { intent.getStringExtra(EXTRA_BIC) }
@@ -47,10 +45,6 @@ class AddAddressActivity : BaseMvpActivity<AddAddressView, AddAddressPresenter>(
     override val postCode: String
         get() = editTextPostCode.getTextString()
     private var progressDialog: MaterialProgressDialog? = null
-
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

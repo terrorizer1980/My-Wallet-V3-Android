@@ -2,9 +2,8 @@ package piuk.blockchain.android.ui.backup.start
 
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
-import javax.inject.Inject
 
-class BackupWalletStartingPresenter @Inject constructor(
+class BackupWalletStartingPresenter(
     private val payloadDataManager: PayloadDataManager
 ) : BasePresenter<BackupWalletStartingView>() {
 
