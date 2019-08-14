@@ -178,12 +178,12 @@ internal class PerCurrencySendPresenter<View : SendView>(
                                 bitpayProtocol?.setIsBitpayPaymentRequest(true)
                                 view?.let { view ->
                                     view.disableInput()
-                                    view.hidePitAddressIcon()
                                     view.showBitPayTimerAndMerchantInfo(it.expires, merchant)
                                     view.updateCryptoAmount(cryptoValue)
                                     view.updateReceivingAddress("bitcoin:?r=" + it.paymentUrl)
                                     view.setFeePrioritySelection(1)
                                     view.disableFeeDropdown()
+                                    view.onBitPayAddressScanned()
                                 }
                             }.doOnError {
                                 Timber.e(it)

@@ -35,8 +35,6 @@ interface SendView : BaseSendView {
 
     fun updateReceivingAddress(address: String)
 
-    fun hidePitAddressIcon()
-
     fun updateFeeAmount(feeCrypto: CryptoValue, feeFiat: FiatValue)
 
     fun clearFeeAmount()
@@ -73,6 +71,8 @@ interface SendView : BaseSendView {
     fun enableFeeDropdown()
 
     fun disableFeeDropdown()
+
+    fun onBitPayAddressScanned()
 
     fun setSendButtonEnabled(enabled: Boolean)
 
