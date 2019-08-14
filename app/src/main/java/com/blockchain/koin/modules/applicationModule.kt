@@ -620,7 +620,12 @@ val applicationModule = applicationContext {
 
     factory { DateUtil(get()) }
 
-    bean { PrngHelper(get(), get()) as PrngFixer }
+    bean {
+        PrngHelper(
+            context = get(),
+            accessState = get()
+        )
+    }.bind(PrngFixer::class)
 
     factory { PrivateKeyFactory() }
 
