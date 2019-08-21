@@ -44,7 +44,6 @@ dependencies {
     implementation Libraries.okHttpInterceptor
     // Utils
     implementation(Libraries.jjwt) { exclude module: 'jackson' }
-    implementation Libraries.okIo
     implementation Libraries.commonsIo
     implementation Libraries.commonsCli
     implementation Libraries.lambdaWorks

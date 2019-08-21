@@ -139,6 +139,7 @@ class PerCurrencySendPresenterTest {
         }
 
         verify(view).disableInput()
+        verify(view).onBitPayAddressScanned()
         verify(view).showBitPayTimerAndMerchantInfo(paymentRequest.expires, "Satoshi")
         verify(view).updateCryptoAmount(cryptoValue)
         verify(view).updateReceivingAddress(bitpayBitcoinURI)

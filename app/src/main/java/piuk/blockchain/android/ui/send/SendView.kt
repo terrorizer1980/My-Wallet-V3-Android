@@ -72,6 +72,8 @@ interface SendView : BaseSendView {
 
     fun disableFeeDropdown()
 
+    fun onBitPayAddressScanned()
+
     fun setSendButtonEnabled(enabled: Boolean)
 
     fun disableInput()

@@ -231,6 +231,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
                     view.updateReceivingAddress("bitcoin:?r=" + it.paymentUrl)
                     view.setFeePrioritySelection(1)
                     view.disableFeeDropdown()
+                    view.onBitPayAddressScanned()
                 }
             }.doOnError {
                 Timber.e(it)

@@ -1265,7 +1265,7 @@
     <string name="swap_intro_description_page_two">Access competitive crypto prices right at your fingertips.</string>
     <string name="swap_intro_description_page_three">All Swap trades are confirmed and settled directly on-chain.</string>
     <string name="swap_intro_description_page_four">With Swap your crypto is safe, secure, and your keys are always intact.</string>
-    <string name="swap_intro_description_page_five">Introducing Digital Dollars (USDp) to de-risk your crypto investment or lock-in gains.</string>
+    <string name="swap_intro_description_page_five">Introducing Digital Dollars (USD PAX) to de-risk your crypto investment or lock-in gains.</string>
     <string name="swap_intro_get_started">Get Started</string>
 
     <!-- buy/Sell -->

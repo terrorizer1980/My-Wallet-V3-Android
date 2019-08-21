@@ -128,6 +128,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     private var pitAddressState: PitAddressFieldState = PitAddressFieldState.CLEARED
 
     private var isBitpayPayPro = false
+    private var bitPayAddressScanned = false
 
     private val dialogHandler = Handler()
     private val dialogRunnable = Runnable {
@@ -577,7 +578,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             showReceivingDropdown()
         }
 
-        if (pitAddressAvailable && pitEnabled) {
+        if (pitAddressAvailable && pitEnabled && !bitPayAddressScanned) {
             showPitAddressIcon()
         } else {
             hidePitAddressIcon()
@@ -1176,7 +1177,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                         "%2d:%02d",
                         TimeUnit.SECONDS.toMinutes(it),
                         TimeUnit.SECONDS.toSeconds(it) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(it))
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(it))
                     )
                     val timerText = timeRemainingText + spaceChar + readableTime
                     bitpayTimeRemaining.text = timerText
@@ -1381,6 +1382,11 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         if (!pitEnabled) {
             pitAddress.gone()
         }
+    }
+
+    override fun onBitPayAddressScanned() {
+        bitPayAddressScanned = true
+        hidePitAddressIcon()
     }
 }
 
