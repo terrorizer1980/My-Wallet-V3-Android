@@ -162,7 +162,7 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
         progressDialog = null
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == EMAIL_CLIENT_REQUEST) {
             presenter.enableAutoLogout()
         }

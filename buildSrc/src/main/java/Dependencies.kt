@@ -72,7 +72,10 @@ object Versions {
     const val circleIndicator = "1.2.2"
     const val bottomNav = "2.2.0"
     const val countryPicker = "1.1.7"
-    const val zxing = "3.4.0"
+    // zxing 3.4.0 crashes with:
+    //      "java.lang.NoSuchMethodError. No interface method sort(Ljava/util/Comparator;)V in class Ljava/util/List;"
+    // List.sort() is not available on Android SDK < 24 so DO NOT UPGRADE until project target min is 24
+    const val zxing = "3.3.0"
     const val wheelPicker = "1.1.2"
     const val konfetti = "1.1.3"
     const val materialDatePicker = "3.6.4"

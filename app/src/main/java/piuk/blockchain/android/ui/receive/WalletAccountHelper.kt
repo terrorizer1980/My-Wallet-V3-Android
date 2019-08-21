@@ -21,6 +21,7 @@ import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
+import timber.log.Timber
 import java.math.BigInteger
 import java.util.Collections
 
@@ -70,7 +71,7 @@ class WalletAccountHelper(
             CryptoCurrency.ETHER -> Single.just(getEthAccount())
             CryptoCurrency.XLM -> getXlmAccount()
             CryptoCurrency.PAX -> Single.just(getPaxAccount())
-        } ?: Single.just(emptyList())
+        }
 
     private fun allBtcAccountItems() = getHdAccounts() + getLegacyAddresses()
 
@@ -222,10 +223,10 @@ class WalletAccountHelper(
         }
 
     fun getEthAccount() =
-        listOf(getDefaultEthAccount())
+        getDefaultEthAccount()?.let { listOf(it) } ?: emptyList()
 
     fun getPaxAccount() =
-        listOf(getDefaultPaxAccount())
+        getDefaultPaxAccount()?.let { listOf(it) } ?: emptyList()
 
     fun getXlmAccount(): Single<List<ItemAccount>> =
         getDefaultXlmAccountItem().map { listOf(it) }
@@ -313,8 +314,8 @@ class WalletAccountHelper(
         )
     }
 
-    private fun getDefaultOrFirstFundedBchAccount(): ItemAccount {
-        var account = bchDataManager.getDefaultGenericMetadataAccount()!!
+    private fun getDefaultOrFirstFundedBchAccount(): ItemAccount? {
+        var account = bchDataManager.getDefaultGenericMetadataAccount() ?: return null
 
         if (getAccountAbsoluteBalance(account) <= 0L)
             for (funded in bchDataManager.getActiveAccounts()) {
@@ -334,46 +335,44 @@ class WalletAccountHelper(
         )
     }
 
-    private fun getDefaultEthAccount(): ItemAccount {
+    private fun getDefaultEthAccount(): ItemAccount? {
         val ethModel = ethDataManager.getEthResponseModel()
         val ethAccount = ethDataManager.getEthWallet()?.account
         val balance = CryptoValue.etherFromWei(ethModel?.getTotalBalance() ?: BigInteger.ZERO)
 
-        if (ethAccount == null || ethAccount.address == null) {
-            throw IllegalStateException("Invalid eth account: " +
-                if (ethAccount == null) "no account" else "no address"
+        return if (ethAccount == null) {
+            Timber.e("Invalid ETHER account: no account")
+            null
+        } else {
+            ItemAccount(
+                ethAccount.label,
+                balance.toBalanceString(),
+                null,
+                0,
+                ethAccount,
+                ethAccount.address
             )
         }
-
-        return ItemAccount(
-            ethAccount.label,
-            balance.toBalanceString(),
-            null,
-            0,
-            ethAccount,
-            ethAccount.address
-        )
     }
 
-    private fun getDefaultPaxAccount(): ItemAccount {
+    private fun getDefaultPaxAccount(): ItemAccount? {
         val erc20DataModel = paxAccount.getErc20Model()
         val ethAccount = ethDataManager.getEthWallet()?.account
         val balance = erc20DataModel?.totalBalance ?: CryptoValue.ZeroPax
 
-        if (ethAccount == null || ethAccount.address == null) {
-            throw IllegalStateException("Invalid pax account: " +
-                if (ethAccount == null) "no account" else "no address"
+        return if (ethAccount == null) {
+            Timber.e("Invalid pax account: no account")
+            null
+        } else {
+            ItemAccount(
+                ethAccount.label,
+                balance.toBalanceString(),
+                null,
+                0,
+                ethAccount,
+                ethAccount.address
             )
         }
-
-        return ItemAccount(
-            ethAccount.label,
-            balance.toBalanceString(),
-            null,
-            0,
-            ethAccount,
-            ethAccount.address
-        )
     }
 
     private fun getDefaultXlmAccountItem() =
