@@ -63,6 +63,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
         delegate.onPitAddressCleared()
     }
 
+    private val bitpayInvoiceUrl = "$BITPAY_LIVE_BASE$PATH_BITPAY_INVOICE/"
     private var selectedMemoType: Int = MEMO_TEXT_NONE
     private var selectedCrypto: CryptoCurrency = CryptoCurrency.BTC
     private val merchantPattern: Pattern = Pattern.compile("for merchant ")
@@ -135,9 +136,6 @@ internal class PerCurrencySendPresenter<View : SendView>(
     }
 
     override fun handleURIScan(untrimmedscanData: String, defaultCurrency: CryptoCurrency) {
-        if (untrimmedscanData == null)
-            return
-
         val address: String
 
         if (untrimmedscanData.isValidXlmQr()) {
@@ -161,33 +159,11 @@ internal class PerCurrencySendPresenter<View : SendView>(
 
                     val amount: String = FormatsUtil.getBitcoinAmount(scanData)
                     val paymentRequestUrl = FormatsUtil.getPaymentRequestUrl(scanData)
-                    val bitpayInvoiceUrl = BITPAY_LIVE_BASE + PATH_BITPAY_INVOICE + "/"
 
-                    if (address.isEmpty() && amount == "0.0000" &&
-                        paymentRequestUrl.contains(bitpayInvoiceUrl)) {
+                    if (address.isEmpty() && scanData.isBitpayAddress()) {
                         // get payment protocol request data from bitpay
                         val invoiceId = paymentRequestUrl.replace(bitpayInvoiceUrl, "")
-                        bitpayDataManager.getRawPaymentRequest(invoiceId = invoiceId)
-                            .doOnSuccess {
-                                val cryptoValue = CryptoValue(selectedCrypto, it.outputs[0].amount)
-                                val merchant = it.memo.split(merchantPattern)[1]
-                                val bitpayProtocol: BitPayProtocol? = delegate as? BitPayProtocol
-
-                                bitpayProtocol?.setbitpayReceivingAddress(it.outputs[0].address)
-                                bitpayProtocol?.setbitpayMerchant(merchant)
-                                bitpayProtocol?.setIsBitpayPaymentRequest(true)
-                                view?.let { view ->
-                                    view.disableInput()
-                                    view.showBitPayTimerAndMerchantInfo(it.expires, merchant)
-                                    view.updateCryptoAmount(cryptoValue)
-                                    view.updateReceivingAddress("bitcoin:?r=" + it.paymentUrl)
-                                    view.setFeePrioritySelection(1)
-                                    view.disableFeeDropdown()
-                                    view.onBitPayAddressScanned()
-                                }
-                            }.doOnError {
-                                Timber.e(it)
-                            }.subscribe()
+                        handleBitPayInvoice(invoiceId)
                     } else {
                         // Convert to correct units
                         try {
@@ -238,6 +214,37 @@ internal class PerCurrencySendPresenter<View : SendView>(
         }
     }
 
+    private fun handleBitPayInvoice(invoiceId: String) {
+        compositeDisposable += bitpayDataManager.getRawPaymentRequest(invoiceId = invoiceId)
+            .doOnSuccess {
+                val cryptoValue = CryptoValue(selectedCrypto, it.outputs[0].amount)
+                val merchant = it.memo.split(merchantPattern)[1]
+                val bitpayProtocol: BitPayProtocol? = delegate as? BitPayProtocol ?: return@doOnSuccess
+
+                bitpayProtocol?.setbitpayReceivingAddress(it.outputs[0].address)
+                bitpayProtocol?.setbitpayMerchant(merchant)
+                bitpayProtocol?.setIsBitpayPaymentRequest(true)
+                view?.let { view ->
+                    view.disableInput()
+                    view.showBitPayTimerAndMerchantInfo(it.expires, merchant)
+                    view.updateCryptoAmount(cryptoValue)
+                    view.updateReceivingAddress("bitcoin:?r=" + it.paymentUrl)
+                    view.setFeePrioritySelection(1)
+                    view.disableFeeDropdown()
+                }
+            }.doOnError {
+                Timber.e(it)
+            }.subscribe()
+    }
+
+    private fun String.isBitpayAddress(): Boolean {
+
+        val amount = FormatsUtil.getBitcoinAmount(this)
+        val paymentRequestUrl = FormatsUtil.getPaymentRequestUrl(this)
+        return amount == "0.0000" &&
+                paymentRequestUrl.contains(bitpayInvoiceUrl)
+    }
+
     override fun handlePrivxScan(scanData: String?) = delegate.handlePrivxScan(scanData)
 
     override fun clearReceivingObject() = delegate.clearReceivingObject()
@@ -283,7 +290,16 @@ internal class PerCurrencySendPresenter<View : SendView>(
 
     override fun onCryptoTextChange(cryptoText: String) = delegate.onCryptoTextChange(cryptoText)
 
-    override fun onAddressTextChange(address: String) = delegate.onAddressTextChange(address)
+    override fun onAddressTextChange(address: String) {
+        delegate.onAddressTextChange(address)
+        val bitPayProtocol = delegate as? BitPayProtocol ?: return
+        if (!bitPayProtocol.isBitpayPaymentRequest && address.isBitpayAddress()) {
+            val invoiceId = address
+                .replace(bitpayInvoiceUrl, "")
+                .replace("bitcoin:?r=", "")
+            handleBitPayInvoice(invoiceId)
+        }
+    }
 
     override fun onMemoChange(memoText: String) =
         delegate.onMemoChange(Memo(memoText, getMemoTypeRawValue(selectedMemoType)))

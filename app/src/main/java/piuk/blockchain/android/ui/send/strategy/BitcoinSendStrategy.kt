@@ -63,6 +63,8 @@ interface BitPayProtocol {
     fun setbitpayReceivingAddress(address: String)
 
     fun setIsBitpayPaymentRequest(isBitPay: Boolean)
+
+    var isBitpayPaymentRequest: Boolean
 }
 
 class BitcoinSendStrategy(
@@ -86,7 +88,7 @@ class BitcoinSendStrategy(
 ) : SendStrategy<SendView>(currencyState), BitPayProtocol {
 
     private var pitAccount: PitAccount? = null
-    private var isBitpayPaymentRequest: Boolean = false
+    override var isBitpayPaymentRequest: Boolean = false
 
     override fun onPitAddressSelected() {
         pitAccount?.let {
