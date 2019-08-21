@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange.history
 
 import android.support.annotation.VisibleForTesting
-import com.blockchain.morph.trade.MorphTrade
-import com.blockchain.morph.trade.MorphTradeDataHistoryList
+import com.blockchain.swap.common.trade.MorphTrade
+import com.blockchain.swap.common.trade.MorphTradeDataHistoryList
 import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
 import info.blockchain.balance.formatWithUnit
 import io.reactivex.android.schedulers.AndroidSchedulers

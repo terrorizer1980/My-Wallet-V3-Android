@@ -69,24 +69,6 @@ val apiModule = applicationContext {
         builder.build()
     }
 
-    bean("api") {
-        Retrofit.Builder()
-            .baseUrl(get<EnvironmentUrls>().apiUrl)
-            .client(get())
-            .addConverterFactory(get<JacksonConverterFactory>())
-            .addCallAdapterFactory(get<RxJava2CallAdapterFactory>())
-            .build()
-    }
-
-    bean("explorer") {
-        Retrofit.Builder()
-            .baseUrl(get<EnvironmentUrls>().explorerUrl)
-            .client(get())
-            .addConverterFactory(get<JacksonConverterFactory>())
-            .addCallAdapterFactory(get<RxJava2CallAdapterFactory>())
-            .build()
-    }
-
     bean {
         Moshi.Builder()
             .also {
@@ -127,6 +109,24 @@ val apiModule = applicationContext {
             .baseUrl(get<EnvironmentUrls>().nabuApi)
             .client(get())
             .addConverterFactory(get<MoshiConverterFactory>())
+            .addCallAdapterFactory(get<RxJava2CallAdapterFactory>())
+            .build()
+    }
+
+    bean("api") {
+        Retrofit.Builder()
+            .baseUrl(get<EnvironmentUrls>().apiUrl)
+            .client(get())
+            .addConverterFactory(get<JacksonConverterFactory>())
+            .addCallAdapterFactory(get<RxJava2CallAdapterFactory>())
+            .build()
+    }
+
+    bean("explorer") {
+        Retrofit.Builder()
+            .baseUrl(get<EnvironmentUrls>().explorerUrl)
+            .client(get())
+            .addConverterFactory(get<JacksonConverterFactory>())
             .addCallAdapterFactory(get<RxJava2CallAdapterFactory>())
             .build()
     }

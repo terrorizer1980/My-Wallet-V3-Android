@@ -1,7 +1,7 @@
 package com.blockchain.kyc.datamanagers.nabu
 
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.NabuUserSync
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuUserSync
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber

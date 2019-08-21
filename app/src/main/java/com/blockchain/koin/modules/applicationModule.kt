@@ -7,8 +7,8 @@ import com.blockchain.activities.StartOnboarding
 import com.blockchain.activities.StartSwap
 import com.blockchain.balance.TotalBalance
 import com.blockchain.balance.plus
-import com.blockchain.kycui.settings.KycStatusHelper
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
@@ -22,6 +22,7 @@ import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.PromptManager
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
+import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
@@ -30,24 +31,34 @@ import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.thepit.PitLinkingImpl
 import piuk.blockchain.android.thepit.ThePitDeepLinkParser
+import piuk.blockchain.android.ui.account.AccountEditPresenter
+import piuk.blockchain.android.ui.account.AccountPresenter
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.LandingPresenter
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.PinEntryPresenter
+import piuk.blockchain.android.ui.backup.start.BackupWalletStartingPresenter
+import piuk.blockchain.android.ui.backup.wordlist.BackupWalletWordListPresenter
 import piuk.blockchain.android.ui.balance.BalancePresenter
+import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifySignUpPresenter
 import piuk.blockchain.android.ui.buysell.createorder.BuySellBuildOrderPresenter
+import piuk.blockchain.android.ui.buysell.payment.bank.addaddress.AddAddressPresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
+import piuk.blockchain.android.ui.createwallet.CreateWalletPresenter
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
+import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
 import piuk.blockchain.android.ui.home.MainPresenter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.login.ManualPairingPresenter
 import piuk.blockchain.android.ui.onboarding.OnBoardingStarter
 import piuk.blockchain.android.ui.onboarding.OnboardingPresenter
+import piuk.blockchain.android.ui.pairingcode.PairingCodePresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
+import piuk.blockchain.android.ui.receive.ReceiveQrPresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.recover.RecoverFundsPresenter
 import piuk.blockchain.android.ui.send.SendView
@@ -69,6 +80,7 @@ import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionHelper
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
+import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
 import piuk.blockchain.android.util.StringUtils
@@ -262,6 +274,66 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            AddAddressPresenter(
+                coinifyDataManager = get(),
+                exchangeService = get(),
+                buyDataManager = get()
+            )
+        }
+
+        factory {
+            CoinifySignUpPresenter(
+                coinifyDataManager = get(),
+                exchangeService = get(),
+                stringUtils = get()
+            )
+        }
+
+        factory {
+            PairingCodePresenter(
+                qrCodeDataManager = get(),
+                stringUtils = get(),
+                payloadDataManager = get(),
+                authDataManager = get()
+            )
+        }
+
+        factory {
+            CreateWalletPresenter(
+                payloadDataManager = get(),
+                prefs = get(),
+                appUtil = get(),
+                accessState = get(),
+                prngFixer = get()
+            )
+        }
+
+        factory {
+            BackupWalletStartingPresenter(
+                payloadDataManager = get()
+            )
+        }
+
+        factory {
+            BackupWalletWordListPresenter(
+                backupWalletUtil = get()
+            )
+        }
+
+        factory {
+            BackupWalletUtil(
+                payloadDataManager = get(),
+                environmentConfig = get()
+            )
+        }
+
+        factory {
+            FingerprintPresenter(
+                fingerprintHelper = get()
+            )
+        }
+
+        factory {
             TransactionDetailPresenter(
                 transactionHelper = get(),
                 prefs = get(),
@@ -430,7 +502,38 @@ val applicationModule = applicationContext {
                 fingerprintHelper = get(),
                 accessState = get(),
                 settingsDataManager = get()
-                )
+            )
+        }
+
+        factory {
+            AccountPresenter(
+                payloadDataManager = get(),
+                bchDataManager = get(),
+                metadataManager = get(),
+                fundsDataManager = get(),
+                prefs = get(),
+                appUtil = get(),
+                privateKeyFactory = get(),
+                environmentSettings = get(),
+                currencyState = get(),
+                currencyFormatManager = get()
+            )
+        }
+
+        factory {
+            TransferFundsDataManager(
+                /* payloadDataManager */ get(),
+                /* sendDataManager */ get(),
+                /* dynamicFeeCache */ get(),
+                /* coinSelectionRemoteConfig */ get()
+            )
+        }
+
+        factory {
+            ReceiveQrPresenter(
+                payloadDataManager = get(),
+                qrCodeDataManager = get()
+            )
         }
 
         factory { DeepLinkPersistence(get()) }
@@ -600,6 +703,23 @@ val applicationModule = applicationContext {
                 emailSyncUpdater = get()
             )
         }
+
+        factory {
+            AccountEditPresenter(
+                prefs = get(),
+                stringUtils = get(),
+                payloadDataManager = get(),
+                bchDataManager = get(),
+                metadataManager = get(),
+                sendDataManager = get(),
+                privateKeyFactory = get(),
+                swipeToReceiveHelper = get(),
+                dynamicFeeCache = get(),
+                environmentSettings = get(),
+                currencyFormatManager = get(),
+                coinSelectionRemoteConfig = get()
+            )
+        }
     }
 
     factory {
@@ -620,7 +740,12 @@ val applicationModule = applicationContext {
 
     factory { DateUtil(get()) }
 
-    bean { PrngHelper(get(), get()) as PrngFixer }
+    bean {
+        PrngHelper(
+            context = get(),
+            accessState = get()
+        )
+    }.bind(PrngFixer::class)
 
     factory { PrivateKeyFactory() }
 

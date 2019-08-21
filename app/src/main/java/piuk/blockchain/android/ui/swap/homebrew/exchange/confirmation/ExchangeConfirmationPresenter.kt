@@ -4,11 +4,11 @@ import android.support.annotation.VisibleForTesting
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees
 import com.blockchain.logging.CrashLogger
 import com.blockchain.morph.CoinPair
-import com.blockchain.morph.exchange.SwapFailureDiagnostics
-import com.blockchain.morph.exchange.mvi.Quote
-import com.blockchain.morph.exchange.service.TradeExecutionService
-import com.blockchain.morph.exchange.service.TradeTransaction
-import com.blockchain.morph.trade.MorphTrade
+import com.blockchain.swap.common.exchange.SwapFailureDiagnostics
+import com.blockchain.swap.nabu.service.Quote
+import com.blockchain.swap.nabu.service.TradeExecutionService
+import com.blockchain.swap.nabu.service.TradeTransaction
+import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.AnalyticsEvent

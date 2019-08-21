@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.State
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.serialization.JsonSerializableAccount
 import info.blockchain.api.data.UnspentOutputs

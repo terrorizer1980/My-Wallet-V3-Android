@@ -10,26 +10,20 @@ import com.blockchain.notifications.analytics.AnalyticsEvents
 import kotlinx.android.synthetic.main.activity_pairing_code.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
-import javax.inject.Inject
 
 @Suppress("UNUSED_PARAMETER")
 class PairingCodeActivity : BaseMvpActivity<PairingCodeView, PairingCodePresenter>(),
     PairingCodeView {
 
     @Suppress("MemberVisibilityCanBePrivate")
-    @Inject
-    lateinit var pairingCodePresenter: PairingCodePresenter
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
+    private val pairingCodePresenter: PairingCodePresenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

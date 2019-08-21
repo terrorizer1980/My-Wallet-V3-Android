@@ -7,7 +7,6 @@ import com.blockchain.kyc.models.nabu.NabuCountryResponse
 import com.blockchain.kyc.models.nabu.NabuJwt
 import com.blockchain.kyc.models.nabu.NabuStateResponse
 import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.kyc.models.nabu.OnfidoApiKey
 import com.blockchain.kyc.models.nabu.RecordCountryRequest
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressRequest
@@ -19,9 +18,9 @@ import com.blockchain.kyc.models.nabu.TiersJson
 import com.blockchain.kyc.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.kyc.models.nabu.VeriffToken
 import com.blockchain.kyc.models.nabu.WalletMercuryLink
-import com.blockchain.nabu.models.NabuOfflineTokenRequest
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.NabuSessionTokenResponse
+import com.blockchain.swap.nabu.models.NabuOfflineTokenRequest
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.NabuSessionTokenResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.Body
@@ -95,11 +94,6 @@ internal interface Nabu {
         @Body recordCountryRequest: RecordCountryRequest,
         @Header("authorization") authorization: String
     ): Completable
-
-    @GET(NABU_ONFIDO_API_KEY)
-    fun getOnfidoApiKey(
-        @Header("authorization") authorization: String
-    ): Single<OnfidoApiKey>
 
     /**
      * This is a GET, but it actually starts a veriff session on the server for historical reasons.

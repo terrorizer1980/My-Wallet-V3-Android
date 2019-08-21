@@ -5,9 +5,9 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
-import com.blockchain.morph.exchange.mvi.FloatKeyboardIntent
-import com.blockchain.morph.exchange.mvi.FloatKeyboardDialog
-import com.blockchain.morph.exchange.mvi.Maximums
+import com.blockchain.swap.common.exchange.mvi.FloatKeyboardIntent
+import com.blockchain.swap.common.exchange.mvi.FloatKeyboardDialog
+import com.blockchain.swap.common.exchange.mvi.Maximums
 import io.reactivex.subjects.BehaviorSubject
 import piuk.blockchain.android.R
 import java.math.BigDecimal

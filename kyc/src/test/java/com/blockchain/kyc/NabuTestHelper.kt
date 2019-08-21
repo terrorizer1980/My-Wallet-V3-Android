@@ -1,6 +1,6 @@
 package com.blockchain.kyc
 
-import com.blockchain.nabu.models.NabuSessionTokenResponse
+import com.blockchain.swap.nabu.models.NabuSessionTokenResponse
 
 fun getEmptySessionToken(): NabuSessionTokenResponse = NabuSessionTokenResponse(
     "ID",

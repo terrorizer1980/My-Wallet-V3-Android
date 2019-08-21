@@ -1,14 +1,11 @@
 package com.blockchain.koin
 
-import com.blockchain.morph.exchange.service.TradeLimitService
-import com.blockchain.morph.trade.MorphTradeDataHistoryList
-import com.blockchain.morph.trade.MorphTradeDataManager
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.api.NabuMarkets
-import com.blockchain.nabu.api.TransactionStateAdapter
-import com.blockchain.nabu.datamanagers.NabuDataManagerAdapter
-import com.blockchain.nabu.metadata.MetadataRepositoryNabuTokenAdapter
-import com.blockchain.nabu.service.NabuMarketsService
+import com.blockchain.swap.nabu.service.TradeLimitService
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.api.NabuMarkets
+import com.blockchain.swap.nabu.api.TransactionStateAdapter
+import com.blockchain.swap.nabu.metadata.MetadataRepositoryNabuTokenAdapter
+import com.blockchain.swap.nabu.service.NabuMarketsService
 import org.koin.dsl.module.applicationContext
 import retrofit2.Retrofit
 
@@ -20,10 +17,6 @@ val nabuModule = applicationContext {
 
         factory { NabuMarketsService(get(), get()) }
             .bind(TradeLimitService::class)
-
-        factory("nabu") { NabuDataManagerAdapter(get(), get()) }
-            .bind(MorphTradeDataManager::class)
-            .bind(MorphTradeDataHistoryList::class)
 
         factory { MetadataRepositoryNabuTokenAdapter(get(), get()) as NabuToken }
     }

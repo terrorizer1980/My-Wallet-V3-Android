@@ -5,8 +5,8 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.blockchain.kycui.navhost.KycNavHostActivity
-import com.blockchain.kycui.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import kotlinx.android.synthetic.main.fragment_swap_intro.*
 import org.koin.android.ext.android.get
 import piuk.blockchain.android.R
@@ -37,7 +37,8 @@ class SwapIntroFragment : HomeFragment<SwapIntroView, SwapIntroPresenter>(), Swa
         indicator.setViewPager(intro_viewpager)
         get_started.setOnClickListener {
             presenter.onGetStartedPressed()
-            startActivityForResult(KycNavHostActivity.intentArgs(activity!!, CampaignType.Swap),
+            startActivityForResult(
+                KycNavHostActivity.intentArgs(activity!!, CampaignType.Swap),
                 MainActivity.KYC_STARTED)
         }
     }

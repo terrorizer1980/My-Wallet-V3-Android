@@ -4,9 +4,9 @@ import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import android.annotation.SuppressLint
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.extensions.fromIso8601ToUtc
-import com.blockchain.nabu.extensions.toLocalTime
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
+import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.crashlytics.android.answers.AddToCartEvent
 import com.crashlytics.android.answers.StartCheckoutEvent
 import info.blockchain.api.data.UnspentOutputs

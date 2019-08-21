@@ -54,7 +54,7 @@ internal class UpgradeWalletActivity : BaseMvpActivity<UpgradeWalletView, Upgrad
         binding.pager.adapter = adapter
         binding.pager.addOnPageChangeListener(this)
 
-        binding.upgradeBtn.setOnClickListener { v -> upgradeClicked() }
+        binding.upgradeBtn.setOnClickListener { upgradeClicked() }
 
         onViewReady()
     }
@@ -113,7 +113,7 @@ internal class UpgradeWalletActivity : BaseMvpActivity<UpgradeWalletView, Upgrad
         binding.progressBar.visibility = View.GONE
         binding.btnUpgradeComplete.visibility = View.VISIBLE
         binding.btnUpgradeComplete.text = getString(R.string.CLOSE)
-        binding.btnUpgradeComplete.setOnClickListener { v -> onBackPressed() }
+        binding.btnUpgradeComplete.setOnClickListener { onBackPressed() }
     }
 
     override fun onBackButtonPressed() {

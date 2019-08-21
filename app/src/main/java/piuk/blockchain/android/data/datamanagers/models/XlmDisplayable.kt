@@ -1,7 +1,7 @@
 package piuk.blockchain.android.data.datamanagers.models
 
-import com.blockchain.nabu.extensions.fromIso8601ToUtc
-import com.blockchain.nabu.extensions.toLocalTime
+import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
+import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.sunriver.models.XlmTransaction
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue

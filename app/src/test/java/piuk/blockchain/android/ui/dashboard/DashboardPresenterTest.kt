@@ -3,10 +3,10 @@ package piuk.blockchain.android.ui.dashboard
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.balance.TotalBalance
 import com.blockchain.kyc.status.KycTiersQueries
-import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.lockbox.data.LockboxDataManager
-import com.blockchain.nabu.CurrentTier
+import com.blockchain.swap.nabu.CurrentTier
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.usdPax

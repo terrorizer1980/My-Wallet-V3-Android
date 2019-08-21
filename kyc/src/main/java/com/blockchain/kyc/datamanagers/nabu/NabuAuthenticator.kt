@@ -1,8 +1,8 @@
 package com.blockchain.kyc.datamanagers.nabu
 
-import com.blockchain.nabu.Authenticator
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.models.NabuSessionTokenResponse
+import com.blockchain.swap.nabu.Authenticator
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.models.NabuSessionTokenResponse
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 

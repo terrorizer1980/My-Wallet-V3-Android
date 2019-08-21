@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.support.annotation.DrawableRes
 import android.support.annotation.VisibleForTesting
 import com.blockchain.balance.drawableResFilled
-import com.blockchain.kycui.navhost.models.CampaignType
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.lockbox.data.LockboxDataManager
-import com.blockchain.nabu.CurrentTier
+import com.blockchain.swap.nabu.CurrentTier
 import com.blockchain.sunriver.ui.BaseAirdropBottomDialog
 import com.blockchain.sunriver.ui.ClaimFreeCryptoSuccessDialog
 import info.blockchain.balance.CryptoCurrency

@@ -55,8 +55,7 @@ object Versions {
     const val jjwt = "0.9.0"
     const val lambdaWorks = "1.0.0"
     const val libPhoneNumber = "8.9.10"
-    // Keep at 1.3 to match Android
-    const val commonsCodec = "1.3"
+    const val commonsCodec = "1.3" // Keep at 1.3 to match Android
     const val commonsLang = "3.4"
     const val commonsCli = "1.3"
     const val commonsIo = "2.6"
@@ -78,7 +77,6 @@ object Versions {
     const val materialDatePicker = "3.6.4"
 
     // Third Party SDKs
-    const val onfido = "4.3.0"
     const val veriff = "2.4.2"
     const val probity = "1.0.0"
 
@@ -87,6 +85,9 @@ object Versions {
     const val slf4j = "1.7.20"
     const val crashlytics = "2.9.5"
     const val fabricTools = "1.26.0"
+
+    // Debugging
+    const val stetho = "1.5.1"
 
     // Testing
     const val mockito = "2.10.0"
@@ -198,7 +199,6 @@ object Libraries {
     const val materialDatePicker = "com.wdullaer:materialdatetimepicker:${Versions.materialDatePicker}"
 
     // Third Party SDKs
-    const val onfido = "com.onfido.sdk.capture:onfido-capture-sdk:${Versions.onfido}"
     const val veriff = "com.veriff:veriff-library:${Versions.veriff}"
     const val probity = "io.probity.sdk:collector:${Versions.probity}"
 
@@ -208,6 +208,10 @@ object Libraries {
     const val slf4jNoOp = "org.slf4j:slf4j-nop:${Versions.slf4j}"
     const val crashlytics = "com.crashlytics.sdk.android:crashlytics:${Versions.crashlytics}@aar"
     const val fabricTools = "io.fabric.tools:gradle:${Versions.fabricTools}"
+
+    // Debugging
+    const val stetho = "com.facebook.stetho:stetho:${Versions.stetho}"
+    const val stethoOkHttp = "com.facebook.stetho:stetho-okhttp3:${Versions.stetho}"
 
     // Testing
     const val mockito = "org.mockito:mockito-core:${Versions.mockito}"

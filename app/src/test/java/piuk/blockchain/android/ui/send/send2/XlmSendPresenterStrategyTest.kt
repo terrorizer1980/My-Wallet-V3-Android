@@ -5,8 +5,8 @@ import com.blockchain.fees.FeeType
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.kyc.models.nabu.State
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.XlmFeesFetcher
 import com.blockchain.testutils.lumens

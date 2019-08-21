@@ -36,8 +36,8 @@ import info.blockchain.wallet.payload.data.LegacyAddress
 import kotlinx.android.synthetic.main.activity_accounts.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.ADDRESS_LABEL_MAX_LENGTH
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.KEY_WARN_TRANSFER_ALL
 import piuk.blockchain.android.ui.account.adapter.AccountAdapter
@@ -58,14 +58,12 @@ import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber
 import java.util.EnumSet
 import java.util.Locale
-import javax.inject.Inject
 
 class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), AccountView,
     AccountHeadersListener {
 
     @Suppress("MemberVisibilityCanBePrivate")
-    @Inject
-    lateinit var accountPresenter: AccountPresenter
+    private val accountPresenter: AccountPresenter by inject()
 
     override val locale: Locale = Locale.getDefault()
 
@@ -85,10 +83,6 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
     }
 
     private var progress: MaterialProgressDialog? = null
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

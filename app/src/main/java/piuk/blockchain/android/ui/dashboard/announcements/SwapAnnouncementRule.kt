@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.dashboard.announcements
 import android.support.annotation.VisibleForTesting
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.services.nabu.TierService
-import com.blockchain.morph.trade.MorphTradeDataHistoryList
+import com.blockchain.swap.common.trade.MorphTradeDataHistoryList
 import io.reactivex.Single
 import piuk.blockchain.android.R
 

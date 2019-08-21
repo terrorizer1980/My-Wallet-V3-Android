@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.home
 
-import com.blockchain.kycui.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter

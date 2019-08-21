@@ -189,13 +189,17 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask" />
         <activity
-            android:name=".ui.thepit.PitLandingActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize" />
-        <activity
             android:name=".ui.thepit.PitPermissionsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".ui.thepit.PitVerifyEmailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
+            android:name="piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask" />
+        <activity
+            android:name="piuk.blockchain.android.ui.kyc.status.KycStatusActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <service

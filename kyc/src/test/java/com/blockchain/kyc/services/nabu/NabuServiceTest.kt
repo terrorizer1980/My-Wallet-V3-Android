@@ -2,20 +2,17 @@ package com.blockchain.kyc.services.nabu
 
 import com.blockchain.kyc.api.nabu.NABU_COUNTRIES
 import com.blockchain.kyc.api.nabu.NABU_INITIAL_AUTH
-import com.blockchain.kyc.api.nabu.NABU_ONFIDO_API_KEY
 import com.blockchain.kyc.api.nabu.NABU_PUT_ADDRESS
 import com.blockchain.kyc.api.nabu.NABU_RECORD_COUNTRY
 import com.blockchain.kyc.api.nabu.NABU_RECOVER_USER
 import com.blockchain.kyc.api.nabu.NABU_REGISTER_CAMPAIGN
 import com.blockchain.kyc.api.nabu.NABU_SESSION_TOKEN
 import com.blockchain.kyc.api.nabu.NABU_STATES
-import com.blockchain.kyc.api.nabu.NABU_SUBMIT_VERIFICATION
 import com.blockchain.kyc.api.nabu.NABU_SUPPORTED_DOCUMENTS
 import com.blockchain.kyc.api.nabu.NABU_UPDATE_WALLET_INFO
 import com.blockchain.kyc.api.nabu.NABU_USERS_CURRENT
 import com.blockchain.kyc.getEmptySessionToken
 import com.blockchain.kyc.models.nabu.AddAddressRequest
-import com.blockchain.kyc.models.nabu.ApplicantIdRequest
 import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kyc.models.nabu.KycStateAdapter
 import com.blockchain.kyc.models.nabu.NabuBasicUser
@@ -26,7 +23,7 @@ import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.models.nabu.UserState
 import com.blockchain.kyc.models.nabu.UserStateAdapter
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.testutils.MockedRetrofitTest
 import com.blockchain.testutils.getStringFromResource
 import com.blockchain.testutils.mockWebServerInit
@@ -310,64 +307,6 @@ class NabuServiceTest {
         recordCountryRequest.countryCode `should equal to` countryCode
         recordCountryRequest.state `should equal` state
         recordCountryRequest.notifyWhenAvailable `should equal to` notifyWhenAvailable
-        // Check Header
-        request.headers.get("authorization") `should equal` getEmptySessionToken().authHeader
-    }
-
-    @Test
-    fun `get onfido API key`() {
-        // Arrange
-        server.enqueue(
-            MockResponse()
-                .setResponseCode(200)
-                .setBody(
-                    "{\n" +
-                        "    \"key\": \"123abc\"\n" +
-                        "}"
-                )
-        )
-        // Act
-        val testObserver = subject.getOnfidoApiKey(getEmptySessionToken()).test()
-        // Assert
-        testObserver.awaitTerminalEvent()
-        testObserver.assertComplete()
-        testObserver.assertNoErrors()
-        // Check Response
-        val apiKey = testObserver.values().first()
-        apiKey `should equal to` "123abc"
-        // Check URL
-        val request = server.takeRequest()
-        request.path!! `should equal to` "/$NABU_ONFIDO_API_KEY"
-        // Check Header
-        request.headers.get("authorization") `should equal` getEmptySessionToken().authHeader
-    }
-
-    @Test
-    fun `submit onfido verification ID`() {
-        // Arrange
-        val appplicantId = "APPLICATION_ID"
-        server.enqueue(
-            MockResponse()
-                .setResponseCode(200)
-                .setBody("")
-        )
-        // Act
-        val testObserver = subject.submitOnfidoVerification(
-            getEmptySessionToken(),
-            appplicantId
-        ).test()
-        // Assert
-        testObserver.awaitTerminalEvent()
-        testObserver.assertComplete()
-        testObserver.assertNoErrors()
-        // Check Body
-        val request = server.takeRequest()
-        val requestString = request.requestToString()
-        val adapter = moshi.adapter(ApplicantIdRequest::class.java)
-        val mobileVerificationRequest = adapter.fromJson(requestString)!!
-        mobileVerificationRequest.applicantId `should equal to` appplicantId
-        // Check URL
-        request.path!! `should equal to` "/$NABU_SUBMIT_VERIFICATION"
         // Check Header
         request.headers.get("authorization") `should equal` getEmptySessionToken().authHeader
     }

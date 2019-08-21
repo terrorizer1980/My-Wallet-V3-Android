@@ -4,7 +4,7 @@ import com.blockchain.kyc.api.nabu.Nabu
 import com.blockchain.kyc.extensions.wrapErrorMessage
 import com.blockchain.kyc.models.nabu.TierUpdateJson
 import com.blockchain.kyc.models.nabu.TiersJson
-import com.blockchain.nabu.Authenticator
+import com.blockchain.swap.nabu.Authenticator
 import io.reactivex.Completable
 import io.reactivex.Single
 

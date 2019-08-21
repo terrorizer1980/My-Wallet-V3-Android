@@ -3,7 +3,9 @@ package piuk.blockchain.android.injection;
 import piuk.blockchain.android.ui.auth.PinEntryFragment;
 import piuk.blockchain.android.ui.swap.detail.TradeDetailActivity;
 import dagger.Subcomponent;
+
 import org.jetbrains.annotations.NotNull;
+
 import piuk.blockchain.android.data.websocket.WebSocketService;
 import piuk.blockchain.android.ui.account.AccountActivity;
 import piuk.blockchain.android.ui.account.AccountEditActivity;
@@ -58,33 +60,13 @@ public interface PresenterComponent {
 
     void inject(@NotNull LoginActivity loginActivity);
 
-    void inject(@NotNull CreateWalletActivity createWalletActivity);
-
-    void inject(@NotNull BackupWalletStartingFragment backupWalletStartingFragment);
-
-    void inject(@NotNull BackupWalletWordListFragment backupWalletWordListFragment);
+    void inject(@NotNull PasswordRequiredActivity passwordRequiredActivity);
 
     void inject(@NotNull BackupWalletCompletedFragment backupWalletCompletedFragment);
-
-    void inject(@NotNull FingerprintDialog fingerprintDialog);
 
     void inject(@NotNull BackupWalletVerifyFragment backupWalletVerifyFragment);
 
     void inject(@NotNull ConfirmFundsTransferDialogFragment confirmFundsTransferDialogFragment);
-
-    void inject(@NotNull PasswordRequiredActivity passwordRequiredActivity);
-
-    void inject(@NotNull AccountEditActivity accountEditActivity);
-
-    void inject(@NotNull OnboardingActivity onboardingActivity);
-
-    void inject(@NotNull AccountActivity accountActivity);
-
-    void inject(@NotNull ReceiveQrActivity receiveQrActivity);
-
-    void inject(@NotNull PairingCodeActivity pairingCodeActivity);
-
-    void inject(@NotNull TradeDetailActivity tradeDetailActivity);
 
     void inject(@NotNull ChartsActivity chartsActivity);
 
@@ -93,8 +75,6 @@ public interface PresenterComponent {
     void inject(@NotNull SSLVerifyActivity sslVerifyActivity);
 
     void inject(@NotNull BuySellLauncherActivity buySellLauncherActivity);
-
-    void inject(@NotNull CoinifySignUpActivity coinifySignUpActivity);
 
     void inject(@NotNull CoinifyVerifyEmailFragment verifyEmailFragment);
 
@@ -113,8 +93,6 @@ public interface PresenterComponent {
     void inject(@NotNull CoinifyTransactionDetailActivity coinifyTransactionDetailActivity);
 
     void inject(@NotNull AddBankAccountActivity addBankAccountActivity);
-
-    void inject(@NotNull AddAddressActivity addAddressActivity);
 
     void inject(@NotNull CoinifyAwaitingBankTransferActivity coinifyAwaitingBankTransferActivity);
 

@@ -7,8 +7,8 @@ import com.blockchain.kyc.models.nabu.KycTierStateAdapter
 import com.blockchain.kyc.models.nabu.LimitsJson
 import com.blockchain.kyc.models.nabu.TierJson
 import com.blockchain.kyc.models.nabu.TiersJson
-import com.blockchain.nabu.Authenticator
-import com.blockchain.nabu.models.NabuSessionTokenResponse
+import com.blockchain.swap.nabu.Authenticator
+import com.blockchain.swap.nabu.models.NabuSessionTokenResponse
 import com.blockchain.serialization.BigDecimalAdaptor
 import com.blockchain.testutils.MockedRetrofitTest
 import com.blockchain.testutils.getStringFromResource

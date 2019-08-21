@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.dashboard.announcements
 import android.support.annotation.VisibleForTesting
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.services.nabu.TierService
-import com.blockchain.kycui.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import io.reactivex.Single
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.PersistentPrefs

@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.buysell.coinify.signup
 
+import android.annotation.SuppressLint
 import com.google.common.base.Optional
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -14,14 +15,14 @@ import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
-import javax.inject.Inject
 
-class CoinifySignUpPresenter @Inject constructor(
+class CoinifySignUpPresenter constructor(
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager,
     private val stringUtils: StringUtils
 ) : BasePresenter<CoinifySignupView>() {
 
+    @SuppressLint("CheckResult")
     override fun onViewReady() {
         getCoinifyTokenOptional()
             .applySchedulers()
@@ -61,6 +62,7 @@ class CoinifySignUpPresenter @Inject constructor(
                 }
             }
 
+    @SuppressLint("CheckResult")
     internal fun continueVerifyIdentification() {
         getCoinifyTokenOptional()
             .flatMapSingle {
@@ -78,12 +80,12 @@ class CoinifySignUpPresenter @Inject constructor(
                             }
 
                             when {
-                            // Continuing after Konfetti fragment
+                                // Continuing after Konfetti fragment
                                 pendingState != null -> view.onStartVerifyIdentification(
                                     pendingState.redirectUrl,
                                     pendingState.externalId
                                 )
-                            // Returning after completed or failed KYC
+                                // Returning after completed or failed KYC
                                 else -> view.onStartOverview()
                             }
                         }

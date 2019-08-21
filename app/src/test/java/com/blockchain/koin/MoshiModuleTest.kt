@@ -1,9 +1,9 @@
 package com.blockchain.koin
 
 import com.blockchain.injection.kycModule
-import com.blockchain.koin.modules.homeBrewModule
 import com.blockchain.koin.modules.moshiModule
 import com.blockchain.network.modules.apiModule
+import com.blockchain.swap.koin.swapModule
 import com.squareup.moshi.Moshi
 import org.amshove.kluent.`should not be`
 import org.junit.Test
@@ -20,7 +20,7 @@ class MoshiModuleTest : AutoCloseKoinTest() {
             listOf(
                 kycModule,
                 buySellModule,
-                homeBrewModule,
+                swapModule,
                 apiModule,
                 moshiModule,
                 nabuModule

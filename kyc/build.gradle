@@ -1,7 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'com.novoda.build-properties'
 apply from: '../quality/jacocoLibrary.gradle'
 apply from: '../quality/ktlint.gradle'
@@ -21,8 +20,6 @@ android {
         versionCode Versions.versionCode
         versionName Versions.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
-        buildConfigField "boolean", "VERIFF", 'true'
     }
 
     compileOptions {
@@ -63,24 +60,11 @@ androidExtensions {
 
 dependencies {
     api project(':buysell')
-    api project(':coreui')
     api project(':notifications')
     api project(':nabu')
-    implementation Libraries.onfido
+
     implementation project(':veriff')
-    implementation(Libraries.googlePlayServicesBase) {
-        exclude group: 'com.android.support'
-    }
-    implementation Libraries.googlePlaces
-    // Utils
-    implementation Libraries.libPhoneNumber
-    // Navigation
-    implementation Libraries.navigationControllerCore
-    implementation Libraries.navigationControllerFragments
-    // RxJava
-    implementation Libraries.rxReplayShare
-    // Custom Views
-    implementation Libraries.materialDatePicker
+
     // Unit Test dependencies
     testImplementation project(':testutils')
     testImplementation project(':testutils-android')
