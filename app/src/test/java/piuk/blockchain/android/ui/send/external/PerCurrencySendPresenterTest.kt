@@ -16,6 +16,7 @@ import org.bitcoinj.params.BitcoinCashMainNetParams
 import org.bitcoinj.params.BitcoinMainNetParams
 import org.junit.Test
 import piuk.blockchain.android.data.api.bitpay.models.BitPayPaymentRequestOutput
+import piuk.blockchain.android.data.api.bitpay.models.BitPaymentInstructions
 import piuk.blockchain.android.data.api.bitpay.models.RawPaymentRequest
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.strategy.BitcoinSendStrategy
@@ -114,9 +115,11 @@ class PerCurrencySendPresenterTest {
 
         val outputs = mutableListOf(output)
 
+        val instructions = listOf(BitPaymentInstructions(outputs))
+
         val cryptoValue = CryptoValue(CryptoCurrency.BTC, output.amount)
 
-        val paymentRequest = RawPaymentRequest(outputs, memo, "2019-08-31T04:49:19Z", paymentUrl)
+        val paymentRequest = RawPaymentRequest(instructions, memo, "2019-08-31T04:49:19Z", paymentUrl)
 
         PerCurrencySendPresenter(
             btcStrategy = btcStrategy,
@@ -171,9 +174,11 @@ class PerCurrencySendPresenterTest {
 
         val outputs = mutableListOf(output)
 
+        val instructions = listOf(BitPaymentInstructions(outputs))
+
         val cryptoValue = CryptoValue(CryptoCurrency.BTC, output.amount)
 
-        val paymentRequest = RawPaymentRequest(outputs, memo, "2019-08-31T04:49:19Z", paymentUrl)
+        val paymentRequest = RawPaymentRequest(instructions, memo, "2019-08-31T04:49:19Z", paymentUrl)
 
         PerCurrencySendPresenter(
             btcStrategy = btcStrategy,

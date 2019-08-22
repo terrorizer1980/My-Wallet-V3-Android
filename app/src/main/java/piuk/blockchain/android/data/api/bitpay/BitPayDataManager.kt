@@ -2,6 +2,8 @@ package piuk.blockchain.android.data.api.bitpay
 
 import piuk.blockchain.android.data.api.bitpay.models.RawPaymentRequest
 import io.reactivex.Single
+import piuk.blockchain.android.data.api.bitpay.models.BitPayPaymentResponse
+import piuk.blockchain.android.data.api.bitpay.models.BitPaymentRequest
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 
 class BitPayDataManager constructor(
@@ -18,4 +20,18 @@ class BitPayDataManager constructor(
      */
     fun getRawPaymentRequest(invoiceId: String): Single<RawPaymentRequest> =
         bitPayService.getRawPaymentRequest(invoiceId = invoiceId).applySchedulers()
+
+    fun paymentVerificationRequest(invoiceId: String, paymentRequest: BitPaymentRequest):
+            Single<BitPayPaymentResponse> =
+        bitPayService.getPaymentVerificationRequest(
+            invoiceId = invoiceId,
+            body = paymentRequest
+        ).applySchedulers()
+
+    fun paymentSubmitRequest(invoiceId: String, paymentRequest: BitPaymentRequest):
+            Single<BitPayPaymentResponse> =
+        bitPayService.getPaymentSubmitRequest(
+            invoiceId = invoiceId,
+            body = paymentRequest
+        ).applySchedulers()
 }
