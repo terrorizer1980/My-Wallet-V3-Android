@@ -383,6 +383,7 @@ val applicationModule = applicationContext {
                 coinSelectionRemoteConfig = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
+                bitPayDataManager = get(),
                 pitLinking = get()
             )
         }

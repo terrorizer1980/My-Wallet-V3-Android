@@ -9,6 +9,7 @@ import io.reactivex.Observable
 import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.ECKey
 import org.bitcoinj.core.NetworkParameters
+import org.bitcoinj.core.Transaction
 import org.bitcoinj.crypto.BIP38PrivateKey
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
@@ -56,6 +57,19 @@ class SendDataManager(
             )
         }.logLastTx()
             .applySchedulers()
+    }
+
+    fun getTransaction(
+        unspentOutputBundle: SpendableUnspentOutputs,
+        keys: List<ECKey>,
+        toAddress: String,
+        changeAddress: String,
+        bigIntFee: BigInteger,
+        bigIntAmount: BigInteger
+    ): Transaction {
+        return paymentService.signAngGetTx(
+            unspentOutputBundle, keys, toAddress, changeAddress, bigIntFee, bigIntAmount
+        )
     }
 
     /**
