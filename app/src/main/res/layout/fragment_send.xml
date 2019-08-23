@@ -350,7 +350,7 @@
 
                     <TextView
                             android:id="@+id/bitpayMerchantText"
-                            android:layout_width="378dp"
+                            android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_marginLeft="16dp"
                             android:layout_marginRight="16dp"
@@ -360,9 +360,10 @@
                             android:visibility="gone"
                             android:gravity="center_vertical"
                             android:contentDescription="Bitpay merchant name"
-                            android:drawableRight="@drawable/ic_bitpay_logo"
+                            android:drawableEnd="@drawable/ic_bitpay_logo"
                             android:drawablePadding="5dp"
                             android:singleLine="true"
+                            android:ellipsize="end"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
