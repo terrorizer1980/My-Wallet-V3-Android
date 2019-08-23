@@ -122,7 +122,7 @@ public class LauncherPresenterTest {
         // Act
         subject.onViewReady();
         // Assert
-        verify(launcherActivity).onStartOnboarding(false);
+        verify(launcherActivity).onStartOnboarding(false,true);
         verify(accessState).setLoggedIn(true);
     }
 
@@ -157,7 +157,7 @@ public class LauncherPresenterTest {
         // Act
         subject.onViewReady();
         // Assert
-        verify(launcherActivity).onStartOnboarding(true);
+        verify(launcherActivity).onStartOnboarding(true,true);
         verify(accessState).setLoggedIn(true);
     }
 
