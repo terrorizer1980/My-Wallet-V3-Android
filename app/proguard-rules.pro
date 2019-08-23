@@ -1,10 +1,11 @@
 -verbose
 -dontobfuscate
 -ignorewarnings
+-dontoptimize
 
 # These lines allow optimisation whilst preserving stack traces
--optimizations !code/allocation/variable
--optimizations !class/unboxing/enum
+#-optimizations !code/allocation/variable
+#-optimizations !class/unboxing/enum
 
 -keepattributes SourceFile, LineNumberTable
 -keep,allowshrinking,allowoptimization class * { <methods>; }

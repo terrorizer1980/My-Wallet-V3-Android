@@ -881,7 +881,7 @@ class BitcoinSendStrategy(
         )
 
         view.updateSendingAddress(label)
-        calculateSpendableAmounts(false, "0")
+        calculateSpendableAmounts(false, view.lastEnteredCryptoAmount())
     }
 
     private fun onSendingBtcAccountSelected(account: Account) {
@@ -900,7 +900,7 @@ class BitcoinSendStrategy(
         )
 
         view.updateSendingAddress(label)
-        calculateSpendableAmounts(false, "0")
+        calculateSpendableAmounts(false, view.lastEnteredCryptoAmount())
     }
 
     private fun String.removeBchUri(): String = this.replace("bitcoincash:", "")
