@@ -18,6 +18,7 @@ import info.blockchain.wallet.util.FormatsUtil
 import info.blockchain.wallet.util.PrivateKeyFactory
 import info.blockchain.wallet.util.Tools
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
@@ -25,7 +26,12 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.ECKey
+import org.bitcoinj.core.Transaction
+import org.spongycastle.util.encoders.Hex
 import piuk.blockchain.android.R
+import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
+import piuk.blockchain.android.data.api.bitpay.models.BitPayTransaction
+import piuk.blockchain.android.data.api.bitpay.models.BitPaymentRequest
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -64,6 +70,8 @@ interface BitPayProtocol {
 
     fun setIsBitpayPaymentRequest(isBitPay: Boolean)
 
+    fun setInvoiceId(invoiceId: String)
+
     var isBitpayPaymentRequest: Boolean
 }
 
@@ -84,6 +92,7 @@ class BitcoinSendStrategy(
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig,
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
+    private val bitPayDataManager: BitPayDataManager,
     currencyState: CurrencyState
 ) : SendStrategy<SendView>(currencyState), BitPayProtocol {
 
@@ -136,6 +145,7 @@ class BitcoinSendStrategy(
     private val unspentApiResponsesBtc by unsafeLazy { HashMap<String, UnspentOutputs>() }
 
     private var feeOptions: FeeOptions? = null
+    private var invoiceId: String = ""
     private var textChangeSubject = PublishSubject.create<String>()
     private var absoluteSuggestedFee = BigInteger.ZERO
     private var maxAvailable = BigInteger.ZERO
@@ -233,6 +243,22 @@ class BitcoinSendStrategy(
         submitBitcoinTransaction()
     }
 
+    private fun bitPayObservableTransaction(transaction: Transaction): Observable<String> {
+        val txHex = transaction.toHexHash()
+
+        return bitPayDataManager.paymentVerificationRequest(invoiceId,
+            BitPaymentRequest(CryptoCurrency.BTC.toString(),
+                listOf(BitPayTransaction(txHex, transaction.messageSize)))).flatMap {
+            Single.timer(3, TimeUnit.SECONDS)
+        }.flatMap {
+            bitPayDataManager.paymentSubmitRequest(invoiceId,
+                BitPaymentRequest(CryptoCurrency.BTC.toString(),
+                    listOf(BitPayTransaction(txHex, transaction.messageSize))))
+        }.map {
+            transaction.hashAsString
+        }.toObservable()
+    }
+
     @SuppressLint("CheckResult")
     private fun submitBitcoinTransaction() {
         view.showProgressDialog(R.string.app_name)
@@ -247,14 +273,26 @@ class BitcoinSendStrategy(
             .map { pendingTransaction.changeAddress = it }
             .flatMap { getBtcKeys() }
             .flatMap {
-                sendDataManager.submitBtcPayment(
-                    pendingTransaction.unspentOutputBundle!!,
-                    it,
-                    pendingTransaction.receivingAddress,
-                    pendingTransaction.changeAddress,
-                    pendingTransaction.bigIntFee,
-                    pendingTransaction.bigIntAmount
-                )
+                if (!isBitpayPaymentRequest) {
+                    sendDataManager.submitBtcPayment(
+                        pendingTransaction.unspentOutputBundle!!,
+                        it,
+                        pendingTransaction.receivingAddress,
+                        pendingTransaction.changeAddress,
+                        pendingTransaction.bigIntFee,
+                        pendingTransaction.bigIntAmount
+                    )
+                } else {
+                    val transaction = sendDataManager.getTransaction(
+                        pendingTransaction.unspentOutputBundle!!,
+                        it,
+                        pendingTransaction.receivingAddress,
+                        pendingTransaction.changeAddress,
+                        pendingTransaction.bigIntFee,
+                        pendingTransaction.bigIntAmount
+                    )
+                    bitPayObservableTransaction(transaction)
+                }
             }
             .subscribe(
                 { hash ->
@@ -275,7 +313,6 @@ class BitcoinSendStrategy(
                         it.message,
                         Snackbar.LENGTH_INDEFINITE
                     )
-
                     logPaymentSentEvent(false, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
                 }
             )
@@ -844,7 +881,7 @@ class BitcoinSendStrategy(
         )
 
         view.updateSendingAddress(label)
-        calculateSpendableAmounts(false, "0")
+        calculateSpendableAmounts(false, view.lastEnteredCryptoAmount())
     }
 
     private fun onSendingBtcAccountSelected(account: Account) {
@@ -863,7 +900,7 @@ class BitcoinSendStrategy(
         )
 
         view.updateSendingAddress(label)
-        calculateSpendableAmounts(false, "0")
+        calculateSpendableAmounts(false, view.lastEnteredCryptoAmount())
     }
 
     private fun String.removeBchUri(): String = this.replace("bitcoincash:", "")
@@ -937,6 +974,13 @@ class BitcoinSendStrategy(
 
         return Pair.of(validated, errorMessage)
     }
+
+    override fun setInvoiceId(invoiceId: String) {
+        this.invoiceId = invoiceId
+    }
+
+    private fun Transaction.toHexHash() =
+        String(Hex.encode(bitcoinSerialize()))
 
     /**
      * Returns true if bitcoin transaction is large by checking against 3 criteria:

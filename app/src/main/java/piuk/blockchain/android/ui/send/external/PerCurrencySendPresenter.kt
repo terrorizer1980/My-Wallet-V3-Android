@@ -217,12 +217,13 @@ internal class PerCurrencySendPresenter<View : SendView>(
     private fun handleBitPayInvoice(invoiceId: String) {
         compositeDisposable += bitpayDataManager.getRawPaymentRequest(invoiceId = invoiceId)
             .doOnSuccess {
-                val cryptoValue = CryptoValue(selectedCrypto, it.outputs[0].amount)
+                val cryptoValue = CryptoValue(selectedCrypto, it.instructions[0].outputs[0].amount)
                 val merchant = it.memo.split(merchantPattern)[1]
                 val bitpayProtocol: BitPayProtocol? = delegate as? BitPayProtocol ?: return@doOnSuccess
 
-                bitpayProtocol?.setbitpayReceivingAddress(it.outputs[0].address)
+                bitpayProtocol?.setbitpayReceivingAddress(it.instructions[0].outputs[0].address)
                 bitpayProtocol?.setbitpayMerchant(merchant)
+                bitpayProtocol?.setInvoiceId(invoiceId)
                 bitpayProtocol?.setIsBitpayPaymentRequest(true)
                 view?.let { view ->
                     view.disableInput()

@@ -422,6 +422,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     }
 
     private fun resetPitAddressState() {
+        if (pitAddressState == PitAddressFieldState.CLEARED)
+            return
         pitAddressState = PitAddressFieldState.CLEARED
         pitAddress.setImageResource(R.drawable.vector_pit_send_address)
         presenter.onPitAddressCleared()
@@ -1387,6 +1389,10 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     override fun onBitPayAddressScanned() {
         bitPayAddressScanned = true
         hidePitAddressIcon()
+    }
+
+    override fun lastEnteredCryptoAmount(): String {
+        return amountCrypto.text?.takeIf { it.isBlank().not() }?.toString() ?: "0"
     }
 }
 
