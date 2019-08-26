@@ -14,11 +14,12 @@ import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressRequest
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
+import com.blockchain.kyc.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.models.nabu.WalletMercuryLink
-import com.blockchain.nabu.models.NabuOfflineTokenRequest
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.NabuSessionTokenResponse
+import com.blockchain.swap.nabu.models.NabuOfflineTokenRequest
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.NabuSessionTokenResponse
 import com.blockchain.veriff.VeriffApplicantAndToken
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -134,27 +135,12 @@ class NabuService(retrofit: Retrofit) {
         sessionToken.authHeader
     ).wrapErrorMessage()
 
-    internal fun getOnfidoApiKey(
-        sessionToken: NabuSessionTokenResponse
-    ): Single<String> = service.getOnfidoApiKey(
-        sessionToken.authHeader
-    ).map { it.key }
-        .wrapErrorMessage()
-
     internal fun startVeriffSession(
         sessionToken: NabuSessionTokenResponse
     ): Single<VeriffApplicantAndToken> = service.startVeriffSession(
         sessionToken.authHeader
     ).map { VeriffApplicantAndToken(it.applicantId, it.token) }
         .wrapErrorMessage()
-
-    internal fun submitOnfidoVerification(
-        sessionToken: NabuSessionTokenResponse,
-        applicantId: String
-    ): Completable = service.submitVerification(
-        ApplicantIdRequest(applicantId),
-        sessionToken.authHeader
-    ).wrapErrorMessage()
 
     internal fun submitVeriffVerification(
         sessionToken: NabuSessionTokenResponse
@@ -199,10 +185,10 @@ class NabuService(retrofit: Retrofit) {
 
     internal fun sendWalletAddressesToThePit(
         sessionToken: NabuSessionTokenResponse,
-        addressMap: Map<String, String> // Crypto symbol -> address
+        request: SendWithdrawalAddressesRequest
     ): Completable = service.sharePitReceiveAddresses(
         sessionToken.authHeader,
-        addressMap
+        request
     ).wrapErrorMessage()
 
     internal fun fetchPitSendToAddressForCrypto(

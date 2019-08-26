@@ -7,8 +7,8 @@ import com.blockchain.activities.StartOnboarding
 import com.blockchain.activities.StartSwap
 import com.blockchain.balance.TotalBalance
 import com.blockchain.balance.plus
-import com.blockchain.kycui.settings.KycStatusHelper
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
@@ -16,9 +16,13 @@ import com.blockchain.ui.password.SecondPasswordHandler
 import info.blockchain.wallet.util.PrivateKeyFactory
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
+import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
+import piuk.blockchain.android.data.api.bitpay.BitPayService
 import piuk.blockchain.android.data.cache.DynamicFeeCache
+import piuk.blockchain.android.data.datamanagers.PromptManager
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
+import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
@@ -27,22 +31,36 @@ import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.thepit.PitLinkingImpl
 import piuk.blockchain.android.thepit.ThePitDeepLinkParser
+import piuk.blockchain.android.ui.account.AccountEditPresenter
+import piuk.blockchain.android.ui.account.AccountPresenter
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
+import piuk.blockchain.android.ui.auth.LandingPresenter
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.PinEntryPresenter
+import piuk.blockchain.android.ui.backup.start.BackupWalletStartingPresenter
+import piuk.blockchain.android.ui.backup.wordlist.BackupWalletWordListPresenter
 import piuk.blockchain.android.ui.balance.BalancePresenter
+import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifySignUpPresenter
 import piuk.blockchain.android.ui.buysell.createorder.BuySellBuildOrderPresenter
+import piuk.blockchain.android.ui.buysell.payment.bank.addaddress.AddAddressPresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
+import piuk.blockchain.android.ui.createwallet.CreateWalletPresenter
 import piuk.blockchain.android.ui.dashboard.DashboardPresenter
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
+import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
+import piuk.blockchain.android.ui.home.MainPresenter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.login.ManualPairingPresenter
 import piuk.blockchain.android.ui.onboarding.OnBoardingStarter
+import piuk.blockchain.android.ui.onboarding.OnboardingPresenter
+import piuk.blockchain.android.ui.pairingcode.PairingCodePresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
+import piuk.blockchain.android.ui.receive.ReceiveQrPresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
+import piuk.blockchain.android.ui.recover.RecoverFundsPresenter
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.PerCurrencySendPresenter
 import piuk.blockchain.android.ui.send.external.SendPresenter
@@ -54,12 +72,15 @@ import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.send.strategy.PaxSendStrategy
 import piuk.blockchain.android.ui.settings.SettingsPresenter
 import piuk.blockchain.android.ui.swap.SwapStarter
+import piuk.blockchain.android.ui.swapintro.SwapIntroPresenter
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
 import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionHelper
+import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
+import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
 import piuk.blockchain.android.util.StringUtils
@@ -71,6 +92,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.DateUtil
+import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import java.util.Locale
 
 val applicationModule = applicationContext {
@@ -145,7 +167,8 @@ val applicationModule = applicationContext {
                 xlmDataManager = get(),
                 environmentSettings = get(),
                 exchangeRates = get(),
-                paxAccount = get("pax")
+                paxAccount = get("pax"),
+                crashLogger = get()
             )
         }
 
@@ -180,6 +203,48 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            PromptManager(get(), get(), get())
+        }
+
+        factory {
+            MainPresenter(
+                prefs = get(),
+                appUtil = get(),
+                accessState = get(),
+                payloadManagerWiper = get(),
+                payloadDataManager = get(),
+                settingsDataManager = get(),
+                coinifyDataManager = get(),
+                buyDataManager = get(),
+                dynamicFeeCache = get(),
+                exchangeService = get(),
+                stringUtils = get(),
+                exchangeRateFactory = get(),
+                rxBus = get(),
+                feeDataManager = get(),
+                promptManager = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                currencyState = get(),
+                walletOptionsDataManager = get(),
+                metadataManager = get(),
+                shapeShiftDataManager = get(),
+                environmentSettings = get(),
+                kycStatusHelper = get(),
+                lockboxDataManager = get(),
+                deepLinkProcessor = get(),
+                sunriverCampaignHelper = get(),
+                xlmDataManager = get(),
+                paxAccount = get(),
+                pitFeatureFlag = get("ff_pit_linking"),
+                pitLinking = get(),
+                nabuDataManager = get(),
+                nabuToken = get(),
+                crashLogger = get()
+            )
+        }
+
+        factory {
             BuySellBuildOrderPresenter(
                 coinifyDataManager = get(),
                 sendDataManager = get(),
@@ -193,6 +258,78 @@ val applicationModule = applicationContext {
                 nabuToken = get(),
                 nabuDataManager = get(),
                 coinSelectionRemoteConfig = get()
+            )
+        }
+
+        factory {
+            UpgradeWalletPresenter(
+                prefs = get(),
+                appUtil = get(),
+                accessState = get(),
+                stringUtils = get(),
+                authDataManager = get(),
+                payloadDataManager = get(),
+                crashLogger = get()
+            )
+        }
+
+        factory {
+            AddAddressPresenter(
+                coinifyDataManager = get(),
+                exchangeService = get(),
+                buyDataManager = get()
+            )
+        }
+
+        factory {
+            CoinifySignUpPresenter(
+                coinifyDataManager = get(),
+                exchangeService = get(),
+                stringUtils = get()
+            )
+        }
+
+        factory {
+            PairingCodePresenter(
+                qrCodeDataManager = get(),
+                stringUtils = get(),
+                payloadDataManager = get(),
+                authDataManager = get()
+            )
+        }
+
+        factory {
+            CreateWalletPresenter(
+                payloadDataManager = get(),
+                prefs = get(),
+                appUtil = get(),
+                accessState = get(),
+                prngFixer = get()
+            )
+        }
+
+        factory {
+            BackupWalletStartingPresenter(
+                payloadDataManager = get()
+            )
+        }
+
+        factory {
+            BackupWalletWordListPresenter(
+                backupWalletUtil = get()
+            )
+        }
+
+        factory {
+            BackupWalletUtil(
+                payloadDataManager = get(),
+                environmentConfig = get()
+            )
+        }
+
+        factory {
+            FingerprintPresenter(
+                fingerprintHelper = get()
             )
         }
 
@@ -223,7 +360,8 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 envSettings = get(),
                 exchangeRateFactory = get(),
-                pitLinkingFeatureFlag = get("ff_pit_linking")
+                pitLinkingFeatureFlag = get("ff_pit_linking"),
+                bitpayDataManager = get()
             )
         }
 
@@ -244,7 +382,9 @@ val applicationModule = applicationContext {
                 exchangeRates = get(),
                 coinSelectionRemoteConfig = get(),
                 nabuDataManager = get(),
-                nabuToken = get()
+                nabuToken = get(),
+                bitPayDataManager = get(),
+                pitLinking = get()
             )
         }
 
@@ -266,7 +406,8 @@ val applicationModule = applicationContext {
                 currencyState = get(),
                 coinSelectionRemoteConfig = get(),
                 nabuToken = get(),
-                nabuDataManager = get()
+                nabuDataManager = get(),
+                pitLinking = get()
             )
         }
 
@@ -284,7 +425,8 @@ val applicationModule = applicationContext {
                 currencyState = get(),
                 currencyPrefs = get(),
                 nabuToken = get(),
-                nabuDataManager = get()
+                nabuDataManager = get(),
+                pitLinking = get()
             )
         }
 
@@ -299,7 +441,8 @@ val applicationModule = applicationContext {
                 fiatExchangeRates = get(),
                 sendFundsResultLocalizer = get(),
                 nabuDataManager = get(),
-                nabuToken = get()
+                nabuToken = get(),
+                pitLinking = get()
             )
         }
 
@@ -318,7 +461,8 @@ val applicationModule = applicationContext {
                 currencyState = get(),
                 currencyPrefs = get(),
                 nabuToken = get(),
-                nabuDataManager = get()
+                nabuDataManager = get(),
+                pitLinking = get()
             )
         }
 
@@ -338,6 +482,10 @@ val applicationModule = applicationContext {
             ThePitDeepLinkParser()
         }
 
+        factory {
+            SwapIntroPresenter(prefs = get())
+        }
+
         factory { EmailVerificationDeepLinkHelper() }
 
         factory {
@@ -347,6 +495,45 @@ val applicationModule = applicationContext {
                 sunriverDeepLinkHelper = get(),
                 emailVerifiedLinkHelper = get(),
                 thePitDeepLinkParser = get()
+            )
+        }
+
+        factory {
+            OnboardingPresenter(
+                fingerprintHelper = get(),
+                accessState = get(),
+                settingsDataManager = get()
+            )
+        }
+
+        factory {
+            AccountPresenter(
+                payloadDataManager = get(),
+                bchDataManager = get(),
+                metadataManager = get(),
+                fundsDataManager = get(),
+                prefs = get(),
+                appUtil = get(),
+                privateKeyFactory = get(),
+                environmentSettings = get(),
+                currencyState = get(),
+                currencyFormatManager = get()
+            )
+        }
+
+        factory {
+            TransferFundsDataManager(
+                /* payloadDataManager */ get(),
+                /* sendDataManager */ get(),
+                /* dynamicFeeCache */ get(),
+                /* coinSelectionRemoteConfig */ get()
+            )
+        }
+
+        factory {
+            ReceiveQrPresenter(
+                payloadDataManager = get(),
+                qrCodeDataManager = get()
             )
         }
 
@@ -450,18 +637,30 @@ val applicationModule = applicationContext {
 
         factory {
             PinEntryPresenter(
-                mAuthDataManager = get(),
+                authDataManager = get(),
                 appUtil = get(),
                 prefs = get(),
-                mPayloadDataManager = get(),
-                mStringUtils = get(),
-                mFingerprintHelper = get(),
-                mAccessState = get(),
+                payloadDataManager = get(),
+                stringUtils = get(),
+                fingerprintHelper = get(),
+                accessState = get(),
                 walletOptionsDataManager = get(),
                 environmentSettings = get(),
                 prngFixer = get(),
-                mobileNoticeRemoteConfig = get()
+                mobileNoticeRemoteConfig = get(),
+                crashLogger = get()
             )
+        }
+
+        factory {
+            LandingPresenter(
+                environmentSettings = get(),
+                promptManager = get()
+            )
+        }
+
+        factory {
+            PromptManager(prefs = get(), payloadDataManager = get(), transactionListDataManager = get())
         }
 
         bean {
@@ -474,6 +673,20 @@ val applicationModule = applicationContext {
                 xlmDataManager = get()
             )
         }.bind(PitLinking::class)
+
+        factory {
+            BitPayDataManager(
+                bitPayService = get()
+            )
+        }
+
+        factory {
+            BitPayService(
+                environmentConfig = get(),
+                retrofit = get("kotlin"),
+                rxBus = get()
+            )
+        }
 
         factory {
             PitPermissionsPresenter(
@@ -491,10 +704,31 @@ val applicationModule = applicationContext {
                 emailSyncUpdater = get()
             )
         }
+
+        factory {
+            AccountEditPresenter(
+                prefs = get(),
+                stringUtils = get(),
+                payloadDataManager = get(),
+                bchDataManager = get(),
+                metadataManager = get(),
+                sendDataManager = get(),
+                privateKeyFactory = get(),
+                swipeToReceiveHelper = get(),
+                dynamicFeeCache = get(),
+                environmentSettings = get(),
+                currencyFormatManager = get(),
+                coinSelectionRemoteConfig = get()
+            )
+        }
     }
 
     factory {
         FirebaseMobileNoticeRemoteConfig(remoteConfig = get()) as MobileNoticeRemoteConfig
+    }
+
+    factory {
+        OverlayDetection(prefs = get())
     }
 
     factory {
@@ -507,11 +741,18 @@ val applicationModule = applicationContext {
 
     factory { DateUtil(get()) }
 
-    bean { PrngHelper(get(), get()) as PrngFixer }
+    bean {
+        PrngHelper(
+            context = get(),
+            accessState = get()
+        )
+    }.bind(PrngFixer::class)
 
     factory { PrivateKeyFactory() }
 
     bean { DynamicFeeCache() }
 
     factory { CoinSelectionRemoteConfig(get()) }
+
+    factory { RecoverFundsPresenter() }
 }

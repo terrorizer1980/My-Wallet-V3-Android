@@ -12,8 +12,8 @@ import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import info.blockchain.wallet.payload.data.Wallet
 import io.reactivex.Observable
-import okhttp3.MediaType
 import okhttp3.ResponseBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.amshove.kluent.mock
 import org.bitcoinj.core.ECKey
 import org.bitcoinj.crypto.DeterministicKey
@@ -286,7 +286,7 @@ class PayloadServiceTest {
         // Arrange
         val txHash = "TX_HASH"
         val note = "NOTE"
-        whenever(mockPayloadManager.payload.txNotes).thenReturn(mutableMapOf())
+        whenever(mockPayloadManager.payload?.txNotes).thenReturn(mutableMapOf())
         whenever(mockPayloadManager.save()).thenReturn(true)
         // Act
         val testObserver = subject.updateTransactionNotes(txHash, note).test()
@@ -389,7 +389,7 @@ class PayloadServiceTest {
     fun registerMdid() {
         // Arrange
         val mockKey: DeterministicKey = mock()
-        val response = ResponseBody.create(MediaType.parse("application/json"), "{}")
+        val response = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
         whenever(mockPayloadManager.metadataNodeFactory.sharedMetadataNode)
             .thenReturn(mockKey)
         whenever(mockPayloadManager.registerMdid(mockKey)).thenReturn(Observable.just(response))
@@ -406,7 +406,7 @@ class PayloadServiceTest {
     fun unregisterMdid() {
         // Arrange
         val mockKey: DeterministicKey = mock()
-        val response = ResponseBody.create(MediaType.parse("application/json"), "{}")
+        val response = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
         whenever(mockPayloadManager.metadataNodeFactory.sharedMetadataNode)
             .thenReturn(mockKey)
         whenever(mockPayloadManager.unregisterMdid(mockKey)).thenReturn(Observable.just(response))

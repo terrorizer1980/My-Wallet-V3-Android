@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by adambennett on 09/08/2016.
  */
-@Config(sdk = 23, constants = BuildConfig.class, application = BlockchainTestApplication.class)
+@Config(sdk = 23, application = BlockchainTestApplication.class)
 @RunWith(RobolectricTestRunner.class)
 public class LauncherPresenterTest {
 

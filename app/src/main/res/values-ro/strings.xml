@@ -120,8 +120,8 @@
   <string name="rate_us">Ne evalua</string>
   <string name="licenses">Licențe</string>
   <string name="email_chooser">Trimite email…</string>
-  <string name="about">Blochează portofelul %1$s 
- © bloc %2$s Blockchain Luxembourg SA 
+  <string name="about">Blochează portofelul %1$s
+ © bloc %2$s Blockchain Luxembourg SA
  Toate drepturile rezervate.</string>
   <string name="merchant_download">Aplicație gratuită pentru comercianți</string>
   <string name="password_or_wipe">Introduceți parola sau uitați acest portofel</string>
@@ -246,27 +246,27 @@
   <string name="privx_required">Cheie privată necesare</string>
   <string name="watch_only_spend_instructions">Această acțiune necesită cheia privată pentru adresa Bitcoin %1$s . Scanați codul QR.</string>
   <string name="invalid_private_key">Cheie privată nevalidă</string>
-  <string name="watch_only_import_warning">Sunteți pe cale să importați o adresă care nu este cheltuită, o adresă (sau un script de cheie publică) 
- stocate în portofel fără cheia privată corespunzătoare. Acest 
- înseamnă că fondurile pot fi cheltuite NUMAI dacă aveți cheia privată stocată în altă parte. Dacă faci 
- nu aveți cheia privată stocată, NU instruiți pe nimeni să vă trimită un mesaj de avertizare non-cheltuieli 
- adresa. 
+  <string name="watch_only_import_warning">Sunteți pe cale să importați o adresă care nu este cheltuită, o adresă (sau un script de cheie publică)
+ stocate în portofel fără cheia privată corespunzătoare. Acest
+ înseamnă că fondurile pot fi cheltuite NUMAI dacă aveți cheia privată stocată în altă parte. Dacă faci
+ nu aveți cheia privată stocată, NU instruiți pe nimeni să vă trimită un mesaj de avertizare non-cheltuieli
+ adresa.
 
- Aceste opțiuni sunt recomandate numai utilizatorilor avansați. Continua? 
+ Aceste opțiuni sunt recomandate numai utilizatorilor avansați. Continua?
 </string>
   <string name="scan_private_key">Scanați cheia privată</string>
   <string name="private_key_successfully_imported">Cheia privată a fost importată cu succes.</string>
   <string name="private_key_not_matching_address">NOTĂ: Cheia privată scanată nu corespunde adresei dvs. nerecuperabile. Pentru a vă cheltui fondurile de la această adresă, vă rugăm să scanați cheia privată corectă.</string>
   <string name="watch_only">Nu se pot cheltui</string>
-  <string name="extended_public_key_description">Dacă sunteți comerciant, arătați xPub și utilizați 
- Aplicația Blockchain Merchant pentru a primi fonduri în siguranță și în mod privat. 
+  <string name="extended_public_key_description">Dacă sunteți comerciant, arătați xPub și utilizați
+ Aplicația Blockchain Merchant pentru a primi fonduri în siguranță și în mod privat.
 
- Păstrați-vă propriul xPub. 
- Cineva care are acces la xPub vă va putea vedea toate fondurile și tranzacțiile. 
+ Păstrați-vă propriul xPub.
+ Cineva care are acces la xPub vă va putea vedea toate fondurile și tranzacțiile.
 </string>
   <string name="extended_public_key_description_bch_only">Păstrați-vă propriul xPub. Cineva care are acces la xPub vă va putea vedea toate fondurile și tranzacțiile.</string>
-  <string name="watch_only_description">Aceasta este o adresă care nu poate fi plătită. Să-ți cheltuiști fondurile 
- acest portofel, vă rog să vă scana cheia privată. 
+  <string name="watch_only_description">Aceasta este o adresă care nu poate fi plătită. Să-ți cheltuiști fondurile
+ acest portofel, vă rog să vă scana cheia privată.
 </string>
   <string name="success">Succesul</string>
   <string name="default_label">Mod implicit</string>
@@ -291,10 +291,10 @@
   <string name="amount">Suma</string>
   <string name="recommended_fee">Taxele de tranzacție au impact asupra vitezei reale a rețelei miniere Bitcoin pentru confirmarea tranzacțiilor dvs. și depind de condițiile actuale ale rețelei. Vă recomandăm taxa de mai jos pentru această tranzacție în acest moment.</string>
   <string name="not_now">nu acum</string>
-  <string name="high_fee_not_necessary_info">Ați specificat o taxă de tranzacție neobișnuit de mare de %1$s . 
+  <string name="high_fee_not_necessary_info">Ați specificat o taxă de tranzacție neobișnuit de mare de %1$s .
 
  Chiar dacă reduceți comisionul la %2$s , vă puteți aștepta ca tranzacția să confirme în următoarele 10 minute (1 bloc).</string>
-  <string name="low_fee_suggestion">Ați specificat o taxă de tranzacție excepțional de mică de %1$s . 
+  <string name="low_fee_suggestion">Ați specificat o taxă de tranzacție excepțional de mică de %1$s .
 
  Tranzacția dvs. poate fi blocată și, eventual, nu poate fi confirmată. Pentru a crește probabilitatea ca tranzacția dvs. să confirme în aproximativ o oră (6 blocuri), vă recomandăm cu insistență o taxă de cel puțin %2$s .</string>
   <string name="raise_fee">Ridicați taxa</string>
@@ -360,7 +360,7 @@
   <string name="sms_verified">Numărul de telefon mobil verificat</string>
   <string name="preferences">Preferințe</string>
   <string name="two_fa_summary">Protejați-vă portofelul împotriva accesului neautorizat, activând Verificarea în doi pași.</string>
-  <string name="two_fa_description">Protejați-vă portofelul împotriva accesului neautorizat, activând Verificarea în doi pași. Puteți alege să utilizați numărul de telefon mobil pentru a vă asigura portofelul. Acest cod va fi solicitat când încercați să accesați portofelul dvs. prin browserul web. 
+  <string name="two_fa_description">Protejați-vă portofelul împotriva accesului neautorizat, activând Verificarea în doi pași. Puteți alege să utilizați numărul de telefon mobil pentru a vă asigura portofelul. Acest cod va fi solicitat când încercați să accesați portofelul dvs. prin browserul web.
 
  Pentru a utiliza în schimb alte metode de autentificare, vă rugăm să vă conectați la portofelul web de la %1$s</string>
   <string name="rate_title">Evaluați portofelul de blocare</string>
@@ -378,7 +378,7 @@
   <string name="pairing_code_show_qr">Afișați codul QR</string>
   <string name="pairing_code_hide_qr">Ascundeți codul QR</string>
   <string name="pairing_code_warning_1">Păstrați acest cod ascuns până când sunteți gata.</string>
-  <string name="pairing_code_warning_2">Păstrați acest cod în siguranță! 
+  <string name="pairing_code_warning_2">Păstrați acest cod în siguranță!
  Nu împărtășiți cu ceilalți.</string>
   <string name="email_request_subject_eth">Solicitare de plată prin eter</string>
   <string name="email_request_subject_bch">Bitcoin Cerere de plată în numerar</string>
@@ -397,9 +397,9 @@
   <string name="forget_wallet">Uita de portofel</string>
   <string name="forget_wallet_warning">Aceasta va șterge toate datele din portofel pe acest dispozitiv. Vă rugăm să confirmați că informațiile dvs. din portofel sunt salvate în alt mod, altfel orice bitcoin din acest portofel va fi inaccesibil!</string>
   <string name="api_fail">Imposibil de conectat la server. Vă rugăm să încercați din nou mai târziu.</string>
-  <string name="large_tx_warning">Aceasta este o tranzacție bitcoin supradimensionată. Portofelul trebuie să fie 
- consolidați multe plăți mai mici pe care le-ați primit în trecut. Acest lucru necesită un relativ 
- taxă mare pentru a fi confirmată rapid. 
+  <string name="large_tx_warning">Aceasta este o tranzacție bitcoin supradimensionată. Portofelul trebuie să fie
+ consolidați multe plăți mai mici pe care le-ați primit în trecut. Acest lucru necesită un relativ
+ taxă mare pentru a fi confirmată rapid.
 </string>
   <string name="go_back">Mergi înapoi</string>
   <string name="accept_higher_fee">Acceptați o taxă mai mare</string>
@@ -452,7 +452,7 @@
   <string name="backup_word_mismatch">Necorespunderea cuvintelor</string>
   <string name="backup_done">TERMINAT</string>
   <string name="backup_lost_mnemonic">Ai pierdut fraza de backup de 12 cuvinte?</string>
-  <string name="fingerprint_prompt">Utilizați amprenta pentru acces mai rapid și mai ușor la portofel. 
+  <string name="fingerprint_prompt">Utilizați amprenta pentru acces mai rapid și mai ușor la portofel.
 
  Confirmați amprenta pentru a continua</string>
   <string name="fingerprint_description">Confirmați amprenta pentru a continua</string>
@@ -544,7 +544,7 @@
   <string name="eth_support_contract_not_allowed">Nu sunt acceptate adrese de cont.</string>
   <string name="eth_support_only_eth">În prezent, suportăm ETH numai - nu puteți primi jetoane la această adresă</string>
   <string name="eth_unconfirmed_wait">Așteptați până ce confirmarea tranzacției dvs. anterioare</string>
-  <string name="eth_transaction_complete">Tranzacția este completă! Tranzacțiile și soldul dvs. vor fi actualizate în curând, acest lucru poate dura câteva minute. 
+  <string name="eth_transaction_complete">Tranzacția este completă! Tranzacțiile și soldul dvs. vor fi actualizate în curând, acest lucru poate dura câteva minute.
 </string>
   <string name="dashboard_title">Tabloul de bord</string>
   <string name="dashboard_time_span_day">Zi</string>
@@ -687,9 +687,9 @@
   <string name="cannot_launch_app">Blocarea portofelului nu poate fi executată pe acest dispozitiv.</string>
   <string name="exit">Ieșire</string>
   <string name="screen_overlay_warning">Ecranul de acoperire a fost detectat!</string>
-  <string name="screen_overlay_note">Aplicațiile care utilizează suprapuneri de ecran au capacitatea de a vă păcăli 
- în atingerea obiectelor nevăzute și, eventual, în furtul fondurilor. Rețineți că acest avertisment va fi, de asemenea, declanșat de aplicațiile de diminuare a ecranului. Dacă sunteți încrezător că există 
- nu este o amenințare pe care o puteți continua. 
+  <string name="screen_overlay_note">Aplicațiile care utilizează suprapuneri de ecran au capacitatea de a vă păcăli
+ în atingerea obiectelor nevăzute și, eventual, în furtul fondurilor. Rețineți că acest avertisment va fi, de asemenea, declanșat de aplicațiile de diminuare a ecranului. Dacă sunteți încrezător că există
+ nu este o amenințare pe care o puteți continua.
 </string>
   <string name="dialog_continue">Continuare</string>
   <string name="insufficient_funds_with_max">Fondurile insuficiente, cel mai mult puteți trimite este %1$s</string>
@@ -703,12 +703,12 @@
   <string name="lockbox_landing_get_yours_button">Cumpară acum</string>
   <string name="lockbox_landing_already_owned_title">Deja proprie?</string>
   <string name="lockbox_landing_already_owned_message">Din calculatorul dvs., conectați-vă la blocchain.com și conectați caseta de blocare.</string>
-  <string name="lockbox_landing_learn_more">Doriți să aflați mai multe? Apăsați aici pentru a vizita 
+  <string name="lockbox_landing_learn_more">Doriți să aflați mai multe? Apăsați aici pentru a vizita
  %1$s</string>
   <string name="lockbox_landing_coming_soon_title">Balanțele vin în curând</string>
   <string name="lockbox_landing_coming_soon_message">În prezent, nu putem afișa balanța Lockbox. Nu vă faceți griji, fondurile dvs. sunt sigure. Vom adăuga această caracteristică în curând. În timp ce așteptați, puteți verifica soldul dvs. pe web.</string>
   <string name="lockbox_landing_coming_soon_button">Verificați soldul meu</string>
-  <string name="coinify_account_created_success">Succes! 
+  <string name="coinify_account_created_success">Succes!
  Cont creat</string>
   <string name="buy_sell_launcher_error">Eroare la preluarea datelor de cumpărare / vânzare</string>
   <string name="buy_sell_buy">Cumpărare</string>
@@ -717,11 +717,11 @@
   <string name="buy_sell_overview_pending_kyc_not_found">Câștigarea KYC nu a fost găsită, încercați din nou mai târziu.</string>
   <string name="buy_sell_overview_could_not_start_kyc">Nu am putut reporni KYC, încercați din nou mai târziu.</string>
   <string name="buy_sell_overview_empty_list">Istoricul comenzilor dvs. va apărea aici</string>
-  <string name="buy_sell_overview_in_review_title">Verificarea identității 
+  <string name="buy_sell_overview_in_review_title">Verificarea identității
  în revizuire</string>
-  <string name="buy_sell_overview_denied_title">Verificarea identității 
+  <string name="buy_sell_overview_denied_title">Verificarea identității
  negat</string>
-  <string name="buy_sell_overview_pending_title">Identitate completă 
+  <string name="buy_sell_overview_pending_title">Identitate completă
  verificare</string>
   <string name="buy_sell_overview_in_review_button">Cumpărați acum cu cardul</string>
   <string name="buy_sell_overview_denied_button">încearcă din nou</string>
@@ -756,7 +756,7 @@
   <string name="buy_sell_detail_bank_disclaimer">Primirea de fonduri în contul dvs. bancar durează de obicei între 2 și 3 zile lucrătoare.</string>
   <string name="buy_sell_detail_refund_message">Coinify a anulat această comandă de vânzare și v-a trimis un e-mail cu instrucțiuni privind modul de rambursare a fondurilor.</string>
   <string name="buy_sell_details_whats_next">Ce urmeaza?</string>
-  <string name="buy_sell_awaiting_funds_description">Trimiteți %1$s pentru a coincide în următoarele 48 de ore. 
+  <string name="buy_sell_awaiting_funds_description">Trimiteți %1$s pentru a coincide în următoarele 48 de ore.
 
  Trimiterea fondurilor din contul bancar trebuie să fie în același nume cu ID-ul dvs. emis de stat. În caz contrar, acesta va fi respins.</string>
   <string name="buy_sell_awaiting_funds_already_sent">Am trimis deja fondurile la Coinify</string>
@@ -833,7 +833,7 @@
   <string name="buy_sell_confirmation_you_will_receive">Creditul total datorat</string>
   <string name="buy_sell_confirmation_btc_to_receive_description">%1$s BTC va fi trimis direct din portofelul Blockchain pentru a coinaliza odată ce apăsați Trimiteți.</string>
   <string name="buy_sell_confirmation_sell_rate_disclaimer">Apreciez că Coinify îmi va procesa comanda după încheierea tranzacției bitcoin și că bitcoinul va fi tranzacționat la cursul de schimb disponibil la momentul respectiv, care poate diferi de rata afișată.</string>
-  <string name="buy_sell_card_payment_success_title">Succes! 
+  <string name="buy_sell_card_payment_success_title">Succes!
  Ordinul a fost creat</string>
   <string name="buy_sell_card_payment_success_message">Fondurile ar trebui să ajungă la contul dvs. în termen de 3 zile.</string>
   <string name="buy_sell_card_order_created_title">Ordinul a fost creat</string>
@@ -1006,7 +1006,6 @@
   <string name="kyc_veriff_splash_id_card">Codul de identitate național</string>
   <string name="kyc_veriff_splash_residence_permit">Residence Card</string>
   <string name="kyc_veriff_splash_continue">Continua</string>
-  <string name="kyc_help_dialog_need_some_help">\@ String / need_some_help</string>
   <string name="kyc_help_dialog_need_some_help_body">Echipa noastră de suport pentru blocuri a scris Ghiduri de asistență explicând de ce trebuie să vă verificăm identitatea.</string>
   <string name="kyc_help_dialog_read_now">Citeste acum</string>
   <string name="kyc_help_dialog_read_now_url">https://blockchain.zendesk.com/hc/en-us/categories/360001135512-Identity-Verification</string>
@@ -1129,10 +1128,10 @@
   <string name="morph_refunded_title">Expirat</string>
   <string name="morph_step_number">Pasul %1$s de 3</string>
   <string name="morph_confirm">A confirma</string>
-  <string name="morph_success_dlg_text">Succes! Schimbul tău are 
+  <string name="morph_success_dlg_text">Succes! Schimbul tău are
  a început!</string>
   <string name="morph_success_for_first_gold_pax_trade_title">Schimbul dvs. a fost pornit!</string>
-  <string name="morph_success_for_first_gold_pax_trade_description">Chiar mai bine, din moment ce aveți nevoie de ETH pentru a efectua tranzacții USD PAX, am redirecționat destul ETH în Wallet pentru a acoperi primele 3 tranzacții 
+  <string name="morph_success_for_first_gold_pax_trade_description">Chiar mai bine, din moment ce aveți nevoie de ETH pentru a efectua tranzacții USD PAX, am redirecționat destul ETH în Wallet pentru a acoperi primele 3 tranzacții
  🙌</string>
   <string name="morph_success_dlg_button">Vezi detaliile comenzii</string>
   <string name="morph_order_id_title">Comanda ID</string>
@@ -1171,10 +1170,8 @@
   <string name="homebrew_confirmation_error_fetching_fee">Eroare la preluarea taxei</string>
   <string name="under_limit">Sub limită</string>
   <string name="over_limit">Peste limită</string>
-  <string name="morph_help_dialog_need_some_help">\@ String / need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">Echipa noastră de asistență în bloc este în picioare pentru a răspunde la întrebările pe care le aveți.</string>
   <string name="morph_help_dialog_view_swap_limit">Vedeți limita mea de swap</string>
-  <string name="morph_help_dialog_contact_support">\@ String / contact_support</string>
   <string name="toolbar_cmd_home">Acasă</string>
   <string name="toolbar_cmd_send">Trimite</string>
   <string name="toolbar_cmd_receive">Cerere</string>
@@ -1204,4 +1201,63 @@
   <string name="kyc_gold_unavailable_goto_swap">Începeți tranzacționarea</string>
   <string name="gold_unavailable">Aurul nu este disponibil</string>
   <string name="veriff_identify">Verify Identify</string>
+  <string name="more_info_needed">Mai multe informații necesare</string>
+  <string name="coinify_kyc_body">Pentru a continua să utilizați cumpărați și vindeți, va trebui să vă actualizați profilul. Odată finalizat, veți debloca și limite de tranzacționare mai mari în swap.</string>
+  <string name="coinify_kyc_cta">Actualizează acum</string>
+  <string name="coinify_kyc_dismiss">Aflați mai multe</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">Dolarii americani digitali</string>
+  <string name="pax_intro_popup_text">Introducerea USD PAX, un activ de criptare sigur și stabil, pe care îl puteți utiliza pentru a păstra valoarea. 1 PAX este egal cu 1 USD ..</string>
+  <string name="pax_intro_popup_cta_btn">Ia USD PAX Acum</string>
+  <string name="buy_sell_error_country_not_supported">Țara dvs. nu este acceptată pentru cumpărare / vânzare în acest moment. Lucrăm să adăugăm sprijin în mai multe domenii în curând.</string>
+  <string name="no_sell_available_message">Din păcate, cumpărarea și vânzarea nu sunt disponibile în statul dvs. Lucrăm din greu pentru ao aduce înapoi cât mai curând posibil.</string>
+  <string name="send">Trimite</string>
+  <string name="item_the_pit">Pitul</string>
+  <string name="btn_close">Închide</string>
+  <string name="sunriver_announcement_stellar_claim_title">Revendicați stelarul (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">Se pare că ai început să-ți verifici 
+ identitate, dar nu a terminat. Ridică-te de unde ai plecat. 
+</string>
+  <string name="sunriver_announcement_stellar_claim_cta">Continuați Verificarea</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">XLM-ul dvs. este pe drum</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">Am verificat cu succes 
+ identitatea ta. 
+</string>
+  <string name="pit_announcement_description">Este timpul să ridicăm nivelul la un schimb de cripte mai bun. Primii 100.000 de comercianți care se vor înscrie vor tranzacționa gratuit timp de 30 de zile.</string>
+  <string name="pit_announcement_introducing_link">Verifică</string>
+  <string name="pit_logo_content_descr">Logo-ul Pit</string>
+  <string name="pit_slogan_kyc_promo">Singurul schimb care se conectează la Wallet.</string>
+  <string name="pit_thunder_kyc_promo">Comerț rapid</string>
+  <string name="pit_security_kyc_promo"><![CDATA[Lichid și fiabil]]></string>
+  <string name="pit_built_kyc_promo">Construit de Blockchain.com</string>
+  <string name="pit_dollar_kyc_promo">Taxe reduse</string>
+  <string name="pit_permission_app_can">Această aplicație va putea:</string>
+  <string name="pit_permission_app_cant">Această aplicație nu va putea:</string>
+  <string name="pit_permission_subtitle">Nu voi putea să:</string>
+  <string name="pit_permission_1">Facilitați transferurile criptate între conturi</string>
+  <string name="pit_permission_2">Distribuiți-vă statutul de nivel de aur sau de argint</string>
+  <string name="pit_permission_3">Adăugați băncile conectate</string>
+  <string name="pit_permission_4">Vizualizați parola portofelului</string>
+  <string name="pit_connect_now">Conectați acum</string>
+  <string name="pit_setting_title">Pitul</string>
+  <string name="pit_setting_connect">Conectați</string>
+  <string name="pit_setting_connected">Conectat</string>
+  <string name="launch_the_pit">Lansați groapa</string>
+  <string name="pit_contact_support">Contactați asistența</string>
+  <string name="pit_loading_dialog_title">Vă duc la PIT</string>
+  <string name="pit_loading_dialog_description">O fereastră nouă trebuie deschisă în 10 secunde.</string>
+  <string name="pit_verify_email_title">Verifica-ți email-ul</string>
+  <string name="pit_verify_email_description">Tocmai v-am trimis un e-mail de verificare. Adresa dvs. de e-mail trebuie verificată înainte de a vă putea conecta la The PIT.</string>
+  <string name="pit_open_email_app">Deschide aplicația pentru e-mail</string>
+  <string name="pit_did_not_get_email">Nu ați primit e-mailul?</string>
+  <string name="pit_send_again">Trimite din nou</string>
+  <string name="mail_resent_succeed">Email trimis. Verificați căsuța poștală pentru a continua.</string>
+  <string name="mail_resent_failed">Ceva n-a mers bine. Apăsați pe Trimitere din nou.</string>
+  <string name="pit_email_verified_description">Sunteți pregătit să vă conectați la Wallet-ul Blockchain la PIT.</string>
+  <string name="pit_email_verified_title">E-mail verificat.</string>
+  <string name="pit_connection_error_title">Eroare de conexiune</string>
+  <string name="pit_connection_error_description">Nu am putut conecta Wallet la The PIT. Reveniți la The PIT și încercați din nou.</string>
+  <string name="pit_connection_success_title">Succes!</string>
+  <string name="pit_connection_success_description">Ați conectat portofelul Blockchain la The PIT.</string>
+  <string name="pit_default_account_label">Adresa mea PIT %1$s</string>
 </resources>

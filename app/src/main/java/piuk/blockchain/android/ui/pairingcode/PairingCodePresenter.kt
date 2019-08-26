@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.pairingcode
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import io.reactivex.Observable
 import okhttp3.ResponseBody
@@ -14,9 +15,8 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.PairingEvent
 import piuk.blockchain.androidcoreui.utils.logging.PairingMethod
-import javax.inject.Inject
 
-class PairingCodePresenter @Inject constructor(
+class PairingCodePresenter(
     private val qrCodeDataManager: QrCodeDataManager,
     stringUtils: StringUtils,
     private val payloadDataManager: PayloadDataManager,
@@ -30,6 +30,7 @@ class PairingCodePresenter @Inject constructor(
     internal val firstStep =
         String.format(stringUtils.getString(R.string.pairing_code_instruction_1), WEB_WALLET_URL)
 
+    @SuppressLint("CheckResult")
     internal fun generatePairingQr() {
         pairingEncryptionPasswordObservable
             .doOnSubscribe { view.showProgressSpinner() }

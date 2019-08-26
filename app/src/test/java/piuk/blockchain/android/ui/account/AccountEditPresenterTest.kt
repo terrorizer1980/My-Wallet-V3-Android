@@ -40,7 +40,6 @@ import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import piuk.blockchain.android.BlockchainTestApplication
-import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.ui.account.AccountEditActivity.Companion.EXTRA_ACCOUNT_INDEX
@@ -61,11 +60,7 @@ import java.math.BigInteger
 import java.util.ArrayList
 import java.util.Arrays
 
-@Config(
-    sdk = [23],
-    constants = BuildConfig::class,
-    application = BlockchainTestApplication::class
-)
+@Config(sdk = [23], application = BlockchainTestApplication::class)
 @RunWith(RobolectricTestRunner::class)
 class AccountEditPresenterTest {
 
@@ -191,7 +186,7 @@ class AccountEditPresenterTest {
         whenever(payloadDataManager.defaultAccount).thenReturn(mock())
         whenever(payloadDataManager.getNextReceiveAddress(any(Account::class)))
             .thenReturn(Observable.just("address"))
-        whenever(sendDataManager.getUnspentOutputs(legacyAddress.address))
+        whenever(sendDataManager.getUnspentBtcOutputs(legacyAddress.address))
             .thenReturn(Observable.just(mock()))
         whenever(
             sendDataManager.getMaximumAvailable(
@@ -247,7 +242,7 @@ class AccountEditPresenterTest {
         whenever(payloadDataManager.defaultAccount).thenReturn(mock())
         whenever(payloadDataManager.getNextReceiveAddress(any(Account::class)))
             .thenReturn(Observable.just("address"))
-        whenever(sendDataManager.getUnspentOutputs(legacyAddress.address))
+        whenever(sendDataManager.getUnspentBtcOutputs(legacyAddress.address))
             .thenReturn(Observable.just(mock()))
         whenever(
             sendDataManager.getMaximumAvailable(
@@ -284,7 +279,7 @@ class AccountEditPresenterTest {
         legacyAddress.address = ""
         legacyAddress.label = ""
         subject.legacyAddress = legacyAddress
-        whenever(sendDataManager.getUnspentOutputs(legacyAddress.address))
+        whenever(sendDataManager.getUnspentBtcOutputs(legacyAddress.address))
             .thenReturn(Observable.error(Throwable()))
         // Act
         subject.onClickTransferFunds()

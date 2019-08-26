@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Config(sdk = 23, constants = BuildConfig.class, application = BlockchainTestApplication.class)
+@Config(sdk = 23,  application = BlockchainTestApplication.class)
 @RunWith(RobolectricTestRunner.class)
 public class FingerprintHelperTest {
 

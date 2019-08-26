@@ -5,8 +5,8 @@ import com.blockchain.fees.FeeType
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.kyc.models.nabu.State
-import com.blockchain.nabu.NabuToken
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.XlmFeesFetcher
 import com.blockchain.testutils.lumens
@@ -34,6 +34,7 @@ import org.amshove.kluent.mock
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.R
+import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
@@ -66,6 +67,20 @@ class XlmSendPresenterStrategyTest {
                     any())
             } `it returns` Single.just(SendToMercuryAddressResponse("123", "",
                 State.ACTIVE))
+        }
+
+    private val pitLinked: PitLinking =
+        mock {
+            on {
+                isPitLinked()
+            } `it returns` Single.just(true)
+        }
+
+    private val pitUnLinked: PitLinking =
+        mock {
+            on {
+                isPitLinked()
+            } `it returns` Single.just(false)
         }
 
     private val nabuToken: NabuToken =
@@ -104,7 +119,8 @@ class XlmSendPresenterStrategyTest {
             sendFundsResultLocalizer = mock(),
             nabuToken = nabuToken,
             nabuDataManager = nabuDataManager,
-            stringUtils = stringUtils
+            stringUtils = stringUtils,
+            pitLinking = pitLinked
         ).apply {
             initView(view)
         }.onCurrencySelected()
@@ -137,6 +153,7 @@ class XlmSendPresenterStrategyTest {
             walletOptionsDataManager = mock(),
             nabuToken = nabuToken,
             nabuDataManager = nabuDataManager,
+            pitLinking = pitLinked,
             stringUtils = stringUtils
         ).apply {
             initView(view)
@@ -171,6 +188,7 @@ class XlmSendPresenterStrategyTest {
             mock(),
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -219,6 +237,7 @@ class XlmSendPresenterStrategyTest {
             mock(),
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -284,6 +303,7 @@ class XlmSendPresenterStrategyTest {
             },
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -336,6 +356,7 @@ class XlmSendPresenterStrategyTest {
             },
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -390,6 +411,7 @@ class XlmSendPresenterStrategyTest {
             },
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -444,6 +466,7 @@ class XlmSendPresenterStrategyTest {
             },
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -510,6 +533,7 @@ class XlmSendPresenterStrategyTest {
             mock(),
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -571,6 +595,7 @@ class XlmSendPresenterStrategyTest {
             mock(),
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -624,6 +649,7 @@ class XlmSendPresenterStrategyTest {
             mock(),
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -657,6 +683,7 @@ class XlmSendPresenterStrategyTest {
             mock(),
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -711,6 +738,7 @@ class XlmSendPresenterStrategyTest {
             mock(),
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -797,6 +825,7 @@ class XlmSendPresenterStrategyTest {
             mock(),
             stringUtils,
             nabuToken,
+            pitLinked,
             nabuDataManager
         ).apply {
             initView(view)
@@ -850,6 +879,7 @@ class XlmSendPresenterStrategyTest {
             sendFundsResultLocalizer = mock(),
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
+            pitLinking = pitLinked,
             nabuToken = nabuToken
         ).apply {
             initView(view)
@@ -892,6 +922,7 @@ class XlmSendPresenterStrategyTest {
             sendFundsResultLocalizer = mock(),
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
+            pitLinking = pitLinked,
             nabuToken = nabuToken
         ).apply {
             initView(view)
@@ -934,6 +965,7 @@ class XlmSendPresenterStrategyTest {
             sendFundsResultLocalizer = mock(),
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
+            pitLinking = pitLinked,
             nabuToken = nabuToken
         ).apply {
             initView(view)
@@ -973,6 +1005,7 @@ class XlmSendPresenterStrategyTest {
             sendFundsResultLocalizer = mock(),
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
+            pitLinking = pitLinked,
             nabuToken = nabuToken
         ).apply {
             initView(view)
@@ -980,6 +1013,46 @@ class XlmSendPresenterStrategyTest {
         }
         verify(view.mock, never()).updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, true)
         verify(view.mock, times(2)).updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
+    }
+
+    @Test
+    fun `test no nabu call happens for pit address when wallet is not connected`() {
+        val view = TestSendView()
+        val walletOptionsDataManager = mock<WalletOptionsDataManager> {
+            on { isXlmAddressExchange("testAddress") } `it returns` true
+        }
+
+        val dataManager = mock<XlmDataManager> {
+            on { defaultAccount() } `it returns` Single.just(AccountReference.Xlm("The Xlm account", ""))
+            on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(199.5.lumens())
+        }
+
+        val nabuDataManager: NabuDataManager =
+            mock {
+                on { fetchCryptoAddressFromThePit(any(), any()) } `it returns` Single.error(Throwable())
+            }
+
+        val feesFetcher = mock<XlmFeesFetcher> {
+            on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
+        }
+
+        XlmSendStrategy(
+            currencyState = mock(),
+            xlmDataManager = dataManager,
+            xlmFeesFetcher = feesFetcher,
+            xlmTransactionSender = mock(),
+            walletOptionsDataManager = walletOptionsDataManager,
+            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            sendFundsResultLocalizer = mock(),
+            stringUtils = stringUtils,
+            nabuDataManager = nabuDataManager,
+            pitLinking = pitUnLinked,
+            nabuToken = nabuToken
+        ).apply {
+            initView(view)
+            onViewReady()
+        }
+        verify(nabuDataManager, never()).fetchCryptoAddressFromThePit(any(), any())
     }
 }
 

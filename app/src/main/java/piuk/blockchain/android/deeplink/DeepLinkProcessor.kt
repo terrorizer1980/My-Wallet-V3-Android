@@ -1,6 +1,7 @@
 package piuk.blockchain.android.deeplink
 
 import android.content.Intent
+import android.net.Uri
 import com.blockchain.notifications.links.PendingLink
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -17,31 +18,36 @@ internal class DeepLinkProcessor(
     private val sunriverDeepLinkHelper: SunriverDeepLinkHelper,
     private val thePitDeepLinkParser: ThePitDeepLinkParser
 ) {
-
     fun getLink(intent: Intent): Single<LinkState> =
         linkHandler.getPendingLinks(intent)
-            .map { uri ->
-                val emailVerifiedUri = emailVerifiedLinkHelper.mapUri(uri)
-                if (emailVerifiedUri != EmailVerifiedLinkState.NoUri) {
-                    return@map LinkState.EmailVerifiedDeepLink(emailVerifiedUri)
-                }
-                val sr = sunriverDeepLinkHelper.mapUri(uri)
-                if (sr !is CampaignLinkState.NoUri) {
-                    return@map LinkState.SunriverDeepLink(sr)
-                }
-                val kyc = kycDeepLinkHelper.mapUri(uri)
-                if (kyc != KycLinkState.NoUri) {
-                    return@map LinkState.KycDeepLink(kyc)
-                }
-                val linkId = thePitDeepLinkParser.mapUri(uri)
-                if (linkId != null) {
-                    return@map LinkState.ThePitDeepLink(linkId)
-                }
-                LinkState.NoUri
+            .flatMapSingle { urlProcessor(it) }
+
+    fun getLink(link: String): Single<LinkState> =
+        urlProcessor(Uri.parse(link))
+
+    private fun urlProcessor(uri: Uri): Single<LinkState> =
+        Maybe.fromCallable {
+            val emailVerifiedUri = emailVerifiedLinkHelper.mapUri(uri)
+            if (emailVerifiedUri != EmailVerifiedLinkState.NoUri) {
+                return@fromCallable LinkState.EmailVerifiedDeepLink(emailVerifiedUri)
             }
-            .switchIfEmpty(Maybe.just(LinkState.NoUri))
-            .toSingle()
-            .onErrorResumeNext { Single.just(LinkState.NoUri) }
+            val sr = sunriverDeepLinkHelper.mapUri(uri)
+            if (sr !is CampaignLinkState.NoUri) {
+                return@fromCallable LinkState.SunriverDeepLink(sr)
+            }
+            val kyc = kycDeepLinkHelper.mapUri(uri)
+            if (kyc != KycLinkState.NoUri) {
+                return@fromCallable LinkState.KycDeepLink(kyc)
+            }
+            val linkId = thePitDeepLinkParser.mapUri(uri)
+            if (linkId != null) {
+                return@fromCallable LinkState.ThePitDeepLink(linkId)
+            }
+            LinkState.NoUri
+        }
+        .switchIfEmpty(Maybe.just(LinkState.NoUri))
+        .toSingle()
+        .onErrorResumeNext { Single.just(LinkState.NoUri) }
 }
 
 sealed class LinkState {

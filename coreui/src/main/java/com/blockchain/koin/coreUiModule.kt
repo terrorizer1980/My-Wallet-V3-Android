@@ -2,8 +2,9 @@
 
 package com.blockchain.koin
 
+import com.blockchain.CrashLoggerImpl
+import com.blockchain.logging.CrashLogger
 import com.blockchain.logging.EventLogger
-import com.blockchain.metadata.MetadataWarningLog
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.remoteconfig.RemoteConfiguration
 import com.blockchain.transactions.ResourceSendFundsResultLocalizer
@@ -19,8 +20,6 @@ import piuk.blockchain.android.ui.dashboard.DashboardData
 import piuk.blockchain.androidcoreui.BuildConfig
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import piuk.blockchain.androidcoreui.utils.logging.AnswersEventLogger
-import piuk.blockchain.androidcoreui.utils.logging.Logging
-import timber.log.Timber
 
 val coreUiModule = applicationContext {
 
@@ -39,21 +38,6 @@ val coreUiModule = applicationContext {
         factory {
             AccountChooserPresenter(get(), get())
         }
-    }
-
-    factory {
-
-        object : MetadataWarningLog {
-            override fun logWarning(warning: String) {
-                Timber.e(warning)
-                val throwable = Throwable(warning)
-                Logging.logException(throwable)
-                if (BuildConfig.DEBUG) {
-                    // we want to know about this on a debug build
-                    throw throwable
-                }
-            }
-        } as MetadataWarningLog
     }
 
     bean {
@@ -77,4 +61,8 @@ val coreUiModule = applicationContext {
     bean {
         OverlayDetection(get())
     }
+
+    bean {
+        CrashLoggerImpl(BuildConfig.DEBUG)
+    }.bind(CrashLogger::class)
 }

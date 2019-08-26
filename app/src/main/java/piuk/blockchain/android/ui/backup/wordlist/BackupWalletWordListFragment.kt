@@ -10,22 +10,20 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import kotlinx.android.synthetic.main.fragment_backup_word_list.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.backup.verify.BackupWalletVerifyFragment
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.visible
-import javax.inject.Inject
 
 class BackupWalletWordListFragment :
     BaseFragment<BackupWalletWordListView, BackupWalletWordListPresenter>(),
     BackupWalletWordListView {
 
-    @Inject
-    lateinit var backupWalletWordListPresenter: BackupWalletWordListPresenter
+    private val backupWalletWordListPresenter: BackupWalletWordListPresenter by inject()
 
     private val animEnterFromRight: Animation by unsafeLazy {
         AnimationUtils.loadAnimation(
@@ -63,10 +61,6 @@ class BackupWalletWordListFragment :
     }
 
     var currentWordIndex = 0
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

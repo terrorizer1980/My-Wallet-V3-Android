@@ -10,8 +10,8 @@ import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.models.wallet.RetailJwtResponse
 import com.blockchain.kyc.services.nabu.NabuService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.stores.NabuSessionTokenStore
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.stores.NabuSessionTokenStore
 import com.blockchain.utils.Optional
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -410,44 +410,6 @@ class NabuDataManagerTest {
             sessionToken,
             countryCode
         )
-    }
-
-    @Test
-    fun getOnfidoApiKey() {
-        // Arrange
-        val apiKey = "API_KEY"
-        val offlineToken = NabuOfflineTokenResponse("", "")
-        val sessionToken = getEmptySessionToken()
-        whenever(nabuTokenStore.requiresRefresh()).thenReturn(false)
-        whenever(nabuTokenStore.getAccessToken())
-            .thenReturn(Observable.just(Optional.Some(sessionToken)))
-        whenever(nabuService.getOnfidoApiKey(sessionToken))
-            .thenReturn(Single.just(apiKey))
-        // Act
-        val testObserver = subject.getOnfidoApiKey(offlineToken).test()
-        // Assert
-        testObserver.assertComplete()
-        testObserver.assertNoErrors()
-        verify(nabuService).getOnfidoApiKey(sessionToken)
-    }
-
-    @Test
-    fun submitOnfidoVerification() {
-        // Arrange
-        val applicantId = "APPLICATION_ID"
-        val offlineToken = NabuOfflineTokenResponse("", "")
-        val sessionToken = getEmptySessionToken()
-        whenever(nabuTokenStore.requiresRefresh()).thenReturn(false)
-        whenever(nabuTokenStore.getAccessToken())
-            .thenReturn(Observable.just(Optional.Some(sessionToken)))
-        whenever(nabuService.submitOnfidoVerification(sessionToken, applicantId))
-            .thenReturn(Completable.complete())
-        // Act
-        val testObserver = subject.submitOnfidoVerification(offlineToken, applicantId).test()
-        // Assert
-        testObserver.assertComplete()
-        testObserver.assertNoErrors()
-        verify(nabuService).submitOnfidoVerification(sessionToken, applicantId)
     }
 
     @Test

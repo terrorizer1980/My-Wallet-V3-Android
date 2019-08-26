@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.State
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.serialization.JsonSerializableAccount
 import info.blockchain.api.data.UnspentOutputs
@@ -29,6 +29,7 @@ import org.bitcoinj.core.Address
 import org.bitcoinj.core.ECKey
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.cache.DynamicFeeCache
+import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import piuk.blockchain.android.ui.account.PitAccount
@@ -73,6 +74,7 @@ class BitcoinCashSendStrategy(
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig,
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
+    private val pitLinking: PitLinking,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
@@ -440,7 +442,9 @@ class BitcoinCashSendStrategy(
     }
 
     private fun resetAccountList() {
-        compositeDisposable += nabuToken.fetchNabuToken().flatMap {
+        compositeDisposable += pitLinking.isPitLinked().filter { it }.flatMapSingle {
+            nabuToken.fetchNabuToken()
+        }.flatMap {
             nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.BCH.symbol)
         }.applySchedulers().doOnSubscribe {
             view.updateReceivingHintAndAccountDropDowns(
@@ -478,7 +482,7 @@ class BitcoinCashSendStrategy(
     private fun getAddressList(): List<ItemAccount> = walletAccountHelper.getAccountItems(CryptoCurrency.BCH)
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
-        val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount()
+        val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount() ?: return
         view.updateSendingAddress(accountItem.label ?: accountItem.address!!)
         pendingTransaction.sendingObject = accountItem
     }

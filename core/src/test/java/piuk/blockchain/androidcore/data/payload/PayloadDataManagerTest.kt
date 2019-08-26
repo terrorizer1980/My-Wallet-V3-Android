@@ -18,7 +18,6 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
-import okhttp3.MediaType
 import okhttp3.ResponseBody
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.mock
@@ -31,6 +30,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import com.blockchain.android.testutils.rxInit
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.math.BigInteger
@@ -287,7 +287,7 @@ class PayloadDataManagerTest {
         val mockAccount: Account = mock()
         val accounts = listOf(mockAccount)
         val address = "ADDRESS"
-        whenever(payloadManager.payload.hdWallets.first().accounts).thenReturn(accounts)
+        whenever(payloadManager.payload?.hdWallets?.first()?.accounts).thenReturn(accounts)
         whenever(payloadManager.getNextReceiveAddress(mockAccount)).thenReturn(address)
         // Act
         val testObserver = subject.getNextReceiveAddress(index).test()
@@ -321,13 +321,13 @@ class PayloadDataManagerTest {
         val address = "ADDRESS"
         val mockAccount: Account = mock()
         val accounts = listOf(mockAccount)
-        whenever(payloadManager.payload.hdWallets[0].accounts).thenReturn(accounts)
-        whenever(payloadManager.getNextReceiveAddressAndReserve(mockAccount, addressLabel))
-            .thenReturn(address)
+        whenever(payloadManager.payload?.hdWallets?.get(0)?.accounts).thenReturn(accounts)
+        whenever(payloadManager.getNextReceiveAddressAndReserve(mockAccount, addressLabel)).thenReturn(address)
+
         // Act
-        val testObserver =
-            subject.getNextReceiveAddressAndReserve(accountIndex, addressLabel).test()
+        val testObserver = subject.getNextReceiveAddressAndReserve(accountIndex, addressLabel).test()
         testScheduler.triggerActions()
+
         // Assert
         verify(payloadManager).getNextReceiveAddressAndReserve(mockAccount, addressLabel)
         testObserver.assertComplete()
@@ -341,11 +341,14 @@ class PayloadDataManagerTest {
         val mockAccount: Account = mock()
         val accounts = listOf(mockAccount)
         val address = "ADDRESS"
-        whenever(payloadManager.payload.hdWallets[0].accounts).thenReturn(accounts)
+
+        whenever(payloadManager.payload?.hdWallets?.get(0)?.accounts).thenReturn(accounts)
         whenever(payloadManager.getNextChangeAddress(mockAccount)).thenReturn(address)
+
         // Act
         val testObserver = subject.getNextChangeAddress(index).test()
         testScheduler.triggerActions()
+
         // Assert
         verify(payloadManager).getNextChangeAddress(mockAccount)
         testObserver.assertComplete()
@@ -476,7 +479,7 @@ class PayloadDataManagerTest {
         // Arrange
         val mockAccount: Account = mock()
         val accounts = listOf(mockAccount)
-        whenever(payloadManager.payload.hdWallets.first().accounts)
+        whenever(payloadManager.payload?.hdWallets?.first()?.accounts)
             .thenReturn(accounts)
         // Act
         val result = subject.accounts
@@ -501,7 +504,7 @@ class PayloadDataManagerTest {
         // Arrange
         val mockLegacyAddress: LegacyAddress = mock()
         val addresses = listOf(mockLegacyAddress)
-        whenever(payloadManager.payload.legacyAddressList).thenReturn(addresses)
+        whenever(payloadManager.payload?.legacyAddressList).thenReturn(addresses)
         // Act
         val result = subject.legacyAddresses
         // Assert
@@ -702,7 +705,7 @@ class PayloadDataManagerTest {
     @Test
     fun registerMdid() {
         // Arrange
-        val responseBody = ResponseBody.create(MediaType.parse("application/json"), "{}")
+        val responseBody = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
         whenever(payloadService.registerMdid()).thenReturn(Observable.just(responseBody))
         // Act
         val testObserver = subject.registerMdid().test()
@@ -716,7 +719,7 @@ class PayloadDataManagerTest {
     @Test
     fun unregisterMdid() {
         // Arrange
-        val responseBody = ResponseBody.create(MediaType.parse("application/json"), "{}")
+        val responseBody = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
         whenever(payloadService.unregisterMdid()).thenReturn(Observable.just(responseBody))
         // Act
         val testObserver = subject.unregisterMdid().test()
@@ -756,7 +759,7 @@ class PayloadDataManagerTest {
     fun getDefaultAccountIndex() {
         // Arrange
         val index = 42
-        whenever(payloadManager.payload.hdWallets.first().defaultAccountIdx).thenReturn(index)
+        whenever(payloadManager.payload?.hdWallets?.first()?.defaultAccountIdx).thenReturn(index)
         // Act
         val result = subject.defaultAccountIndex
         // Assert
@@ -769,9 +772,9 @@ class PayloadDataManagerTest {
         // Arrange
         val index = 42
         val mockAccount: Account = mock()
-        whenever(payloadManager.payload.hdWallets.first().defaultAccountIdx)
+        whenever(payloadManager.payload?.hdWallets?.first()?.defaultAccountIdx)
             .thenReturn(index)
-        whenever(payloadManager.payload.hdWallets.first().getAccount(index))
+        whenever(payloadManager.payload?.hdWallets?.first()?.getAccount(index))
             .thenReturn(mockAccount)
         // Act
         val result = subject.defaultAccount
@@ -785,7 +788,7 @@ class PayloadDataManagerTest {
         // Arrange
         val index = 42
         val mockAccount: Account = mock()
-        whenever(payloadManager.payload.hdWallets.first().getAccount(index))
+        whenever(payloadManager.payload?.hdWallets?.first()?.getAccount(index))
             .thenReturn(mockAccount)
         // Act
         val result = subject.getAccount(index)
@@ -800,7 +803,7 @@ class PayloadDataManagerTest {
         val txHash = "TX_HASH"
         val note = "NOTES"
         val map = mapOf(txHash to note)
-        whenever(payloadManager.payload.txNotes).thenReturn(map)
+        whenever(payloadManager.payload?.txNotes).thenReturn(map)
         // Act
         val result = subject.getTransactionNotes(txHash)
         // Assert
@@ -815,7 +818,7 @@ class PayloadDataManagerTest {
         val mockOutputs: SpendableUnspentOutputs = mock()
         val mockEcKey: ECKey = mock()
         whenever(
-            payloadManager.payload.hdWallets.first().getHDKeysForSigning(
+            payloadManager.payload?.hdWallets?.first()?.getHDKeysForSigning(
                 mockAccount,
                 mockOutputs
             )
@@ -881,7 +884,7 @@ class PayloadDataManagerTest {
     @Test
     fun isDoubleEncrypted() {
         // Arrange
-        whenever(payloadManager.payload.isDoubleEncryption).thenReturn(true)
+        whenever(payloadManager.payload?.isDoubleEncryption).thenReturn(true)
         // Act
         val result = subject.isDoubleEncrypted
         // Assert
@@ -896,7 +899,7 @@ class PayloadDataManagerTest {
         val account1 = Account()
         val account2 = Account().apply { isArchived = true }
         val account3 = Account()
-        whenever(payloadManager.payload.hdWallets.first().accounts)
+        whenever(payloadManager.payload?.hdWallets?.first()?.accounts)
             .thenReturn(listOf(account0, account1, account2, account3))
         // Act
         val result = subject.getPositionOfAccountFromActiveList(index)
@@ -912,7 +915,7 @@ class PayloadDataManagerTest {
         val account1 = Account()
         val account2 = Account().apply { isArchived = true }
         val account3 = Account()
-        whenever(payloadManager.payload.hdWallets.first().accounts)
+        whenever(payloadManager.payload?.hdWallets?.first()?.accounts)
             .thenReturn(listOf(account0, account1, account2, account3))
         // Act
         val result = subject.getPositionOfAccountInActiveList(index)

@@ -73,7 +73,7 @@ class ConfirmFundsTransferDialogFragment :
         toolbar.title = getString(R.string.transfer_confirm)
 
         val receiveToAdapter = AddressAdapter(
-            activity,
+            requireContext(),
             R.layout.spinner_item,
             presenter.getReceiveToList(),
             true

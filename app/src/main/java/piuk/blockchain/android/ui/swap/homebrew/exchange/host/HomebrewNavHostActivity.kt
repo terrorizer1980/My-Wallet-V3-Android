@@ -11,10 +11,10 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.accounts.AsyncAllAccountList
-import com.blockchain.morph.exchange.mvi.ChangeCryptoFromAccount
-import com.blockchain.morph.exchange.mvi.ChangeCryptoToAccount
-import com.blockchain.morph.exchange.mvi.SimpleFieldUpdateIntent
-import com.blockchain.morph.exchange.service.QuoteService
+import com.blockchain.swap.common.exchange.mvi.ChangeCryptoFromAccount
+import com.blockchain.swap.common.exchange.mvi.ChangeCryptoToAccount
+import com.blockchain.swap.common.exchange.mvi.SimpleFieldUpdateIntent
+import com.blockchain.swap.common.exchange.service.QuoteService
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeFragment
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeLimitState
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeMenuState
@@ -25,7 +25,7 @@ import piuk.blockchain.android.ui.swap.homebrew.exchange.REQUEST_CODE_CHOOSE_SEN
 import piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation.ExchangeConfirmationFragment
 import piuk.blockchain.android.ui.swap.logging.WebsocketConnectionFailureEvent
 import piuk.blockchain.android.ui.swap.showErrorDialog
-import com.blockchain.nabu.StartKyc
+import com.blockchain.swap.nabu.StartKyc
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
@@ -52,9 +52,9 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
 
     private val toolbar by unsafeLazy { findViewById<Toolbar>(R.id.toolbar_general) }
     private val navHostFragment by unsafeLazy { supportFragmentManager.findFragmentById(R.id.nav_host) }
-    private val navController by unsafeLazy { findNavController(navHostFragment) }
+    private val navController by unsafeLazy { findNavController(navHostFragment!!) }
     private val currentFragment: Fragment?
-        get() = navHostFragment.childFragmentManager.findFragmentById(R.id.nav_host)
+        get() = navHostFragment?.childFragmentManager?.findFragmentById(R.id.nav_host)
 
     private val defaultCurrency by unsafeLazy { intent.getStringExtra(EXTRA_DEFAULT_CURRENCY) }
 
@@ -73,8 +73,8 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
 
         val args = ExchangeFragment.bundleArgs(defaultCurrency)
         compositeDisposable += allAccountList.allAccounts()
-            .map {
-                accounts -> accounts.first { it.cryptoCurrency == preselectedToCurrency }
+            .map { accounts ->
+                accounts.first { it.cryptoCurrency == preselectedToCurrency }
             }.subscribeBy { exchangeViewModel.initWithPreselectedCurrency(it.cryptoCurrency) }
 
         navController.navigate(R.id.exchangeFragment, args)

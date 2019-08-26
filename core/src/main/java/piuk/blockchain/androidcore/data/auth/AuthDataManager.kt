@@ -1,6 +1,7 @@
 package piuk.blockchain.androidcore.data.auth
 
 import android.support.annotation.VisibleForTesting
+import com.blockchain.logging.CrashLogger
 import info.blockchain.wallet.api.data.WalletOptions
 import info.blockchain.wallet.crypto.AESUtil
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
@@ -12,6 +13,7 @@ import io.reactivex.exceptions.Exceptions
 import okhttp3.ResponseBody
 import org.spongycastle.util.encoders.Hex
 import piuk.blockchain.androidcore.data.access.AccessState
+import piuk.blockchain.androidcore.data.access.isValidPin
 import piuk.blockchain.androidcore.utils.AESUtilWrapper
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
@@ -25,7 +27,8 @@ class AuthDataManager(
     private val authService: AuthService,
     private val accessState: AccessState,
     private val aesUtilWrapper: AESUtilWrapper,
-    private val prngHelper: PrngFixer
+    private val prngHelper: PrngFixer,
+    private val crashLogger: CrashLogger
 ) {
 
     @VisibleForTesting
@@ -134,9 +137,10 @@ class AuthDataManager(
      * @param passedPin The PIN to be used
      * @return An [Observable] where the wrapped String is the user's decrypted password
      */
-    fun validatePin(passedPin: String): Observable<String> =
-        getValidatePinObservable(passedPin)
+    fun validatePin(passedPin: String): Observable<String> {
+        return getValidatePinObservable(passedPin)
             .applySchedulers()
+    }
 
     /**
      * Creates a new PIN for a user
@@ -145,14 +149,22 @@ class AuthDataManager(
      * @param pin The new chosen PIN
      * @return A [Completable] object
      */
-    fun createPin(password: String, pin: String): Completable =
-        getCreatePinObservable(password, pin)
+    fun createPin(password: String, passedPin: String): Completable {
+        return getCreatePinObservable(password, passedPin)
             .applySchedulers()
+    }
 
     private fun getValidatePinObservable(passedPin: String): Observable<String> {
-        accessState.pin = passedPin
         val key = prefs.getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")
         val encryptedPassword = prefs.getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, "")
+
+        if (!passedPin.isValidPin()) {
+            return Observable.error(IllegalArgumentException("Invalid PIN"))
+        } else {
+            accessState.setPin(passedPin)
+            crashLogger.log("validatePin. pin set. validity: ${passedPin.isValidPin()}")
+        }
+
         return authService.validateAccess(key, passedPin)
             .map { response ->
                 /*
@@ -179,12 +191,15 @@ class AuthDataManager(
             }
     }
 
-    private fun getCreatePinObservable(password: String, passedPin: String?): Completable {
-        if (passedPin == null || passedPin == "0000" || passedPin.length != 4) {
-            return Completable.error(Throwable("Invalid PIN"))
+    private fun getCreatePinObservable(password: String, passedPin: String): Completable {
+
+        if (!passedPin.isValidPin()) {
+            return Completable.error(IllegalArgumentException("Invalid PIN"))
+        } else {
+            accessState.setPin(passedPin)
+            crashLogger.log("createPin. pin set. validity: ${passedPin.isValidPin()}")
         }
 
-        accessState.pin = passedPin
         prngHelper.applyPRNGFixes()
 
         return Completable.create { subscriber ->
@@ -237,7 +252,6 @@ class AuthDataManager(
             .applySchedulers()
 
     companion object {
-
         @VisibleForTesting
         internal const val AUTHORIZATION_REQUIRED = "authorization_required"
     }

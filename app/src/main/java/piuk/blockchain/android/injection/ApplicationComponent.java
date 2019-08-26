@@ -2,14 +2,8 @@ package piuk.blockchain.android.injection;
 
 import dagger.Component;
 import info.blockchain.wallet.util.PrivateKeyFactory;
-import piuk.blockchain.android.BlockchainApplication;
-import com.blockchain.notifications.InstanceIdService;
 
 import javax.inject.Singleton;
-
-/**
- * Created by adambennett on 08/08/2016.
- */
 
 @Singleton
 @Component(modules = {
@@ -27,8 +21,4 @@ public interface ApplicationComponent {
     PresenterComponent presenterComponent();
 
     void inject(PrivateKeyFactory privateKeyFactory);
-
-    void inject(InstanceIdService instanceIdService);
-
-    void inject(BlockchainApplication blockchainApplication);
 }

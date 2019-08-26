@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange.history
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.morph.trade.MorphTradeDataHistoryList
+import com.blockchain.swap.common.trade.MorphTradeDataHistoryList
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Single

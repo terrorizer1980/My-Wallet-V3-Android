@@ -372,7 +372,7 @@ class BchDataManager(
         bchDataStore.bchWallet?.accounts?.get(getDefaultAccountPosition())
 
     fun getDefaultGenericMetadataAccount(): GenericMetadataAccount? =
-        getAccountMetadataList()[getDefaultAccountPosition()]
+        getAccountMetadataList().elementAtOrNull(getDefaultAccountPosition())
 
     /**
      * Allows you to generate a BCH receive address at an arbitrary number of positions on the chain

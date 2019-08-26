@@ -10,6 +10,7 @@ import info.blockchain.wallet.payment.SpendableUnspentOutputs
 import io.reactivex.Observable
 import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.ECKey
+import org.bitcoinj.core.Transaction
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.utils.annotations.WebRequest
 import java.io.UnsupportedEncodingException
@@ -35,7 +36,7 @@ class PaymentService(
      * @return An [Observable] wrapping a [String] where the String is the transaction hash
      */
     @WebRequest
-    internal fun submitPayment(
+    internal fun submitBtcPayment(
         unspentOutputBundle: SpendableUnspentOutputs,
         keys: List<ECKey>,
         toAddress: String,
@@ -43,6 +44,24 @@ class PaymentService(
         bigIntFee: BigInteger,
         bigIntAmount: BigInteger
     ): Observable<String> = Observable.fromCallable {
+
+        val tx = signAngGetTx(unspentOutputBundle, keys, toAddress, changeAddress, bigIntFee, bigIntAmount)
+        val response = payment.publishSimpleTransaction(tx).execute()
+
+        when {
+            response.isSuccessful -> tx.hashAsString
+            else -> throw TransactionHashApiException.fromResponse(tx.hashAsString, response)
+        }
+    }
+
+    internal fun signAngGetTx(
+        unspentOutputBundle: SpendableUnspentOutputs,
+        keys: List<ECKey>,
+        toAddress: String,
+        changeAddress: String,
+        bigIntFee: BigInteger,
+        bigIntAmount: BigInteger
+    ): Transaction {
         val receivers = HashMap<String, BigInteger>()
         receivers[toAddress] = bigIntAmount
 
@@ -55,13 +74,7 @@ class PaymentService(
         )
 
         payment.signSimpleTransaction(environmentSettings.bitcoinNetworkParameters, tx, keys)
-
-        val response = payment.publishSimpleTransaction(tx).execute()
-
-        when {
-            response.isSuccessful -> tx.hashAsString
-            else -> throw TransactionHashApiException.fromResponse(tx.hashAsString, response)
-        }
+        return tx
     }
 
     /**
@@ -117,7 +130,7 @@ class PaymentService(
      * @return An [Observable] wrapping an [UnspentOutputs] object
      */
     @WebRequest
-    internal fun getUnspentOutputs(address: String): Observable<UnspentOutputs> {
+    internal fun getUnspentBtcOutputs(address: String): Observable<UnspentOutputs> {
         return Observable.fromCallable {
             val response = payment.getUnspentCoins(listOf(address)).execute()
             when {

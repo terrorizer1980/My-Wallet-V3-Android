@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.thepit
 
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.preferences.ThePitLinkingPrefs
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -29,12 +29,7 @@ class PitPermissionsPresenter(
     private fun linkPit(linkId: String) = nabuToken.fetchNabuToken()
         .flatMapCompletable { nabu.linkMercuryWithWallet(it, linkId) }
 
-    override fun onViewReady() { }
-
-    override fun onViewDestroyed() {
-        prefs.clearPitToWalletLinkId()
-        super.onViewDestroyed()
-    }
+    override fun onViewReady() {}
 
     fun checkEmailIsVerified() {
         compositeDisposable += fetchUser()
@@ -43,7 +38,7 @@ class PitPermissionsPresenter(
                 onSuccess = { view?.showEmailVerifiedDialog() },
                 onError = { Timber.d("Email not verified") }
             )
-        }
+    }
 
     fun tryToConnectWalletToPit() {
         compositeDisposable += fetchUser()
@@ -86,7 +81,7 @@ class PitPermissionsPresenter(
             }
             .flatMapCompletable {
                 linkPit(linkId)
-                .mergeWith(Completable.timer(2, TimeUnit.SECONDS))
+                    .mergeWith(Completable.timer(2, TimeUnit.SECONDS))
             }
             .doOnComplete { pitLinking.sendWalletAddressToThePit() }
             .doOnComplete { prefs.clearPitToWalletLinkId() }
@@ -104,6 +99,10 @@ class PitPermissionsPresenter(
             Single.just(user.email)
         else
             Single.error(EmailNotVerifiedException(user.email))
+
+    fun clearLinkPrefs() {
+        prefs.clearPitToWalletLinkId()
+    }
 
     private class EmailNotVerifiedException(val email: String) : Throwable()
 }

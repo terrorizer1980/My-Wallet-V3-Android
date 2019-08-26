@@ -2,14 +2,14 @@ package piuk.blockchain.android.injection
 
 import android.content.Context
 import com.blockchain.koin.KoinDaggerModule
-import com.blockchain.nabu.CurrentTier
+import com.blockchain.swap.nabu.CurrentTier
 import dagger.Module
 import dagger.Provides
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataStore
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.data.shapeshift.datastore.ShapeShiftDataStore
+import com.blockchain.swap.shapeshift.datastore.ShapeShiftDataStore
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
 import com.blockchain.preferences.CurrencyPrefs
 import piuk.blockchain.androidcore.utils.PersistentPrefs

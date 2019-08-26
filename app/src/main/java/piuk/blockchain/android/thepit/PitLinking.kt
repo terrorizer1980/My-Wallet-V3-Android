@@ -2,7 +2,7 @@ package piuk.blockchain.android.thepit
 
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.sunriver.XlmDataManager
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Observable
@@ -92,10 +92,8 @@ class PitLinkingImpl(
             fetchAddressMap()
         )
         .subscribeOn(Schedulers.computation())
-        .map { nabu.shareWalletAddressesWithThePit(it.first, it.second) }
-        .subscribeBy(
-            onError = { Timber.e("Unable to send local addresses to the pit: $it") }
-        )
+        .flatMapCompletable { nabu.shareWalletAddressesWithThePit(it.first, it.second) }
+        .subscribeBy(onError = { Timber.e("Unable to send local addresses to the pit: $it") })
     }
 
     private fun fetchAddressMap(): Single<HashMap<String, String>> =

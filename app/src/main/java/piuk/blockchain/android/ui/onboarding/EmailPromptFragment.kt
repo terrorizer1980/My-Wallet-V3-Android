@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import piuk.blockchain.android.R
 import piuk.blockchain.android.databinding.FragmentEmailPromptBinding
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
+import java.lang.NullPointerException
 
 class EmailPromptFragment : Fragment() {
 
@@ -21,40 +22,26 @@ class EmailPromptFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_email_prompt, container,
-            false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_email_prompt, container, false)
         return binding!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding?.buttonEnable?.setOnClickListener {
-            if (listener != null)
-                listener?.onVerifyEmailClicked()
-        }
-
-        binding?.buttonLater?.setOnClickListener {
-            if (listener != null)
-                listener?.onVerifyLaterClicked()
-        }
-
-        if (arguments != null) {
-            val email = arguments?.getString(ARGUMENT_EMAIL)
-            binding?.textviewEmail?.text = email
-            val showDismsissOption = arguments?.getBoolean(ARGUMENT_SHOW_DISMISS,
-                true) ?: true
-            binding?.buttonLater.goneIf(showDismsissOption.not())
-        }
+        binding?.buttonEnable?.setOnClickListener { listener?.onVerifyEmailClicked() }
+        binding?.buttonLater?.setOnClickListener { listener?.onVerifyLaterClicked() }
+        binding?.textviewEmail?.text = arguments?.emailAddress
+        binding?.buttonLater.goneIf(!arguments.showDismiss)
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
+
         if (context is OnFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context!!.toString() +
-                    " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
@@ -65,7 +52,6 @@ class EmailPromptFragment : Fragment() {
 
     internal interface OnFragmentInteractionListener {
         fun onVerifyEmailClicked()
-
         fun onVerifyLaterClicked()
     }
 
@@ -74,13 +60,22 @@ class EmailPromptFragment : Fragment() {
         private const val ARGUMENT_EMAIL = "email"
         private const val ARGUMENT_SHOW_DISMISS = "show_dismiss"
 
-        fun newInstance(email: String, showDismiss: Boolean): EmailPromptFragment {
+        fun newInstance(email: String, showDismissBtn: Boolean): EmailPromptFragment {
             val fragment = EmailPromptFragment()
-            val args = Bundle()
-            args.putString(ARGUMENT_EMAIL, email)
-            args.putBoolean(ARGUMENT_SHOW_DISMISS, showDismiss)
-            fragment.arguments = args
+
+            fragment.arguments = Bundle().apply {
+                emailAddress = email
+                showDismiss = showDismissBtn
+            }
             return fragment
         }
+
+        private var Bundle?.emailAddress: String
+            get() = this?.getString(ARGUMENT_EMAIL) ?: ""
+            set(v) = this?.putString(ARGUMENT_EMAIL, v) ?: throw NullPointerException()
+
+        private var Bundle?.showDismiss: Boolean
+            get() = this?.getBoolean(ARGUMENT_SHOW_DISMISS, true) ?: true
+            set(v) = this?.putBoolean(ARGUMENT_SHOW_DISMISS, v) ?: throw NullPointerException()
     }
 }

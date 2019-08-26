@@ -33,8 +33,6 @@ interface BalanceView : View {
 
     fun generateLauncherShortcuts()
 
-    fun shouldShowBuy(): Boolean
-
     fun startSwapOrKyc(targetCurrency: CryptoCurrency)
 
     fun setDropdownVisibility(visible: Boolean)

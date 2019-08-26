@@ -36,7 +36,7 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.data.shapeshift.ShapeShiftDataManager
+import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -246,7 +246,7 @@ class BalancePresenter(
             buyDataManager.canBuy
                 .subscribe(
                     {
-                        if (it && view.shouldShowBuy()) {
+                        if (it) {
                             view.startBuyActivity()
                         } else {
                             view.startReceiveFragmentBtc()

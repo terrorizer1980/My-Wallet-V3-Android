@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.receive
 
+import com.blockchain.logging.CrashLogger
 import com.blockchain.sunriver.XlmDataManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -20,6 +21,7 @@ import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
+import timber.log.Timber
 import java.math.BigInteger
 import java.util.Collections
 
@@ -32,7 +34,8 @@ class WalletAccountHelper(
     private val bchDataManager: BchDataManager,
     private val xlmDataManager: XlmDataManager,
     private val environmentSettings: EnvironmentConfig,
-    private val exchangeRates: FiatExchangeRates
+    private val exchangeRates: FiatExchangeRates,
+    private val crashLogger: CrashLogger
 ) {
     /**
      * Returns a list of [ItemAccount] objects containing both HD accounts and [LegacyAddress]
@@ -41,13 +44,19 @@ class WalletAccountHelper(
      * @return Returns a list of [ItemAccount] objects
      */
     @Deprecated("XLM needs singles - this needs to go")
-    fun getAccountItems(cryptoCurrency: CryptoCurrency): List<ItemAccount> = when (cryptoCurrency) {
-        CryptoCurrency.BTC -> allBtcAccountItems()
-        CryptoCurrency.BCH -> allBchAccountItems()
-        CryptoCurrency.ETHER -> getEthAccount()
-        CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
-        CryptoCurrency.PAX -> getPaxAccount()
-    }
+    fun getAccountItems(cryptoCurrency: CryptoCurrency): List<ItemAccount> =
+        try {
+            when (cryptoCurrency) {
+                CryptoCurrency.BTC -> allBtcAccountItems()
+                CryptoCurrency.BCH -> allBchAccountItems()
+                CryptoCurrency.ETHER -> getEthAccount()
+                CryptoCurrency.XLM -> throw IllegalArgumentException("XLM is not supported here")
+                CryptoCurrency.PAX -> getPaxAccount()
+            }
+        } catch (t: Throwable) {
+            crashLogger.logException(t)
+            emptyList()
+        }
 
     /**
      * Returns a list of [ItemAccount] objects containing both HD accounts and [LegacyAddress]
@@ -149,38 +158,39 @@ class WalletAccountHelper(
      *
      * @return Returns a list of [ItemAccount] objects
      */
-    fun getLegacyBchAddresses() = payloadManager.payload.legacyAddressList
+    fun getLegacyBchAddresses(): List<ItemAccount> {
+        val list = payloadManager.payload?.legacyAddressList ?: emptyList()
+
         // Skip archived address
-        .filterNot { it.tag == LegacyAddress.ARCHIVED_ADDRESS }
-        .filterNot {
-            bchDataManager.getAddressBalance(it.address).compareTo(BigInteger.ZERO) == 0
-        }
-        .map {
-            val cashAddress = Address.fromBase58(
-                environmentSettings.bitcoinCashNetworkParameters,
-                it.address
-            ).toCashAddress().removeBchUri()
-            // If address has no label, we'll display address
-            var labelOrAddress: String? = it.label
-            if (labelOrAddress == null || labelOrAddress.trim { it <= ' ' }.isEmpty()) {
-                labelOrAddress = cashAddress
-            }
+        return list.filterNot { it.tag == LegacyAddress.ARCHIVED_ADDRESS }
+            .filterNot { bchDataManager.getAddressBalance(it.address).compareTo(BigInteger.ZERO) == 0 }
+            .map {
+                val cashAddress = Address.fromBase58(
+                    environmentSettings.bitcoinCashNetworkParameters,
+                    it.address
+                ).toCashAddress().removeBchUri()
+                // If address has no label, we'll display address
+                var labelOrAddress: String? = it.label
+                if (labelOrAddress == null || labelOrAddress.trim { it <= ' ' }.isEmpty()) {
+                    labelOrAddress = cashAddress
+                }
 
-            // Watch-only tag - we'll ask for xpriv scan when spending from
-            var tag: String? = null
-            if (it.isWatchOnly) {
-                tag = stringUtils.getString(R.string.watch_only)
-            }
+                // Watch-only tag - we'll ask for xpriv scan when spending from
+                var tag: String? = null
+                if (it.isWatchOnly) {
+                    tag = stringUtils.getString(R.string.watch_only)
+                }
 
-            ItemAccount(
-                labelOrAddress,
-                getBchAddressBalance(it),
-                tag,
-                getAddressAbsoluteBalance(it),
-                it,
-                cashAddress
-            )
-        }
+                ItemAccount(
+                    labelOrAddress,
+                    getBchAddressBalance(it),
+                    tag,
+                    getAddressAbsoluteBalance(it),
+                    it,
+                    cashAddress
+                )
+            }
+    }
 
     /**
      * Returns a list of [ItemAccount] objects containing only [LegacyAddress] objects,
@@ -188,7 +198,7 @@ class WalletAccountHelper(
      *
      * @return Returns a list of [ItemAccount] objects
      */
-    fun getAddressBookEntries() = payloadManager.payload.addressBook?.map {
+    fun getAddressBookEntries() = payloadManager.payload?.addressBook?.map {
         ItemAccount(
             if (it.label.isNullOrEmpty()) it.address else it.label,
             "",
@@ -201,9 +211,9 @@ class WalletAccountHelper(
 
     @Deprecated("CurrencyState is deprecated, so pass currency into alternative",
         ReplaceWith("getDefaultOrFirstFundedAccount(cryptoCurrency)"))
-    fun getDefaultOrFirstFundedAccount(): ItemAccount = getDefaultOrFirstFundedAccount(currencyState.cryptoCurrency)
+    fun getDefaultOrFirstFundedAccount(): ItemAccount? = getDefaultOrFirstFundedAccount(currencyState.cryptoCurrency)
 
-    fun getDefaultOrFirstFundedAccount(cryptoCurrency: CryptoCurrency): ItemAccount =
+    fun getDefaultOrFirstFundedAccount(cryptoCurrency: CryptoCurrency): ItemAccount? =
         when (cryptoCurrency) {
             CryptoCurrency.BTC -> getDefaultOrFirstFundedBtcAccount()
             CryptoCurrency.BCH -> getDefaultOrFirstFundedBchAccount()
@@ -213,10 +223,10 @@ class WalletAccountHelper(
         }
 
     fun getEthAccount() =
-        listOf(getDefaultEthAccount())
+        getDefaultEthAccount()?.let { listOf(it) } ?: emptyList()
 
     fun getPaxAccount() =
-        listOf(getDefaultPaxAccount())
+        getDefaultPaxAccount()?.let { listOf(it) } ?: emptyList()
 
     fun getXlmAccount(): Single<List<ItemAccount>> =
         getDefaultXlmAccountItem().map { listOf(it) }
@@ -281,12 +291,13 @@ class WalletAccountHelper(
             .toBalanceString()
     }
 
-    private fun getDefaultOrFirstFundedBtcAccount(): ItemAccount {
-        var account =
-            payloadManager.payload.hdWallets[0].accounts[payloadManager.payload.hdWallets[0].defaultAccountIdx]
+    private fun getDefaultOrFirstFundedBtcAccount(): ItemAccount? {
+        val hdWallet = payloadManager.payload?.hdWallets?.get(0)
+
+        var account: Account = hdWallet?.accounts?.get(hdWallet.defaultAccountIdx) ?: return null
 
         if (getAccountAbsoluteBalance(account) <= 0L)
-            for (funded in payloadManager.payload.hdWallets[0].accounts) {
+            for (funded in hdWallet.accounts) {
                 if (!funded.isArchived && getAccountAbsoluteBalance(funded) > 0L) {
                     account = funded
                     break
@@ -303,8 +314,8 @@ class WalletAccountHelper(
         )
     }
 
-    private fun getDefaultOrFirstFundedBchAccount(): ItemAccount {
-        var account = bchDataManager.getDefaultGenericMetadataAccount()!!
+    private fun getDefaultOrFirstFundedBchAccount(): ItemAccount? {
+        var account = bchDataManager.getDefaultGenericMetadataAccount() ?: return null
 
         if (getAccountAbsoluteBalance(account) <= 0L)
             for (funded in bchDataManager.getActiveAccounts()) {
@@ -324,34 +335,44 @@ class WalletAccountHelper(
         )
     }
 
-    private fun getDefaultEthAccount(): ItemAccount {
+    private fun getDefaultEthAccount(): ItemAccount? {
         val ethModel = ethDataManager.getEthResponseModel()
-        val ethAccount = ethDataManager.getEthWallet()!!.account
+        val ethAccount = ethDataManager.getEthWallet()?.account
         val balance = CryptoValue.etherFromWei(ethModel?.getTotalBalance() ?: BigInteger.ZERO)
 
-        return ItemAccount(
-            ethAccount?.label,
-            balance.toBalanceString(),
-            null,
-            0,
-            ethAccount,
-            ethAccount?.address!!
-        )
+        return if (ethAccount == null) {
+            Timber.e("Invalid ETHER account: no account")
+            null
+        } else {
+            ItemAccount(
+                ethAccount.label,
+                balance.toBalanceString(),
+                null,
+                0,
+                ethAccount,
+                ethAccount.address
+            )
+        }
     }
 
-    private fun getDefaultPaxAccount(): ItemAccount {
+    private fun getDefaultPaxAccount(): ItemAccount? {
         val erc20DataModel = paxAccount.getErc20Model()
-        val ethAccount = ethDataManager.getEthWallet()!!.account
+        val ethAccount = ethDataManager.getEthWallet()?.account
         val balance = erc20DataModel?.totalBalance ?: CryptoValue.ZeroPax
 
-        return ItemAccount(
-            ethAccount?.label,
-            balance.toBalanceString(),
-            null,
-            0,
-            ethAccount,
-            ethAccount?.address!!
-        )
+        return if (ethAccount == null) {
+            Timber.e("Invalid pax account: no account")
+            null
+        } else {
+            ItemAccount(
+                ethAccount.label,
+                balance.toBalanceString(),
+                null,
+                0,
+                ethAccount,
+                ethAccount.address
+            )
+        }
     }
 
     private fun getDefaultXlmAccountItem() =

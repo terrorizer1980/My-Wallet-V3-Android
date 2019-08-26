@@ -12,8 +12,8 @@ import info.blockchain.wallet.payment.Payment;
 import info.blockchain.wallet.prices.PriceApi;
 import info.blockchain.wallet.prices.PriceEndpoints;
 import info.blockchain.wallet.settings.SettingsManager;
-import info.blockchain.wallet.shapeshift.ShapeShiftApi;
-import info.blockchain.wallet.shapeshift.ShapeShiftEndpoints;
+import com.blockchain.swap.shapeshift.ShapeShiftApi;
+import com.blockchain.swap.shapeshift.ShapeShiftEndpoints;
 import piuk.blockchain.android.data.fingerprint.FingerprintAuth;
 
 @Module

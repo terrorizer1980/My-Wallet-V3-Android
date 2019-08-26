@@ -18,7 +18,7 @@ internal fun showUpdateEmailDialog(activity: Context, settingsPresenter: Setting
         .apply {
             inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             setText(originalEmail)
-            setSelection(text.length)
+            setSelection(text?.length ?: 0)
         }
 
     val alertDialog = AlertDialog.Builder(activity, R.style.AlertDialogStyle)

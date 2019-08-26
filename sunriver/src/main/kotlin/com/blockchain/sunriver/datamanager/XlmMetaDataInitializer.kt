@@ -1,7 +1,7 @@
 package com.blockchain.sunriver.datamanager
 
+import com.blockchain.logging.CrashLogger
 import com.blockchain.metadata.MetadataRepository
-import com.blockchain.metadata.MetadataWarningLog
 import com.blockchain.rx.maybeCache
 import com.blockchain.sunriver.derivation.deriveXlmAccountKeyPair
 import com.blockchain.wallet.DefaultLabels
@@ -14,7 +14,7 @@ internal class XlmMetaDataInitializer(
     private val defaultLabels: DefaultLabels,
     private val repository: MetadataRepository,
     private val seedAccess: SeedAccess,
-    private val metadataWarningLog: MetadataWarningLog
+    private val crashLogger: CrashLogger
 ) {
     /**
      * Will not prompt for second password.
@@ -70,7 +70,13 @@ internal class XlmMetaDataInitializer(
         val expectedAccount = expected.accounts?.get(0)
         val loadedAccount = loaded.accounts?.get(0)
         if (expectedAccount?.publicKey != loadedAccount?.publicKey) {
-            metadataWarningLog.logWarning("Xlm metadata expected did not match that loaded")
+            Throwable("Xlm metadata expected did not match that loaded").let {
+                crashLogger.logException(it)
+                if (crashLogger.isDebugBuild) {
+                    // we want to know about this on a debug build
+                    throw it
+                }
+            }
         }
     }
 

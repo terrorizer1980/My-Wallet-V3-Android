@@ -152,7 +152,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         setupLayout()
         setCustomKeypad()
 
-        scrollview?.post { scrollview.scrollTo(0, 0) }
+        scrollview?.post { scrollview?.scrollTo(0, 0) }
 
         currency_header.setSelectionListener { currency ->
             when (currency) {
@@ -434,7 +434,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         AccountChooserActivity.unpackAccountResult(intent)
 
     override fun showShareBottomSheet(uri: String) {
-        receiveIntentHelper.getIntentDataList(uri, getQrBitmap(), currencyState.cryptoCurrency)?.let {
+        receiveIntentHelper.getIntentDataList(uri, getQrBitmap(), currencyState.cryptoCurrency).let {
             val adapter = ShareReceiveIntentAdapter(it).apply {
                 itemClickedListener = { bottomSheetDialog?.dismiss() }
             }

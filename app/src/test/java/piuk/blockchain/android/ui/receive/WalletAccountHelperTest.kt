@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.receive
 
+import com.blockchain.logging.CrashLogger
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
@@ -51,6 +52,7 @@ class WalletAccountHelperTest {
     private val environmentSettings: EnvironmentConfig = mock()
     private val fiatExchangeRates: FiatExchangeRates = mock()
     private val paxAccount: Erc20Account = mock()
+    private val crashLogger: CrashLogger = mock()
 
     @Before
     fun setUp() {
@@ -65,7 +67,8 @@ class WalletAccountHelperTest {
             bchDataManager,
             xlmDataManager,
             environmentSettings,
-            fiatExchangeRates
+            fiatExchangeRates,
+            crashLogger
         )
 
         whenever(environmentSettings.bitcoinCashNetworkParameters)
@@ -88,8 +91,8 @@ class WalletAccountHelperTest {
             this.label = null
             this.address = address
         }
-        whenever(payloadManager.payload.hdWallets[0].accounts).thenReturn(listOf(account))
-        whenever(payloadManager.payload.legacyAddressList).thenReturn(mutableListOf(legacyAddress))
+        whenever(payloadManager.payload?.hdWallets?.get(0)?.accounts).thenReturn(listOf(account))
+        whenever(payloadManager.payload?.legacyAddressList).thenReturn(mutableListOf(legacyAddress))
         givenCryptoCurrency(CryptoCurrency.BTC)
         whenever(payloadManager.getAddressBalance(xPub)).thenReturn(1.2.bitcoin().amount)
         whenever(payloadManager.getAddressBalance(address)).thenReturn(2.3.bitcoin().amount)
@@ -121,7 +124,7 @@ class WalletAccountHelperTest {
         }
         whenever(bchDataManager.getActiveAccounts()).thenReturn(listOf(account))
         whenever(bchDataManager.getAddressBalance(address)).thenReturn(5.1.bitcoinCash().amount)
-        whenever(payloadManager.payload.legacyAddressList).thenReturn(mutableListOf(legacyAddress))
+        whenever(payloadManager.payload?.legacyAddressList).thenReturn(mutableListOf(legacyAddress))
         givenCryptoCurrency(CryptoCurrency.BCH)
         whenever(bchDataManager.getAddressBalance(xPub)).thenReturn(20.1.bitcoinCash().amount)
         // Act
@@ -147,7 +150,7 @@ class WalletAccountHelperTest {
             this.label = label
             this.xpub = xPub
         }
-        whenever(payloadManager.payload.hdWallets[0].accounts)
+        whenever(payloadManager.payload?.hdWallets?.get(0)?.accounts)
             .thenReturn(mutableListOf(archivedAccount, account))
         givenCryptoCurrency(CryptoCurrency.BTC)
         whenever(payloadManager.getAddressBalance(xPub)).thenReturn(BigInteger.TEN)
@@ -233,7 +236,7 @@ class WalletAccountHelperTest {
             this.label = null
             this.address = address
         }
-        whenever(payloadManager.payload.legacyAddressList)
+        whenever(payloadManager.payload?.legacyAddressList)
             .thenReturn(mutableListOf(archivedAddress, legacyAddress))
         givenCryptoCurrency(CryptoCurrency.BTC)
         whenever(payloadManager.getAddressBalance(address)).thenReturn(BigInteger.TEN)
@@ -250,7 +253,7 @@ class WalletAccountHelperTest {
     fun `getAddressBookEntries should return single item`() {
         // Arrange
         val addressBook = AddressBook()
-        whenever(payloadManager.payload.addressBook).thenReturn(listOf(addressBook))
+        whenever(payloadManager.payload?.addressBook).thenReturn(listOf(addressBook))
         // Act
         val result = subject.getAddressBookEntries()
         // Assert
@@ -260,7 +263,7 @@ class WalletAccountHelperTest {
     @Test
     fun `getAddressBookEntries should return empty list`() {
         // Arrange
-        whenever(payloadManager.payload.addressBook)
+        whenever(payloadManager.payload?.addressBook)
             .thenReturn(null)
         // Act
         val result = subject.getAddressBookEntries()

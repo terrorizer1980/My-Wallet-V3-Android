@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
 import com.blockchain.kyc.services.nabu.TierService
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Single
 import org.amshove.kluent.mock

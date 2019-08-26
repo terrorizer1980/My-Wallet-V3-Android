@@ -34,7 +34,7 @@ class NumericKeyboard @JvmOverloads constructor(
     private var callback: NumericKeyboardCallback? = null
 
     init {
-        orientation = LinearLayout.HORIZONTAL
+        orientation = HORIZONTAL
         gravity = Gravity.BOTTOM
 
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

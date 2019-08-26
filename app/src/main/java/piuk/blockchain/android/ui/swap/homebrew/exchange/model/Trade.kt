@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange.model
 
 import android.os.Parcelable
-import com.blockchain.morph.trade.MorphTrade
+import com.blockchain.swap.common.trade.MorphTrade
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize

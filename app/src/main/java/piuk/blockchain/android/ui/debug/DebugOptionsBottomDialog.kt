@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.logging.CrashLogger
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.dialog_debug_options.*
 import org.koin.android.ext.android.get
@@ -26,6 +27,7 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
     private val prefs: PersistentPrefs by inject()
     private val appUtil: AppUtil by inject()
     private val loginState: AccessState by inject()
+    private val crashLogger: CrashLogger by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,6 +44,8 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
         btn_reset_prefs.setOnClickListener { onResetPrefs() }
 
         btn_store_linkId.setOnClickListener { prefs.pitToWalletLinkId = "11111111-2222-3333-4444-55556666677" }
+
+        firebase_token.text = prefs.getValue(PersistentPrefs.KEY_FIREBASE_TOKEN)
     }
 
     private fun onRndDeviceId() {
@@ -68,7 +72,9 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
         prefs.clear()
 
         AppRate.reset(context)
-        loginState.pin = null
+
+        crashLogger.log("debug clear prefs. Pin reset")
+        loginState.clearPin()
 
         context?.toast("Prefs Reset")
         dismiss()

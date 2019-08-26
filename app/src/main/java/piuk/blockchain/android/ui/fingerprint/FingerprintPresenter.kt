@@ -7,10 +7,9 @@ import piuk.blockchain.android.ui.fingerprint.FingerprintDialog.Companion.KEY_BU
 import piuk.blockchain.android.ui.fingerprint.FingerprintDialog.Companion.KEY_BUNDLE_STAGE
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
-import javax.inject.Inject
 
 @Suppress("MemberVisibilityCanBePrivate")
-class FingerprintPresenter @Inject constructor(
+class FingerprintPresenter(
     private val fingerprintHelper: FingerprintHelper
 ) : BasePresenter<FingerprintView>(), FingerprintHelper.AuthCallback {
 

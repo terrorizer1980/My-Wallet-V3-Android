@@ -52,7 +52,7 @@ class AdapterDelegatesManager<T> {
     fun getItemViewType(items: List<T>, position: Int): Int {
         for (i in 0 until delegates.size()) {
             val delegate = delegates.get(i)
-            if (delegate.isForViewType(items, position)) {
+            if (delegate?.isForViewType(items, position) == true) {
                 return delegates.keyAt(i)
             }
         }

@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.dashboard.announcements
 
 import android.support.annotation.VisibleForTesting
 import com.blockchain.kyc.status.KycTiersQueries
-import com.blockchain.kycui.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import io.reactivex.Single
 import piuk.blockchain.android.R
 

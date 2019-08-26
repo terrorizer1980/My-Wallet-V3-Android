@@ -34,25 +34,30 @@ import timber.log.Timber;
 
 public class PasswordRequiredPresenter extends BasePresenter<PasswordRequiredView> {
 
-    @VisibleForTesting static final String KEY_AUTH_REQUIRED = "authorization_required";
+    @VisibleForTesting
+    static final String KEY_AUTH_REQUIRED = "authorization_required";
 
     @SuppressWarnings("WeakerAccess")
-    @Thunk AppUtil appUtil;
+    @Thunk
+    AppUtil appUtil;
     private PersistentPrefs prefs;
     private AuthDataManager authDataManager;
     private PayloadDataManager payloadDataManager;
     private BuyDataManager buyDataManager;
     private CoinifyDataManager coinifyDataManager;
     private String sessionId;
-    @VisibleForTesting boolean waitingForAuth = false;
+    @VisibleForTesting
+    boolean waitingForAuth = false;
 
     @Inject
-    PasswordRequiredPresenter(AppUtil appUtil,
-                              PersistentPrefs prefs,
-                              AuthDataManager authDataManager,
-                              PayloadDataManager payloadDataManager,
-                              BuyDataManager buyDataManager,
-                              CoinifyDataManager coinifyDataManager) {
+    public PasswordRequiredPresenter(
+            AppUtil appUtil,
+            PersistentPrefs prefs,
+            AuthDataManager authDataManager,
+            PayloadDataManager payloadDataManager,
+            BuyDataManager buyDataManager,
+            CoinifyDataManager coinifyDataManager
+    ) {
 
         this.appUtil = appUtil;
         this.prefs = prefs;

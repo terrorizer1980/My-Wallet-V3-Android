@@ -2,15 +2,13 @@ package piuk.blockchain.android.ui.dashboard
 
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetDialogFragment
-import com.blockchain.kycui.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.util.Locale
 
 interface DashboardView : View {
-
-    val shouldShowBuy: Boolean
 
     val locale: Locale
 

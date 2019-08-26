@@ -63,7 +63,7 @@ public class EthereumWalletTest extends MockedResponseTest {
         Assert.assertEquals(0, subject.getTxNotes().size());
 
         Assert.assertEquals("60e2d382449758aab3866585dc69a946e3566bca0eea274b9073cb60da636133",
-                EthereumAccount.deriveECKey(wallet.getMasterKey(), 0).getPrivateKeyAsHex());
+                EthereumAccount.Companion.deriveECKey(wallet.getMasterKey(), 0).getPrivateKeyAsHex());
 
         Assert.assertTrue(subject.getAccount().getAddress()
                 .equalsIgnoreCase("0x14f2BD143692B14D170c34b2eE25EE5FC61e8570"));
@@ -89,7 +89,7 @@ public class EthereumWalletTest extends MockedResponseTest {
         Assert.assertEquals(0, subject.getTxNotes().size());
 
         Assert.assertEquals("b96e9ccb774cc33213cbcb2c69d3cdae17b0fe4888a1ccd343cbd1a17fd98b18",
-                EthereumAccount.deriveECKey(wallet.getMasterKey(), 0).getPrivateKeyAsHex());
+                EthereumAccount.Companion.deriveECKey(wallet.getMasterKey(), 0).getPrivateKeyAsHex());
 
         Assert.assertTrue(subject.getAccount().getAddress()
                 .equalsIgnoreCase("0xaC39b311DCEb2A4b2f5d8461c1cdaF756F4F7Ae9"));
@@ -115,7 +115,7 @@ public class EthereumWalletTest extends MockedResponseTest {
         Assert.assertEquals(0, subject.getTxNotes().size());
 
         Assert.assertEquals("6e1ae089604577d31f25617297e4f50ef1b06376d7b04419c7e82e2507927857",
-                EthereumAccount.deriveECKey(wallet.getMasterKey(), 0).getPrivateKeyAsHex());
+                EthereumAccount.Companion.deriveECKey(wallet.getMasterKey(), 0).getPrivateKeyAsHex());
 
         Assert.assertTrue(subject.getAccount().getAddress()
                 .equalsIgnoreCase("0x351e4184A9aBe6B71a2a7a71c2628c47cC861e51"));
@@ -212,7 +212,7 @@ public class EthereumWalletTest extends MockedResponseTest {
         RawTransaction tx = createEtherTransaction();
 
         //Act
-        byte[] signTransaction = subject.getAccount().signTransaction(tx, EthereumAccount.deriveECKey(wallet.getMasterKey(), 0));
+        byte[] signTransaction = subject.getAccount().signTransaction(tx, EthereumAccount.Companion.deriveECKey(wallet.getMasterKey(), 0));
 
         //Assert
         Assert.assertEquals(

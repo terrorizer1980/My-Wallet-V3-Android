@@ -247,7 +247,7 @@ Wszelkie prawa zastrzeżone.</string>
   <string name="privx_required">Potrzebny klucz prywatny</string>
   <string name="watch_only_spend_instructions">To działanie wymaga klucza prywatnego dla adresu bitcoin %1$s. Proszę zeskanować kod QR.</string>
   <string name="invalid_private_key">Nieprawidłowy klucz prywatny</string>
-  <string name="watch_only_import_warning">Zamierzasz importować adres tylko do odczytu, adres (lub skrypt klucza publicznego) przechowywany w portfelu bez odpowiadającego mu klucza prywatnego. Oznacza to, że środki z tego adresu możesz wydawać tylko, jeśli masz klucz prywatny przechowywany gdzie indziej. Jeśli nie masz takiego klucza, NIE podawaj adresu tylko do odczytu jako adresu do otrzymywania bitcoinów. 
+  <string name="watch_only_import_warning">Zamierzasz importować adres tylko do odczytu, adres (lub skrypt klucza publicznego) przechowywany w portfelu bez odpowiadającego mu klucza prywatnego. Oznacza to, że środki z tego adresu możesz wydawać tylko, jeśli masz klucz prywatny przechowywany gdzie indziej. Jeśli nie masz takiego klucza, NIE podawaj adresu tylko do odczytu jako adresu do otrzymywania bitcoinów.
 
 Te opcje są zalecane tylko dla zaawansowanych użytkowników. Kontynuować? </string>
   <string name="scan_private_key">Skanuj klucz prywatny</string>
@@ -688,12 +688,12 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="lockbox_landing_get_yours_button">Kup Teraz</string>
   <string name="lockbox_landing_already_owned_title">Masz już własny?</string>
   <string name="lockbox_landing_already_owned_message">Z poziomu komputera, zaloguj się na blockchain.com i podłącz swoja skrytkę.</string>
-  <string name="lockbox_landing_learn_more">Chcesz się dowiedzieć więcej? Kliknij tutaj, aby odwiedzić 
+  <string name="lockbox_landing_learn_more">Chcesz się dowiedzieć więcej? Kliknij tutaj, aby odwiedzić
  %1$s</string>
   <string name="lockbox_landing_coming_soon_title">Równowagi już wkrótce</string>
   <string name="lockbox_landing_coming_soon_message">Obecnie nie możemy wyświetlić Twojego salda Lockbox. Nie martw się, twoje fundusze są bezpieczne. Wkrótce dodamy tę funkcję. Podczas oczekiwania możesz sprawdzić saldo w internecie.</string>
   <string name="lockbox_landing_coming_soon_button">Sprawdź moje saldo</string>
-  <string name="coinify_account_created_success">Powodzenie! 
+  <string name="coinify_account_created_success">Powodzenie!
  Konto utworzone</string>
   <string name="buy_sell_launcher_error">Błąd przy pobieraniu danych kup / sprzedaj</string>
   <string name="buy_sell_buy">Kup</string>
@@ -702,11 +702,11 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="buy_sell_overview_pending_kyc_not_found">Nie znaleziono KYC, spróbuj ponownie później.</string>
   <string name="buy_sell_overview_could_not_start_kyc">Nie można ponownie uruchomić KYC, spróbuj ponownie później.</string>
   <string name="buy_sell_overview_empty_list">Tutaj wyświetli się historia zamówień</string>
-  <string name="buy_sell_overview_in_review_title">Weryfikacja tożsamości 
+  <string name="buy_sell_overview_in_review_title">Weryfikacja tożsamości
  w recenzji</string>
-  <string name="buy_sell_overview_denied_title">Weryfikacja tożsamości 
+  <string name="buy_sell_overview_denied_title">Weryfikacja tożsamości
  odmówiono</string>
-  <string name="buy_sell_overview_pending_title">Pełna tożsamość 
+  <string name="buy_sell_overview_pending_title">Pełna tożsamość
  weryfikacja</string>
   <string name="buy_sell_overview_in_review_button">Kup teraz z kartą</string>
   <string name="buy_sell_overview_denied_button">Spróbuj ponownie</string>
@@ -741,7 +741,7 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="buy_sell_detail_bank_disclaimer">Odbieranie środków na konto bankowe trwa zazwyczaj od 2 do 3 dni roboczych.</string>
   <string name="buy_sell_detail_refund_message">Coinify anulowało to zamówienie sprzedaży i wysłało Ci e-mail z instrukcjami, jak otrzymać zwrot środków.</string>
   <string name="buy_sell_details_whats_next">Co dalej?</string>
-  <string name="buy_sell_awaiting_funds_description">Wyślij %1$s do Coinify w ciągu najbliższych 48 godzin. 
+  <string name="buy_sell_awaiting_funds_description">Wyślij %1$s do Coinify w ciągu najbliższych 48 godzin.
 
  Środki na wysyłanie rachunków bankowych muszą mieć taką samą nazwę jak twój wydany przez rząd dokument tożsamości. W przeciwnym razie zostanie odrzucony.</string>
   <string name="buy_sell_awaiting_funds_already_sent">Wysłałem już fundusze na Coinify</string>
@@ -818,7 +818,7 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="buy_sell_confirmation_you_will_receive">Łączny kredyt należny</string>
   <string name="buy_sell_confirmation_btc_to_receive_description">%1$s BTC zostanie wysłany bezpośrednio z portfela Blockchain do Coinify po naciśnięciu przycisku Submit.</string>
   <string name="buy_sell_confirmation_sell_rate_disclaimer">Przyjmuję do wiadomości, że Coinify przetworzy moje zamówienie po zakończeniu transakcji bitcoin i że bitcoin będzie sprzedawany po dostępnym kursie wymiany w danym czasie, który może różnić się od wyświetlanej stawki.</string>
-  <string name="buy_sell_card_payment_success_title">Powodzenie! 
+  <string name="buy_sell_card_payment_success_title">Powodzenie!
  Zamówienie utworzone</string>
   <string name="buy_sell_card_payment_success_message">Środki powinny dotrzeć do Twojego konta w ciągu 3 dni.</string>
   <string name="buy_sell_card_order_created_title">Zamówienie utworzone</string>
@@ -991,7 +991,6 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="kyc_veriff_splash_id_card">Narodowa karta identyfikacyjna</string>
   <string name="kyc_veriff_splash_residence_permit">Karta mieszkańca</string>
   <string name="kyc_veriff_splash_continue">dalej</string>
-  <string name="kyc_help_dialog_need_some_help">\@ string / need_some_help</string>
   <string name="kyc_help_dialog_need_some_help_body">Nasz zespół wsparcia Blockchain napisał Przewodniki pomocnicze wyjaśniające, dlaczego musimy zweryfikować Twoją tożsamość.</string>
   <string name="kyc_help_dialog_read_now">Czytaj teraz</string>
   <string name="kyc_help_dialog_read_now_url">https://blockchain.zendesk.com/hc/en-us/categories/360001135512-Identity-Verification</string>
@@ -1114,10 +1113,10 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="morph_refunded_title">Przedawniony</string>
   <string name="morph_step_number">Krok %1$s 3</string>
   <string name="morph_confirm">Potwierdzać</string>
-  <string name="morph_success_dlg_text">Powodzenie! Twoja wymiana ma 
+  <string name="morph_success_dlg_text">Powodzenie! Twoja wymiana ma
  został uruchomiony!</string>
   <string name="morph_success_for_first_gold_pax_trade_title">Twoja Exchange została uruchomiona!</string>
-  <string name="morph_success_for_first_gold_pax_trade_description">Co więcej, ponieważ potrzebujesz ETH do zawierania transakcji PAX w USD, po prostu zrzuciliśmy wystarczającą ilość ETH do Twojego Portfela, aby pokryć Twoje pierwsze 3 transakcje 
+  <string name="morph_success_for_first_gold_pax_trade_description">Co więcej, ponieważ potrzebujesz ETH do zawierania transakcji PAX w USD, po prostu zrzuciliśmy wystarczającą ilość ETH do Twojego Portfela, aby pokryć Twoje pierwsze 3 transakcje
  🙌</string>
   <string name="morph_success_dlg_button">Zobacz szczegóły zamówienia</string>
   <string name="morph_order_id_title">ID zamówienia</string>
@@ -1156,10 +1155,8 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="homebrew_confirmation_error_fetching_fee">Błąd pobierania opłaty</string>
   <string name="under_limit">Poniżej limitu</string>
   <string name="over_limit">Ponad limit</string>
-  <string name="morph_help_dialog_need_some_help">\@ string / need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">Nasz Zespół Wsparcia Blockchain jest w stanie odpowiedzieć na wszelkie pytania.</string>
   <string name="morph_help_dialog_view_swap_limit">Wyświetl mój limit wymiany</string>
-  <string name="morph_help_dialog_contact_support">\@ string / contact_support</string>
   <string name="toolbar_cmd_home">Dom</string>
   <string name="toolbar_cmd_send">Wysłać</string>
   <string name="toolbar_cmd_receive">Żądanie</string>
@@ -1189,4 +1186,63 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="kyc_gold_unavailable_goto_swap">Rozpocznij handel</string>
   <string name="gold_unavailable">Złoto Niedostępne</string>
   <string name="veriff_identify">Veriff Identify</string>
+  <string name="more_info_needed">Więcej informacji potrzebne</string>
+  <string name="coinify_kyc_body">Aby nadal korzystać z opcji Kupuj i sprzedawaj, musisz zaktualizować swój profil. Po zakończeniu odblokujesz również wyższe limity handlowe w Swap.</string>
+  <string name="coinify_kyc_cta">Aktualizuj teraz</string>
+  <string name="coinify_kyc_dismiss">Ucz się więcej</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">Cyfrowe dolary amerykańskie</string>
+  <string name="pax_intro_popup_text">Wprowadzenie USD PAX, bezpiecznego i stabilnego zasobu kryptograficznego, którego możesz używać do przechowywania wartości. 1 PAX równa się 1 USD ..</string>
+  <string name="pax_intro_popup_cta_btn">Uzyskaj USD PAX teraz</string>
+  <string name="buy_sell_error_country_not_supported">Twój kraj nie jest obecnie obsługiwany przy kupnie / sprzedaży. Pracujemy nad tym, aby wkrótce dodać obsługę większej liczby obszarów.</string>
+  <string name="no_sell_available_message">Niestety, kupno i sprzedaż nie jest dostępna w twoim stanie. Ciężko pracujemy, aby przywrócić go jak najszybciej.</string>
+  <string name="send">Wysłać</string>
+  <string name="item_the_pit">Jama</string>
+  <string name="btn_close">Blisko</string>
+  <string name="sunriver_announcement_stellar_claim_title">Claim Your Stellar (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">Wygląda na to, że zacząłeś weryfikować swoje 
+ tożsamość, ale nie skończyłem. Odbierz, gdzie skończyłeś. 
+</string>
+  <string name="sunriver_announcement_stellar_claim_cta">Kontynuuj weryfikację</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">Twój XLM jest w drodze</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">Pomyślnie zweryfikowaliśmy 
+ Twoja tożsamość. 
+</string>
+  <string name="pit_announcement_description">Nadszedł czas na Level Up do lepszej wymiany kryptograficznej. Pierwsze 100 000 handlowców, którzy chcą się zarejestrować, będzie handlować za darmo przez 30 dni.</string>
+  <string name="pit_announcement_introducing_link">Sprawdź to</string>
+  <string name="pit_logo_content_descr">Logo Pit</string>
+  <string name="pit_slogan_kyc_promo">Jedyna Exchange, która łączy się z Twoim Portfelem.</string>
+  <string name="pit_thunder_kyc_promo">Handel błyskawicami</string>
+  <string name="pit_security_kyc_promo"><![CDATA[Płynny i niezawodny]]></string>
+  <string name="pit_built_kyc_promo">Zbudowany przez Blockchain.com</string>
+  <string name="pit_dollar_kyc_promo">Niskie opłaty</string>
+  <string name="pit_permission_app_can">Ta aplikacja będzie mogła:</string>
+  <string name="pit_permission_app_cant">Ta aplikacja nie będzie w stanie:</string>
+  <string name="pit_permission_subtitle">Nie będzie w stanie:</string>
+  <string name="pit_permission_1">Ułatwienie transferu kryptograficznego między kontami</string>
+  <string name="pit_permission_2">Udostępnij swój status złotego lub srebrnego poziomu</string>
+  <string name="pit_permission_3">Dodaj połączone banki</string>
+  <string name="pit_permission_4">Wyświetl swoje hasło do portfela</string>
+  <string name="pit_connect_now">Połącz teraz</string>
+  <string name="pit_setting_title">Jama</string>
+  <string name="pit_setting_connect">Połączyć</string>
+  <string name="pit_setting_connected">Połączony</string>
+  <string name="launch_the_pit">Uruchom The Pit</string>
+  <string name="pit_contact_support">Skontaktuj się z pomocą techniczną</string>
+  <string name="pit_loading_dialog_title">Zabieranie Cię do PIT</string>
+  <string name="pit_loading_dialog_description">Nowe okno powinno się otworzyć w ciągu 10 sekund.</string>
+  <string name="pit_verify_email_title">Zweryfikuj swój email</string>
+  <string name="pit_verify_email_description">Właśnie wysłaliśmy Ci e-mail weryfikacyjny. Twój adres e-mail musi zostać zweryfikowany, zanim będziesz mógł połączyć się z The PIT.</string>
+  <string name="pit_open_email_app">Otwórz aplikację e-mail</string>
+  <string name="pit_did_not_get_email">Nie dostałeś e-maila?</string>
+  <string name="pit_send_again">Wyślij ponownie</string>
+  <string name="mail_resent_succeed">E-mail wysłany. Sprawdź swoją skrzynkę odbiorczą, aby kontynuować.</string>
+  <string name="mail_resent_failed">Coś poszło nie tak. Wybierz Wyślij ponownie.</string>
+  <string name="pit_email_verified_description">Jesteś gotowy podłączyć swój Portfel Blockchain do PIT.</string>
+  <string name="pit_email_verified_title">E-mail zweryfikowany.</string>
+  <string name="pit_connection_error_title">Błąd połączenia</string>
+  <string name="pit_connection_error_description">Nie mogliśmy połączyć twojego portfela z PIT. Wróć do PIT i spróbuj ponownie.</string>
+  <string name="pit_connection_success_title">Powodzenie!</string>
+  <string name="pit_connection_success_description">Połączyłeś swój portfel Blockchain z PIT.</string>
+  <string name="pit_default_account_label">Mój adres PIT %1$s</string>
 </resources>

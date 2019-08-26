@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import com.blockchain.annotations.BurnCandidate
+import com.blockchain.notifications.NotificationTokenManager
 import com.blockchain.notifications.NotificationsUtil
 import com.blockchain.notifications.R
 import com.blockchain.notifications.models.NotificationPayload
@@ -20,6 +21,7 @@ import timber.log.Timber
 class FcmCallbackService : FirebaseMessagingService() {
 
     private val notificationManager: NotificationManager by inject()
+    private val notificationTokenManager: NotificationTokenManager by inject()
     private val rxBus: RxBus by inject()
     private val accessState: AccessState by inject()
 
@@ -32,6 +34,13 @@ class FcmCallbackService : FirebaseMessagingService() {
             val payload = NotificationPayload(remoteMessage.data)
             rxBus.emitEvent(NotificationPayload::class.java, payload)
             sendNotification(payload)
+        }
+    }
+
+    override fun onNewToken(newToken: String?) {
+        super.onNewToken(newToken)
+        newToken?.let {
+            notificationTokenManager.storeAndUpdateToken(it)
         }
     }
 

@@ -108,7 +108,7 @@ class CoinifyServiceTest {
         val traderResponse = testObserver.values().first()
         traderResponse.trader.id `should equal to` 754035
         traderResponse.trader.profile.address.countryCode `should equal to` "US"
-        server.takeRequest().path `should equal to` "/$PATH_COINFY_SIGNUP_TRADER"
+        server.takeRequest().path!!.`should equal to`("/$PATH_COINFY_SIGNUP_TRADER")
     }
 
     @Test
@@ -136,7 +136,7 @@ class CoinifyServiceTest {
         val throwable = testObserver.errors()[0]
         throwable as CoinifyApiException
         throwable.getErrorCode() `should equal` CoinifyErrorCodes.EmailAddressInUse
-        server.takeRequest().path `should equal to` "/$PATH_COINFY_SIGNUP_TRADER"
+        server.takeRequest().path!!.`should equal to`("/$PATH_COINFY_SIGNUP_TRADER")
     }
 
     @Test
@@ -161,7 +161,7 @@ class CoinifyServiceTest {
         traderResponse.id `should equal to` 754035
         traderResponse.profile.address.countryCode `should equal to` "US"
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_GET_TRADER"
+        request.path!! `should equal to` "/$PATH_COINFY_GET_TRADER"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -187,7 +187,7 @@ class CoinifyServiceTest {
         subscriptionResponse.id `should equal to` 218
         subscriptionResponse.frequency `should equal` BuyFrequency.Weekly
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_SUBSCRIPTIONS"
+        request.path!! `should equal to` "/$PATH_COINFY_SUBSCRIPTIONS"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -213,7 +213,7 @@ class CoinifyServiceTest {
         list[0].transferIn.medium `should equal` Medium.Bank
         list[0].transferIn.details `should be instance of` BankDetails::class
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_TRADES"
+        request.path!! `should equal to` "/$PATH_COINFY_TRADES"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -245,7 +245,7 @@ class CoinifyServiceTest {
         trade.transferOut.medium `should equal` Medium.Blockchain
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_TRADES"
+        request.path!! `should equal to` "/$PATH_COINFY_TRADES"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
         // Check outgoing
         val inputAsString = request.requestToString()
@@ -286,7 +286,7 @@ class CoinifyServiceTest {
         trade.transferOut.medium `should equal` Medium.Blockchain
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_TRADES"
+        request.path!! `should equal to` "/$PATH_COINFY_TRADES"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
         // Check outgoing
         val inputAsString = request.requestToString()
@@ -327,7 +327,7 @@ class CoinifyServiceTest {
         trade.transferOut.medium `should equal` Medium.Blockchain
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_TRADES"
+        request.path!! `should equal to` "/$PATH_COINFY_TRADES"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
         // Check outgoing
         val inputAsString = request.requestToString()
@@ -365,7 +365,7 @@ class CoinifyServiceTest {
         trade.transferOut.medium `should equal` Medium.Blockchain
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_TRADES/$tradeId/$PATH_COINFY_CANCEL"
+        request.path!! `should equal to` "/$PATH_COINFY_TRADES/$tradeId/$PATH_COINFY_CANCEL"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -391,7 +391,7 @@ class CoinifyServiceTest {
         val trade = testObserver.values().first()
         trade.transferIn.details `should be instance of` BankDetails::class
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_TRADES/12345"
+        request.path!! `should equal to` "/$PATH_COINFY_TRADES/12345"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -419,7 +419,7 @@ class CoinifyServiceTest {
         authResponse.tokenType `should equal` "bearer"
         authResponse.expiresIn `should equal` 1200
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_AUTH"
+        request.path!! `should equal to` "/$PATH_COINFY_AUTH"
         // Check Moshi's handling of enum class w/overridden toString method
         val inputAsString = request.requestToString()
         val adapter = moshi.adapter(AuthRequest::class.java)
@@ -449,7 +449,7 @@ class CoinifyServiceTest {
         val kycResponse = testObserver.values().first()
         kycResponse.state `should equal` ReviewState.Completed
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_PREP_KYC"
+        request.path!! `should equal to` "/$PATH_COINFY_PREP_KYC"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -475,7 +475,7 @@ class CoinifyServiceTest {
         val kycResponse = testObserver.values().first()
         kycResponse.state `should equal` ReviewState.Completed
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_KYC/12345"
+        request.path!! `should equal to` "/$PATH_COINFY_KYC/12345"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -502,7 +502,7 @@ class CoinifyServiceTest {
         kycResponse[0].id `should equal` 55555
         kycResponse[1].id `should equal` 55556
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_KYC"
+        request.path!! `should equal to` "/$PATH_COINFY_KYC"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -532,7 +532,7 @@ class CoinifyServiceTest {
         quote.baseAmount `should equal to` -1000.00
         quote.quoteAmount `should equal to` 2.41551728
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_TRADES_QUOTE"
+        request.path!! `should equal to` "/$PATH_COINFY_TRADES_QUOTE"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
         // Check outgoing JSON
         val inputAsString = request.requestToString()
@@ -577,7 +577,7 @@ class CoinifyServiceTest {
         cardInMethod.minimumInAmounts.gbp `should equal to` 8.00
         cardInMethod.limitInAmounts.gbp!! `should equal to` 8.00
         val request = server.takeRequest()
-        request.path `should equal to` "/$PATH_COINFY_TRADES_PAYMENT_METHODS?inCurrency=USD&outCurrency=BTC"
+        request.path!! `should equal to` "/$PATH_COINFY_TRADES_PAYMENT_METHODS?inCurrency=USD&outCurrency=BTC"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -606,8 +606,8 @@ class CoinifyServiceTest {
         accounts[1].id `should equal` 67890
         // Check URL
         val request = server.takeRequest()
-        request.method `should equal to` "GET"
-        request.path `should equal to` "/$PATH_COINFY_BANK_ACCOUNTS"
+        request.method!! `should equal to` "GET"
+        request.path!! `should equal to` "/$PATH_COINFY_BANK_ACCOUNTS"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -636,8 +636,8 @@ class CoinifyServiceTest {
         account.id `should equal` 12345
         // Check URL
         val request = server.takeRequest()
-        request.method `should equal to` "GET"
-        request.path `should equal to` "/$PATH_COINFY_BANK_ACCOUNTS/$accountId"
+        request.method!! `should equal to` "GET"
+        request.path!! `should equal to` "/$PATH_COINFY_BANK_ACCOUNTS/$accountId"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -663,8 +663,8 @@ class CoinifyServiceTest {
         testObserver.assertNoErrors()
         // Check URL
         val request = server.takeRequest()
-        request.method `should equal to` "DELETE"
-        request.path `should equal to` "/$PATH_COINFY_BANK_ACCOUNTS/$accountId"
+        request.method!! `should equal to` "DELETE"
+        request.path!! `should equal to` "/$PATH_COINFY_BANK_ACCOUNTS/$accountId"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 
@@ -716,8 +716,8 @@ class CoinifyServiceTest {
         updateTime `should equal` null
         createTime `should equal` null
         // Check URL
-        request.method `should equal to` "POST"
-        request.path `should equal to` "/$PATH_COINFY_BANK_ACCOUNTS"
+        request.method!! `should equal to` "POST"
+        request.path!! `should equal to` "/$PATH_COINFY_BANK_ACCOUNTS"
         request.headers.get("Authorization") `should equal` "Bearer $accessToken"
     }
 

@@ -1,7 +1,6 @@
 package piuk.blockchain.androidcoreui.utils.logging
 
 import com.blockchain.logging.CustomEventBuilder
-import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.AddToCartEvent
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.AnswersEvent
@@ -63,9 +62,5 @@ object Logging {
 
     fun logStartCheckout(startCheckoutEvent: StartCheckoutEvent) {
         if (shouldLog) Answers.getInstance().logStartCheckout(startCheckoutEvent)
-    }
-
-    fun logException(throwable: Throwable) {
-        if (shouldLog) Crashlytics.logException(throwable)
     }
 }

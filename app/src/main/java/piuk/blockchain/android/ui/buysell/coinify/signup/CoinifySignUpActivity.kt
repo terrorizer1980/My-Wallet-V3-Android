@@ -10,8 +10,8 @@ import android.view.animation.DecelerateInterpolator
 import kotlinx.android.synthetic.main.activity_coinify_signup.*
 import kotlinx.android.synthetic.main.include_buysell_signup_progress.*
 import kotlinx.android.synthetic.main.toolbar_general.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.coinify.signup.createaccountcompleted.CoinifyCreateAccountCompletedFragment
 import piuk.blockchain.android.ui.buysell.coinify.signup.createaccountstart.CoinifyCreateAccountStartFragment
 import piuk.blockchain.android.ui.buysell.coinify.signup.identityinreview.CoinifyIdentityInReviewFragment
@@ -28,19 +28,13 @@ import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
-import javax.inject.Inject
 
 class CoinifySignUpActivity : BaseMvpActivity<CoinifySignupView, CoinifySignUpPresenter>(),
     CoinifySignupView,
     FragmentManager.OnBackStackChangedListener,
     CoinifyFlowListener {
 
-    @Inject
-    lateinit var presenter: CoinifySignUpPresenter
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
+    private val presenter: CoinifySignUpPresenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +69,7 @@ class CoinifySignUpActivity : BaseMvpActivity<CoinifySignupView, CoinifySignUpPr
         }
 
         setupToolbar(title)
-        onProgressUpdate(currentFragment)
+        onProgressUpdate(currentFragment ?: return)
     }
 
     override fun onProgressUpdate(currentFragment: Fragment) {

@@ -1,6 +1,6 @@
 package com.blockchain.koin.modules
 
-import com.blockchain.nabu.StartBuySell
+import com.blockchain.swap.nabu.StartBuySell
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.ui.buysell.launcher.BuySellLauncherPresenter
 import piuk.blockchain.android.ui.buysell.launcher.BuySellStarter

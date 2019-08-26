@@ -56,11 +56,9 @@ import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.math.BigInteger
-import java.util.ArrayList
-import javax.inject.Inject
 
 // TODO: This page is pretty nasty and could do with a proper refactor
-class AccountEditPresenter @Inject internal constructor(
+class AccountEditPresenter constructor(
     private val prefs: PersistentPrefs,
     private val stringUtils: StringUtils,
     private val payloadDataManager: PayloadDataManager,
@@ -359,8 +357,8 @@ class AccountEditPresenter @Inject internal constructor(
             pendingTransaction.bigIntFee.toDouble() / pendingTransaction.bigIntAmount.toDouble() * 100.0
 
         return (pendingTransaction.bigIntFee.toLong() > SendModel.LARGE_TX_FEE &&
-            txSize > SendModel.LARGE_TX_SIZE &&
-            relativeFee > SendModel.LARGE_TX_PERCENTAGE)
+                txSize > SendModel.LARGE_TX_SIZE &&
+                relativeFee > SendModel.LARGE_TX_PERCENTAGE)
     }
 
     @SuppressLint("CheckResult")
@@ -860,7 +858,7 @@ class AccountEditPresenter @Inject internal constructor(
         val pendingTransaction = PendingTransaction()
 
         return Observables.zip(
-            sendDataManager.getUnspentOutputs(legacyAddress!!.address),
+            sendDataManager.getUnspentBtcOutputs(legacyAddress!!.address),
             coinSelectionRemoteConfig.enabled.toObservable()
         )
             .flatMap { (unspentOutputs, newCoinSelectionEnabled) ->

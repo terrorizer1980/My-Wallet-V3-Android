@@ -27,8 +27,8 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.blockchain.annotations.ButWhy
 import com.blockchain.annotations.CommonCode
-import com.blockchain.kycui.navhost.KycNavHostActivity
-import com.blockchain.kycui.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import com.blockchain.lockbox.ui.LockboxLandingActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
@@ -48,7 +48,6 @@ import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.PromptDlgFactory
 import piuk.blockchain.android.databinding.ActivityMainBinding
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.account.AccountActivity
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.ui.balance.BalanceFragment
@@ -61,8 +60,9 @@ import piuk.blockchain.android.ui.pairingcode.PairingCodeActivity
 import piuk.blockchain.android.ui.receive.ReceiveFragment
 import piuk.blockchain.android.ui.send.SendFragment
 import piuk.blockchain.android.ui.settings.SettingsActivity
-import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
+import piuk.blockchain.android.ui.swapintro.SwapIntroFragment
+import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.thepit.PitPermissionsActivity
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
@@ -75,8 +75,6 @@ import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import timber.log.Timber
-import javax.inject.Inject
-import java.util.HashMap
 
 class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, MainView,
     ConfirmPaymentDialog.OnConfirmDialogInteractionListener {
@@ -86,8 +84,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
     private var handlingResult = false
 
-    @Inject
-    internal lateinit var mainPresenter: MainPresenter
+    private val mainPresenter: MainPresenter by inject()
 
     private val appUtil: AppUtil by inject()
     private val analytics: Analytics by inject()
@@ -136,7 +133,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         }
 
     private val currentFragment: Fragment
-        get() = supportFragmentManager.findFragmentById(R.id.content_frame)
+        get() = supportFragmentManager.findFragmentById(R.id.content_frame)!!
 
     internal val activity: Context
         get() = this
@@ -146,10 +143,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
     private val menu: Menu
         get() = binding.navigationView.menu
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -281,6 +274,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             f is SendFragment -> f.onBackPressed()
             f is ReceiveFragment -> f.onBackPressed()
             f is DashboardFragment -> f.onBackPressed()
+            f is SwapIntroFragment -> f.onBackPressed()
             else -> {
                 // Switch to balance fragment - it's not clear, though,
                 // how we can ever wind up here...
@@ -321,25 +315,51 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     }
 
     private fun doScanInput(strResult: String) {
-        if (FormatsUtil.isValidBitcoinAddress(strResult)) {
-            AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                .setTitle(R.string.confirm_currency)
-                .setMessage(R.string.confirm_currency_message)
-                .setCancelable(true)
-                .setPositiveButton(R.string.bitcoin_cash) { _, _ ->
-                    presenter.setCryptoCurrency(CryptoCurrency.BCH)
-                    startSendFragment(strResult)
-                }
-                .setNegativeButton(R.string.bitcoin) { _, _ ->
-                    presenter.setCryptoCurrency(CryptoCurrency.BTC)
-                    startSendFragment(strResult)
-                }
-                .create()
-                .show()
-        } else {
-            startSendFragment(strResult)
+        when {
+            strResult.isBTCorBCHAddress() -> disambiguateBTCandBCHQrScans(strResult)
+            strResult.isETHAddress() -> disambiguateETHQrScans(strResult)
+            strResult.isHttpUri() -> presenter.handlePossibleDeepLink(strResult)
+            else -> startSendFragment(strResult)
         }
     }
+
+    private fun disambiguateBTCandBCHQrScans(uri: String) {
+        AlertDialog.Builder(this, R.style.AlertDialogStyle)
+            .setTitle(R.string.confirm_currency)
+            .setMessage(R.string.confirm_currency_message)
+            .setCancelable(true)
+            .setPositiveButton(R.string.bitcoin_cash) { _, _ ->
+                presenter.setCryptoCurrency(CryptoCurrency.BCH)
+                startSendFragment(uri)
+            }
+            .setNegativeButton(R.string.bitcoin) { _, _ ->
+                presenter.setCryptoCurrency(CryptoCurrency.BTC)
+                startSendFragment(uri)
+            }
+            .create()
+            .show()
+    }
+
+    private fun disambiguateETHQrScans(uri: String) {
+        AlertDialog.Builder(this, R.style.AlertDialogStyle)
+            .setTitle(R.string.confirm_currency)
+            .setMessage(R.string.confirm_currency_message)
+            .setCancelable(true)
+            .setPositiveButton(R.string.ether) { _, _ ->
+                presenter.setCryptoCurrency(CryptoCurrency.ETHER)
+                startSendFragment(uri)
+            }
+            .setNegativeButton(R.string.usd_pax) { _, _ ->
+                presenter.setCryptoCurrency(CryptoCurrency.PAX)
+                startSendFragment(uri)
+            }
+            .create()
+            .show()
+    }
+
+    private fun String.isHttpUri(): Boolean = startsWith("http")
+    private fun String.isBTCorBCHAddress(): Boolean = FormatsUtil.isValidBitcoinAddress(this)
+    private fun String.isETHAddress(): Boolean = FormatsUtil.isValidEthereumAddress(this)
 
     private fun selectDrawerItem(menuItem: MenuItem) {
         when (menuItem.itemId) {
@@ -561,16 +581,14 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     }
 
     override fun showTestnetWarning() {
-        if (activity != null) {
-            val snack = Snackbar.make(
-                binding.coordinatorLayout,
-                R.string.testnet_warning,
-                Snackbar.LENGTH_SHORT
-            )
-            val view = snack.view
-            view.setBackgroundColor(ContextCompat.getColor(this, R.color.product_red_medium))
-            snack.show()
-        }
+        val snack = Snackbar.make(
+            binding.coordinatorLayout,
+            R.string.testnet_warning,
+            Snackbar.LENGTH_SHORT
+        )
+        val view = snack.view
+        view.setBackgroundColor(ContextCompat.getColor(this, R.color.product_red_medium))
+        snack.show()
     }
 
     override fun enableSwapButton(isEnabled: Boolean) {
@@ -697,9 +715,26 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         toolbar_general.title = ""
     }
 
+    override fun launchKycIntro() {
+        val swapIntroFragment = SwapIntroFragment.newInstance()
+        replaceContentFragment(swapIntroFragment)
+    }
+
     override fun onStartBuySell() {
         BuySellLauncherActivity.start(this)
     }
+
+    override fun launchSwapIntro() {
+        setCurrentTabItem(ITEM_SWAP)
+
+        ViewUtils.setElevation(binding.appbarLayout, 0f)
+
+        val swapIntroFragment = SwapIntroFragment.newInstance()
+        replaceContentFragment(swapIntroFragment)
+    }
+
+    override fun shouldIgnoreDeepLinking() =
+        (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0
 
     private fun replaceContentFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
@@ -767,26 +802,26 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
         private fun toolbarNavigationItems(): List<AHBottomNavigationItem> =
             listOf(AHBottomNavigationItem(
-                    R.string.toolbar_cmd_activity,
-                    R.drawable.ic_vector_toolbar_activity,
-                    R.color.white
-                ), AHBottomNavigationItem(
-                    R.string.toolbar_cmd_swap,
-                    R.drawable.ic_vector_toolbar_swap,
-                    R.color.white
-                ), AHBottomNavigationItem(
-                    R.string.toolbar_cmd_home,
-                    R.drawable.ic_vector_toolbar_home,
-                    R.color.white
-                ), AHBottomNavigationItem(
-                    R.string.toolbar_cmd_send,
-                    R.drawable.ic_vector_toolbar_send,
-                    R.color.white
-                ), AHBottomNavigationItem(
-                    R.string.toolbar_cmd_receive,
-                    R.drawable.ic_vector_toolbar_receive,
-                    R.color.white
-                ))
+                R.string.toolbar_cmd_activity,
+                R.drawable.ic_vector_toolbar_activity,
+                R.color.white
+            ), AHBottomNavigationItem(
+                R.string.toolbar_cmd_swap,
+                R.drawable.ic_vector_toolbar_swap,
+                R.color.white
+            ), AHBottomNavigationItem(
+                R.string.toolbar_cmd_home,
+                R.drawable.ic_vector_toolbar_home,
+                R.color.white
+            ), AHBottomNavigationItem(
+                R.string.toolbar_cmd_send,
+                R.drawable.ic_vector_toolbar_send,
+                R.color.white
+            ), AHBottomNavigationItem(
+                R.string.toolbar_cmd_receive,
+                R.drawable.ic_vector_toolbar_receive,
+                R.color.white
+            ))
 
         fun start(context: Context, bundle: Bundle) {
             Intent(context, MainActivity::class.java).apply {

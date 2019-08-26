@@ -9,12 +9,13 @@ import com.blockchain.kyc.models.nabu.NabuUser
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
+import com.blockchain.kyc.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.kyc.models.nabu.SupportedDocuments
 import com.blockchain.kyc.services.nabu.NabuService
 import com.blockchain.kyc.services.wallet.RetailWalletTokenService
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.NabuSessionTokenResponse
-import com.blockchain.nabu.stores.NabuSessionTokenStore
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.NabuSessionTokenResponse
+import com.blockchain.swap.nabu.stores.NabuSessionTokenStore
 import com.blockchain.utils.Optional
 import com.blockchain.veriff.VeriffApplicantAndToken
 import info.blockchain.wallet.exceptions.ApiException
@@ -66,18 +67,18 @@ interface NabuDataManager {
         notifyWhenAvailable: Boolean
     ): Completable
 
-    fun getOnfidoApiKey(
-        offlineTokenResponse: NabuOfflineTokenResponse
-    ): Single<String>
+//    fun getOnfidoApiKey(
+//        offlineTokenResponse: NabuOfflineTokenResponse
+//    ): Single<String>
 
     fun startVeriffSession(
         offlineTokenResponse: NabuOfflineTokenResponse
     ): Single<VeriffApplicantAndToken>
 
-    fun submitOnfidoVerification(
-        offlineTokenResponse: NabuOfflineTokenResponse,
-        applicantId: String
-    ): Completable
+//    fun submitOnfidoVerification(
+//        offlineTokenResponse: NabuOfflineTokenResponse,
+//        applicantId: String
+//    ): Completable
 
     fun submitVeriffVerification(
         offlineTokenResponse: NabuOfflineTokenResponse
@@ -244,25 +245,11 @@ internal class NabuDataManagerImpl(
         ).toSingleDefault(Any())
     }.ignoreElement()
 
-    override fun getOnfidoApiKey(
-        offlineTokenResponse: NabuOfflineTokenResponse
-    ): Single<String> = authenticate(offlineTokenResponse) {
-        nabuService.getOnfidoApiKey(it)
-    }
-
     override fun startVeriffSession(
         offlineTokenResponse: NabuOfflineTokenResponse
     ): Single<VeriffApplicantAndToken> = authenticate(offlineTokenResponse) {
         nabuService.startVeriffSession(it)
     }
-
-    override fun submitOnfidoVerification(
-        offlineTokenResponse: NabuOfflineTokenResponse,
-        applicantId: String
-    ): Completable = authenticate(offlineTokenResponse) {
-        nabuService.submitOnfidoVerification(it, applicantId)
-            .toSingleDefault(Any())
-    }.ignoreElement()
 
     override fun submitVeriffVerification(
         offlineTokenResponse: NabuOfflineTokenResponse
@@ -354,7 +341,7 @@ internal class NabuDataManagerImpl(
         addressMap: Map<String, String> // Crypto symbol -> address
     ): Completable =
         authenticate(offlineTokenResponse) {
-            nabuService.sendWalletAddressesToThePit(it, addressMap)
+            nabuService.sendWalletAddressesToThePit(it, SendWithdrawalAddressesRequest(addressMap))
                 .toSingleDefault(Any())
         }.ignoreElement()
 

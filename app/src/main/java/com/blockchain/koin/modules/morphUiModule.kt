@@ -3,8 +3,8 @@ package com.blockchain.koin.modules
 import com.blockchain.datamanagers.BalanceCalculator
 import com.blockchain.datamanagers.BalanceCalculatorImpl
 import com.blockchain.koin.registerDebug
-import com.blockchain.morph.trade.MergingMorphTradeDataManager
-import com.blockchain.morph.trade.MorphTradeDataHistoryList
+import com.blockchain.swap.common.trade.MergingMorphTradeDataManager
+import com.blockchain.swap.common.trade.MorphTradeDataHistoryList
 
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeModel
@@ -22,7 +22,8 @@ val morphUiModule = applicationContext {
                 payloadDecrypt = get(),
                 stringUtils = get(),
                 locale = get(),
-                analytics = get()
+                analytics = get(),
+                crashLogger = get()
             )
         }
 

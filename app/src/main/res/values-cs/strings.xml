@@ -689,12 +689,12 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="lockbox_landing_get_yours_button">Kup nyní</string>
   <string name="lockbox_landing_already_owned_title">Již vlastní?</string>
   <string name="lockbox_landing_already_owned_message">Z počítače se přihlaste na bloku.cz a připojte svou schránku.</string>
-  <string name="lockbox_landing_learn_more">Chcete se dozvědět více? Klikněte sem pro návštěvu 
+  <string name="lockbox_landing_learn_more">Chcete se dozvědět více? Klikněte sem pro návštěvu
  %1$s</string>
   <string name="lockbox_landing_coming_soon_title">Váhy se blíží brzy</string>
   <string name="lockbox_landing_coming_soon_message">Momentálně nemůžeme zobrazit zůstatek Lockboxu. Nebojte se, vaše prostředky jsou v bezpečí. Tuto funkci přidáme brzy. Během čekání můžete zkontrolovat zůstatek na webu.</string>
   <string name="lockbox_landing_coming_soon_button">Zkontrolujte zůstatek</string>
-  <string name="coinify_account_created_success">Úspěch! 
+  <string name="coinify_account_created_success">Úspěch!
  Účet založen</string>
   <string name="buy_sell_launcher_error">Při načítání údajů o koupi / prodeji došlo k chybě</string>
   <string name="buy_sell_buy">Koupit</string>
@@ -703,11 +703,11 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="buy_sell_overview_pending_kyc_not_found">Čekací KYC nebylo nalezeno, zkuste to prosím později.</string>
   <string name="buy_sell_overview_could_not_start_kyc">KYC nelze restartovat, zkuste to prosím znovu později.</string>
   <string name="buy_sell_overview_empty_list">Historie objednávek se zobrazí zde</string>
-  <string name="buy_sell_overview_in_review_title">Ověření totožnosti 
+  <string name="buy_sell_overview_in_review_title">Ověření totožnosti
  v přehledu</string>
-  <string name="buy_sell_overview_denied_title">Ověření totožnosti 
+  <string name="buy_sell_overview_denied_title">Ověření totožnosti
  popřel</string>
-  <string name="buy_sell_overview_pending_title">Kompletní identita 
+  <string name="buy_sell_overview_pending_title">Kompletní identita
  ověření</string>
   <string name="buy_sell_overview_in_review_button">Koupit nyní s kartou</string>
   <string name="buy_sell_overview_denied_button">Zkusit znovu</string>
@@ -742,7 +742,7 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="buy_sell_detail_bank_disclaimer">Příjem finančních prostředků na váš bankovní účet obvykle trvá 2 až 3 pracovní dny.</string>
   <string name="buy_sell_detail_refund_message">Coinify zrušila tuto objednávku prodeje a zaslala vám e-mail s pokyny, jak získat peníze vrácené.</string>
   <string name="buy_sell_details_whats_next">Co bude dál?</string>
-  <string name="buy_sell_awaiting_funds_description">Pošlete %1$s k synchronizaci během následujících 48 hodin. 
+  <string name="buy_sell_awaiting_funds_description">Pošlete %1$s k synchronizaci během následujících 48 hodin.
 
  Prostředky zasílající bankovní účet musí být ve stejném názvu jako identifikační číslo vašeho státu. V opačném případě bude zamítnut.</string>
   <string name="buy_sell_awaiting_funds_already_sent">Prostředky jsem již poslal Coinify</string>
@@ -819,7 +819,7 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="buy_sell_confirmation_you_will_receive">Celkový dluh úvěru</string>
   <string name="buy_sell_confirmation_btc_to_receive_description">%1$s BTC bude odesláno přímo z vaší peněženky Blockchain, aby se coinfikovala po stisknutí tlačítka Odeslat.</string>
   <string name="buy_sell_confirmation_sell_rate_disclaimer">Souhlasím s tím, že společnost Coinify bude zpracovávat svou objednávku po dokončení transakce bitcoin a že bitová měna bude obchodována s dostupným směnným kurzem v té době, což se může lišit od zobrazené sazby.</string>
-  <string name="buy_sell_card_payment_success_title">Úspěch! 
+  <string name="buy_sell_card_payment_success_title">Úspěch!
  Objednávka byla vytvořena</string>
   <string name="buy_sell_card_payment_success_message">Prostředky by se měly dostat do vašeho účtu do 3 dnů.</string>
   <string name="buy_sell_card_order_created_title">Objednávka byla vytvořena</string>
@@ -992,7 +992,6 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="kyc_veriff_splash_id_card">Občanský průkaz</string>
   <string name="kyc_veriff_splash_residence_permit">Rezidenční karta</string>
   <string name="kyc_veriff_splash_continue">Pokračovat</string>
-  <string name="kyc_help_dialog_need_some_help">\@ string / need_some_help</string>
   <string name="kyc_help_dialog_need_some_help_body">Náš podpůrný tým společnosti Blockchain napsal nápovědu s vysvětlením, proč potřebujeme ověřit vaši totožnost.</string>
   <string name="kyc_help_dialog_read_now">Přečtěte si nyní</string>
   <string name="kyc_help_dialog_read_now_url">https://blockchain.zendesk.com/hc/cs-us/categories/360001135512-Identity-Verification</string>
@@ -1115,10 +1114,10 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="morph_refunded_title">Platnost vypršela</string>
   <string name="morph_step_number">Krok %1$s ze 3</string>
   <string name="morph_confirm">Potvrdit</string>
-  <string name="morph_success_dlg_text">Úspěch! Vaše výměna má 
+  <string name="morph_success_dlg_text">Úspěch! Vaše výměna má
  byla zahájena!</string>
   <string name="morph_success_for_first_gold_pax_trade_title">Vaše burza byla spuštěna!</string>
-  <string name="morph_success_for_first_gold_pax_trade_description">Ještě lépe, protože potřebujete, aby ETH učinil obchody PAX v USD, právě jsme do Peněženky vyslali dostatek ETH, abychom pokryli vaše první 3 transakce 
+  <string name="morph_success_for_first_gold_pax_trade_description">Ještě lépe, protože potřebujete, aby ETH učinil obchody PAX v USD, právě jsme do Peněženky vyslali dostatek ETH, abychom pokryli vaše první 3 transakce
  🙌</string>
   <string name="morph_success_dlg_button">Zobrazit podrobnosti objednávky</string>
   <string name="morph_order_id_title">číslo objednávky</string>
@@ -1157,10 +1156,8 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="homebrew_confirmation_error_fetching_fee">Chyba při načítání poplatku</string>
   <string name="under_limit">Pod limitem</string>
   <string name="over_limit">Přes limit</string>
-  <string name="morph_help_dialog_need_some_help">\@ string / need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">Náš podpůrný tým společnosti Blockchain vám zodpoví všechny vaše otázky.</string>
   <string name="morph_help_dialog_view_swap_limit">Zobrazit My Swap Limit</string>
-  <string name="morph_help_dialog_contact_support">\@ string / contact_support</string>
   <string name="toolbar_cmd_home">Domov</string>
   <string name="toolbar_cmd_send">Poslat</string>
   <string name="toolbar_cmd_receive">Žádost</string>
@@ -1190,4 +1187,63 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="kyc_gold_unavailable_goto_swap">Začněte obchodování</string>
   <string name="gold_unavailable">Zlato není k dispozici</string>
   <string name="veriff_identify">Identifikace verif</string>
+  <string name="more_info_needed">Potřebujeme více informací</string>
+  <string name="coinify_kyc_body">Abyste mohli nadále nakupovat a prodávat, musíte svůj profil aktualizovat. Po dokončení také odemknete vyšší obchodní limity ve swapu.</string>
+  <string name="coinify_kyc_cta">Nyní aktualizovat</string>
+  <string name="coinify_kyc_dismiss">Další informace</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">Digitální americké dolary</string>
+  <string name="pax_intro_popup_text">Představujeme USD PAX, bezpečné a stabilní šifrovací aktivum, které můžete použít k zachování hodnoty. 1 PAX se rovná 1 USD.</string>
+  <string name="pax_intro_popup_cta_btn">Získejte nyní USD PAX</string>
+  <string name="buy_sell_error_country_not_supported">Nákup a prodej vaší země není v tuto chvíli podporován. Brzy se chystáme přidat podporu do více oblastí.</string>
+  <string name="no_sell_available_message">Nákup a prodej bohužel ve vašem státě není k dispozici. Usilovně pracujeme na tom, abychom ji co nejdříve přivedli zpět.</string>
+  <string name="send">Poslat</string>
+  <string name="item_the_pit">Jáma</string>
+  <string name="btn_close">Zavřít</string>
+  <string name="sunriver_announcement_stellar_claim_title">Vyžádejte si svůj hvězdný (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">Vypadá to, že jste to začali ověřovat 
+ identita, ale neskončila. Zvedněte, kde jste skončili. 
+</string>
+  <string name="sunriver_announcement_stellar_claim_cta">Pokračujte v ověřování</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">Váš XLM je na cestě</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">Úspěšně jsme ověřili 
+ vaši identitu. 
+</string>
+  <string name="pit_announcement_description">Je čas na Level Up pro lepší kryptoměnu. Prvních 100 000 obchodníků, kteří se zaregistrují, bude obchodovat zdarma po dobu 30 dnů.</string>
+  <string name="pit_announcement_introducing_link">Koukni na to</string>
+  <string name="pit_logo_content_descr">Logo Pit</string>
+  <string name="pit_slogan_kyc_promo">Jediná burza, která se připojuje k vaší Peněžence.</string>
+  <string name="pit_thunder_kyc_promo">Bleskové rychlé obchody</string>
+  <string name="pit_security_kyc_promo"><![CDATA[Tekuté a spolehlivé]]></string>
+  <string name="pit_built_kyc_promo">Vytvořil Blockchain.com</string>
+  <string name="pit_dollar_kyc_promo">Nízké poplatky</string>
+  <string name="pit_permission_app_can">Tato aplikace bude moci:</string>
+  <string name="pit_permission_app_cant">Tato aplikace nebude moci:</string>
+  <string name="pit_permission_subtitle">Nebudu schopen:</string>
+  <string name="pit_permission_1">Usnadněte kryptoměny mezi účty</string>
+  <string name="pit_permission_2">Sdílejte svůj stav na zlaté nebo stříbrné úrovni</string>
+  <string name="pit_permission_3">Přidejte své propojené banky</string>
+  <string name="pit_permission_4">Zobrazte své heslo k peněžence</string>
+  <string name="pit_connect_now">Připojte se nyní</string>
+  <string name="pit_setting_title">Jáma</string>
+  <string name="pit_setting_connect">Připojit</string>
+  <string name="pit_setting_connected">Připojeno</string>
+  <string name="launch_the_pit">Spusťte Pit</string>
+  <string name="pit_contact_support">Kontaktujte podporu</string>
+  <string name="pit_loading_dialog_title">Vezmeme vás na PIT</string>
+  <string name="pit_loading_dialog_description">Nové okno by se mělo otevřít do 10 sekund.</string>
+  <string name="pit_verify_email_title">Ověřte svůj email</string>
+  <string name="pit_verify_email_description">Právě jsme vám poslali ověřovací e-mail. Než se budete moci připojit k PIT, musí být ověřena vaše e-mailová adresa.</string>
+  <string name="pit_open_email_app">Otevřete aplikaci E-mail</string>
+  <string name="pit_did_not_get_email">Nedostal jste e-mail?</string>
+  <string name="pit_send_again">Poslat znovu</string>
+  <string name="mail_resent_succeed">Email odeslán. Pokračujte v doručené poště.</string>
+  <string name="mail_resent_failed">Něco se pokazilo. Klepněte na Odeslat znovu.</string>
+  <string name="pit_email_verified_description">Všichni jste připraveni připojit vaši peněženku Blockchain k PIT.</string>
+  <string name="pit_email_verified_title">E-mail byl ověřen.</string>
+  <string name="pit_connection_error_title">Chyba připojení</string>
+  <string name="pit_connection_error_description">Vaši Peněženku jsme nemohli připojit k PIT. Vraťte se zpět do PITu a zkuste to znovu.</string>
+  <string name="pit_connection_success_title">Úspěch!</string>
+  <string name="pit_connection_success_description">Svou peněženku Blockchain jste připojili k PIT.</string>
+  <string name="pit_default_account_label">Moje adresa PIT %1$s</string>
 </resources>

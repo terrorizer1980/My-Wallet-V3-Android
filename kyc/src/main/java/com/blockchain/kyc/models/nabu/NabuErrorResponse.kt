@@ -10,7 +10,7 @@ private data class NabuErrorResponse(
      */
     val code: Int,
     /**
-     * Machine-readable error type.
+     * Machine-readable error type./ο-
      */
     val type: String,
     /**
@@ -40,10 +40,10 @@ class NabuApiException private constructor(message: String) : Throwable(message)
     companion object {
 
         @SuppressLint("SyntheticAccessor")
-        fun fromResponseBody(response: Response<*>): NabuApiException {
+        fun fromResponseBody(response: Response<*>?): NabuApiException {
             val moshi = Moshi.Builder().build()
             val adapter = moshi.adapter(NabuErrorResponse::class.java)
-            val errorResponse = adapter.fromJson(response.errorBody()!!.string())!!
+            val errorResponse = adapter.fromJson(response?.errorBody()!!.string())!!
 
             val httpErrorCode = response.code()
             val error = errorResponse.type

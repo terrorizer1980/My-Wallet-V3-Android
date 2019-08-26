@@ -15,10 +15,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import kotlinx.android.synthetic.main.dialog_fingerprint.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.androidcoreui.ui.base.BaseDialogFragment
-import javax.inject.Inject
 
 private const val ERROR_TIMEOUT_MILLIS: Long = 1500
 private const val SUCCESS_DELAY_MILLIS: Long = 600
@@ -27,13 +26,8 @@ private const val FATAL_ERROR_TIMEOUT_MILLIS: Long = 3500
 class FingerprintDialog : BaseDialogFragment<FingerprintView, FingerprintPresenter>(),
     FingerprintView {
 
-    @Inject
-    lateinit var fingerprintPresenter: FingerprintPresenter
+    private val fingerprintPresenter: FingerprintPresenter by inject()
     private var authCallback: FingerprintAuthCallback? = null
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {

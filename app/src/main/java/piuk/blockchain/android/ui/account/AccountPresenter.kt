@@ -38,10 +38,9 @@ import piuk.blockchain.androidcoreui.utils.logging.ImportEvent
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.math.BigInteger
-import javax.inject.Inject
 import kotlin.properties.Delegates
 
-class AccountPresenter @Inject internal constructor(
+class AccountPresenter internal constructor(
     private val payloadDataManager: PayloadDataManager,
     private val bchDataManager: BchDataManager,
     private val metadataManager: MetadataManager,
@@ -100,7 +99,7 @@ class AccountPresenter @Inject internal constructor(
                         view.onSetTransferLegacyFundsMenuItemVisible(true)
 
                         if ((prefs.getValue(KEY_WARN_TRANSFER_ALL, true) ||
-                                !isAutoPopup) &&
+                                    !isAutoPopup) &&
                             showWarningDialog
                         ) {
                             view.onShowTransferableLegacyFundsWarning(isAutoPopup)

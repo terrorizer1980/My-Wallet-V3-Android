@@ -13,7 +13,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.blockchain.kycui.navhost.models.CampaignType
+import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
@@ -33,7 +33,6 @@ import piuk.blockchain.android.ui.home.MainActivity.Companion.SETTINGS_EDIT
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
-import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -47,8 +46,6 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
             HomebrewNavHostActivity.start(it, defCurrency, currency)
         }
     }
-
-    override val shouldShowBuy: Boolean = AndroidUtils.is19orHigher()
 
     override val locale: Locale by inject()
 

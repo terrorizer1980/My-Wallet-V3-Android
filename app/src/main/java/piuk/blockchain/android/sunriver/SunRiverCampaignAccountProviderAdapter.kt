@@ -1,6 +1,6 @@
 package piuk.blockchain.android.sunriver
 
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.sunriver.XlmDataManager
 import info.blockchain.balance.AccountReference
 import io.reactivex.Single

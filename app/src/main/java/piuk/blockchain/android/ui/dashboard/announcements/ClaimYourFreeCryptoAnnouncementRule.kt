@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.dashboard.announcements
 import android.support.annotation.VisibleForTesting
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import com.blockchain.kyc.services.nabu.TierService
-import com.blockchain.kycui.sunriver.SunriverCampaignHelper
+import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import io.reactivex.Single
 import piuk.blockchain.android.R
 

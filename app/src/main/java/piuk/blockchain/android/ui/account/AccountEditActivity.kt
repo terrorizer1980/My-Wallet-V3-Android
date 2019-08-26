@@ -28,7 +28,6 @@ import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.android.databinding.ActivityAccountEditBinding
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
 import piuk.blockchain.android.ui.zxing.CaptureActivity
@@ -38,6 +37,7 @@ import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import com.blockchain.ui.password.SecondPasswordHandler
+import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
@@ -46,7 +46,6 @@ import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber
-import javax.inject.Inject
 
 class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresenter>(),
     AccountEditView, ConfirmPaymentDialog.OnConfirmDialogInteractionListener {
@@ -59,19 +58,13 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    @Inject
-    lateinit var accountEditPresenter: AccountEditPresenter
-    @Inject
-    lateinit var payloadDataManager: PayloadDataManager
-    @Inject
-    lateinit var appUtil: AppUtil
+    private val accountEditPresenter: AccountEditPresenter by inject()
+    private val payloadDataManager: PayloadDataManager by inject()
+    private val appUtil: AppUtil by inject()
+
     private lateinit var binding: ActivityAccountEditBinding
     private var transactionSuccessDialog: AlertDialog? = null
     private var progress: MaterialProgressDialog? = null
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

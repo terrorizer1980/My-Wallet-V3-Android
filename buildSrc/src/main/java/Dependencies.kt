@@ -3,11 +3,11 @@
 object Versions {
 
     // Release info
-    const val minSdk = 19
-    const val targetSdk = 27
+    const val minSdk = 21
+    const val targetSdk = 28
     const val compileSdk = 27
-    const val versionCode = 463
-    const val versionName = "6.27.0"
+    const val versionCode = 472
+    const val versionName = "6.28.2"
     const val buildTools = "28.0.3"
 
     // Build tools and languages
@@ -35,17 +35,16 @@ object Versions {
     const val lifecycle_version = "1.1.1"
 
     // Networking, RxJava
-    const val retrofit = "2.5.0"
-    const val okHttp = "3.12.0"
+    const val retrofit = "2.6.1"
+    const val okHttp = "4.0.1"
     const val mockWebServer = "v0.1.0"
-    const val okIo = "1.14.1"
-    const val moshi = "1.6.0"
-    const val jacksonCore = "2.9.5"
-    const val dagger = "2.16"
+    const val moshi = "1.8.0"
+    const val jacksonCore = "2.9.9"
+    const val dagger = "2.24"
     const val koin = "0.9.3"
-    const val rxJava = "2.2.3"
-    const val rxKotlin = "2.3.0"
-    const val rxAndroid = "2.0.2"
+    const val rxJava = "2.2.11"
+    const val rxKotlin = "2.4.0"
+    const val rxAndroid = "2.1.1"
     const val rxBinding = "2.1.1"
     const val rxReplayShare = "2.0.1"
     const val rxFingerprint = "2.2.1"
@@ -56,31 +55,32 @@ object Versions {
     const val jjwt = "0.9.0"
     const val lambdaWorks = "1.0.0"
     const val libPhoneNumber = "8.9.10"
-    // Keep at 1.3 to match Android
-    const val commonsCodec = "1.3"
+    const val commonsCodec = "1.3" // Keep at 1.3 to match Android
     const val commonsLang = "3.4"
     const val commonsCli = "1.3"
     const val commonsIo = "2.6"
-    const val urlBuilder = "2.0.8"
+    const val urlBuilder = "2.0.9"
     const val yearclass = "2.0.0"
-    const val protobuf = "2.6.1"
-    const val findbugs = "2.0.1"
-    const val guava = "26.0-android"
-    const val dexter = "4.2.0"
+    const val protobuf = "3.9.0"
+    const val findbugs = "3.0.2"
+    const val guava = "28.0-android"
+    const val dexter = "5.0.0"
 
     // Custom Views
     const val charts = "3.0.3"
     const val circleIndicator = "1.2.2"
     const val bottomNav = "2.2.0"
     const val countryPicker = "1.1.7"
+    // zxing 3.4.0 crashes with:
+    //      "java.lang.NoSuchMethodError. No interface method sort(Ljava/util/Comparator;)V in class Ljava/util/List;"
+    // List.sort() is not available on Android SDK < 24 so DO NOT UPGRADE until project target min is 24
     const val zxing = "3.3.0"
     const val wheelPicker = "1.1.2"
-    const val konfetti = "1.1.1"
+    const val konfetti = "1.1.3"
     const val materialDatePicker = "3.6.4"
 
     // Third Party SDKs
-    const val onfido = "4.3.0"
-    const val veriff = "2.3.5"
+    const val veriff = "2.4.2"
     const val probity = "1.0.0"
 
     // Logging
@@ -89,13 +89,16 @@ object Versions {
     const val crashlytics = "2.9.5"
     const val fabricTools = "1.26.0"
 
+    // Debugging
+    const val stetho = "1.5.1"
+
     // Testing
     const val mockito = "2.10.0"
     const val mockitoKotlin = "1.5.0"
     const val kluent = "1.19"
     const val hamcrestJunit = "2.0.0.0"
     const val junit = "4.12"
-    const val robolectric = "3.8"
+    const val robolectric = "4.3"
     const val json = "20140107"
     const val espresso = "3.0.1"
     const val jacoco = "0.8.1"
@@ -152,7 +155,6 @@ object Libraries {
     const val okHttp = "com.squareup.okhttp3:okhttp:${Versions.okHttp}"
     const val okHttpSse = "com.squareup.okhttp3:okhttp-sse:${Versions.okHttp}"
     const val okHttpInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okHttp}"
-    const val okIo = "com.squareup.okio:okio:${Versions.okIo}"
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi}"
     const val moshiKotlin = "com.squareup.moshi:moshi-kotlin:${Versions.moshi}"
     const val jacksonCore = "com.fasterxml.jackson.core:jackson-core:${Versions.jacksonCore}"
@@ -200,7 +202,6 @@ object Libraries {
     const val materialDatePicker = "com.wdullaer:materialdatetimepicker:${Versions.materialDatePicker}"
 
     // Third Party SDKs
-    const val onfido = "com.onfido.sdk.capture:onfido-capture-sdk:${Versions.onfido}"
     const val veriff = "com.veriff:veriff-library:${Versions.veriff}"
     const val probity = "io.probity.sdk:collector:${Versions.probity}"
 
@@ -210,6 +211,10 @@ object Libraries {
     const val slf4jNoOp = "org.slf4j:slf4j-nop:${Versions.slf4j}"
     const val crashlytics = "com.crashlytics.sdk.android:crashlytics:${Versions.crashlytics}@aar"
     const val fabricTools = "io.fabric.tools:gradle:${Versions.fabricTools}"
+
+    // Debugging
+    const val stetho = "com.facebook.stetho:stetho:${Versions.stetho}"
+    const val stethoOkHttp = "com.facebook.stetho:stetho-okhttp3:${Versions.stetho}"
 
     // Testing
     const val mockito = "org.mockito:mockito-core:${Versions.mockito}"

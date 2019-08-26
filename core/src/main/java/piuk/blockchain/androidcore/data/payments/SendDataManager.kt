@@ -9,6 +9,7 @@ import io.reactivex.Observable
 import org.apache.commons.lang3.tuple.Pair
 import org.bitcoinj.core.ECKey
 import org.bitcoinj.core.NetworkParameters
+import org.bitcoinj.core.Transaction
 import org.bitcoinj.crypto.BIP38PrivateKey
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
@@ -46,7 +47,7 @@ class SendDataManager(
     ): Observable<String> {
 
         return rxPinning.call<String> {
-            paymentService.submitPayment(
+            paymentService.submitBtcPayment(
                 unspentOutputBundle,
                 keys,
                 toAddress,
@@ -56,6 +57,19 @@ class SendDataManager(
             )
         }.logLastTx()
             .applySchedulers()
+    }
+
+    fun getTransaction(
+        unspentOutputBundle: SpendableUnspentOutputs,
+        keys: List<ECKey>,
+        toAddress: String,
+        changeAddress: String,
+        bigIntFee: BigInteger,
+        bigIntAmount: BigInteger
+    ): Transaction {
+        return paymentService.signAngGetTx(
+            unspentOutputBundle, keys, toAddress, changeAddress, bigIntFee, bigIntAmount
+        )
     }
 
     /**
@@ -115,8 +129,8 @@ class SendDataManager(
      * @param address The Bitcoin address you wish to query, as a String
      * @return An [Observable] wrapping an [UnspentOutputs] object
      */
-    fun getUnspentOutputs(address: String): Observable<UnspentOutputs> =
-        rxPinning.call<UnspentOutputs> { paymentService.getUnspentOutputs(address) }
+    fun getUnspentBtcOutputs(address: String): Observable<UnspentOutputs> =
+        rxPinning.call<UnspentOutputs> { paymentService.getUnspentBtcOutputs(address) }
             .applySchedulers()
 
     /**
@@ -163,7 +177,7 @@ class SendDataManager(
      * object and returns the amount that can be recovered, along with the fee (in absolute terms)
      * necessary to sweep those coins.
      *
-     * @param cryptoCurrency The currency for which you whish to calculate the max available.
+     * @param cryptoCurrency The currency for which you wish to calculate the max available.
      * @param unspentCoins An [UnspentOutputs] object that you wish to sweep
      * @param feePerKb The current fee per kB on the network
      * @return A [Pair] object, where left = the sweepable amount as a [BigInteger],

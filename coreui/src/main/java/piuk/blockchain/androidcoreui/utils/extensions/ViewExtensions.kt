@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.support.animation.DynamicAnimation
 import android.support.animation.SpringAnimation
 import android.support.animation.SpringForce
+import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -97,7 +98,7 @@ fun View?.invisibleIf(value: Boolean) {
  * @param layoutId The layout ID as an [Int]
  * @return The inflated [View]
  */
-fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
+fun ViewGroup.inflate(@LayoutRes layoutId: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutId, this, attachToRoot)
 }
 

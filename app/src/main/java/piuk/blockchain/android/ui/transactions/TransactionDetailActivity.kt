@@ -57,7 +57,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
             fArray[0] = InputFilter.LengthFilter(maxLength)
             editText.filters = fArray
             editText.setText(presenter.transactionNote)
-            editText.setSelection(editText.text.length)
+            editText.setSelection(editText.text?.length ?: 0)
 
             AlertDialog.Builder(this, R.style.AlertDialogStyle)
                 .setTitle(R.string.app_name)

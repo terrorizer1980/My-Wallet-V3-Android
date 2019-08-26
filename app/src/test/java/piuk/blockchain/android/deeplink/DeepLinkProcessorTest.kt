@@ -1,5 +1,6 @@
 package piuk.blockchain.android.deeplink
 
+import android.content.Intent
 import android.net.Uri
 import com.blockchain.kyc.models.nabu.CampaignData
 import com.blockchain.notifications.links.PendingLink
@@ -12,28 +13,29 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import piuk.blockchain.android.BlockchainTestApplication
-import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.kyc.KycLinkState
 import piuk.blockchain.android.sunriver.CampaignLinkState
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.thepit.ThePitDeepLinkParser
 
-@Config(sdk = [23], constants = BuildConfig::class, application = BlockchainTestApplication::class)
+@Config(sdk = [23], application = BlockchainTestApplication::class)
 @RunWith(RobolectricTestRunner::class)
 class DeepLinkProcessorTest {
 
     @Test
     fun `unknown uri`() {
         givenUriExpect(
-            "https://login.blockchain.com/", LinkState.NoUri
+            "https://login.blockchain.com/",
+            LinkState.NoUri
         )
     }
 
     @Test
     fun `sunriver uri`() {
         givenUriExpect(
-            "https://login.blockchain.com/#/open/referral?campaign=sunriver", LinkState.SunriverDeepLink(
+            "https://login.blockchain.com/#/open/referral?campaign=sunriver",
+            LinkState.SunriverDeepLink(
                 CampaignLinkState.Data(CampaignData("sunriver", newUser = false))
             )
         )
@@ -77,8 +79,8 @@ class DeepLinkProcessorTest {
     @Test
     fun `general kyc uri without campaign`() {
         givenUriExpect(
-            "https://login.blockchain.com/#/open/kyc?tier=2&deep_link_path=kyc", LinkState.KycDeepLink(
-                KycLinkState.General(null)
+            "https://login.blockchain.com/#/open/kyc?tier=2&deep_link_path=kyc",
+            LinkState.KycDeepLink(KycLinkState.General(null)
             )
         )
     }
@@ -97,13 +99,15 @@ class DeepLinkProcessorTest {
 }
 
 private fun givenUriExpect(uri: String, expected: LinkState) {
+    val i: Intent = mock()
+
     DeepLinkProcessor(
         linkHandler = givenPendingUri(uri),
         emailVerifiedLinkHelper = EmailVerificationDeepLinkHelper(),
         kycDeepLinkHelper = KycDeepLinkHelper(mock()),
         sunriverDeepLinkHelper = SunriverDeepLinkHelper(mock()),
         thePitDeepLinkParser = ThePitDeepLinkParser()
-    ).getLink(mock())
+    ).getLink(i)
         .test()
         .assertNoErrors()
         .assertValue(expected)

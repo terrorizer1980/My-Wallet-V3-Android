@@ -34,7 +34,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:drawableLeft="@drawable/layer_list_timer"
+        android:drawableStart="@drawable/vector_timer"
         android:drawablePadding="16dp"
         android:text="@string/buy_sell_review_status"
         android:textColor="@color/primary_navy_medium"

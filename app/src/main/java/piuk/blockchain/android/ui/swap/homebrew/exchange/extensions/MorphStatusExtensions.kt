@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.swap.homebrew.exchange.extensions
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import com.blockchain.morph.trade.MorphTrade
+import com.blockchain.swap.common.trade.MorphTrade
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedDrawable
 

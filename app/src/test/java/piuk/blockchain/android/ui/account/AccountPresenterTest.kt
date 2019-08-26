@@ -32,7 +32,6 @@ import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import piuk.blockchain.android.BlockchainTestApplication
-import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
@@ -51,7 +50,6 @@ import java.util.Locale
 
 @Config(
     sdk = [23],
-    constants = BuildConfig::class,
     application = BlockchainTestApplication::class
 )
 @RunWith(RobolectricTestRunner::class)

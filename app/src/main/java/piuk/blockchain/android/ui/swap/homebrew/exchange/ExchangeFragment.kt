@@ -20,15 +20,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.blockchain.balance.coinIconWhite
 import com.blockchain.balance.colorRes
-import com.blockchain.morph.exchange.mvi.ApplyMaxSpendable
-import com.blockchain.morph.exchange.mvi.ExchangeIntent
-import com.blockchain.morph.exchange.mvi.ExchangeViewState
-import com.blockchain.morph.exchange.mvi.Fix
-import com.blockchain.morph.exchange.mvi.Maximums
-import com.blockchain.morph.exchange.mvi.Quote
-import com.blockchain.morph.exchange.mvi.QuoteValidity
-import com.blockchain.morph.exchange.mvi.SimpleFieldUpdateIntent
-import com.blockchain.morph.exchange.mvi.ToggleFiatCryptoIntent
+import com.blockchain.swap.common.exchange.mvi.ApplyMaxSpendable
+import com.blockchain.swap.common.exchange.mvi.ExchangeIntent
+import com.blockchain.swap.common.exchange.mvi.ExchangeViewState
+import com.blockchain.swap.nabu.service.Fix
+import com.blockchain.swap.common.exchange.mvi.Maximums
+import com.blockchain.swap.nabu.service.Quote
+import com.blockchain.swap.common.exchange.mvi.QuoteValidity
+import com.blockchain.swap.common.exchange.mvi.SimpleFieldUpdateIntent
+import com.blockchain.swap.common.exchange.mvi.ToggleFiatCryptoIntent
 import piuk.blockchain.android.ui.swap.customviews.CurrencyTextView
 import piuk.blockchain.android.ui.swap.customviews.ThreePartText
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewHostActivityListener
@@ -173,7 +173,7 @@ internal class ExchangeFragment : Fragment() {
             )
         )
 
-        compositeDisposable += allTextUpdates().distinctUntilChanged()
+        compositeDisposable += allTextUpdates()
             .subscribeBy {
                 exchangeModel.inputEventSink.onNext(it)
             }
@@ -293,7 +293,10 @@ internal class ExchangeFragment : Fragment() {
                 view!!.findViewById<View>(R.id.numberBackSpace).isEnabled = it.previous != null
             }
             .map {
-                SimpleFieldUpdateIntent(it.userDecimal, it.decimalCursor)
+                SimpleFieldUpdateIntent(
+                    it.userDecimal,
+                    it.decimalCursor
+                )
             }
     }
 
@@ -333,7 +336,13 @@ internal class ExchangeFragment : Fragment() {
                 val linksMap = mapOf<String, Uri>(
                     "pax_faq" to Uri.parse(URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ)
                 )
-                val body = stringUtils.getStringWithMappedLinks(R.string.pax_need_more_eth_error_body, linksMap)
+
+                val body = stringUtils.getStringWithMappedLinks(
+                    R.string.pax_need_more_eth_error_body,
+                    linksMap,
+                    requireActivity()
+                )
+
                 return ExchangeMenuState.ExchangeMenuError(
                     CryptoCurrency.ETHER,
                     userTier,

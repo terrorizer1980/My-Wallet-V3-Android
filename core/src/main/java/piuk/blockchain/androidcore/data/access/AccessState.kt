@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
+import com.blockchain.logging.CrashLogger
 
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -13,7 +14,7 @@ interface AccessState {
 
     var canAutoLogout: Boolean
 
-    var pin: String?
+    val pin: String
 
     var isLoggedIn: Boolean
 
@@ -33,15 +34,22 @@ interface AccessState {
 
     fun forgetWallet()
 
+    fun clearPin()
+    fun setPin(pin: String)
+
     companion object {
         const val LOGOUT_ACTION = "info.blockchain.wallet.LOGOUT"
+        const val PIN_LENGTH = 4
     }
 }
+
+fun String.isValidPin(): Boolean = (this != "0000" && this.length == AccessState.PIN_LENGTH)
 
 internal class AccessStateImpl(
     val context: Context,
     val prefs: PersistentPrefs,
-    val rxBus: RxBus
+    val rxBus: RxBus,
+    private val crashLogger: CrashLogger
 ) : AccessState {
 
     override var canAutoLogout = true
@@ -49,7 +57,23 @@ internal class AccessStateImpl(
     private var logoutActivity: Class<*>? = null
     private var logoutPendingIntent: PendingIntent? = null
 
-    override var pin: String? = null
+    private var thePin: String = ""
+    override val pin: String
+        get() = thePin
+
+    override fun clearPin() {
+        thePin = ""
+    }
+
+    override fun setPin(pin: String) {
+        if (!pin.isValidPin()) {
+            IllegalArgumentException("setting invalid pin!").let {
+                crashLogger.logException(it)
+                throw it
+            }
+        }
+        thePin = pin
+    }
 
     override var isLoggedIn = false
         set(loggedIn) {
@@ -104,7 +128,8 @@ internal class AccessStateImpl(
     }
 
     override fun logout() {
-        pin = null
+        crashLogger.log("logout. resetting pin")
+        clearPin()
         val intent = Intent(context, logoutActivity!!)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         intent.action = AccessState.LOGOUT_ACTION
@@ -114,7 +139,8 @@ internal class AccessStateImpl(
     override fun logIn() = prefs.logIn()
 
     override fun unpairWallet() {
-        pin = null
+        crashLogger.log("unpair. resetting pin")
+        clearPin()
         prefs.logOut()
         rxBus.emitEvent(AuthEvent::class.java, AuthEvent.UNPAIR)
     }

@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.buysell.createorder
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.kyc.models.nabu.Address
 import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.anyOrNull
 import com.nhaarman.mockito_kotlin.atLeastOnce

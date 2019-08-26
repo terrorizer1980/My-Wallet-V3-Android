@@ -41,6 +41,8 @@ interface SendView : BaseSendView {
 
     fun clearAmount()
 
+    fun lastEnteredCryptoAmount(): String
+
     // Set property
     fun setCryptoMaxLength(length: Int)
 
@@ -72,9 +74,13 @@ interface SendView : BaseSendView {
 
     fun disableFeeDropdown()
 
+    fun onBitPayAddressScanned()
+
     fun setSendButtonEnabled(enabled: Boolean)
 
     fun disableInput()
+
+    fun showBitPayTimerAndMerchantInfo(expiry: String, merchantName: String)
 
     fun enableInput()
 

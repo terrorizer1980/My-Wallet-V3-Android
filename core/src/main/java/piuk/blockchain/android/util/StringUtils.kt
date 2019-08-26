@@ -1,5 +1,6 @@
 package piuk.blockchain.android.util
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -30,7 +31,11 @@ constructor(private val context: Context) {
         return context.resources.getString(stringId, *formatArgs)
     }
 
-    fun getStringWithMappedLinks(@StringRes stringId: Int, linksMap: Map<String, Uri>): CharSequence {
+    fun getStringWithMappedLinks(
+        @StringRes stringId: Int,
+        linksMap: Map<String, Uri>,
+        launchActivity: Activity
+    ): CharSequence {
 
         val rawText = context.getText(stringId) as SpannedString
         val out = SpannableString(rawText)
@@ -41,7 +46,7 @@ constructor(private val context: Context) {
                     out.setSpan(
                         object : ClickableSpan() {
                             override fun onClick(widget: View?) {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, it))
+                                launchActivity.startActivity(Intent(Intent.ACTION_VIEW, it))
                         }
                     },
                     rawText.getSpanStart(annotation),

@@ -67,7 +67,7 @@ class RetailWalletTokenServiceTest {
         jwtResponse.error `should equal` null
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$RETAIL_JWT_TOKEN?guid=$guid&sharedKey=$sharedKey&api_code=$apiKey"
+        request.path!! `should equal to` "/$RETAIL_JWT_TOKEN?guid=$guid&sharedKey=$sharedKey&api_code=$apiKey"
     }
 
     @Test
@@ -97,6 +97,6 @@ class RetailWalletTokenServiceTest {
         jwtResponse.token `should equal` null
         // Check URL
         val request = server.takeRequest()
-        request.path `should equal to` "/$RETAIL_JWT_TOKEN?guid=$guid&sharedKey=$sharedKey&api_code=$apiKey"
+        request.path!! `should equal to` "/$RETAIL_JWT_TOKEN?guid=$guid&sharedKey=$sharedKey&api_code=$apiKey"
     }
 }

@@ -1152,7 +1152,6 @@ Commande créée</string>
   <string name="morph_help_dialog_need_some_help">@string/need_some_help</string>
   <string name="morph_help_dialog_need_some_help_body">Notre équipe d\'assistance Blockchain est à votre disposition pour répondre à toutes vos questions.</string>
   <string name="morph_help_dialog_view_swap_limit">Afficher ma limite Swap</string>
-  <string name="morph_help_dialog_contact_support">@string/contact_support</string>
   <string name="toolbar_cmd_home">Accueil</string>
   <string name="toolbar_cmd_send">Envoyer</string>
   <string name="toolbar_cmd_receive">Demande</string>
@@ -1182,4 +1181,63 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
   <string name="kyc_gold_unavailable_goto_swap">Commencer à trader</string>
   <string name="gold_unavailable">Gold indisponible</string>
   <string name="veriff_identify">Vérifier identité</string>
+  <string name="more_info_needed">Plus d\'informations nécessaires</string>
+  <string name="coinify_kyc_body">Pour continuer à utiliser Buy &amp; Sell, vous devez mettre à jour votre profil. Une fois terminé, vous débloquerez également des plafonds de trading plus élevées dans Swap.</string>
+  <string name="coinify_kyc_cta">Mettre à jour maintenant</string>
+  <string name="coinify_kyc_dismiss">En savoir plus</string>
+  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+  <string name="pax_intro_popup_title">Dollars américains numériques</string>
+  <string name="pax_intro_popup_text">Découvrez USD PAX, une cryptomonnaie fiable et stable que vous pouvez utiliser pour stocker de la valeur. 1 PAX équivaut à 1 USD.</string>
+  <string name="pax_intro_popup_cta_btn">Obtenir des USD PAX maintenant</string>
+  <string name="buy_sell_error_country_not_supported">Votre pays n\'est pas actuellement pris en charge pour l\'achat/la vente. Nous travaillons pour créer un service d\'assistance dans d\'autres régions sous peu.</string>
+  <string name="no_sell_available_message">Malheureusement, les ordres d\'achat et de vente ne sont pas disponibles dans votre région. Nous travaillons d\'arrache-pied pour le ramener le plus rapidement possible.</string>
+  <string name="send">Envoyer</string>
+  <string name="item_the_pit">The Pit</string>
+  <string name="btn_close">Fermer</string>
+  <string name="sunriver_announcement_stellar_claim_title">Réclamez votre Stellar (XLM)</string>
+  <string name="sunriver_announcement_stellar_claim_message">Il semble que vous avez commencé la vérification de votre identité sans la terminer. Reprenez-la à   
+        partir de l\'étape où vous vous êtes arrêté.
+    </string>
+  <string name="sunriver_announcement_stellar_claim_cta">Continuer la vérification</string>
+  <string name="sunriver_announcement_stellar_on_the_way_title">Vous allez bientôt recevoir votre XLM</string>
+  <string name="sunriver_announcement_stellar_on_the_way_message">Nous avons vérifié votre identité 
+         avec succès.
+    </string>
+  <string name="pit_announcement_description">Il est temps de passer à un niveau supérieur pour un meilleur crypto-échange. Les 100 000 premiers traders à s\'inscrire échangeront gratuitement pendant 30 jours.</string>
+  <string name="pit_announcement_introducing_link">Jetez-y un coup d\'œil</string>
+  <string name="pit_logo_content_descr">Le logo de The Pit</string>
+  <string name="pit_slogan_kyc_promo">Le seul échange qui se connecte à votre portefeuille.</string>
+  <string name="pit_thunder_kyc_promo">Des transactions extrêmement rapides</string>
+  <string name="pit_security_kyc_promo"><![CDATA[Liquide et Fiable]]></string>
+  <string name="pit_built_kyc_promo">Conçu par Blockchain.com</string>
+  <string name="pit_dollar_kyc_promo">Frais peu élevés</string>
+  <string name="pit_permission_app_can">Cette application sera en mesure de :</string>
+  <string name="pit_permission_app_cant">Cette application sera pas en mesure de :</string>
+  <string name="pit_permission_subtitle">Ne sera pas en mesure de :</string>
+  <string name="pit_permission_1">Faciliter des crypto-transferts entre les comptes</string>
+  <string name="pit_permission_2">Partager votre statut Or ou Argent</string>
+  <string name="pit_permission_3">Ajouter vos banques liées</string>
+  <string name="pit_permission_4">Afficher le mot de passe de votre portefeuille</string>
+  <string name="pit_connect_now">Se connecter maintenant</string>
+  <string name="pit_setting_title">The Pit</string>
+  <string name="pit_setting_connect">Se connecter</string>
+  <string name="pit_setting_connected">Connecté</string>
+  <string name="launch_the_pit">Lancer The PIT</string>
+  <string name="pit_contact_support">Contacter le centre d\'assistance</string>
+  <string name="pit_loading_dialog_title">Votre accès à The PIT est en cours</string>
+  <string name="pit_loading_dialog_description">Une nouvelle fenêtre devrait s\'ouvrir dans les 10 secondes.</string>
+  <string name="pit_verify_email_title">Vérifiez votre adresse électronique</string>
+  <string name="pit_verify_email_description">Nous venons de vous envoyer un email de vérification. Votre adresse électronique doit être vérifiée avant que vous ne puissiez vous connecter à The PIT.</string>
+  <string name="pit_open_email_app">Ouvrir l\'application Email</string>
+  <string name="pit_did_not_get_email">Vous n\'avez pas reçu le courriel ?</string>
+  <string name="pit_send_again">Envoyer à nouveau</string>
+  <string name="mail_resent_succeed">Courriel envoyé. Vérifiez votre boîte de réception pour continuer.</string>
+  <string name="mail_resent_failed">Une erreur s\'est produite. Veuillez appuyer sur Envoyer à nouveau.</string>
+  <string name="pit_email_verified_description">Vous êtes prêt à connecter votre Blockchain Wallet à The PIT.</string>
+  <string name="pit_email_verified_title">Adresse électronique vérifiée.</string>
+  <string name="pit_connection_error_title">Erreur de connexion</string>
+  <string name="pit_connection_error_description">Nous n\'avons pas pu connecter votre portefeuille à The PIT. Veuillez retourner à The PIT et réessayer.</string>
+  <string name="pit_connection_success_title">Réussi !</string>
+  <string name="pit_connection_success_description">Vous avez connecté votre Blockchain Wallet à The PIT.</string>
+  <string name="pit_default_account_label">Mon adresse %1$s PIT</string>
 </resources>

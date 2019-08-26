@@ -7,7 +7,7 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
 import org.junit.Before
 import org.junit.Test
@@ -16,14 +16,13 @@ import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import piuk.blockchain.android.BlockchainTestApplication
-import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 
-@Config(sdk = [23], constants = BuildConfig::class, application = BlockchainTestApplication::class)
+@Config(sdk = [23], application = BlockchainTestApplication::class)
 @RunWith(RobolectricTestRunner::class)
 class PairingCodePresenterTest {
 
@@ -64,7 +63,7 @@ class PairingCodePresenterTest {
                 any()
             )
         ).thenReturn(Observable.just(bitmap))
-        val body = ResponseBody.create(MediaType.parse("application/text"), "asdasdasd")
+        val body = ResponseBody.create(("application/text").toMediaTypeOrNull(), "asdasdasd")
         whenever(mockAuthDataManager.getPairingEncryptionPassword(any()))
             .thenReturn(Observable.just(body))
         // Act

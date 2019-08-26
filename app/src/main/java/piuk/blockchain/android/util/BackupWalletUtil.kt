@@ -2,13 +2,10 @@ package piuk.blockchain.android.util
 
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.injection.PresenterScope
 import timber.log.Timber
 import java.security.SecureRandom
-import javax.inject.Inject
 
-@PresenterScope
-class BackupWalletUtil @Inject constructor(
+class BackupWalletUtil(
     private val payloadDataManager: PayloadDataManager,
     environmentConfig: EnvironmentConfig
 ) {

@@ -5,8 +5,8 @@ import com.blockchain.kyc.models.nabu.LimitsJson
 import com.blockchain.kyc.models.nabu.TierJson
 import com.blockchain.kyc.models.nabu.TiersJson
 import com.blockchain.kyc.services.nabu.TierService
-import com.blockchain.morph.trade.MorphTrade
-import com.blockchain.morph.trade.MorphTradeDataHistoryList
+import com.blockchain.swap.common.trade.MorphTrade
+import com.blockchain.swap.common.trade.MorphTradeDataHistoryList
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever

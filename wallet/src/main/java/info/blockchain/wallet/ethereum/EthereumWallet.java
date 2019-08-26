@@ -43,7 +43,7 @@ public class EthereumWallet {
     public EthereumWallet(DeterministicKey walletMasterKey, String defaultAccountName, String defaultPaxLabel) {
 
         ArrayList<EthereumAccount> accounts = new ArrayList<>();
-        accounts.add(EthereumAccount.deriveAccount(walletMasterKey, ACCOUNT_INDEX, defaultAccountName));
+        accounts.add(EthereumAccount.Companion.deriveAccount(walletMasterKey, ACCOUNT_INDEX, defaultAccountName));
 
         this.walletData = new EthereumWalletData();
         this.walletData.setHasSeen(false);

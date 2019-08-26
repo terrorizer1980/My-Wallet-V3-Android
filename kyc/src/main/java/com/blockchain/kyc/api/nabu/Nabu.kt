@@ -7,20 +7,20 @@ import com.blockchain.kyc.models.nabu.NabuCountryResponse
 import com.blockchain.kyc.models.nabu.NabuJwt
 import com.blockchain.kyc.models.nabu.NabuStateResponse
 import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.kyc.models.nabu.OnfidoApiKey
 import com.blockchain.kyc.models.nabu.RecordCountryRequest
 import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressRequest
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
+import com.blockchain.kyc.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.kyc.models.nabu.SupportedDocumentsResponse
 import com.blockchain.kyc.models.nabu.TierUpdateJson
 import com.blockchain.kyc.models.nabu.TiersJson
 import com.blockchain.kyc.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.kyc.models.nabu.VeriffToken
 import com.blockchain.kyc.models.nabu.WalletMercuryLink
-import com.blockchain.nabu.models.NabuOfflineTokenRequest
-import com.blockchain.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.nabu.models.NabuSessionTokenResponse
+import com.blockchain.swap.nabu.models.NabuOfflineTokenRequest
+import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.NabuSessionTokenResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.Body
@@ -95,11 +95,6 @@ internal interface Nabu {
         @Header("authorization") authorization: String
     ): Completable
 
-    @GET(NABU_ONFIDO_API_KEY)
-    fun getOnfidoApiKey(
-        @Header("authorization") authorization: String
-    ): Single<OnfidoApiKey>
-
     /**
      * This is a GET, but it actually starts a veriff session on the server for historical reasons.
      * So do not call more than once per veriff launch.
@@ -161,7 +156,7 @@ internal interface Nabu {
     @POST(NABU_SEND_WALLET_ADDRESSES_TO_PIT)
     fun sharePitReceiveAddresses(
         @Header("authorization") authorization: String,
-        @Body addressMap: Map<String, String> // Crypto symbol -> address
+        @Body addresses: SendWithdrawalAddressesRequest
     ): Completable
 
     @PUT(NABU_FETCH_PIT_ADDRESS_FOR_WALLET)

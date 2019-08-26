@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import com.blockchain.fees.FeeType
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.State
-import com.blockchain.nabu.NabuToken
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.XlmFeesFetcher
@@ -29,6 +29,7 @@ import io.reactivex.rxkotlin.withLatestFrom
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.account.PitAccount
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
@@ -52,6 +53,7 @@ class XlmSendStrategy(
     private val sendFundsResultLocalizer: SendFundsResultLocalizer,
     private val stringUtils: StringUtils,
     private val nabuToken: NabuToken,
+    private val pitLinking: PitLinking,
     private val nabuDataManager: NabuDataManager
 ) : SendStrategy<SendView>(currencyState) {
 
@@ -337,17 +339,18 @@ class XlmSendStrategy(
     }
 
     private fun resetAccountList() {
-        compositeDisposable += nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.XLM.symbol)
-        }.applySchedulers().doOnSubscribe {
-            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
-        }.subscribeBy(onError = {
-            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
-        }) {
-            pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
-                CryptoCurrency.XLM.symbol), it.address.split(":")[0])
-            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1,
-                it.state == State.ACTIVE && it.address.isNotEmpty())
-        }
+        compositeDisposable += pitLinking.isPitLinked().filter { it }.flatMapSingle { nabuToken.fetchNabuToken() }
+            .flatMap {
+                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.XLM.symbol)
+            }.applySchedulers().doOnSubscribe {
+                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
+            }.subscribeBy(onError = {
+                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
+            }) {
+                pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
+                    CryptoCurrency.XLM.symbol), it.address.split(":")[0])
+                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1,
+                    it.state == State.ACTIVE && it.address.isNotEmpty())
+            }
     }
 }
