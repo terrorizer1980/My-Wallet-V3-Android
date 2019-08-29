@@ -123,7 +123,14 @@ class EthDisplayable(
             put(ethTransaction.to, ethTransaction.value)
         }
     override val confirmations: Int
-        get() = (blockHeight - ethTransaction.blockNumber).toInt()
+        get() = ethConfirmations(ethTransaction, blockHeight)
+
+    private fun ethConfirmations(ethTransaction: EthTransaction, blockHeight: Long): Int {
+        val blockNumber = ethTransaction.blockNumber ?: return 0
+        val blockHash = ethTransaction.blockHash ?: return 0
+
+        return if (blockNumber == 0L || blockHash == "0x") 0 else (blockHeight - blockNumber).toInt()
+    }
 }
 
 class BtcDisplayable(
