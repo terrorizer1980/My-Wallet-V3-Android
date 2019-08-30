@@ -225,7 +225,7 @@ class EtherSendStrategy(
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view.showProgressDialog(R.string.app_name) }
             .doOnError {
-                view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_INDEFINITE)
+                view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
             }
             .doOnTerminate {
                 view.dismissProgressDialog()
@@ -241,7 +241,7 @@ class EtherSendStrategy(
                 {
                     Timber.e(it)
                     logPaymentSentEvent(false, CryptoCurrency.ETHER, pendingTransaction.bigIntAmount)
-                    view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_INDEFINITE)
+                    view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
                 }
             )
     }

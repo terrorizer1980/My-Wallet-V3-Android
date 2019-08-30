@@ -200,7 +200,7 @@ class PaxSendStrategy(
             .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view.showProgressDialog(R.string.app_name) }
-            .doOnError { view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_INDEFINITE) }
+            .doOnError { view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG) }
             .doOnTerminate {
                 view.dismissProgressDialog()
                 view.dismissConfirmationDialog()
@@ -215,7 +215,7 @@ class PaxSendStrategy(
                 {
                     Timber.e(it)
                     logPaymentSentEvent(false, CryptoCurrency.PAX, pendingTx.amountPax)
-                    view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_INDEFINITE)
+                    view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
                 }
             )
     }
