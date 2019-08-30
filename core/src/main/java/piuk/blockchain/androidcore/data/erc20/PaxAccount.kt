@@ -21,6 +21,8 @@ class PaxAccount(
     override val dataStore: Erc20DataStore,
     private val environmentSettings: EnvironmentConfig
 ) : Erc20Account {
+    override val contractAddress: String
+        get() = ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress
 
     override val cryptoCurrency: CryptoCurrency
         get() = CryptoCurrency.PAX

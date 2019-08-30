@@ -39,19 +39,32 @@ public class WebSocketService extends Service {
     public static final String EXTRA_X_PUB_BCH = "piuk.blockchain.android.extras.EXTRA_X_PUB_BCH";
 
     private final IBinder binder = new LocalBinder();
-    @Inject protected PayloadDataManager payloadDataManager;
-    @Inject protected EthDataManager ethDataManager;
-    @Inject protected BchDataManager bchDataManager;
-    @Inject protected PersistentPrefs prefs;
-    @Inject protected NotificationManager notificationManager;
-    @Inject protected SwipeToReceiveHelper swipeToReceiveHelper;
-    @Inject protected OkHttpClient okHttpClient;
-    @Inject protected RxBus rxBus;
-    @Inject protected AccessState accessState;
-    @Inject protected AppUtil appUtil;
-    @Thunk WebSocketHandler webSocketHandler;
-    @Inject protected CurrencyFormatManager currencyFormatManager;
-    @Inject protected EnvironmentConfig environmentConfig;
+    @Inject
+    protected PayloadDataManager payloadDataManager;
+    @Inject
+    protected EthDataManager ethDataManager;
+    @Inject
+    protected BchDataManager bchDataManager;
+    @Inject
+    protected PersistentPrefs prefs;
+    @Inject
+    protected NotificationManager notificationManager;
+    @Inject
+    protected SwipeToReceiveHelper swipeToReceiveHelper;
+    @Inject
+    protected OkHttpClient okHttpClient;
+    @Inject
+    protected RxBus rxBus;
+    @Inject
+    protected AccessState accessState;
+    @Inject
+    protected AppUtil appUtil;
+    @Thunk
+    WebSocketHandler webSocketHandler;
+    @Inject
+    protected CurrencyFormatManager currencyFormatManager;
+    @Inject
+    protected EnvironmentConfig environmentConfig;
 
     protected BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -93,7 +106,6 @@ public class WebSocketService extends Service {
                 getApplicationContext(),
                 okHttpClient,
                 payloadDataManager,
-                ethDataManager,
                 bchDataManager,
                 notificationManager,
                 environmentConfig,
@@ -103,7 +115,6 @@ public class WebSocketService extends Service {
                 getAddressesBtc(),
                 getXpubsBch(),
                 getAddressesBch(),
-                getEthAccount(),
                 rxBus,
                 accessState,
                 appUtil);
@@ -203,16 +214,6 @@ public class WebSocketService extends Service {
         } else {
             return new String[0];
         }
-    }
-
-    @Nullable
-    private String getEthAccount() {
-        if (ethDataManager.getEthWallet() != null && ethDataManager.getEthWallet().getAccount() != null) {
-            return ethDataManager.getEthWallet().getAccount().getAddress();
-        } else if (swipeToReceiveHelper.getEthReceiveAddress() != null) {
-            return swipeToReceiveHelper.getEthReceiveAddress();
-        }
-        return null;
     }
 
     @Override

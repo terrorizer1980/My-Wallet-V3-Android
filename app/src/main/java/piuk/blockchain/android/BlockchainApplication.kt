@@ -2,6 +2,7 @@ package piuk.blockchain.android
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.arch.lifecycle.ProcessLifecycleOwner
 import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatDelegate
@@ -25,6 +26,8 @@ import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.auth.LogoutActivity
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity
+import piuk.blockchain.android.util.lifecycle.AppLifecycleListener
+import piuk.blockchain.android.util.lifecycle.LifecycleInterestedComponent
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.connectivity.ConnectionEvent
@@ -44,14 +47,17 @@ open class BlockchainApplication : Application(), FrameworkInterface {
 
     private val retrofitApi: Retrofit by inject("api")
     private val retrofitExplorer: Retrofit by inject("explorer")
-
     private val environmentSettings: EnvironmentConfig by inject()
     private val loginState: AccessState by inject()
-
+    private val lifeCycleInterestedComponent: LifecycleInterestedComponent by inject()
     private val rxBus: RxBus by inject()
     private val currentContextAccess: CurrentContextAccess by inject()
     private val appUtils: AppUtil by inject()
     private val crashLogger: CrashLogger by inject()
+
+    private val lifecycleListener: AppLifecycleListener by lazy {
+        AppLifecycleListener(lifeCycleInterestedComponent)
+    }
 
     override fun onCreate() {
 
@@ -70,7 +76,7 @@ open class BlockchainApplication : Application(), FrameworkInterface {
         // Build the DI graphs:
         KoinStarter.start(this)
         Injector.getInstance().init(this)
-
+        initLifecycleListener()
         crashLogger.init(this)
         crashLogger.userLanguageLocale(resources.configuration.locale.language)
 
@@ -98,7 +104,8 @@ open class BlockchainApplication : Application(), FrameworkInterface {
                     prngUpdater.applyPRNGFixes()
                 }
 
-                override fun onBecameBackground() { /* No-op */ }
+                override fun onBecameBackground() {
+                }
             })
 
         ConnectivityManager.getInstance().registerNetworkListener(this)
@@ -132,6 +139,11 @@ open class BlockchainApplication : Application(), FrameworkInterface {
                     connectionEvent
                 )
             }
+    }
+
+    private fun initLifecycleListener() {
+        ProcessLifecycleOwner.get().lifecycle
+            .addObserver(lifecycleListener)
     }
 
     // FrameworkInterface

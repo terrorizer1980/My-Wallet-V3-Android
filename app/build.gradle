@@ -111,6 +111,7 @@ android {
             buildConfigString "HORIZON_URL", buildProperties.secrets['prodHorizonUrl']
             buildConfigString "PIT_LINKING_URL", buildProperties.secrets['prodPitDoLink']
             buildConfigString "PIT_LAUNCHING_URL", buildProperties.secrets['prodPitLaunch']
+            buildConfigString "COINS_WEBSOCKET_URL", buildProperties.secrets['prodCoinsWebsocket']
             buildConfigField "String", "ENVIRONMENT", '"env_prod"'
         }
         envDev {
@@ -129,6 +130,7 @@ android {
             buildConfigString "HORIZON_URL", buildProperties.secrets['devHorizonUrl']
             buildConfigString "PIT_LINKING_URL", buildProperties.secrets['devPitDoLink']
             buildConfigString "PIT_LAUNCHING_URL", buildProperties.secrets['devPitLaunch']
+            buildConfigString "COINS_WEBSOCKET_URL", buildProperties.secrets['devCoinsWebsocket']
             buildConfigField "String", "ENVIRONMENT", '"env_dev"'
             versionNameSuffix '-dev'
         }
@@ -148,6 +150,7 @@ android {
             buildConfigString "HORIZON_URL", buildProperties.secrets['stagingHorizonUrl']
             buildConfigString "PIT_LINKING_URL", buildProperties.secrets['stagingPitDoLink']
             buildConfigString "PIT_LAUNCHING_URL", buildProperties.secrets['stagingPitLaunch']
+            buildConfigString "COINS_WEBSOCKET_URL", buildProperties.secrets['stagingCoinsWebsocket']
             buildConfigField "String", "ENVIRONMENT", '"env_staging"'
 
             versionNameSuffix '-staging'
@@ -169,6 +172,7 @@ android {
             buildConfigString "HORIZON_URL", buildProperties.secrets['testnetHorizonUrl']
             buildConfigString "PIT_LINKING_URL", buildProperties.secrets['testnetPitDoLink']
             buildConfigString "PIT_LAUNCHING_URL", buildProperties.secrets['testnetPitLaunch']
+            buildConfigString "COINS_WEBSOCKET_URL", buildProperties.secrets['testnetCoinsWebsocket']
             buildConfigField "String", "ENVIRONMENT", '"env_testnet"'
             versionNameSuffix '-testnet'
         }
@@ -252,6 +256,7 @@ dependencies {
     implementation Libraries.bottomNav
     implementation Libraries.circleIndicator
     implementation Libraries.charts
+    implementation Libraries.gson
 
     // Google core
     implementation Libraries.googlePlayCore
