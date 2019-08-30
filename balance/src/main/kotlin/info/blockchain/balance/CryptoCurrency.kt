@@ -52,7 +52,7 @@ enum class CryptoCurrency(
         unit = "USD PAX",
         dp = 18,
         userDp = 8,
-        requiredConfirmations = 3, // Same as ETHER
+        requiredConfirmations = 12, // Same as ETHER
         featureFlags =
             0L
     );
