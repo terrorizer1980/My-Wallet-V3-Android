@@ -130,16 +130,17 @@ val coreModule = applicationContext {
 
         factory {
             TransactionExecutorViaDataManagers(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get()
+                payloadDataManager = get(),
+                ethDataManager = get(),
+                erc20Account = get(),
+                sendDataManager = get(),
+                addressResolver = get(),
+                accountLookup = get(),
+                defaultAccountDataManager = get(),
+                ethereumAccountWrapper = get(),
+                xlmSender = get(),
+                coinSelectionRemoteConfig = get(),
+                analytics = get()
             ) as TransactionExecutor
         }
 

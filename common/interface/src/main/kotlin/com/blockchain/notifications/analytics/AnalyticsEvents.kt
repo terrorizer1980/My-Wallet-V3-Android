@@ -57,10 +57,31 @@ enum class AnalyticsEvents(
     SwapInfoDialog("swap_info_dialog"),
     SwapInfoDialogViewHistory("swap_info_dialog_history_click"),
     SwapInfoDialogSwapLimits("swap_info_dialog_limits_click"),
-    SwapInfoDialogSupport("swap_info_dialog_support_click")
+    SwapInfoDialogSupport("swap_info_dialog_support_click"),
 }
 
 fun kycTierStart(tier: Int): AnalyticsEvent = object : AnalyticsEvent {
     override val event: String = "kyc_tier${tier}_start"
     override val params: Map<String, String> = emptyMap()
 }
+
+fun networkError(host: String, path: String, message: String): AnalyticsEvent = object : AnalyticsEvent {
+    override val event: String
+        get() = "network_error"
+    override val params: Map<String, String>
+        get() = mapOf("host" to host, "message" to message, "path" to path)
+}
+
+fun apiError(host: String, path: String, body: String?, requestId: String?, errorCode: Int): AnalyticsEvent =
+    object : AnalyticsEvent {
+        override val event: String
+            get() = "api_error"
+        override val params: Map<String, String>
+            get() = mapOf(
+                "host" to host,
+                "body" to body,
+                "path" to path,
+                "error_code" to errorCode.toString(),
+                "request_id" to requestId
+            ).mapNotNull { it.value?.let { value -> it.key to value } }.toMap()
+    }
