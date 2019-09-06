@@ -58,6 +58,9 @@ enum class AnalyticsEvents(
     SwapInfoDialogViewHistory("swap_info_dialog_history_click"),
     SwapInfoDialogSwapLimits("swap_info_dialog_limits_click"),
     SwapInfoDialogSupport("swap_info_dialog_support_click"),
+    WalletCreation("wallet_creation"),
+    WalletManualLogin("wallet_manual_login"),
+    WalletAutoPairing("wallet_auto_pairing")
 }
 
 fun kycTierStart(tier: Int): AnalyticsEvent = object : AnalyticsEvent {

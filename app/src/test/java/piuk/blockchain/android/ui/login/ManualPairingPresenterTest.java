@@ -1,5 +1,8 @@
 package piuk.blockchain.android.ui.login;
 
+import com.blockchain.notifications.analytics.Analytics;
+import com.blockchain.notifications.analytics.AnalyticsEvents;
+
 import info.blockchain.wallet.exceptions.DecryptionException;
 import info.blockchain.wallet.exceptions.HDWalletException;
 
@@ -33,6 +36,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,11 +55,18 @@ public class ManualPairingPresenterTest {
 
     private ManualPairingPresenter mSubject;
 
-    @Mock private ManualPairingActivity mActivity;
-    @Mock private AppUtil mAppUtil;
-    @Mock private AuthDataManager mAuthDataManager;
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS) private PayloadDataManager mPayloadDataManager;
-    @Mock private PrefsUtil mPrefsUtil;
+    @Mock
+    private ManualPairingActivity mActivity;
+    @Mock
+    private AppUtil mAppUtil;
+    @Mock
+    private AuthDataManager mAuthDataManager;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private PayloadDataManager mPayloadDataManager;
+    @Mock
+    private PrefsUtil mPrefsUtil;
+    @Mock
+    private Analytics analytics;
 
     @Before
     public void setUp() {
@@ -65,7 +76,8 @@ public class ManualPairingPresenterTest {
                 mAppUtil,
                 mAuthDataManager,
                 mPayloadDataManager,
-                mPrefsUtil);
+                mPrefsUtil,
+                analytics);
         mSubject.initView(mActivity);
     }
 
@@ -82,6 +94,7 @@ public class ManualPairingPresenterTest {
         // Assert
         // noinspection WrongConstant
         verify(mActivity).showToast(anyInt(), anyString());
+        verify(analytics, never()).logEvent(any());
     }
 
     /**
@@ -97,6 +110,7 @@ public class ManualPairingPresenterTest {
         // Assert
         // noinspection WrongConstant
         verify(mActivity).showToast(anyInt(), anyString());
+        verify(analytics, never()).logEvent(any());
     }
 
     /**
@@ -127,6 +141,7 @@ public class ManualPairingPresenterTest {
         verify(mPrefsUtil).setValue(anyString(), anyString());
         verify(mPrefsUtil).setValue(anyString(), anyBoolean());
         verify(mAppUtil).setSharedKey(anyString());
+        verify(analytics).logEvent(AnalyticsEvents.WalletManualLogin);
     }
 
     /**
@@ -177,6 +192,7 @@ public class ManualPairingPresenterTest {
         verify(mActivity).showToast(anyInt(), anyString());
         verify(mActivity).resetPasswordField();
         verify(mActivity).dismissProgressDialog();
+        verify(analytics, never()).logEvent(any());
     }
 
     /**
@@ -205,6 +221,7 @@ public class ManualPairingPresenterTest {
         verify(mActivity).showToast(anyInt(), anyString());
         verify(mActivity).resetPasswordField();
         verify(mActivity).dismissProgressDialog();
+        verify(analytics, never()).logEvent(any());
     }
 
     /**
@@ -234,6 +251,7 @@ public class ManualPairingPresenterTest {
         verify(mActivity).showToast(anyInt(), anyString());
         verify(mActivity).resetPasswordField();
         verify(mActivity).dismissProgressDialog();
+        verify(analytics, never()).logEvent(any());
     }
 
     /**
@@ -263,6 +281,7 @@ public class ManualPairingPresenterTest {
         verify(mActivity).showToast(anyInt(), anyString());
         verify(mActivity).resetPasswordField();
         verify(mActivity).dismissProgressDialog();
+        verify(analytics, never()).logEvent(any());
     }
 
     /**
@@ -336,6 +355,7 @@ public class ManualPairingPresenterTest {
         verify(mActivity).showToast(anyInt(), anyString());
         verify(mActivity).resetPasswordField();
         verify(mActivity).dismissProgressDialog();
+        verify(analytics, never()).logEvent(any());
     }
 
     /**
@@ -363,6 +383,7 @@ public class ManualPairingPresenterTest {
         // noinspection WrongConstant
         verify(mActivity).showToast(anyInt(), anyString());
         verify(mActivity).resetPasswordField();
+        verify(analytics, never()).logEvent(any());
     }
 
     /**
@@ -390,6 +411,7 @@ public class ManualPairingPresenterTest {
         mSubject.onContinueClicked();
         // Assert
         verify(mPayloadDataManager).initializeFromPayload(anyString(), anyString());
+        verify(analytics).logEvent(AnalyticsEvents.WalletManualLogin);
     }
 
     /**
@@ -446,6 +468,7 @@ public class ManualPairingPresenterTest {
         // noinspection WrongConstant
         verify(mActivity).showToast(anyInt(), anyString());
         verify(mActivity).resetPasswordField();
+        verify(analytics, never()).logEvent(any());
     }
 
     /**
@@ -473,6 +496,7 @@ public class ManualPairingPresenterTest {
         verify(mActivity, times(2)).showToast(anyInt(), anyString());
         verify(mActivity, times(2)).resetPasswordField();
         verify(mAppUtil).clearCredentialsAndRestart(LauncherActivity.class);
+        verify(analytics, never()).logEvent(any());
     }
 
     @Test
@@ -486,6 +510,7 @@ public class ManualPairingPresenterTest {
         mSubject.submitTwoFactorCode(responseObject, sessionId, guid, password, null);
         // Assert
         verify(mActivity).showToast(anyInt(), eq(ToastCustom.TYPE_ERROR));
+        verify(analytics, never()).logEvent(any());
     }
 
     @Test
@@ -526,6 +551,7 @@ public class ManualPairingPresenterTest {
         verify(mActivity).goToPinPage();
         verify(mAuthDataManager).submitTwoFactorCode(sessionId, guid, code);
         verify(mPayloadDataManager).initializeFromPayload(anyString(), eq(password));
+        verify(analytics).logEvent(AnalyticsEvents.WalletManualLogin);
     }
 
     @Test

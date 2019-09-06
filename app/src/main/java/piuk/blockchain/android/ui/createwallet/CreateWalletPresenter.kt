@@ -3,6 +3,8 @@ package piuk.blockchain.android.ui.createwallet
 import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.content.Intent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.crashlytics.android.answers.SignUpEvent
 import info.blockchain.wallet.util.FormatsUtil
 import info.blockchain.wallet.util.PasswordUtil
@@ -25,7 +27,8 @@ class CreateWalletPresenter(
     private val prefs: PersistentPrefs,
     private val appUtil: AppUtil,
     private val accessState: AccessState,
-    private val prngFixer: PrngFixer
+    private val prngFixer: PrngFixer,
+    private val analytics: Analytics
 ) : BasePresenter<CreateWalletView>() {
 
     var recoveryPhrase: String = ""
@@ -111,6 +114,7 @@ class CreateWalletPresenter(
                     Logging.logSignUp(
                         SignUpEvent().putSuccess(true)
                     )
+                    analytics.logEvent(AnalyticsEvents.WalletCreation)
                 },
                 {
                     Timber.e(it)

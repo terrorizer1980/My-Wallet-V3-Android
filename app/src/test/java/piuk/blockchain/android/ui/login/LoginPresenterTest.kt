@@ -1,10 +1,13 @@
 package piuk.blockchain.android.ui.login
 
 import com.blockchain.android.testutils.DaggerLazyImpl
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
@@ -29,10 +32,11 @@ class LoginPresenterTest {
     private var payloadDataManager: PayloadDataManager =
         mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private var prefsUtil: PersistentPrefs = mock()
+    private var analytics: Analytics = mock()
 
     @Before
     fun setUp() {
-        subject = LoginPresenter(appUtil, DaggerLazyImpl(payloadDataManager), prefsUtil)
+        subject = LoginPresenter(appUtil, DaggerLazyImpl(payloadDataManager), prefsUtil, analytics)
         subject.initView(view)
     }
 
@@ -58,6 +62,7 @@ class LoginPresenterTest {
         verify(prefsUtil).setValue(PersistentPrefs.KEY_WALLET_GUID, guid)
         verify(prefsUtil).setValue(PersistentPrefs.KEY_EMAIL_VERIFIED, true)
         verify(prefsUtil).setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, true)
+        verify(analytics).logEvent(AnalyticsEvents.WalletAutoPairing)
         verifyNoMoreInteractions(prefsUtil)
         verify(payloadDataManager).handleQrCode(qrCode)
         verify(payloadDataManager, atLeastOnce()).wallet
@@ -81,6 +86,7 @@ class LoginPresenterTest {
         verify(appUtil).clearCredentialsAndRestart(LauncherActivity::class.java)
         verifyNoMoreInteractions(appUtil)
         verifyZeroInteractions(prefsUtil)
+        verify(analytics, never()).logEvent(AnalyticsEvents.WalletAutoPairing)
         verify(payloadDataManager).handleQrCode(qrCode)
         verifyNoMoreInteractions(payloadDataManager)
     }

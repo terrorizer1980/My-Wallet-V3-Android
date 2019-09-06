@@ -335,7 +335,8 @@ val applicationModule = applicationContext {
                 prefs = get(),
                 appUtil = get(),
                 accessState = get(),
-                prngFixer = get()
+                prngFixer = get(),
+                analytics = get()
             )
         }
 
@@ -641,7 +642,8 @@ val applicationModule = applicationContext {
                 /* appUtil = */ get(),
                 /* authDataManager = */ get(),
                 /* payloadDataManager = */ get(),
-                /* prefs = */ get()
+                /* prefs = */ get(),
+                /* analytics = */ get()
             )
         }
 
