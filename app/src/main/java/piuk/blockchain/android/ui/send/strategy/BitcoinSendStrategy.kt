@@ -192,6 +192,7 @@ class BitcoinSendStrategy(
             it.showFeePriority()
             it.enableFeeDropdown()
             it.setCryptoMaxLength(17)
+            it.resetBitpayState()
             calculateSpendableAmounts(spendAll = false, amountToSendText = "0")
             it.enableInput()
         }

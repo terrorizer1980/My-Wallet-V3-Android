@@ -60,6 +60,8 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.balance.compareTo
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.alert_watch_only_spend.view.*
 import kotlinx.android.synthetic.main.fragment_send.*
 import kotlinx.android.synthetic.main.include_amount_row.*
@@ -122,7 +124,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     private var confirmPaymentDialog: ConfirmPaymentDialog? = null
     private var transactionSuccessDialog: AlertDialog? = null
     private var bitpayInvoiceExpiredDialog: AlertDialog? = null
-
+    private val timerDisposable = CompositeDisposable()
     private var handlingActivityResult = false
     private var pitEnabled = false
     private var pitAddressState: PitAddressFieldState = PitAddressFieldState.CLEARED
@@ -1159,6 +1161,13 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
+    override fun resetBitpayState() {
+        bitpayMerchantText.gone()
+        bitpayTimeRemaining.gone()
+        bitpayDivider.gone()
+        timerDisposable.clear()
+    }
+
     private fun startCountdown(endTime: Long) {
         val timeRemainingText = stringUtils.getString(R.string.bitpay_remaining_time)
         var remaining = (endTime - System.currentTimeMillis()) / 1000
@@ -1167,7 +1176,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             // Finish page with error
             showbitpayInvoiceExpiredDialog()
         } else {
-            Observable.interval(1, TimeUnit.SECONDS)
+            timerDisposable.clear()
+            timerDisposable += Observable.interval(1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnEach { remaining-- }
                 .map { remaining }
@@ -1191,6 +1201,11 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                 .doOnComplete { showbitpayInvoiceExpiredDialog() }
                 .subscribe()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        timerDisposable.clear()
     }
 
     private fun startBitPayTimer(expiryDateGmt: Date) {
