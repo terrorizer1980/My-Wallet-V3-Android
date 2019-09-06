@@ -393,7 +393,8 @@ val applicationModule = applicationContext {
                 envSettings = get(),
                 exchangeRateFactory = get(),
                 pitLinkingFeatureFlag = get("ff_pit_linking"),
-                bitpayDataManager = get()
+                bitpayDataManager = get(),
+                analytics = get()
             )
         }
 
@@ -416,7 +417,8 @@ val applicationModule = applicationContext {
                 nabuDataManager = get(),
                 nabuToken = get(),
                 bitPayDataManager = get(),
-                pitLinking = get()
+                pitLinking = get(),
+                analytics = get()
             )
         }
 

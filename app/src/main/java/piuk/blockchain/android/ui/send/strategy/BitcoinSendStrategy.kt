@@ -4,9 +4,10 @@ import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.State
-import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.serialization.JsonSerializableAccount
+import com.blockchain.swap.nabu.NabuToken
 import info.blockchain.api.data.UnspentOutputs
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -32,6 +33,8 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.models.BitPayTransaction
 import piuk.blockchain.android.data.api.bitpay.models.BitPaymentRequest
+import piuk.blockchain.android.data.api.bitpay.models.events.BitPayEvent
+import piuk.blockchain.android.data.api.bitpay.models.exceptions.BitPayApiException
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -60,7 +63,6 @@ import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import timber.log.Timber
 import java.io.UnsupportedEncodingException
 import java.math.BigInteger
-import java.util.HashMap
 import java.util.concurrent.TimeUnit
 
 interface BitPayProtocol {
@@ -93,6 +95,7 @@ class BitcoinSendStrategy(
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
     private val bitPayDataManager: BitPayDataManager,
+    private val analytics: Analytics,
     currencyState: CurrencyState
 ) : SendStrategy<SendView>(currencyState), BitPayProtocol {
 
@@ -298,7 +301,9 @@ class BitcoinSendStrategy(
             .subscribe(
                 { hash ->
                     logPaymentSentEvent(true, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
-
+                    if (isBitpayPaymentRequest) {
+                        analytics.logEvent(BitPayEvent.SuccessEvent(pendingTransaction.bigIntAmount))
+                    }
                     clearBtcUnspentResponseCache()
                     view.dismissProgressDialog()
                     view.dismissConfirmationDialog()
@@ -315,6 +320,10 @@ class BitcoinSendStrategy(
                         Snackbar.LENGTH_INDEFINITE
                     )
                     logPaymentSentEvent(false, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
+
+                    (it as? BitPayApiException)?.let { bitpayException ->
+                        analytics.logEvent(BitPayEvent.FailureEvent(bitpayException.message ?: ""))
+                    }
                 }
             )
     }

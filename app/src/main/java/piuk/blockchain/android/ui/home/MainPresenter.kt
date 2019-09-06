@@ -208,7 +208,7 @@ class MainPresenter internal constructor(
                 val strUri = prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "")
                 if (strUri.isNotEmpty()) {
                     prefs.removeValue(PersistentPrefs.KEY_SCHEME_URL)
-                    view.onScanInput(strUri)
+                    view.onHandleInput(strUri)
                 }
             }
             .subscribe({

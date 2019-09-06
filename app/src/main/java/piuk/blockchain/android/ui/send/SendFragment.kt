@@ -39,6 +39,7 @@ import android.widget.Spinner
 import com.blockchain.annotations.CommonCode
 import com.blockchain.balance.errorIcon
 import com.blockchain.koin.injectActivity
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.ui.MinBalanceExplanationDialog
@@ -73,6 +74,7 @@ import kotlinx.android.synthetic.main.view_expanding_currency_header.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.data.api.bitpay.models.events.BitPayEvent
 import piuk.blockchain.android.data.connectivity.ConnectivityStatus
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import piuk.blockchain.android.ui.balance.BalanceFragment
@@ -115,6 +117,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     NumericKeyboardCallback {
 
     private val appUtil: AppUtil by inject()
+    private val analytics: Analytics by inject()
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
     private val currencyState: CurrencyState by inject()
@@ -543,17 +546,17 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     }
 
     private fun handleIncomingArguments() {
-        if (!handleIncomingScan()) {
+        if (!handlePredefinedInput(arguments.inputDeeplinked)) {
             presenter.onCurrencySelected(currencyState.cryptoCurrency)
         }
     }
 
-    private fun handleIncomingScan(): Boolean {
+    private fun handlePredefinedInput(isDeeplinked: Boolean): Boolean {
         if (arguments != null) {
-            val scanData = arguments.scanData
-            if (scanData != null) {
+            val input = arguments.input
+            if (input != null) {
                 handlingActivityResult = true
-                presenter.handleURIScan(scanData, currencyState.cryptoCurrency)
+                presenter.handlePredefinedInput(input, currencyState.cryptoCurrency, isDeeplinked)
                 return true
             }
         }
@@ -1221,7 +1224,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         val appRate = AppRate(activity)
             .setMinTransactionsUntilPrompt(3)
             .incrementTransactionCount()
-
+        analytics.logEvent(BitPayEvent.ExpiredEvent)
         activity?.run {
             val dialogBuilder = AlertDialog.Builder(this)
             val dialogView = View.inflate(activity, R.layout.modal_transaction_failed, null)
@@ -1373,7 +1376,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     companion object {
         const val SCAN_PRIVX = 2011
-        private const val ARGUMENT_SCAN_DATA = "scan_data"
+        private const val ARGUMENT_SEND_INPUT = "send_input"
+        private const val ARGUMENT_SEND_INPUT_DEEPLINKED = "send_input_deeplinked"
 
         private const val REQUEST_CODE_BTC_RECEIVING = 911
         private const val REQUEST_CODE_BTC_SENDING = 912
@@ -1381,17 +1385,22 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         private const val REQUEST_CODE_BCH_SENDING = 914
         private const val REQUEST_CODE_MEMO = 915
 
-        fun newInstance(scanUri: String?): SendFragment {
+        fun newInstance(scanUri: String?, inputDeeplinked: Boolean = false): SendFragment {
             val fragment = SendFragment()
             fragment.arguments = Bundle().apply {
-                scanData = scanUri
+                input = scanUri
+                this.inputDeeplinked = inputDeeplinked
             }
             return fragment
         }
 
-        private var Bundle?.scanData: String?
-            get() = this?.getString(ARGUMENT_SCAN_DATA)
-            set(v) = this?.putString(ARGUMENT_SCAN_DATA, v) ?: throw NullPointerException()
+        private var Bundle?.input: String?
+            get() = this?.getString(ARGUMENT_SEND_INPUT)
+            set(v) = this?.putString(ARGUMENT_SEND_INPUT, v) ?: throw NullPointerException()
+
+        private var Bundle?.inputDeeplinked: Boolean
+            get() = this?.getBoolean(ARGUMENT_SEND_INPUT_DEEPLINKED) ?: false
+            set(v) = this?.putBoolean(ARGUMENT_SEND_INPUT_DEEPLINKED, v) ?: throw NullPointerException()
     }
 
     override fun isPitEnabled(enabled: Boolean) {

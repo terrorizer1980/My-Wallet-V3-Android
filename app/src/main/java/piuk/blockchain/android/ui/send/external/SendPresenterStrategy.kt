@@ -30,7 +30,11 @@ abstract class SendPresenterStrategy<View : piuk.blockchain.androidcoreui.ui.bas
 
     abstract fun onCurrencySelected(currency: CryptoCurrency)
 
-    abstract fun handleURIScan(untrimmedscanData: String, defaultCurrency: CryptoCurrency)
+    abstract fun handlePredefinedInput(
+        untrimmedscanData: String,
+        defaultCurrency: CryptoCurrency,
+        isDeepLinked: Boolean
+    )
 
     abstract fun handlePrivxScan(scanData: String?)
 

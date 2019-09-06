@@ -243,7 +243,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             data != null && data.getStringExtra(CaptureActivity.SCAN_RESULT) != null
         ) {
             val strResult = data.getStringExtra(CaptureActivity.SCAN_RESULT)
-            doScanInput(strResult)
+            handlePredefinedInput(strResult, false)
         } else if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_BACKUP) {
             resetUi()
         } else if (requestCode == SETTINGS_EDIT ||
@@ -314,12 +314,12 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         }
     }
 
-    private fun doScanInput(strResult: String) {
+    private fun handlePredefinedInput(strResult: String, isDeeplinked: Boolean) {
         when {
             strResult.isBTCorBCHAddress() -> disambiguateBTCandBCHQrScans(strResult)
             strResult.isETHAddress() -> disambiguateETHQrScans(strResult)
             strResult.isHttpUri() -> presenter.handlePossibleDeepLink(strResult)
-            else -> startSendFragment(strResult)
+            else -> startSendFragment(strResult, isDeeplinked)
         }
     }
 
@@ -518,8 +518,8 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         }
     }
 
-    override fun onScanInput(strUri: String) {
-        doScanInput(strUri)
+    override fun onHandleInput(strUri: String) {
+        handlePredefinedInput(strUri, true)
     }
 
     override fun getStartIntent(): Intent {
@@ -675,12 +675,12 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         startSendFragment(null)
     }
 
-    private fun startSendFragment(scanData: String?) {
+    private fun startSendFragment(input: String?, isDeeplinked: Boolean = false) {
         setCurrentTabItem(ITEM_SEND)
 
         ViewUtils.setElevation(binding.appbarLayout, 0f)
 
-        val sendFragment = SendFragment.newInstance(scanData)
+        val sendFragment = SendFragment.newInstance(input, isDeeplinked)
         replaceContentFragment(sendFragment)
     }
 
