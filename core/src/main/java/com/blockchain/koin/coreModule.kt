@@ -39,6 +39,7 @@ import com.blockchain.logging.TimberLogger
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.preferences.NotificationPrefs
 import com.blockchain.preferences.ThePitLinkingPrefs
 import com.blockchain.sunriver.XlmHorizonUrlFetcher
 import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
@@ -297,7 +298,10 @@ val coreModule = applicationContext {
             idGenerator = get(),
             uuidGenerator = get()
         )
-    }.bind(PersistentPrefs::class).bind(CurrencyPrefs::class).bind(ThePitLinkingPrefs::class)
+    }.bind(PersistentPrefs::class)
+        .bind(CurrencyPrefs::class)
+        .bind(ThePitLinkingPrefs::class)
+        .bind(NotificationPrefs::class)
 
     factory { CurrencyFormatUtil() }
 
