@@ -16,10 +16,19 @@ interface SendView : BaseSendView {
 
     fun setSelectedCurrency(cryptoCurrency: CryptoCurrency)
 
-    fun updateReceivingHintAndAccountDropDowns(currency: CryptoCurrency, listSize: Int, pitAddressAvailable: Boolean)
+    fun updateReceivingHintAndAccountDropDowns(
+        currency: CryptoCurrency,
+        listSize: Int,
+        pitAddressAvailable: Boolean,
+        onPitClicked: () -> Unit = {}
+    )
 
     // Update field
     fun updateSendingAddress(label: String)
+
+    fun show2FANotAvailableError()
+
+    fun fillOrClearAddress()
 
     fun updateCryptoAmount(cryptoValue: CryptoValue, silent: Boolean = false)
 

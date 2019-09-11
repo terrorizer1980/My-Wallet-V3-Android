@@ -182,7 +182,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         // Push and Email notification status
         getView().setEmailNotificationPref(false);
 
-        getView().setPushNotificationPref(isPushNotificationEnabled());
+        getView().setPushNotificationPref(arePushNotificationEnabled());
 
         if (settings.isNotificationsOn() && !settings.getNotificationsType().isEmpty()) {
             for (int type : settings.getNotificationsType()) {
@@ -570,8 +570,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         swipeToReceiveHelper.clearStoredData();
     }
 
-    boolean isPushNotificationEnabled() {
-        return prefs.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true);
+    boolean arePushNotificationEnabled() {
+        return prefs.getArePushNotificationsEnabled();
     }
 
     void enablePushNotifications() {

@@ -1232,6 +1232,7 @@
     <string name="pit_verify_email_title">Verify Your Email</string>
     <string name="pit_verify_email_description">We just sent you a verification email. Your email address needs to be verified before you can connect to The PIT.</string>
     <string name="pit_open_email_app">Open Email App</string>
+    <string name="pit_no_two_fa_available">Please enable 2FA on your PIT account to complete deposit</string>
     <string name="pit_did_not_get_email">Didn\'t get the email?</string>
     <string name="pit_send_again">Send again</string>
     <string name="mail_resent_succeed">Email sent. Check your inbox to continue.</string>

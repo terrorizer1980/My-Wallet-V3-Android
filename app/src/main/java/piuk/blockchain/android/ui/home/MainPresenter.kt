@@ -134,9 +134,7 @@ class MainPresenter internal constructor(
      * available addresses.
      */
     private fun doPushNotifications() {
-        prefs.setValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true)
-
-        if (prefs.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true)) {
+        if (prefs.arePushNotificationsEnabled) {
             compositeDisposable += payloadDataManager.syncPayloadAndPublicKeys()
                 .subscribe({ /*no-op*/ },
                     { throwable -> Timber.e(throwable) })

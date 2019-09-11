@@ -149,20 +149,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
-    private val onPitClickListener = View.OnClickListener {
-        if (pitAddressState == PitAddressFieldState.CLEARED) {
-            pitAddressState = PitAddressFieldState.FILLED
-            pitAddress.setImageResource(R.drawable.vector_dismiss_pit_address)
-            presenter.onPitAddressSelected()
-            toContainer.toAddressEditTextView.isEnabled = false
-        } else {
-            pitAddressState = PitAddressFieldState.CLEARED
-            pitAddress.setImageResource(R.drawable.vector_pit_send_address)
-            presenter.onPitAddressCleared()
-            toContainer.toAddressEditTextView.isEnabled = true
-        }
-    }
-
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == BalanceFragment.ACTION_INTENT) {
@@ -212,8 +198,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                 showSnackbar(R.string.check_connectivity_exit, Snackbar.LENGTH_LONG)
             }
         }
-
-        pitAddress.setOnClickListener(onPitClickListener)
 
         max.setOnClickListener { presenter.onSpendMaxClicked() }
 
@@ -576,7 +560,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     override fun updateReceivingHintAndAccountDropDowns(
         currency: CryptoCurrency,
         listSize: Int,
-        pitAddressAvailable: Boolean
+        pitAddressAvailable: Boolean,
+        onPitClicked: () -> Unit
     ) {
         if (listSize == 1) {
             hideReceivingDropdown()
@@ -587,7 +572,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
 
         if (pitAddressAvailable && pitEnabled && !bitPayAddressScanned) {
-            showPitAddressIcon()
+            showPitAddressIconWithClickListener(onPitClicked)
         } else {
             hidePitAddressIcon()
         }
@@ -610,6 +595,15 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             }
         }
         toContainer.toAddressEditTextView.setHint(hint)
+    }
+
+    private fun showPitAddressIconWithClickListener(onPitClicked: () -> Unit) {
+        toContainer.pitAddress.apply {
+            visible()
+            setOnClickListener {
+                onPitClicked()
+            }
+        }
     }
 
     private fun startFromAccountChooser() {
@@ -755,10 +749,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     private fun hidePitAddressIcon() {
         toContainer.pitAddress.gone()
-    }
-
-    private fun showPitAddressIcon() {
-        toContainer.pitAddress.visible()
     }
 
     override fun updateReceivingAddress(address: String) {
@@ -1418,6 +1408,24 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     override fun lastEnteredCryptoAmount(): String {
         return amountCrypto.text?.takeIf { it.isBlank().not() }?.toString() ?: "0"
+    }
+
+    override fun show2FANotAvailableError() {
+        toast(R.string.pit_no_two_fa_available, ToastCustom.TYPE_ERROR)
+    }
+
+    override fun fillOrClearAddress() {
+        if (pitAddressState == PitAddressFieldState.CLEARED) {
+            pitAddressState = PitAddressFieldState.FILLED
+            pitAddress.setImageResource(R.drawable.vector_dismiss_pit_address)
+            presenter.onPitAddressSelected()
+            toContainer.toAddressEditTextView.isEnabled = false
+        } else {
+            pitAddressState = PitAddressFieldState.CLEARED
+            pitAddress.setImageResource(R.drawable.vector_pit_send_address)
+            presenter.onPitAddressCleared()
+            toContainer.toAddressEditTextView.isEnabled = true
+        }
     }
 }
 

@@ -140,13 +140,15 @@ class PaxSendStrategy(
             }.applySchedulers().doOnSubscribe {
                 view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
             }.subscribeBy(onError = {
-                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
+                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false) {
+                    view.show2FANotAvailableError()
+                }
             }) {
                 pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
                     CryptoCurrency.PAX.symbol), it.address)
                 view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX,
                     1,
-                    it.state == State.ACTIVE && it.address.isNotEmpty())
+                    it.state == State.ACTIVE && it.address.isNotEmpty()) { view.fillOrClearAddress() }
             }
     }
 
