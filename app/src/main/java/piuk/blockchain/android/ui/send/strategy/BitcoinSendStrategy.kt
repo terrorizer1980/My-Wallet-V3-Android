@@ -3,6 +3,8 @@ package piuk.blockchain.android.ui.send.strategy
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.NabuApiException
+import com.blockchain.kyc.models.nabu.NabuErrorCodes
 import com.blockchain.kyc.models.nabu.State
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
@@ -504,8 +506,8 @@ class BitcoinSendStrategy(
             view.updateReceivingHintAndAccountDropDowns(
                 CryptoCurrency.BTC,
                 getAddressList().size,
-                false
-            )
+                it is NabuApiException && it.getErrorCode() == NabuErrorCodes.Bad2fa
+            ) { view.show2FANotAvailableError() }
         }) {
             pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
                 CryptoCurrency.BTC.symbol), it.address)
@@ -513,7 +515,7 @@ class BitcoinSendStrategy(
                 CryptoCurrency.BTC,
                 getAddressList().size,
                 it.state == State.ACTIVE && it.address.isNotEmpty()
-            )
+            ) { view.fillOrClearAddress() }
         }
     }
 

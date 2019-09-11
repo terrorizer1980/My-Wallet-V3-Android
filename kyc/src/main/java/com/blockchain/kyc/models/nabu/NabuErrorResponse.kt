@@ -58,5 +58,12 @@ class NabuApiException private constructor(message: String) : Throwable(message)
                     _errorDescription = errorDescription
                 }
         }
+
+        fun withErrorCode(errorCode: Int): NabuApiException {
+            return NabuApiException("")
+                .apply {
+                    _errorCode = errorCode
+                }
+        }
     }
 }

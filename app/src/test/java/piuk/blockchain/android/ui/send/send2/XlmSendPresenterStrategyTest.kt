@@ -3,6 +3,8 @@ package piuk.blockchain.android.ui.send.send2
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.fees.FeeType
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.NabuApiException
+import com.blockchain.kyc.models.nabu.NabuErrorCodes
 import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.kyc.models.nabu.State
 import com.blockchain.swap.nabu.NabuToken
@@ -17,6 +19,7 @@ import com.blockchain.transactions.SendDetails
 import com.blockchain.transactions.SendFundsResult
 import com.blockchain.transactions.TransactionSender
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.times
@@ -971,7 +974,12 @@ class XlmSendPresenterStrategyTest {
             initView(view)
             onViewReady()
         }
-        verify(view.mock).updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, true)
+        verify(view.mock).updateReceivingHintAndAccountDropDowns(
+            eq(CryptoCurrency.XLM),
+            eq(1),
+            eq(true),
+            any()
+        )
     }
 
     @Test
@@ -1012,7 +1020,64 @@ class XlmSendPresenterStrategyTest {
             onViewReady()
         }
         verify(view.mock, never()).updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, true)
-        verify(view.mock, times(2)).updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
+        verify(view.mock, times(2)).updateReceivingHintAndAccountDropDowns(
+            eq(CryptoCurrency.XLM),
+            eq(1),
+            eq(false),
+            any()
+        )
+    }
+
+    @Test
+    fun `test view pit icon should be visible when 2fa error returned by nabuserver`() {
+        val view = TestSendView()
+        val walletOptionsDataManager = mock<WalletOptionsDataManager> {
+            on { isXlmAddressExchange("testAddress") } `it returns` true
+        }
+
+        val dataManager = mock<XlmDataManager> {
+            on { defaultAccount() } `it returns` Single.just(AccountReference.Xlm("The Xlm account", ""))
+            on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(199.5.lumens())
+        }
+
+        val nabuDataManager: NabuDataManager =
+            mock {
+                on {
+                    fetchCryptoAddressFromThePit(any(), any())
+                } `it returns`
+                        Single.error(NabuApiException.withErrorCode(
+                            NabuErrorCodes.Bad2fa.code
+                        )
+                        )
+            }
+
+        val feesFetcher = mock<XlmFeesFetcher> {
+            on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
+        }
+
+        XlmSendStrategy(
+            currencyState = mock(),
+            xlmDataManager = dataManager,
+            xlmFeesFetcher = feesFetcher,
+            xlmTransactionSender = mock(),
+            walletOptionsDataManager = walletOptionsDataManager,
+            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            sendFundsResultLocalizer = mock(),
+            stringUtils = stringUtils,
+            nabuDataManager = nabuDataManager,
+            pitLinking = pitLinked,
+            nabuToken = nabuToken
+        ).apply {
+            initView(view)
+            onViewReady()
+        }
+
+        verify(view.mock).updateReceivingHintAndAccountDropDowns(
+            eq(CryptoCurrency.XLM),
+            eq(1),
+            eq(true),
+            any()
+        )
     }
 
     @Test
