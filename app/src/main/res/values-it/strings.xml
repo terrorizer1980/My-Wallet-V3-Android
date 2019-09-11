@@ -478,9 +478,7 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="onboarding_qr_codes">Codici QR </string>
   <string name="onboarding_scan_address">Scansiona indirizzo</string>
   <string name="onboarding_buy_content">Lavoriamo con partner di scambio da tutto il mondo, così potrai comprare i bitcoin direttamente dal tuo portafogli.</string>
-  <string name="onboarding_receive_content">Invia l\'indirizzo del portafoglio ad un amico per richiedere fondi. Un indirizzo è una stringa formata da numeri e lettere casuali che cambia ad ogni transazione.</string>
-  <string name="onboarding_qr_codes_content">Un indirizzo può essere visualizzato anche come indirizzo QR. Scansiona il codice QR di un amico per memorizzare velocemente l\'indirizzo del suo portafogli.</string>
-  <string name="onboarding_buy_bitcoin">Compra bitcoin</string>
+    <string name="onboarding_buy_bitcoin">Compra bitcoin</string>
   <string name="onboarding_buy_and_sell_bitcoin">Compri e venda Bitcoin</string>
   <string name="onboarding_get_bitcoin">Ottieni Bitcoin</string>
   <string name="onboarding_get_eth">Ottieni Ether</string>
@@ -563,7 +561,6 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="bch_invalid_address">Indirizzo Cash di Bitcoin non valido</string>
   <string name="confirm_currency">Conferma valuta</string>
   <string name="confirm_currency_message">Si prega di selezionare il codice QR della valuta che si sta scansionando.</string>
-  <string name="error_bitpay_not_supported">Gli URI di Bitpay non sono attualmente supportati</string>
   <string name="announcement_trading_cta">Un migliore acquisto e vendita</string>
   <string name="announcement_trading_description">Un flusso migliorato per la tua esperienza di acquisto e vendita di dispositivi mobili è ora disponibile nel tuo portafoglio. È semplice, senza soluzione di continuità e sicuro.</string>
   <string name="announcement_trading_link">Iniziare</string>
@@ -624,14 +621,8 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="kyc_phone_number_validation_hint">Codice di conferma</string>
   <string name="kyc_phone_number_validation_error">Errore durante la convalida del numero di telefono. Si prega di controllare il codice</string>
   <string name="kyc_phone_number_validation_error_incorrect">Codice di verifica errato. Per favore ricontrolla il codice che ti abbiamo inviato e riprova.</string>
-  <string name="kyc_onfido_splash_title">verifica la tua identità</string>
   <string name="kyc_onfido_splash_header">Let\'s Confirm It\'s You</string>
-  <string name="kyc_onfido_splash_subtitle">Prendi il tuo passaporto o la patente di guida.</string>
-  <string name="kyc_onfido_splash_message">Una volta verificata la tua identità, sei autorizzato a scambiare criptovalute sull\'app Blockchain!</string>
   <string name="kyc_onfido_splash_verification_error">Errore durante la verifica dell\'ID, per favore riprova</string>
-  <string name="kyc_onfido_splash_passport">Il mio passaporto</string>
-  <string name="kyc_onfido_splash_drivers_license">La mia patente di guida</string>
-  <string name="kyc_onfido_splash_id_card">ID del mio governo emesso</string>
   <string name="kyc_complete_title">Applicazione completa</string>
   <string name="kyc_complete_header">Fatto e fatto!</string>
   <string name="kyc_complete_subtitle">Hai inviato correttamente le tue informazioni. Il tuo account è ora in revisione!</string>
@@ -674,9 +665,7 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="screen_overlay_warning">Rilevato schermo sovrapposto!</string>
   <string name="screen_overlay_note">Le app che utilizzano le sovrapposizioni di schermo hanno la capacità di indurti a toccare oggetti invisibili e potenzialmente a rubare i fondi. Nota che questo avviso sarà attivato anche da app di regolazione dello schermo. Se credi che non ci siano minacce allora puoi continuare. </string>
   <string name="dialog_continue">Continua</string>
-  <string name="insufficient_funds_with_max">Fondi insufficienti, il massimo che puoi inviare è %1$s</string>
-  <string name="not_enough_funds_with_currency">Non abbastanza %1$s</string>
-  <string name="invalid_address">Indirizzo non valido</string>
+    <string name="not_enough_funds_with_currency">Non abbastanza %1$s</string>
   <string name="transaction_failed_min_send">Il minimo che puoi inviare è %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Minimo di %1$s necessario per i nuovi account</string>
   <string name="lockbox_title">Lockbox</string>
@@ -976,7 +965,6 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="kyc_address_city_town_village">Città / Paese / Paese</string>
   <string name="kyc_address_state_region_province_county">Stato / Regione / Provincia / Contea</string>
   <string name="kyc_address_postal_code">codice postale</string>
-  <string name="kyc_onfido_splash_residence_permit">Permesso di soggiorno</string>
   <string name="kyc_veriff_splash_title">\@ String / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ String / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">Per continuare, avrai bisogno di uno dei seguenti tipi di ID.</string>
@@ -1184,11 +1172,7 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="gold_unavailable">Oro non disponibile</string>
   <string name="veriff_identify">Identificare Veriff</string>
   <string name="more_info_needed">Altre informazioni necessarie</string>
-  <string name="coinify_kyc_body">Per continuare a utilizzare Compra e vendi, devi aggiornare il tuo profilo. Una volta completato, sbloccherai anche limiti di trading più alti in Swap.</string>
-  <string name="coinify_kyc_cta">Aggiorna ora</string>
-  <string name="coinify_kyc_dismiss">Per saperne di più</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">Dollari USA digitali</string>
+    <string name="pax_intro_popup_title">Dollari USA digitali</string>
   <string name="pax_intro_popup_text">Presentazione di USD PAX, una criptovaluta sicura e stabile che puoi utilizzare per conservare il valore. 1 PAX equivale a 1 USD ..</string>
   <string name="pax_intro_popup_cta_btn">Ottieni USD PAX ora</string>
   <string name="buy_sell_error_country_not_supported">Al momento il tuo Paese non è supportato per l\'acquisto / la vendita. Stiamo lavorando per aggiungere presto supporto a più aree.</string>

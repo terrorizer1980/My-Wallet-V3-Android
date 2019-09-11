@@ -1,21 +1,24 @@
 package piuk.blockchain.android.ui.dashboard.announcements.delegates
 
 import android.annotation.SuppressLint
+import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import kotlinx.android.synthetic.main.item_announcement_left_icon.view.*
+import kotlinx.android.synthetic.main.item_announcement_standard.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementStyle
+import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
+import piuk.blockchain.androidcoreui.utils.extensions.isVisible
+import android.graphics.drawable.GradientDrawable
 
-sealed class AnnouncementDelegate<in T> : AdapterDelegate<T> {
+class AnnouncementDelegate<in T> : AdapterDelegate<T> {
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(
@@ -27,96 +30,83 @@ sealed class AnnouncementDelegate<in T> : AdapterDelegate<T> {
         val announcement = items[position] as AnnouncementCard
 
         (holder as AnnouncementViewHolder).apply {
-            if (announcement.title > 0) {
-                title?.setText(announcement.title)
+            if (announcement.titleText != 0) {
+                title?.setText(announcement.titleText)
             } else {
                 title?.gone()
             }
 
-            if (announcement.description > 0) {
-                description?.setText(announcement.description)
+            if (announcement.bodyText != 0) {
+                body?.setText(announcement.bodyText)
             } else {
-                description?.gone()
+                body?.gone()
             }
 
-            if (announcement.image > 0) {
-                image?.setImageDrawable(ContextCompat.getDrawable(itemView.context, announcement.image))
+            if (announcement.iconImage != 0) {
+                icon.setImageDrawable(ContextCompat.getDrawable(itemView.context, announcement.iconImage))
             } else {
-                image?.gone()
+                icon.gone()
             }
 
-            if (announcement.link > 0) {
-                link.setText(announcement.link)
+            if (announcement.ctaText != 0) {
+                ctaBtn.setText(announcement.ctaText)
+                ctaBtn.setOnClickListener { announcement.ctaClicked() }
             } else {
-                link.gone()
+                ctaBtn.gone()
             }
 
-            close.setOnClickListener { announcement.closeFunction() }
-            link.setOnClickListener { announcement.linkFunction() }
+            if (announcement.dismissText != 0) {
+                dismissBtn?.setText(announcement.dismissText)
+                dismissBtn?.setOnClickListener { announcement.dismissClicked() }
+                closeBtn.gone()
+            } else {
+                dismissBtn.gone()
+            }
+
+            if (announcement.dismissRule != DismissRule.CardPersistent) {
+                closeBtn.setOnClickListener { announcement.dismissClicked() }
+            } else {
+                closeBtn.gone()
+                dismissBtn.gone()
+            }
+
+            paintButtons(announcement.buttonColor)
         }
     }
 
-    final override fun isForViewType(items: List<T>, position: Int): Boolean {
+    override fun isForViewType(items: List<T>, position: Int): Boolean {
         val item = items[position]
-        return if (item is AnnouncementCard) {
-            isForAnnouncementStyle(item)
-        } else {
-            false
-        }
+        return (item is AnnouncementCard)
     }
 
-    protected abstract fun isForAnnouncementStyle(card: AnnouncementCard): Boolean
+    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_standard))
 
-    protected class AnnouncementViewHolder internal constructor(
+    private class AnnouncementViewHolder internal constructor(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
-        internal val title: TextView? = itemView.textview_title
-        internal val description: TextView? = itemView.textview_content
-        internal val close: ImageView = itemView.imageview_close
-        internal val link: TextView = itemView.textview_link
-        internal val image: ImageView? = itemView.imageview_icon
+        internal val icon: ImageView = itemView.icon
+        internal val title: TextView? = itemView.msg_title
+        internal val body: TextView? = itemView.msg_body
+        internal val closeBtn: ImageView = itemView.btn_close
+        internal val ctaBtn: TextView = itemView.btn_cta1
+        internal val dismissBtn: TextView? = itemView.btn_dismiss
+
+        fun paintButtons(@ColorRes btnColour: Int) {
+            val colour = ContextCompat.getColor(ctaBtn.context, btnColour)
+            if (ctaBtn.isVisible()) {
+                ctaBtn.setBackgroundColor(colour)
+            }
+
+            if (dismissBtn.isVisible()) {
+                val bgColour = ContextCompat.getColor(ctaBtn.context, R.color.announce_background)
+                val gd = GradientDrawable()
+                gd.setColor(bgColour)
+                gd.setStroke(2, colour)
+                dismissBtn?.background = gd
+                dismissBtn?.setTextColor(colour)
+            }
+        }
     }
-}
-
-class ImageRightAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
-    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.ImageRight
-
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_right_icon))
-}
-
-class ImageLeftAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
-    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.ImageLeft
-
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_left_icon))
-}
-
-class StableCoinAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
-    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.StableCoin
-
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_stablecoin))
-}
-
-class PitAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
-    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.ThePit
-
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_pit))
-}
-
-class SwapAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
-    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.Swap
-
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_swap))
-}
-
-class SunriverAnnouncementDelegate<in T> : AnnouncementDelegate<T>() {
-    override fun isForAnnouncementStyle(card: AnnouncementCard) = card.style == AnnouncementStyle.Sunriver
-
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_sunriver))
 }

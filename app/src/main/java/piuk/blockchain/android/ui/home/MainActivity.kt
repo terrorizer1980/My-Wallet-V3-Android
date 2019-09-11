@@ -46,7 +46,6 @@ import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.datamanagers.PromptDlgFactory
 import piuk.blockchain.android.databinding.ActivityMainBinding
 import piuk.blockchain.android.ui.account.AccountActivity
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
@@ -69,7 +68,8 @@ import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.android.ui.onboarding.OnboardingActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -244,8 +244,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         ) {
             val strResult = data.getStringExtra(CaptureActivity.SCAN_RESULT)
             handlePredefinedInput(strResult, false)
-        } else if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_BACKUP) {
-            resetUi()
         } else if (requestCode == SETTINGS_EDIT ||
             requestCode == ACCOUNT_EDIT ||
             requestCode == KYC_STARTED
@@ -364,8 +362,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     private fun selectDrawerItem(menuItem: MenuItem) {
         when (menuItem.itemId) {
             R.id.nav_lockbox -> LockboxLandingActivity.start(this)
-            R.id.nav_backup -> startActivityForResult(
-                Intent(this, BackupWalletActivity::class.java), REQUEST_BACKUP)
+            R.id.nav_backup -> launchBackupFunds()
             R.id.nav_exchange_homebrew_debug -> HomebrewNavHostActivity.start(
                 this,
                 mainPresenter.defaultCurrency
@@ -391,6 +388,26 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
     override fun setPitEnabled(enabled: Boolean) {
         setPitVisible(enabled)
+    }
+
+    override fun launchBackupFunds() {
+        BackupWalletActivity.start(this)
+    }
+
+    override fun launchSetup2Fa() {
+        SettingsActivity.startFor2Fa(this)
+    }
+
+    override fun launchSetupVerifyEmail() {
+        SettingsActivity.startForVerifyEmail(this)
+    }
+
+    override fun launchSetupFingerprintLogin() {
+        OnboardingActivity.launchForFingerprints(this)
+    }
+
+    override fun launchBuySell() {
+        presenter.routeToBuySell()
     }
 
     private fun showLogoutDialog() {
@@ -482,11 +499,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     }
 
     override fun launchSwap(defCurrency: String, targetCrypto: CryptoCurrency?) {
-        HomebrewNavHostActivity.start(
-            (activity as? Context) ?: return,
-            defCurrency,
-            targetCrypto
-        )
+        HomebrewNavHostActivity.start(this, defCurrency, targetCrypto)
     }
 
     override fun launchSwapOrKyc(targetCurrency: CryptoCurrency?) {
@@ -596,14 +609,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             bottom_navigation.enableItemAtPosition(ITEM_SWAP)
         } else {
             bottom_navigation.disableItemAtPosition(ITEM_SWAP)
-        }
-    }
-
-    override fun showCustomPrompt(dlgFn: PromptDlgFactory) {
-        if (!isFinishing) {
-            dlgFn(this).apply {
-                show(supportFragmentManager, tag)
-            }
         }
     }
 
@@ -765,7 +770,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
                     presenter.setCryptoCurrency(CryptoCurrency.BTC)
                     bottom_navigation.currentItem = ITEM_RECEIVE
                 }
-                ACTION_BUY -> presenter.routeToBuySell()
             }
         }
 
@@ -773,7 +777,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             val broadcastManager = LocalBroadcastManager.getInstance(ctx)
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_SEND))
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_RECEIVE))
-            broadcastManager.registerReceiver(this, IntentFilter(ACTION_BUY))
         }
     }
 
@@ -783,9 +786,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
         const val ACTION_SEND = "info.blockchain.wallet.ui.BalanceFragment.SEND"
         const val ACTION_RECEIVE = "info.blockchain.wallet.ui.BalanceFragment.RECEIVE"
-        const val ACTION_BUY = "info.blockchain.wallet.ui.BalanceFragment.BUY"
-
-        private const val REQUEST_BACKUP = 2225
 
         const val SCAN_URI = 2007
         const val ACCOUNT_EDIT = 2008

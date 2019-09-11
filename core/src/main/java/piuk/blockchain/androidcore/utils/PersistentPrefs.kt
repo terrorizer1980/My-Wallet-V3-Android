@@ -3,16 +3,20 @@ package piuk.blockchain.androidcore.utils
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.OnBoardingPrefs
 import com.blockchain.preferences.ThePitLinkingPrefs
+import com.blockchain.preferences.WalletStatus
 
 interface PersistentPrefs :
     CurrencyPrefs,
     ThePitLinkingPrefs,
-    OnBoardingPrefs {
+    OnBoardingPrefs,
+    WalletStatus {
 
     val isLoggedOut: Boolean
 
     val deviceId: String // Pre-IDV device identifier
     var devicePreIDVCheckFailed: Boolean // Pre-IDV check has failed! Don't show 'gold' announce cards etc
+
+    var disableRootedWarning: Boolean
 
     fun getValue(name: String): String?
     fun getValue(name: String, defaultValue: String): String
@@ -66,6 +70,8 @@ interface PersistentPrefs :
 
         const val KEY_LATEST_ANNOUNCEMENT_DISMISSED = "latest_announcement_dismissed"
         const val KEY_LATEST_ANNOUNCEMENT_SEEN = "latest_announcement_seen"
+
+        const val KEY_ROOT_WARNING_DISABLED = "disable_root_warning"
 
         // Send screen
         const val KEY_WARN_ADVANCED_FEE = "pref_warn_advanced_fee"

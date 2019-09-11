@@ -6,7 +6,6 @@ import com.blockchain.sunriver.SunriverCampaignSignUp
 import com.blockchain.swap.nabu.CurrentTier
 import com.blockchain.swap.nabu.EthEligibility
 import com.blockchain.swap.nabu.StartKyc
-import com.blockchain.swap.nabu.StartKycAirdrop
 import com.blockchain.swap.nabu.StartKycForBuySell
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.ui.kyc.address.CurrentTierAdapter
@@ -22,7 +21,6 @@ import piuk.blockchain.android.ui.kyc.mobile.entry.KycMobileEntryPresenter
 import piuk.blockchain.android.ui.kyc.mobile.validation.KycMobileValidationPresenter
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostPresenter
 import piuk.blockchain.android.ui.kyc.navhost.KycStarter
-import piuk.blockchain.android.ui.kyc.navhost.KycStarterAirdrop
 import piuk.blockchain.android.ui.kyc.navhost.KycStarterBuySell
 import piuk.blockchain.android.ui.kyc.profile.KycProfilePresenter
 import piuk.blockchain.android.ui.kyc.reentry.KycNavigator
@@ -37,8 +35,6 @@ import piuk.blockchain.android.ui.kyc.veriffsplash.VeriffSplashPresenter
 val kycUiModule = applicationContext {
 
     factory { KycStarter() as StartKyc }
-
-    factory { KycStarterAirdrop() as StartKycAirdrop }
 
     factory { KycStarterBuySell() as StartKycForBuySell }
 

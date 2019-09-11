@@ -164,6 +164,7 @@
     <string name="bitpay_remaining_time">Remaining time</string>
     <string name="bitpay_invoice_expired">BitPay Invoice Expired</string>
     <string name="bitpay_invoice_expired_message">An invoice is only valid for 15 minutes. Return to the merchant if you would like to resubmit a payment.</string>
+    <string name="bitpay_announcement_body">With BitPay, you can now use your Blockchain wallet for purchases with supporting retailers.</string>
 
     <string name="transaction_failed">Transaction Failed</string>
 
@@ -815,7 +816,6 @@
         authenticate and access your wallet.
     </string>
     <string name="onboarding_fingerprint_enable">Enable fingerprint</string>
-    <string name="onboarding_complete_later">I\'ll do this later</string>
     <string name="onboarding_check_inbox_title">Check Your Inbox</string>
     <string name="onboarding_check_inbox_summary">Look for an email from Blockchain and click the
         verification link to complete your wallet setup.
@@ -825,15 +825,6 @@
     <string name="onboarding_current_price">Current Price:</string>
     <string name="onboarding_qr_codes">QR Codes</string>
     <string name="onboarding_scan_address">Scan Address</string>
-    <string name="onboarding_buy_content">We work with exchange partners all over the world, so you
-        can buy bitcoin directly from your wallet.
-    </string>
-    <string name="onboarding_receive_content">Send your wallet address to a friend to request funds.
-        An address is a string of random letters and numbers that change for each transaction.
-    </string>
-    <string name="onboarding_qr_codes_content">An address can also be shown as a QR code. Scan a
-        friend’s QR code to quickly capture their wallet address.
-    </string>
 
     <!-- BUY BITCOIN -->
     <string name="onboarding_buy_bitcoin">Buy Bitcoin</string>
@@ -943,12 +934,9 @@
         include your linked %1$s.
     </string>
 
-    <!-- ANNOUNCEMTNS -->
-    <string name="more_info_needed">More Info Needed</string>
-    <string name="coinify_kyc_body">To keep using Buy &amp; Sell, you’ll need to update your profile. Once completed, you’ll also unlock higher trading limits in Swap.</string>
-    <string name="coinify_kyc_cta">Update Now</string>
-    <string name="coinify_kyc_dismiss">Learn More</string>
-    <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
+    <string name="kyc_more_info_title">More Information Needed</string>
+    <string name="kyc_more_info_body">To keep using Buy &amp; Sell, you’ll need to update your profile. Once completed, you’ll also unlock higher trading limits in Swap.</string>
+    <string name="kyc_more_info_cta">Update Now</string>
 
     <string name="pax_intro_popup_title">Digital US Dollars</string>
     <string name="pax_intro_popup_text">Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX equals 1 USD.</string>
@@ -1029,8 +1017,8 @@
     <!--STABLECOIN-->
     <string name="stablecoin_announcement_new">New</string>
     <string name="stablecoin_announcement_introducing_title">Digital US Dollars</string>
-    <string name="stablecoin_announcement_introducing_description">Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX equals 1 USD.</string>
-    <string name="stablecoin_announcement_introducing_link">Get USD PAX Now</string>
+    <string name="stablecoin_announcement_introducing_description">Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD.</string>
+    <string name="stablecoin_announcement_introducing_link">Get USD PAX</string>
 
     <!-- Complete Your Profile Card -->
     <string name="complete_your_profile_card_title">Go for Gold</string>
@@ -1053,12 +1041,10 @@
     <string name="pax_swap_now">Swap For USD PAX Now</string>
 
     <!-- Claim Your Free Crypto Card -->
-    <string name="swap_announcement_new">New</string>
-    <string name="swap_announcement_title">Swap</string>
-    <string name="swap_announcement_description">Exchange one crypto for another without ever
-        leaving your Blockchain Wallet.
-    </string>
-    <string name="swap_announcement_introducing_link">Check it out!</string>
+    <string name="swap_announcement_title">Trade Crypto</string>
+    <string name="swap_announcement_description">Trade one crypto for another without ever leaving your wallet. Get competitive, real-time prices and fast on-chain settlement.</string>
+    <string name="swap_announcement_introducing_link">Check out Swap</string>
+
     <string name="pax_wallet_name">My USD PAX Wallet</string>
 
     <!-- HISTORY -->
@@ -1217,8 +1203,10 @@
     <string name="swap_info_order_history">Order History</string>
 
     <!-- The Pit linking -->
-    <string name="pit_announcement_description">It\'s time to Level Up to a better crypto exchange. First 100,000 traders to sign up will trade free for 30 days.</string>
-    <string name="pit_announcement_introducing_link">Check it out</string>
+    <string name="pit_announcement_title">Introducing The PIT</string>
+    <string name="pit_announcement_body">It\'s time to Level Up to a better crypto exchange by Blockchain. First 100,000 traders to sign up will trade free for 30 days.</string>
+    <string name="pit_announcement_cta_text">Check out The PIT</string>
+
     <string name="pit_logo_content_descr">The Pit Logo</string>
     <string name="pit_slogan_kyc_promo">The only Exchange that connects to your Wallet.</string>
     <string name="pit_thunder_kyc_promo">Lightning Fast Trades</string>
@@ -1268,6 +1256,37 @@
     <string name="swap_intro_description_page_four">With Swap your crypto is safe, secure, and your keys are always intact.</string>
     <string name="swap_intro_description_page_five">Introducing Digital Dollars (USD PAX) to de-risk your crypto investment or lock-in gains.</string>
     <string name="swap_intro_get_started">Get Started</string>
+
+    <!-- intro tour -->
+    <string name="tour_card_title">Welcome to Blockchain!</string>
+    <string name="tour_card_body">Here are a few tips to get your wallet up and running. We\'ll also help you make sure everything is secure.</string>
+    <string name="tour_card_cta">Take A Tour</string>
+    <string name="tour_card_dismiss">Maybe Later</string>
+
+    <!-- Verify email announcement -->
+    <string name="verify_email_card_title">Verify Your Email Address</string>
+    <string name="verify_email_card_body">In order to start using your Blockchain wallet, you need to confirm your email address.</string>
+    <string name="verify_email_card_cta">Verify Email Address</string>
+
+    <!-- Enable 2fa announcement -->
+    <string name="two_fa_card_title">Enable 2-Step Verification</string>
+    <string name="two_fa_card_body">Protect your wallet from unauthorized access by enabling 2-Step Verification.</string>
+    <string name="two_fa_card_cta">Enable 2-Step Verification</string>
+
+    <!-- Buy Bitcoin announcement -->
+    <string name="buy_btc_card_title">Buy Bitcoin</string>
+    <string name="buy_btc_card_body">Turn your cash in to Bitcoin and back.</string>
+    <string name="buy_btc_card_cta">Buy Bitcoin</string>
+
+    <!-- Wallet Recovery announcement -->
+    <string name="recovery_card_title">Wallet Recovery Phrase</string>
+    <string name="recovery_card_body">Your recovery phrase can be used to restore all your funds in the case of a lost password or a loss of service at Blockchain.</string>
+    <string name="recovery_card_cta">Backup Phrase</string>
+
+    <!-- Buy Bitcoin announcement -->
+    <string name="register_fingerprint_card_title">Fingerprint Log in</string>
+    <string name="register_fingerprint_card_body">Enable fingerprint to quickly log into your wallet instead of using your PIN.</string>
+    <string name="register_fingerprint_card_cta">Enable Now</string>
 
     <!-- buy/Sell -->
     <!-- Account created Success -->
@@ -1450,7 +1469,7 @@
 
     <!-- Account creation completed -->
     <string name="buy_sell_identification_verification">Identify verification</string>
-    <string name="buy_sell_verify_your_identity">Verify your identity</string>
+    <!--<string name="buy_sell_verify_your_identity">Verify your identity</string>-->
     <string name="buy_sell_identification_verification_message">Government Anti Money Laundering require us to verify your identity</string>
     <string name="buy_sell_verification_status_title">Verification status</string>
 
@@ -1696,7 +1715,8 @@
     <string name="kyc_more_info_splash_subtitle">You’ll need to verify your phone number. provide a government issued ID and a Selfie.</string>
 
     <!-- Drop-off Card -->
-    <string name="kyc_drop_off_card_description">Looks like you\'ve started verifying your identity but didn\'t finish. Pick up where you left off?</string>
+    <string name="kyc_drop_off_card_title">Finish Verifying Your Account</string>
+    <string name="kyc_drop_off_card_description">Pick up where you left off and complete your identity verification.</string>
     <string name="kyc_drop_off_card_button">Continue verification</string>
 
     <!-- Resubmission Card -->
@@ -1715,8 +1735,7 @@
 
     <!-- Sunriver Airdrop -->
     <string name="sunriver_splash_title">Identity Verification</string>
-    <string name="sunriver_splash_message">Verify your identity to claim your XLM. It only takes a few minutes. Once verified, you\'ll be able to use our next generation trading product, Swap.</string>
-    <string name="sunriver_status_message">Your information is being reviewed. The review should complete in 5 minutes. Once you\'re successfully verified, we\'ll send your Stellar within one week.</string>
+    <string name="sunriver_status_message">Your information is being reviewed. The review should complete shortly.</string>
 
     <!-- Buy/Sell -->
     <string name="buy_sell_splash_title">Buy &amp; Sell</string>

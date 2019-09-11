@@ -15,9 +15,9 @@
         android:layout_height="wrap_content" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/message"
+        android:id="@+id/txt_message"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
         tools:text="This is a loading message..."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

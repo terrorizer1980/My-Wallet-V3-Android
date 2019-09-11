@@ -23,6 +23,9 @@ fun View?.visible() {
     if (this != null) visibility = View.VISIBLE
 }
 
+fun View?.isVisible(): Boolean =
+    this?.let { visibility == View.VISIBLE } ?: false
+
 /**
  * Sets the visibility of a [View] to [View.INVISIBLE]
  */

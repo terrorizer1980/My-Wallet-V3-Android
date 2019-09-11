@@ -9,11 +9,8 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.fingerprint.FingerprintDialog
 import piuk.blockchain.android.ui.fingerprint.FingerprintStage
-import piuk.blockchain.android.ui.home.MainActivity
-import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
-import timber.log.Timber
+import com.blockchain.ui.dialog.MaterialProgressDialog
 
 internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPresenter>(),
     OnboardingView,
@@ -21,7 +18,6 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
     EmailPromptFragment.OnFragmentInteractionListener {
 
     private val onboardingPresenter: OnboardingPresenter by inject()
-    private val deepLinkPersistence: DeepLinkPersistence by inject()
     private var emailLaunched = false
 
     private var progressDialog: MaterialProgressDialog? = null
@@ -42,15 +38,16 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
     override fun onResume() {
         super.onResume()
 
-        if (emailLaunched && intent.canDismiss) {
-            startMainActivity()
-        } else if (emailLaunched) {
+        if (emailLaunched) {
             finish()
         }
     }
 
-    override val isEmailOnly: Boolean
-        get() = intent.isEmailOnly
+    override val showEmail: Boolean
+        get() = intent.showEmail
+
+    override val showFingerprints: Boolean
+        get() = intent.showFingerprints
 
     override fun showFingerprintPrompt() {
         if (!isFinishing) {
@@ -69,7 +66,7 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
             fragmentManager.beginTransaction()
                 .replace(
                     R.id.content_frame,
-                    EmailPromptFragment.newInstance(presenter.email!!, intent.canDismiss)
+                    EmailPromptFragment.newInstance(presenter.email!!)
                 )
                 .commit()
         }
@@ -77,10 +74,6 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
 
     override fun onEnableFingerprintClicked() {
         presenter.onEnableFingerprintClicked()
-    }
-
-    override fun onCompleteLaterClicked() {
-        showEmailPrompt()
     }
 
     override fun showFingerprintDialog(pincode: String) {
@@ -132,29 +125,10 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
         startActivity(Intent.createChooser(intent, getString(R.string.security_centre_email_check)))
     }
 
-    override fun onVerifyLaterClicked() {
-        startMainActivity()
-    }
-
-    override fun createPresenter(): OnboardingPresenter {
-        return onboardingPresenter
-    }
+    override fun createPresenter() = onboardingPresenter
 
     override fun getView(): OnboardingView {
         return this
-    }
-
-    private fun startMainActivity() {
-        dismissDialog()
-
-        Intent(this, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            data = deepLinkPersistence.popUriFromSharedPrefs()
-
-            Timber.d("DeepLink: Starting main activity with %s", intent.data)
-
-            startActivityForResult(this, EMAIL_CLIENT_REQUEST)
-        }
     }
 
     private fun dismissDialog() {
@@ -172,12 +146,20 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
 
         private const val EMAIL_CLIENT_REQUEST = 5400
 
-        fun launch(ctx: Context, emailOnly: Boolean, canDismiss: Boolean = false) {
+        fun launchForFingerprints(ctx: Context) {
 
             Intent(ctx, OnboardingActivity::class.java).let {
-                it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                it.isEmailOnly = emailOnly
-                it.canDismiss = canDismiss
+                it.showEmail = false
+                it.showFingerprints = true
+                ctx.startActivity(it)
+            }
+        }
+
+        fun launchForEmail(ctx: Context) {
+
+            Intent(ctx, OnboardingActivity::class.java).let {
+                it.showEmail = true
+                it.showFingerprints = false
                 ctx.startActivity(it)
             }
         }
@@ -186,19 +168,19 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
          * Flag for showing only the email verification prompt. This is for use when signup was
          * completed some other time, but the user hasn't verified their email yet.
          */
-        private const val EXTRAS_EMAIL_ONLY = "email_only"
-        private const val EXTRAS_OPTION_TO_DISMISS = "has_option_for_dismiss"
+        private const val EXTRAS_SHOW_EMAIL = "show_email"
+        private const val EXTRAS_SHOW_FINGERPRINTS = "show_fingerprints"
 
-        private var Intent.isEmailOnly: Boolean
-            get() = extras?.getBoolean(EXTRAS_EMAIL_ONLY, true) ?: true
+        private var Intent.showEmail: Boolean
+            get() = extras?.getBoolean(EXTRAS_SHOW_EMAIL, true) ?: true
             set(v) {
-                putExtra(EXTRAS_EMAIL_ONLY, v)
+                putExtra(EXTRAS_SHOW_EMAIL, v)
             }
 
-        private var Intent.canDismiss: Boolean
-            get() = extras?.getBoolean(EXTRAS_OPTION_TO_DISMISS, false) ?: false
+        private var Intent.showFingerprints: Boolean
+            get() = extras?.getBoolean(EXTRAS_SHOW_FINGERPRINTS, true) ?: true
             set(v) {
-                putExtra(EXTRAS_OPTION_TO_DISMISS, v)
+                putExtra(EXTRAS_SHOW_FINGERPRINTS, v)
             }
     }
 }

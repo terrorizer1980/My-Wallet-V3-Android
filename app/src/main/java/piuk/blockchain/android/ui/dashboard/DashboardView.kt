@@ -22,8 +22,6 @@ interface DashboardView : View {
 
     fun notifyItemUpdated(displayItems: MutableList<Any>, positions: List<Int>)
 
-    fun startBuyActivity()
-
     fun startBitcoinCashReceive()
 
     fun scrollToTop()
@@ -32,11 +30,21 @@ interface DashboardView : View {
 
     fun startKycFlow(campaignType: CampaignType)
 
+    fun startBuySell()
+
+    fun startSwap(defCurrency: String, currency: CryptoCurrency?)
+
     fun startPitLinkingFlow(linkId: String = "")
+
+    fun startBackupWallet()
+
+    fun startSetup2Fa()
+
+    fun startEnableFingerprintLogin()
+
+    fun startSetupVerifyEmail()
 
     fun launchWaitlist()
 
     fun showBottomSheetDialog(bottomSheetDialogFragment: BottomSheetDialogFragment)
-
-    fun goToExchange(currency: CryptoCurrency?, defCurrency: String)
 }

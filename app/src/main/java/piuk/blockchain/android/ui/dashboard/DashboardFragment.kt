@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
-import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
@@ -28,7 +27,6 @@ import piuk.blockchain.android.ui.charts.ChartsActivity
 import piuk.blockchain.android.ui.customviews.BottomSpacerDecoration
 import piuk.blockchain.android.ui.dashboard.adapter.DashboardDelegateAdapter
 import piuk.blockchain.android.ui.home.HomeFragment
-import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.MainActivity.Companion.ACCOUNT_EDIT
 import piuk.blockchain.android.ui.home.MainActivity.Companion.SETTINGS_EDIT
 import piuk.blockchain.android.util.OSUtil
@@ -42,12 +40,6 @@ import java.util.Locale
 
 class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     DashboardView {
-
-    override fun goToExchange(currency: CryptoCurrency?, defCurrency: String) {
-        (activity as? Context)?.let {
-            HomebrewNavHostActivity.start(it, defCurrency, currency)
-        }
-    }
 
     override val locale: Locale by inject()
 
@@ -159,8 +151,12 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
 
     override fun showToast(message: Int, toastType: String) = toast(message, toastType)
 
-    override fun startBuyActivity() {
-        broadcastIntent(MainActivity.ACTION_BUY)
+    override fun startBuySell() {
+        navigator().launchBuySell()
+    }
+
+    override fun startSwap(defCurrency: String, currency: CryptoCurrency?) {
+        navigator().launchSwap(defCurrency, currency)
     }
 
     override fun startBitcoinCashReceive() {
@@ -173,6 +169,22 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
 
     override fun startPitLinkingFlow(linkId: String) {
         navigator().launchThePitLinking(linkId)
+    }
+
+    override fun startBackupWallet() {
+        navigator().launchBackupFunds()
+    }
+
+    override fun startSetup2Fa() {
+        navigator().launchSetup2Fa()
+    }
+
+    override fun startSetupVerifyEmail() {
+        navigator().launchSetupVerifyEmail()
+    }
+
+    override fun startEnableFingerprintLogin() {
+        navigator().launchSetupFingerprintLogin()
     }
 
     override fun startWebsocketService() {
@@ -194,13 +206,6 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     override fun createPresenter() = dashboardPresenter
 
     override fun getMvpView() = this
-
-    private fun broadcastIntent(action: String) {
-        activity?.run {
-            LocalBroadcastManager.getInstance(this)
-                .sendBroadcast(Intent(action))
-        }
-    }
 
     /**
      * Inserts a spacer into the last position in the list

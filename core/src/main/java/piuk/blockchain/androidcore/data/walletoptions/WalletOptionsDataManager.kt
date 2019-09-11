@@ -22,7 +22,7 @@ class WalletOptionsDataManager(
 
     override fun xlmHorizonUrl(def: String): Single<String> =
         walletOptionsState.walletOptionsSource
-            .map { it.stellarhorizonUrl }.first(def)
+            .map { it.stellarHorizonUrl }.first(def)
 
     private val walletOptionsService by unsafeLazy {
         authService.getWalletOptions()

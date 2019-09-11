@@ -41,7 +41,7 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.ethereum.exceptions.TransactionInProgressException
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
+import com.blockchain.ui.dialog.ErrorBottomDialog
 import retrofit2.HttpException
 import timber.log.Timber
 import java.util.Locale
@@ -249,7 +249,8 @@ class ExchangeConfirmationPresenter internal constructor(
         maxAmountFiat: FiatValue?
     ): SwapErrorDialogContent =
         when (this) {
-            SwapErrorType.ORDER_BELOW_MIN_LIMIT -> SwapErrorDialogContent(ErrorBottomDialog.Content(
+            SwapErrorType.ORDER_BELOW_MIN_LIMIT -> SwapErrorDialogContent(
+                ErrorBottomDialog.Content(
                 stringUtils.getString(R.string.markets_are_moving),
                 stringUtils.getFormattedString(R.string.markets_movement_markets_below_required,
                     minAmountFiat?.formatOrSymbolForZero() ?: ""), R.string.update_order,
@@ -257,7 +258,8 @@ class ExchangeConfirmationPresenter internal constructor(
                 { view?.goBack() },
                 { view?.openMoreInfoLink(URL_BLOCKCHAIN_ORDER_FAILED_BELOW_MIN) })
             SwapErrorType.ORDER_ABOVE_MAX_LIMIT ->
-                SwapErrorDialogContent(ErrorBottomDialog.Content(stringUtils.getString(
+                SwapErrorDialogContent(
+                    ErrorBottomDialog.Content(stringUtils.getString(
                     R.string.markets_are_moving),
                     stringUtils.getFormattedString(R.string.markets_movement_markets_above_required,
                         maxAmountFiat?.formatOrSymbolForZero() ?: ""), R.string.update_order,
@@ -266,7 +268,8 @@ class ExchangeConfirmationPresenter internal constructor(
                     { view?.openMoreInfoLink(URL_BLOCKCHAIN_ORDER_ABOVE_MAX) })
             SwapErrorType.DAILY_LIMIT_EXCEEDED,
             SwapErrorType.WEEKLY_LIMIT_EXCEEDED ->
-                SwapErrorDialogContent(ErrorBottomDialog.Content(stringUtils.getString(
+                SwapErrorDialogContent(
+                    ErrorBottomDialog.Content(stringUtils.getString(
                     R.string.hold_your_horses),
                     stringUtils.getFormattedString(R.string.above_limit_description,
                         maxAmountFiat?.formatOrSymbolForZero() ?: ""),
@@ -275,7 +278,8 @@ class ExchangeConfirmationPresenter internal constructor(
                     0), { view.goBack() },
                     { view?.openMoreInfoLink(URL_BLOCKCHAIN_ORDER_LIMIT_EXCEED) })
             SwapErrorType.ANNUAL_LIMIT_EXCEEDED ->
-                SwapErrorDialogContent(ErrorBottomDialog.Content(stringUtils.getString(
+                SwapErrorDialogContent(
+                    ErrorBottomDialog.Content(stringUtils.getString(
                     R.string.hold_your_horses),
                     stringUtils.getFormattedString(R.string.above_limit_description,
                         maxAmountFiat?.formatOrSymbolForZero() ?: ""),
@@ -285,14 +289,16 @@ class ExchangeConfirmationPresenter internal constructor(
                     { view.goBack() },
                     { view.openTiersCard() })
             SwapErrorType.CONFIRMATION_ETH_PENDING ->
-                SwapErrorDialogContent(ErrorBottomDialog.Content(stringUtils.getString(
+                SwapErrorDialogContent(
+                    ErrorBottomDialog.Content(stringUtils.getString(
                     R.string.ops_something_went_wrong),
                     stringUtils.getString(R.string.morph_confirmation_eth_pending),
                     R.string.try_again, 0, 0),
                     { view.goBack() },
                     { })
             SwapErrorType.ALBERT_EXECUTION_ERROR ->
-                SwapErrorDialogContent(ErrorBottomDialog.Content(stringUtils.getString(
+                SwapErrorDialogContent(
+                    ErrorBottomDialog.Content(stringUtils.getString(
                     R.string.ops_something_went_wrong),
                     stringUtils.getString(R.string.something_went_wrong_description),
                     R.string.try_again,
@@ -301,7 +307,8 @@ class ExchangeConfirmationPresenter internal constructor(
                     { view.goBack() },
                     { view?.openMoreInfoLink(URL_BLOCKCHAIN_ORDER_EXPIRED) })
             else ->
-                SwapErrorDialogContent(ErrorBottomDialog.Content(stringUtils.getString(
+                SwapErrorDialogContent(
+                    ErrorBottomDialog.Content(stringUtils.getString(
                     R.string.ops_something_went_wrong),
                     stringUtils.getString(R.string.something_went_wrong_description),
                     R.string.try_again, 0, 0),

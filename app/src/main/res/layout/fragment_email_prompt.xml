@@ -35,7 +35,7 @@
                 android:text="@string/onboarding_check_inbox_title" />
 
             <TextView
-                android:id="@+id/textview_email"
+                android:id="@+id/email_address"
                 style="@style/OnBoardingEmail"
                 android:gravity="center"
                 tools:text="example@blockchain.com" />
@@ -60,21 +60,10 @@
                     android:layout_marginLeft="64dp"
                     android:layout_marginBottom="16dp"
                     android:layout_marginRight="64dp"
+                    android:paddingBottom="64dp"
                     android:contentDescription="@string/onboarding_verify_email"
                     android:text="@string/onboarding_verify_email"
                     android:theme="@style/ButtonLightBlueTheme" />
-
-                <TextView
-                    android:id="@+id/button_later"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:gravity="center"
-                    android:paddingBottom="16dp"
-                    android:contentDescription="@string/onboarding_complete_later"
-                    android:text="@string/onboarding_complete_later"
-                    android:textColor="@color/product_gray_hint"
-                    android:textSize="16sp" />
 
             </LinearLayout>
         </LinearLayout>

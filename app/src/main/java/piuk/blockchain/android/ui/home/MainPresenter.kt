@@ -21,7 +21,6 @@ import info.blockchain.wallet.exceptions.HDWalletException
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
 import info.blockchain.wallet.payload.PayloadManagerWiper
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
@@ -30,7 +29,6 @@ import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.cache.DynamicFeeCache
-import piuk.blockchain.android.data.datamanagers.PromptManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerifiedLinkState
 import piuk.blockchain.android.deeplink.LinkState
@@ -55,9 +53,7 @@ import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import com.blockchain.swap.shapeshift.ShapeShiftDataManager
-import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -73,17 +69,14 @@ class MainPresenter internal constructor(
     private val accessState: AccessState,
     private val payloadManagerWiper: PayloadManagerWiper,
     private val payloadDataManager: PayloadDataManager,
-    private val settingsDataManager: SettingsDataManager,
     private val buyDataManager: BuyDataManager,
     private val dynamicFeeCache: DynamicFeeCache,
     private val exchangeRateFactory: ExchangeRateDataManager,
     private val rxBus: RxBus,
     private val feeDataManager: FeeDataManager,
-    private val promptManager: PromptManager,
     private val ethDataManager: EthDataManager,
     private val bchDataManager: BchDataManager,
     private val currencyState: CurrencyState,
-    private val walletOptionsDataManager: WalletOptionsDataManager,
     private val metadataManager: MetadataManager,
     private val stringUtils: StringUtils,
     private val shapeShiftDataManager: ShapeShiftDataManager,
@@ -103,29 +96,8 @@ class MainPresenter internal constructor(
     private val crashLogger: CrashLogger
 ) : BasePresenter<MainView>() {
 
-    internal val currentServerUrl: String
-        get() = walletOptionsDataManager.getBuyWebviewWalletLink()
-
     internal val defaultCurrency: String
         get() = prefs.selectedFiatCurrency
-
-    private fun initPrompts() {
-        compositeDisposable += settingsDataManager.getSettings()
-            .flatMap { settings ->
-                promptManager.getCustomPrompts(settings)
-            }
-            .flatMap {
-                Observable.fromIterable(it)
-            }
-            .firstOrError()
-            .subscribe(
-                { factory -> view.showCustomPrompt(factory) },
-                { throwable ->
-                    if (throwable !is NoSuchElementException) {
-                        Timber.e(throwable)
-                    }
-                })
-    }
 
     override fun onViewReady() {
         if (!accessState.isLoggedIn) {
@@ -187,7 +159,7 @@ class MainPresenter internal constructor(
             )
     }
 
-    private fun setDebugExchangeVisiblity() {
+    private fun setDebugExchangeVisibility() {
         if (BuildConfig.DEBUG) {
             view.showHomebrewDebugMenu()
         }
@@ -204,7 +176,6 @@ class MainPresenter internal constructor(
             .doAfterTerminate {
                 view.hideProgressDialog()
 
-                initPrompts()
                 val strUri = prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "")
                 if (strUri.isNotEmpty()) {
                     prefs.removeValue(PersistentPrefs.KEY_SCHEME_URL)
@@ -213,7 +184,7 @@ class MainPresenter internal constructor(
             }
             .subscribe({
                 checkKycStatus()
-                setDebugExchangeVisiblity()
+                setDebugExchangeVisibility()
                 initBuyService()
                 rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
 
@@ -414,11 +385,6 @@ class MainPresenter internal constructor(
         DashboardPresenter.onLogout()
     }
 
-    override fun onViewDestroyed() {
-        super.onViewDestroyed()
-        dismissAnnouncementIfOnboardingCompleted()
-    }
-
     internal fun updateTicker() {
         compositeDisposable +=
             exchangeRateFactory.updateTickers()
@@ -460,14 +426,6 @@ class MainPresenter internal constructor(
                 .subscribeBy({
                     Timber.e(it)
                 }) { view.showTradeCompleteMsg(it) }
-    }
-
-    private fun dismissAnnouncementIfOnboardingCompleted() {
-        if (prefs.getValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE,
-                false) && prefs.getValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_SEEN, false)
-        ) {
-            prefs.setValue(PersistentPrefs.KEY_LATEST_ANNOUNCEMENT_DISMISSED, true)
-        }
     }
 
     internal fun decryptAndSetupMetadata(secondPassword: String) {

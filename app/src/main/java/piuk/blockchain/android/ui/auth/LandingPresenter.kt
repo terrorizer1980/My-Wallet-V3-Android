@@ -1,16 +1,15 @@
 package piuk.blockchain.android.ui.auth
 
-import android.content.Context
-import io.reactivex.Observable
-import io.reactivex.rxkotlin.plusAssign
-import piuk.blockchain.android.data.datamanagers.PromptManager
+import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 class LandingPresenter(
     private val environmentSettings: EnvironmentConfig,
-    private val promptManager: PromptManager
+    private val prefs: PersistentPrefs,
+    private val rootUtil: RootUtil
 ) : BasePresenter<LandingView>() {
 
     override fun onViewReady() {
@@ -25,9 +24,9 @@ class LandingPresenter(
         }
     }
 
-    internal fun initPreLoginPrompts(context: Context) {
-        compositeDisposable += promptManager.getPreLoginPrompts(context)
-            .flatMap { Observable.fromIterable(it) }
-            .forEach { view.showWarningPrompt(it) }
+    internal fun checkForRooted() {
+        if (rootUtil.isDeviceRooted && !prefs.disableRootedWarning) {
+            view.showIsRootedWarning()
+        }
     }
 }

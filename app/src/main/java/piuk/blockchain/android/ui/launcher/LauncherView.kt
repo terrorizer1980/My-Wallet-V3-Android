@@ -22,7 +22,5 @@ interface LauncherView : View {
 
     fun onReEnterPassword()
 
-    fun onStartOnboarding(emailOnly: Boolean, isDismissable: Boolean)
-
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
 }

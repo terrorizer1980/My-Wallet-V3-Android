@@ -8,15 +8,8 @@ import piuk.blockchain.android.ui.dashboard.BalanceFilter
 import piuk.blockchain.android.ui.dashboard.PieChartsState
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.AssetPriceCardDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.HeaderDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.ImageLeftAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.ImageRightAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.adapter.delegates.OnboardingDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.PieChartDelegate
-
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.PitAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.StableCoinAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.SunriverAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.SwapAnnouncementDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.delegates.AnnouncementDelegate
 
 /**
  * @param context The Activity/Fragment [Context]
@@ -31,22 +24,17 @@ class DashboardDelegateAdapter(
     balanceModeSelector: (BalanceFilter) -> Unit
 ) : DelegationAdapter<Any>(AdapterDelegatesManager(), emptyList()) {
 
-    private val onboardingDelegate = OnboardingDelegate<Any>(context)
     private val pieChartDelegate = PieChartDelegate<Any>(context, coinSelector, balanceModeSelector)
     private val assetPriceDelegate = AssetPriceCardDelegate<Any>(context, assetSelector)
 
     init {
         // Add all necessary AdapterDelegate objects here
-        delegatesManager.addAdapterDelegate(ImageLeftAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(ImageRightAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(SunriverAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(StableCoinAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(PitAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(HeaderDelegate())
-        delegatesManager.addAdapterDelegate(SwapAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(onboardingDelegate)
-        delegatesManager.addAdapterDelegate(pieChartDelegate)
-        delegatesManager.addAdapterDelegate(assetPriceDelegate)
+        with(delegatesManager) {
+            addAdapterDelegate(HeaderDelegate())
+            addAdapterDelegate(AnnouncementDelegate())
+            addAdapterDelegate(pieChartDelegate)
+            addAdapterDelegate(assetPriceDelegate)
+        }
     }
 
     /**

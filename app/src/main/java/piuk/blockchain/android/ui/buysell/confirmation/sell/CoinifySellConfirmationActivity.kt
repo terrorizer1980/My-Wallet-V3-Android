@@ -17,7 +17,7 @@ import piuk.blockchain.android.ui.buysell.payment.complete.CoinifyPaymentComplet
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import java.util.Locale
 import java.util.concurrent.TimeUnit

@@ -481,9 +481,7 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="onboarding_qr_codes">Kody QR</string>
   <string name="onboarding_scan_address">Zeskanuj adres</string>
   <string name="onboarding_buy_content">Współpracujemy z partnerami ds. wymiany z całego świata, abyś mógł kupować bitcoiny bezpośrednio ze swojego portfela.</string>
-  <string name="onboarding_receive_content">Wyślij adres swojego portfela znajomemu, aby zażądać środków. Adres to ciąg losowo wybranych liter i cyfr, które zmieniają się przy każdej transakcji.</string>
-  <string name="onboarding_qr_codes_content">Adres może być również ukazany jako kod QR. Zeskanuj kod QR znajomego, by szybko zdobyć adres jego portfela.</string>
-  <string name="onboarding_buy_bitcoin">Kup bitcoiny</string>
+    <string name="onboarding_buy_bitcoin">Kup bitcoiny</string>
   <string name="onboarding_buy_and_sell_bitcoin">Kupuj i sprzedawaj bitcoiny</string>
   <string name="onboarding_get_bitcoin">Zdobądź bitcoiny</string>
   <string name="onboarding_get_eth">Zdobądź Ether</string>
@@ -566,7 +564,6 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="bch_invalid_address">Nieprawidłowy adres kasowy Bitcoin</string>
   <string name="confirm_currency">Potwierdź walutę</string>
   <string name="confirm_currency_message">Wybierz kod QR wybranej waluty, którą skanujesz.</string>
-  <string name="error_bitpay_not_supported">Identyfikatory UR grupy Bitpay nie są obecnie obsługiwane</string>
   <string name="announcement_trading_cta">Lepiej kupuj i sprzedawaj</string>
   <string name="announcement_trading_description">W Twoim portfelu dostępny jest teraz ulepszony przepływ do mobilnego kupowania i sprzedawania. To proste, bezproblemowe i bezpieczne.</string>
   <string name="announcement_trading_link">Zaczynać</string>
@@ -627,14 +624,8 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="kyc_phone_number_validation_hint">Kod potwierdzający</string>
   <string name="kyc_phone_number_validation_error">Błąd podczas sprawdzania poprawności numeru telefonu. Sprawdź swój kod</string>
   <string name="kyc_phone_number_validation_error_incorrect">Niepoprawny kod weryfikacyjny. Sprawdź dokładnie kod, który wysłaliśmy i spróbuj ponownie.</string>
-  <string name="kyc_onfido_splash_title">zweryfikować Twoją tożsamość</string>
   <string name="kyc_onfido_splash_header">Potwierdźmy to Ty</string>
-  <string name="kyc_onfido_splash_subtitle">Złap swój paszport lub prawo jazdy.</string>
-  <string name="kyc_onfido_splash_message">Gdy zweryfikujemy Twoją tożsamość, otrzymasz zgodę na wymianę kryptowalut w aplikacji Blockchain!</string>
   <string name="kyc_onfido_splash_verification_error">Błąd podczas weryfikowania identyfikatora. Spróbuj ponownie</string>
-  <string name="kyc_onfido_splash_passport">Mój paszport</string>
-  <string name="kyc_onfido_splash_drivers_license">Moja licencja kierowców</string>
-  <string name="kyc_onfido_splash_id_card">Mój rząd Wydano ID</string>
   <string name="kyc_complete_title">Aplikacja zakończona</string>
   <string name="kyc_complete_header">Gotowe i gotowe!</string>
   <string name="kyc_complete_subtitle">Pomyślnie przesłałeś swoje dane. Twoje konto jest teraz sprawdzane!</string>
@@ -677,9 +668,7 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="screen_overlay_warning">Wykryto nakładkę ekranu!</string>
   <string name="screen_overlay_note">Aplikacje korzystające z nakładek ekranu mogą wymusić na Tobie kliknięcie niewidocznych obiektów i potencjalnie ukraść Twoje środki. Pamiętaj, że to ostrzeżenie pojawi się również w przypadku aplikacji przyciemniających ekran. Jeśli masz pewność, że nie ma żadnego zagrożenia, możesz kontynuować. </string>
   <string name="dialog_continue">Kontynuuj</string>
-  <string name="insufficient_funds_with_max">Niewystarczające środki, najwięcej możesz wysłać to %1$s</string>
-  <string name="not_enough_funds_with_currency">Za mało %1$s</string>
-  <string name="invalid_address">Błędny adres</string>
+    <string name="not_enough_funds_with_currency">Za mało %1$s</string>
   <string name="transaction_failed_min_send">Minimalna liczba wysyłanych wiadomości to %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Minimalna wartość %1$s potrzebna dla nowych kont</string>
   <string name="lockbox_title">Lockbox</string>
@@ -979,7 +968,6 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="kyc_address_city_town_village">Miasto / miasto / wieś</string>
   <string name="kyc_address_state_region_province_county">Stan / region / prowincja / okręg</string>
   <string name="kyc_address_postal_code">kod pocztowy</string>
-  <string name="kyc_onfido_splash_residence_permit">Moje pozwolenie na pobyt</string>
   <string name="kyc_veriff_splash_title">\@ string / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ string / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">Aby kontynuować, potrzebujesz 1 z poniższych typów ID.</string>
@@ -1187,11 +1175,7 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="gold_unavailable">Złoto Niedostępne</string>
   <string name="veriff_identify">Veriff Identify</string>
   <string name="more_info_needed">Więcej informacji potrzebne</string>
-  <string name="coinify_kyc_body">Aby nadal korzystać z opcji Kupuj i sprzedawaj, musisz zaktualizować swój profil. Po zakończeniu odblokujesz również wyższe limity handlowe w Swap.</string>
-  <string name="coinify_kyc_cta">Aktualizuj teraz</string>
-  <string name="coinify_kyc_dismiss">Ucz się więcej</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">Cyfrowe dolary amerykańskie</string>
+    <string name="pax_intro_popup_title">Cyfrowe dolary amerykańskie</string>
   <string name="pax_intro_popup_text">Wprowadzenie USD PAX, bezpiecznego i stabilnego zasobu kryptograficznego, którego możesz używać do przechowywania wartości. 1 PAX równa się 1 USD ..</string>
   <string name="pax_intro_popup_cta_btn">Uzyskaj USD PAX teraz</string>
   <string name="buy_sell_error_country_not_supported">Twój kraj nie jest obecnie obsługiwany przy kupnie / sprzedaży. Pracujemy nad tym, aby wkrótce dodać obsługę większej liczby obszarów.</string>

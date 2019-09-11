@@ -42,7 +42,7 @@ import com.blockchain.koin.injectActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.serialization.JsonSerializableAccount
-import com.blockchain.sunriver.ui.MinBalanceExplanationDialog
+import com.blockchain.ui.dialog.MinBalanceExplanationDialog
 import com.blockchain.transactions.Memo
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
@@ -91,10 +91,10 @@ import piuk.blockchain.android.util.AppRate
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
+import com.blockchain.ui.dialog.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
@@ -217,7 +217,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
         max.setOnClickListener { presenter.onSpendMaxClicked() }
 
-        info_link.setOnClickListener { MinBalanceExplanationDialog().show(fragmentManager, "Dialog") }
+        info_link.setOnClickListener { MinBalanceExplanationDialog()
+            .show(fragmentManager, "Dialog") }
 
         amountContainer.currencyFiat.text = currencyState.fiatUnit
 
@@ -1018,7 +1019,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     @CommonCode("Move to base")
     override fun showProgressDialog(title: Int) {
-        progressDialog = MaterialProgressDialog(activity)
+        progressDialog = MaterialProgressDialog(requireContext())
         progressDialog?.apply {
             setCancelable(false)
             setMessage(R.string.please_wait)

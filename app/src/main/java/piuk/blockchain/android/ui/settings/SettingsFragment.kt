@@ -52,7 +52,7 @@ import piuk.blockchain.android.ui.fingerprint.FingerprintDialog
 import piuk.blockchain.android.ui.fingerprint.FingerprintStage
 import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -63,7 +63,6 @@ import com.blockchain.ui.urllinks.URL_PRIVACY_POLICY
 import com.blockchain.ui.urllinks.URL_TOS_POLICY
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R.string.success
-import piuk.blockchain.android.data.datamanagers.PromptManager
 import piuk.blockchain.android.ui.auth.KEY_VALIDATING_PIN_FOR_RESULT
 import piuk.blockchain.android.ui.auth.REQUEST_CODE_VALIDATE_PIN
 import piuk.blockchain.android.ui.settings.preferences.KycStatusPreference
@@ -216,7 +215,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         findPreference("tos").onClick { onTosClicked() }
         findPreference("privacy").onClick { onPrivacyClicked() }
 
-        val disableRootWarningPref = findPreference("disable_root_warning")
+        val disableRootWarningPref = findPreference(PersistentPrefs.KEY_ROOT_WARNING_DISABLED)
         if (disableRootWarningPref != null && !RootUtil().isDeviceRooted) {
             val appCategory = findPreference("app") as PreferenceCategory
             appCategory.removePreference(disableRootWarningPref)
@@ -227,15 +226,15 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         when {
             intent == null -> {
             }
-            intent.hasExtra(PromptManager.EXTRA_SHOW_TWO_FA_DIALOG) ->
+            intent.hasExtra(EXTRA_SHOW_TWO_FA_DIALOG) ->
                 showDialogTwoFA()
-            intent.hasExtra(PromptManager.EXTRA_SHOW_ADD_EMAIL_DIALOG) ->
+            intent.hasExtra(EXTRA_SHOW_ADD_EMAIL_DIALOG) ->
                 showUpdateEmailDialog(activity!!, settingsPresenter)
         }
     }
 
     override fun showProgressDialog(@StringRes message: Int) {
-        progressDialog = MaterialProgressDialog(activity).apply {
+        progressDialog = MaterialProgressDialog(requireContext()).apply {
             setCancelable(false)
             setMessage(message)
             show()
@@ -509,12 +508,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                     val sms = countryTextView.text.toString() + mobileNumber.text.toString()
 
                     if (!FormatsUtil.isValidMobileNumber(sms)) {
-                        ToastCustom.makeText(
-                            activity,
-                            getString(R.string.invalid_mobile),
-                            ToastCustom.LENGTH_SHORT,
-                            ToastCustom.TYPE_ERROR
-                        )
+                        showCustomToast(R.string.invalid_mobile)
                     } else {
                         settingsPresenter.updateSms(sms)
                         dialog.dismiss()
@@ -536,12 +530,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                     activity!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clip = ClipData.newPlainText("guid", guidPref!!.summary)
                 clipboard.primaryClip = clip
-                ToastCustom.makeText(
-                    activity,
-                    getString(R.string.copied_to_clipboard),
-                    ToastCustom.LENGTH_SHORT,
-                    ToastCustom.TYPE_GENERAL
-                )
+                showCustomToast(R.string.copied_to_clipboard)
             }
             .setNegativeButton(R.string.no, null)
             .show()
@@ -742,37 +731,31 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                         } else {
                             newPasswordConfirmation.setText("")
                             newPasswordConfirmation.requestFocus()
-                            ToastCustom.makeText(
-                                activity,
-                                getString(R.string.password_mismatch_error),
-                                ToastCustom.LENGTH_SHORT,
-                                ToastCustom.TYPE_ERROR
-                            )
+                            showCustomToast(R.string.password_mismatch_error)
                         }
                     } else {
                         currentPassword.setText("")
                         currentPassword.requestFocus()
-                        ToastCustom.makeText(
-                            activity,
-                            getString(R.string.invalid_password),
-                            ToastCustom.LENGTH_SHORT,
-                            ToastCustom.TYPE_ERROR
-                        )
+                        showCustomToast(R.string.invalid_password)
                     }
                 } else {
                     newPassword.setText("")
                     newPasswordConfirmation.setText("")
                     newPassword.requestFocus()
-                    ToastCustom.makeText(
-                        activity,
-                        getString(R.string.change_password_new_matches_current),
-                        ToastCustom.LENGTH_LONG,
-                        ToastCustom.TYPE_ERROR
-                    )
+                    showCustomToast(R.string.change_password_new_matches_current)
                 }
             }
         }
         alertDialog.show()
+    }
+
+    private fun showCustomToast(@StringRes stringId: Int) {
+        ToastCustom.makeText(
+            activity,
+            getString(stringId),
+            ToastCustom.LENGTH_LONG,
+            ToastCustom.TYPE_ERROR
+        )
     }
 
     private fun showDialogTwoFA() {
@@ -885,6 +868,9 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     companion object {
         const val URL_LOGIN = "<a href=\"https://login.blockchain.com/\">login.blockchain.com</a>"
+
+        internal const val EXTRA_SHOW_ADD_EMAIL_DIALOG = "show_add_email_dialog"
+        internal const val EXTRA_SHOW_TWO_FA_DIALOG = "show_two_fa_dialog"
     }
 }
 

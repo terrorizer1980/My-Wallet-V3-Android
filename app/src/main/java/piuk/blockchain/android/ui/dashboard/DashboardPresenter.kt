@@ -5,11 +5,8 @@ import android.support.annotation.DrawableRes
 import android.support.annotation.VisibleForTesting
 import com.blockchain.balance.drawableResFilled
 import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
-import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.swap.nabu.CurrentTier
-import com.blockchain.sunriver.ui.BaseAirdropBottomDialog
-import com.blockchain.sunriver.ui.ClaimFreeCryptoSuccessDialog
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -27,16 +24,10 @@ import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
-import piuk.blockchain.android.ui.dashboard.models.OnboardingModel
-import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.models.MetadataEvent
-import piuk.blockchain.android.ui.onboarding.OnboardingPagerContent
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
-import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
-import piuk.blockchain.androidcore.data.access.AccessState
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -46,21 +37,16 @@ import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.utils.logging.BalanceLoadedEvent
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
-import java.text.DecimalFormat
 
 class DashboardPresenter(
     private val dashboardBalanceCalculator: DashboardData,
     private val prefs: PersistentPrefs,
     private val exchangeRateFactory: ExchangeRateDataManager,
     private val stringUtils: StringUtils,
-    private val accessState: AccessState,
-    private val buyDataManager: BuyDataManager,
     private val rxBus: RxBus,
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
-    private val currencyFormatManager: CurrencyFormatManager,
     private val lockboxDataManager: LockboxDataManager,
     private val currentTier: CurrentTier,
-    private val sunriverCampaignHelper: SunriverCampaignHelper,
     private val pitLinking: PitLinking,
     private val announcements: AnnouncementList
 ) : BasePresenter<DashboardView>(), AnnouncementHost {
@@ -108,20 +94,20 @@ class DashboardPresenter(
         compositeDisposable += balanceUpdateDisposable
 
         // Triggers various updates to the page once all metadata is loaded
-        compositeDisposable += observable.flatMap { getOnboardingStatusObservable() }
+        compositeDisposable += observable
             // Clears subscription after single event
             .firstOrError()
             .doOnSuccess { updateAllBalances() }
             .doOnSuccess { announcements.checkLatest(this, compositeDisposable) }
             .doOnSuccess { storeSwipeToReceiveAddresses() }
-            .doOnSuccess { updatePitAddressesForthePit() }
+            .doOnSuccess { updatePitAddressesForThePit() }
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
             )
     }
 
-    private fun updatePitAddressesForthePit() {
+    private fun updatePitAddressesForThePit() {
         // Wallet pit linking - update receive addresses in for the pit
         compositeDisposable += pitLinking.isPitLinked()
             .subscribeBy(
@@ -211,6 +197,7 @@ class DashboardPresenter(
         balanceUpdateDisposable += Observables.combineLatest(data, shouldDisplayLockboxMessage().cache().toObservable())
             .map { (data, hasLockbox) -> data.copy(hasLockbox = hasLockbox) }
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { if (!it.isZero) prefs.setWalletFunded() }
             .subscribe(
                 view::updatePieChartState,
                 Timber::e
@@ -237,14 +224,10 @@ class DashboardPresenter(
         }
     }
 
-    override fun showAnnouncmentPopup(popup: BaseAirdropBottomDialog) {
-        view.showBottomSheetDialog(popup)
-    }
-
     override fun dismissAnnouncementCard(prefsKey: String) {
         displayList.filterIsInstance<AnnouncementCard>()
             .forEachIndexed { index, any ->
-                if (any.prefsKey == prefsKey) {
+                if (any.dismissKey == prefsKey) {
                     displayList.remove(any)
                     with(view) {
                         notifyItemRemoved(displayList, index)
@@ -264,7 +247,18 @@ class DashboardPresenter(
         compositeDisposable += currentTier.usersCurrentTier()
             .subscribe { tier ->
                 if (tier > 0) {
-                    view.goToExchange(currency, prefs.selectedFiatCurrency)
+                    view.startSwap(prefs.selectedFiatCurrency, currency)
+                } else {
+                    view.startKycFlow(CampaignType.Swap)
+                }
+            }
+    }
+
+    override fun startBuyOrKyc() {
+        compositeDisposable += currentTier.usersCurrentTier()
+            .subscribe { tier ->
+                if (tier > 0) {
+                    view.startBuySell()
                 } else {
                     view.startKycFlow(CampaignType.Swap)
                 }
@@ -275,108 +269,24 @@ class DashboardPresenter(
         view.startPitLinkingFlow()
     }
 
-    override fun signupToSunRiverCampaign() {
-        compositeDisposable += sunriverCampaignHelper
-            .registerSunRiverCampaign()
-            .doOnError(Timber::e)
-            .subscribeBy(onComplete = {
-                showSignUpToSunRiverCampaignSuccessDialog()
-            })
+    override fun startIntroTourGuide() {
+        // TODO: Implement this! And start the tour!
     }
 
-    private fun showSignUpToSunRiverCampaignSuccessDialog() {
-        view.showBottomSheetDialog(ClaimFreeCryptoSuccessDialog())
+    override fun startFundsBackup() {
+        view.startBackupWallet()
     }
 
-    private fun getOnboardingStatusObservable(): Observable<Boolean> = if (isOnboardingComplete()) {
-        Observable.just(false)
-    } else {
-        buyDataManager.canBuy
-            .addToCompositeDisposable(this)
-            .doOnNext { displayList.removeAll { it is OnboardingModel } }
-            .doOnNext { displayList.add(0, getOnboardingPages(it)) }
-            .doOnNext { view.notifyItemAdded(displayList, 0) }
-            .doOnNext { view.scrollToTop() }
-            .doOnError { Timber.e(it) }
+    override fun startSetup2Fa() {
+        view.startSetup2Fa()
     }
 
-    private fun getOnboardingPages(isBuyAllowed: Boolean): OnboardingModel {
-        val pages = mutableListOf<OnboardingPagerContent>()
-
-        if (isBuyAllowed) {
-            // Buy bitcoin prompt
-            pages.add(
-                OnboardingPagerContent(
-                    stringUtils.getString(R.string.onboarding_current_price),
-                    getFormattedPriceString(CryptoCurrency.BTC),
-                    stringUtils.getString(R.string.onboarding_buy_content),
-                    stringUtils.getString(R.string.onboarding_buy_bitcoin),
-                    MainActivity.ACTION_BUY,
-                    R.color.primary_blue_accent,
-                    R.drawable.vector_buy_offset
-                )
-            )
-        }
-        // Receive bitcoin
-        pages.add(
-            OnboardingPagerContent(
-                stringUtils.getString(R.string.onboarding_receive_bitcoin),
-                "",
-                stringUtils.getString(R.string.onboarding_receive_content),
-                stringUtils.getString(R.string.request),
-                MainActivity.ACTION_RECEIVE,
-                R.color.secondary_teal_medium,
-                R.drawable.vector_receive_offset
-            )
-        )
-        // QR Codes
-        pages.add(
-            OnboardingPagerContent(
-                stringUtils.getString(R.string.onboarding_qr_codes),
-                "",
-                stringUtils.getString(R.string.onboarding_qr_codes_content),
-                stringUtils.getString(R.string.onboarding_scan_address),
-                MainActivity.ACTION_SEND,
-                R.color.primary_navy_medium,
-                R.drawable.vector_qr_offset
-            )
-        )
-
-        return OnboardingModel(
-            pages,
-            // TODO: These are neat and clever, but make things pretty hard to test. Replace with callbacks.
-            dismissOnboarding = {
-                setOnboardingComplete(true)
-                displayList.removeAll { it is OnboardingModel }
-                view.notifyItemRemoved(displayList, 0)
-                view.scrollToTop()
-            },
-            onboardingComplete = { setOnboardingComplete(true) },
-            onboardingNotComplete = { setOnboardingComplete(false) }
-        )
+    override fun startSetupVerifyEmail() {
+        view.startSetupVerifyEmail()
     }
 
-    private fun isOnboardingComplete() =
-        // If wallet isn't newly created, don't show onboarding
-        prefs.isOnboardingComplete || !accessState.isNewlyCreated
-
-    private fun setOnboardingComplete(completed: Boolean) {
-        prefs.isOnboardingComplete = completed
-    }
-
-    // /////////////////////////////////////////////////////////////////////////
-    // Units
-    // /////////////////////////////////////////////////////////////////////////
-
-    private fun getFormattedPriceString(cryptoCurrency: CryptoCurrency): String {
-        val lastPrice = getLastPrice(cryptoCurrency, getFiatCurrency())
-        val fiatSymbol = currencyFormatManager.getFiatSymbol(getFiatCurrency())
-        val format = DecimalFormat().apply { minimumFractionDigits = 2 }
-
-        return stringUtils.getFormattedString(
-            R.string.current_price_btc,
-            "$fiatSymbol${format.format(lastPrice)}"
-        )
+    override fun startEnableFingerprintLogin() {
+        view.startEnableFingerprintLogin()
     }
 
     private fun getPriceString(cryptoCurrency: CryptoCurrency): String {

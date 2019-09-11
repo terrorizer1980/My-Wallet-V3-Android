@@ -24,7 +24,7 @@ import piuk.blockchain.android.injection.Injector;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
 import piuk.blockchain.android.util.DialogButtonCallback;
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity;
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog;
+import com.blockchain.ui.dialog.MaterialProgressDialog;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.OverlayDetection;
 import piuk.blockchain.androidcoreui.utils.ViewUtils;

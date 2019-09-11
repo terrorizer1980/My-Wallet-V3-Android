@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.backup.completed
 
+import com.blockchain.preferences.WalletStatus
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.verifyZeroInteractions
@@ -9,20 +10,18 @@ import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Test
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
-import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.ui.send.PendingTransaction
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class BackupWalletCompletedPresenterTest {
 
     private lateinit var subject: BackupWalletCompletedPresenter
     private val view: BackupWalletCompletedView = mock()
     private val transferFundsDataManager: TransferFundsDataManager = mock()
-    private val prefs: PersistentPrefs = mock()
+    private val walletStatus: WalletStatus = mock()
 
     @Before
     fun setUp() {
-        subject = BackupWalletCompletedPresenter(transferFundsDataManager, prefs)
+        subject = BackupWalletCompletedPresenter(transferFundsDataManager, walletStatus)
         subject.initView(view)
     }
 
@@ -30,13 +29,12 @@ class BackupWalletCompletedPresenterTest {
     fun `onViewReady set backup date`() {
         // Arrange
         val date = 1499181978000L
-        whenever(prefs.getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L))
-            .thenReturn(date)
+        whenever(walletStatus.lastBackupTime).thenReturn(date)
         // Act
         subject.onViewReady()
         // Assert
-        verify(prefs).getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L)
-        verifyNoMoreInteractions(prefs)
+        verify(walletStatus).lastBackupTime
+        verifyNoMoreInteractions(walletStatus)
         verify(view).showLastBackupDate(date)
         verifyNoMoreInteractions(view)
     }
@@ -44,13 +42,12 @@ class BackupWalletCompletedPresenterTest {
     @Test
     fun `onViewReady hide backup date`() {
         // Arrange
-        whenever(prefs.getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L))
-            .thenReturn(0L)
+        whenever(walletStatus.lastBackupTime).thenReturn(0L)
         // Act
         subject.onViewReady()
         // Assert
-        verify(prefs).getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L)
-        verifyNoMoreInteractions(prefs)
+        verify(walletStatus).lastBackupTime
+        verifyNoMoreInteractions(walletStatus)
         verify(view).hideLastBackupDate()
         verifyNoMoreInteractions(view)
     }

@@ -321,7 +321,7 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
         no_transaction_include.gone()
     }
 
-    override fun startBuyActivity() = broadcastIntent(MainActivity.ACTION_BUY)
+    override fun startBuyActivity() = navigator().launchBuySell()
 
     override fun onTransactionClicked(correctedPosition: Int, absolutePosition: Int) {
         val bundle = Bundle()
@@ -340,16 +340,7 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
         currency_header?.setCurrentlySelectedCurrency(cryptoCurrency)
     }
 
-    private fun broadcastIntent(action: String) {
-        activity?.run {
-            LocalBroadcastManager.getInstance(this)
-                .sendBroadcast(Intent(action))
-        }
-    }
-
-    override fun startSwapOrKyc(targetCurrency: CryptoCurrency) {
-        navigator().launchSwapOrKyc(targetCurrency)
-    }
+    override fun startSwapOrKyc(targetCurrency: CryptoCurrency) = navigator().launchSwapOrKyc(targetCurrency)
 
     override fun getCurrentAccountPosition() = accounts_spinner.selectedItemPosition
 

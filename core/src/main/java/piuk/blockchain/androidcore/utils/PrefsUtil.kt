@@ -43,6 +43,11 @@ class PrefsUtil(
         get() = getValue(KEY_IS_DEVICE_ID_RANDOMISED, false)
         set(value) = setValue(KEY_IS_DEVICE_ID_RANDOMISED, value)
 
+    // Settings - TODO: Move to interface
+    override var disableRootedWarning: Boolean
+        get() = getValue(PersistentPrefs.KEY_ROOT_WARNING_DISABLED, false)
+        set(v) = setValue(PersistentPrefs.KEY_ROOT_WARNING_DISABLED, v)
+
     // From CurrencyPrefs
     override var selectedFiatCurrency: String
         get() = getValue(KEY_SELECTED_FIAT, DEFAULT_FIAT_CURRENCY)
@@ -74,6 +79,32 @@ class PrefsUtil(
         get() = getValue(KEY_SWAP_INTRO_COMPLETED, false)
         set(v) = setValue(KEY_SWAP_INTRO_COMPLETED, v)
 
+    // Wallet Status
+    override var lastBackupTime: Long
+        get() = getValue(BACKUP_DATE_KEY, 0L)
+        set(v) = setValue(BACKUP_DATE_KEY, v)
+
+    override val isWalletBackedUp: Boolean
+        get() = lastBackupTime != 0L
+
+    override val isWalletFunded: Boolean
+        get() = getValue(WALLET_FUNDED_KEY, false)
+
+    override fun setWalletFunded() = setValue(WALLET_FUNDED_KEY, true)
+
+    override var lastSwapTime: Long
+        get() = getValue(SWAP_DATE_KEY, 0L)
+        set(v) = setValue(SWAP_DATE_KEY, v)
+
+    override val hasSwapped: Boolean
+        get() = lastSwapTime != 0L
+
+    override val hasMadeBitPayTransaction: Boolean
+        get() = getValue(BITPAY_TRANSACTION_SUCCEEDED, false)
+
+    override fun setBitPaySuccess() = setValue(BITPAY_TRANSACTION_SUCCEEDED, true)
+
+    // Raw accessors
     override fun getValue(name: String): String? =
         store.getString(name, null)
 
@@ -162,6 +193,10 @@ class PrefsUtil(
 
         private const val KEY_SWAP_INTRO_COMPLETED = "key_swap_intro_completed"
 
+        private const val BACKUP_DATE_KEY = "BACKUP_DATE_KEY"
+        private const val SWAP_DATE_KEY = "SWAP_DATE_KEY"
+        private const val WALLET_FUNDED_KEY = "WALLET_FUNDED_KEY"
+        private const val BITPAY_TRANSACTION_SUCCEEDED = "BITPAY_TRANSACTION_SUCCEEDED"
         // For QA:
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         const val KEY_IS_DEVICE_ID_RANDOMISED = "random_device_id"

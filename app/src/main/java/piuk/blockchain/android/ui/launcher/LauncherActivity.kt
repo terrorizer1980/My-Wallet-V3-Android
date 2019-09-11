@@ -11,7 +11,6 @@ import piuk.blockchain.android.ui.auth.LandingActivity
 import piuk.blockchain.android.ui.auth.PasswordRequiredActivity
 import piuk.blockchain.android.ui.auth.PinEntryActivity
 import piuk.blockchain.android.ui.home.MainActivity
-import piuk.blockchain.android.ui.onboarding.OnboardingActivity
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -69,10 +68,6 @@ class LauncherActivity : BaseMvpActivity<LauncherView, LauncherPresenter>(), Lau
 
     override fun onStartMainActivity(uri: Uri?) {
         startSingleActivity(MainActivity::class.java, null, uri)
-    }
-
-    override fun onStartOnboarding(emailOnly: Boolean, isDismissable: Boolean) {
-        OnboardingActivity.launch(this, emailOnly, isDismissable)
     }
 
     override fun onReEnterPassword() {

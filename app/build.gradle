@@ -273,6 +273,7 @@ dependencies {
     }
     implementation Libraries.googlePlaces
 
+    implementation Libraries.gson
     // Utils
     implementation Libraries.libPhoneNumber
     implementation Libraries.yearclass

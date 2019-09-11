@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.data.rxjava.RxUtil;
 import com.blockchain.ui.password.SecondPasswordHandler;
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog;
+import com.blockchain.ui.dialog.MaterialProgressDialog;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.androidcoreui.utils.ViewUtils;
 import timber.log.Timber;

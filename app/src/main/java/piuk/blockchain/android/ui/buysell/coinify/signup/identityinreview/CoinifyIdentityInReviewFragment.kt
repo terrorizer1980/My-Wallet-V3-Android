@@ -11,7 +11,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifyFlowListener
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.invisibleIf
 import piuk.blockchain.androidcoreui.utils.extensions.visible
@@ -160,7 +160,7 @@ class CoinifyIdentityInReviewFragment :
 
     private fun displayProgressDialog() {
         if (activity?.isFinishing == false) {
-            progressDialog = MaterialProgressDialog(context).apply {
+            progressDialog = MaterialProgressDialog(requireContext()).apply {
                 setMessage(getString(R.string.buy_sell_review_status_fetching))
                 setCancelable(false)
                 show()

@@ -1,103 +1,160 @@
-@file:Suppress("USELESS_CAST")
-
 package piuk.blockchain.android.ui.dashboard.announcements
 
 import io.reactivex.android.schedulers.AndroidSchedulers
+import org.koin.dsl.context.Context
+import org.koin.dsl.context.ParameterProvider
 import org.koin.dsl.module.applicationContext
+import piuk.blockchain.android.ui.dashboard.announcements.rule.BackupPhraseAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.BitpayAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.BuyBitcoinAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.IntroTourAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.KycIncompleteAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.KycMoreInfoAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.KycResubmissionAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.PaxAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.PitAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.RegisterFingerprintsAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.SwapAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.TwoFAAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.VerifyEmailAnnouncement
 
 val dashboardAnnouncementsModule = applicationContext {
 
     context("Payload") {
 
         bean {
+            val availableAnnouncements = getAllAnnouncements(this@context, it)
+
             AnnouncementList(
-                mainScheduler = AndroidSchedulers.mainThread()
-            ).apply {
-                add(get("kycresubmission")) // Always first
-                add(get("pit"))
-                add(get("stablecoin"))
-                add(get("coinify"))
-                add(get("profile"))
-                add(get("claim"))
-                add(get("swap"))
-                add(get("kycincomplete")) // Always last
-            }
+                mainScheduler = AndroidSchedulers.mainThread(),
+                availableAnnouncements = availableAnnouncements,
+                orderAdapter = get(),
+                dismissRecorder = get()
+            )
         }
 
-        factory("kycresubmission") {
-            KycResubmissionAnnouncementRule(
+        factory {
+            AnnouncementConfigAdapterImpl(
+                config = get()
+            )
+        }.bind(AnnouncementConfigAdapter::class)
+
+        factory {
+            KycResubmissionAnnouncement(
                 kycTiersQueries = get(),
                 dismissRecorder = get()
-            ) as AnnouncementRule
-        }
+            )
+        }.bind(AnnouncementRule::class)
 
-        factory("kycincomplete") {
-            KycIncompleteAnnouncementRule(
+        factory {
+            KycIncompleteAnnouncement(
                 kycTiersQueries = get(),
                 sunriverCampaignHelper = get(),
                 dismissRecorder = get(),
                 mainScheduler = AndroidSchedulers.mainThread()
-            ) as AnnouncementRule
-        }
+            )
+        }.bind(AnnouncementRule::class)
 
-        factory("coinify") {
-            CoinifyKycModalPopupAnnouncementRule(
+        factory {
+            KycMoreInfoAnnouncement(
                 tierService = get(),
                 coinifyWalletService = get(),
                 showPopupFeatureFlag = get("ff_notify_coinify_users_to_kyc"),
                 dismissRecorder = get()
-            ) as AnnouncementRule
-        }
+            )
+        }.bind(AnnouncementRule::class)
 
-        factory("stellar") {
-            StellarModalPopupAnnouncementRule(
-                tierService = get(),
-                dismissRecorder = get(),
-                showPopupFeatureFlag = get("ff_get_free_xlm_popup")
-            ) as AnnouncementRule
-        }
-
-        factory("profile") {
-            GoForGoldAnnouncementRule(
-                tierService = get(),
-                prefs = get(),
-                dismissRecorder = get()
-            ) as AnnouncementRule
-        }
-
-        factory("pit") {
-            PitAnnouncementRule(
+        factory {
+            PitAnnouncement(
                 pitLink = get(),
                 dismissRecorder = get(),
                 featureFlag = get("ff_pit_announcement")
-            ) as AnnouncementRule
-        }
+            )
+        }.bind(AnnouncementRule::class)
 
-        factory("claim") {
-            ClaimYourFreeCryptoAnnouncementRule(
-                tierService = get(),
-                sunriverCampaignHelper = get(),
-                dismissRecorder = get()
-            ) as AnnouncementRule
-        }
-
-        factory("stablecoin") {
-            StableCoinIntroAnnouncementRule(
-                featureEnabled = get("ff_stablecoin"),
-                config = get(),
+        factory {
+            PaxAnnouncement(
                 analytics = get(),
-                dismissRecorder = get()
-            ) as AnnouncementRule
-        }
+                dismissRecorder = get(),
+                walletStatus = get()
+            )
+        }.bind(AnnouncementRule::class)
 
-        factory("swap") {
-            SwapAnnouncementRule(
+        factory {
+            IntroTourAnnouncement(
+                dismissRecorder = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            BitpayAnnouncement(
+                dismissRecorder = get(),
+                walletStatus = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            SwapAnnouncement(
                 tierService = get(),
                 dataManager = get("merge"),
                 dismissRecorder = get()
-            ) as AnnouncementRule
-        }
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            VerifyEmailAnnouncement(
+                dismissRecorder = get(),
+                walletSettings = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            TwoFAAnnouncement(
+                dismissRecorder = get(),
+                walletStatus = get(),
+                walletSettings = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            BackupPhraseAnnouncement(
+                dismissRecorder = get(),
+                walletStatus = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            BuyBitcoinAnnouncement(
+                dismissRecorder = get(),
+                walletStatus = get(),
+                buyDataManager = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            RegisterFingerprintsAnnouncement(
+                dismissRecorder = get(),
+                fingerprints = get()
+            )
+        }.bind(AnnouncementRule::class)
     }
 
-    bean { DismissRecorder(prefs = get()) }
+    bean {
+        DismissRecorder(
+            prefs = get(),
+            clock = get()
+        )
+    }
+
+    bean {
+        object : DismissClock {
+            override fun now(): Long = System.currentTimeMillis()
+        }
+    }.bind(DismissClock::class)
+}
+
+fun getAllAnnouncements(koinContext: Context, params: ParameterProvider): List<AnnouncementRule> {
+    return koinContext.definitions
+        .filter { it.types.contains(AnnouncementRule::class) }
+        .map { it.definition.invoke(params) as AnnouncementRule }
 }

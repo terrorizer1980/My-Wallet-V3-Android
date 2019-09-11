@@ -26,7 +26,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.data.cache.DynamicFeeCache
-import piuk.blockchain.android.data.datamanagers.PromptManager
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.util.StringUtils
@@ -44,9 +43,7 @@ import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import com.blockchain.swap.shapeshift.ShapeShiftDataManager
-import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.utils.AppUtil
 
@@ -61,18 +58,15 @@ class MainPresenterTest {
     private val accessState: AccessState = mock()
     private val payloadManagerWiper: PayloadManagerWiper = mock()
     private val payloadDataManager: PayloadDataManager = mock()
-    private val settingsDataManager: SettingsDataManager = mock()
     private val buyDataManager: BuyDataManager = mock()
     private val dynamicFeeCache: DynamicFeeCache = mock()
     private val exchangeRateFactory: ExchangeRateDataManager = mock()
     private val rxBus: RxBus = mock()
     private val feeDataManager: FeeDataManager = mock()
-    private val promptManager: PromptManager = mock()
     private val ethDataManager: EthDataManager = mock()
     private val paxAccount: Erc20Account = mock()
     private val bchDataManager: BchDataManager = mock()
     private val currencyState: CurrencyState = mock()
-    private val walletOptionsDataManager: WalletOptionsDataManager = mock()
     private val metadataManager: MetadataManager = mock()
     private val stringUtils: StringUtils = mock()
     private val shapeShiftDataManager: ShapeShiftDataManager = mock()
@@ -119,17 +113,14 @@ class MainPresenterTest {
             accessState,
             payloadManagerWiper,
             payloadDataManager,
-            settingsDataManager,
             buyDataManager,
             dynamicFeeCache,
             exchangeRateFactory,
             rxBus,
             feeDataManager,
-            promptManager,
             ethDataManager,
             bchDataManager,
             currencyState,
-            walletOptionsDataManager,
             metadataManager,
             stringUtils,
             shapeShiftDataManager,
@@ -201,7 +192,7 @@ class MainPresenterTest {
     }
 
     @Test
-    fun `should go to swap intro if tier is 0 and intro hasnt completed`() {
+    fun `should go to swap intro if tier is 0 and intro hasn't completed`() {
         // Arrange
         whenever(prefs.selectedFiatCurrency).thenReturn("USD")
         whenever(prefs.swapIntroCompleted).thenReturn(false)
