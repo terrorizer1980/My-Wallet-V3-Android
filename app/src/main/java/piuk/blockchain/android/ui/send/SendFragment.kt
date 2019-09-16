@@ -864,6 +864,17 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     override fun displayMemo(usersMemo: Memo) {
         lastMemo = usersMemo
+        if (memo_text_edit.text.toString() != usersMemo.value) {
+            memo_text_edit.setText(usersMemo.value)
+        }
+        usersMemo.type?.let {
+            val position = if (it == "text") 0 else 1
+            memo_type_spinner.setSelection(position)
+        }
+    }
+
+    override fun enableMemo(enabled: Boolean) {
+        memo_text_edit.isEnabled = enabled
     }
 
     override fun updateWarning(message: String) {
