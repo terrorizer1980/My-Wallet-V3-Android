@@ -46,6 +46,7 @@ import piuk.blockchain.android.ui.auth.LandingPresenter
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.PinEntryPresenter
 import piuk.blockchain.android.ui.backup.start.BackupWalletStartingPresenter
+import piuk.blockchain.android.ui.backup.verify.BackupVerifyPresenter
 import piuk.blockchain.android.ui.backup.wordlist.BackupWalletWordListPresenter
 import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifySignUpPresenter
@@ -362,6 +363,14 @@ val applicationModule = applicationContext {
         factory {
             FingerprintPresenter(
                 fingerprintHelper = get()
+            )
+        }
+
+        factory {
+            BackupVerifyPresenter(
+                payloadDataManager = get(),
+                prefs = get(),
+                backupWalletUtil = get()
             )
         }
 
