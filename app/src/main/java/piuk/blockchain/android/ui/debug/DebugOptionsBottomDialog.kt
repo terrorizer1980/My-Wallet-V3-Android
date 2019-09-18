@@ -45,7 +45,7 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
 
         btn_store_linkId.setOnClickListener { prefs.pitToWalletLinkId = "11111111-2222-3333-4444-55556666677" }
 
-        firebase_token.text = prefs.getValue(PersistentPrefs.KEY_FIREBASE_TOKEN)
+        firebase_token.text = prefs.firebaseToken
     }
 
     private fun onRndDeviceId() {

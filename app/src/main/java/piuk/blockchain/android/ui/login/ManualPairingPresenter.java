@@ -3,6 +3,10 @@ package piuk.blockchain.android.ui.login;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
+
+import com.blockchain.notifications.analytics.Analytics;
+import com.blockchain.notifications.analytics.AnalyticsEvents;
+
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.exceptions.DecryptionException;
 import info.blockchain.wallet.exceptions.HDWalletException;
@@ -11,6 +15,7 @@ import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
@@ -38,19 +43,22 @@ public class ManualPairingPresenter extends BasePresenter<ManualPairingView> {
     private final AuthDataManager authDataManager;
     private final PayloadDataManager payloadDataManager;
     private final PersistentPrefs prefs;
+    private final Analytics analytics;
 
     @VisibleForTesting
     boolean waitingForAuth = false;
 
     public ManualPairingPresenter(AppUtil appUtil,
-                           AuthDataManager authDataManager,
-                           PayloadDataManager payloadDataManager,
-                           PersistentPrefs prefs) {
+                                  AuthDataManager authDataManager,
+                                  PayloadDataManager payloadDataManager,
+                                  PersistentPrefs prefs,
+                                  Analytics analytics) {
 
         this.appUtil = appUtil;
         this.authDataManager = authDataManager;
         this.payloadDataManager = payloadDataManager;
         this.prefs = prefs;
+        this.analytics = analytics;
     }
 
     @Override
@@ -178,31 +186,32 @@ public class ManualPairingPresenter extends BasePresenter<ManualPairingView> {
 
     private void attemptDecryptPayload(String password, String payload) {
         getCompositeDisposable().add(
-            payloadDataManager.initializeFromPayload(payload, password)
-                .doOnComplete(() -> {
-                    prefs.setValue(PersistentPrefs.KEY_WALLET_GUID, payloadDataManager.getWallet().getGuid());
-                    appUtil.setSharedKey(payloadDataManager.getWallet().getSharedKey());
-                    prefs.setValue(PersistentPrefs.KEY_EMAIL_VERIFIED, true);
-                })
-                .subscribe(() -> {
-                    getView().goToPinPage();
-                    Logging.INSTANCE.logCustom(new PairingEvent()
-                        .putMethod(PairingMethod.MANUAL)
-                        .putSuccess(true));
-                },
-                throwable -> {
-                    Logging.INSTANCE.logCustom(new PairingEvent()
-                        .putMethod(PairingMethod.MANUAL)
-                        .putSuccess(false));
+                payloadDataManager.initializeFromPayload(payload, password)
+                        .doOnComplete(() -> {
+                            prefs.setValue(PersistentPrefs.KEY_WALLET_GUID, payloadDataManager.getWallet().getGuid());
+                            appUtil.setSharedKey(payloadDataManager.getWallet().getSharedKey());
+                            prefs.setValue(PersistentPrefs.KEY_EMAIL_VERIFIED, true);
+                        })
+                        .subscribe(() -> {
+                                    getView().goToPinPage();
+                                    Logging.INSTANCE.logCustom(new PairingEvent()
+                                            .putMethod(PairingMethod.MANUAL)
+                                            .putSuccess(true));
+                                    analytics.logEvent(AnalyticsEvents.WalletManualLogin);
+                                },
+                                throwable -> {
+                                    Logging.INSTANCE.logCustom(new PairingEvent()
+                                            .putMethod(PairingMethod.MANUAL)
+                                            .putSuccess(false));
 
-                    if (throwable instanceof HDWalletException) {
-                        showErrorToast(R.string.pairing_failed);
-                    } else if (throwable instanceof DecryptionException) {
-                        showErrorToast(R.string.invalid_password);
-                    } else {
-                        showErrorToastAndRestartApp(R.string.auth_failed);
-                    }
-                }));
+                                    if (throwable instanceof HDWalletException) {
+                                        showErrorToast(R.string.pairing_failed);
+                                    } else if (throwable instanceof DecryptionException) {
+                                        showErrorToast(R.string.invalid_password);
+                                    } else {
+                                        showErrorToastAndRestartApp(R.string.auth_failed);
+                                    }
+                                }));
     }
 
     private void showCheckEmailDialog() {

@@ -21,6 +21,7 @@ import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
 import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.charts.ChartsActivity
@@ -31,6 +32,7 @@ import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.MainActivity.Companion.ACCOUNT_EDIT
 import piuk.blockchain.android.ui.home.MainActivity.Companion.SETTINGS_EDIT
 import piuk.blockchain.android.util.OSUtil
+import piuk.blockchain.android.util.start
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -175,16 +177,8 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
 
     override fun startWebsocketService() {
         context?.run {
-            val intent = Intent(this, WebSocketService::class.java)
-
-            if (!osUtil.isServiceRunning(WebSocketService::class.java)) {
-                applicationContext.startService(intent)
-            } else {
-                // Restarting this here ensures re-subscription after app restart - the service may remain
-                // running, but the subscription to the WebSocket won't be restarted unless onCreate called
-                applicationContext.stopService(intent)
-                applicationContext.startService(intent)
-            }
+            CoinsWebSocketService::class.java.start(this, osUtil)
+            WebSocketService::class.java.start(this, osUtil)
         }
     }
 

@@ -1,6 +1,8 @@
 package piuk.blockchain.android.ui.createwallet
 
 import android.content.Intent
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -30,11 +32,12 @@ class CreateWalletPresenterTest {
         mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private var prefsUtil: PersistentPrefs = mock()
     private var prngFixer: PrngFixer = mock()
+    private var analytics: Analytics = mock()
 
     @Before
     fun setUp() {
         subject =
-            CreateWalletPresenter(payloadDataManager, prefsUtil, appUtil, accessState, prngFixer)
+            CreateWalletPresenter(payloadDataManager, prefsUtil, appUtil, accessState, prngFixer, analytics)
         subject.initView(view)
     }
 
@@ -152,6 +155,7 @@ class CreateWalletPresenterTest {
         verify(appUtil).sharedKey = sharedKey
         verify(view).startPinEntryActivity()
         verify(view).dismissProgressDialog()
+        verify(analytics).logEvent(AnalyticsEvents.WalletCreation)
     }
 
     @Test

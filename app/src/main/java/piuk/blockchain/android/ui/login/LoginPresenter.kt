@@ -1,5 +1,8 @@
 package piuk.blockchain.android.ui.login
 
+import android.annotation.SuppressLint
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import dagger.Lazy
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.launcher.LauncherActivity
@@ -18,13 +21,15 @@ import javax.net.ssl.SSLPeerUnverifiedException
 class LoginPresenter @Inject constructor(
     private val appUtil: AppUtil,
     private val payloadDataManager: Lazy<PayloadDataManager>,
-    private val prefs: PersistentPrefs
+    private val prefs: PersistentPrefs,
+    private val analytics: Analytics
 ) : BasePresenter<LoginView>() {
 
     override fun onViewReady() {
         // No-op
     }
 
+    @SuppressLint("CheckResult")
     internal fun pairWithQR(raw: String?) {
         appUtil.clearCredentials()
 
@@ -41,6 +46,7 @@ class LoginPresenter @Inject constructor(
                 prefs.setValue(PersistentPrefs.KEY_EMAIL_VERIFIED, true)
                 prefs.setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, true)
                 view.startPinEntryActivity()
+                analytics.logEvent(AnalyticsEvents.WalletAutoPairing)
 
                 Logging.logCustom(
                     PairingEvent()

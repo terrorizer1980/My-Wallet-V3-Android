@@ -1,5 +1,7 @@
 package piuk.blockchain.android.ui.send.external
 
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
@@ -18,6 +20,7 @@ import org.junit.Test
 import piuk.blockchain.android.data.api.bitpay.models.BitPayPaymentRequestOutput
 import piuk.blockchain.android.data.api.bitpay.models.BitPaymentInstructions
 import piuk.blockchain.android.data.api.bitpay.models.RawPaymentRequest
+import piuk.blockchain.android.data.api.bitpay.models.events.BitPayEvent
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.strategy.BitcoinSendStrategy
 import piuk.blockchain.android.ui.send.strategy.SendStrategy
@@ -25,6 +28,8 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 
 class PerCurrencySendPresenterTest {
+
+    private val analytics: Analytics = mock()
 
     @Test
     fun `handles xlm address scan, delegates to xlm strategy`() {
@@ -47,10 +52,11 @@ class PerCurrencySendPresenterTest {
             envSettings = mock(),
             exchangeRateFactory = exchangeRateFactory,
             pitLinkingFeatureFlag = mock(),
-            bitpayDataManager = mock()
+            bitpayDataManager = mock(),
+            analytics = analytics
         ).apply {
             initView(view)
-            handleURIScan("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4", CryptoCurrency.BTC)
+            handlePredefinedInput("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4", CryptoCurrency.BTC, false)
         }
 
         verify(xlmStrategy).processURIScanAddress("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4")
@@ -82,10 +88,11 @@ class PerCurrencySendPresenterTest {
             envSettings = envSettings,
             exchangeRateFactory = exchangeRateFactory,
             pitLinkingFeatureFlag = mock(),
-            bitpayDataManager = mock()
+            bitpayDataManager = mock(),
+            analytics = analytics
         ).apply {
             initView(view)
-            handleURIScan("1FBPzxps6kGyk2exqLvz7cRMi2odtLEVQ", CryptoCurrency.BTC)
+            handlePredefinedInput("1FBPzxps6kGyk2exqLvz7cRMi2odtLEVQ", CryptoCurrency.BTC, false)
         }
 
         verify(btcStrategy).processURIScanAddress("1FBPzxps6kGyk2exqLvz7cRMi2odtLEVQ")
@@ -135,10 +142,11 @@ class PerCurrencySendPresenterTest {
             pitLinkingFeatureFlag = mock(),
             bitpayDataManager = mock {
                 on { getRawPaymentRequest(invoiceId) } `it returns` Single.just(paymentRequest)
-            }
+            },
+            analytics = analytics
         ).apply {
             initView(view)
-            handleURIScan(bitpayBitcoinURI, CryptoCurrency.BTC)
+            handlePredefinedInput(bitpayBitcoinURI, CryptoCurrency.BTC, false)
         }
 
         verify(view).disableInput()
@@ -148,6 +156,70 @@ class PerCurrencySendPresenterTest {
         verify(view).updateReceivingAddress(bitpayBitcoinURI)
         verify(view).setFeePrioritySelection(1)
         verify(view).disableFeeDropdown()
+        verify(analytics).logEvent(BitPayEvent.InputEvent(AnalyticsEvents.BitpayAdrressScanned.event,
+            CryptoCurrency.BTC))
+    }
+
+    @Test
+    fun `handles bitpay paypro deeplinked`() {
+        val view: SendView = mock()
+        val btcStrategy: BitcoinSendStrategy = mock()
+        val exchangeRateFactory = mock<ExchangeRateDataManager> {
+            on { updateTickers() } `it returns` Completable.complete()
+        }
+        val envSettings = mock<EnvironmentConfig> {
+            on { bitcoinCashNetworkParameters } `it returns` BitcoinCashMainNetParams()
+            on { bitcoinNetworkParameters } `it returns` BitcoinMainNetParams()
+        }
+
+        val invoiceId = "Mjo9YLKe2pK31uH7vzD1p7"
+
+        val bitpayBitcoinURI = "bitcoin:?r=https://bitpay.com/i/Mjo9YLKe2pK31uH7vzD1p7"
+
+        val memo = "Payment request for BitPay invoice Mjo9YLKe2pK31uH7vzD1p7 for merchant Satoshi"
+
+        val paymentUrl = "https://bitpay.com/i/Mjo9YLKe2pK31uH7vzD1p7"
+
+        val output = BitPayPaymentRequestOutput(2.toBigInteger(), "1HLoD9E4SDFFPDiYfNYnkBLQ85Y51J3Zb1")
+
+        val outputs = mutableListOf(output)
+
+        val instructions = listOf(BitPaymentInstructions(outputs))
+
+        val cryptoValue = CryptoValue(CryptoCurrency.BTC, output.amount)
+
+        val paymentRequest = RawPaymentRequest(instructions, memo, "2019-08-31T04:49:19Z", paymentUrl)
+
+        PerCurrencySendPresenter(
+            btcStrategy = btcStrategy,
+            bchStrategy = mock(),
+            etherStrategy = mock(),
+            xlmStrategy = mock(),
+            paxStrategy = mock(),
+            prefs = mock(),
+            exchangeRates = mock(),
+            stringUtils = mock(),
+            envSettings = envSettings,
+            exchangeRateFactory = exchangeRateFactory,
+            pitLinkingFeatureFlag = mock(),
+            bitpayDataManager = mock {
+                on { getRawPaymentRequest(invoiceId) } `it returns` Single.just(paymentRequest)
+            },
+            analytics = analytics
+        ).apply {
+            initView(view)
+            handlePredefinedInput(bitpayBitcoinURI, CryptoCurrency.BTC, true)
+        }
+
+        verify(view).disableInput()
+        verify(view).onBitPayAddressScanned()
+        verify(view).showBitPayTimerAndMerchantInfo(paymentRequest.expires, "Satoshi")
+        verify(view).updateCryptoAmount(cryptoValue)
+        verify(view).updateReceivingAddress(bitpayBitcoinURI)
+        verify(view).setFeePrioritySelection(1)
+        verify(view).disableFeeDropdown()
+        verify(analytics).logEvent(BitPayEvent.InputEvent(AnalyticsEvents.BitpayUrlDeeplink.event,
+            CryptoCurrency.BTC))
     }
 
     @Test
@@ -194,7 +266,8 @@ class PerCurrencySendPresenterTest {
             pitLinkingFeatureFlag = mock(),
             bitpayDataManager = mock {
                 on { getRawPaymentRequest(invoiceId) } `it returns` Single.just(paymentRequest)
-            }
+            },
+            analytics = analytics
         ).apply {
             initView(view)
             onCurrencySelected(CryptoCurrency.BTC)
@@ -207,6 +280,8 @@ class PerCurrencySendPresenterTest {
         verify(view).updateReceivingAddress(bitpayBitcoinURI)
         verify(view).setFeePrioritySelection(1)
         verify(view).disableFeeDropdown()
+        verify(analytics).logEvent(BitPayEvent.InputEvent(AnalyticsEvents.BitpayUrlPasted.event,
+            CryptoCurrency.BTC))
     }
 
     @Test
@@ -239,10 +314,11 @@ class PerCurrencySendPresenterTest {
             envSettings = envSettings,
             exchangeRateFactory = exchangeRateFactory,
             pitLinkingFeatureFlag = mock(),
-            bitpayDataManager = mock()
+            bitpayDataManager = mock(),
+            analytics = analytics
         ).apply {
             initView(view)
-            handleURIScan("nope_nope_nope", CryptoCurrency.BTC)
+            handlePredefinedInput("nope_nope_nope", CryptoCurrency.BTC, false)
         }
 
         verify(btcStrategy, never()).processURIScanAddress(any())
@@ -250,6 +326,7 @@ class PerCurrencySendPresenterTest {
         verify(etherStrategy, never()).processURIScanAddress(any())
         verify(xlmStrategy, never()).processURIScanAddress(any())
         verify(erc20Strategy, never()).processURIScanAddress(any())
+        verify(analytics, never()).logEvent(any())
     }
 
     @Test
@@ -274,7 +351,8 @@ class PerCurrencySendPresenterTest {
             pitLinkingFeatureFlag = mock {
                 on { enabled } `it returns` Single.just(true)
             },
-            bitpayDataManager = mock()
+            bitpayDataManager = mock(),
+            analytics = analytics
         ).apply {
             initView(view)
             onViewReady()
@@ -305,7 +383,8 @@ class PerCurrencySendPresenterTest {
             pitLinkingFeatureFlag = mock {
                 on { enabled } `it returns` Single.just(true)
             },
-            bitpayDataManager = mock()
+            bitpayDataManager = mock(),
+            analytics = analytics
         ).apply {
             initView(view)
             onViewReady()
@@ -335,7 +414,8 @@ class PerCurrencySendPresenterTest {
             pitLinkingFeatureFlag = mock {
                 on { enabled } `it returns` Single.just(false)
             },
-            bitpayDataManager = mock()
+            bitpayDataManager = mock(),
+            analytics = analytics
         ).apply {
             initView(view)
             onViewReady()

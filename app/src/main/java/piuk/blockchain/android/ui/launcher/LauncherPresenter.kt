@@ -106,7 +106,7 @@ class LauncherPresenter @Inject constructor(
 
     private fun checkOnboardingStatus(settings: Settings) {
         when {
-            accessState.isNewlyCreated -> view.onStartOnboarding(false)
+            accessState.isNewlyCreated -> view.onStartOnboarding(emailOnly = false, isDismissable = true)
             !settings.isEmailVerified &&
                     settings.email != null
                     && settings.email.isNotEmpty() -> checkIfOnboardingNeeded()
@@ -118,7 +118,7 @@ class LauncherPresenter @Inject constructor(
         var visits = prefs.getValue(PersistentPrefs.KEY_APP_VISITS, 0)
         // Nag user to verify email after second login
         when (visits) {
-            1 -> view.onStartOnboarding(true)
+            1 -> view.onStartOnboarding(emailOnly = true, isDismissable = true)
             else -> view.onStartMainActivity(deepLinkPersistence.popUriFromSharedPrefs())
         }
 

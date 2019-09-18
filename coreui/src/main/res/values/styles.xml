@@ -1,8 +1,7 @@
 <resources>
 
     <style name="AppTheme" parent="BaseTheme">
-        <!-- <v21 specific stuff here -->
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="android:fontFamily">@font/inter</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:toolbarStyle">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>

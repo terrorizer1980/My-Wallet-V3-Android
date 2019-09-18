@@ -18,6 +18,8 @@ interface Erc20Account {
 
     val dataStore: Erc20DataStore
 
+    val contractAddress: String
+
     fun clear() = dataStore.clearData()
     /**
      * Returns an [Erc20AddressResponse] object for a given ERC20 address as an [Observable]. An

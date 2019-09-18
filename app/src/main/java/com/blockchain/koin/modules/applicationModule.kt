@@ -7,13 +7,19 @@ import com.blockchain.activities.StartOnboarding
 import com.blockchain.activities.StartSwap
 import com.blockchain.balance.TotalBalance
 import com.blockchain.balance.plus
+import com.blockchain.network.websocket.Options
+import com.blockchain.network.websocket.autoRetry
+import com.blockchain.network.websocket.debugLog
+import com.blockchain.network.websocket.newBlockchainWebSocket
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
 import com.blockchain.ui.password.SecondPasswordHandler
+import com.google.gson.GsonBuilder
 import info.blockchain.wallet.util.PrivateKeyFactory
+import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
@@ -23,6 +29,7 @@ import piuk.blockchain.android.data.datamanagers.PromptManager
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
+import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
@@ -39,6 +46,7 @@ import piuk.blockchain.android.ui.auth.LandingPresenter
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.PinEntryPresenter
 import piuk.blockchain.android.ui.backup.start.BackupWalletStartingPresenter
+import piuk.blockchain.android.ui.backup.verify.BackupVerifyPresenter
 import piuk.blockchain.android.ui.backup.wordlist.BackupWalletWordListPresenter
 import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifySignUpPresenter
@@ -84,6 +92,7 @@ import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
 import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.android.util.lifecycle.LifecycleInterestedComponent
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
@@ -115,6 +124,8 @@ val applicationModule = applicationContext {
     factory { Locale.getDefault() }
 
     bean { CurrentContextAccess() }
+
+    bean { LifecycleInterestedComponent() }
 
     context("Payload") {
 
@@ -244,6 +255,27 @@ val applicationModule = applicationContext {
             )
         }
 
+        bean {
+            CoinsWebSocketStrategy(
+                coinsWebSocket = get(),
+                ethDataManager = get(),
+                swipeToReceiveHelper = get(),
+                stringUtils = get(),
+                gson = get(),
+                erc20Account = get("pax")
+            )
+        }
+
+        factory {
+            GsonBuilder().create()
+        }
+
+        factory {
+            OkHttpClient()
+                .newBlockchainWebSocket(options = Options(url = BuildConfig.COINS_WEBSOCKET_URL))
+                .autoRetry().debugLog("COIN_SOCKET")
+        }
+
         factory {
             BuySellBuildOrderPresenter(
                 coinifyDataManager = get(),
@@ -304,7 +336,8 @@ val applicationModule = applicationContext {
                 prefs = get(),
                 appUtil = get(),
                 accessState = get(),
-                prngFixer = get()
+                prngFixer = get(),
+                analytics = get()
             )
         }
 
@@ -330,6 +363,14 @@ val applicationModule = applicationContext {
         factory {
             FingerprintPresenter(
                 fingerprintHelper = get()
+            )
+        }
+
+        factory {
+            BackupVerifyPresenter(
+                payloadDataManager = get(),
+                prefs = get(),
+                backupWalletUtil = get()
             )
         }
 
@@ -361,7 +402,8 @@ val applicationModule = applicationContext {
                 envSettings = get(),
                 exchangeRateFactory = get(),
                 pitLinkingFeatureFlag = get("ff_pit_linking"),
-                bitpayDataManager = get()
+                bitpayDataManager = get(),
+                analytics = get()
             )
         }
 
@@ -384,7 +426,8 @@ val applicationModule = applicationContext {
                 nabuDataManager = get(),
                 nabuToken = get(),
                 bitPayDataManager = get(),
-                pitLinking = get()
+                pitLinking = get(),
+                analytics = get()
             )
         }
 
@@ -610,7 +653,8 @@ val applicationModule = applicationContext {
                 /* appUtil = */ get(),
                 /* authDataManager = */ get(),
                 /* payloadDataManager = */ get(),
-                /* prefs = */ get()
+                /* prefs = */ get(),
+                /* analytics = */ get()
             )
         }
 

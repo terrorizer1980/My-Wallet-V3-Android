@@ -3,6 +3,8 @@ package piuk.blockchain.android.ui.send.strategy
 import android.annotation.SuppressLint
 import com.blockchain.fees.FeeType
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.NabuApiException
+import com.blockchain.kyc.models.nabu.NabuErrorCodes
 import com.blockchain.kyc.models.nabu.State
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.serialization.JsonSerializableAccount
@@ -64,6 +66,10 @@ class XlmSendStrategy(
             view.updateReceivingAddress(it.label)
             addressSubject.onNext(it.address)
             addressToLabel.onNext(it.label)
+            it.memo?.let { memo ->
+                onMemoChange(Memo(value = memo, type = "text"))
+                view.enableMemo(false)
+            }
         }
     }
 
@@ -71,6 +77,8 @@ class XlmSendStrategy(
         addressSubject.onNext("")
         view.updateReceivingAddress("")
         addressToLabel.onNext("")
+        onMemoChange(Memo.None)
+        view.enableMemo(true)
     }
 
     private val currency: CryptoCurrency by lazy { currencyState.cryptoCurrency }
@@ -345,12 +353,22 @@ class XlmSendStrategy(
             }.applySchedulers().doOnSubscribe {
                 view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
             }.subscribeBy(onError = {
-                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
+                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM,
+                    1,
+                    it is NabuApiException && it.getErrorCode() == NabuErrorCodes.Bad2fa
+                ) { view.show2FANotAvailableError() }
             }) {
-                pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
-                    CryptoCurrency.XLM.symbol), it.address.split(":")[0])
+                val components = it.address.split(":")
+                pitAccount = PitAccount(
+                    label = stringUtils.getFormattedString(
+                        R.string.pit_default_account_label,
+                        CryptoCurrency.XLM.symbol
+                    ),
+                    address = components[0],
+                    memo = components[1]
+                )
                 view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1,
-                    it.state == State.ACTIVE && it.address.isNotEmpty())
+                    it.state == State.ACTIVE && it.address.isNotEmpty()) { view.fillOrClearAddress() }
             }
     }
 }

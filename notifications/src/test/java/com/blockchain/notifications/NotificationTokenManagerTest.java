@@ -1,5 +1,6 @@
 package com.blockchain.notifications;
 
+import com.blockchain.preferences.NotificationPrefs;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.junit.Before;
@@ -27,7 +28,7 @@ public class NotificationTokenManagerTest extends RxTest {
     private NotificationTokenManager subject;
     @Mock private NotificationService notificationService;
     @Mock private PayloadManager payloadManager;
-    @Mock private PersistentPrefs prefs;
+    @Mock private NotificationPrefs prefs;
     @Mock private FirebaseInstanceId firebaseInstanceId;
     @Mock private RxBus rxBus;
 
@@ -41,35 +42,35 @@ public class NotificationTokenManagerTest extends RxTest {
     @Test
     public void storeAndUpdateToken_disabledNotifications() {
         // Arrange
-        when(prefs.getValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true)).thenReturn(false);
+        when(prefs.getArePushNotificationsEnabled()).thenReturn(false);
         when(payloadManager.getPayload()).thenReturn(null);
 
         // Act
         subject.storeAndUpdateToken("token");
         // Assert
-        verify(prefs).getValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true);
-        verify(prefs).setValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN, "token");
+        verify(prefs).getArePushNotificationsEnabled();
+        verify(prefs).setFirebaseToken("token");
         verifyNoMoreInteractions(prefs);
     }
 
     @Test
     public void storeAndUpdateToken_enabledNotifications_notSignedIn() {
         // Arrange
-        when(prefs.getValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true)).thenReturn(true);
+        when(prefs.getArePushNotificationsEnabled()).thenReturn(true);
         when(payloadManager.getPayload()).thenReturn(null);
 
         // Act
         subject.storeAndUpdateToken("token");
         // Assert
-        verify(prefs).getValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true);
-        verify(prefs).setValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN, "token");
+        verify(prefs).getArePushNotificationsEnabled();
+        verify(prefs).setFirebaseToken("token");
         verifyNoMoreInteractions(prefs);
     }
 
     @Test
     public void storeAndUpdateToken_enabledNotifications_signedIn() {
         // Arrange
-        when(prefs.getValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true)).thenReturn(true);
+        when(prefs.getArePushNotificationsEnabled()).thenReturn(true);
 
         Wallet mockPayload = mock(Wallet.class);
         when(mockPayload.getGuid()).thenReturn("guid");
@@ -81,8 +82,8 @@ public class NotificationTokenManagerTest extends RxTest {
         // Act
         subject.storeAndUpdateToken("token");
         // Assert
-        verify(prefs).getValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true);
-        verify(prefs).setValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN, "token");
+        verify(prefs).getArePushNotificationsEnabled();
+        verify(prefs).setFirebaseToken("token");
         verify(notificationService).sendNotificationToken("token","guid","sharedKey");
         verifyNoMoreInteractions(prefs);
     }
@@ -90,22 +91,22 @@ public class NotificationTokenManagerTest extends RxTest {
     @Test
     public void enableNotifications_requestToken() {
         // Arrange
-        when(prefs.getValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN, "")).thenReturn("");
+        when(prefs.getFirebaseToken()).thenReturn("");
 
         when(firebaseInstanceId.getToken()).thenReturn("token");
 
         // Act
         subject.enableNotifications();
         // Assert
-        verify(prefs).setValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true);
+        verify(prefs).setArePushNotificationsEnabled(true);
         verifyNoMoreInteractions(notificationService);
     }
 
     @Test
     public void enableNotifications_storedToken() {
         // Arrange
-        when(prefs.getValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN, "")).thenReturn("token");
-        when(prefs.getValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true)).thenReturn(true);
+        when(prefs.getFirebaseToken()).thenReturn("token");
+        when(prefs.getArePushNotificationsEnabled()).thenReturn(true);
 
         Wallet mockPayload = mock(Wallet.class);
         when(mockPayload.getGuid()).thenReturn("guid");
@@ -119,7 +120,7 @@ public class NotificationTokenManagerTest extends RxTest {
         // Assert
         testObservable.assertComplete();
         testObservable.assertNoErrors();
-        verify(prefs).setValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, true);
+        verify(prefs).setArePushNotificationsEnabled(true);
         verify(payloadManager, atLeastOnce()).getPayload();
         verify(notificationService).sendNotificationToken(anyString(), anyString(), anyString());
         verifyNoMoreInteractions(notificationService);
@@ -128,14 +129,14 @@ public class NotificationTokenManagerTest extends RxTest {
     @Test
     public void disableNotifications() throws Exception {
         // Arrange
-        when(prefs.getValue(PersistentPrefs.Companion.KEY_FIREBASE_TOKEN, "")).thenReturn("");
+        when(prefs.getFirebaseToken()).thenReturn("");
 
         // Act
         TestObserver<Void> testObservable = subject.disableNotifications().test();
         // Assert
         testObservable.assertComplete();
         testObservable.assertNoErrors();
-        verify(prefs).setValue(PersistentPrefs.Companion.KEY_PUSH_NOTIFICATION_ENABLED, false);
+        verify(prefs).setArePushNotificationsEnabled(false);
         verify(firebaseInstanceId).deleteInstanceId();
         verifyNoMoreInteractions(notificationService);
     }

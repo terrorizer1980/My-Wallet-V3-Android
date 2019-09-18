@@ -16,10 +16,19 @@ interface SendView : BaseSendView {
 
     fun setSelectedCurrency(cryptoCurrency: CryptoCurrency)
 
-    fun updateReceivingHintAndAccountDropDowns(currency: CryptoCurrency, listSize: Int, pitAddressAvailable: Boolean)
+    fun updateReceivingHintAndAccountDropDowns(
+        currency: CryptoCurrency,
+        listSize: Int,
+        pitAddressAvailable: Boolean,
+        onPitClicked: () -> Unit = {}
+    )
 
     // Update field
     fun updateSendingAddress(label: String)
+
+    fun show2FANotAvailableError()
+
+    fun fillOrClearAddress()
 
     fun updateCryptoAmount(cryptoValue: CryptoValue, silent: Boolean = false)
 
@@ -65,6 +74,8 @@ interface SendView : BaseSendView {
 
     fun displayMemo(usersMemo: Memo)
 
+    fun enableMemo(enabled: Boolean)
+
     fun showInfoLink()
 
     fun hideInfoLink()
@@ -81,6 +92,8 @@ interface SendView : BaseSendView {
     fun disableInput()
 
     fun showBitPayTimerAndMerchantInfo(expiry: String, merchantName: String)
+
+    fun resetBitpayState()
 
     fun enableInput()
 

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
 import android.text.Editable
 import android.widget.EditText
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.isValidXlmQr
@@ -20,6 +22,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.PATH_BITPAY_INVOICE
 import piuk.blockchain.android.data.api.bitpay.BITPAY_LIVE_BASE
+import piuk.blockchain.android.data.api.bitpay.models.events.BitPayEvent
 import piuk.blockchain.android.ui.send.DisplayFeeOptions
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.strategy.BitPayProtocol
@@ -52,7 +55,8 @@ internal class PerCurrencySendPresenter<View : SendView>(
     private val exchangeRateFactory: ExchangeRateDataManager,
     private val prefs: PersistentPrefs,
     private val pitLinkingFeatureFlag: FeatureFlag,
-    private val bitpayDataManager: BitPayDataManager
+    private val bitpayDataManager: BitPayDataManager,
+    private val analytics: Analytics
 ) : SendPresenter<View>() {
 
     override fun onPitAddressSelected() {
@@ -135,7 +139,11 @@ internal class PerCurrencySendPresenter<View : SendView>(
         delegate.onCurrencySelected()
     }
 
-    override fun handleURIScan(untrimmedscanData: String, defaultCurrency: CryptoCurrency) {
+    override fun handlePredefinedInput(
+        untrimmedscanData: String,
+        defaultCurrency: CryptoCurrency,
+        isDeepLinked: Boolean
+    ) {
         val address: String
 
         if (untrimmedscanData.isValidXlmQr()) {
@@ -163,6 +171,13 @@ internal class PerCurrencySendPresenter<View : SendView>(
                     if (address.isEmpty() && scanData.isBitpayAddress()) {
                         // get payment protocol request data from bitpay
                         val invoiceId = paymentRequestUrl.replace(bitpayInvoiceUrl, "")
+                        if (isDeepLinked) {
+                            analytics.logEvent(BitPayEvent.InputEvent(AnalyticsEvents.BitpayUrlDeeplink.event,
+                                CryptoCurrency.BTC))
+                        } else {
+                            analytics.logEvent(BitPayEvent.InputEvent(AnalyticsEvents.BitpayAdrressScanned.event,
+                                CryptoCurrency.BTC))
+                        }
                         handleBitPayInvoice(invoiceId)
                     } else {
                         // Convert to correct units
@@ -232,6 +247,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
                     view.updateReceivingAddress("bitcoin:?r=" + it.paymentUrl)
                     view.setFeePrioritySelection(1)
                     view.disableFeeDropdown()
+                    view.onBitPayAddressScanned()
                 }
             }.doOnError {
                 Timber.e(it)
@@ -299,6 +315,7 @@ internal class PerCurrencySendPresenter<View : SendView>(
                 .replace(bitpayInvoiceUrl, "")
                 .replace("bitcoin:?r=", "")
             handleBitPayInvoice(invoiceId)
+            analytics.logEvent(BitPayEvent.InputEvent(AnalyticsEvents.BitpayUrlPasted.event, CryptoCurrency.BTC))
         }
     }
 
@@ -347,5 +364,10 @@ internal class PerCurrencySendPresenter<View : SendView>(
 
     override fun setWarnWatchOnlySpend(warn: Boolean) {
         prefs.setValue(PersistentPrefs.KEY_WARN_WATCH_ONLY_SPEND, warn)
+    }
+
+    override fun onViewDestroyed() {
+        delegate.onViewDestroyed()
+        super.onViewDestroyed()
     }
 }

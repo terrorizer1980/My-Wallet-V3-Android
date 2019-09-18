@@ -3,6 +3,8 @@ package piuk.blockchain.android.ui.send.strategy
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.NabuApiException
+import com.blockchain.kyc.models.nabu.NabuErrorCodes
 import com.blockchain.kyc.models.nabu.State
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.preferences.CurrencyPrefs
@@ -140,13 +142,16 @@ class PaxSendStrategy(
             }.applySchedulers().doOnSubscribe {
                 view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
             }.subscribeBy(onError = {
-                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
+                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1,
+                    it is NabuApiException && it.getErrorCode() == NabuErrorCodes.Bad2fa) {
+                    view.show2FANotAvailableError()
+                }
             }) {
                 pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
                     CryptoCurrency.PAX.symbol), it.address)
                 view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX,
                     1,
-                    it.state == State.ACTIVE && it.address.isNotEmpty())
+                    it.state == State.ACTIVE && it.address.isNotEmpty()) { view.fillOrClearAddress() }
             }
     }
 
@@ -200,7 +205,7 @@ class PaxSendStrategy(
             .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view.showProgressDialog(R.string.app_name) }
-            .doOnError { view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_INDEFINITE) }
+            .doOnError { view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG) }
             .doOnTerminate {
                 view.dismissProgressDialog()
                 view.dismissConfirmationDialog()
@@ -215,7 +220,7 @@ class PaxSendStrategy(
                 {
                     Timber.e(it)
                     logPaymentSentEvent(false, CryptoCurrency.PAX, pendingTx.amountPax)
-                    view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_INDEFINITE)
+                    view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
                 }
             )
     }

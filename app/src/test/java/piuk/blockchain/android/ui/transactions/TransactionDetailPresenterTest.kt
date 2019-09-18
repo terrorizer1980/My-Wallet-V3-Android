@@ -435,7 +435,7 @@ class TransactionDetailPresenterTest {
         subject.onViewReady()
         // Assert
         verify(view).getPageIntent()
-        verify(view).setStatus(CryptoCurrency.PAX, "Pending (0/3 Confirmations)", "hash")
+        verify(view).setStatus(CryptoCurrency.PAX, "Pending (0/12 Confirmations)", "hash")
         verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
         verify(view).setTransactionColour(R.color.product_red_sent_50)
         verify(view).setDescription(any())

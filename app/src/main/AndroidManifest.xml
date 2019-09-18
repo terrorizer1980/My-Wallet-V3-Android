@@ -204,10 +204,18 @@
 
         <service
             android:name=".data.websocket.WebSocketService"
-            android:stopWithTask="true" /> <!-- Set custom default icon. This is used when no icon is set for incoming notification messages. -->
+            android:stopWithTask="true" />
+
+        <service
+            android:name=".data.coinswebsocket.service.CoinsWebSocketService"
+            android:stopWithTask="true" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_launcher_round" />
+            android:resource="@mipmap/ic_notification" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notification_tint" />
         <!--
              Set color used with incoming notification messages. This is used when no color is set for the incoming
              notification message.

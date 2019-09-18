@@ -13,7 +13,7 @@ interface MainView : View, HomeNavigator {
     @Deprecated("Used for processing deep links. Find a way to get rid of this")
     fun getStartIntent(): Intent
 
-    fun onScanInput(strUri: String)
+    fun onHandleInput(strUri: String)
 
     fun startBalanceFragment()
 

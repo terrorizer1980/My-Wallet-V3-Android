@@ -6,8 +6,8 @@ object Versions {
     const val minSdk = 21
     const val targetSdk = 28
     const val compileSdk = 27
-    const val versionCode = 472
-    const val versionName = "6.28.2"
+    const val versionCode = 475
+    const val versionName = "6.29.0"
     const val buildTools = "28.0.3"
 
     // Build tools and languages
@@ -39,6 +39,7 @@ object Versions {
     const val okHttp = "4.0.1"
     const val mockWebServer = "v0.1.0"
     const val moshi = "1.8.0"
+    const val gson = "2.8.5"
     const val jacksonCore = "2.9.9"
     const val dagger = "2.24"
     const val koin = "0.9.3"
@@ -158,6 +159,7 @@ object Libraries {
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi}"
     const val moshiKotlin = "com.squareup.moshi:moshi-kotlin:${Versions.moshi}"
     const val jacksonCore = "com.fasterxml.jackson.core:jackson-core:${Versions.jacksonCore}"
+    const val gson = "com.google.code.gson:gson:${Versions.gson}"
     const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
     const val daggerKapt = "com.google.dagger:dagger-compiler:${Versions.dagger}"
     const val koin = "org.koin:koin-core:${Versions.koin}"

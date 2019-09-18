@@ -39,6 +39,7 @@ import android.widget.Spinner
 import com.blockchain.annotations.CommonCode
 import com.blockchain.balance.errorIcon
 import com.blockchain.koin.injectActivity
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.ui.MinBalanceExplanationDialog
@@ -60,6 +61,8 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.balance.compareTo
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.alert_watch_only_spend.view.*
 import kotlinx.android.synthetic.main.fragment_send.*
 import kotlinx.android.synthetic.main.include_amount_row.*
@@ -71,6 +74,7 @@ import kotlinx.android.synthetic.main.view_expanding_currency_header.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.data.api.bitpay.models.events.BitPayEvent
 import piuk.blockchain.android.data.connectivity.ConnectivityStatus
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import piuk.blockchain.android.ui.balance.BalanceFragment
@@ -113,6 +117,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     NumericKeyboardCallback {
 
     private val appUtil: AppUtil by inject()
+    private val analytics: Analytics by inject()
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
     private val currencyState: CurrencyState by inject()
@@ -122,7 +127,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     private var confirmPaymentDialog: ConfirmPaymentDialog? = null
     private var transactionSuccessDialog: AlertDialog? = null
     private var bitpayInvoiceExpiredDialog: AlertDialog? = null
-
+    private val timerDisposable = CompositeDisposable()
     private var handlingActivityResult = false
     private var pitEnabled = false
     private var pitAddressState: PitAddressFieldState = PitAddressFieldState.CLEARED
@@ -141,20 +146,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             if (isShowing && activity?.isFinishing == false) {
                 dismiss()
             }
-        }
-    }
-
-    private val onPitClickListener = View.OnClickListener {
-        if (pitAddressState == PitAddressFieldState.CLEARED) {
-            pitAddressState = PitAddressFieldState.FILLED
-            pitAddress.setImageResource(R.drawable.vector_dismiss_pit_address)
-            presenter.onPitAddressSelected()
-            toContainer.toAddressEditTextView.isEnabled = false
-        } else {
-            pitAddressState = PitAddressFieldState.CLEARED
-            pitAddress.setImageResource(R.drawable.vector_pit_send_address)
-            presenter.onPitAddressCleared()
-            toContainer.toAddressEditTextView.isEnabled = true
         }
     }
 
@@ -207,8 +198,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
                 showSnackbar(R.string.check_connectivity_exit, Snackbar.LENGTH_LONG)
             }
         }
-
-        pitAddress.setOnClickListener(onPitClickListener)
 
         max.setOnClickListener { presenter.onSpendMaxClicked() }
 
@@ -541,17 +530,17 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     }
 
     private fun handleIncomingArguments() {
-        if (!handleIncomingScan()) {
+        if (!handlePredefinedInput(arguments.inputDeeplinked)) {
             presenter.onCurrencySelected(currencyState.cryptoCurrency)
         }
     }
 
-    private fun handleIncomingScan(): Boolean {
+    private fun handlePredefinedInput(isDeeplinked: Boolean): Boolean {
         if (arguments != null) {
-            val scanData = arguments.scanData
-            if (scanData != null) {
+            val input = arguments.input
+            if (input != null) {
                 handlingActivityResult = true
-                presenter.handleURIScan(scanData, currencyState.cryptoCurrency)
+                presenter.handlePredefinedInput(input, currencyState.cryptoCurrency, isDeeplinked)
                 return true
             }
         }
@@ -570,7 +559,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     override fun updateReceivingHintAndAccountDropDowns(
         currency: CryptoCurrency,
         listSize: Int,
-        pitAddressAvailable: Boolean
+        pitAddressAvailable: Boolean,
+        onPitClicked: () -> Unit
     ) {
         if (listSize == 1) {
             hideReceivingDropdown()
@@ -581,7 +571,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
 
         if (pitAddressAvailable && pitEnabled && !bitPayAddressScanned) {
-            showPitAddressIcon()
+            showPitAddressIconWithClickListener(onPitClicked)
         } else {
             hidePitAddressIcon()
         }
@@ -604,6 +594,15 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             }
         }
         toContainer.toAddressEditTextView.setHint(hint)
+    }
+
+    private fun showPitAddressIconWithClickListener(onPitClicked: () -> Unit) {
+        toContainer.pitAddress.apply {
+            visible()
+            setOnClickListener {
+                onPitClicked()
+            }
+        }
     }
 
     private fun startFromAccountChooser() {
@@ -751,10 +750,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         toContainer.pitAddress.gone()
     }
 
-    private fun showPitAddressIcon() {
-        toContainer.pitAddress.visible()
-    }
-
     override fun updateReceivingAddress(address: String) {
         toContainer.toAddressEditTextView.setText(address)
     }
@@ -869,6 +864,17 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     override fun displayMemo(usersMemo: Memo) {
         lastMemo = usersMemo
+        if (memo_text_edit.text.toString() != usersMemo.value) {
+            memo_text_edit.setText(usersMemo.value)
+        }
+        usersMemo.type?.let {
+            val position = if (it == "text") 0 else 1
+            memo_type_spinner.setSelection(position)
+        }
+    }
+
+    override fun enableMemo(enabled: Boolean) {
+        memo_text_edit.isEnabled = enabled
     }
 
     override fun updateWarning(message: String) {
@@ -1159,6 +1165,13 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
+    override fun resetBitpayState() {
+        bitpayMerchantText.gone()
+        bitpayTimeRemaining.gone()
+        bitpayDivider.gone()
+        timerDisposable.clear()
+    }
+
     private fun startCountdown(endTime: Long) {
         val timeRemainingText = stringUtils.getString(R.string.bitpay_remaining_time)
         var remaining = (endTime - System.currentTimeMillis()) / 1000
@@ -1167,7 +1180,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             // Finish page with error
             showbitpayInvoiceExpiredDialog()
         } else {
-            Observable.interval(1, TimeUnit.SECONDS)
+            timerDisposable.clear()
+            timerDisposable += Observable.interval(1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnEach { remaining-- }
                 .map { remaining }
@@ -1193,6 +1207,11 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        timerDisposable.clear()
+    }
+
     private fun startBitPayTimer(expiryDateGmt: Date) {
         val calendar = Calendar.getInstance()
         val timeZone = calendar.timeZone
@@ -1206,7 +1225,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         val appRate = AppRate(activity)
             .setMinTransactionsUntilPrompt(3)
             .incrementTransactionCount()
-
+        analytics.logEvent(BitPayEvent.ExpiredEvent)
         activity?.run {
             val dialogBuilder = AlertDialog.Builder(this)
             val dialogView = View.inflate(activity, R.layout.modal_transaction_failed, null)
@@ -1358,7 +1377,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     companion object {
         const val SCAN_PRIVX = 2011
-        private const val ARGUMENT_SCAN_DATA = "scan_data"
+        private const val ARGUMENT_SEND_INPUT = "send_input"
+        private const val ARGUMENT_SEND_INPUT_DEEPLINKED = "send_input_deeplinked"
 
         private const val REQUEST_CODE_BTC_RECEIVING = 911
         private const val REQUEST_CODE_BTC_SENDING = 912
@@ -1366,17 +1386,22 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         private const val REQUEST_CODE_BCH_SENDING = 914
         private const val REQUEST_CODE_MEMO = 915
 
-        fun newInstance(scanUri: String?): SendFragment {
+        fun newInstance(scanUri: String?, inputDeeplinked: Boolean = false): SendFragment {
             val fragment = SendFragment()
             fragment.arguments = Bundle().apply {
-                scanData = scanUri
+                input = scanUri
+                this.inputDeeplinked = inputDeeplinked
             }
             return fragment
         }
 
-        private var Bundle?.scanData: String?
-            get() = this?.getString(ARGUMENT_SCAN_DATA)
-            set(v) = this?.putString(ARGUMENT_SCAN_DATA, v) ?: throw NullPointerException()
+        private var Bundle?.input: String?
+            get() = this?.getString(ARGUMENT_SEND_INPUT)
+            set(v) = this?.putString(ARGUMENT_SEND_INPUT, v) ?: throw NullPointerException()
+
+        private var Bundle?.inputDeeplinked: Boolean
+            get() = this?.getBoolean(ARGUMENT_SEND_INPUT_DEEPLINKED) ?: false
+            set(v) = this?.putBoolean(ARGUMENT_SEND_INPUT_DEEPLINKED, v) ?: throw NullPointerException()
     }
 
     override fun isPitEnabled(enabled: Boolean) {
@@ -1393,6 +1418,24 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     override fun lastEnteredCryptoAmount(): String {
         return amountCrypto.text?.takeIf { it.isBlank().not() }?.toString() ?: "0"
+    }
+
+    override fun show2FANotAvailableError() {
+        toast(R.string.pit_no_two_fa_available, ToastCustom.TYPE_ERROR)
+    }
+
+    override fun fillOrClearAddress() {
+        if (pitAddressState == PitAddressFieldState.CLEARED) {
+            pitAddressState = PitAddressFieldState.FILLED
+            pitAddress.setImageResource(R.drawable.vector_dismiss_pit_address)
+            presenter.onPitAddressSelected()
+            toContainer.toAddressEditTextView.isEnabled = false
+        } else {
+            pitAddressState = PitAddressFieldState.CLEARED
+            pitAddress.setImageResource(R.drawable.vector_pit_send_address)
+            presenter.onPitAddressCleared()
+            toContainer.toAddressEditTextView.isEnabled = true
+        }
     }
 }
 

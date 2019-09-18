@@ -8,6 +8,7 @@ import com.blockchain.datamanagers.fees.XlmFees
 import com.blockchain.datamanagers.fees.feeForType
 import com.blockchain.fees.FeeType
 import com.blockchain.logging.SwapDiagnostics
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendDetails
@@ -34,6 +35,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.exceptions.TransactionInProgressException
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.payments.SendDataManager
+import piuk.blockchain.androidcore.utils.extensions.logAnalyticsError
 import timber.log.Timber
 import java.math.BigInteger
 
@@ -47,7 +49,8 @@ internal class TransactionExecutorViaDataManagers(
     private val defaultAccountDataManager: DefaultAccountDataManager,
     private val ethereumAccountWrapper: EthereumAccountWrapper,
     private val xlmSender: TransactionSender,
-    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig
+    private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig,
+    private val analytics: Analytics
 ) : TransactionExecutor {
 
     override fun executeTransaction(
@@ -90,7 +93,7 @@ internal class TransactionExecutorViaDataManagers(
                     fee = (fees as XlmFees).feeForType(feeType),
                     memo = memo
                 )
-            ).map { it.hash!! }
+            ).logAnalyticsError(analytics).map { it.hash!! }
             CryptoCurrency.PAX ->
                 sendPaxTransaction(fees as EthereumFees, destination, amount)
         }
@@ -105,7 +108,7 @@ internal class TransactionExecutorViaDataManagers(
                 val ecKey = EthereumAccount.deriveECKey(payloadDataManager.wallet!!.hdWallets[0].masterKey, 0)
                 return@flatMap ethDataManager.signEthTransaction(it, ecKey)
             }
-            .flatMap { ethDataManager.pushEthTx(it) }
+            .flatMap { ethDataManager.pushEthTx(it).logAnalyticsError(analytics) }
             .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
             .subscribeOn(Schedulers.io())
             .singleOrError()
@@ -288,7 +291,7 @@ internal class TransactionExecutorViaDataManagers(
                                 destination,
                                 it,
                                 spendable.absoluteFee
-                            )
+                            ).logAnalyticsError(analytics)
                         }
                 }
         }
@@ -327,7 +330,7 @@ internal class TransactionExecutorViaDataManagers(
                             ethereumAccountWrapper.deriveECKey(payloadDataManager.masterKey, 0)
                         )
                     }
-                    .flatMap { ethDataManager.pushEthTx(it) }
+                    .flatMap { ethDataManager.pushEthTx(it).logAnalyticsError(analytics) }
                     .flatMap { ethDataManager.setLastTxHashObservable(it, System.currentTimeMillis()) }
                     .subscribeOn(Schedulers.io())
                     .singleOrError()

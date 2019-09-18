@@ -1,13 +1,15 @@
 package piuk.blockchain.androidcore.utils
 
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.preferences.NotificationPrefs
 import com.blockchain.preferences.OnBoardingPrefs
 import com.blockchain.preferences.ThePitLinkingPrefs
 
 interface PersistentPrefs :
     CurrencyPrefs,
     ThePitLinkingPrefs,
-    OnBoardingPrefs {
+    OnBoardingPrefs,
+    NotificationPrefs {
 
     val isLoggedOut: Boolean
 
@@ -56,13 +58,11 @@ interface PersistentPrefs :
         const val KEY_ENCRYPTED_PIN_CODE = "encrypted_pin_code"
         const val KEY_FINGERPRINT_ENABLED = "fingerprint_enabled"
         const val KEY_RECEIVE_SHORTCUTS_ENABLED = "receive_shortcuts_enabled"
-        const val KEY_FIREBASE_TOKEN = "firebase_token"
         const val KEY_SWIPE_TO_RECEIVE_ENABLED = "swipe_to_receive_enabled"
         const val KEY_APP_VISITS = "app_visits"
         const val KEY_SCREENSHOTS_ENABLED = "screenshots_enabled"
         const val KEY_ONBOARDING_COMPLETE = "onboarding_complete_1"
         const val KEY_OVERLAY_TRUSTED = "overlay_trusted"
-        const val KEY_PUSH_NOTIFICATION_ENABLED = "push_notification_enabled"
 
         const val KEY_LATEST_ANNOUNCEMENT_DISMISSED = "latest_announcement_dismissed"
         const val KEY_LATEST_ANNOUNCEMENT_SEEN = "latest_announcement_seen"

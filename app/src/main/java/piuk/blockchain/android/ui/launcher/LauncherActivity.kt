@@ -71,8 +71,8 @@ class LauncherActivity : BaseMvpActivity<LauncherView, LauncherPresenter>(), Lau
         startSingleActivity(MainActivity::class.java, null, uri)
     }
 
-    override fun onStartOnboarding(emailOnly: Boolean) {
-        OnboardingActivity.launch(this, emailOnly)
+    override fun onStartOnboarding(emailOnly: Boolean, isDismissable: Boolean) {
+        OnboardingActivity.launch(this, emailOnly, isDismissable)
     }
 
     override fun onReEnterPassword() {

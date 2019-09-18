@@ -46,9 +46,7 @@ class PrefsUtil(
     // From CurrencyPrefs
     override var selectedFiatCurrency: String
         get() = getValue(KEY_SELECTED_FIAT, DEFAULT_FIAT_CURRENCY)
-        set(fiat) {
-            setValue(KEY_SELECTED_FIAT, fiat)
-        }
+        set(fiat) = setValue(KEY_SELECTED_FIAT, fiat)
 
     override var selectedCryptoCurrency: CryptoCurrency
         get() =
@@ -73,6 +71,15 @@ class PrefsUtil(
     override var swapIntroCompleted: Boolean
         get() = getValue(KEY_SWAP_INTRO_COMPLETED, false)
         set(v) = setValue(KEY_SWAP_INTRO_COMPLETED, v)
+
+    // Notification prefs
+    override var arePushNotificationsEnabled: Boolean
+        get() = getValue(KEY_PUSH_NOTIFICATION_ENABLED, true)
+        set(v) = setValue(KEY_PUSH_NOTIFICATION_ENABLED, v)
+
+    override var firebaseToken: String
+        get() = getValue(KEY_FIREBASE_TOKEN, "")
+        set(v) = setValue(KEY_FIREBASE_TOKEN, v)
 
     override fun getValue(name: String): String? =
         store.getString(name, null)
@@ -124,14 +131,12 @@ class PrefsUtil(
      */
     override fun logOut() {
         val guid = getValue(PersistentPrefs.KEY_WALLET_GUID, "")
-        val notificationsToken = getValue(PersistentPrefs.KEY_FIREBASE_TOKEN, "")
         val deviceId = getValue(KEY_PRE_IDV_DEVICE_ID, "")
 
         clear()
 
         setValue(KEY_LOGGED_OUT, true)
         setValue(PersistentPrefs.KEY_WALLET_GUID, guid)
-        setValue(PersistentPrefs.KEY_FIREBASE_TOKEN, notificationsToken)
         setValue(KEY_PRE_IDV_DEVICE_ID, deviceId)
     }
 
@@ -165,5 +170,8 @@ class PrefsUtil(
         // For QA:
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         const val KEY_IS_DEVICE_ID_RANDOMISED = "random_device_id"
+
+        private const val KEY_FIREBASE_TOKEN = "firebase_token"
+        private const val KEY_PUSH_NOTIFICATION_ENABLED = "push_notification_enabled"
     }
 }

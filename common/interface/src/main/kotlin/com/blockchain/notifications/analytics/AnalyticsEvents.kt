@@ -57,10 +57,40 @@ enum class AnalyticsEvents(
     SwapInfoDialog("swap_info_dialog"),
     SwapInfoDialogViewHistory("swap_info_dialog_history_click"),
     SwapInfoDialogSwapLimits("swap_info_dialog_limits_click"),
-    SwapInfoDialogSupport("swap_info_dialog_support_click")
+    SwapInfoDialogSupport("swap_info_dialog_support_click"),
+    BitpayAdrressScanned("bitpay_url_scanned"),
+    BitpayUrlPasted("bitpay_url_pasted"),
+    BitpayPaymentExpired("bitpay_payment_expired"),
+    BitpayPaymentFailed("bitpay_payment_failure"),
+    BitpayPaymentSucceed("bitpay_payment_success"),
+    BitpayUrlDeeplink("bitpay_url_deeplink"),
+    WalletCreation("wallet_creation"),
+    WalletManualLogin("wallet_manual_login"),
+    WalletAutoPairing("wallet_auto_pairing")
 }
 
 fun kycTierStart(tier: Int): AnalyticsEvent = object : AnalyticsEvent {
     override val event: String = "kyc_tier${tier}_start"
     override val params: Map<String, String> = emptyMap()
 }
+
+fun networkError(host: String, path: String, message: String): AnalyticsEvent = object : AnalyticsEvent {
+    override val event: String
+        get() = "network_error"
+    override val params: Map<String, String>
+        get() = mapOf("host" to host, "message" to message, "path" to path)
+}
+
+fun apiError(host: String, path: String, body: String?, requestId: String?, errorCode: Int): AnalyticsEvent =
+    object : AnalyticsEvent {
+        override val event: String
+            get() = "api_error"
+        override val params: Map<String, String>
+            get() = mapOf(
+                "host" to host,
+                "body" to body,
+                "path" to path,
+                "error_code" to errorCode.toString(),
+                "request_id" to requestId
+            ).mapNotNull { it.value?.let { value -> it.key to value } }.toMap()
+    }

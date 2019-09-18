@@ -16,7 +16,7 @@ import java.math.BigInteger
 class EthTransaction {
 
     @JsonProperty("blockNumber")
-    var blockNumber: Long = 0L
+    var blockNumber: Long? = 0L
     @JsonProperty("timeStamp")
     var timeStamp: Long = 0L
     @JsonProperty("hash")
@@ -28,7 +28,7 @@ class EthTransaction {
     @JsonProperty("nonce")
     var nonce: String = ""
     @JsonProperty("blockHash")
-    var blockHash: String = ""
+    var blockHash: String? = ""
     @JsonProperty("transactionIndex")
     var transactionIndex: Int = 0
     @JsonProperty("from")

@@ -40,8 +40,6 @@ class CoinsTest {
             val max = maximumSpendable.first
             val absoluteFee = maximumSpendable.second
             val bundle = spendableUnspentOutputs(unspentOutputs, max, fee)
-            println("Fee $fee, ${absoluteFee.toStringWithSymbol()} Max ${max.toStringWithSymbol()}")
-            println("Spendable outputs: ${bundle.spendableOutputs.size}")
 
             val payment = Payment()
             payment.makeSimpleTransaction(

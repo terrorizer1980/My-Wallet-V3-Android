@@ -162,9 +162,7 @@ class MainPresenter internal constructor(
      * available addresses.
      */
     private fun doPushNotifications() {
-        prefs.setValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true)
-
-        if (prefs.getValue(PersistentPrefs.KEY_PUSH_NOTIFICATION_ENABLED, true)) {
+        if (prefs.arePushNotificationsEnabled) {
             compositeDisposable += payloadDataManager.syncPayloadAndPublicKeys()
                 .subscribe({ /*no-op*/ },
                     { throwable -> Timber.e(throwable) })
@@ -208,7 +206,7 @@ class MainPresenter internal constructor(
                 val strUri = prefs.getValue(PersistentPrefs.KEY_SCHEME_URL, "")
                 if (strUri.isNotEmpty()) {
                     prefs.removeValue(PersistentPrefs.KEY_SCHEME_URL)
-                    view.onScanInput(strUri)
+                    view.onHandleInput(strUri)
                 }
             }
             .subscribe({

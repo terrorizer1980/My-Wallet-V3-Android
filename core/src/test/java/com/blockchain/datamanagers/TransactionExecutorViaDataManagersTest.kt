@@ -6,6 +6,7 @@ import com.blockchain.datamanagers.fees.BitcoinLikeFees
 import com.blockchain.datamanagers.fees.EthereumFees
 import com.blockchain.datamanagers.fees.XlmFees
 import com.blockchain.fees.FeeType
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
@@ -62,6 +63,7 @@ class TransactionExecutorViaDataManagersTest {
     private val addressResolver: AddressResolver = mock()
     private val accountLookup: AccountLookup = mock()
     private val xlmSender: TransactionSender = mock()
+    private val analytics: Analytics = mock()
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig = mock()
 
     private val useNewCoinSelection = true
@@ -85,7 +87,8 @@ class TransactionExecutorViaDataManagersTest {
             defaultAccountDataManager,
             ethereumAccountWrapper,
             xlmSender,
-            coinSelectionRemoteConfig
+            coinSelectionRemoteConfig,
+            analytics
         )
 
         whenever(coinSelectionRemoteConfig.enabled).thenReturn(Single.just(useNewCoinSelection))

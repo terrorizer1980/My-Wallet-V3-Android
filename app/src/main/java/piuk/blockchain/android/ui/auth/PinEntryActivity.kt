@@ -14,10 +14,12 @@ import android.view.Window
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
+import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
 import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.android.databinding.ActivityPinEntryBinding
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveFragment
 import piuk.blockchain.android.util.OSUtil
+import piuk.blockchain.android.util.start
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.annotations.Thunk
@@ -136,16 +138,8 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
     }
 
     private fun startWebSocketService() {
-        val intent = Intent(this, WebSocketService::class.java)
-
-        if (!osUtil.isServiceRunning(WebSocketService::class.java)) {
-            startService(intent)
-        } else {
-            // Restarting this here ensures re-subscription after app restart - the service may remain
-            // running, but the subscription to the WebSocket won't be restarted unless onCreate called
-            stopService(intent)
-            startService(intent)
-        }
+        CoinsWebSocketService::class.java.start(this, osUtil)
+        WebSocketService::class.java.start(this, osUtil)
     }
 
     private class SwipeToReceiveFragmentPagerAdapter internal constructor(
