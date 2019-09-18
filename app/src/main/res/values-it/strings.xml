@@ -1205,22 +1205,16 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="sunriver_announcement_stellar_on_the_way_message">Abbiamo verificato con successo 
  la tua identità. 
 </string>
-  <string name="pit_announcement_description">È tempo di salire di livello per un migliore scambio di criptovalute. I primi 100.000 trader a registrarsi verranno scambiati gratuitamente per 30 giorni.</string>
-  <string name="pit_announcement_introducing_link">Controlla</string>
-  <string name="pit_logo_content_descr">Il logo Pit</string>
+    <string name="pit_logo_content_descr">Il logo Pit</string>
   <string name="pit_slogan_kyc_promo">L\'unico scambio che si collega al tuo portafoglio.</string>
   <string name="pit_thunder_kyc_promo">Commerci fulminei</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Liquido e affidabile]]></string>
-  <string name="pit_built_kyc_promo">Costruito da Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Commissioni basse</string>
-  <string name="pit_permission_app_can">Questa applicazione sarà in grado di:</string>
+    <string name="pit_built_kyc_promo">Costruito da Blockchain</string>
+    <string name="pit_permission_app_can">Questa applicazione sarà in grado di:</string>
   <string name="pit_permission_app_cant">Questa applicazione non sarà in grado di:</string>
   <string name="pit_permission_subtitle">Non sarò in grado di:</string>
-  <string name="pit_permission_1">Facilitare i trasferimenti crittografici tra account</string>
-  <string name="pit_permission_2">Condividi il tuo stato di livello Oro o Argento</string>
+    <string name="pit_permission_2">Condividi il tuo stato di livello Oro o Argento</string>
   <string name="pit_permission_3">Aggiungi le tue banche collegate</string>
-  <string name="pit_permission_4">Visualizza la password del tuo portafoglio</string>
-  <string name="pit_connect_now">Connetti ora</string>
+    <string name="pit_connect_now">Connetti ora</string>
   <string name="pit_setting_title">Fossa</string>
   <string name="pit_setting_connect">Collegare</string>
   <string name="pit_setting_connected">Collegato</string>

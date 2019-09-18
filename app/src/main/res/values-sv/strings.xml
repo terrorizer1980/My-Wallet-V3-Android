@@ -1222,22 +1222,16 @@
   <string name="sunriver_announcement_stellar_on_the_way_message">Vi har verifierat 
  din identitet. 
 </string>
-  <string name="pit_announcement_description">Det är dags att nivå upp till ett bättre krypto-utbyte. De första 100 000 handlare som registrerar sig kommer att handla gratis i 30 dagar.</string>
-  <string name="pit_announcement_introducing_link">Kolla in det</string>
-  <string name="pit_logo_content_descr">The Pit-logotypen</string>
+    <string name="pit_logo_content_descr">The Pit-logotypen</string>
   <string name="pit_slogan_kyc_promo">Den enda Exchange som ansluts till din plånbok.</string>
   <string name="pit_thunder_kyc_promo">Lightning Fast Trades</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Flytande och pålitlig]]></string>
-  <string name="pit_built_kyc_promo">Byggt av Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Låga avgifter</string>
-  <string name="pit_permission_app_can">Denna applikation kommer att kunna:</string>
+    <string name="pit_built_kyc_promo">Byggt av Blockchain</string>
+    <string name="pit_permission_app_can">Denna applikation kommer att kunna:</string>
   <string name="pit_permission_app_cant">Den här applikationen kan inte:</string>
   <string name="pit_permission_subtitle">Kommer inte kunna:</string>
-  <string name="pit_permission_1">Underlätta kryptoöverföringar mellan konton</string>
-  <string name="pit_permission_2">Dela din guld- eller silvernivåstatus</string>
+    <string name="pit_permission_2">Dela din guld- eller silvernivåstatus</string>
   <string name="pit_permission_3">Lägg till dina kopplade banker</string>
-  <string name="pit_permission_4">Visa ditt plånbokslösenord</string>
-  <string name="pit_connect_now">Anslut nu</string>
+    <string name="pit_connect_now">Anslut nu</string>
   <string name="pit_setting_title">Gropen</string>
   <string name="pit_setting_connect">Ansluta</string>
   <string name="pit_setting_connected">Ansluten</string>

@@ -1208,22 +1208,16 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="sunriver_announcement_stellar_on_the_way_message">Pomyślnie zweryfikowaliśmy 
  Twoja tożsamość. 
 </string>
-  <string name="pit_announcement_description">Nadszedł czas na Level Up do lepszej wymiany kryptograficznej. Pierwsze 100 000 handlowców, którzy chcą się zarejestrować, będzie handlować za darmo przez 30 dni.</string>
-  <string name="pit_announcement_introducing_link">Sprawdź to</string>
-  <string name="pit_logo_content_descr">Logo Pit</string>
+    <string name="pit_logo_content_descr">Logo Pit</string>
   <string name="pit_slogan_kyc_promo">Jedyna Exchange, która łączy się z Twoim Portfelem.</string>
   <string name="pit_thunder_kyc_promo">Handel błyskawicami</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Płynny i niezawodny]]></string>
-  <string name="pit_built_kyc_promo">Zbudowany przez Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Niskie opłaty</string>
-  <string name="pit_permission_app_can">Ta aplikacja będzie mogła:</string>
+    <string name="pit_built_kyc_promo">Zbudowany przez Blockchain</string>
+    <string name="pit_permission_app_can">Ta aplikacja będzie mogła:</string>
   <string name="pit_permission_app_cant">Ta aplikacja nie będzie w stanie:</string>
   <string name="pit_permission_subtitle">Nie będzie w stanie:</string>
-  <string name="pit_permission_1">Ułatwienie transferu kryptograficznego między kontami</string>
-  <string name="pit_permission_2">Udostępnij swój status złotego lub srebrnego poziomu</string>
+    <string name="pit_permission_2">Udostępnij swój status złotego lub srebrnego poziomu</string>
   <string name="pit_permission_3">Dodaj połączone banki</string>
-  <string name="pit_permission_4">Wyświetl swoje hasło do portfela</string>
-  <string name="pit_connect_now">Połącz teraz</string>
+    <string name="pit_connect_now">Połącz teraz</string>
   <string name="pit_setting_title">Jama</string>
   <string name="pit_setting_connect">Połączyć</string>
   <string name="pit_setting_connected">Połączony</string>

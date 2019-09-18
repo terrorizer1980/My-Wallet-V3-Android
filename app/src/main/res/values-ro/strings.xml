@@ -1223,22 +1223,16 @@
   <string name="sunriver_announcement_stellar_on_the_way_message">Am verificat cu succes 
  identitatea ta. 
 </string>
-  <string name="pit_announcement_description">Este timpul să ridicăm nivelul la un schimb de cripte mai bun. Primii 100.000 de comercianți care se vor înscrie vor tranzacționa gratuit timp de 30 de zile.</string>
-  <string name="pit_announcement_introducing_link">Verifică</string>
-  <string name="pit_logo_content_descr">Logo-ul Pit</string>
+    <string name="pit_logo_content_descr">Logo-ul Pit</string>
   <string name="pit_slogan_kyc_promo">Singurul schimb care se conectează la Wallet.</string>
   <string name="pit_thunder_kyc_promo">Comerț rapid</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Lichid și fiabil]]></string>
-  <string name="pit_built_kyc_promo">Construit de Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Taxe reduse</string>
-  <string name="pit_permission_app_can">Această aplicație va putea:</string>
+    <string name="pit_built_kyc_promo">Construit de Blockchain</string>
+    <string name="pit_permission_app_can">Această aplicație va putea:</string>
   <string name="pit_permission_app_cant">Această aplicație nu va putea:</string>
   <string name="pit_permission_subtitle">Nu voi putea să:</string>
-  <string name="pit_permission_1">Facilitați transferurile criptate între conturi</string>
-  <string name="pit_permission_2">Distribuiți-vă statutul de nivel de aur sau de argint</string>
+    <string name="pit_permission_2">Distribuiți-vă statutul de nivel de aur sau de argint</string>
   <string name="pit_permission_3">Adăugați băncile conectate</string>
-  <string name="pit_permission_4">Vizualizați parola portofelului</string>
-  <string name="pit_connect_now">Conectați acum</string>
+    <string name="pit_connect_now">Conectați acum</string>
   <string name="pit_setting_title">Pitul</string>
   <string name="pit_setting_connect">Conectați</string>
   <string name="pit_setting_connected">Conectat</string>

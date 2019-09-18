@@ -1205,22 +1205,16 @@ Bitte beachten Sie, dass es eine große Warteliste für Stellar Airdrops gibt un
   <string name="sunriver_announcement_stellar_on_the_way_message">Wir haben erfolgreich
        Ihre Identität verifiziert.
     </string>
-  <string name="pit_announcement_description">Es ist an der Zeit, eine bessere Crypto-Börse einzuführen. Die ersten 100.000 Trader, die sich registrieren, können 30 Tage lang kostenlos handeln.</string>
-  <string name="pit_announcement_introducing_link">Probieren Sie es aus</string>
-  <string name="pit_logo_content_descr">The PIT Logo</string>
+    <string name="pit_logo_content_descr">The PIT Logo</string>
   <string name="pit_slogan_kyc_promo">Die einzige Börse, die eine Verbindung zu Ihrer Wallet herstellt.</string>
   <string name="pit_thunder_kyc_promo">Blitzschnelle Trades</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Liquide & Zuverlässig]]></string>
-  <string name="pit_built_kyc_promo">Erstellt von Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Niedrige Gebühren</string>
-  <string name="pit_permission_app_can">Diese Anwendung kann:</string>
+    <string name="pit_built_kyc_promo">Erstellt von Blockchain</string>
+    <string name="pit_permission_app_can">Diese Anwendung kann:</string>
   <string name="pit_permission_app_cant">Diese Anwendung kann nicht:</string>
   <string name="pit_permission_subtitle">Wird nicht in der Lage sein zu:</string>
-  <string name="pit_permission_1">Erleichtern Sie Crypto-Überweisungen zwischen Konten</string>
-  <string name="pit_permission_2">Teilen Sie Ihren Status in den Stufen Gold oder Silber</string>
+    <string name="pit_permission_2">Teilen Sie Ihren Status in den Stufen Gold oder Silber</string>
   <string name="pit_permission_3">Fügen Sie Ihre verknüpften Banken hinzu</string>
-  <string name="pit_permission_4">Zeigen Sie Ihr Wallet-Passwort an</string>
-  <string name="pit_connect_now">Jetzt verbinden</string>
+    <string name="pit_connect_now">Jetzt verbinden</string>
   <string name="pit_setting_title">The Pit</string>
   <string name="pit_setting_connect">Verbinden</string>
   <string name="pit_setting_connected">Verbunden</string>

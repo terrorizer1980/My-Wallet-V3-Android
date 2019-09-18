@@ -1203,22 +1203,16 @@ Veuillez noter que la liste d’attente pour les airdrops Stellar est longue et 
   <string name="sunriver_announcement_stellar_on_the_way_message">Nous avons vérifié votre identité 
          avec succès.
     </string>
-  <string name="pit_announcement_description">Il est temps de passer à un niveau supérieur pour un meilleur crypto-échange. Les 100 000 premiers traders à s\'inscrire échangeront gratuitement pendant 30 jours.</string>
-  <string name="pit_announcement_introducing_link">Jetez-y un coup d\'œil</string>
-  <string name="pit_logo_content_descr">Le logo de The Pit</string>
+    <string name="pit_logo_content_descr">Le logo de The Pit</string>
   <string name="pit_slogan_kyc_promo">Le seul échange qui se connecte à votre portefeuille.</string>
   <string name="pit_thunder_kyc_promo">Des transactions extrêmement rapides</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Liquide et Fiable]]></string>
-  <string name="pit_built_kyc_promo">Conçu par Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Frais peu élevés</string>
-  <string name="pit_permission_app_can">Cette application sera en mesure de :</string>
+    <string name="pit_built_kyc_promo">Conçu par Blockchain</string>
+    <string name="pit_permission_app_can">Cette application sera en mesure de :</string>
   <string name="pit_permission_app_cant">Cette application sera pas en mesure de :</string>
   <string name="pit_permission_subtitle">Ne sera pas en mesure de :</string>
-  <string name="pit_permission_1">Faciliter des crypto-transferts entre les comptes</string>
-  <string name="pit_permission_2">Partager votre statut Or ou Argent</string>
+    <string name="pit_permission_2">Partager votre statut Or ou Argent</string>
   <string name="pit_permission_3">Ajouter vos banques liées</string>
-  <string name="pit_permission_4">Afficher le mot de passe de votre portefeuille</string>
-  <string name="pit_connect_now">Se connecter maintenant</string>
+    <string name="pit_connect_now">Se connecter maintenant</string>
   <string name="pit_setting_title">The Pit</string>
   <string name="pit_setting_connect">Se connecter</string>
   <string name="pit_setting_connected">Connecté</string>
