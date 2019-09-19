@@ -16,6 +16,7 @@
 
 package piuk.blockchain.android.ui.zxing;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -92,6 +93,7 @@ final class InactivityTimer {
     }
   }
 
+  @SuppressLint("StaticFieldLeak")
   private final class InactivityAsyncTask extends AsyncTask<Object,Object,Object> {
     @Override
     protected Object doInBackground(Object... objects) {
