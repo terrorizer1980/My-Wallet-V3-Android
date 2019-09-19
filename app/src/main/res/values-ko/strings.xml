@@ -1184,22 +1184,16 @@
   <string name="sunriver_announcement_stellar_on_the_way_message">우리는 성공적으로 확인했다. 
  너의 정체성. 
 </string>
-  <string name="pit_announcement_description">더 나은 암호 교환으로 레벨 업 할 때입니다. 첫 10 만명의 상인이 30 일 동안 무료로 거래됩니다.</string>
-  <string name="pit_announcement_introducing_link">확인 해봐</string>
-  <string name="pit_logo_content_descr">구덩이 로고</string>
+    <string name="pit_logo_content_descr">구덩이 로고</string>
   <string name="pit_slogan_kyc_promo">월렛에 연결하는 유일한 Exchange입니다.</string>
   <string name="pit_thunder_kyc_promo">번개 빠른 무역</string>
-  <string name="pit_security_kyc_promo"><![CDATA[액체 및 신뢰성]]></string>
-  <string name="pit_built_kyc_promo">Blockchain.com에서 제작</string>
-  <string name="pit_dollar_kyc_promo">저비용</string>
-  <string name="pit_permission_app_can">이 응용 프로그램은 다음을 수행 할 수 있습니다.</string>
+    <string name="pit_built_kyc_promo">Blockchain에서 제작</string>
+    <string name="pit_permission_app_can">이 응용 프로그램은 다음을 수행 할 수 있습니다.</string>
   <string name="pit_permission_app_cant">이 응용 프로그램은 다음 작업을 수행 할 수 없습니다.</string>
   <string name="pit_permission_subtitle">할 수 없을 것이다:</string>
-  <string name="pit_permission_1">계정 간 암호화 전송 촉진</string>
-  <string name="pit_permission_2">골드 또는 실버 등급 상태 공유</string>
+    <string name="pit_permission_2">골드 또는 실버 등급 상태 공유</string>
   <string name="pit_permission_3">연결된 은행 추가</string>
-  <string name="pit_permission_4">지갑 암호보기</string>
-  <string name="pit_connect_now">지금 연결</string>
+    <string name="pit_connect_now">지금 연결</string>
   <string name="pit_setting_title">구덩이</string>
   <string name="pit_setting_connect">잇다</string>
   <string name="pit_setting_connected">연결됨</string>

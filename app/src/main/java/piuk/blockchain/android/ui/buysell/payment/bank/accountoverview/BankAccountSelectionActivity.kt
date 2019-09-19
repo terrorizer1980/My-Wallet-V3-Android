@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.confirmation.sell.CoinifySellConfirmationActivity
 import piuk.blockchain.android.ui.buysell.createorder.models.SellConfirmationDisplayModel
 import piuk.blockchain.android.ui.buysell.payment.bank.accountoverview.adapter.BankAccountSelectionAdapter
@@ -21,7 +21,6 @@ import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.toast
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_bank_account_selection.button_bank_selection_retry as buttonRetry
 import kotlinx.android.synthetic.main.activity_bank_account_selection.recycler_view_bank_accounts as recyclerView
 import kotlinx.android.synthetic.main.activity_bank_account_selection.text_view_account_description as textViewDescription
@@ -33,8 +32,7 @@ class BankAccountSelectionActivity :
     BankAccountSelectionView,
     BankAccountSelectionListener {
 
-    @Inject
-    lateinit var presenter: BankAccountSelectionPresenter
+    private val presenter: BankAccountSelectionPresenter by inject()
     private var progressDialog: MaterialProgressDialog? = null
     private val dataViews by unsafeLazy { listOf(recyclerView, textViewDescription) }
     private val failureViews by unsafeLazy { listOf(textViewFailureMessage, buttonRetry) }
@@ -43,10 +41,6 @@ class BankAccountSelectionActivity :
         intent.getParcelableExtra(EXTRA_DISPLAY_MODEL) as SellConfirmationDisplayModel
     }
     private var actionSelected = false
-
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

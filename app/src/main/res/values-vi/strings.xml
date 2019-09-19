@@ -1186,21 +1186,15 @@ Xin lưu ý rằng có một danh sách rất dài đang chờ để nhận aird
   <string name="sunriver_announcement_stellar_on_the_way_message">Chúng tôi đã xác minh danh tính
         của bạn thành công.
     </string>
-  <string name="pit_announcement_description">Đã đến lúc nâng sàn giao dịch tiền kỹ thuật số của bạn lên cấp độ tốt hơn. 100.000 người giao dịch đầu tiên đăng ký sẽ được phép giao dịch miễn phí trong 30 ngày.</string>
-  <string name="pit_announcement_introducing_link">Hãy kiểm tra</string>
   <string name="pit_logo_content_descr">Logo The Pit</string>
   <string name="pit_slogan_kyc_promo">Sàn giao dịch duy nhất kết nối với Ví của bạn.</string>
   <string name="pit_thunder_kyc_promo">Giao dịch nhanh như chớp</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Lưu động & Đáng tin cậy]]></string>
-  <string name="pit_built_kyc_promo">Được xây dựng bởi Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Mức phí thấp</string>
+  <string name="pit_built_kyc_promo">Được xây dựng bởi Blockchain</string>
   <string name="pit_permission_app_can">Ứng dụng này sẽ có thể:</string>
   <string name="pit_permission_app_cant">Ứng dụng này sẽ không thể:</string>
   <string name="pit_permission_subtitle">Sẽ không thể:</string>
-  <string name="pit_permission_1">Hỗ trợ chuyển tiền kỹ thuật số giữa các tài khoản</string>
   <string name="pit_permission_2">Chia sẻ trạng thái Cấp độ Vàng hoặc Bạc của bạn</string>
   <string name="pit_permission_3">Thêm ngân hàng được liên kết của bạn</string>
-  <string name="pit_permission_4">Xem mật khẩu ví của bạn</string>
   <string name="pit_connect_now">Kết nối ngay</string>
   <string name="pit_setting_title">The Pit</string>
   <string name="pit_setting_connect">Kết nối</string>

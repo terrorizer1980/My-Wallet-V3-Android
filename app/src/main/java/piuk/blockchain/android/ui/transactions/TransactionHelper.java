@@ -7,9 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.transactions.models.Displayable;
-import piuk.blockchain.androidcore.injection.PresenterScope;
-
-import javax.inject.Inject;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,13 +15,11 @@ import java.util.TreeMap;
 
 import static info.blockchain.wallet.multiaddress.TransactionSummary.Direction.RECEIVED;
 
-@PresenterScope
 public class TransactionHelper {
 
     private PayloadDataManager payloadDataManager;
     private BchDataManager bchDataManager;
 
-    @Inject
     public TransactionHelper(PayloadDataManager payloadDataManager, BchDataManager bchDataManager) {
         this.payloadDataManager = payloadDataManager;
         this.bchDataManager = bchDataManager;

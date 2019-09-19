@@ -11,8 +11,8 @@ import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.toolbar_general.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.auth.PinEntryActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
@@ -22,21 +22,13 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber
-import javax.inject.Inject
 
 @Suppress("MemberVisibilityCanBePrivate")
 class LoginActivity : BaseMvpActivity<LoginView, LoginPresenter>(), LoginView {
 
-    @Inject
-    lateinit var loginPresenter: LoginPresenter
-    @Inject
-    lateinit var appUtil: AppUtil
-
+    private val loginPresenter: LoginPresenter by inject()
+    private val appUtil: AppUtil by inject()
     private var progressDialog: MaterialProgressDialog? = null
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

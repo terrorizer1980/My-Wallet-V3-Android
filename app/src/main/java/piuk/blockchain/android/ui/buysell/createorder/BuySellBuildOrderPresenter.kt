@@ -71,7 +71,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
 import kotlin.properties.Delegates
 
-class BuySellBuildOrderPresenter constructor(
+class BuySellBuildOrderPresenter(
     private val coinifyDataManager: CoinifyDataManager,
     private val sendDataManager: SendDataManager,
     private val payloadDataManager: PayloadDataManager,
@@ -209,7 +209,7 @@ class BuySellBuildOrderPresenter constructor(
         val countryHasStates = country.states?.isNotEmpty() ?: false
         val stateSupported =
             countryHasStates && country.stateSupported(NabuState(user.address?.state ?: "",
-            user.address?.countryCode ?: "").toCodeName())
+                user.address?.countryCode ?: "").toCodeName())
 
         if (countrySupported && !countryHasStates) {
             return true

@@ -27,6 +27,9 @@ dependencies {
     testImplementation Libraries.mockWebServer
     testImplementation Libraries.koinTest
     testImplementation project(':testutils')
+    testImplementation(Libraries.mockitoKotlin) {
+        ['kotlin-stdlib', 'kotlin-reflect'].each { exclude module: it }
+    }
 }
 
 test {

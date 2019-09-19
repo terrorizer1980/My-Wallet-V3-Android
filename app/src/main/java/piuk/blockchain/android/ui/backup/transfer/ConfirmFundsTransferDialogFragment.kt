@@ -12,9 +12,9 @@ import android.view.ViewTreeObserver
 import android.view.WindowManager
 import kotlinx.android.synthetic.main.dialog_transfer_funds.*
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import com.blockchain.koin.injectActivity
 import com.blockchain.ui.password.SecondPasswordHandler
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.androidcoreui.ui.base.BaseDialogFragment
 import com.blockchain.ui.dialog.MaterialProgressDialog
@@ -23,23 +23,17 @@ import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.helperfunctions.onItemSelectedListener
 import java.util.Locale
-import javax.inject.Inject
 
 class ConfirmFundsTransferDialogFragment :
     BaseDialogFragment<ConfirmFundsTransferView, ConfirmFundsTransferPresenter>(),
     ConfirmFundsTransferView {
 
-    @Inject
-    lateinit var confirmFundsTransferPresenter: ConfirmFundsTransferPresenter
+    private val confirmFundsTransferPresenter: ConfirmFundsTransferPresenter by inject()
     override val locale: Locale = Locale.getDefault()
 
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
     private var progressDialog: MaterialProgressDialog? = null
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

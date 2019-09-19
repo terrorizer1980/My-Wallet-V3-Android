@@ -12,10 +12,7 @@ import android.text.SpannedString
 import android.text.style.ClickableSpan
 import android.view.View
 
-import javax.inject.Inject
-
-class StringUtils @Inject
-constructor(private val context: Context) {
+class StringUtils(private val context: Context) {
 
     fun getString(@StringRes stringId: Int): String {
         return context.getString(stringId)
@@ -47,11 +44,11 @@ constructor(private val context: Context) {
                         object : ClickableSpan() {
                             override fun onClick(widget: View?) {
                                 launchActivity.startActivity(Intent(Intent.ACTION_VIEW, it))
-                        }
-                    },
-                    rawText.getSpanStart(annotation),
-                    rawText.getSpanEnd(annotation),
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            }
+                        },
+                        rawText.getSpanStart(annotation),
+                        rawText.getSpanEnd(annotation),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
             }
         }

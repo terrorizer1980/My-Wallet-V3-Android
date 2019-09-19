@@ -1193,21 +1193,16 @@
   <string name="sunriver_announcement_stellar_on_the_way_message">验证身份成功。
 ....</string>
   <string name="pit_announcement_description">是时候升级使用更好的加密货币交易平台了。前100,000名注册交易者将可免费交易30 天。</string>
-  <string name="pit_announcement_introducing_link">查看</string>
-  <string name="pit_logo_content_descr">PIT 商标</string>
+    <string name="pit_logo_content_descr">PIT 商标</string>
   <string name="pit_slogan_kyc_promo">连接到您的钱包的唯一交易平台。</string>
   <string name="pit_thunder_kyc_promo">闪电般快速交易</string>
-  <string name="pit_security_kyc_promo"><![CDATA[流动 & 安全可靠]]></string>
-  <string name="pit_built_kyc_promo">由 Blockchain.com 打造</string>
-  <string name="pit_dollar_kyc_promo">费用少</string>
-  <string name="pit_permission_app_can">该应用将能够：</string>
+    <string name="pit_built_kyc_promo">由 Blockchain 打造</string>
+    <string name="pit_permission_app_can">该应用将能够：</string>
   <string name="pit_permission_app_cant">该应用将不能：</string>
   <string name="pit_permission_subtitle">将不能：</string>
-  <string name="pit_permission_1">促进帐户之间的加密货币传输</string>
-  <string name="pit_permission_2">分享您的金级或银级身份</string>
+    <string name="pit_permission_2">分享您的金级或银级身份</string>
   <string name="pit_permission_3">添加您的关联银行</string>
-  <string name="pit_permission_4">查看您的电子钱包密码</string>
-  <string name="pit_connect_now">立即连接</string>
+    <string name="pit_connect_now">立即连接</string>
   <string name="pit_setting_title">PIT</string>
   <string name="pit_setting_connect">连接</string>
   <string name="pit_setting_connected">已连接</string>

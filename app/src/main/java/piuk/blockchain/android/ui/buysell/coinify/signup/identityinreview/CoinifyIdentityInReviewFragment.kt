@@ -7,29 +7,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.dialog_fragment_coinify_id_in_review.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifyFlowListener
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.invisibleIf
 import piuk.blockchain.androidcoreui.utils.extensions.visible
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.dialog_fragment_coinify_id_in_review.text_view_finish_verification as finishKyc
 
 class CoinifyIdentityInReviewFragment :
     BaseFragment<CoinifyIdentityInReviewView, CoinifyIdentityInReviewPresenter>(),
     CoinifyIdentityInReviewView {
 
-    @Inject
-    lateinit var presenter: CoinifyIdentityInReviewPresenter
+    private val presenter: CoinifyIdentityInReviewPresenter by inject()
     private var progressDialog: MaterialProgressDialog? = null
     private var signUpListener: CoinifyFlowListener? = null
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

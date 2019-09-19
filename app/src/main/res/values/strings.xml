@@ -1206,20 +1206,23 @@
     <string name="pit_announcement_title">Introducing The PIT</string>
     <string name="pit_announcement_body">It\'s time to Level Up to a better crypto exchange by Blockchain. First 100,000 traders to sign up will trade free for 30 days.</string>
     <string name="pit_announcement_cta_text">Check out The PIT</string>
+    <string name="pit_announcement_description">We built our own exchange that redefines speed, reliability, and liquidity so you can upgrade your trading experience.</string>
+    <string name="pit_announcement_introducing_link">Get Started</string>
 
     <string name="pit_logo_content_descr">The Pit Logo</string>
-    <string name="pit_slogan_kyc_promo">The only Exchange that connects to your Wallet.</string>
-    <string name="pit_thunder_kyc_promo">Lightning Fast Trades</string>
-    <string name="pit_security_kyc_promo"><![CDATA[Liquid & Reliable]]></string>
-    <string name="pit_built_kyc_promo">Built by Blockchain.com</string>
-    <string name="pit_dollar_kyc_promo">Low Fees</string>
-    <string name="pit_permission_app_can">The PIT will be able to:</string>
+    <string name="pit_slogan_kyc_promo">There’s a new way to trade. Link your Wallet for instant access.</string>
+
+    <string name="pit_thunder_kyc_promo">Trade\nLightning Fast</string>
+    <string name="pit_built_kyc_promo">Built by\nBlockchain</string>
+    <string name="pit_dollar_kyc_promo">Access More\nCryptos</string>
+    <string name="pit_bill_kyc_promo">Deposit &amp; Withdraw\nEuros/Dollars</string>
+    <string name="pit_permission_app_can">Will Not:</string>
     <string name="pit_permission_app_cant">The PIT will not be able to:</string>
     <string name="pit_permission_subtitle">Will not be able to:</string>
-    <string name="pit_permission_1">Exchange crypto addresses so you don’t have to copy and paste</string>
-    <string name="pit_permission_2">Share your Gold or Silver Level status</string>
+    <string name="pit_permission_1">Sync addresses with your Wallet so you can securely sweep crypto between accounts</string>
+    <string name="pit_permission_2">Share your Gold or Silver Level status for unlimited trading</string>
     <string name="pit_permission_3">Add your linked banks</string>
-    <string name="pit_permission_4">View your wallet password</string>
+    <string name="pit_permission_4">Access the crypto in your wallet, access your keys, or view your password.</string>
     <string name="pit_connect_now">Connect Now</string>
 
     <string name="the_pit_title">The PIT</string>

@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.activity_graphs.*
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseAuthActivity
@@ -22,10 +21,6 @@ class ChartsActivity : BaseAuthActivity(), TimeSpanUpdateListener {
     private val fragments = CryptoCurrency.values()
         .filter { it.hasFeature(CryptoCurrency.PRICE_CHARTING) }
         .map { ChartsFragment.newInstance(it) }
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

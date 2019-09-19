@@ -7,14 +7,11 @@ import org.bitcoinj.crypto.DeterministicKey;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
 /**
  * Simple wrapper class to allow mocking of metadata keys
  */
 public class MetadataUtils {
 
-    @Inject
     public MetadataUtils() {
         // Empty constructor for injection
     }

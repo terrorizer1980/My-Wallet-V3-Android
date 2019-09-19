@@ -1186,22 +1186,16 @@ Fique ciente que há uma grande lista de espera para os airdrops Stellar e, infe
   <string name="sunriver_announcement_stellar_on_the_way_message">Verificamos a sua identidade 
          com sucesso.
     </string>
-  <string name="pit_announcement_description">É hora de subir de Nível para uma melhor troca de crypto. Os primeiros 100.000 negociantes a se cadastrar irão negociar gratuitamente por 30 dias.</string>
-  <string name="pit_announcement_introducing_link">Confira</string>
-  <string name="pit_logo_content_descr">Logotipo do The Pit</string>
+    <string name="pit_logo_content_descr">Logotipo do The Pit</string>
   <string name="pit_slogan_kyc_promo">A única Troca que se liga ao seu Wallet.</string>
   <string name="pit_thunder_kyc_promo">Negociações Rápidas Relâmpago</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Líquido e Confiável]]></string>
-  <string name="pit_built_kyc_promo">Criado por Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Taxas baixas</string>
-  <string name="pit_permission_app_can">Esta aplicação será capaz de:</string>
+    <string name="pit_built_kyc_promo">Criado por Blockchain</string>
+    <string name="pit_permission_app_can">Esta aplicação será capaz de:</string>
   <string name="pit_permission_app_cant">Esta aplicação não será capaz de:</string>
   <string name="pit_permission_subtitle">Não será capaz de:</string>
-  <string name="pit_permission_1">Facilitar transferências de crypto entre contas</string>
-  <string name="pit_permission_2">Partilhe o seu estado de Nível Gold ou Silver</string>
+    <string name="pit_permission_2">Partilhe o seu estado de Nível Gold ou Silver</string>
   <string name="pit_permission_3">Adicione os seus bancos vinculados</string>
-  <string name="pit_permission_4">Ver a palavra-passe do seu wallet</string>
-  <string name="pit_connect_now">Ligue agora</string>
+    <string name="pit_connect_now">Ligue agora</string>
   <string name="pit_setting_title">The Pit</string>
   <string name="pit_setting_connect">Ligar</string>
   <string name="pit_setting_connected">Ligado</string>

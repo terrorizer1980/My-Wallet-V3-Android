@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.buysell.details.awaitingtransfer
 
 import io.reactivex.Single
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
@@ -10,9 +11,8 @@ import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
-import javax.inject.Inject
 
-class CoinifyAwaitingBankTransferPresenter @Inject constructor(
+class CoinifyAwaitingBankTransferPresenter(
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager
 ) : BasePresenter<CoinifyAwaitingBankTransferView>() {
@@ -27,7 +27,7 @@ class CoinifyAwaitingBankTransferPresenter @Inject constructor(
     override fun onViewReady() = Unit
 
     internal fun cancelTrade(tradeId: Int) {
-        tokenSingle
+        compositeDisposable += tokenSingle
             .flatMap { coinifyDataManager.cancelTrade(it, tradeId) }
             .applySchedulers()
             .doOnSubscribe { view.showProgressDialog() }

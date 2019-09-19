@@ -8,13 +8,12 @@ import info.blockchain.balance.formatWithUnit
 import java.math.BigDecimal
 import java.util.Currency
 import java.util.Locale
-import javax.inject.Inject
 
 /**
  * This class allows us to format decimal values for clean UI display.
  */
 @Deprecated("Use the CryptoValue.format and formatWithUnit extension methods.")
-class CurrencyFormatUtil @Inject constructor() {
+class CurrencyFormatUtil {
     fun formatFiat(fiatValue: FiatValue): String =
         fiatValue.toStringWithoutSymbol(Locale.getDefault())
 

@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.backup.completed
 
 import com.blockchain.preferences.WalletStatus
 import io.reactivex.rxkotlin.plusAssign
+import android.annotation.SuppressLint
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
@@ -20,6 +21,7 @@ class BackupWalletCompletedPresenter(
         }
     }
 
+    @SuppressLint("CheckResult")
     internal fun checkTransferableFunds() {
         compositeDisposable += transferFundsDataManager.transferableFundTransactionListForDefaultAccount
             .subscribe({ triple ->

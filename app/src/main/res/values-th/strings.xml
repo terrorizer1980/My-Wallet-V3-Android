@@ -1187,22 +1187,16 @@
   <string name="sunriver_announcement_stellar_on_the_way_message">เราได้ตรวจสอบเรียบร้อยแล้ว 
  ตัวตนของคุณ 
 </string>
-  <string name="pit_announcement_description">ถึงเวลาที่จะยกระดับการแลกเปลี่ยน crypto ที่ดีขึ้น ผู้ค้า 100,000 รายแรกที่ลงทะเบียนจะทำการซื้อขายฟรีเป็นเวลา 30 วัน</string>
-  <string name="pit_announcement_introducing_link">ลองดูสิ</string>
-  <string name="pit_logo_content_descr">โลโก้ The Pit</string>
+    <string name="pit_logo_content_descr">โลโก้ The Pit</string>
   <string name="pit_slogan_kyc_promo">แลกเปลี่ยนเดียวที่เชื่อมต่อกับกระเป๋าเงินของคุณ</string>
   <string name="pit_thunder_kyc_promo">การซื้อขายที่รวดเร็วของ Lightning</string>
-  <string name="pit_security_kyc_promo"><![CDATA[ของเหลวและเชื่อถือได้]]></string>
-  <string name="pit_built_kyc_promo">สร้างโดย Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">ค่าธรรมเนียมต่ำ</string>
-  <string name="pit_permission_app_can">แอปพลิเคชันนี้จะสามารถ:</string>
+    <string name="pit_built_kyc_promo">สร้างโดย Blockchain</string>
+    <string name="pit_permission_app_can">แอปพลิเคชันนี้จะสามารถ:</string>
   <string name="pit_permission_app_cant">แอปพลิเคชันนี้จะไม่สามารถ:</string>
   <string name="pit_permission_subtitle">จะไม่สามารถ:</string>
-  <string name="pit_permission_1">อำนวยความสะดวกในการถ่ายโอนการเข้ารหัสลับระหว่างบัญชี</string>
-  <string name="pit_permission_2">แบ่งปันสถานะระดับทองหรือสีเงินของคุณ</string>
+    <string name="pit_permission_2">แบ่งปันสถานะระดับทองหรือสีเงินของคุณ</string>
   <string name="pit_permission_3">เพิ่มธนาคารที่เชื่อมโยงของคุณ</string>
-  <string name="pit_permission_4">ดูรหัสผ่านกระเป๋าเงินของคุณ</string>
-  <string name="pit_connect_now">เชื่อมต่อเลย</string>
+    <string name="pit_connect_now">เชื่อมต่อเลย</string>
   <string name="pit_setting_title">พิท</string>
   <string name="pit_setting_connect">ต่อ</string>
   <string name="pit_setting_connected">เกี่ยวข้อง</string>

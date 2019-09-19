@@ -43,9 +43,8 @@ import java.math.RoundingMode
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
 
-class CoinifyOverviewPresenter @Inject constructor(
+class CoinifyOverviewPresenter(
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager,
     private val metadataManager: MetadataManager,

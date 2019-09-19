@@ -28,9 +28,8 @@ import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-class CoinifyBuyConfirmationPresenter @Inject constructor(
+class CoinifyBuyConfirmationPresenter(
     private val payloadDataManager: PayloadDataManager,
     private val coinifyDataManager: CoinifyDataManager,
     private val exchangeService: ExchangeService,
@@ -207,7 +206,7 @@ class CoinifyBuyConfirmationPresenter @Inject constructor(
                         "%2d:%02d",
                         TimeUnit.SECONDS.toMinutes(it),
                         TimeUnit.SECONDS.toSeconds(it) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(it))
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(it))
                     )
                     view.updateCounter(readableTime)
                 }

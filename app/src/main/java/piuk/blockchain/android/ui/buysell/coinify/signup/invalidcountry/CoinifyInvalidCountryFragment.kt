@@ -5,21 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_coinify_invalid_country.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
-import javax.inject.Inject
 
 class CoinifyInvalidCountryFragment : BaseFragment<CoinifyInvalidCountryView,
-    CoinifyInvalidCountryPresenter>(), CoinifyInvalidCountryView {
+        CoinifyInvalidCountryPresenter>(), CoinifyInvalidCountryView {
 
-    @Inject
-    lateinit var presenter: CoinifyInvalidCountryPresenter
-
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
-    }
+    private val presenter: CoinifyInvalidCountryPresenter by inject()
 
     override fun createPresenter() = presenter
 
@@ -46,7 +40,6 @@ class CoinifyInvalidCountryFragment : BaseFragment<CoinifyInvalidCountryView,
     }
 
     companion object {
-
         fun newInstance(): CoinifyInvalidCountryFragment = CoinifyInvalidCountryFragment()
     }
 }

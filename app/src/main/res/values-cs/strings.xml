@@ -1193,21 +1193,15 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="sunriver_announcement_stellar_on_the_way_message">Úspěšně jsme ověřili 
  vaši identitu. 
 </string>
-  <string name="pit_announcement_description">Je čas na Level Up pro lepší kryptoměnu. Prvních 100 000 obchodníků, kteří se zaregistrují, bude obchodovat zdarma po dobu 30 dnů.</string>
-  <string name="pit_announcement_introducing_link">Koukni na to</string>
   <string name="pit_logo_content_descr">Logo Pit</string>
   <string name="pit_slogan_kyc_promo">Jediná burza, která se připojuje k vaší Peněžence.</string>
   <string name="pit_thunder_kyc_promo">Bleskové rychlé obchody</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Tekuté a spolehlivé]]></string>
-  <string name="pit_built_kyc_promo">Vytvořil Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Nízké poplatky</string>
+  <string name="pit_built_kyc_promo">Vytvořil Blockchain</string>
   <string name="pit_permission_app_can">Tato aplikace bude moci:</string>
   <string name="pit_permission_app_cant">Tato aplikace nebude moci:</string>
   <string name="pit_permission_subtitle">Nebudu schopen:</string>
-  <string name="pit_permission_1">Usnadněte kryptoměny mezi účty</string>
   <string name="pit_permission_2">Sdílejte svůj stav na zlaté nebo stříbrné úrovni</string>
   <string name="pit_permission_3">Přidejte své propojené banky</string>
-  <string name="pit_permission_4">Zobrazte své heslo k peněžence</string>
   <string name="pit_connect_now">Připojte se nyní</string>
   <string name="pit_setting_title">Jáma</string>
   <string name="pit_setting_connect">Připojit</string>

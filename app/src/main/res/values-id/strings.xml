@@ -1188,22 +1188,16 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="sunriver_announcement_stellar_on_the_way_message">Kami telah berhasil memverifikasi 
  identitas anda. 
 </string>
-  <string name="pit_announcement_description">Saatnya Naik Level ke pertukaran kripto yang lebih baik. 100.000 trader pertama yang mendaftar akan berdagang gratis selama 30 hari.</string>
-  <string name="pit_announcement_introducing_link">Coba lihat</string>
-  <string name="pit_logo_content_descr">Logo Lubang</string>
+    <string name="pit_logo_content_descr">Logo Lubang</string>
   <string name="pit_slogan_kyc_promo">Satu-satunya Exchange yang terhubung ke Dompet Anda.</string>
   <string name="pit_thunder_kyc_promo">Perdagangan Cepat Kilat</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Cairan & Andal]]></string>
-  <string name="pit_built_kyc_promo">Dibangun oleh Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Biaya rendah</string>
-  <string name="pit_permission_app_can">Aplikasi ini akan dapat:</string>
+    <string name="pit_built_kyc_promo">Dibangun oleh Blockchain</string>
+    <string name="pit_permission_app_can">Aplikasi ini akan dapat:</string>
   <string name="pit_permission_app_cant">Aplikasi ini tidak dapat:</string>
   <string name="pit_permission_subtitle">Tidak akan bisa:</string>
-  <string name="pit_permission_1">Memfasilitasi transfer crypto antar akun</string>
-  <string name="pit_permission_2">Bagikan status Tingkat Emas atau Perak Anda</string>
+    <string name="pit_permission_2">Bagikan status Tingkat Emas atau Perak Anda</string>
   <string name="pit_permission_3">Tambahkan bank Anda yang ditautkan</string>
-  <string name="pit_permission_4">Lihat kata sandi dompet Anda</string>
-  <string name="pit_connect_now">Hubungkan Sekarang</string>
+    <string name="pit_connect_now">Hubungkan Sekarang</string>
   <string name="pit_setting_title">Pit</string>
   <string name="pit_setting_connect">Menghubungkan</string>
   <string name="pit_setting_connected">Terhubung</string>

@@ -1205,22 +1205,16 @@
   <string name="sunriver_announcement_stellar_on_the_way_message">Kami telah berjaya mengesahkannya 
  identiti anda. 
 </string>
-  <string name="pit_announcement_description">Ia adalah masa untuk Tahap Sehingga pertukaran crypto yang lebih baik. Pertama 100,000 pedagang untuk mendaftar akan berdagang percuma selama 30 hari.</string>
-  <string name="pit_announcement_introducing_link">Semak ia</string>
-  <string name="pit_logo_content_descr">Logo Pit</string>
+    <string name="pit_logo_content_descr">Logo Pit</string>
   <string name="pit_slogan_kyc_promo">Satu-satunya Exchange yang menghubungkan ke Wallet anda.</string>
   <string name="pit_thunder_kyc_promo">Dagangan Lightning Fast</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Cecair & Boleh Dipercayai]]></string>
-  <string name="pit_built_kyc_promo">Dibina oleh Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Yuran Rendah</string>
-  <string name="pit_permission_app_can">Permohonan ini akan dapat:</string>
+    <string name="pit_built_kyc_promo">Dibina oleh Blockchain</string>
+    <string name="pit_permission_app_can">Permohonan ini akan dapat:</string>
   <string name="pit_permission_app_cant">Permohonan ini tidak akan dapat:</string>
   <string name="pit_permission_subtitle">Tidak akan dapat:</string>
-  <string name="pit_permission_1">Memudahkan pemindahan kripto antara akaun</string>
-  <string name="pit_permission_2">Kongsi status Tahap Emas atau Perak anda</string>
+    <string name="pit_permission_2">Kongsi status Tahap Emas atau Perak anda</string>
   <string name="pit_permission_3">Tambah bank yang dipautkan</string>
-  <string name="pit_permission_4">Lihat kata laluan dompet anda</string>
-  <string name="pit_connect_now">Sambung Sekarang</string>
+    <string name="pit_connect_now">Sambung Sekarang</string>
   <string name="pit_setting_title">Pit itu</string>
   <string name="pit_setting_connect">Sambungkan</string>
   <string name="pit_setting_connected">Disambungkan</string>

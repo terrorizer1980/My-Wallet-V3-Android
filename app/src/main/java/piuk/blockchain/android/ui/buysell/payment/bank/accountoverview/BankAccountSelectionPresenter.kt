@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.buysell.payment.bank.accountoverview
 
+import android.annotation.SuppressLint
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
@@ -13,9 +14,8 @@ import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
-import javax.inject.Inject
 
-class BankAccountSelectionPresenter @Inject constructor(
+class BankAccountSelectionPresenter(
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager
 ) : BasePresenter<BankAccountSelectionView>() {
@@ -27,6 +27,7 @@ class BankAccountSelectionPresenter @Inject constructor(
             .singleOrError()
             .map { it.coinify!!.token }
 
+    @SuppressLint("CheckResult")
     override fun onViewReady() {
         tokenSingle
             .addToCompositeDisposable(this)
@@ -36,6 +37,7 @@ class BankAccountSelectionPresenter @Inject constructor(
             .subscribeBy(onNext = { view.renderUiState(it) })
     }
 
+    @SuppressLint("CheckResult")
     internal fun deleteBankAccount(bankAccountId: Int) {
         tokenSingle
             .addToCompositeDisposable(this)

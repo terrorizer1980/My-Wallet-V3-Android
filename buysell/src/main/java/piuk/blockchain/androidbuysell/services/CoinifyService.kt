@@ -18,9 +18,9 @@ import piuk.blockchain.androidbuysell.api.PATH_COINFY_TRADES_QUOTE
 import piuk.blockchain.androidbuysell.models.coinify.AuthRequest
 import piuk.blockchain.androidbuysell.models.coinify.AuthResponse
 import piuk.blockchain.androidbuysell.models.coinify.BankAccount
-import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTradeRequest
+import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidbuysell.models.coinify.KycResponse
 import piuk.blockchain.androidbuysell.models.coinify.PaymentMethod
 import piuk.blockchain.androidbuysell.models.coinify.Quote
@@ -34,14 +34,10 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
 import retrofit2.Retrofit
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Singleton
 
-@Singleton
-class CoinifyService @Inject constructor(
+class CoinifyService(
     environmentConfig: EnvironmentConfig,
-    @Named("kotlin") retrofit: Retrofit,
+    retrofit: Retrofit,
     rxBus: RxBus
 ) {
 

@@ -3,6 +3,8 @@ package piuk.blockchain.android.ui.send.strategy
 import android.annotation.SuppressLint
 import android.support.design.widget.Snackbar
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.NabuApiException
+import com.blockchain.kyc.models.nabu.NabuErrorCodes
 import com.blockchain.kyc.models.nabu.State
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.preferences.CurrencyPrefs
@@ -140,7 +142,8 @@ class PaxSendStrategy(
             }.applySchedulers().doOnSubscribe {
                 view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
             }.subscribeBy(onError = {
-                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false) {
+                view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1,
+                    it is NabuApiException && it.getErrorCode() == NabuErrorCodes.Bad2fa) {
                     view.show2FANotAvailableError()
                 }
             }) {

@@ -7,8 +7,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import kotlinx.android.synthetic.main.toolbar_general.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.details.models.BuySellDetailsModel
 import piuk.blockchain.android.ui.buysell.payment.card.ISignThisActivity
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
@@ -18,7 +18,6 @@ import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_coinify_transaction_detail.button_finish_payment as buttonFinishPayment
 import kotlinx.android.synthetic.main.activity_coinify_transaction_detail.card_view_refund_message as cardViewRefund
 import kotlinx.android.synthetic.main.activity_coinify_transaction_detail.text_view_amount_text as textViewAmountDetail
@@ -41,14 +40,9 @@ class CoinifyTransactionDetailActivity :
     BaseMvpActivity<CoinifyTransactionDetailView, CoinifyTransactionDetailPresenter>(),
     CoinifyTransactionDetailView {
 
-    @Inject
-    lateinit var presenter: CoinifyTransactionDetailPresenter
+    private val presenter: CoinifyTransactionDetailPresenter by inject()
     override val orderDetails by unsafeLazy { intent.getParcelableExtra(EXTRA_DETAILS_MODEL) as BuySellDetailsModel }
     private var progressDialog: MaterialProgressDialog? = null
-
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
-    }
 
     private val bankSellInProgressViewsToShow by unsafeLazy {
         listOf<View>(
@@ -74,7 +68,7 @@ class CoinifyTransactionDetailActivity :
         // Check Intent for validity
         require(intent.hasExtra(EXTRA_DETAILS_MODEL)) {
             "Intent does not contain BuySellDetailsModel. " +
-                "Please start this Activity via the static factory method start()."
+                    "Please start this Activity via the static factory method start()."
         }
 
         renderUi(orderDetails)

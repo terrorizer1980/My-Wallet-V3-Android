@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.buysell.coinify.signup.identityinreview
 
+import android.annotation.SuppressLint
 import android.support.annotation.VisibleForTesting
 import com.google.common.base.Optional
 import io.reactivex.Completable
@@ -16,13 +17,13 @@ import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-class CoinifyIdentityInReviewPresenter @Inject constructor(
+class CoinifyIdentityInReviewPresenter(
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager
 ) : BasePresenter<CoinifyIdentityInReviewView>() {
 
+    @SuppressLint("CheckResult")
     override fun onViewReady() {
         // Leave enough of a delay for KYC to move from Pending to Reviewing
         Observable.timer(10, TimeUnit.SECONDS, Schedulers.computation())
@@ -63,22 +64,22 @@ class CoinifyIdentityInReviewPresenter @Inject constructor(
     @VisibleForTesting
     fun filterReviewStatus(kycList: List<KycResponse>) {
         when {
-        // Unlikely to see this result - after supplying docs status will be pending
-        // otherwise we will go straight to overview
+            // Unlikely to see this result - after supplying docs status will be pending
+            // otherwise we will go straight to overview
             kycList.any { it.state == ReviewState.Completed } -> view.onShowCompleted()
-        // Unlikely to see this result - after supplying docs status will be pending
-        // otherwise we will go straight to overview
+            // Unlikely to see this result - after supplying docs status will be pending
+            // otherwise we will go straight to overview
             kycList.any { it.state == ReviewState.Reviewing } -> view.onShowReviewing()
-        // Please supply proof
-        // Very likely that the back button was pressed
+            // Please supply proof
+            // Very likely that the back button was pressed
             kycList.any { it.state == ReviewState.Pending } -> view.onShowPending()
-        // Unlikely to see this result
+            // Unlikely to see this result
             kycList.any { it.state == ReviewState.DocumentsRequested } -> view.onShowDocumentsRequested()
-        // Unlikely to see this result - User would be redirected to supply docs again before getting to this fragment
+            // Unlikely to see this result - User would be redirected to supply docs again before getting to this fragment
             kycList.any { it.state == ReviewState.Expired } -> view.onShowExpired()
-        // We get stuck with the below cases
-        // Can't create new account with same email
-        // redirectUrl isn't valid - Same issue on web
+            // We get stuck with the below cases
+            // Can't create new account with same email
+            // redirectUrl isn't valid - Same issue on web
             kycList.any { it.state == ReviewState.Failed } -> view.onShowFailed()
             kycList.any { it.state == ReviewState.Rejected } -> view.onShowRejected()
             else -> view.onFinish()

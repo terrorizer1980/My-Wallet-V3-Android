@@ -16,6 +16,7 @@
 
 package piuk.blockchain.android.ui.zxing.camera;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Camera;
@@ -96,6 +97,7 @@ final class AutoFocusManager implements Camera.AutoFocusCallback {
     active = false;
   }
 
+  @SuppressLint("StaticFieldLeak")
   private final class AutoFocusTask extends AsyncTask<Object,Object,Object> {
     @Override
     protected Object doInBackground(Object... voids) {

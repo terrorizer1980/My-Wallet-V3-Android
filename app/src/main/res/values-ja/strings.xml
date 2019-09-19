@@ -1187,21 +1187,15 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="sunriver_announcement_stellar_on_the_way_message">確認しました
 あなたのアイデンティティ
 </string>
-  <string name="pit_announcement_description">レベルアップして、より良い暗号交換を行いましょう。最初にサインアップした10万人のトレーダーが30日間無料でトレードします。</string>
-  <string name="pit_announcement_introducing_link">見てみな</string>
   <string name="pit_logo_content_descr">ピットロゴ</string>
   <string name="pit_slogan_kyc_promo">あなたの財布に接続する唯一の取引所。</string>
   <string name="pit_thunder_kyc_promo">超高速トレード</string>
-  <string name="pit_security_kyc_promo"><![CDATA[リキッド＆信頼性]]></string>
-  <string name="pit_built_kyc_promo">Blockchain.comによって構築された</string>
-  <string name="pit_dollar_kyc_promo">低料金</string>
+  <string name="pit_built_kyc_promo">Blockchainによって構築された</string>
   <string name="pit_permission_app_can">このアプリケーションはできるようになります：</string>
   <string name="pit_permission_app_cant">このアプリケーションはできません。</string>
   <string name="pit_permission_subtitle">できない：</string>
-  <string name="pit_permission_1">アカウント間の暗号転送を促進する</string>
   <string name="pit_permission_2">ゴールドまたはシルバーレベルのステータスを共有する</string>
   <string name="pit_permission_3">リンクされた銀行を追加する</string>
-  <string name="pit_permission_4">ウォレットのパスワードを表示する</string>
   <string name="pit_connect_now">今すぐ接続</string>
   <string name="pit_setting_title">ピット</string>
   <string name="pit_setting_connect">接続する</string>

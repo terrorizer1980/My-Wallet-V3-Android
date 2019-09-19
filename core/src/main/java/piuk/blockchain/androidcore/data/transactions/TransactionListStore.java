@@ -4,10 +4,6 @@ import info.blockchain.wallet.multiaddress.TransactionSummary;
 
 import java.util.HashMap;
 import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import piuk.blockchain.androidcore.data.datastores.ListStore;
 import piuk.blockchain.androidcore.data.transactions.models.Displayable;
 

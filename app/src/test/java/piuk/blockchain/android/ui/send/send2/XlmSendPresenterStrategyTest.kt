@@ -68,7 +68,7 @@ class XlmSendPresenterStrategyTest {
             on {
                 fetchCryptoAddressFromThePit(any(),
                     any())
-            } `it returns` Single.just(SendToMercuryAddressResponse("123", "",
+            } `it returns` Single.just(SendToMercuryAddressResponse("123:2143", "",
                 State.ACTIVE))
         }
 

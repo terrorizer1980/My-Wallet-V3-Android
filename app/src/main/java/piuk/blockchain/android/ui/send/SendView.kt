@@ -74,6 +74,8 @@ interface SendView : BaseSendView {
 
     fun displayMemo(usersMemo: Memo)
 
+    fun enableMemo(enabled: Boolean)
+
     fun showInfoLink()
 
     fun hideInfoLink()

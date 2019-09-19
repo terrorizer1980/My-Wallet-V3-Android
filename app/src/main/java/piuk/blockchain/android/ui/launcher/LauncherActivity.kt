@@ -5,8 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AlertDialog
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.auth.LandingActivity
 import piuk.blockchain.android.ui.auth.PasswordRequiredActivity
 import piuk.blockchain.android.ui.auth.PinEntryActivity
@@ -15,17 +15,11 @@ import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber
-import javax.inject.Inject
 
 class LauncherActivity : BaseMvpActivity<LauncherView, LauncherPresenter>(), LauncherView {
 
     @Suppress("MemberVisibilityCanBePrivate")
-    @Inject
-    lateinit var launcherPresenter: LauncherPresenter
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
+    private val launcherPresenter: LauncherPresenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

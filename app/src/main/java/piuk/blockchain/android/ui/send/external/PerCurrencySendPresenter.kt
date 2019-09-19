@@ -365,4 +365,9 @@ internal class PerCurrencySendPresenter<View : SendView>(
     override fun setWarnWatchOnlySpend(warn: Boolean) {
         prefs.setValue(PersistentPrefs.KEY_WARN_WATCH_ONLY_SPEND, warn)
     }
+
+    override fun onViewDestroyed() {
+        delegate.onViewDestroyed()
+        super.onViewDestroyed()
+    }
 }
