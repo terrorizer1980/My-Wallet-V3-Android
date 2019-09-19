@@ -309,6 +309,12 @@ internal class PerCurrencySendPresenter<View : SendView>(
 
     override fun onAddressTextChange(address: String) {
         delegate.onAddressTextChange(address)
+        if (delegate.isAddressValid(address)) {
+            view.hidePitIconForValidAddress()
+        } else {
+            view.showPitIconIfAvailable()
+        }
+
         val bitPayProtocol = delegate as? BitPayProtocol ?: return
         if (!bitPayProtocol.isBitpayPaymentRequest && address.isBitpayAddress()) {
             val invoiceId = address

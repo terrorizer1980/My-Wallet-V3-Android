@@ -214,6 +214,9 @@ class EtherSendStrategy(
         submitTransaction()
     }
 
+    override fun isAddressValid(address: String) =
+        FormatsUtil.isValidEthereumAddress(address)
+
     @SuppressLint("CheckResult")
     private fun submitTransaction() {
         createEthTransaction()

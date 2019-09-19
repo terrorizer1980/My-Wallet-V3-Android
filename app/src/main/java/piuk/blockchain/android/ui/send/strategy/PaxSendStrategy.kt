@@ -160,6 +160,9 @@ class PaxSendStrategy(
         view.updateReceivingAddress(address)
     }
 
+    override fun isAddressValid(address: String): Boolean =
+        FormatsUtil.isValidEthereumAddress(address)
+
     @SuppressLint("CheckResult")
     override fun onContinueClicked() {
 

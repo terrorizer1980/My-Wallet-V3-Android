@@ -427,7 +427,8 @@ val applicationModule = applicationContext {
                 nabuToken = get(),
                 bitPayDataManager = get(),
                 pitLinking = get(),
-                analytics = get()
+                analytics = get(),
+                envSettings = get()
             )
         }
 
@@ -450,7 +451,8 @@ val applicationModule = applicationContext {
                 coinSelectionRemoteConfig = get(),
                 nabuToken = get(),
                 nabuDataManager = get(),
-                pitLinking = get()
+                pitLinking = get(),
+                envSettings = get()
             )
         }
 

@@ -98,6 +98,7 @@ class BitcoinSendStrategy(
     private val nabuToken: NabuToken,
     private val bitPayDataManager: BitPayDataManager,
     private val analytics: Analytics,
+    private val envSettings: EnvironmentConfig,
     currencyState: CurrencyState
 ) : SendStrategy<SendView>(currencyState), BitPayProtocol {
 
@@ -633,6 +634,9 @@ class BitcoinSendStrategy(
     }
 
     override fun onAddressTextChange(address: String) {}
+
+    override fun isAddressValid(address: String) =
+        FormatsUtil.isValidBitcoinAddress(envSettings.bitcoinNetworkParameters, address)
 
     /**
      * Calculate amounts on crypto text change

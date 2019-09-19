@@ -144,6 +144,10 @@ interface SendView : BaseSendView {
 
     fun hideCurrencyHeader()
 
+    fun hidePitIconForValidAddress()
+
+    fun showPitIconIfAvailable()
+
     fun updateRequiredLabelVisibility(isVisible: Boolean)
 
     fun isPitEnabled(enabled: Boolean)
