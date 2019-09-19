@@ -10,18 +10,15 @@ import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
-import piuk.blockchain.androidcore.injection.PresenterScope
 import java.math.BigDecimal
 import java.math.RoundingMode
-import javax.inject.Inject
 
 /**
  * This data manager is responsible for storing and updating the latest exchange rates information
  * for all crypto currencies.
  * Historic prices for all crypto currencies can be queried from here.
  */
-@PresenterScope
-class ExchangeRateDataManager @Inject constructor(
+class ExchangeRateDataManager(
     private val exchangeRateDataStore: ExchangeRateDataStore,
     rxBus: RxBus
 ) {
@@ -92,7 +89,7 @@ class FiatExchangeRates constructor(
     internal val fiatUnit: String
 ) {
     constructor(exchangeRates: ExchangeRateDataManager, currencyPrefs: CurrencyPrefs) :
-        this(exchangeRates, currencyPrefs.selectedFiatCurrency)
+            this(exchangeRates, currencyPrefs.selectedFiatCurrency)
 
     fun getFiat(cryptoValue: CryptoValue): FiatValue = cryptoValue.toFiat(exchangeRates, fiatUnit)
 

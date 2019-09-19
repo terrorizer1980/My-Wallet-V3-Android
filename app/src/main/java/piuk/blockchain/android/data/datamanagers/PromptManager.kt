@@ -13,14 +13,11 @@ import piuk.blockchain.android.ui.home.SecurityPromptDialog
 import piuk.blockchain.android.ui.settings.SettingsActivity
 import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.injection.PresenterScope
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import javax.inject.Inject
 
 typealias PromptDlgFactory = (Context) -> SecurityPromptDialog
 
-@PresenterScope
-class PromptManager @Inject constructor(
+class PromptManager(
     private val prefs: PersistentPrefs,
     private val payloadDataManager: PayloadDataManager,
     private val transactionListDataManager: TransactionListDataManager
@@ -98,7 +95,7 @@ class PromptManager @Inject constructor(
 
     private fun isVerifyEmailReminderAllowed(settings: Settings): Boolean {
         val isCorrectTime = getTimeOfLastSecurityPrompt() == 0L ||
-            System.currentTimeMillis() - getTimeOfLastSecurityPrompt() >= ONE_MONTH
+                System.currentTimeMillis() - getTimeOfLastSecurityPrompt() >= ONE_MONTH
         return !isFirstRun() && !settings.isEmailVerified && !settings.email.isEmpty() && isCorrectTime
     }
 
@@ -107,7 +104,7 @@ class PromptManager @Inject constructor(
         val isEnoughVisits = (!getIfNeverPrompt2Fa() && getAppVisitCount() >= 3)
         val isNeeded = !settings.isSmsVerified && settings.authType == Settings.AUTH_TYPE_OFF
         val isCorrectTime = getTimeOfLastSecurityPrompt() == 0L ||
-            System.currentTimeMillis() - getTimeOfLastSecurityPrompt() >= ONE_MONTH
+                System.currentTimeMillis() - getTimeOfLastSecurityPrompt() >= ONE_MONTH
 
         if (isEnoughVisits && isNeeded && isCorrectTime) {
             storeTimeOfLastSecurityPrompt()
@@ -118,11 +115,11 @@ class PromptManager @Inject constructor(
 
     private fun isBackedUpReminderAllowed(): Boolean {
         val isAllowed = !isFirstRun() &&
-            !getIfNeverPromptBackup() &&
-            !payloadDataManager.isBackedUp && hasTransactions()
+                !getIfNeverPromptBackup() &&
+                !payloadDataManager.isBackedUp && hasTransactions()
 
         val isCorrectTime = getTimeOfLastSecurityPrompt() == 0L ||
-            System.currentTimeMillis() - getTimeOfLastSecurityPrompt() >= ONE_MONTH
+                System.currentTimeMillis() - getTimeOfLastSecurityPrompt() >= ONE_MONTH
 
         if (isAllowed && isCorrectTime) {
             storeTimeOfLastSecurityPrompt()

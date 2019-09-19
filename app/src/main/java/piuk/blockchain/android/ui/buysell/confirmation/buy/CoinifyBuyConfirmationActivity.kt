@@ -14,8 +14,8 @@ import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.createorder.models.BuyConfirmationDisplayModel
 import piuk.blockchain.android.ui.buysell.createorder.models.OrderType
 import piuk.blockchain.android.ui.buysell.details.awaitingtransfer.CoinifyAwaitingBankTransferActivity
@@ -31,7 +31,6 @@ import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_coinify_confirmation.button_bank as buttonBank
 import kotlinx.android.synthetic.main.activity_coinify_confirmation.button_card as buttonCard
 import kotlinx.android.synthetic.main.activity_coinify_confirmation.button_confirm as buttonConfirm
@@ -49,8 +48,7 @@ class CoinifyBuyConfirmationActivity :
     BaseMvpActivity<CoinifyBuyConfirmationView, CoinifyBuyConfirmationPresenter>(),
     CoinifyBuyConfirmationView {
 
-    @Inject
-    lateinit var presenter: CoinifyBuyConfirmationPresenter
+    private val presenter: CoinifyBuyConfirmationPresenter by inject()
     override val locale: Locale = Locale.getDefault()
     override val orderType by unsafeLazy { intent.getSerializableExtra(EXTRA_ORDER_TYPE) as OrderType }
     override val displayableQuote by unsafeLazy {
@@ -72,10 +70,6 @@ class CoinifyBuyConfirmationActivity :
     }
 
     private val compositeDisposable = CompositeDisposable()
-
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
-    }
 
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {

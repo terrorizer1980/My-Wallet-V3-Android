@@ -11,9 +11,8 @@ import okhttp3.ResponseBody
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
 import retrofit2.Response
-import javax.inject.Inject
 
-class AuthService @Inject constructor(private val walletApi: WalletApi, rxBus: RxBus) {
+class AuthService(private val walletApi: WalletApi, rxBus: RxBus) {
 
     private val rxPinning: RxPinning = RxPinning(rxBus)
 

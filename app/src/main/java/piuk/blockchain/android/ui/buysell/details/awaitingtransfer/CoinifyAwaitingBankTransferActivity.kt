@@ -8,15 +8,14 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.details.models.AwaitingFundsModel
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.utils.extensions.toast
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_coinify_awaiting_transfer.text_view_awaiting_funds_description as textViewDescription
 import kotlinx.android.synthetic.main.activity_coinify_awaiting_transfer.text_view_bank_text as textViewBank
 import kotlinx.android.synthetic.main.activity_coinify_awaiting_transfer.text_view_bic_text as textViewBic
@@ -38,14 +37,9 @@ class CoinifyAwaitingBankTransferActivity :
     BaseMvpActivity<CoinifyAwaitingBankTransferView, CoinifyAwaitingBankTransferPresenter>(),
     CoinifyAwaitingBankTransferView {
 
-    @Inject
-    lateinit var presenter: CoinifyAwaitingBankTransferPresenter
+    private val presenter: CoinifyAwaitingBankTransferPresenter by inject()
     private var progressDialog: MaterialProgressDialog? = null
     private val dataModel by unsafeLazy { intent.getParcelableExtra(EXTRA_AWAITING_FUNDS_MODEL) as AwaitingFundsModel }
-
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +49,7 @@ class CoinifyAwaitingBankTransferActivity :
         // Check Intent for validity
         require(intent.hasExtra(EXTRA_AWAITING_FUNDS_MODEL)) {
             "Intent does not contain AwaitingFundsModel. " +
-                "Please start this Activity via the static factory method start()."
+                    "Please start this Activity via the static factory method start()."
         }
 
         renderUi(dataModel)
@@ -77,11 +71,11 @@ class CoinifyAwaitingBankTransferActivity :
         textViewCopyAll.setOnClickListener {
             copyToClipboard(
                 dataModel.reference +
-                    "\n${dataModel.recipientName}" +
-                    "\n${dataModel.recipientAddress}" +
-                    "\n${dataModel.iban}" +
-                    "\n${dataModel.bic}" +
-                    "\n${dataModel.bank}\n"
+                        "\n${dataModel.recipientName}" +
+                        "\n${dataModel.recipientAddress}" +
+                        "\n${dataModel.iban}" +
+                        "\n${dataModel.bic}" +
+                        "\n${dataModel.bank}\n"
             )
         }
 

@@ -19,7 +19,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.plugins.RxJavaPlugins
 import org.bitcoinj.core.NetworkParameters
 import piuk.blockchain.android.data.connectivity.ConnectivityManager
-import piuk.blockchain.android.injection.Injector
 import com.blockchain.ui.CurrentContextAccess
 import com.facebook.stetho.Stetho
 import org.koin.android.ext.android.get
@@ -75,7 +74,6 @@ open class BlockchainApplication : Application(), FrameworkInterface {
 
         // Build the DI graphs:
         KoinStarter.start(this)
-        Injector.getInstance().init(this)
         initLifecycleListener()
         crashLogger.init(this)
         crashLogger.userLanguageLocale(resources.configuration.locale.language)

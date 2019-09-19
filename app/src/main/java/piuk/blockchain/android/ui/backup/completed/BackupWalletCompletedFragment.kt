@@ -9,8 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_backup_complete.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.backup.start.BackupWalletStartingFragment
 import piuk.blockchain.android.ui.backup.transfer.ConfirmFundsTransferDialogFragment
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
@@ -19,18 +19,10 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
-
 class BackupWalletCompletedFragment :
-    BaseFragment<BackupWalletCompletedView, BackupWalletCompletedPresenter>(),
-    BackupWalletCompletedView {
+    BaseFragment<BackupWalletCompletedView, BackupWalletCompletedPresenter>(), BackupWalletCompletedView {
 
-    @Inject
-    lateinit var backupWalletCompletedPresenter: BackupWalletCompletedPresenter
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
+    private val backupWalletCompletedPresenter: BackupWalletCompletedPresenter by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,

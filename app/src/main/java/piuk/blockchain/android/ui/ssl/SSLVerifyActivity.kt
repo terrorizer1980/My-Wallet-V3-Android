@@ -4,27 +4,21 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.androidcore.data.connectivity.ConnectionEvent
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import javax.inject.Inject
 
 class SSLVerifyActivity : BaseMvpActivity<SSLVerifyView, SSLVerifyPresenter>(), SSLVerifyView {
 
-    @Inject
-    lateinit var presenter: SSLVerifyPresenter
+    private val presenter: SSLVerifyPresenter by inject()
 
     private val allowRetry: Boolean by unsafeLazy {
         intent.getBooleanExtra(EXTRA_ALLOW_RETRY, false)
     }
     private val warningMessage: Int by unsafeLazy {
         intent.getIntExtra(EXTRA_WARNING, R.string.unexpected_error)
-    }
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

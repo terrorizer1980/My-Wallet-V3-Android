@@ -14,9 +14,8 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
-import javax.inject.Inject
 
-class LauncherPresenter @Inject constructor(
+class LauncherPresenter(
     private val appUtil: AppUtil,
     private val payloadDataManager: PayloadDataManager,
     private val prefs: PersistentPrefs,

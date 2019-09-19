@@ -14,7 +14,7 @@ import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
 
-class BuySellLauncherPresenter constructor(
+class BuySellLauncherPresenter(
     private val kycStatusHelper: KycStatusHelper,
     private val exchangeService: ExchangeService
 ) : BasePresenter<BuySellLauncherView>() {
@@ -26,37 +26,37 @@ class BuySellLauncherPresenter constructor(
                     .switchIfEmpty(Single.just(CoinifyData(0, ""))),
                 kycStatusHelper.getKyc2TierStatus()
             ).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { view.displayProgressDialog() }
-            .doAfterTerminate { view.dismissProgressDialog() }
-            .doOnError(Timber::e)
-            .subscribeBy(
-                onError = {
-                    view.showErrorToast(R.string.buy_sell_launcher_error)
-                    view.finishPage()
-                },
-                onSuccess = {
-                    val coinifyData = it.first
-                    val tierState = it.second
-                    when (tierState) {
-                        Kyc2TierState.Tier2Approved -> {
-                            if (coinifyData.user != 0) {
-                                view.onStartCoinifyOverview()
-                            } else {
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { view.displayProgressDialog() }
+                .doAfterTerminate { view.dismissProgressDialog() }
+                .doOnError(Timber::e)
+                .subscribeBy(
+                    onError = {
+                        view.showErrorToast(R.string.buy_sell_launcher_error)
+                        view.finishPage()
+                    },
+                    onSuccess = {
+                        val coinifyData = it.first
+                        val tierState = it.second
+                        when (tierState) {
+                            Kyc2TierState.Tier2Approved -> {
+                                if (coinifyData.user != 0) {
+                                    view.onStartCoinifyOverview()
+                                } else {
+                                    view.onStartCoinifyOptIn()
+                                }
+                            }
+                            Kyc2TierState.Tier1InReview,
+                            Kyc2TierState.Tier1Failed,
+                            Kyc2TierState.Tier1Approved -> {
                                 view.onStartCoinifyOptIn()
                             }
+                            Kyc2TierState.Hidden,
+                            Kyc2TierState.Locked -> view.onStartCoinifySignUp()
+                            Kyc2TierState.Tier2InReview,
+                            Kyc2TierState.Tier2Failed -> view.showPendingVerificationView()
                         }
-                        Kyc2TierState.Tier1InReview,
-                        Kyc2TierState.Tier1Failed,
-                        Kyc2TierState.Tier1Approved -> {
-                            view.onStartCoinifyOptIn()
-                        }
-                        Kyc2TierState.Hidden,
-                        Kyc2TierState.Locked -> view.onStartCoinifySignUp()
-                        Kyc2TierState.Tier2InReview,
-                        Kyc2TierState.Tier2Failed -> view.showPendingVerificationView()
                     }
-                }
-            )
+                )
     }
 }

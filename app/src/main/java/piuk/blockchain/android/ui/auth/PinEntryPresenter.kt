@@ -39,9 +39,8 @@ import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.net.SocketTimeoutException
-import javax.inject.Inject
 
-class PinEntryPresenter @Inject constructor(
+class PinEntryPresenter(
     private val authDataManager: AuthDataManager,
     private val appUtil: AppUtil,
     private val prefs: PersistentPrefs,
@@ -171,7 +170,7 @@ class PinEntryPresenter @Inject constructor(
                     }
                 })
 
-            // If user is changing their PIN and it matches their old one, disallow it
+                // If user is changing their PIN and it matches their old one, disallow it
             } else if (isChangingPin &&
                 userEnteredConfirmationPin == null &&
                 accessState.pin == userEnteredPin
@@ -231,14 +230,14 @@ class PinEntryPresenter @Inject constructor(
             prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, ""),
             password
         )
-        .doAfterTerminate {
-            view.dismissProgressDialog()
-            canShowFingerprintDialog = true
-        }
-        .subscribeBy(
-            onComplete = { handlePayloadUpdateComplete() },
-            onError = { handlePayloadUpdateError(it) }
-        )
+            .doAfterTerminate {
+                view.dismissProgressDialog()
+                canShowFingerprintDialog = true
+            }
+            .subscribeBy(
+                onComplete = { handlePayloadUpdateComplete() },
+                onError = { handlePayloadUpdateError(it) }
+            )
     }
 
     private fun handlePayloadUpdateComplete() {
@@ -301,11 +300,11 @@ class PinEntryPresenter @Inject constructor(
             prefs.getValue(PersistentPrefs.KEY_SHARED_KEY, ""),
             prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, ""),
             password)
-        .doAfterTerminate { view.dismissProgressDialog() }
-        .subscribeBy(
-            onComplete = { handlePasswordValidated() },
-            onError = { throwable -> handlePasswordValidatedError(throwable) }
-        )
+            .doAfterTerminate { view.dismissProgressDialog() }
+            .subscribeBy(
+                onComplete = { handlePasswordValidated() },
+                onError = { throwable -> handlePasswordValidatedError(throwable) }
+            )
     }
 
     private fun handlePasswordValidated() {
@@ -364,7 +363,7 @@ class PinEntryPresenter @Inject constructor(
                     prefs.clear()
                     appUtil.restartApp(LauncherActivity::class.java)
                 }
-        )
+            )
     }
 
     @SuppressLint("CheckResult")

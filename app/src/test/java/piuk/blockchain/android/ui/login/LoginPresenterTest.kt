@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.login
 
-import com.blockchain.android.testutils.DaggerLazyImpl
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.nhaarman.mockito_kotlin.any
@@ -13,10 +12,10 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.verifyZeroInteractions
 import com.nhaarman.mockito_kotlin.whenever
+import info.blockchain.wallet.payload.data.Wallet
 import io.reactivex.Completable
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -27,16 +26,17 @@ import javax.net.ssl.SSLPeerUnverifiedException
 class LoginPresenterTest {
 
     private lateinit var subject: LoginPresenter
-    private var view: LoginView = mock()
-    private var appUtil: AppUtil = mock()
-    private var payloadDataManager: PayloadDataManager =
-        mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
-    private var prefsUtil: PersistentPrefs = mock()
-    private var analytics: Analytics = mock()
+    private val view: LoginView = mock()
+    private val appUtil: AppUtil = mock()
+    private val _payloadDataManager: Lazy<PayloadDataManager> = mock()
+    private val payloadDataManager: PayloadDataManager = mock()
+    private val prefsUtil: PersistentPrefs = mock()
+    private val analytics: Analytics = mock()
 
     @Before
     fun setUp() {
-        subject = LoginPresenter(appUtil, DaggerLazyImpl(payloadDataManager), prefsUtil, analytics)
+        subject = LoginPresenter(appUtil, _payloadDataManager, prefsUtil, analytics)
+        whenever(_payloadDataManager.value).thenReturn(payloadDataManager)
         subject.initView(view)
     }
 
@@ -47,8 +47,10 @@ class LoginPresenterTest {
         val sharedKey = "SHARED_KEY"
         val guid = "GUID"
         whenever(payloadDataManager.handleQrCode(qrCode)).thenReturn(Completable.complete())
-        whenever(payloadDataManager.wallet!!.sharedKey).thenReturn(sharedKey)
-        whenever(payloadDataManager.wallet!!.guid).thenReturn(guid)
+        whenever(payloadDataManager.wallet).thenReturn(Wallet().apply {
+            this.sharedKey = sharedKey
+            this.guid = guid
+        })
         // Act
         subject.pairWithQR(qrCode)
         // Assert

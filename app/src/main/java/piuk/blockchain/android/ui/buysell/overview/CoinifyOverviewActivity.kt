@@ -7,8 +7,8 @@ import android.support.annotation.StringRes
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.toolbar_general.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifySignUpActivity
 import piuk.blockchain.android.ui.buysell.coinify.signup.kyc.CoinifyKycActivity
 import piuk.blockchain.android.ui.buysell.createorder.BuySellBuildOrderActivity
@@ -30,7 +30,6 @@ import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import java.util.Locale
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_coinify_overview.recycler_view_coinify_overview as recyclerView
 import kotlinx.android.synthetic.main.activity_coinify_overview.swipe_refresh_layout_coinify as swipeRefresh
 
@@ -38,8 +37,7 @@ class CoinifyOverviewActivity : BaseMvpActivity<CoinifyOverviewView, CoinifyOver
     CoinifyOverviewView {
 
     override val locale: Locale = Locale.getDefault()
-    @Inject
-    lateinit var presenter: CoinifyOverviewPresenter
+    private val presenter: CoinifyOverviewPresenter by inject()
     private var progressDialog: MaterialProgressDialog? = null
     private val adapter by unsafeLazy {
         CoinifyOverviewAdapter(
@@ -69,10 +67,6 @@ class CoinifyOverviewActivity : BaseMvpActivity<CoinifyOverviewView, CoinifyOver
                 }
             }
         )
-    }
-
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

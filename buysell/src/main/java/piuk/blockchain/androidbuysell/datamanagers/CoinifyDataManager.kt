@@ -1,5 +1,6 @@
 package piuk.blockchain.androidbuysell.datamanagers
 
+import com.blockchain.utils.Optional
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -12,6 +13,7 @@ import piuk.blockchain.androidbuysell.models.coinify.AuthResponse
 import piuk.blockchain.androidbuysell.models.coinify.BankAccount
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTradeRequest
+import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidbuysell.models.coinify.GrantType
 import piuk.blockchain.androidbuysell.models.coinify.KycResponse
 import piuk.blockchain.androidbuysell.models.coinify.PaymentMethod
@@ -26,14 +28,9 @@ import piuk.blockchain.androidbuysell.models.coinify.exceptions.CoinifyErrorCode
 import piuk.blockchain.androidbuysell.repositories.AccessTokenStore
 import piuk.blockchain.androidbuysell.services.CoinifyService
 import piuk.blockchain.androidcore.data.auth.AuthService
-import piuk.blockchain.androidcore.injection.PresenterScope
-import com.blockchain.utils.Optional
-import piuk.blockchain.androidbuysell.models.coinify.CountrySupport
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
-import javax.inject.Inject
 
-@PresenterScope
-class CoinifyDataManager @Inject constructor(
+class CoinifyDataManager constructor(
     private val coinifyService: CoinifyService,
     private val authService: AuthService,
     private val accessTokenStore: AccessTokenStore

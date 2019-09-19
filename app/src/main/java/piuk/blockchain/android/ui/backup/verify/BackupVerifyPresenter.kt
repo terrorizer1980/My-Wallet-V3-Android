@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.backup.verify
 
+import android.annotation.SuppressLint
 import android.support.annotation.VisibleForTesting
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
@@ -37,6 +38,7 @@ class BackupVerifyPresenter(
         }
     }
 
+    @SuppressLint("CheckResult")
     @VisibleForTesting
     internal fun updateBackupStatus() {
         payloadDataManager.wallet!!.hdWallets[0].isMnemonicVerified = true

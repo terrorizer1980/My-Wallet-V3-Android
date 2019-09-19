@@ -8,9 +8,8 @@ import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import java.util.Locale
-import javax.inject.Inject
 
-class CoinifySelectCountryPresenter @Inject constructor(
+class CoinifySelectCountryPresenter(
     private val buyDataManager: BuyDataManager
 ) : BasePresenter<CoinifySelectCountryView>() {
 

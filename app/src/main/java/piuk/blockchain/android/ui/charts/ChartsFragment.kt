@@ -21,8 +21,8 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_graphs.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
@@ -37,15 +37,13 @@ import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
 import java.math.RoundingMode
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
+import java.util.Date
 
 class ChartsFragment : BaseFragment<ChartsView, ChartsPresenter>(), ChartsView {
 
     @Suppress("MemberVisibilityCanBePrivate")
-    @Inject
-    lateinit var chartsPresenter: ChartsPresenter
+    private val chartsPresenter: ChartsPresenter by inject()
 
     override val locale: Locale = Locale.getDefault()
     override val cryptoCurrency: CryptoCurrency by unsafeLazy {
@@ -61,10 +59,6 @@ class ChartsFragment : BaseFragment<ChartsView, ChartsPresenter>(), ChartsView {
         )
     }
     private var listener: TimeSpanUpdateListener? = null
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
