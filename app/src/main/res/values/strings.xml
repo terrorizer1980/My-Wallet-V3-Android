@@ -15,7 +15,7 @@
     <string name="item_buy_sell">Buy &amp; Sell</string>
     <string name="item_backup">Backup funds</string>
     <string name="item_lockbox">Lockbox</string>
-    <string name="item_the_pit">The Pit</string>
+    <string name="item_the_pit">The PIT</string>
     <string name="item_debug_homebrew" translatable="false">Debug Homebrew</string>
 
     <!-- toolbar -->
@@ -1226,8 +1226,8 @@
     <string name="pit_built_kyc_promo">Built by\nBlockchain</string>
     <string name="pit_dollar_kyc_promo">Access More\nCryptos</string>
     <string name="pit_bill_kyc_promo">Deposit &amp; Withdraw\nEuros/Dollars</string>
-    <string name="pit_permission_app_can">Will Not:</string>
-    <string name="pit_permission_app_cant">The PIT will not be able to:</string>
+    <string name="pit_permission_app_can">The PIT will be able to:</string>
+    <string name="pit_permission_app_cant">Will Not:</string>
     <string name="pit_permission_subtitle">Will not be able to:</string>
     <string name="pit_permission_1">Sync addresses with your Wallet so you can securely sweep crypto between accounts</string>
     <string name="pit_permission_2">Share your Gold or Silver Level status for unlimited trading</string>
