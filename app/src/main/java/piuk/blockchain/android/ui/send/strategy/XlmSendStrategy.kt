@@ -163,6 +163,8 @@ class XlmSendStrategy(
 
     override fun onResume() {}
 
+    override fun isAddressValid(address: String): Boolean = xlmDataManager.isAddressValid(address)
+
     override fun onCurrencySelected() {
         currencyState.cryptoCurrency = CryptoCurrency.XLM
         xlmSelected()

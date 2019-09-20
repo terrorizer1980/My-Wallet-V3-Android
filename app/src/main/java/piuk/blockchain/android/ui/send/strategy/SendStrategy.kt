@@ -62,6 +62,8 @@ abstract class SendStrategy<View : SendView>(
 
     abstract fun submitPayment()
 
+    abstract fun isAddressValid(address: String): Boolean
+
     abstract fun onAddressTextChange(address: String)
 
     open fun onMemoChange(memo: Memo) {}

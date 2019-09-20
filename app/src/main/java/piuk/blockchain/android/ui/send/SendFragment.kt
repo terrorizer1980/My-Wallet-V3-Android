@@ -134,6 +134,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     private var isBitpayPayPro = false
     private var bitPayAddressScanned = false
+    private var pitAddressAvailable = false
+    private var validAddressFilled = false
 
     private val dialogHandler = Handler()
     private val dialogRunnable = Runnable {
@@ -397,10 +399,10 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         handlingActivityResult = true
-
         if (resultCode != Activity.RESULT_OK) return
         resetPitAddressState()
         when (requestCode) {
+
             SCAN_PRIVX -> presenter.handlePrivxScan(data?.getStringExtra(CaptureActivity.SCAN_RESULT))
             REQUEST_CODE_BTC_SENDING -> presenter.selectSendingAccount(unpackAccountResult(data))
             REQUEST_CODE_BTC_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
@@ -408,6 +410,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             REQUEST_CODE_BCH_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
+        println("QRRR onActivityResult $requestCode")
     }
 
     private fun resetPitAddressState() {
@@ -556,6 +559,9 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         fromContainer.fromAddressTextView.text = label
     }
 
+    private val pitIconCanBeDisplayed: Boolean
+        get() = pitEnabled && !validAddressFilled && !bitPayAddressScanned
+
     override fun updateReceivingHintAndAccountDropDowns(
         currency: CryptoCurrency,
         listSize: Int,
@@ -570,11 +576,13 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             showReceivingDropdown()
         }
 
-        if (pitAddressAvailable && pitEnabled && !bitPayAddressScanned) {
+        if (pitAddressAvailable && pitIconCanBeDisplayed) {
             showPitAddressIconWithClickListener(onPitClicked)
         } else {
             hidePitAddressIcon()
         }
+
+        this.pitAddressAvailable = pitAddressAvailable
 
         val hint: Int = if (listSize > 1) {
             when (currencyState.cryptoCurrency) {
@@ -1436,6 +1444,17 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             presenter.onPitAddressCleared()
             toContainer.toAddressEditTextView.isEnabled = true
         }
+    }
+
+    override fun hidePitIconForValidAddress() {
+        validAddressFilled = true
+        hidePitAddressIcon()
+    }
+
+    override fun showPitIconIfAvailable() {
+        if (pitAddressAvailable && pitEnabled)
+            toContainer.pitAddress.visible()
+        validAddressFilled = false
     }
 }
 
