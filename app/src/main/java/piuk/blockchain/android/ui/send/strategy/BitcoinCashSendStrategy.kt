@@ -147,7 +147,7 @@ class BitcoinCashSendStrategy(
     }
 
     override fun isAddressValid(address: String) =
-        FormatsUtil.isValidBitcoinAddress(envSettings.bitcoinNetworkParameters, address)
+        FormatsUtil.isValidBitcoinCashAddress(envSettings.bitcoinNetworkParameters, address)
 
     override fun onViewReady() {
         resetAccountList()
