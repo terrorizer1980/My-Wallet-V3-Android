@@ -44,6 +44,8 @@ interface DashboardView : View {
 
     fun startSetupVerifyEmail()
 
+    fun startIntroTour()
+
     fun launchWaitlist()
 
     fun showBottomSheetDialog(bottomSheetDialogFragment: BottomSheetDialogFragment)

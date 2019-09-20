@@ -77,6 +77,25 @@ class PrefsUtil(
         get() = getValue(KEY_SWAP_INTRO_COMPLETED, false)
         set(v) = setValue(KEY_SWAP_INTRO_COMPLETED, v)
 
+    override val isTourComplete: Boolean
+        get() = getValue(KEY_INTRO_TOUR_COMPLETED, false)
+
+    override val tourStage: String
+        get() = getValue(KEY_INTRO_TOUR_CURRENT_STAGE, "")
+
+    override fun setTourComplete() {
+        setValue(KEY_INTRO_TOUR_COMPLETED, true)
+        removeValue(KEY_INTRO_TOUR_CURRENT_STAGE)
+    }
+
+    override fun setTourStage(stageName: String) =
+        setValue(KEY_INTRO_TOUR_CURRENT_STAGE, stageName)
+
+    override fun resetTour() {
+        removeValue(KEY_INTRO_TOUR_COMPLETED)
+        removeValue(KEY_INTRO_TOUR_CURRENT_STAGE)
+    }
+
     // Wallet Status
     override var lastBackupTime: Long
         get() = getValue(BACKUP_DATE_KEY, 0L)
@@ -197,6 +216,8 @@ class PrefsUtil(
         private const val KEY_PIT_LINKING_LINK_ID = "pit_wallet_link_id"
 
         private const val KEY_SWAP_INTRO_COMPLETED = "key_swap_intro_completed"
+        private const val KEY_INTRO_TOUR_COMPLETED = "key_intro_tour_complete"
+        private const val KEY_INTRO_TOUR_CURRENT_STAGE = "key_intro_tour_current_stage"
 
         private const val BACKUP_DATE_KEY = "BACKUP_DATE_KEY"
         private const val SWAP_DATE_KEY = "SWAP_DATE_KEY"

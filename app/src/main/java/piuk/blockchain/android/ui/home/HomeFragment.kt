@@ -34,6 +34,8 @@ interface HomeNavigator {
     fun launchSetupFingerprintLogin()
     fun launchBuySell()
 
+    fun launchIntroTour()
+
     fun gotoSendFor(cryptoCurrency: CryptoCurrency)
     fun gotoReceiveFor(cryptoCurrency: CryptoCurrency)
     fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency)

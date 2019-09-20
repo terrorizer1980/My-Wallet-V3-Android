@@ -1,20 +1,19 @@
-package com.blockchain.ui.dialog
+package piuk.blockchain.android.ui.tour
 
 import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetDialogFragment
-import android.support.v4.app.FragmentManager
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.notifications.analytics.Analytics
-import kotlinx.android.synthetic.main.dialog_single_button_sheet.*
+import kotlinx.android.synthetic.main.dialog_tour_bottom_sheet.*
 import org.koin.android.ext.android.inject
-import piuk.blockchain.androidcoreui.R
+import piuk.blockchain.android.R
 
-open class SingleButtonBottomSheet : BottomSheetDialogFragment() {
+open class TourBottomDialog : BottomSheetDialogFragment() {
 
     data class Content(
         @DrawableRes val iconId: Int,
@@ -25,7 +24,7 @@ open class SingleButtonBottomSheet : BottomSheetDialogFragment() {
     )
 
     protected val analytics: Analytics by inject()
-    protected open val layout = R.layout.dialog_single_button_sheet
+    protected open val layout = R.layout.dialog_tour_bottom_sheet
 
     private var content: Content? = null
 
@@ -55,19 +54,19 @@ open class SingleButtonBottomSheet : BottomSheetDialogFragment() {
             txt_title.setText(titleText)
             txt_body.setText(bodyText)
             button.setText(btnText)
-            button.setOnClickListener { onBtnClick.invoke() }
+            button.setOnClickListener {
+                dismiss()
+                onBtnClick.invoke()
+            }
         }
         return true
     }
-}
-
-class TourBottomDialog : SingleButtonBottomSheet() {
 
     companion object {
-        fun showDialog(fm: FragmentManager, content: Content) {
-            TourBottomDialog().apply {
+        fun newInstance(content: Content): TourBottomDialog {
+            return TourBottomDialog().apply {
+                isCancelable = false
                 setContent(content)
-                show(fm, "TOUR_SHEET")
             }
         }
     }

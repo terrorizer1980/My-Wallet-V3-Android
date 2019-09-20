@@ -56,20 +56,13 @@ interface PersistentPrefs :
         const val KEY_SCHEME_URL = "scheme_url"
         const val KEY_METADATA_URI = "metadata_uri"
         const val KEY_NEWLY_CREATED_WALLET = "newly_created_wallet"
-        const val KEY_SECURITY_TIME_ELAPSED = "security_time_elapsed"
-        const val KEY_SECURITY_TWO_FA_NEVER = "security_two_fa_never"
-        const val KEY_SECURITY_BACKUP_NEVER = "security_backup_never"
         const val KEY_ENCRYPTED_PIN_CODE = "encrypted_pin_code"
         const val KEY_FINGERPRINT_ENABLED = "fingerprint_enabled"
         const val KEY_RECEIVE_SHORTCUTS_ENABLED = "receive_shortcuts_enabled"
         const val KEY_SWIPE_TO_RECEIVE_ENABLED = "swipe_to_receive_enabled"
-        const val KEY_APP_VISITS = "app_visits"
         const val KEY_SCREENSHOTS_ENABLED = "screenshots_enabled"
         const val KEY_ONBOARDING_COMPLETE = "onboarding_complete_1"
         const val KEY_OVERLAY_TRUSTED = "overlay_trusted"
-
-        const val KEY_LATEST_ANNOUNCEMENT_DISMISSED = "latest_announcement_dismissed"
-        const val KEY_LATEST_ANNOUNCEMENT_SEEN = "latest_announcement_seen"
 
         const val KEY_ROOT_WARNING_DISABLED = "disable_root_warning"
 

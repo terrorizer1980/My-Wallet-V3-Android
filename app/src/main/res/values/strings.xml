@@ -1784,4 +1784,23 @@
     <string name="gold_unavailable">Gold Unavailable</string>
     <string name="veriff_identify">Veriff Identify</string>
 
+    <string name="tour_step_one_title">View Your Portfolio</string>
+    <string name="tour_step_one_body">Keep track of your crypto balances from your Wallet\'s dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and USD PAX.</string>
+    <string name="tour_step_one_btn">Next</string>
+
+    <string name="tour_step_two_title">Send</string>
+    <string name="tour_step_two_body">Send crypto anywhere, anytime. All you need is the recipients crypto address. </string>
+    <string name="tour_step_two_btn">Next</string>
+
+    <string name="tour_step_three_title">Request</string>
+    <string name="tour_step_three_body">To receive crypto, all the sender needs is your crypto\'s address. You can find these addresses here.</string>
+    <string name="tour_step_three_btn">Next</string>
+
+    <string name="tour_step_four_title">Swap</string>
+    <string name="tour_step_four_body">Trade crypto with low fees without leaving your wallet.</string>
+    <string name="tour_step_four_btn">Done</string>
+
+    <string name="tour_step_five_title">Buy &amp; Sell</string>
+    <string name="tour_step_five_body">Jump start your crypto portfolio by easily buying and selling Bitcoin.one</string>
+    <string name="tour_step_five_btn">Done</string>
 </resources>

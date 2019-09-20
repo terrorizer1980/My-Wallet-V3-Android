@@ -187,6 +187,10 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
         navigator().launchSetupFingerprintLogin()
     }
 
+    override fun startIntroTour() {
+        navigator().launchIntroTour()
+    }
+
     override fun startWebsocketService() {
         context?.run {
             CoinsWebSocketService::class.java.start(this, osUtil)

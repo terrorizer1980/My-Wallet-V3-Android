@@ -82,7 +82,9 @@ val dashboardAnnouncementsModule = applicationContext {
 
         factory {
             IntroTourAnnouncement(
-                dismissRecorder = get()
+                dismissRecorder = get(),
+                prefs = get(),
+                analytics = get()
             )
         }.bind(AnnouncementRule::class)
 

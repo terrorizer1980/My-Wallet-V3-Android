@@ -270,7 +270,7 @@ class DashboardPresenter(
     }
 
     override fun startIntroTourGuide() {
-        // TODO: Implement this! And start the tour!
+        view.startIntroTour()
     }
 
     override fun startFundsBackup() {

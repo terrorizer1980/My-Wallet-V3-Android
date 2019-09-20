@@ -26,5 +26,6 @@
     <color name="default_announce_button">@color/blue_600</color>
 
     <color name="notification_tint">@color/blue_600</color>
+    <color name="tour_icon_tint">@color/blue_600</color>
 
 </resources>

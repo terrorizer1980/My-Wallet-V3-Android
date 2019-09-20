@@ -65,7 +65,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="2dp"
         android:gravity="center"
-        android:text="Reset all announcement cards and popups to unshown state"/>
+        android:text="Reset all announcement cards and tour popups to unshown state"/>
 
     <Button
         android:id="@+id/btn_reset_announce"
