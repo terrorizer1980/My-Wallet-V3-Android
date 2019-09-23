@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v7.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_receive_qr.*
-import kotlinx.android.synthetic.main.spinner_item_transaction_detail.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
@@ -44,7 +43,7 @@ internal class ReceiveQrActivity :
     }
 
     override fun setAddressInfo(addressInfo: String) {
-        address.text = addressInfo
+        address_info.text = addressInfo
     }
 
     override fun setAddressLabel(label: String) {

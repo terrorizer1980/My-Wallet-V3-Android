@@ -15,7 +15,7 @@ class OverlayDetection constructor(private val prefs: PersistentPrefs) {
         if (!prefs.getValue(PersistentPrefs.KEY_OVERLAY_TRUSTED, false) &&
             event.flags and MotionEvent.FLAG_WINDOW_IS_OBSCURED != 0
         ) {
-            if (!activity.isDestroyed) {
+            if (!(activity.isFinishing || activity.isDestroyed)) {
                 // Prevent Not Attached To Window crash
                 alertDialog?.dismiss() // Prevent multiple popups
 

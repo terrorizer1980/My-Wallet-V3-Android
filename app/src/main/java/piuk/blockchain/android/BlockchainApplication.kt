@@ -196,7 +196,7 @@ open class BlockchainApplication : Application(), FrameworkInterface {
                     Timber.i("Security Provider installed")
                 }
 
-                override fun onProviderInstallFailed(errorCode: Int, intent: Intent) {
+                override fun onProviderInstallFailed(errorCode: Int, intent: Intent?) {
                     if (GoogleApiAvailability.getInstance().isUserResolvableError(errorCode)) {
                         showError(errorCode)
                     } else {

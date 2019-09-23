@@ -14,7 +14,7 @@ class CombinedEthModel(private val ethAddressResponseMap: EthAddressResponseMap)
         val values = ethAddressResponseMap.ethAddressResponseMap.values
         var total = BigInteger.ZERO
         for (it in values) {
-            total += total.add(it.balance)
+            total += total.add(it?.balance ?: BigInteger.ZERO)
         }
         return total
     }

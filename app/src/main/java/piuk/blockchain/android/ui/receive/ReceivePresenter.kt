@@ -299,14 +299,14 @@ class ReceivePresenter(
     }
 
     internal fun onShowBottomShareSheetSelected() {
+        val v = view ?: return
         selectedAddress?.let {
             when {
                 FormatsUtil.isValidBitcoinAddress(it) ->
-                    view.showShareBottomSheet(getBitcoinUri(it, view.getBtcAmount()))
+                    v.showShareBottomSheet(getBitcoinUri(it, v.getBtcAmount()))
                 FormatsUtil.isValidEthereumAddress(it) ||
                 FormatsUtil.isValidBitcoinCashAddress(environmentSettings.bitcoinCashNetworkParameters, it) ||
-                it.isValidXlmQr() ->
-                    view.showShareBottomSheet(it)
+                it.isValidXlmQr() -> v.showShareBottomSheet(it)
                 else -> throw IllegalStateException("Unknown address format $selectedAddress")
             }
         }
