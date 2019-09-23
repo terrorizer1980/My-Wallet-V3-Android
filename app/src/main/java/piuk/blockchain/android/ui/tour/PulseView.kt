@@ -5,8 +5,9 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
+import android.support.annotation.ColorInt
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -31,13 +32,13 @@ class PulseView
 
     private var repeat: Int = 0
 
-    private val views = ArrayList<View>()
     private var animatorSet: AnimatorSet? = null
     private var radius: Float = 0.toFloat()
     private var viewHeight: Float = 0.toFloat()
     private var centerX: Float = 0.toFloat()
     private var centerY: Float = 0.toFloat()
-//    private var started: Boolean = false
+
+    private val defaultColor = ContextCompat.getColor(context, R.color.default_tour_pulse_color)
 
     private val paint = Paint().apply {
         isAntiAlias = true
@@ -50,9 +51,7 @@ class PulseView
     // Number of pulses.
     var count: Int = 1
         set(count) {
-            if (count < 0) {
-                throw IllegalArgumentException("Count cannot be negative")
-            }
+            require(count > 0) { "Count must be positive and non-zero" }
 
             if (count != field) {
                 field = count
@@ -63,10 +62,7 @@ class PulseView
     // pulse duration.
     var duration: Long = DEFAULT_DURATION.toLong()
         set(millis) {
-            if (millis < 0) {
-                throw IllegalArgumentException("Duration cannot be negative")
-            }
-
+            require(millis > 0) { "Duration must be positive and non-zero" }
             if (millis != field) {
                 field = millis
                 reset()
@@ -74,7 +70,7 @@ class PulseView
         }
 
     // Gets the current color of the pulse effect as RGB integer
-    var color: Int = DEFAULT_COLOR
+    @ColorInt var color: Int = defaultColor
         set(color) {
             if (color != field) {
                 field = color
@@ -97,21 +93,11 @@ class PulseView
         )
 
         try {
-            count = attr.getInteger(R.styleable.PulseView_pulse_count,
-                DEFAULT_COUNT
-            )
-            duration = attr.getInteger(R.styleable.PulseView_pulse_duration,
-                DEFAULT_DURATION
-            ).toLong()
-            repeat = attr.getInteger(R.styleable.PulseView_pulse_repeat,
-                DEFAULT_REPEAT
-            )
-            color = attr.getColor(R.styleable.PulseView_pulse_color,
-                DEFAULT_COLOR
-            )
-            interpolator = attr.getInteger(R.styleable.PulseView_pulse_interpolator,
-                DEFAULT_INTERPOLATOR
-            )
+            count = attr.getInteger(R.styleable.PulseView_pulse_count, DEFAULT_COUNT)
+            duration = attr.getInteger(R.styleable.PulseView_pulse_duration, DEFAULT_DURATION).toLong()
+            repeat = attr.getInteger(R.styleable.PulseView_pulse_repeat, DEFAULT_REPEAT)
+            color = attr.getColor(R.styleable.PulseView_pulse_color, defaultColor)
+            interpolator = attr.getInteger(R.styleable.PulseView_pulse_interpolator, DEFAULT_INTERPOLATOR)
         } finally {
             attr.recycle()
         }
@@ -150,11 +136,7 @@ class PulseView
 
     private fun clear() {
         stop()
-
-        for (view in views) {
-            removeView(view)
-        }
-        views.clear()
+        removeAllViews()
     }
 
     private fun build() {
@@ -173,7 +155,6 @@ class PulseView
                 alpha = 1f
 
                 addView(this, index, layoutParams)
-                views.add(this)
             }
 
             val delay = (index * duration / count)
@@ -245,8 +226,6 @@ class PulseView
         private const val DEFAULT_DURATION = 7000
         private const val DEFAULT_REPEAT = INFINITE
         private const val DEFAULT_INTERPOLATOR = INTERPOLATOR_LINEAR
-
-        private val DEFAULT_COLOR = Color.rgb(0, 116, 193)
 
         private fun createInterpolator(type: Int): Interpolator {
             return when (type) {

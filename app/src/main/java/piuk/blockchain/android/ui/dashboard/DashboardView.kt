@@ -46,6 +46,8 @@ interface DashboardView : View {
 
     fun startIntroTour()
 
+    fun startTransferCrypto()
+
     fun launchWaitlist()
 
     fun showBottomSheetDialog(bottomSheetDialogFragment: BottomSheetDialogFragment)

@@ -191,6 +191,10 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
         navigator().launchIntroTour()
     }
 
+    override fun startTransferCrypto() {
+        navigator().gotoReceiveFor(CryptoCurrency.BTC)
+    }
+
     override fun startWebsocketService() {
         context?.run {
             CoinsWebSocketService::class.java.start(this, osUtil)

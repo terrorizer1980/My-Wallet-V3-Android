@@ -29,6 +29,7 @@ interface AnnouncementHost {
     fun startSetupVerifyEmail()
     fun startEnableFingerprintLogin()
     fun startIntroTourGuide()
+    fun startTransferCrypto()
 }
 
 abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {

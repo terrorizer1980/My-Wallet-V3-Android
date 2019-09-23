@@ -8,6 +8,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.rule.BackupPhraseAnnou
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BitpayAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BuyBitcoinAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.IntroTourAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForAirdropsAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycIncompleteAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycMoreInfoAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycResubmissionAnnouncement
@@ -15,6 +16,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.rule.PaxAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.PitAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.RegisterFingerprintsAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.SwapAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.TransferBitcoinAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.TwoFAAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.VerifyEmailAnnouncement
 
@@ -38,6 +40,14 @@ val dashboardAnnouncementsModule = applicationContext {
                 config = get()
             )
         }.bind(AnnouncementConfigAdapter::class)
+
+        factory {
+            AnnouncementQueries(
+                nabuToken = get(),
+                settings = get(),
+                nabu = get()
+            )
+        }
 
         factory {
             KycResubmissionAnnouncement(
@@ -137,6 +147,20 @@ val dashboardAnnouncementsModule = applicationContext {
             RegisterFingerprintsAnnouncement(
                 dismissRecorder = get(),
                 fingerprints = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            TransferBitcoinAnnouncement(
+                dismissRecorder = get(),
+                walletStatus = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            KycForAirdropsAnnouncement(
+                dismissRecorder = get(),
+                queries = get()
             )
         }.bind(AnnouncementRule::class)
     }

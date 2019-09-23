@@ -67,18 +67,9 @@ interface NabuDataManager {
         notifyWhenAvailable: Boolean
     ): Completable
 
-//    fun getOnfidoApiKey(
-//        offlineTokenResponse: NabuOfflineTokenResponse
-//    ): Single<String>
-
     fun startVeriffSession(
         offlineTokenResponse: NabuOfflineTokenResponse
     ): Single<VeriffApplicantAndToken>
-
-//    fun submitOnfidoVerification(
-//        offlineTokenResponse: NabuOfflineTokenResponse,
-//        applicantId: String
-//    ): Completable
 
     fun submitVeriffVerification(
         offlineTokenResponse: NabuOfflineTokenResponse

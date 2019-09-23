@@ -1279,18 +1279,28 @@
 
     <!-- Buy Bitcoin announcement -->
     <string name="buy_btc_card_title">Buy Bitcoin</string>
-    <string name="buy_btc_card_body">Turn your cash in to Bitcoin and back.</string>
+    <string name="buy_btc_card_body">Buy Bitcoin with your credit card or bank account to kickstart your crypto portfolio.</string>
     <string name="buy_btc_card_cta">Buy Bitcoin</string>
+
+    <!-- Transfer Bitcoin announcement -->
+    <string name="transfer_btc_card_title">Transfer In Crypto</string>
+    <string name="transfer_btc_card_body">Deposit crypto in your wallet to get started. It\'s the best way to store your crypto while keeping control of your keys.</string>
+    <string name="transfer_btc_card_cta">Get Started</string>
 
     <!-- Wallet Recovery announcement -->
     <string name="recovery_card_title">Wallet Recovery Phrase</string>
     <string name="recovery_card_body">Your recovery phrase can be used to restore all your funds in the case of a lost password or a loss of service at Blockchain.</string>
     <string name="recovery_card_cta">Backup Phrase</string>
 
-    <!-- Buy Bitcoin announcement -->
+    <!-- Enrole fingerprints announcement -->
     <string name="register_fingerprint_card_title">Fingerprint Log in</string>
     <string name="register_fingerprint_card_body">Enable fingerprint to quickly log into your wallet instead of using your PIN.</string>
     <string name="register_fingerprint_card_cta">Enable Now</string>
+
+    <!-- Kyc for Airdrops announcement -->
+    <string name="kyc_airdrop_card_title">Want Free Crypto?</string>
+    <string name="kyc_airdrop_card_body">Verify your identity to participate in our Airdrop program and receive free crypto from future Airdrops.</string>
+    <string name="kyc_airdrop_card_cta">Start Verification</string>
 
     <!-- buy/Sell -->
     <!-- Account created Success -->
@@ -1801,6 +1811,6 @@
     <string name="tour_step_four_btn">Done</string>
 
     <string name="tour_step_five_title">Buy &amp; Sell</string>
-    <string name="tour_step_five_body">Jump start your crypto portfolio by easily buying and selling Bitcoin.one</string>
+    <string name="tour_step_five_body">Buy Bitcoin with your credit card or bank account to kickstart your crypto portfolio.</string>
     <string name="tour_step_five_btn">Done</string>
 </resources>

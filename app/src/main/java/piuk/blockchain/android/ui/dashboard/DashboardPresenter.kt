@@ -289,6 +289,10 @@ class DashboardPresenter(
         view.startEnableFingerprintLogin()
     }
 
+    override fun startTransferCrypto() {
+        view.startTransferCrypto()
+    }
+
     private fun getPriceString(cryptoCurrency: CryptoCurrency): String {
         val fiat = getFiatCurrency()
         return getLastPrice(cryptoCurrency, fiat).run {

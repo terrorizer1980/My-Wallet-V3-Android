@@ -125,9 +125,8 @@ class TourGuide @JvmOverloads constructor(
         pulse.layoutParams = pulseParams
 
         // Do we need to set a larger bounds area? For ie menus etc
-        // If the target view extends beyond the pulse in x or y directions, then
-        // apply a touch delegate to extend the capture area.
-        // Don't forget to remove this delegate, though, or things could get interesting.
+        // If the target view extends beyond the pulse in x or y directions, then expand the touchable view to cover
+        // the target view.
 
         val dW: Int = (max(v.width - widthPulse, 0f) / 2).toInt()
         val dH: Int = (max(v.height - heightPulse, 0f) / 2).toInt()
@@ -175,8 +174,6 @@ class TourGuide @JvmOverloads constructor(
 
     private fun nextStep() {
         ++currentStepIndex
-
-        // Trigger analytics event?
 
         if (currentStepIndex >= steps.size) {
             stop()
