@@ -16,7 +16,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedDrawable

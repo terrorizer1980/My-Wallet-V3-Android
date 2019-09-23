@@ -3,7 +3,6 @@ package piuk.blockchain.android.ui.auth
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.support.v7.app.AlertDialog
 import android.view.MotionEvent
 import kotlinx.android.synthetic.main.activity_landing.*
@@ -36,7 +35,7 @@ class LandingActivity : BaseMvpActivity<LandingView, LandingPresenter>(), Landin
         if (!ConnectivityStatus.hasConnectivity(this)) {
             showConnectivityWarning()
         } else {
-            presenter.initPreLoginPrompts(this)
+            presenter.checkForRooted()
         }
 
         onViewReady()
@@ -105,13 +104,13 @@ class LandingActivity : BaseMvpActivity<LandingView, LandingPresenter>(), Landin
             .show()
     }
 
-    override fun showWarningPrompt(alertDialog: AlertDialog) {
-        val handler = Handler()
-        handler.postDelayed({
-            if (!isFinishing) {
-                alertDialog.show()
-            }
-        }, 100)
+    override fun showIsRootedWarning() {
+        AlertDialog.Builder(this, R.style.AlertDialogStyle)
+            .setMessage(R.string.device_rooted)
+            .setCancelable(false)
+            .setPositiveButton(R.string.dialog_continue, null)
+            .create()
+            .show()
     }
 
     companion object {

@@ -491,9 +491,7 @@
   <string name="onboarding_qr_codes">QR-koder</string>
   <string name="onboarding_scan_address">Skanna adress</string>
   <string name="onboarding_buy_content">Vi arbetar med utbytespartners över hela världen, så du kan köpa bitcoin direkt från din plånbok.</string>
-  <string name="onboarding_receive_content">Skicka din plånbokadress till en vän för att begära pengar. En adress är en sträng av slumpmässiga bokstäver och siffror som ändras för varje transaktion.</string>
-  <string name="onboarding_qr_codes_content">En adress kan också visas som en QR-kod. Skanna en väns QR-kod för att snabbt fånga sin plånboksadress.</string>
-  <string name="onboarding_buy_bitcoin">Köp Bitcoin</string>
+    <string name="onboarding_buy_bitcoin">Köp Bitcoin</string>
   <string name="onboarding_buy_and_sell_bitcoin">Köp och sälj Bitcoin</string>
   <string name="onboarding_get_bitcoin">Få Bitcoin</string>
   <string name="onboarding_get_eth">Få eter</string>
@@ -576,8 +574,7 @@
   <string name="bch_invalid_address">Ogiltig Bitcoin Cash-adress</string>
   <string name="confirm_currency">Bekräfta valuta</string>
   <string name="confirm_currency_message">Vänligen välj vilken valuta QR-kod du skannar.</string>
-  <string name="error_bitpay_not_supported">Bitpay URI-enheter stöds inte för närvarande</string>
-  <string name="announcement_trading_cta">En bättre köp och sälja</string>
+    <string name="announcement_trading_cta">En bättre köp och sälja</string>
   <string name="announcement_trading_description">Ett förbättrat flöde för din mobila köp- och säljupplevelse finns nu i din plånbok. Det är enkelt, smidigt och säkert.</string>
   <string name="announcement_trading_link">Komma igång</string>
   <string name="testnet_warning">Varning! Detta är testnet3 blockchain.</string>
@@ -637,15 +634,9 @@
   <string name="kyc_phone_number_validation_hint">Bekräftelsekod</string>
   <string name="kyc_phone_number_validation_error">Fel med att validera telefonnummer. Kontrollera din kod</string>
   <string name="kyc_phone_number_validation_error_incorrect">Verifieringskoden är felaktig. Vänligen dubbelkod koden vi skickade till dig och försök igen.</string>
-  <string name="kyc_onfido_splash_title">Verifiera din identitet</string>
-  <string name="kyc_onfido_splash_header">Låt oss bekräfta att det är du</string>
-  <string name="kyc_onfido_splash_subtitle">Ta ditt pass eller körkort.</string>
-  <string name="kyc_onfido_splash_message">När vi har verifierat din identitet godkänns du för att utbyta krypteringsvaluta i Blockchain-appen!</string>
-  <string name="kyc_onfido_splash_verification_error">Ett fel på att verifiera ID, var vänlig försök igen</string>
-  <string name="kyc_onfido_splash_passport">Mitt pass</string>
-  <string name="kyc_onfido_splash_drivers_license">Min Drivers License</string>
-  <string name="kyc_onfido_splash_id_card">Min regering utfärdat ID</string>
-  <string name="kyc_complete_title">Ansökan är klar</string>
+    <string name="kyc_onfido_splash_header">Låt oss bekräfta att det är du</string>
+    <string name="kyc_onfido_splash_verification_error">Ett fel på att verifiera ID, var vänlig försök igen</string>
+    <string name="kyc_complete_title">Ansökan är klar</string>
   <string name="kyc_complete_header">Klar och klar!</string>
   <string name="kyc_complete_subtitle">Du har skickat in din information. Ditt konto är nu i recension!</string>
   <string name="kyc_complete_button_done">Gjort</string>
@@ -690,10 +681,8 @@
  Det är inget hot du kan fortsätta.
 </string>
   <string name="dialog_continue">Fortsätt</string>
-  <string name="insufficient_funds_with_max">Otillräckliga medel, det mest du kan skicka är %1$s</string>
-  <string name="not_enough_funds_with_currency">Inte tillräckligt med %1$s</string>
-  <string name="invalid_address">Ogiltig adress</string>
-  <string name="transaction_failed_min_send">Det minsta du kan skicka är %1$s</string>
+    <string name="not_enough_funds_with_currency">Inte tillräckligt med %1$s</string>
+    <string name="transaction_failed_min_send">Det minsta du kan skicka är %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Minst %1$s behövs för nya konton</string>
   <string name="lockbox_title">Lockbox</string>
   <string name="lockbox_landing_get_yours_title">Hämta din låsbox</string>
@@ -992,8 +981,7 @@
   <string name="kyc_address_city_town_village">Stad / Ort / By</string>
   <string name="kyc_address_state_region_province_county">Stat / Region / Provins / Län</string>
   <string name="kyc_address_postal_code">postnummer</string>
-  <string name="kyc_onfido_splash_residence_permit">Mitt uppehållstillstånd</string>
-  <string name="kyc_veriff_splash_title">\@ Sträng / kyc_documents_needed</string>
+    <string name="kyc_veriff_splash_title">\@ Sträng / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ Sträng / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">Du behöver 1 av ID-typerna nedan för att fortsätta.</string>
   <string name="kyc_veriff_splash_enable_camera_title">Aktivera också din kamera!</string>
@@ -1201,11 +1189,7 @@
   <string name="gold_unavailable">Guld Ej tillgängligt</string>
   <string name="veriff_identify">Verifiera Identifiera</string>
   <string name="more_info_needed">Mer information behövs</string>
-  <string name="coinify_kyc_body">För att fortsätta använda Buy &amp; Sell måste du uppdatera din profil. När du är klar låser du också upp högre handelsgränser i Swap.</string>
-  <string name="coinify_kyc_cta">Uppdatera nu</string>
-  <string name="coinify_kyc_dismiss">Läs mer</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">Digitala amerikanska dollar</string>
+    <string name="pax_intro_popup_title">Digitala amerikanska dollar</string>
   <string name="pax_intro_popup_text">Vi introducerar USD PAX, en säker och stabil krypto tillgång du kan använda för att stärka värdet. 1 PAX är lika med 1 USD ..</string>
   <string name="pax_intro_popup_cta_btn">Få USD PAX nu</string>
   <string name="buy_sell_error_country_not_supported">Ditt land stöds inte för köp / försäljning just nu. Vi arbetar för att lägga till stöd till fler områden snart.</string>

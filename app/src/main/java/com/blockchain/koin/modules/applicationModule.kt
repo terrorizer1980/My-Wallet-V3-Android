@@ -3,7 +3,6 @@
 package com.blockchain.koin.modules
 
 import android.content.Context
-import com.blockchain.activities.StartOnboarding
 import com.blockchain.activities.StartSwap
 import com.blockchain.balance.TotalBalance
 import com.blockchain.balance.plus
@@ -25,7 +24,6 @@ import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
 import piuk.blockchain.android.data.cache.DynamicFeeCache
-import piuk.blockchain.android.data.datamanagers.PromptManager
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
@@ -79,7 +77,6 @@ import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.launcher.LauncherPresenter
 import piuk.blockchain.android.ui.login.LoginPresenter
 import piuk.blockchain.android.ui.login.ManualPairingPresenter
-import piuk.blockchain.android.ui.onboarding.OnBoardingStarter
 import piuk.blockchain.android.ui.onboarding.OnboardingPresenter
 import piuk.blockchain.android.ui.pairingcode.PairingCodePresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
@@ -106,6 +103,7 @@ import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionHelper
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
@@ -236,17 +234,12 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            PromptManager(get(), get(), get())
-        }
-
-        factory {
             MainPresenter(
                 prefs = get(),
                 appUtil = get(),
                 accessState = get(),
                 payloadManagerWiper = get(),
                 payloadDataManager = get(),
-                settingsDataManager = get(),
                 coinifyDataManager = get(),
                 buyDataManager = get(),
                 dynamicFeeCache = get(),
@@ -255,11 +248,9 @@ val applicationModule = applicationContext {
                 exchangeRateFactory = get(),
                 rxBus = get(),
                 feeDataManager = get(),
-                promptManager = get(),
                 ethDataManager = get(),
                 bchDataManager = get(),
                 currencyState = get(),
-                walletOptionsDataManager = get(),
                 metadataManager = get(),
                 shapeShiftDataManager = get(),
                 environmentSettings = get(),
@@ -444,13 +435,6 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            BackupWalletCompletedPresenter(
-                transferFundsDataManager = get(),
-                prefs = get()
-            )
-        }
-
-        factory {
             PasswordRequiredPresenter(
                 get(),
                 get(),
@@ -537,8 +521,8 @@ val applicationModule = applicationContext {
         factory {
             BackupVerifyPresenter(
                 payloadDataManager = get(),
-                prefs = get(),
-                backupWalletUtil = get()
+                backupWalletUtil = get(),
+                walletStatus = get()
             )
         }
 
@@ -712,14 +696,6 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            OnboardingPresenter(
-                fingerprintHelper = get(),
-                accessState = get(),
-                settingsDataManager = get()
-            )
-        }
-
-        factory {
             AccountPresenter(
                 payloadDataManager = get(),
                 bchDataManager = get(),
@@ -762,14 +738,10 @@ val applicationModule = applicationContext {
                 prefs = get(),
                 exchangeRateFactory = get(),
                 stringUtils = get(),
-                accessState = get(),
-                buyDataManager = get(),
                 rxBus = get(),
                 swipeToReceiveHelper = get(),
-                currencyFormatManager = get(),
                 lockboxDataManager = get(),
                 currentTier = get(),
-                sunriverCampaignHelper = get(),
                 announcements = get(),
                 pitLinking = get()
             )
@@ -869,12 +841,9 @@ val applicationModule = applicationContext {
         factory {
             LandingPresenter(
                 environmentSettings = get(),
-                promptManager = get()
+                prefs = get(),
+                rootUtil = get()
             )
-        }
-
-        factory {
-            PromptManager(prefs = get(), payloadDataManager = get(), transactionListDataManager = get())
         }
 
         bean {
@@ -946,6 +915,21 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            BackupWalletCompletedPresenter(
+                transferFundsDataManager = get(),
+                walletStatus = get()
+            )
+        }
+
+        factory {
+            OnboardingPresenter(
+                fingerprintHelper = get(),
+                accessState = get(),
+                settingsDataManager = get()
+            )
+        }
+
+        factory {
             LauncherPresenter(
                 appUtil = get(),
                 payloadDataManager = get(),
@@ -954,6 +938,14 @@ val applicationModule = applicationContext {
                 accessState = get(),
                 settingsDataManager = get(),
                 notificationTokenManager = get()
+            )
+        }
+
+        bean {
+            AnnouncementQueries(
+                nabuToken = get(),
+                settings = get(),
+                nabu = get()
             )
         }
     }
@@ -969,10 +961,6 @@ val applicationModule = applicationContext {
     factory {
         SwapStarter(prefs = get())
     }.bind(StartSwap::class)
-
-    factory {
-        OnBoardingStarter()
-    }.bind(StartOnboarding::class)
 
     factory { DateUtil(get()) }
 

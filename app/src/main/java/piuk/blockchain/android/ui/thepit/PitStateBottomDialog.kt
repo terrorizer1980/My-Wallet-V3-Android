@@ -6,7 +6,7 @@ import android.view.View
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.wallet_mercury_linking_botton_dialog.*
 import piuk.blockchain.android.R
-import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
+import com.blockchain.ui.dialog.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 
 class PitStateBottomDialog : ErrorBottomDialog() {

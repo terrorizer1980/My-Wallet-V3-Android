@@ -2,13 +2,12 @@ package piuk.blockchain.android.ui.backup.verify
 
 import android.annotation.SuppressLint
 import android.support.annotation.VisibleForTesting
+import com.blockchain.preferences.WalletStatus
+import io.reactivex.rxkotlin.plusAssign
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.ui.backup.wordlist.BackupWalletWordListFragment.Companion.ARGUMENT_SECOND_PASSWORD
 import piuk.blockchain.android.util.BackupWalletUtil
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -16,7 +15,7 @@ import timber.log.Timber
 
 class BackupVerifyPresenter(
     private val payloadDataManager: PayloadDataManager,
-    private val prefs: PersistentPrefs,
+    private val walletStatus: WalletStatus,
     private val backupWalletUtil: BackupWalletUtil
 ) : BasePresenter<BackupVerifyView>() {
 
@@ -43,16 +42,12 @@ class BackupVerifyPresenter(
     internal fun updateBackupStatus() {
         payloadDataManager.wallet!!.hdWallets[0].isMnemonicVerified = true
 
-        payloadDataManager.syncPayloadWithServer()
+        compositeDisposable += payloadDataManager.syncPayloadWithServer()
             .doOnSubscribe { view.showProgressDialog() }
             .doAfterTerminate { view.hideProgressDialog() }
-            .addToCompositeDisposable(this)
             .subscribe(
                 {
-                    prefs.setValue(
-                        BackupWalletActivity.BACKUP_DATE_KEY,
-                        (System.currentTimeMillis() / 1000).toInt()
-                    )
+                    walletStatus.lastBackupTime = System.currentTimeMillis() / 1000
                     view.showToast(R.string.backup_confirmed, ToastCustom.TYPE_OK)
                     view.showCompletedFragment()
                 },

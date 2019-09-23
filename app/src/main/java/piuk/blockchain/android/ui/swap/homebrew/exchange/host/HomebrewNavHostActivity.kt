@@ -28,7 +28,7 @@ import piuk.blockchain.android.ui.swap.showErrorDialog
 import com.blockchain.swap.nabu.StartKyc
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
-import com.blockchain.ui.chooserdialog.AccountChooserBottomDialog
+import com.blockchain.ui.dialog.AccountChooserBottomDialog
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.disposables.CompositeDisposable

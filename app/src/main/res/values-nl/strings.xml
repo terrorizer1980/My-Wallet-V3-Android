@@ -478,9 +478,7 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="onboarding_qr_codes">QR-codes</string>
   <string name="onboarding_scan_address">Adres scannen</string>
   <string name="onboarding_buy_content">Wij werken met uitwisselingspartners uit de hele wereld, zodat je bitcoin direct uit je portemonnee kunt kopen.</string>
-  <string name="onboarding_receive_content">Stuur uw portemonneeadres naar een vriend om geld te vragen. Een adres is een reeks willekeurige letters en getallen die voor elke transactie worden gewijzigd.</string>
-  <string name="onboarding_qr_codes_content">Een adres kan ook als een QR-code worden getoond. Scan de QR-code van een vriend om het adres van hun portemonnee snel vast te leggen.</string>
-  <string name="onboarding_buy_bitcoin">Bitcoins kopen</string>
+    <string name="onboarding_buy_bitcoin">Bitcoins kopen</string>
   <string name="onboarding_buy_and_sell_bitcoin">Bitcoin kopen en verkopen</string>
   <string name="onboarding_get_bitcoin">Bitcoins krijgen</string>
   <string name="onboarding_get_eth">Neem Ether</string>
@@ -563,7 +561,6 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="bch_invalid_address">Ongeldig bitcoin-adres</string>
   <string name="confirm_currency">Bevestig valuta</string>
   <string name="confirm_currency_message">Selecteer de QR-code van uw valuta die u aan het scannen bent.</string>
-  <string name="error_bitpay_not_supported">Bitpay-URI\'s worden momenteel niet ondersteund</string>
   <string name="announcement_trading_cta">Een betere buy &amp; sell</string>
   <string name="announcement_trading_description">Een verbeterde stroom voor uw mobiele buy &amp; sell-ervaring is nu beschikbaar in uw portemonnee. Het is eenvoudig, naadloos en veilig.</string>
   <string name="announcement_trading_link">Begin</string>
@@ -624,14 +621,8 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="kyc_phone_number_validation_hint">Bevestigingscode</string>
   <string name="kyc_phone_number_validation_error">Fout bij het valideren van telefoonnummer. Controleer uw code</string>
   <string name="kyc_phone_number_validation_error_incorrect">Verificatiecode onjuist. Controleer de code die we je hebben gestuurd nogmaals en probeer het opnieuw.</string>
-  <string name="kyc_onfido_splash_title">Verifieer uw identiteit</string>
   <string name="kyc_onfido_splash_header">Laten we bevestigen dat jij het bent</string>
-  <string name="kyc_onfido_splash_subtitle">Pak je paspoort of rijbewijs.</string>
-  <string name="kyc_onfido_splash_message">Zodra we uw identiteit hebben geverifieerd, bent u goedgekeurd om cryptocurrencies uit te wisselen via de Blockchain-app!</string>
   <string name="kyc_onfido_splash_verification_error">Fout bij het verifiëren van de ID, probeer het opnieuw</string>
-  <string name="kyc_onfido_splash_passport">Mijn paspoort</string>
-  <string name="kyc_onfido_splash_drivers_license">Mijn rijbewijs</string>
-  <string name="kyc_onfido_splash_id_card">Mijn regering heeft ID uitgegeven</string>
   <string name="kyc_complete_title">Applicatie voltooid</string>
   <string name="kyc_complete_header">Klaar en klaar!</string>
   <string name="kyc_complete_subtitle">Je hebt je informatie succesvol ingediend. Uw account is nu in beoordeling!</string>
@@ -674,9 +665,7 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="screen_overlay_warning">Schermoverlay gedetecteerd!</string>
   <string name="screen_overlay_note">Apps die schermoverlays gebruiken hebben de mogelijkheid om u te verleiden om op onzichtbare objecten te tikken en mogelijk tegoeden te stelen. Deze waarschuwing wordt ook veroorzaakt door schermdim-apps. Als u zeker weet dat er geen bedreigingen zijn, kunt u verdergaan. </string>
   <string name="dialog_continue">Doorgaan</string>
-  <string name="insufficient_funds_with_max">Onvoldoende geld, het meeste dat u kunt verzenden, is %1$s</string>
-  <string name="not_enough_funds_with_currency">Niet genoeg %1$s</string>
-  <string name="invalid_address">Ongeldig adres</string>
+    <string name="not_enough_funds_with_currency">Niet genoeg %1$s</string>
   <string name="transaction_failed_min_send">Het minimum dat u kunt verzenden, is %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Minimaal %1$s nodig voor nieuwe accounts</string>
   <string name="lockbox_title">lockbox</string>
@@ -976,7 +965,6 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="kyc_address_city_town_village">Stad stad dorp</string>
   <string name="kyc_address_state_region_province_county">Staat / regio / provincie / provincie</string>
   <string name="kyc_address_postal_code">Postcode</string>
-  <string name="kyc_onfido_splash_residence_permit">Mijn verblijfsvergunning</string>
   <string name="kyc_veriff_splash_title">\@ String / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ String / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">U hebt 1 van de onderstaande ID-typen nodig om door te gaan.</string>
@@ -1184,11 +1172,7 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="gold_unavailable">Goud niet beschikbaar</string>
   <string name="veriff_identify">Veriff Identify</string>
   <string name="more_info_needed">Meer info nodig</string>
-  <string name="coinify_kyc_body">Als je Kopen &amp; Verkopen wilt blijven gebruiken, moet je je profiel bijwerken. Eenmaal voltooid, ontgrendel je ook hogere handelslimieten in Swap.</string>
-  <string name="coinify_kyc_cta">Update nu</string>
-  <string name="coinify_kyc_dismiss">Kom meer te weten</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">Digitale Amerikaanse dollars</string>
+    <string name="pax_intro_popup_title">Digitale Amerikaanse dollars</string>
   <string name="pax_intro_popup_text">Introductie van USD PAX, een veilige en stabiele crypto-asset die u kunt gebruiken om waarde te behouden. 1 PAX is gelijk aan 1 USD ..</string>
   <string name="pax_intro_popup_cta_btn">Ontvang nu USD PAX</string>
   <string name="buy_sell_error_country_not_supported">Uw land wordt momenteel niet ondersteund voor kopen / verkopen. We werken eraan om binnenkort meer gebieden te ondersteunen.</string>

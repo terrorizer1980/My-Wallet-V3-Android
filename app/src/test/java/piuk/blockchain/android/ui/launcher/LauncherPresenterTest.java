@@ -81,7 +81,6 @@ public class LauncherPresenterTest {
         when(payloadDataManager.getWallet()).thenReturn(wallet);
         when(wallet.isUpgraded()).thenReturn(true);
         when(accessState.isLoggedIn()).thenReturn(true);
-        when(accessState.isNewlyCreated()).thenReturn(false);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
         when(wallet.getGuid()).thenReturn(guid);
@@ -93,106 +92,6 @@ public class LauncherPresenterTest {
         subject.onViewReady();
         // Assert
         verify(launcherActivity).onStartMainActivity(null);
-    }
-
-    /**
-     * Wallet is newly created. Launch onboarding process.
-     */
-    @Test
-    public void onViewReadyNewlyCreated() {
-        // Arrange
-        when(launcherActivity.getPageIntent()).thenReturn(intent);
-        when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
-        when(extras.getBoolean(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
-        when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
-        when(prefsUtil.isLoggedOut()).thenReturn(false);
-        when(appUtil.isSane()).thenReturn(true);
-        String guid = "GUID";
-        String sharedKey = "SHARED_KEY";
-        when(wallet.getGuid()).thenReturn(guid);
-        when(wallet.getSharedKey()).thenReturn(sharedKey);
-        when(payloadDataManager.getWallet()).thenReturn(wallet);
-        Settings mockSettings = mock(Settings.class);
-        when(mockSettings.getCurrency()).thenReturn("USD");
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
-        when(wallet.isUpgraded()).thenReturn(true);
-        when(accessState.isLoggedIn()).thenReturn(true);
-        when(accessState.isNewlyCreated()).thenReturn(true);
-        // Act
-        subject.onViewReady();
-        // Assert
-        verify(launcherActivity).onStartOnboarding(false,true);
-        verify(accessState).setLoggedIn(true);
-    }
-
-    /**
-     * Everything is good, email not verified and second launch. Should start email verification nag
-     * flow.
-     */
-    @Test
-    public void onViewReadyNonVerifiedEmailNotVerifiedSecondLaunch() {
-        // Arrange
-        when(launcherActivity.getPageIntent()).thenReturn(intent);
-        when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
-        when(extras.getBoolean(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
-        when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
-        when(prefsUtil.isLoggedOut()).thenReturn(false);
-        when(appUtil.isSane()).thenReturn(true);
-        when(payloadDataManager.getWallet()).thenReturn(wallet);
-        when(wallet.isUpgraded()).thenReturn(true);
-        when(accessState.isLoggedIn()).thenReturn(true);
-        when(accessState.isNewlyCreated()).thenReturn(false);
-        String guid = "GUID";
-        String sharedKey = "SHARED_KEY";
-        when(wallet.getGuid()).thenReturn(guid);
-        when(wallet.getSharedKey()).thenReturn(sharedKey);
-        Settings mockSettings = mock(Settings.class);
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
-        when(mockSettings.isEmailVerified()).thenReturn(false);
-        when(mockSettings.getEmail()).thenReturn("email");
-        when(mockSettings.getCurrency()).thenReturn("USD");
-        when(prefsUtil.getValue(PersistentPrefs.KEY_APP_VISITS, 0)).thenReturn(1);
-        // Act
-        subject.onViewReady();
-        // Assert
-        verify(launcherActivity).onStartOnboarding(true,true);
-        verify(accessState).setLoggedIn(true);
-    }
-
-    /**
-     * Everything is good, email not verified but first launch. Should start MainActivity flow.
-     */
-    @Test
-    public void onViewReadyNonVerifiedEmailNotVerifiedFirstLaunch() {
-        // Arrange
-        when(launcherActivity.getPageIntent()).thenReturn(intent);
-        when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
-        when(extras.getBoolean(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
-        when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
-        when(prefsUtil.isLoggedOut()).thenReturn(false);
-        when(appUtil.isSane()).thenReturn(true);
-        when(payloadDataManager.getWallet()).thenReturn(wallet);
-        when(wallet.isUpgraded()).thenReturn(true);
-        when(accessState.isLoggedIn()).thenReturn(true);
-        when(accessState.isNewlyCreated()).thenReturn(false);
-        String guid = "GUID";
-        String sharedKey = "SHARED_KEY";
-        when(wallet.getGuid()).thenReturn(guid);
-        when(wallet.getSharedKey()).thenReturn(sharedKey);
-        Settings mockSettings = mock(Settings.class);
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
-        when(mockSettings.isEmailVerified()).thenReturn(false);
-        when(mockSettings.getEmail()).thenReturn("email");
-        when(mockSettings.getCurrency()).thenReturn("USD");
-        when(prefsUtil.getValue(PersistentPrefs.KEY_APP_VISITS, 0)).thenReturn(0);
-        // Act
-        subject.onViewReady();
-        // Assert
-        verify(launcherActivity).onStartMainActivity(null);
-        verify(accessState).setLoggedIn(true);
     }
 
     /**
@@ -212,7 +111,6 @@ public class LauncherPresenterTest {
         when(payloadDataManager.getWallet()).thenReturn(wallet);
         when(wallet.isUpgraded()).thenReturn(true);
         when(accessState.isLoggedIn()).thenReturn(true);
-        when(accessState.isNewlyCreated()).thenReturn(false);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
         when(wallet.getGuid()).thenReturn(guid);
@@ -245,7 +143,6 @@ public class LauncherPresenterTest {
         when(payloadDataManager.getWallet()).thenReturn(wallet);
         when(wallet.isUpgraded()).thenReturn(true);
         when(accessState.isLoggedIn()).thenReturn(true);
-        when(accessState.isNewlyCreated()).thenReturn(false);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
         when(wallet.getGuid()).thenReturn(guid);
@@ -298,7 +195,6 @@ public class LauncherPresenterTest {
         when(payloadDataManager.getWallet()).thenReturn(wallet);
         when(wallet.isUpgraded()).thenReturn(true);
         when(accessState.isLoggedIn()).thenReturn(true);
-        when(accessState.isNewlyCreated()).thenReturn(false);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
         when(wallet.getGuid()).thenReturn(guid);
@@ -339,8 +235,8 @@ public class LauncherPresenterTest {
         when(launcherActivity.getPageIntent()).thenReturn(intent);
         when(intent.getExtras()).thenReturn(extras);
         when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(false);
-        when(prefsUtil.getValue(eq(PersistentPrefs.Companion.KEY_WALLET_GUID), anyString())).thenReturn("1234567890");
-        when(prefsUtil.getValue(eq(PersistentPrefs.Companion.KEY_PIN_IDENTIFIER), anyString())).thenReturn("");
+        when(prefsUtil.getValue(eq(PersistentPrefs.KEY_WALLET_GUID), anyString())).thenReturn("1234567890");
+        when(prefsUtil.getValue(eq(PersistentPrefs.KEY_PIN_IDENTIFIER), anyString())).thenReturn("");
         // Act
         subject.onViewReady();
         // Assert

@@ -17,7 +17,7 @@ import com.blockchain.ui.password.SecondPasswordHandler
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.androidcoreui.ui.base.BaseDialogFragment
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -108,7 +108,7 @@ class ConfirmFundsTransferDialogFragment :
         hideProgressDialog()
         if (activity != null && !activity!!.isFinishing) {
             progressDialog = MaterialProgressDialog(
-                context
+                requireContext()
             ).apply {
                 setMessage(getString(R.string.please_wait))
                 setCancelable(false)

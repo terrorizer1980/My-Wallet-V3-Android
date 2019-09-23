@@ -481,9 +481,7 @@
   <string name="onboarding_qr_codes">二维码</string>
   <string name="onboarding_scan_address">扫描地址</string>
   <string name="onboarding_buy_content">我们与全球比特币交易所进行合作，所以您能直接从您的钱包中购买比特币, so you can buy bitcoin directly from your wallet.</string>
-  <string name="onboarding_receive_content">将您的钱包地址发送给朋友以请求比特币。钱包地址是一个由字母和数字随机组成的字符串，每一笔交易时都会变化。</string>
-  <string name="onboarding_qr_codes_content">地址也可以显示为二维码。扫描朋友的二维码以迅速获得他们的钱包地址。</string>
-  <string name="onboarding_buy_bitcoin">购买比特币</string>
+    <string name="onboarding_buy_bitcoin">购买比特币</string>
   <string name="onboarding_buy_and_sell_bitcoin">买卖比特币</string>
   <string name="onboarding_get_bitcoin">获得比特币</string>
   <string name="onboarding_get_eth">获取以太币</string>
@@ -566,8 +564,7 @@
   <string name="bch_invalid_address">无效 Bitcoin Cash 地址</string>
   <string name="confirm_currency">确认货币</string>
   <string name="confirm_currency_message">请选择您要扫描的货币二维码。</string>
-  <string name="error_bitpay_not_supported">Bitpay URI 尚不支持</string>
-  <string name="announcement_trading_cta">更好的购买与卖出服务</string>
+    <string name="announcement_trading_cta">更好的购买与卖出服务</string>
   <string name="announcement_trading_description">现在您可以在手机钱包里通过我们改进后的流体验购买与卖出服务了， 简单、便捷且又安全。</string>
   <string name="announcement_trading_link">开始吧</string>
   <string name="testnet_warning">警告！这是测试网 3 的区块链。</string>
@@ -627,15 +624,9 @@
   <string name="kyc_phone_number_validation_hint">验证码</string>
   <string name="kyc_phone_number_validation_error">验证电话号码时出错。请检查您的验证码</string>
   <string name="kyc_phone_number_validation_error_incorrect">验证码错误。请仔细检查验证码并重试。</string>
-  <string name="kyc_onfido_splash_title">验证您的身份</string>
-  <string name="kyc_onfido_splash_header">确认您是本人</string>
-  <string name="kyc_onfido_splash_subtitle">出具您的护照及驾驶执照。</string>
-  <string name="kyc_onfido_splash_message">通过验证之后您即可在 Blockchain app 上兑换加密货币！</string>
-  <string name="kyc_onfido_splash_verification_error">验证身份时出错，请重试</string>
-  <string name="kyc_onfido_splash_passport">我的护照</string>
-  <string name="kyc_onfido_splash_drivers_license">我的驾驶执照</string>
-  <string name="kyc_onfido_splash_id_card">我国政府颁发的身份证</string>
-  <string name="kyc_complete_title">申请完成</string>
+    <string name="kyc_onfido_splash_header">确认您是本人</string>
+    <string name="kyc_onfido_splash_verification_error">验证身份时出错，请重试</string>
+    <string name="kyc_complete_title">申请完成</string>
   <string name="kyc_complete_header">完成！</string>
   <string name="kyc_complete_subtitle">已成功提交信息。您的帐户正在审核中！</string>
   <string name="kyc_complete_button_done">完成</string>
@@ -678,10 +669,8 @@
   <string name="screen_overlay_note">使用屏幕覆盖的应用程序会欺骗你点击看不到的对象并可能窃取资金。请注意，屏幕调光应用程序也会触发该警告。若您确定没有威胁，您可继续操作。
     </string>
   <string name="dialog_continue">继续</string>
-  <string name="insufficient_funds_with_max">资金不足，最高汇款为%1$s</string>
-  <string name="not_enough_funds_with_currency">不足%1$s</string>
-  <string name="invalid_address">无效地址</string>
-  <string name="transaction_failed_min_send">最低汇款为%1$s</string>
+    <string name="not_enough_funds_with_currency">不足%1$s</string>
+    <string name="transaction_failed_min_send">最低汇款为%1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">新账户最少需要%1$s</string>
   <string name="lockbox_title">密码箱</string>
   <string name="lockbox_landing_get_yours_title">获取您的 Lockbox</string>
@@ -980,8 +969,7 @@
   <string name="kyc_address_city_town_village">城市/城镇/村庄</string>
   <string name="kyc_address_state_region_province_county">州/地区/省/国家</string>
   <string name="kyc_address_postal_code">邮政编码</string>
-  <string name="kyc_onfido_splash_residence_permit">我的居留证</string>
-  <string name="kyc_veriff_splash_title">@string/kyc_documents_needed</string>
+    <string name="kyc_veriff_splash_title">@string/kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">@string/kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">您需要以下1种ID类型才能继续。</string>
   <string name="kyc_veriff_splash_enable_camera_title">另外，启用您的摄像头！</string>
@@ -1189,11 +1177,7 @@
   <string name="gold_unavailable">黄金不可用</string>
   <string name="veriff_identify">Veriff识别</string>
   <string name="more_info_needed">需更多信息</string>
-  <string name="coinify_kyc_body">要继续使用买入 &amp; 卖出，您需要更新个人资料。完成后，您还可以在 Swap 中解锁更高额的交易权限。 </string>
-  <string name="coinify_kyc_cta">立即更新</string>
-  <string name="coinify_kyc_dismiss">了解更多</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">数字美元</string>
+    <string name="pax_intro_popup_title">数字美元</string>
   <string name="pax_intro_popup_text">推出 USD PAX，一种安全稳定的加密货币资产，可用于存储价值。 1 PAX等于1美元。</string>
   <string name="pax_intro_popup_cta_btn">立即获得 USD PAX</string>
   <string name="buy_sell_error_country_not_supported">目前您所在的国家/地区不支持买入/卖出。我们正在努力尽快为更多地区增加支持。</string>

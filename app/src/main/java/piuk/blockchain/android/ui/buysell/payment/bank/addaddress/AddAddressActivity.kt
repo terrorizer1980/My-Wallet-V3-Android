@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.inputmethod.EditorInfo
-import com.blockchain.ui.countryselection.CountryDialog
+import com.blockchain.ui.dialog.CountryDialog
 import io.reactivex.Single
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
@@ -14,7 +14,7 @@ import piuk.blockchain.android.ui.buysell.createorder.models.SellConfirmationDis
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.toast

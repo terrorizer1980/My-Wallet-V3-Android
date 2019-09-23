@@ -3,10 +3,11 @@ package piuk.blockchain.android.ui.onboarding
 import android.content.Context
 import com.blockchain.activities.StartOnboarding
 
+@Suppress("unused")
 class OnBoardingStarter : StartOnboarding {
-    override fun startOnBoarding(context: Any, emailOnly: Boolean, hasOptionForDismiss: Boolean) {
+    override fun startEmailOnboarding(context: Any) {
         (context as? Context)?.let {
-            OnboardingActivity.launch(it, emailOnly, hasOptionForDismiss)
+            OnboardingActivity.launchForEmail(it)
         }
     }
 }

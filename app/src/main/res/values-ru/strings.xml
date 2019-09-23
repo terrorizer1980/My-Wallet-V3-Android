@@ -482,9 +482,7 @@
   <string name="onboarding_qr_codes">QR-коды</string>
   <string name="onboarding_scan_address">Сканировать адрес</string>
   <string name="onboarding_buy_content">Мы работаем с партнерами по обмену со всего мира, поэтому вы можете покупать биткоины прямо из своего кошелька.</string>
-  <string name="onboarding_receive_content">Чтобы запросить средства, отправьте адрес своего кошелька другу. Адрес - это цепочка произвольных букв и цифр, которые меняются с каждой сделкой.</string>
-  <string name="onboarding_qr_codes_content">Адрес также может быть показан как Q-код. Сканируйте QR-код друга для быстрого считывания адреса его кошелька.</string>
-  <string name="onboarding_buy_bitcoin">Купить Bitcoin</string>
+    <string name="onboarding_buy_bitcoin">Купить Bitcoin</string>
   <string name="onboarding_buy_and_sell_bitcoin">Покупка и продажа биткойнов</string>
   <string name="onboarding_get_bitcoin">Получить Bitcoin</string>
   <string name="onboarding_get_eth">Получить Ether</string>
@@ -567,7 +565,6 @@
   <string name="bch_invalid_address">Недействительный адрес Bitcoin Сash</string>
   <string name="confirm_currency">Подтвердить валюту</string>
   <string name="confirm_currency_message">Выберите, QR-код какой валюты вы просматриваете.</string>
-  <string name="error_bitpay_not_supported">URI Bitpay в настоящее время не поддерживаются</string>
   <string name="announcement_trading_cta">Лучший способ покупки и продажи</string>
   <string name="announcement_trading_description">Расширенная возможность покупки и продажи через мобильное устройство теперь доступна в вашем кошельке. Это просто, беспроблемно и безопасно.</string>
   <string name="announcement_trading_link">Начать</string>
@@ -628,14 +625,8 @@
   <string name="kyc_phone_number_validation_hint">Код подтверждения</string>
   <string name="kyc_phone_number_validation_error">Ошибка проверки номера телефона. Проверьте код</string>
   <string name="kyc_phone_number_validation_error_incorrect">Проверочный код недействителен. Перепроверьте отправленный вам код и повторите попытку.</string>
-  <string name="kyc_onfido_splash_title">Подтвердите вашу личность</string>
   <string name="kyc_onfido_splash_header">Давайте подтвердим, что это вы</string>
-  <string name="kyc_onfido_splash_subtitle">Возьмите свой паспорт или водительские права.</string>
-  <string name="kyc_onfido_splash_message">Как только мы проверим вашу личность, вы получите разрешение на обмен криптовалюты в приложении Blockchain!</string>
   <string name="kyc_onfido_splash_verification_error">Ошибка проверки удостоверения личности, повторите попытку</string>
-  <string name="kyc_onfido_splash_passport">Мой паспорт</string>
-  <string name="kyc_onfido_splash_drivers_license">Мои водительские права</string>
-  <string name="kyc_onfido_splash_id_card">Удостоверение личности государственного образца</string>
   <string name="kyc_complete_title">Заявка подана</string>
   <string name="kyc_complete_header">Все готово!</string>
   <string name="kyc_complete_subtitle">Вы успешно отправили свою информацию. Ваша учетная запись сейчас находится на рассмотрении!</string>
@@ -678,9 +669,7 @@
   <string name="screen_overlay_warning">Обнаружено окно данных!</string>
   <string name="screen_overlay_note">Приложения, которые используют окна данных, представляют угрозу кражи средств, так как вы можете нажать на что-то, что вы не будете видеть. Обратите внимание, что это предупреждение также может быть связано с приложением, затемняющим экран. Если вы уверены, что никакой опасности нет, продолжайте работу. </string>
   <string name="dialog_continue">Продолжить</string>
-  <string name="insufficient_funds_with_max">Недостаточно средств, максимальная сумма для отправки составляет %1$s</string>
-  <string name="not_enough_funds_with_currency">Недостаточно %1$s</string>
-  <string name="invalid_address">Недопустимый адрес</string>
+    <string name="not_enough_funds_with_currency">Недостаточно %1$s</string>
   <string name="transaction_failed_min_send">Минимальная сумма, которую вы можете отправить, составляет %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Минимум %1$s необходимо для новых учетных записей</string>
   <string name="lockbox_title">Lockbox</string>
@@ -980,7 +969,6 @@
   <string name="kyc_address_city_town_village">Крупный город / Город / Деревня</string>
   <string name="kyc_address_state_region_province_county">Штат / Регион / Провинция / Страна</string>
   <string name="kyc_address_postal_code">Почтовый индекс</string>
-  <string name="kyc_onfido_splash_residence_permit">Мой вид на жительство</string>
   <string name="kyc_veriff_splash_title">@string/kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">@string/kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">Чтобы продолжить, вам понадобится одно из следующих удостоверений.</string>
@@ -1187,11 +1175,7 @@
   <string name="gold_unavailable">Золото недоступно</string>
   <string name="veriff_identify">Верифицируйте личность</string>
   <string name="more_info_needed">Требуется дополнительная информация</string>
-  <string name="coinify_kyc_body">Чтобы продолжать продавать и покупать, вам нужно обновить свой профиль. После завершения вы также разблокируете более высокие торговые лимиты в Swap.</string>
-  <string name="coinify_kyc_cta">Обновить сейчас</string>
-  <string name="coinify_kyc_dismiss">Подробнее</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">Цифровые доллары США</string>
+    <string name="pax_intro_popup_title">Цифровые доллары США</string>
   <string name="pax_intro_popup_text">Представляем USD PAX, безопасный и стабильный крипто-актив, который вы можете использовать для хранения средств. 1 PAX равен 1 USD.</string>
   <string name="pax_intro_popup_cta_btn">Получить USD PAX сейчас</string>
   <string name="buy_sell_error_country_not_supported">В настоящее время ваша страна не поддерживается для покупки / продажи. Мы работаем над тем, чтобы поддерживать большее количество мест.</string>

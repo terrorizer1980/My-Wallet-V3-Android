@@ -8,16 +8,13 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.annotations.CommonCode
 import kotlinx.android.synthetic.main.mobile_notice_dialog.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.auth.MobileNoticeDialog
 
+@CommonCode("One of many almost identical bottom dialogs")
 class MobileNoticeDialogFragment : BottomSheetDialogFragment() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.TransparentBottomSheetDialogTheme)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

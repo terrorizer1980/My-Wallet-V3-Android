@@ -60,7 +60,7 @@ class WalletOptions {
     val xmlExchangeAddresses: List<String>
         get() = xlmExchange.exchangeAddresses
 
-    val stellarhorizonUrl: String
+    val stellarHorizonUrl: String
         get() = domains["stellarHorizon"] ?: ""
 
     val buyWebviewWalletLink: String?

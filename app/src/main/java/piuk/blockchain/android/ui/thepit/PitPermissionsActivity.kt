@@ -10,7 +10,7 @@ import org.koin.android.ext.android.get
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.launchUrlInBrowser
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
+import com.blockchain.ui.dialog.ErrorBottomDialog
 
 class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermissionsView, PitPermissionsPresenter>() {
 
@@ -54,7 +54,8 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
 
     override fun onLinkFailed(reason: String) {
         PitStateBottomDialog.newInstance(
-            PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(
+            PitStateBottomDialog.StateContent(
+                ErrorBottomDialog.Content(
                 getString(R.string.pit_connection_error_title),
                 getString(R.string.pit_connection_error_description),
                 R.string.try_again,
@@ -72,7 +73,8 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
 
     override fun onPitLinked() {
         PitStateBottomDialog.newInstance(
-            PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(
+            PitStateBottomDialog.StateContent(
+                ErrorBottomDialog.Content(
                 getString(R.string.pit_connection_success_title),
                 getString(R.string.pit_connection_success_description),
                 R.string.btn_close,
@@ -90,7 +92,8 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
     override fun showLoading() {
         if (loadingDialog == null) {
             loadingDialog = PitStateBottomDialog.newInstance(
-                PitStateBottomDialog.StateContent(ErrorBottomDialog.Content(
+                PitStateBottomDialog.StateContent(
+                    ErrorBottomDialog.Content(
                     getString(R.string.pit_loading_dialog_title),
                     getString(R.string.pit_loading_dialog_description),
                     0,

@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.swap
 import android.support.v4.app.FragmentManager
 import com.blockchain.balance.errorIcon
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeMenuState
-import piuk.blockchain.androidcoreui.ui.dlg.ErrorBottomDialog
+import com.blockchain.ui.dialog.ErrorBottomDialog
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.R
 

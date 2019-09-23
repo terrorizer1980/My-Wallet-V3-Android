@@ -5,8 +5,8 @@ import android.app.LauncherActivity
 import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
 import info.blockchain.wallet.api.data.Settings
+import io.reactivex.rxkotlin.plusAssign
 import piuk.blockchain.android.R
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
@@ -87,15 +87,14 @@ class LauncherPresenter(
      */
     @SuppressLint("CheckResult")
     private fun initSettings() {
-        settingsDataManager.initSettings(
+        compositeDisposable += settingsDataManager.initSettings(
             payloadDataManager.wallet!!.guid,
             payloadDataManager.wallet!!.sharedKey
         )
             .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }
-            .addToCompositeDisposable(this)
             .subscribe({ settings ->
-                checkOnboardingStatus(settings)
+                startMainActivity()
                 setCurrencyUnits(settings)
             }, {
                 view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
@@ -103,26 +102,8 @@ class LauncherPresenter(
             })
     }
 
-    private fun checkOnboardingStatus(settings: Settings) {
-        when {
-            accessState.isNewlyCreated -> view.onStartOnboarding(emailOnly = false, isDismissable = true)
-            !settings.isEmailVerified &&
-                    settings.email != null
-                    && settings.email.isNotEmpty() -> checkIfOnboardingNeeded()
-            else -> view.onStartMainActivity(deepLinkPersistence.popUriFromSharedPrefs())
-        }
-    }
-
-    private fun checkIfOnboardingNeeded() {
-        var visits = prefs.getValue(PersistentPrefs.KEY_APP_VISITS, 0)
-        // Nag user to verify email after second login
-        when (visits) {
-            1 -> view.onStartOnboarding(emailOnly = true, isDismissable = true)
-            else -> view.onStartMainActivity(deepLinkPersistence.popUriFromSharedPrefs())
-        }
-
-        visits++
-        prefs.setValue(PersistentPrefs.KEY_APP_VISITS, visits)
+    private fun startMainActivity() {
+        view.onStartMainActivity(deepLinkPersistence.popUriFromSharedPrefs())
     }
 
     private fun setCurrencyUnits(settings: Settings) {

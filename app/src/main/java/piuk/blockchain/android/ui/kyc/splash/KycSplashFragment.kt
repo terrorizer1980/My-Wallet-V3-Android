@@ -23,7 +23,7 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -114,7 +114,7 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
 
     override fun displayLoading(isLoading: Boolean) {
         if (isLoading) {
-            progressDialog = MaterialProgressDialog(activity).apply {
+            progressDialog = MaterialProgressDialog(requireContext()).apply {
                 setMessage(R.string.buy_sell_please_wait)
                 show()
             }
@@ -131,7 +131,7 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
     override fun onEmailNotVerified() {
         disposable += settingsDataManager.getSettings().subscribeBy(onNext = {
             activity?.let {
-                onBoardingStarter.startOnBoarding(it, true, false)
+                onBoardingStarter.startEmailOnboarding(it)
             }
         }, onError = {})
     }

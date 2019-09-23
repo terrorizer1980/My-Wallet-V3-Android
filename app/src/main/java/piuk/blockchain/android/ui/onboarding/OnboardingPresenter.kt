@@ -16,7 +16,8 @@ internal class OnboardingPresenter constructor(
     private val settingsDataManager: SettingsDataManager
 ) : BasePresenter<OnboardingView>() {
 
-    private val showEmailOnly: Boolean by lazy { view.isEmailOnly }
+    private val showEmail: Boolean by lazy { view.showEmail }
+    private val showFingerprints: Boolean by lazy { view.showFingerprints }
 
     @VisibleForTesting
     internal var email: String? = null
@@ -65,8 +66,8 @@ internal class OnboardingPresenter constructor(
 
     private fun checkAppState() {
         when {
-            showEmailOnly -> view.showEmailPrompt()
-            fingerprintHelper.isHardwareDetected() -> view.showFingerprintPrompt()
+            showEmail -> view.showEmailPrompt()
+            showFingerprints -> view.showFingerprintPrompt()
             else -> view.showEmailPrompt()
         }
     }

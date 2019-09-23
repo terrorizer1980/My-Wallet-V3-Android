@@ -475,9 +475,7 @@ Xác nhận dấu vân tay để tiếp tục</string>
   <string name="onboarding_qr_codes">Mã QR</string>
   <string name="onboarding_scan_address">Quét Địa chỉ</string>
   <string name="onboarding_buy_content">Chúng tôi làm việc với các đối tác giao dịch trên khắp thế giới, do đó bạn có thể mua bitcoin trực tiếp từ ví của mình.</string>
-  <string name="onboarding_receive_content">Gửi địa chỉ ví của bạn đến một người bạn để yêu cầu khoản tiền. Địa chỉ là một chuỗi các chữ cái và chữ số ngẫu nhiên thay đổi theo từng giao dịch.</string>
-  <string name="onboarding_qr_codes_content">Địa chỉ cũng có thể được hiển thị dưới dạng mã QR. Quét mã QR của bạn bè để nhanh chóng biết được địa chỉ ví của họ.</string>
-  <string name="onboarding_buy_bitcoin">Mua Bitcoin</string>
+    <string name="onboarding_buy_bitcoin">Mua Bitcoin</string>
   <string name="onboarding_buy_and_sell_bitcoin">Mua &amp; Bán Bitcoin</string>
   <string name="onboarding_get_bitcoin">Nhận Bitcoin</string>
   <string name="onboarding_get_eth">Nhận Ether</string>
@@ -560,7 +558,6 @@ Xác nhận dấu vân tay để tiếp tục</string>
   <string name="bch_invalid_address">Địa chỉ Bitcoin Cash không hợp lệ</string>
   <string name="confirm_currency">Xác nhận tiền tệ</string>
   <string name="confirm_currency_message">Vui lòng chọn mã QR của tiền tệ mà bạn đang quét.</string>
-  <string name="error_bitpay_not_supported">Các URI Bitpay hiện không được hỗ trợ</string>
   <string name="announcement_trading_cta">Mua &amp; bán tốt hơn</string>
   <string name="announcement_trading_description">Trải nghiệm mua &amp; bán di động trong ví của bạn nay đã được cải thiện. Đây là một quy trình đơn giản, liên tục và bảo mật.</string>
   <string name="announcement_trading_link">Bắt đầu</string>
@@ -621,14 +618,8 @@ Xác nhận dấu vân tay để tiếp tục</string>
   <string name="kyc_phone_number_validation_hint">Mã xác nhận</string>
   <string name="kyc_phone_number_validation_error">Lỗi xác thực số điện thoại. Vui lòng kiểm tra mã của bạn</string>
   <string name="kyc_phone_number_validation_error_incorrect">Mã xác minh không chính xác. Vui lòng kiểm tra kỹ mã mà chúng tôi đã gửi cho bạn và thử lại.</string>
-  <string name="kyc_onfido_splash_title">Xác minh Danh tính của Bạn</string>
   <string name="kyc_onfido_splash_header">Hãy cùng xác nhận đó là bạn</string>
-  <string name="kyc_onfido_splash_subtitle">Lấy hộ chiếu hoặc giấy phép lái xe của bạn</string>
-  <string name="kyc_onfido_splash_message">Sau khi chúng tôi xác minh danh tính của bạn, bạn sẽ được phép chuyển đổi tiền kỹ thuật số trên ứng dụng Blockchain!</string>
   <string name="kyc_onfido_splash_verification_error">Lỗi xác minh thẻ căn cước, vui lòng thử lại</string>
-  <string name="kyc_onfido_splash_passport">Hộ chiếu của tôi</string>
-  <string name="kyc_onfido_splash_drivers_license">Giấy phép lái xe của tôi</string>
-  <string name="kyc_onfido_splash_id_card">Thẻ căn cước do chính phủ cấp của tôi</string>
   <string name="kyc_complete_title">Đăng ký hoàn tất</string>
   <string name="kyc_complete_header">Tất cả đã xong!</string>
   <string name="kyc_complete_subtitle">Bạn đã gửi thông tin thành công. Tài khoản của bạn hiện đang được xem xét!</string>
@@ -671,9 +662,7 @@ Xác nhận dấu vân tay để tiếp tục</string>
   <string name="screen_overlay_warning">Phát hiện màn hình bị che!</string>
   <string name="screen_overlay_note">Các ứng dụng sử dụng màn hình bị che có khả năng đánh lừa bạn nhấn vào các vật vô hình và có nguy cơ đánh cắp các khoản tiền của bạn. Lưu ý rằng cảnh báo này cũng sẽ được kích hoạt bởi các ứng dụng che màn hình. Nếu bạn chắc chắn không nguy hiểm, bạn có thể tiếp tục. </string>
   <string name="dialog_continue">Tiếp tục</string>
-  <string name="insufficient_funds_with_max">Không đủ tiền, mức cao nhất bạn có thể gửi là %1$s</string>
-  <string name="not_enough_funds_with_currency">Không đủ %1$s</string>
-  <string name="invalid_address">Địa chỉ không hợp lệ</string>
+    <string name="not_enough_funds_with_currency">Không đủ %1$s</string>
   <string name="transaction_failed_min_send">Mức tối thiểu bạn có thể gửi là %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Tài khoản mới cần tối thiểu %1$s</string>
   <string name="lockbox_title">Lockbox</string>
@@ -973,7 +962,6 @@ Lệnh đã được tạo</string>
   <string name="kyc_address_city_town_village">Thành phố / Thị trấn / Làng</string>
   <string name="kyc_address_state_region_province_county">Tiểu bang / Khu vực / Tỉnh / Hạt</string>
   <string name="kyc_address_postal_code">Mã bưu điện</string>
-  <string name="kyc_onfido_splash_residence_permit">Giấy phép Cư trú của tôi</string>
   <string name="kyc_veriff_splash_title">@string/kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">@string/kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">Bạn sẽ cần 1 loại giấy tờ tùy thân dưới đây để tiếp tục.</string>
@@ -1181,10 +1169,6 @@ Xin lưu ý rằng có một danh sách rất dài đang chờ để nhận aird
   <string name="gold_unavailable">Vàng không có sẵn</string>
   <string name="veriff_identify">Xác minh danh tính</string>
   <string name="more_info_needed">Cần Thêm Thông tin</string>
-  <string name="coinify_kyc_body">Để tiếp tục sử dụng chức năng Mua &amp; Bán, bạn sẽ cần cập nhật hồ sơ của mình. Sau khi hoàn thành, bạn cũng sẽ mở khóa các giới hạn giao dịch cao hơn trong Trao đổi.</string>
-  <string name="coinify_kyc_cta">Cập nhật ngay</string>
-  <string name="coinify_kyc_dismiss">Tìm hiểu thêm</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
   <string name="pax_intro_popup_title">Đôla Mỹ kỹ thuật số</string>
   <string name="pax_intro_popup_text">Giới thiệu USD PAX, tài sản tiền kỹ thuật số an toàn và ổn định mà bạn có thể sử dụng để lưu trữ giá trị. 1 PAX bằng 1 USD.</string>
   <string name="pax_intro_popup_cta_btn">Nhận USD PAX ngay</string>

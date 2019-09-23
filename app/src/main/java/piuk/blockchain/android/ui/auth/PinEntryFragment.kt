@@ -46,7 +46,7 @@ import piuk.blockchain.android.util.DialogButtonCallback
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.utils.annotations.Thunk
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import android.app.Activity.RESULT_CANCELED
@@ -363,7 +363,7 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
 
     override fun showProgressDialog(@StringRes messageId: Int, suffix: String?) {
         dismissProgressDialog()
-        materialProgressDialog = MaterialProgressDialog(context)
+        materialProgressDialog = MaterialProgressDialog(requireContext())
         materialProgressDialog!!.setCancelable(false)
         if (suffix != null) {
             materialProgressDialog!!.setMessage(getString(messageId) + suffix)

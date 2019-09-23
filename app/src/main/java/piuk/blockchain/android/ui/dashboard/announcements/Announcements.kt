@@ -2,7 +2,6 @@ package piuk.blockchain.android.ui.dashboard.announcements
 
 import android.support.annotation.VisibleForTesting
 import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
-import com.blockchain.sunriver.ui.BaseAirdropBottomDialog
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -20,35 +19,47 @@ interface AnnouncementHost {
     fun showAnnouncementCard(card: AnnouncementCard)
     fun dismissAnnouncementCard(prefsKey: String)
 
-    fun showAnnouncmentPopup(popup: BaseAirdropBottomDialog)
-
     // Actions
-    fun signupToSunRiverCampaign()
-    fun startSwapOrKyc(swapTarget: CryptoCurrency? = null)
     fun startKyc(campaignType: CampaignType)
+    fun startSwapOrKyc(swapTarget: CryptoCurrency? = null)
+    fun startBuyOrKyc()
     fun startPitLinking()
+    fun startFundsBackup()
+    fun startSetup2Fa()
+    fun startSetupVerifyEmail()
+    fun startEnableFingerprintLogin()
+    fun startIntroTourGuide()
+    fun startTransferCrypto()
 }
 
-interface AnnouncementRule {
-    val dismissKey: String
-    fun shouldShow(): Single<Boolean>
-    fun show(host: AnnouncementHost)
+abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {
+
+    protected val dismissEntry by lazy { dismissRecorder[dismissKey] }
+
+    abstract val dismissKey: String
+    abstract val name: String
+
+    abstract fun shouldShow(): Single<Boolean>
+    abstract fun show(host: AnnouncementHost)
 }
 
-class AnnouncementList(private val mainScheduler: Scheduler) {
-
-    private val list = mutableListOf<AnnouncementRule>()
-
-    fun add(announcement: AnnouncementRule): AnnouncementList {
-        list.add(announcement)
-        return this
-    }
-
+class AnnouncementList(
+    private val mainScheduler: Scheduler,
+    private val orderAdapter: AnnouncementConfigAdapter,
+    private val availableAnnouncements: List<AnnouncementRule>,
+    private val dismissRecorder: DismissRecorder
+) {
     fun checkLatest(host: AnnouncementHost, disposables: CompositeDisposable) {
         host.clearAllAnnouncements()
 
         disposables += showNextAnnouncement(host)
             .subscribeBy(onError = Timber::e)
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun buildAnnouncementList(order: List<String>): List<AnnouncementRule> {
+        val r = order.mapNotNull { availableAnnouncements.find(it) }
+        return r
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -58,8 +69,11 @@ class AnnouncementList(private val mainScheduler: Scheduler) {
             .doOnSuccess { it.show(host) }
 
     private fun getNextAnnouncement(): Maybe<AnnouncementRule> =
-        Observable.concat(
-            list.map { a ->
+        orderAdapter.announcementConfig
+            .doOnSuccess { dismissRecorder.setPeriod(it.interval) }
+            .map { buildAnnouncementList(it.order) }
+            .flattenAsObservable { it }
+            .flatMap { a ->
                 Observable.defer {
                     a.shouldShow()
                         .filter { it }
@@ -67,7 +81,10 @@ class AnnouncementList(private val mainScheduler: Scheduler) {
                         .toObservable()
                 }
             }
-        ).firstElement()
+            .firstElement()
 
-    internal fun dismissKeys(): List<String> = list.map { it.dismissKey }
+    internal fun dismissKeys(): List<String> = availableAnnouncements.map { it.dismissKey }
+
+    private fun List<AnnouncementRule>.find(name: String): AnnouncementRule? =
+        this.find { it.name == name }
 }

@@ -16,7 +16,6 @@ import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.splash.KycSplashFragment
 import com.blockchain.swap.nabu.StartKyc
-import com.blockchain.swap.nabu.StartKycAirdrop
 import com.blockchain.swap.nabu.StartKycForBuySell
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.KycNavXmlDirections
@@ -44,13 +43,6 @@ internal class KycStarter : StartKyc {
 
     override fun startKycActivity(context: Any) {
         KycNavHostActivity.start(context as Context, CampaignType.Swap)
-    }
-}
-
-internal class KycStarterAirdrop : StartKycAirdrop {
-
-    override fun startKycActivity(context: Any) {
-        KycNavHostActivity.start(context as Context, CampaignType.Sunriver)
     }
 }
 

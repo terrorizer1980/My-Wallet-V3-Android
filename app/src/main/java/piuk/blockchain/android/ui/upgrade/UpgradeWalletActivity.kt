@@ -22,7 +22,7 @@ import piuk.blockchain.android.databinding.ActivityUpgradeWalletBinding
 import com.blockchain.ui.password.SecondPasswordHandler
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 internal class UpgradeWalletActivity : BaseMvpActivity<UpgradeWalletView, UpgradeWalletPresenter>(),

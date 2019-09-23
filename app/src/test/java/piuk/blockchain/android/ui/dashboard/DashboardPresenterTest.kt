@@ -4,7 +4,6 @@ import com.blockchain.android.testutils.rxInit
 import com.blockchain.balance.TotalBalance
 import com.blockchain.kyc.status.KycTiersQueries
 import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
-import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.swap.nabu.CurrentTier
 import com.blockchain.testutils.bitcoinCash
@@ -26,7 +25,6 @@ import info.blockchain.balance.CryptoValue
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import org.amshove.kluent.`it returns`
 import org.junit.Before
 import org.junit.Rule
@@ -69,7 +67,8 @@ class DashboardPresenterTest {
         on { isKycResubmissionRequired() } `it returns` Single.just(false)
     }
     private val lockboxDataManager: LockboxDataManager = mock()
-    private val sunriverCampaignHelper: SunriverCampaignHelper = mock()
+
+    private val announcementList: AnnouncementList = mock()
 
     @get:Rule
     val rxSchedulers = rxInit {
@@ -93,18 +92,12 @@ class DashboardPresenterTest {
             prefs,
             exchangeRateFactory,
             stringUtils,
-            accessState,
-            buyDataManager,
             rxBus,
             swipeToReceiveHelper,
-            currencyFormatManager,
             lockboxDataManager,
             currentTier,
-            sunriverCampaignHelper,
             pitLinking,
-            AnnouncementList(
-                mainScheduler = Schedulers.trampoline()
-            )
+            announcementList
         )
 
         subject.initView(view)
@@ -178,8 +171,6 @@ class DashboardPresenterTest {
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
-        // Ignore Sunriver
-        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
 
         // Act
         subject.onViewReady()
@@ -188,7 +179,6 @@ class DashboardPresenterTest {
         verify(view, atLeastOnce()).notifyItemAdded(any(), eq(0))
         verify(view, atLeastOnce()).notifyItemUpdated(any(), any())
         verify(view, atLeastOnce()).scrollToTop()
-        verify(prefs, atLeastOnce()).isOnboardingComplete
 
         verify(exchangeRateFactory, atLeastOnce()).updateTickers()
         verify(exchangeRateFactory, atLeastOnce()).getLastPrice(eq(CryptoCurrency.BTC), any())
@@ -282,8 +272,6 @@ class DashboardPresenterTest {
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
-        // Ignore Sunriver
-        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
 
         // Act
         subject.onViewReady()
@@ -387,8 +375,6 @@ class DashboardPresenterTest {
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
-        // Ignore Sunriver
-        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
 
         // Act
         subject.onViewReady()
@@ -484,8 +470,6 @@ class DashboardPresenterTest {
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
-        // Ignore Sunriver
-        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
 
         // Act
         subject.onViewReady()
@@ -591,8 +575,6 @@ class DashboardPresenterTest {
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
-        // Ignore Sunriver
-        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
 
         // Act
         subject.onViewReady()
@@ -690,8 +672,6 @@ class DashboardPresenterTest {
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
-        // Ignore Sunriver
-        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
 
         // Act
         subject.updateBalances()
@@ -763,7 +743,7 @@ class DashboardPresenterTest {
         subject.onViewReady()
         subject.startSwapOrKyc(CryptoCurrency.ETHER)
         // Assert
-        verify(view).goToExchange(CryptoCurrency.ETHER, "USD")
+        verify(view).startSwap("USD", CryptoCurrency.ETHER)
     }
 
     @Test
@@ -776,7 +756,7 @@ class DashboardPresenterTest {
         subject.onViewReady()
         subject.startSwapOrKyc(CryptoCurrency.ETHER)
         // Assert
-        verify(view).goToExchange(CryptoCurrency.ETHER, "USD")
+        verify(view).startSwap("USD", CryptoCurrency.ETHER)
         verify(view, never()).startKycFlow(CampaignType.Swap)
     }
 
@@ -789,7 +769,7 @@ class DashboardPresenterTest {
         subject.onViewReady()
         subject.startSwapOrKyc(CryptoCurrency.ETHER)
         // Assert
-        verify(view, never()).goToExchange(any(), any())
+        verify(view, never()).startSwap(any(), any())
         verify(view).startKycFlow(CampaignType.Swap)
     }
 
@@ -850,7 +830,5 @@ class DashboardPresenterTest {
         // No Lockbox, not available
         whenever(lockboxDataManager.hasLockbox()).thenReturn(Single.just(false))
         whenever(lockboxDataManager.isLockboxAvailable()).thenReturn(Single.just(false))
-        // Ignore Sunriver
-        whenever(sunriverCampaignHelper.getCampaignCardType()).thenReturn(Single.never())
     }
 }

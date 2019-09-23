@@ -14,7 +14,7 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifyFlowListener
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -109,7 +109,7 @@ class CoinifyVerifyEmailFragment :
 
     private fun displayProgressDialog() {
         if (activity?.isFinishing == false) {
-            progressDialog = MaterialProgressDialog(context).apply {
+            progressDialog = MaterialProgressDialog(requireContext()).apply {
                 setMessage(getString(R.string.please_wait))
                 setCancelable(false)
                 show()

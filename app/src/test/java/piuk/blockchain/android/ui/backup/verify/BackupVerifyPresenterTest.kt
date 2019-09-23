@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.backup.verify
 
+import com.blockchain.preferences.WalletStatus
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
@@ -13,24 +14,21 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 class BackupVerifyPresenterTest {
 
     private lateinit var subject: BackupVerifyPresenter
     private val view: BackupVerifyView = mock()
-    private val payloadDataManager: PayloadDataManager =
-        mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
-    private val prefsUtil: PersistentPrefs = mock()
+    private val payloadDataManager: PayloadDataManager = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
+    private val walletStatus: WalletStatus = mock()
     private val backupWalletUtil: BackupWalletUtil = mock()
 
     @Before
     fun setUp() {
-        subject = BackupVerifyPresenter(payloadDataManager, prefsUtil, backupWalletUtil)
+        subject = BackupVerifyPresenter(payloadDataManager, walletStatus, backupWalletUtil)
         subject.initView(view)
     }
 
@@ -95,8 +93,8 @@ class BackupVerifyPresenterTest {
         verify(view).showToast(any(), eq(ToastCustom.TYPE_OK))
         verify(view).showCompletedFragment()
         verifyNoMoreInteractions(view)
-        verify(prefsUtil).setValue(eq(BackupWalletActivity.BACKUP_DATE_KEY), any<Int>())
-        verifyNoMoreInteractions(prefsUtil)
+        verify(walletStatus).lastBackupTime = any()
+        verifyNoMoreInteractions(walletStatus)
     }
 
     @Test
@@ -115,8 +113,8 @@ class BackupVerifyPresenterTest {
         verify(view).showToast(any(), eq(ToastCustom.TYPE_OK))
         verify(view).showCompletedFragment()
         verifyNoMoreInteractions(view)
-        verify(prefsUtil).setValue(eq(BackupWalletActivity.BACKUP_DATE_KEY), any<Int>())
-        verifyNoMoreInteractions(prefsUtil)
+        verify(walletStatus).lastBackupTime = any()
+        verifyNoMoreInteractions(walletStatus)
     }
 
     @Test
@@ -136,6 +134,6 @@ class BackupVerifyPresenterTest {
         verify(view).showToast(any(), eq(ToastCustom.TYPE_ERROR))
         verify(view).showStartingFragment()
         verifyNoMoreInteractions(view)
-        verifyZeroInteractions(prefsUtil)
+        verifyZeroInteractions(walletStatus)
     }
 }

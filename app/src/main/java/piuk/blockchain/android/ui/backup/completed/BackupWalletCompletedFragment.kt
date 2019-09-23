@@ -19,10 +19,12 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-class BackupWalletCompletedFragment :
-    BaseFragment<BackupWalletCompletedView, BackupWalletCompletedPresenter>(), BackupWalletCompletedView {
 
-    private val backupWalletCompletedPresenter: BackupWalletCompletedPresenter by inject()
+class BackupWalletCompletedFragment :
+    BaseFragment<BackupWalletCompletedView, BackupWalletCompletedPresenter>(),
+    BackupWalletCompletedView {
+
+    private val presenter: BackupWalletCompletedPresenter by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,7 +70,7 @@ class BackupWalletCompletedFragment :
         }
     }
 
-    override fun createPresenter() = backupWalletCompletedPresenter
+    override fun createPresenter() = presenter
 
     override fun getMvpView() = this
 

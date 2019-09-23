@@ -26,7 +26,7 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -120,7 +120,7 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
     }
 
     override fun showProgressDialog() {
-        progressDialog = MaterialProgressDialog(activity).apply {
+        progressDialog = MaterialProgressDialog(requireContext()).apply {
             setOnCancelListener { presenter.onProgressCancelled() }
             setMessage(R.string.kyc_country_selection_please_wait)
             show()

@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar
 import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.view.MotionEvent
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import info.blockchain.wallet.api.data.Settings
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
@@ -18,7 +19,6 @@ import piuk.blockchain.android.databinding.ActivityPasswordRequiredBinding
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.DialogButtonCallback
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import piuk.blockchain.androidcoreui.utils.ViewUtils

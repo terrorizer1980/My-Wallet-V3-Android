@@ -478,9 +478,7 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="onboarding_qr_codes">QR Kodları</string>
   <string name="onboarding_scan_address">Adresleri Tara</string>
   <string name="onboarding_buy_content">Doğrudan cüzdanınızdan bitcoin alabilmeniz için dünya çapında dönüştürme ortaklarıyla çalışmaktayız.</string>
-  <string name="onboarding_receive_content">Para talep etmek için cüzdan adresinizi bir arkadaşınıza gönderin. Bir adres her işlem için değişen rastgele harf ve numaralardan oluşan bir dizidir.</string>
-  <string name="onboarding_qr_codes_content">Bir adres ayrıca QR kodu olarak da gösterilebilir. Bir arkadaşınızın cüzdan adresini hızlıca almak için arkadaşınızın QR kodunu tarayın.</string>
-  <string name="onboarding_buy_bitcoin">Bitcoin Al</string>
+    <string name="onboarding_buy_bitcoin">Bitcoin Al</string>
   <string name="onboarding_buy_and_sell_bitcoin">Bitcoin Al ve Sat </string>
   <string name="onboarding_get_bitcoin">Bitcoin Edin</string>
   <string name="onboarding_get_eth">Ether Alın</string>
@@ -563,7 +561,6 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="bch_invalid_address">Geçersiz Bitcoin Cash adresi</string>
   <string name="confirm_currency">Para birimini onayla</string>
   <string name="confirm_currency_message">Lütfen taradığınız QR kodunu seçin.</string>
-  <string name="error_bitpay_not_supported">Bitpay URI\'leri şu anda desteklenmiyor</string>
   <string name="announcement_trading_cta">Daha iyi bir satın alma ve satma</string>
   <string name="announcement_trading_description">Cep telefonunuzda satın alma ve satma deneyiminiz için geliştirilmiş bir akış artık cüzdanınızda mevcut. Basit, kesintisiz ve güvenli.</string>
   <string name="announcement_trading_link">Başlamak</string>
@@ -624,14 +621,8 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="kyc_phone_number_validation_hint">Onay kodu</string>
   <string name="kyc_phone_number_validation_error">Telefon numarası doğrulanırken hata oluştu. Lütfen kodunuzu kontrol edin</string>
   <string name="kyc_phone_number_validation_error_incorrect">Doğrulama kodu yanlış. Lütfen size gönderdiğimiz kodu tekrar kontrol edip tekrar deneyin.</string>
-  <string name="kyc_onfido_splash_title">kimliginizi dogrulayin</string>
   <string name="kyc_onfido_splash_header">Senin olduğunuzu teyit edelim</string>
-  <string name="kyc_onfido_splash_subtitle">Pasaportunuzu veya Sürücü Belgenizi alın.</string>
-  <string name="kyc_onfido_splash_message">Kimliğinizi doğruladıktan sonra Blockchain uygulamasında kripto para alışverişi onaylanmaya onaylısınız!</string>
   <string name="kyc_onfido_splash_verification_error">Kimlik doğrulanıyorken hata oluştu, lütfen tekrar deneyin</string>
-  <string name="kyc_onfido_splash_passport">PASAPORTUM</string>
-  <string name="kyc_onfido_splash_drivers_license">Sürücü Ehliyemi</string>
-  <string name="kyc_onfido_splash_id_card">Hükümetim Yayınlandı</string>
   <string name="kyc_complete_title">Uygulama Tamamlandı</string>
   <string name="kyc_complete_header">Bitti ve Bitti!</string>
   <string name="kyc_complete_subtitle">Bilgilerinizi başarıyla gönderdiniz. Hesabınız artık inceleniyor!</string>
@@ -674,9 +665,7 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="screen_overlay_warning">Ekran bindirme algılandı!</string>
   <string name="screen_overlay_note">Ekran bindirmeleri kullanan uygulamalar, sizi görünmeyen nesnelere tıklamanız için kandırma ve muhtemelen paranızı çalma kabiliyetine sahiptir. Lütfen bu uyarının ekran karartma uygulamaları tarafından da harekete geçeceğini dikkate alın. Eğer bir tehdit olmadığından eminseniz, devam edebilirsiniz. </string>
   <string name="dialog_continue">Devam</string>
-  <string name="insufficient_funds_with_max">Yetersiz para, gönderebileceğiniz en çok %1$s</string>
-  <string name="not_enough_funds_with_currency">%1$s yeterli değil</string>
-  <string name="invalid_address">Geçersiz adres</string>
+    <string name="not_enough_funds_with_currency">%1$s yeterli değil</string>
   <string name="transaction_failed_min_send">Gönderebileceğiniz minimum %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Yeni hesaplar için minimum %1$s gerekli</string>
   <string name="lockbox_title">Lockbox</string>
@@ -976,7 +965,6 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="kyc_address_city_town_village">Şehir / Kasaba / Köy</string>
   <string name="kyc_address_state_region_province_county">Eyalet / Bölge / İl / İlçe</string>
   <string name="kyc_address_postal_code">posta kodu</string>
-  <string name="kyc_onfido_splash_residence_permit">Oturma İznim</string>
   <string name="kyc_veriff_splash_title">\@ String / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ String / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">Devam etmek için aşağıdaki 1 kimlik türünden birine ihtiyacınız olacak.</string>
@@ -1184,11 +1172,7 @@ Stellar airdrop için uzun bir bekleme listesi olduğunu ve ücretsiz XLM talepl
   <string name="gold_unavailable">Altın Kullanılamaz</string>
   <string name="veriff_identify">Veriff Tanımla</string>
   <string name="more_info_needed">Daha Fazla Bilgi Gerekli</string>
-  <string name="coinify_kyc_body">Alım-Satım özelliğini kullanmyı sürdürmek için profilinizi güncellemeniz gerekir. Tamamladıktan sonra Swap\'ta daha yüksek ticaret limitine sahip olacaksınız.</string>
-  <string name="coinify_kyc_cta">Şimdi güncelle</string>
-  <string name="coinify_kyc_dismiss">Daha Fazlasını Öğren</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">Dijital ABD Doları</string>
+    <string name="pax_intro_popup_title">Dijital ABD Doları</string>
   <string name="pax_intro_popup_text">Varlıklarınızı saklamak için kullanacağınız güvenli ve dengeli bir kripto değer USD PAX ile tanışın. 1 PAX 1 USD\'ye eşittir.</string>
   <string name="pax_intro_popup_cta_btn">Hemen USD PAX alın</string>
   <string name="buy_sell_error_country_not_supported">Şu anda ülkeniz için alım/satım desteği veremiyoruz. Çok yakında daha fazla bölgeye destek verebilmek için çalışıyoruz.</string>

@@ -57,16 +57,11 @@ class BackupWalletActivity : BaseAuthActivity() {
     override fun onSupportNavigateUp() =
         consume { onBackPressed() }
 
-    private fun isBackedUp() =
-        payloadManger.payload?.hdWallets?.get(0)?.isMnemonicVerified ?: false
+    private fun isBackedUp() = payloadManger.isWalletBackedUp
 
     companion object {
-
-        const val BACKUP_DATE_KEY = "BACKUP_DATE_KEY"
-
-        fun start(context: Context, extras: Bundle?) {
+        fun start(context: Context) {
             val starter = Intent(context, BackupWalletActivity::class.java)
-            if (extras != null) starter.putExtras(extras)
             context.startActivity(starter)
         }
     }

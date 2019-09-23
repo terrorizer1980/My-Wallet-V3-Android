@@ -43,7 +43,7 @@ import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
 import piuk.blockchain.android.ui.swap.ui.SwapErrorBottomDialog
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpFragment
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -86,7 +86,7 @@ class ExchangeConfirmationFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        progressDialog = MaterialProgressDialog(activity).apply {
+        progressDialog = MaterialProgressDialog(requireContext()).apply {
             setMessage(piuk.blockchain.androidcoreui.R.string.please_wait)
             setCancelable(false)
         }

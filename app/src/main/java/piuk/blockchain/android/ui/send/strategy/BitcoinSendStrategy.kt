@@ -305,6 +305,7 @@ class BitcoinSendStrategy(
                 { hash ->
                     logPaymentSentEvent(true, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
                     if (isBitpayPaymentRequest) {
+                        prefs.setBitPaySuccess()
                         analytics.logEvent(BitPayEvent.SuccessEvent(pendingTransaction.bigIntAmount))
                     }
                     clearBtcUnspentResponseCache()
