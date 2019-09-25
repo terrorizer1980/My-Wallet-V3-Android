@@ -34,6 +34,7 @@ class PitAnnouncement(
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
             card = AnnouncementCard(
+                name = name,
                 titleText = R.string.pit_announcement_title,
                 bodyText = R.string.pit_announcement_body,
                 ctaText = R.string.pit_announcement_cta_text,

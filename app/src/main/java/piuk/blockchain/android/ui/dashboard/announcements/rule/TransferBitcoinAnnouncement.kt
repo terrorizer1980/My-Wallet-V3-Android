@@ -28,6 +28,7 @@ class TransferBitcoinAnnouncement(
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
             card = AnnouncementCard(
+                name = name,
                 dismissRule = DismissRule.CardPeriodic,
                 dismissEntry = dismissEntry,
                 titleText = R.string.transfer_btc_card_title,

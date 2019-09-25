@@ -53,6 +53,7 @@ internal class KycMoreInfoAnnouncement(
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
             AnnouncementCard(
+                name = name,
                 titleText = R.string.kyc_more_info_title,
                 bodyText = R.string.kyc_more_info_body,
                 ctaText = R.string.kyc_more_info_cta,

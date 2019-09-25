@@ -33,6 +33,7 @@ class KycForAirdropsAnnouncement(
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
             card = AnnouncementCard(
+                name = name,
                 dismissRule = DismissRule.CardPeriodic,
                 dismissEntry = dismissEntry,
                 titleText = R.string.kyc_airdrop_card_title,

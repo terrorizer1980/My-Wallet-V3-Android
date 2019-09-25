@@ -31,6 +31,7 @@ class RegisterFingerprintsAnnouncement(
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
             card = AnnouncementCard(
+                name = name,
                 dismissRule = DismissRule.CardPeriodic,
                 dismissEntry = dismissEntry,
                 titleText = R.string.register_fingerprint_card_title,

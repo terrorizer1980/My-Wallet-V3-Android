@@ -48,6 +48,7 @@ internal class KycIncompleteAnnouncement(
 
     private fun createCard(host: AnnouncementHost, cardType: SunriverCardType) =
         AnnouncementCard(
+            name = name,
             titleText = R.string.kyc_drop_off_card_title,
             bodyText = R.string.kyc_drop_off_card_description,
             ctaText = R.string.kyc_drop_off_card_button,

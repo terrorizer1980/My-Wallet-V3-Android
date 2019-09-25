@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.dashboard.announcements.delegates
+package piuk.blockchain.android.ui.dashboard.announcements
 
 import android.annotation.SuppressLint
 import android.support.annotation.ColorRes
@@ -11,14 +11,13 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.item_announcement_standard.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
-import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.isVisible
 import android.graphics.drawable.GradientDrawable
+import com.blockchain.notifications.analytics.Analytics
 
-class AnnouncementDelegate<in T> : AdapterDelegate<T> {
+class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDelegate<T> {
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(
@@ -50,21 +49,30 @@ class AnnouncementDelegate<in T> : AdapterDelegate<T> {
 
             if (announcement.ctaText != 0) {
                 ctaBtn.setText(announcement.ctaText)
-                ctaBtn.setOnClickListener { announcement.ctaClicked() }
+                ctaBtn.setOnClickListener {
+                    analytics.logEvent(AnnouncementAnalyticsEvent.CardActioned(announcement.name))
+                    announcement.ctaClicked()
+                }
             } else {
                 ctaBtn.gone()
             }
 
             if (announcement.dismissText != 0) {
                 dismissBtn?.setText(announcement.dismissText)
-                dismissBtn?.setOnClickListener { announcement.dismissClicked() }
+                dismissBtn?.setOnClickListener {
+                    analytics.logEvent(AnnouncementAnalyticsEvent.CardDismissed(announcement.name))
+                    announcement.dismissClicked()
+                }
                 closeBtn.gone()
             } else {
                 dismissBtn.gone()
             }
 
             if (announcement.dismissRule != DismissRule.CardPersistent) {
-                closeBtn.setOnClickListener { announcement.dismissClicked() }
+                closeBtn.setOnClickListener {
+                    analytics.logEvent(AnnouncementAnalyticsEvent.CardDismissed(announcement.name))
+                    announcement.dismissClicked()
+                }
             } else {
                 closeBtn.gone()
                 dismissBtn.gone()
@@ -72,6 +80,7 @@ class AnnouncementDelegate<in T> : AdapterDelegate<T> {
 
             paintButtons(announcement.buttonColor)
         }
+        analytics.logEvent(AnnouncementAnalyticsEvent.CardShown(announcement.name))
     }
 
     override fun isForViewType(items: List<T>, position: Int): Boolean {
@@ -80,7 +89,9 @@ class AnnouncementDelegate<in T> : AdapterDelegate<T> {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        AnnouncementViewHolder(parent.inflate(R.layout.item_announcement_standard))
+        AnnouncementViewHolder(
+            parent.inflate(R.layout.item_announcement_standard)
+        )
 
     private class AnnouncementViewHolder internal constructor(
         itemView: View

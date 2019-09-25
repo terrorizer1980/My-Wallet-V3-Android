@@ -30,6 +30,7 @@ class VerifyEmailAnnouncement(
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
             card = AnnouncementCard(
+                name = name,
                 dismissRule = DismissRule.CardPersistent,
                 dismissEntry = dismissEntry,
                 titleText = R.string.verify_email_card_title,

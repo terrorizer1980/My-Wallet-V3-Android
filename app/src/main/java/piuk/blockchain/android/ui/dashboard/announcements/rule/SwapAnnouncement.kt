@@ -46,6 +46,7 @@ class SwapAnnouncement(
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
             AnnouncementCard(
+                name = name,
                 titleText = R.string.swap_announcement_title,
                 bodyText = R.string.swap_announcement_description,
                 ctaText = R.string.swap_announcement_introducing_link,

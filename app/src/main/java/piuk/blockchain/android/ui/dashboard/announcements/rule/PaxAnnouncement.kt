@@ -41,6 +41,7 @@ class PaxAnnouncement(
 
     private fun createAnnouncementCard(host: AnnouncementHost) =
         AnnouncementCard(
+            name = name,
             dismissEntry = dismissEntry,
             dismissRule = DismissRule.CardOneTime,
             titleText = R.string.stablecoin_announcement_introducing_title,

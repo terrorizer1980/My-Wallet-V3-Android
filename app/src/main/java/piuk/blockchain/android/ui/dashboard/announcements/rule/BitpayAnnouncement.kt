@@ -28,6 +28,7 @@ class BitpayAnnouncement(
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
             card = AnnouncementCard(
+                name = name,
                 dismissRule = DismissRule.CardOneTime,
                 dismissEntry = dismissEntry,
                 bodyText = R.string.bitpay_announcement_body,

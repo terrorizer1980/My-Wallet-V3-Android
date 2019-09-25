@@ -30,6 +30,7 @@ internal class KycResubmissionAnnouncement(
     override fun show(host: AnnouncementHost) {
 
         val card = AnnouncementCard(
+            name = name,
             titleText = R.string.kyc_resubmission_card_title,
             bodyText = R.string.kyc_resubmission_card_description,
             ctaText = R.string.kyc_resubmission_card_button,

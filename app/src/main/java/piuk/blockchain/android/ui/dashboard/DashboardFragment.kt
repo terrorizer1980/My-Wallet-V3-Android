@@ -54,7 +54,8 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
             context!!,
             { ChartsActivity.start(context!!, it) },
             { showTransactionsFor(it) },
-            { presenter.setBalanceFilter(it) }
+            { presenter.setBalanceFilter(it) },
+            analytics
         )
     }
 

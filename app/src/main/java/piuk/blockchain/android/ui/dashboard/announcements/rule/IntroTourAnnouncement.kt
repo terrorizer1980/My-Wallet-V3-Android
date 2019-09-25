@@ -30,6 +30,7 @@ class IntroTourAnnouncement(
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
             card = AnnouncementCard(
+                name = name,
                 titleText = R.string.tour_card_title,
                 bodyText = R.string.tour_card_body,
                 iconImage = R.drawable.ic_blockchain_logo,

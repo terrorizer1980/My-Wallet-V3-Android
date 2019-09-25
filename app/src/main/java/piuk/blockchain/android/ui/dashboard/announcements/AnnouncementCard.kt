@@ -6,6 +6,7 @@ import android.support.annotation.StringRes
 import piuk.blockchain.android.R
 
 data class AnnouncementCard(
+    val name: String,
     val dismissRule: DismissRule,
     val dismissEntry: DismissRecorder.DismissEntry,
     @StringRes val titleText: Int = 0,

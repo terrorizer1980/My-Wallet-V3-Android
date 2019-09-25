@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.adapter
 
 import android.content.Context
+import com.blockchain.notifications.analytics.Analytics
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.ui.adapters.AdapterDelegatesManager
 import piuk.blockchain.android.ui.adapters.DelegationAdapter
@@ -9,7 +10,7 @@ import piuk.blockchain.android.ui.dashboard.PieChartsState
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.AssetPriceCardDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.HeaderDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.PieChartDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.AnnouncementDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementDelegate
 
 /**
  * @param context The Activity/Fragment [Context]
@@ -21,7 +22,8 @@ class DashboardDelegateAdapter(
     context: Context,
     assetSelector: (CryptoCurrency) -> Unit,
     coinSelector: (CryptoCurrency) -> Unit,
-    balanceModeSelector: (BalanceFilter) -> Unit
+    balanceModeSelector: (BalanceFilter) -> Unit,
+    analytics: Analytics
 ) : DelegationAdapter<Any>(AdapterDelegatesManager(), emptyList()) {
 
     private val pieChartDelegate = PieChartDelegate<Any>(context, coinSelector, balanceModeSelector)
@@ -31,7 +33,7 @@ class DashboardDelegateAdapter(
         // Add all necessary AdapterDelegate objects here
         with(delegatesManager) {
             addAdapterDelegate(HeaderDelegate())
-            addAdapterDelegate(AnnouncementDelegate())
+            addAdapterDelegate(AnnouncementDelegate(analytics))
             addAdapterDelegate(pieChartDelegate)
             addAdapterDelegate(assetPriceDelegate)
         }
