@@ -261,6 +261,7 @@ val applicationModule = applicationContext {
                 xlmDataManager = get(),
                 paxAccount = get(),
                 pitFeatureFlag = get("ff_pit_linking"),
+                pitABTestingExperiment = get(),
                 pitLinking = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),

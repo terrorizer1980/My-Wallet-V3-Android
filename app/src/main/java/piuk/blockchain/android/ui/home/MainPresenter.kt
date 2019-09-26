@@ -12,6 +12,7 @@ import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import piuk.blockchain.android.ui.kyc.sunriver.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
+import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
@@ -90,6 +91,7 @@ class MainPresenter internal constructor(
     private val xlmDataManager: XlmDataManager,
     private val paxAccount: Erc20Account,
     private val pitFeatureFlag: FeatureFlag,
+    private val pitABTestingExperiment: ABTestExperiment,
     private val pitLinking: PitLinking,
     private val nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
@@ -116,7 +118,19 @@ class MainPresenter internal constructor(
             doPushNotifications()
 
             checkPitAvailability()
+
+            setPitTitle()
         }
+    }
+
+    private fun setPitTitle() {
+        compositeDisposable += pitABTestingExperiment.getABVariant(ABTestExperiment.AB_THE_PIT_SIDE_NAV_VARIANT).map {
+            when (it) {
+                "B" -> return@map stringUtils.getString(R.string.trading)
+                "C" -> return@map stringUtils.getString(R.string.the_pit_exchange_title)
+                else -> return@map stringUtils.getString(R.string.the_pit_title)
+            }
+        }.subscribeBy { view.setPitItemTitle(it) }
     }
 
     private fun checkPitAvailability() {

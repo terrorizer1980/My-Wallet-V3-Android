@@ -29,6 +29,8 @@ interface MainView : View, HomeNavigator {
 
     fun setPitEnabled(enabled: Boolean)
 
+    fun setPitItemTitle(title: String)
+
     fun showTradeCompleteMsg(txHash: String)
 
     fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails)
