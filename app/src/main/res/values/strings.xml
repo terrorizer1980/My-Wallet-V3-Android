@@ -1785,7 +1785,7 @@
 
     <string name="tour_step_two_btn">Next</string>
     <string name="tour_step_three_title">Request</string>
-    <string name="tour_step_three_body">To receive crypto, all the sender needs is your crypto\'s address. You can find these addresses here.</string>
+    <string name="tour_step_three_body">To receive crypto to your wallet, get a unique address for each crypto here that you can share with the sender.</string>
 
     <string name="tour_step_three_btn">Next</string>
     <string name="tour_step_four_title">Swap</string>
