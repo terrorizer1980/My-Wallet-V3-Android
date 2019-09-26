@@ -10,6 +10,7 @@ interface ABTestExperiment {
 
     companion object {
         const val AB_THE_PIT_SIDE_NAV_VARIANT = "ab_the_pit_side_nav_variant"
+        const val AB_THE_PIT_ANNOUNCEMENT_VARIANT = "ab_the_pit_announcement_variant"
     }
 }
 

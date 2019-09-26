@@ -1183,10 +1183,11 @@
     <string name="swap_info_swap_limits">Swap Limits</string>
     <string name="swap_info_order_history">Order History</string>
     <string name="pit_announcement_title">Introducing The PIT</string>
-    <string name="pit_announcement_body">It\'s time to Level Up to a better crypto exchange by Blockchain. First 100,000 traders to sign up will trade free for 30 days.</string>
+    <string name="pit_announcement_body_variant_a">We built our own exchange that links to your Wallet. Instantly access more cryptos and deposit/withdraw cash.</string>
+    <string name="pit_announcement_body_variant_b">Upgrade your trading on our new crypto exchange. Link your Wallet to buy, sell, and trade crypto instantly.</string>
 
     <!-- The Pit linking -->
-    <string name="pit_announcement_cta_text">Check out The PIT</string>
+    <string name="pit_announcement_cta_text">Get Started</string>
     <string name="pit_announcement_description">We built our own exchange that redefines speed, reliability, and liquidity so you can upgrade your trading experience.</string>
     <string name="pit_announcement_introducing_link">Get Started</string>
     <string name="pit_logo_content_descr">The Pit Logo</string>

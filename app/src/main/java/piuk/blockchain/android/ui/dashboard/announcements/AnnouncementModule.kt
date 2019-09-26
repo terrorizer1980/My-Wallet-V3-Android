@@ -78,7 +78,8 @@ val dashboardAnnouncementsModule = applicationContext {
             PitAnnouncement(
                 pitLink = get(),
                 dismissRecorder = get(),
-                featureFlag = get("ff_pit_announcement")
+                featureFlag = get("ff_pit_announcement"),
+                abTestExperiment = get()
             )
         }.bind(AnnouncementRule::class)
 
