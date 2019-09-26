@@ -127,6 +127,8 @@ internal class NabuDataManagerImpl(
     private val nabuTokenStore: NabuSessionTokenStore,
     private val appVersion: String,
     private val settingsDataManager: SettingsDataManager,
+    private val userReporter: NabuUserReporter,
+    private val walletReporter: WalletReporter,
     private val payloadDataManager: PayloadDataManager,
     private val prefs: PersistentPrefs
 ) : NabuDataManager {
@@ -190,6 +192,10 @@ internal class NabuDataManagerImpl(
     ): Single<NabuUser> =
         authenticate(offlineTokenResponse) {
             nabuService.getUser(it)
+        }.doOnSuccess {
+            userReporter.reportUserId(offlineTokenResponse.userId)
+            userReporter.reportUser(it)
+            walletReporter.reportWalletGuid(guid)
         }
 
     override fun updateUserWalletInfo(

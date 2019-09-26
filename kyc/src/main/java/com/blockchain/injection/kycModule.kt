@@ -1,4 +1,5 @@
 @file:Suppress("USELESS_CAST")
+
 package com.blockchain.injection
 
 import com.blockchain.koin.moshiInterceptor
@@ -9,7 +10,13 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManagerImpl
 import com.blockchain.kyc.datamanagers.nabu.NabuDataUserProvider
 import com.blockchain.kyc.datamanagers.nabu.NabuDataUserProviderNabuDataManagerAdapter
+import com.blockchain.kyc.datamanagers.nabu.NabuUserReporter
+import com.blockchain.kyc.datamanagers.nabu.AnalyticsNabuUserReporterImpl
+import com.blockchain.kyc.datamanagers.nabu.AnalyticsWalletReporter
 import com.blockchain.kyc.datamanagers.nabu.NabuUserSyncUpdateUserWalletInfoWithJWT
+import com.blockchain.kyc.datamanagers.nabu.UniqueAnalyticsNabuUserReporter
+import com.blockchain.kyc.datamanagers.nabu.UniqueAnalyticsWalletReporter
+import com.blockchain.kyc.datamanagers.nabu.WalletReporter
 import com.blockchain.kyc.models.nabu.KycStateAdapter
 import com.blockchain.kyc.models.nabu.KycTierStateAdapter
 import com.blockchain.kyc.models.nabu.UserStateAdapter
@@ -80,9 +87,32 @@ val kycNabuModule = applicationContext {
                 appVersion = getProperty("app-version"),
                 settingsDataManager = get(),
                 payloadDataManager = get(),
-                prefs = get()
+                prefs = get(),
+                walletReporter = get("unique_id"),
+                userReporter = get("unique_user_analytics")
             ) as NabuDataManager
         }
+
+        factory("unique_user_analytics") {
+            UniqueAnalyticsNabuUserReporter(
+                nabuUserReporter = get("user_analytics"),
+                prefs = get()
+            )
+        }.bind(NabuUserReporter::class)
+
+        factory("user_analytics") {
+            AnalyticsNabuUserReporterImpl(
+                userAnalytics = get()
+            )
+        }.bind(NabuUserReporter::class)
+
+        factory("unique_id") {
+            UniqueAnalyticsWalletReporter(get("wallet_analytics"), prefs = get())
+        }.bind(WalletReporter::class)
+
+        factory("wallet_analytics") {
+            AnalyticsWalletReporter(userAnalytics = get())
+        }.bind(WalletReporter::class)
 
         factory {
             NabuCoinifyAccountService(

@@ -6,6 +6,8 @@ import com.blockchain.notifications.NotificationService
 import com.blockchain.notifications.NotificationTokenManager
 import com.blockchain.notifications.analytics.AnalyticsImpl
 import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.UserAnalytics
+import com.blockchain.notifications.analytics.UserAnalyticsImpl
 import com.blockchain.notifications.links.DynamicLinkHandler
 import com.blockchain.notifications.links.PendingLink
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -34,4 +36,7 @@ val notificationModule = applicationContext {
 
     factory { AnalyticsImpl(get()) }
         .bind(Analytics::class)
+
+    factory { UserAnalyticsImpl(get()) }
+        .bind(UserAnalytics::class)
 }
