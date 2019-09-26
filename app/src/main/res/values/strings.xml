@@ -1789,9 +1789,9 @@
 
     <string name="tour_step_three_btn">Next</string>
     <string name="tour_step_four_title">Swap</string>
-    <string name="tour_step_four_body">Trade crypto with low fees without leaving your wallet.</string>
+    <string name="tour_step_four_body">Trade crypto with low fees while keeping control of your keys. Expand your portfolio, take risk off, or simply exchange into the crypto you need.</string>
 
-    <string name="tour_step_four_btn">Done</string>
+    <string name="tour_step_four_btn">Next</string>
     <string name="tour_step_five_title">Buy &amp; Sell</string>
     <string name="tour_step_five_body">Buy Bitcoin with your credit card or bank account to kickstart your crypto portfolio.</string>
 
