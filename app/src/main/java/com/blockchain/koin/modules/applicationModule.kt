@@ -877,7 +877,8 @@ val applicationModule = applicationContext {
                 nabu = get(),
                 nabuToken = get(),
                 pitLinking = get(),
-                prefs = get()
+                prefs = get(),
+                abTestExperiment = get()
             )
         }
 

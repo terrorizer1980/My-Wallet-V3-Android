@@ -4,15 +4,19 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.ui.dialog.ErrorBottomDialog
+import com.blockchain.ui.extensions.throttledClicks
 import com.blockchain.ui.urllinks.URL_THE_PIT_LANDING_LEARN_MORE
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_pit_kyc_promo_layout.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.get
 import piuk.blockchain.android.R
+import piuk.blockchain.android.thepit.PitAnalyticsEvent
 import piuk.blockchain.android.util.launchUrlInBrowser
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import com.blockchain.ui.dialog.ErrorBottomDialog
-import piuk.blockchain.android.thepit.PitAnalyticsEvent
 
 class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermissionsView, PitPermissionsPresenter>() {
 
@@ -21,6 +25,8 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
 
     private val analytics: Analytics = get()
     private var loadingDialog: PitStateBottomDialog? = null
+
+    private val compositeDisposable = CompositeDisposable()
 
     override fun promptForEmailVerification(email: String) {
         PitVerifyEmailActivity.start(this, email, REQUEST_VERIFY_EMAIL)
@@ -36,9 +42,15 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         connect_now.setOnClickListener {
             doLinkClickHandler()
         }
-        learn_more.setOnClickListener {
-            analytics.logEvent(PitAnalyticsEvent.LearnMoreEvent)
-            launchUrlInBrowser(URL_THE_PIT_LANDING_LEARN_MORE)
+
+        compositeDisposable += learn_more.throttledClicks().flatMapSingle {
+            presenter.learnMoreUrl()
+        }.subscribeBy { (sideCampaign, announcementCampaign) ->
+            launchUrlInBrowser(URL_THE_PIT_LANDING_LEARN_MORE +
+                    "/?utm_source=android_wallet" +
+                    "&utm_medium=wallet_linking" +
+                    "&utm_campaign=$sideCampaign" +
+                    "&utm_campaign_2=$announcementCampaign")
         }
         onViewReady()
     }
@@ -61,11 +73,11 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         PitStateBottomDialog.newInstance(
             PitStateBottomDialog.StateContent(
                 ErrorBottomDialog.Content(
-                getString(R.string.pit_connection_error_title),
-                getString(R.string.pit_connection_error_description),
-                R.string.try_again,
-                0,
-                R.drawable.vector_pit_request_failure), false
+                    getString(R.string.pit_connection_error_title),
+                    getString(R.string.pit_connection_error_description),
+                    R.string.try_again,
+                    0,
+                    R.drawable.vector_pit_request_failure), false
             )).apply {
             onCtaClick = {
                 doLinkClickHandler()
@@ -80,11 +92,11 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         PitStateBottomDialog.newInstance(
             PitStateBottomDialog.StateContent(
                 ErrorBottomDialog.Content(
-                getString(R.string.pit_connection_success_title),
-                getString(R.string.pit_connection_success_description),
-                R.string.btn_close,
-                0,
-                R.drawable.vector_pit_request_ok), false
+                    getString(R.string.pit_connection_success_title),
+                    getString(R.string.pit_connection_success_description),
+                    R.string.btn_close,
+                    0,
+                    R.drawable.vector_pit_request_ok), false
             )).apply {
             onCtaClick = {
                 dismiss()
@@ -99,12 +111,12 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
             loadingDialog = PitStateBottomDialog.newInstance(
                 PitStateBottomDialog.StateContent(
                     ErrorBottomDialog.Content(
-                    getString(R.string.pit_loading_dialog_title),
-                    getString(R.string.pit_loading_dialog_description),
-                    0,
-                    0,
-                    0
-                ),
+                        getString(R.string.pit_loading_dialog_title),
+                        getString(R.string.pit_loading_dialog_description),
+                        0,
+                        0,
+                        0
+                    ),
                     true
                 ))
             loadingDialog?.show(supportFragmentManager, "LoadingBottomDialog")
@@ -174,5 +186,10 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
     override fun onBackPressed() {
         super.onBackPressed()
         presenter?.clearLinkPrefs()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.clear()
     }
 }
