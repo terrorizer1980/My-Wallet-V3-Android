@@ -75,6 +75,7 @@ import piuk.blockchain.android.ui.tour.BuySellTourFragment
 import piuk.blockchain.android.ui.tour.IntroTourAnalyticsEvent
 import piuk.blockchain.android.ui.tour.IntroTourHost
 import piuk.blockchain.android.ui.tour.IntroTourStep
+import piuk.blockchain.android.ui.tour.SwapTourFragment
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -272,6 +273,9 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
     }
 
     override fun onBackPressed() {
+        if (tour_guide.isActive) {
+            tour_guide.stop()
+        }
         val f = currentFragment
         val backHandled = when {
             drawerOpen -> {
@@ -309,7 +313,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
 
         if (out.isNotEmpty()) {
             val menuView = out[0]
-            tour_guide.setDeferredTriggerView(menuView, -menuView.width / 3)
+            tour_guide.setDeferredTriggerView(menuView, offsetX = -menuView.width / 3)
         }
     }
 
@@ -425,8 +429,11 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
         SettingsActivity.startFor2Fa(this)
     }
 
-    override fun launchSetupVerifyEmail() {
-        SettingsActivity.startForVerifyEmail(this)
+    override fun launchVerifyEmail() {
+        Intent(Intent.ACTION_MAIN).apply {
+            addCategory(Intent.CATEGORY_APP_EMAIL)
+            startActivity(Intent.createChooser(this, getString(R.string.security_centre_email_check)))
+        }
     }
 
     override fun launchSetupFingerprintLogin() {
@@ -434,7 +441,11 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
     }
 
     override fun launchBuySell() {
-        presenter.routeToBuySell()
+        BuySellLauncherActivity.start(this)
+    }
+
+    override fun launchTransfer() {
+        bottom_navigation.getViewAtPosition(ITEM_RECEIVE).performClick()
     }
 
     private fun showLogoutDialog() {
@@ -752,10 +763,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
         replaceContentFragment(swapIntroFragment)
     }
 
-    override fun onStartBuySell() {
-        BuySellLauncherActivity.start(this)
-    }
-
     override fun launchSwapIntro() {
         setCurrentTabItem(ITEM_SWAP)
 
@@ -862,7 +869,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
 
     override fun launchIntroTour() {
 
-        showNavigation()
+        bottom_navigation.restoreBottomNavigation(false)
 
         val tourSteps = listOf(
             IntroTourStep(
@@ -895,6 +902,9 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
             IntroTourStep(
                 name = "Step_Four",
                 lookupTriggerView = { bottom_navigation.getViewAtPosition(ITEM_SWAP) },
+                triggerClick = {
+                    replaceContentFragment(SwapTourFragment.newInstance())
+                },
                 analyticsEvent = IntroTourAnalyticsEvent.IntroSwapViewedAnalytics,
                 msgIcon = R.drawable.ic_vector_toolbar_swap,
                 msgTitle = R.string.tour_step_four_title,
@@ -904,6 +914,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
             IntroTourStep(
                 name = "Step_Five",
                 lookupTriggerView = {
+                    bottom_navigation.getViewAtPosition(ITEM_HOME).performClick()
                     drawer_layout.openDrawer(GravityCompat.START)
                     null
                 },
@@ -924,7 +935,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
 
     override fun onTourFinished() {
         drawer_layout.closeDrawers()
-        bottom_navigation.getViewAtPosition(ITEM_HOME).performClick()
+        startDashboardFragment()
     }
 
     override fun showTourDialog(dlg: BottomSheetDialogFragment) {

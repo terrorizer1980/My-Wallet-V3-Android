@@ -98,13 +98,16 @@ class DashboardPresenter(
             // Clears subscription after single event
             .firstOrError()
             .doOnSuccess { updateAllBalances() }
-            .doOnSuccess { announcements.checkLatest(this, compositeDisposable) }
             .doOnSuccess { storeSwipeToReceiveAddresses() }
             .doOnSuccess { updatePitAddressesForThePit() }
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
             )
+    }
+
+    override fun onViewResumed() {
+        announcements.checkLatest(this, compositeDisposable)
     }
 
     private fun updatePitAddressesForThePit() {
@@ -254,15 +257,8 @@ class DashboardPresenter(
             }
     }
 
-    override fun startBuyOrKyc() {
-        compositeDisposable += currentTier.usersCurrentTier()
-            .subscribe { tier ->
-                if (tier > 0) {
-                    view.startBuySell()
-                } else {
-                    view.startKycFlow(CampaignType.Swap)
-                }
-            }
+    override fun startBuySell() {
+        view.startBuySell()
     }
 
     override fun startPitLinking() {
@@ -281,8 +277,8 @@ class DashboardPresenter(
         view.startSetup2Fa()
     }
 
-    override fun startSetupVerifyEmail() {
-        view.startSetupVerifyEmail()
+    override fun startVerifyEmail() {
+        view.startVerifyEmail()
     }
 
     override fun startEnableFingerprintLogin() {

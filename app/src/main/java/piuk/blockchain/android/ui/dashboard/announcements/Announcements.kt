@@ -22,11 +22,11 @@ interface AnnouncementHost {
     // Actions
     fun startKyc(campaignType: CampaignType)
     fun startSwapOrKyc(swapTarget: CryptoCurrency? = null)
-    fun startBuyOrKyc()
+    fun startBuySell()
     fun startPitLinking()
     fun startFundsBackup()
     fun startSetup2Fa()
-    fun startSetupVerifyEmail()
+    fun startVerifyEmail()
     fun startEnableFingerprintLogin()
     fun startIntroTourGuide()
     fun startTransferCrypto()

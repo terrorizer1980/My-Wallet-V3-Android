@@ -42,7 +42,7 @@ interface DashboardView : View {
 
     fun startEnableFingerprintLogin()
 
-    fun startSetupVerifyEmail()
+    fun startVerifyEmail()
 
     fun startIntroTour()
 

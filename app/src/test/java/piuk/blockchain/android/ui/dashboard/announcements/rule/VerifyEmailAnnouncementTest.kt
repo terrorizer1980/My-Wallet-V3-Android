@@ -33,17 +33,6 @@ class VerifyEmailAnnouncementTest {
     }
 
     @Test
-    fun `should not show, when already shown`() {
-        whenever(dismissEntry.isDismissed).thenReturn(true)
-
-        subject.shouldShow()
-            .test()
-            .assertValue { !it }
-            .assertValueCount(1)
-            .assertComplete()
-    }
-
-    @Test
     fun `should show, when not already shown, email address is valid and unverified`() {
         whenever(dismissEntry.isDismissed).thenReturn(false)
 

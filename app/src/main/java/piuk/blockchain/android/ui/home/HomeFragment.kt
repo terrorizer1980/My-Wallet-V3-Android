@@ -30,10 +30,10 @@ interface HomeNavigator {
     fun launchThePit()
     fun launchBackupFunds()
     fun launchSetup2Fa()
-    fun launchSetupVerifyEmail()
+    fun launchVerifyEmail()
     fun launchSetupFingerprintLogin()
     fun launchBuySell()
-
+    fun launchTransfer()
     fun launchIntroTour()
 
     fun gotoSendFor(cryptoCurrency: CryptoCurrency)

@@ -39,6 +39,7 @@ class TransferBitcoinAnnouncement(
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 ctaFunction = {
+                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
                     host.startTransferCrypto()
                 }
             )

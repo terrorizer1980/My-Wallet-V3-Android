@@ -43,7 +43,8 @@ class BuyBitcoinAnnouncement(
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 ctaFunction = {
-                    host.startBuyOrKyc()
+                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.startBuySell()
                 }
             )
         )

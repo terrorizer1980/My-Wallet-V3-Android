@@ -113,13 +113,13 @@ class TourGuide @JvmOverloads constructor(
         val widthPulse = heightPulse
 
         // Location of the pulse
-        val x = x0 + xV + v.width / 2 - widthPulse / 2 + offsetX
-        val y = y0 + yV + v.height / 2 - heightPulse / 2 + offsetY
+        val x = x0 + xV + v.width / 2 - widthPulse / 2
+        val y = y0 + yV + v.height / 2 - heightPulse / 2
 
         val pulseParams = LayoutParams(widthPulse.toInt(), heightPulse.toInt())
 
-        pulseParams.leftMargin = x.toInt()
-        pulseParams.topMargin = y.toInt()
+        pulseParams.leftMargin = x.toInt() + offsetX
+        pulseParams.topMargin = y.toInt() + offsetY
 
         pulse.stop()
         pulse.layoutParams = pulseParams
@@ -131,9 +131,11 @@ class TourGuide @JvmOverloads constructor(
         val dW: Int = (max(v.width - widthPulse, 0f) / 2).toInt()
         val dH: Int = (max(v.height - heightPulse, 0f) / 2).toInt()
 
-        val touchParams = LayoutParams(widthPulse.toInt() + dW * 2, heightPulse.toInt() + dH * 2)
-        touchParams.leftMargin = pulseParams.leftMargin - dW
-        touchParams.topMargin = pulseParams.topMargin - dH
+        val touchWidth = widthPulse.toInt() + dW * 2
+
+        val touchParams = LayoutParams(touchWidth, heightPulse.toInt() + dH * 2)
+        touchParams.leftMargin = x.toInt() - dW
+        touchParams.topMargin = y.toInt() - dH
         touch_hook.layoutParams = touchParams
 
         pulse.start()
@@ -167,7 +169,7 @@ class TourGuide @JvmOverloads constructor(
         return max(steps.indexOfFirst { it.name == stage } - 1, -1)
     }
 
-    private fun stop() {
+    fun stop() {
         pulse.stop()
         visibility = View.GONE
     }

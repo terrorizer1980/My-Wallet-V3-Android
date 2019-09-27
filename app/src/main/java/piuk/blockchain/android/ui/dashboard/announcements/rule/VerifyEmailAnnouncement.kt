@@ -18,10 +18,6 @@ class VerifyEmailAnnouncement(
     override val dismissKey = DISMISS_KEY
 
     override fun shouldShow(): Single<Boolean> {
-        if (dismissEntry.isDismissed) {
-            return Single.just(false)
-        }
-
         return walletSettings.getSettings()
             .map { !it.isEmailVerified && it.email.isNotEmpty() }
             .singleOrError()
@@ -41,7 +37,8 @@ class VerifyEmailAnnouncement(
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 ctaFunction = {
-                    host.startSetupVerifyEmail()
+                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.startVerifyEmail()
                 }
             )
         )

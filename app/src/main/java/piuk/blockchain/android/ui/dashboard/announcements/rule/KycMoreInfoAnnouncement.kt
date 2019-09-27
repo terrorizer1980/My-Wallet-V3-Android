@@ -62,8 +62,8 @@ internal class KycMoreInfoAnnouncement(
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 ctaFunction = {
-                    host.startKyc(CampaignType.Sunriver)
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.startKyc(CampaignType.Sunriver)
                 },
                 dismissEntry = dismissEntry,
                 dismissRule = DismissRule.CardOneTime

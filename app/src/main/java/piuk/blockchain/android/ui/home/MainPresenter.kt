@@ -461,7 +461,7 @@ class MainPresenter internal constructor(
             .subscribeBy(onError = { it.printStackTrace() },
                 onNext = { coinifyAllowed ->
                     if (coinifyAllowed)
-                        view.onStartBuySell()
+                        view.launchBuySell()
                 })
     }
 

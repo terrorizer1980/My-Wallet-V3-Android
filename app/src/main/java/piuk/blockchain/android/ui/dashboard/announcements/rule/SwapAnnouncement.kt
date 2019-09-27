@@ -55,8 +55,8 @@ class SwapAnnouncement(
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 ctaFunction = {
-                    host.startSwapOrKyc()
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.startSwapOrKyc()
                 },
                 dismissEntry = dismissEntry,
                 dismissRule = DismissRule.CardPeriodic

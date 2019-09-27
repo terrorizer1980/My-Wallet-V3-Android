@@ -180,8 +180,8 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
         navigator().launchSetup2Fa()
     }
 
-    override fun startSetupVerifyEmail() {
-        navigator().launchSetupVerifyEmail()
+    override fun startVerifyEmail() {
+        navigator().launchVerifyEmail()
     }
 
     override fun startEnableFingerprintLogin() {
@@ -193,7 +193,7 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     }
 
     override fun startTransferCrypto() {
-        navigator().gotoReceiveFor(CryptoCurrency.BTC)
+        navigator().launchTransfer()
     }
 
     override fun startWebsocketService() {

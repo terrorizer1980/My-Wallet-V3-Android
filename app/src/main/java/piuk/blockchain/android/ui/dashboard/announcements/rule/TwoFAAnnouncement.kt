@@ -44,6 +44,7 @@ class TwoFAAnnouncement(
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 ctaFunction = {
+                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
                     host.startSetup2Fa()
                 }
             )

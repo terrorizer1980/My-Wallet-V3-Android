@@ -42,6 +42,7 @@ class RegisterFingerprintsAnnouncement(
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 ctaFunction = {
+                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
                     host.startEnableFingerprintLogin()
                 }
             )

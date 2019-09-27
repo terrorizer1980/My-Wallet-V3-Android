@@ -36,6 +36,7 @@ class BackupPhraseAnnouncement(
                 ctaText = R.string.recovery_card_cta,
                 iconImage = R.drawable.ic_announce_backup,
                 ctaFunction = {
+                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
                     host.startFundsBackup()
                 },
                 dismissFunction = {

@@ -44,6 +44,7 @@ class KycForAirdropsAnnouncement(
                     host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 },
                 ctaFunction = {
+                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
                     host.startKyc(CampaignType.Sunriver)
                 }
             )

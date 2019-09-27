@@ -1244,47 +1244,48 @@
     <string name="swap_intro_description_page_four">With Swap your crypto is safe, secure, and your keys are always intact.</string>
     <string name="swap_intro_description_page_five">Introducing Digital Dollars (USD PAX) to de-risk your crypto investment or lock-in gains.</string>
     <string name="swap_intro_get_started">Get Started</string>
-    <string name="tour_card_title">Welcome to Blockchain!</string>
-    <string name="tour_card_body">Here are a few tips to get your wallet up and running. We\'ll also help you make sure everything is secure.</string>
 
     <!-- intro tour -->
+    <string name="tour_card_title">Welcome to Blockchain!</string>
+    <string name="tour_card_body">Here are a few tips to get your wallet up and running. We\'ll also help you make sure everything is secure.</string>
     <string name="tour_card_cta">Take A Tour</string>
     <string name="tour_card_dismiss">Maybe Later</string>
-    <string name="verify_email_card_title">Verify Your Email Address</string>
-    <string name="verify_email_card_body">In order to start using your Blockchain wallet, you need to confirm your email address.</string>
 
     <!-- Verify email announcement -->
+    <string name="verify_email_card_title">Verify Your Email Address</string>
+    <string name="verify_email_card_body">In order to start using your Blockchain wallet, you need to confirm your email address.</string>
     <string name="verify_email_card_cta">Verify Email Address</string>
-    <string name="two_fa_card_title">Enable 2-Step Verification</string>
-    <string name="two_fa_card_body">Protect your wallet from unauthorized access by enabling 2-Step Verification.</string>
 
     <!-- Enable 2fa announcement -->
+    <string name="two_fa_card_title">Enable 2-Step Verification</string>
+    <string name="two_fa_card_body">Protect your wallet from unauthorized access by enabling 2-Step Verification.</string>
     <string name="two_fa_card_cta">Enable 2-Step Verification</string>
-    <string name="buy_btc_card_title">Buy Bitcoin</string>
-    <string name="buy_btc_card_body">Buy Bitcoin with your credit card or bank account to kickstart your crypto portfolio.</string>
 
     <!-- Buy Bitcoin announcement -->
+    <string name="buy_btc_card_title">Buy Bitcoin</string>
+    <string name="buy_btc_card_body">Buy Bitcoin with your credit card or bank account to kickstart your crypto portfolio.</string>
     <string name="buy_btc_card_cta">Buy Bitcoin</string>
-    <string name="transfer_btc_card_title">Transfer In Crypto</string>
-    <string name="transfer_btc_card_body">Deposit crypto in your wallet to get started. It\'s the best way to store your crypto while keeping control of your keys.</string>
 
     <!-- Transfer Bitcoin announcement -->
+    <string name="transfer_btc_card_title">Transfer In Crypto</string>
+    <string name="transfer_btc_card_body">Deposit crypto in your wallet to get started. It\'s the best way to store your crypto while keeping control of your keys.</string>
     <string name="transfer_btc_card_cta">Get Started</string>
-    <string name="recovery_card_title">Wallet Recovery Phrase</string>
-    <string name="recovery_card_body">Your recovery phrase can be used to restore all your funds in the case of a lost password or a loss of service at Blockchain.</string>
 
     <!-- Wallet Recovery announcement -->
+    <string name="recovery_card_title">Wallet Recovery Phrase</string>
+    <string name="recovery_card_body">You control your crypto. Write down your recovery phrase to restore all your funds in case you lose your password.</string>
     <string name="recovery_card_cta">Backup Phrase</string>
-    <string name="register_fingerprint_card_title">Fingerprint Log in</string>
-    <string name="register_fingerprint_card_body">Enable fingerprint to quickly log into your wallet instead of using your PIN.</string>
 
     <!-- Enrole fingerprints announcement -->
+    <string name="register_fingerprint_card_title">Fingerprint Log in</string>
+    <string name="register_fingerprint_card_body">Enable fingerprint to quickly log into your wallet instead of using your PIN.</string>
     <string name="register_fingerprint_card_cta">Enable Now</string>
-    <string name="kyc_airdrop_card_title">Want Free Crypto?</string>
-    <string name="kyc_airdrop_card_body">Verify your identity to participate in our Airdrop program and receive free crypto from future Airdrops.</string>
 
     <!-- Kyc for Airdrops announcement -->
+    <string name="kyc_airdrop_card_title">Want Free Crypto?</string>
+    <string name="kyc_airdrop_card_body">Verify your identity to participate in our Airdrop program and receive free crypto from future Airdrops.</string>
     <string name="kyc_airdrop_card_cta">Start Verification</string>
+
     <string name="coinify_account_created_success">Success!\n Account Created</string>
     <string name="buy_sell_launcher_error">Error fetching buy/sell data</string>
 

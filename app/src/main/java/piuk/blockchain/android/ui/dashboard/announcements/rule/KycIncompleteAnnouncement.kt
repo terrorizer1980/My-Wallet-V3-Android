@@ -57,13 +57,13 @@ internal class KycIncompleteAnnouncement(
                 host.dismissAnnouncementCard(dismissEntry.prefsKey)
             },
             ctaFunction = {
+                host.dismissAnnouncementCard(dismissEntry.prefsKey)
                 val campaignType = if (cardType == SunriverCardType.FinishSignUp) {
                     CampaignType.Sunriver
                 } else {
                     CampaignType.Swap
                 }
                 host.startKyc(campaignType)
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
             },
             dismissEntry = dismissEntry,
             dismissRule = DismissRule.CardPeriodic

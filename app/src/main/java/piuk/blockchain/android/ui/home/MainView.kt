@@ -47,8 +47,6 @@ interface MainView : View, HomeNavigator {
 
     fun showTestnetWarning()
 
-    fun onStartBuySell()
-
     fun launchSwapIntro()
 
     fun refreshDashboard()
