@@ -69,6 +69,7 @@ import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.android.ui.home.analytics.SideNavEvent
 import piuk.blockchain.android.ui.onboarding.OnboardingActivity
 import piuk.blockchain.android.ui.tour.BuySellTourFragment
 import piuk.blockchain.android.ui.tour.IntroTourAnalyticsEvent
@@ -381,6 +382,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
     private fun String.isETHAddress(): Boolean = FormatsUtil.isValidEthereumAddress(this)
 
     private fun selectDrawerItem(menuItem: MenuItem) {
+        analytics.logEvent(SideNavEvent(menuItem.itemId))
         when (menuItem.itemId) {
             R.id.nav_lockbox -> LockboxLandingActivity.start(this)
             R.id.nav_backup -> launchBackupFunds()

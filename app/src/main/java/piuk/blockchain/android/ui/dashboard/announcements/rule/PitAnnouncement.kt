@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
 import android.support.annotation.VisibleForTesting
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.remoteconfig.FeatureFlag
 import io.reactivex.Single
@@ -9,6 +10,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.R
+import piuk.blockchain.android.thepit.PitAnalyticsEvent
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
@@ -20,6 +22,7 @@ class PitAnnouncement(
     private val pitLink: PitLinking,
     dismissRecorder: DismissRecorder,
     private val featureFlag: FeatureFlag,
+    private val analytics: Analytics,
     private val abTestExperiment: ABTestExperiment
 ) : AnnouncementRule(dismissRecorder) {
 
@@ -53,6 +56,7 @@ class PitAnnouncement(
                             compositeDisposable.clear()
                         },
                         ctaFunction = {
+                        analytics.logEvent(PitAnalyticsEvent.AnnouncementTappedEvent)
                             host.dismissAnnouncementCard(dismissEntry.prefsKey)
                             host.startPitLinking()
                             compositeDisposable.clear()

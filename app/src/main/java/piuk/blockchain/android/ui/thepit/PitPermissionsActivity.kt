@@ -3,6 +3,7 @@ package piuk.blockchain.android.ui.thepit
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.ui.urllinks.URL_THE_PIT_LANDING_LEARN_MORE
 import kotlinx.android.synthetic.main.activity_pit_kyc_promo_layout.*
 import kotlinx.android.synthetic.main.toolbar_general.*
@@ -11,12 +12,14 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.util.launchUrlInBrowser
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.android.thepit.PitAnalyticsEvent
 
 class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermissionsView, PitPermissionsPresenter>() {
 
     override fun createPresenter(): PitPermissionsPresenter = get()
     override fun getView(): PitPermissionsView = this
 
+    private val analytics: Analytics = get()
     private var loadingDialog: PitStateBottomDialog? = null
 
     override fun promptForEmailVerification(email: String) {
@@ -34,12 +37,14 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
             doLinkClickHandler()
         }
         learn_more.setOnClickListener {
+            analytics.logEvent(PitAnalyticsEvent.LearnMoreEvent)
             launchUrlInBrowser(URL_THE_PIT_LANDING_LEARN_MORE)
         }
         onViewReady()
     }
 
     private fun doLinkClickHandler() {
+        analytics.logEvent(PitAnalyticsEvent.ConnectNowEvent)
         if (intent.isPitToWalletLink) {
             val linkId = intent.pitToWalletLinkId ?: throw IllegalStateException("Link id is missing")
             presenter.tryToConnectPitToWallet(linkId)
