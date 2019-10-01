@@ -1783,7 +1783,7 @@
 
     <string name="tour_step_one_btn">Next</string>
     <string name="tour_step_two_title">Send</string>
-    <string name="tour_step_two_body">Send crypto anywhere, anytime. All you need is the recipients crypto address. </string>
+    <string name="tour_step_two_body">Send crypto anywhere, anytime. All you need is the recipient\'s crypto address. </string>
 
     <string name="tour_step_two_btn">Next</string>
     <string name="tour_step_three_title">Request</string>

@@ -68,7 +68,7 @@ class SwapTourFragment : Fragment() {
     private fun formatSpendableString(): CharSequence {
         val spendableString = SpannableStringBuilder()
 
-        val fiatString = SpannableString("US$1.40")
+        val fiatString = SpannableString("US$140.00")
         fiatString.setSpan(
             ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.product_green_medium)),
             0,
@@ -77,7 +77,7 @@ class SwapTourFragment : Fragment() {
         )
         spendableString.append(fiatString)
         spendableString.append(" ")
-        spendableString.append(" 0.000173262 BTC")
+        spendableString.append(" 0.012375857 BTC")
         return spendableString
     }
 
