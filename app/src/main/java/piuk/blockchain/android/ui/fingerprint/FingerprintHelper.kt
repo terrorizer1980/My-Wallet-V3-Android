@@ -7,11 +7,9 @@ import com.mtramin.rxfingerprint.RxFingerprint
 import com.mtramin.rxfingerprint.data.FingerprintResult
 import io.reactivex.disposables.CompositeDisposable
 import piuk.blockchain.android.data.fingerprint.FingerprintAuth
-import piuk.blockchain.androidcore.injection.PresenterScope
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import java.io.UnsupportedEncodingException
 
-@PresenterScope
 class FingerprintHelper constructor(
     private val applicationContext: Context,
     private val prefs: PersistentPrefs,

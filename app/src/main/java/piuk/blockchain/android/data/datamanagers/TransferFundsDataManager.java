@@ -20,15 +20,11 @@ import piuk.blockchain.android.ui.account.ItemAccount;
 import piuk.blockchain.android.ui.send.PendingTransaction;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.payments.SendDataManager;
-import piuk.blockchain.androidcore.injection.PresenterScope;
 import piuk.blockchain.androidcore.utils.rxjava.IgnorableDefaultObserver;
-
-import javax.inject.Inject;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-@PresenterScope
 public class TransferFundsDataManager {
 
     private PayloadDataManager payloadDataManager;
@@ -36,7 +32,6 @@ public class TransferFundsDataManager {
     private DynamicFeeCache dynamicFeeCache;
     private CoinSelectionRemoteConfig coinSelectionRemoteConfig;
 
-    @Inject
     public TransferFundsDataManager(PayloadDataManager payloadDataManager,
                                     SendDataManager sendDataManager,
                                     DynamicFeeCache dynamicFeeCache,

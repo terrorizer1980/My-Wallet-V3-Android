@@ -14,9 +14,8 @@ import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import javax.inject.Inject
 
-class ConfirmFundsTransferPresenter @Inject constructor(
+class ConfirmFundsTransferPresenter(
     private val walletAccountHelper: WalletAccountHelper,
     private val fundsDataManager: TransferFundsDataManager,
     private val payloadDataManager: PayloadDataManager,
@@ -41,7 +40,7 @@ class ConfirmFundsTransferPresenter @Inject constructor(
      *
      * @param secondPassword The user's double encryption password if necessary
      */
-    @SuppressLint("VisibleForTests")
+    @SuppressLint("VisibleForTests", "CheckResult")
     internal fun sendPayment(secondPassword: String?) {
         val archiveAll = view.getIfArchiveChecked()
 
@@ -108,6 +107,7 @@ class ConfirmFundsTransferPresenter @Inject constructor(
         view.onUiUpdated()
     }
 
+    @SuppressLint("CheckResult")
     @VisibleForTesting
     internal fun archiveAll() {
         for (spend in pendingTransactions) {
@@ -127,7 +127,7 @@ class ConfirmFundsTransferPresenter @Inject constructor(
                 { view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR) })
     }
 
-    @SuppressLint("VisibleForTests")
+    @SuppressLint("VisibleForTests", "CheckResult")
     private fun updateToAddress(indexOfReceiveAccount: Int) {
         fundsDataManager.getTransferableFundTransactionList(indexOfReceiveAccount)
             .doOnSubscribe { view.setPaymentButtonEnabled(false) }

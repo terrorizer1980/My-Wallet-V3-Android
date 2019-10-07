@@ -8,6 +8,7 @@ import com.blockchain.koin.injectActivity
 import com.blockchain.ui.password.SecondPasswordHandler
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.data.access.LogoutTimer
+import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 
@@ -15,6 +16,8 @@ import piuk.blockchain.androidcoreui.ApplicationLifeCycle
  * A base Activity for all activities which need auth timeouts & screenshot prevention
  */
 abstract class BaseAuthActivity : ToolBarActivity() {
+
+    private val environment: EnvironmentConfig by inject()
 
     private val logoutTimer: LogoutTimer by inject()
 
@@ -41,12 +44,15 @@ abstract class BaseAuthActivity : ToolBarActivity() {
         stopLogoutTimer()
         ApplicationLifeCycle.getInstance().onActivityResumed()
 
-        if (prefs.getValue(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, false) && !enforceFlagSecure()) {
+        if (environment.shouldShowDebugMenu() || (prefs.areScreenshotAllowed && !enforceFlagSecure())) {
             enableScreenshots()
         } else {
             disallowScreenshots()
         }
     }
+
+    private val PersistentPrefs.areScreenshotAllowed
+        get() = getValue(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, false)
 
     /**
      * Allows us to enable screenshots on all pages, unless this is overridden in an Activity and

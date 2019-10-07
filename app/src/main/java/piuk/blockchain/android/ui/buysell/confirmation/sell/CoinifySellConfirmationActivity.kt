@@ -5,23 +5,24 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import com.blockchain.ui.password.SecondPasswordHandler
 import com.jakewharton.rxbinding2.view.RxView
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.toolbar_general.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
-import com.blockchain.ui.password.SecondPasswordHandler
 import piuk.blockchain.android.ui.buysell.createorder.models.SellConfirmationDisplayModel
 import piuk.blockchain.android.ui.buysell.payment.card.PaymentState
 import piuk.blockchain.android.ui.buysell.payment.complete.CoinifyPaymentCompleteActivity
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_coinify_sell_confirmation.button_confirm_sell as buttonConfirm
 import kotlinx.android.synthetic.main.activity_coinify_sell_confirmation.check_box_sell_rate_disclaimer as checkBoxDisclaimer
 import kotlinx.android.synthetic.main.activity_coinify_sell_confirmation.text_view_btc_total_to_send_description as textViewBtcToSend
@@ -35,31 +36,33 @@ class CoinifySellConfirmationActivity :
     BaseMvpActivity<CoinifySellConfirmationView, CoinifySellConfirmationPresenter>(),
     CoinifySellConfirmationView {
 
-    @Inject
-    lateinit var presenter: CoinifySellConfirmationPresenter
+    private val presenter: CoinifySellConfirmationPresenter by inject()
     override val locale: Locale = Locale.getDefault()
+    private val compositeDisposable = CompositeDisposable()
+
     override val displayableQuote by unsafeLazy {
         intent.getParcelableExtra(EXTRA_DISPLAY_MODEL) as SellConfirmationDisplayModel
     }
     override val bankAccountId: Int by unsafeLazy { intent.getIntExtra(EXTRA_BANK_ID, -1) }
     private var progressDialog: MaterialProgressDialog? = null
 
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_coinify_sell_confirmation)
         setupToolbar(toolbar_general, R.string.buy_sell_confirmation_title_sell)
 
-        RxView.clicks(buttonConfirm)
+        compositeDisposable += RxView.clicks(buttonConfirm)
             .throttleFirst(500, TimeUnit.MILLISECONDS)
             .subscribeBy(onNext = { presenter.onConfirmClicked() })
 
         renderUi()
 
         onViewReady()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.clear()
     }
 
     @SuppressLint("SetTextI18n")

@@ -1,38 +1,30 @@
 package piuk.blockchain.android.ui.onboarding
 
 import android.content.Context
-import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_email_prompt.*
 import piuk.blockchain.android.R
-import piuk.blockchain.android.databinding.FragmentEmailPromptBinding
-import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import java.lang.NullPointerException
 
 class EmailPromptFragment : Fragment() {
 
     private var listener: OnFragmentInteractionListener? = null
-    private var binding: FragmentEmailPromptBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_email_prompt, container, false)
-        return binding!!.root
-    }
+    ): View? = inflater.inflate(R.layout.fragment_email_prompt, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding?.buttonEnable?.setOnClickListener { listener?.onVerifyEmailClicked() }
-        binding?.buttonLater?.setOnClickListener { listener?.onVerifyLaterClicked() }
-        binding?.textviewEmail?.text = arguments?.emailAddress
-        binding?.buttonLater.goneIf(!arguments.showDismiss)
+        button_enable?.setOnClickListener { listener?.onVerifyEmailClicked() }
+        email_address?.text = arguments?.emailAddress
     }
 
     override fun onAttach(context: Context?) {
@@ -52,20 +44,17 @@ class EmailPromptFragment : Fragment() {
 
     internal interface OnFragmentInteractionListener {
         fun onVerifyEmailClicked()
-        fun onVerifyLaterClicked()
     }
 
     companion object {
 
         private const val ARGUMENT_EMAIL = "email"
-        private const val ARGUMENT_SHOW_DISMISS = "show_dismiss"
 
-        fun newInstance(email: String, showDismissBtn: Boolean): EmailPromptFragment {
+        fun newInstance(email: String): EmailPromptFragment {
             val fragment = EmailPromptFragment()
 
             fragment.arguments = Bundle().apply {
                 emailAddress = email
-                showDismiss = showDismissBtn
             }
             return fragment
         }
@@ -73,9 +62,5 @@ class EmailPromptFragment : Fragment() {
         private var Bundle?.emailAddress: String
             get() = this?.getString(ARGUMENT_EMAIL) ?: ""
             set(v) = this?.putString(ARGUMENT_EMAIL, v) ?: throw NullPointerException()
-
-        private var Bundle?.showDismiss: Boolean
-            get() = this?.getBoolean(ARGUMENT_SHOW_DISMISS, true) ?: true
-            set(v) = this?.putBoolean(ARGUMENT_SHOW_DISMISS, v) ?: throw NullPointerException()
     }
 }

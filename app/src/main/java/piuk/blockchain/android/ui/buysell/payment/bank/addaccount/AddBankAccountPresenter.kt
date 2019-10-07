@@ -3,9 +3,8 @@ package piuk.blockchain.android.ui.buysell.payment.bank.addaccount
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import javax.inject.Inject
 
-class AddBankAccountPresenter @Inject constructor() : BasePresenter<AddBankAccountView>() {
+class AddBankAccountPresenter : BasePresenter<AddBankAccountView>() {
 
     override fun onViewReady() = Unit
 

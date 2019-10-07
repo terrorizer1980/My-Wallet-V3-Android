@@ -12,10 +12,9 @@ import com.blockchain.notifications.analytics.AnalyticsEvents
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.overview.CoinifyOverviewActivity
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 
@@ -34,10 +33,6 @@ class BuySellLauncherActivity : BaseMvpActivity<BuySellLauncherView, BuySellLaun
     private var progressDialog: MaterialProgressDialog? = null
     private val startBuySellKyc: StartKycForBuySell by inject()
     private val presenter: BuySellLauncherPresenter by inject()
-
-    init {
-        Injector.getInstance().presenterComponent.inject(this)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

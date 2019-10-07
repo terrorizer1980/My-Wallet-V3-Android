@@ -9,9 +9,8 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber
 import java.security.Security
-import javax.inject.Inject
 
-class PrngHelper @Inject constructor(
+class PrngHelper(
     private val context: Context,
     private val accessState: AccessState
 ) : PrngFixer {

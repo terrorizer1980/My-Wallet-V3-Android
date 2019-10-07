@@ -76,6 +76,7 @@ class BitcoinCashSendStrategy(
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig,
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
+    private val envSettings: EnvironmentConfig,
     private val pitLinking: PitLinking,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
@@ -144,6 +145,9 @@ class BitcoinCashSendStrategy(
     override fun onBroadcastReceived() {
         resetAccountList()
     }
+
+    override fun isAddressValid(address: String) =
+        FormatsUtil.isValidBitcoinCashAddress(envSettings.bitcoinNetworkParameters, address)
 
     override fun onViewReady() {
         resetAccountList()

@@ -4,11 +4,8 @@ import io.reactivex.Observable
 import piuk.blockchain.androidbuysell.models.coinify.AuthResponse
 import com.blockchain.data.datastores.PersistentStore
 import com.blockchain.utils.Optional
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class AccessTokenStore @Inject constructor() : TokenStore,
+class AccessTokenStore : TokenStore,
     PersistentStore<AuthResponse> {
 
     private var token: Optional<AuthResponse> = Optional.None

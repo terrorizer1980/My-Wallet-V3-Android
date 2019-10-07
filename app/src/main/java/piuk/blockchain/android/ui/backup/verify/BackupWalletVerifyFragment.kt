@@ -14,7 +14,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.backup.completed.BackupWalletCompletedFragment
 import piuk.blockchain.android.ui.backup.start.BackupWalletStartingFragment
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 
@@ -59,7 +59,7 @@ class BackupWalletVerifyFragment : BaseFragment<BackupVerifyView, BackupVerifyPr
 
     override fun showProgressDialog() {
         progressDialog = MaterialProgressDialog(
-            activity
+            requireContext()
         ).apply {
             setMessage("${getString(R.string.please_wait)}…")
             setCancelable(false)

@@ -9,9 +9,8 @@ import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
-import javax.inject.Inject
 
-class AccountChooserPresenter @Inject constructor(
+class AccountChooserPresenter(
     private val accountHelper: AccountListing,
     private val stringUtils: StringUtils
 ) : BasePresenter<AccountChooserView>() {

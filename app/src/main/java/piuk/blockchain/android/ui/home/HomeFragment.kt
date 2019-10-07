@@ -23,12 +23,18 @@ interface HomeNavigator {
     fun gotoDashboard()
 
     fun launchSwapOrKyc(targetCurrency: CryptoCurrency? = null)
-
+    fun launchSwap(defCurrency: String, targetCrypto: CryptoCurrency? = null)
     fun launchKyc(campaignType: CampaignType)
     fun launchKycIntro()
-
     fun launchThePitLinking(linkId: String = "")
     fun launchThePit()
+    fun launchBackupFunds()
+    fun launchSetup2Fa()
+    fun launchVerifyEmail()
+    fun launchSetupFingerprintLogin()
+    fun launchBuySell()
+    fun launchTransfer()
+    fun launchIntroTour()
 
     fun gotoSendFor(cryptoCurrency: CryptoCurrency)
     fun gotoReceiveFor(cryptoCurrency: CryptoCurrency)

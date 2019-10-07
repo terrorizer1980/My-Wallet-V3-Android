@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="default_tour_pulse_color">@color/blue_600</color>
     <color name="exchange_history_sent">#FF004A7C</color>
     <color name="exchange_history_received">#FF03A972</color>
     <color name="exchange_history_description">#FF4E4E4E</color>
@@ -21,5 +22,11 @@
     <color name="pit_email_veriff_address">@color/blue_500</color>
     <color name="pit_open_mail_app_background">@color/blue_600</color>
     <color name="swap_intro_title">@color/blue_500</color>
+
+    <color name="announce_background">@color/white</color>
+    <color name="default_announce_button">@color/blue_600</color>
+
     <color name="notification_tint">@color/blue_600</color>
+    <color name="tour_icon_tint">@color/blue_600</color>
+
 </resources>

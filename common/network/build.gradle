@@ -31,6 +31,9 @@ dependencies {
     testImplementation Libraries.okHttpMock
     testImplementation Libraries.mockWebServer
     testImplementation project(':testutils')
+    testImplementation(Libraries.mockitoKotlin) {
+        ['kotlin-stdlib', 'kotlin-reflect'].each { exclude module: it }
+    }
 }
 
 test {

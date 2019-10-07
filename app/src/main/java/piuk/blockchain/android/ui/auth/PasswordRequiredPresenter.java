@@ -37,19 +37,16 @@ public class PasswordRequiredPresenter extends BasePresenter<PasswordRequiredVie
     @VisibleForTesting
     static final String KEY_AUTH_REQUIRED = "authorization_required";
 
-    @SuppressWarnings("WeakerAccess")
-    @Thunk
-    AppUtil appUtil;
-    private PersistentPrefs prefs;
-    private AuthDataManager authDataManager;
-    private PayloadDataManager payloadDataManager;
-    private BuyDataManager buyDataManager;
-    private CoinifyDataManager coinifyDataManager;
+    private final AppUtil appUtil;
+    private final PersistentPrefs prefs;
+    private final AuthDataManager authDataManager;
+    private final PayloadDataManager payloadDataManager;
+    private final BuyDataManager buyDataManager;
+    private final CoinifyDataManager coinifyDataManager;
     private String sessionId;
     @VisibleForTesting
     boolean waitingForAuth = false;
 
-    @Inject
     public PasswordRequiredPresenter(
             AppUtil appUtil,
             PersistentPrefs prefs,
@@ -58,7 +55,6 @@ public class PasswordRequiredPresenter extends BasePresenter<PasswordRequiredVie
             BuyDataManager buyDataManager,
             CoinifyDataManager coinifyDataManager
     ) {
-
         this.appUtil = appUtil;
         this.prefs = prefs;
         this.authDataManager = authDataManager;

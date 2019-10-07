@@ -203,10 +203,6 @@
             android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <service
-            android:name=".data.websocket.WebSocketService"
-            android:stopWithTask="true" />
-
-        <service
             android:name=".data.coinswebsocket.service.CoinsWebSocketService"
             android:stopWithTask="true" />
 

@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.buysell.confirmation.sell
 
-import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.logging.LastTxUpdater
+import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.crashlytics.android.answers.PurchaseEvent
 import info.blockchain.balance.CryptoValue
@@ -28,10 +28,9 @@ import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlin.math.absoluteValue
 
-class CoinifySellConfirmationPresenter @Inject constructor(
+class CoinifySellConfirmationPresenter(
     private val coinifyDataManager: CoinifyDataManager,
     private val exchangeService: ExchangeService,
     private val payloadDataManager: PayloadDataManager,
@@ -172,7 +171,7 @@ class CoinifySellConfirmationPresenter @Inject constructor(
                         "%2d:%02d",
                         TimeUnit.SECONDS.toMinutes(it),
                         TimeUnit.SECONDS.toSeconds(it) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(it))
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(it))
                     )
                     view.updateCounter(readableTime)
                 }

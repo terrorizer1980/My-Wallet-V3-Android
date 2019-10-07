@@ -25,7 +25,6 @@ import org.amshove.kluent.any
 import org.amshove.kluent.mock
 import org.bitcoinj.core.ECKey
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
@@ -304,18 +303,19 @@ class EthDataManagerTest {
         isLastTxPending(isProcessed, sent, shouldBePending)
     }
 
-    @Ignore // This is incredibly flakey
-    @Test
-    fun `isLastTxPending last tx unprocessed, just dropped`() {
+    /*
+      @Test
+      @Ignore  This is incredibly flakey . Commented out cause of a lint error
+      fun `isLastTxPending last tx unprocessed, just dropped`() {
 
-        // 24h - on drop time
-        val isProcessed = false
-        val sent = System.currentTimeMillis() - (86400L * 1000)
-        val shouldBePending = false
+          // 24h - on drop time
+          val isProcessed = false
+          val sent = System.currentTimeMillis() - (86400L * 1000)
+          val shouldBePending = false
 
-        isLastTxPending(isProcessed, sent, shouldBePending)
-    }
-
+          isLastTxPending(isProcessed, sent, shouldBePending)
+      }
+  */
     @Test
     fun `isLastTxPending last tx unprocessed, 1min after being dropped`() {
 

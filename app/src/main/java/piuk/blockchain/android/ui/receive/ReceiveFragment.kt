@@ -464,14 +464,10 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.receive_address_to_share)
                 .setCancelable(false)
-                .setPositiveButton(R.string.yes) { _, _ -> requestStoragePermissionIfNeeded() }
+                .setPositiveButton(R.string.yes) { _, _ -> presenter.onShowBottomShareSheetSelected() }
                 .setNegativeButton(R.string.no, null)
                 .show()
         }
-    }
-
-    private fun requestStoragePermissionIfNeeded() {
-        presenter.onShowBottomShareSheetSelected()
     }
 
     override fun showWatchOnlyWarning() {

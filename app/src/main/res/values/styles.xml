@@ -108,6 +108,10 @@
         <item name="colorControlNormal">@color/black</item>
     </style>
 
+    <style name="BaseTextStyle">
+        <item name="android:fontFamily">@font/inter</item>
+    </style>
+
     <style name="RecoveryPhraseEditText">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">42dp</item>

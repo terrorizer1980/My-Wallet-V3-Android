@@ -7,13 +7,10 @@ import io.reactivex.Observable
 import piuk.blockchain.androidcore.data.charts.models.ChartDatumDto
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
-import piuk.blockchain.androidcore.injection.PresenterScope
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import java.util.Calendar
-import javax.inject.Inject
 
-@PresenterScope
-class ChartsDataManager @Inject constructor(private val historicPriceApi: PriceApi, rxBus: RxBus) {
+class ChartsDataManager(private val historicPriceApi: PriceApi, rxBus: RxBus) {
 
     private val rxPinning = RxPinning(rxBus)
 

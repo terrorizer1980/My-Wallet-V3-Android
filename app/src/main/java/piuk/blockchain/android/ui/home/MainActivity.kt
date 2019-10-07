@@ -7,9 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ShortcutManager
-import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.annotation.StringRes
+import android.support.design.widget.BottomSheetDialogFragment
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -23,6 +23,7 @@ import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.FIND_VIEWS_WITH_TEXT
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.blockchain.annotations.ButWhy
@@ -46,8 +47,6 @@ import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.datamanagers.PromptDlgFactory
-import piuk.blockchain.android.databinding.ActivityMainBinding
 import piuk.blockchain.android.ui.account.AccountActivity
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
 import piuk.blockchain.android.ui.balance.BalanceFragment
@@ -69,14 +68,25 @@ import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.android.ui.home.analytics.SideNavEvent
+import piuk.blockchain.android.ui.onboarding.OnboardingActivity
+import piuk.blockchain.android.ui.tour.BuySellTourFragment
+import piuk.blockchain.android.ui.tour.IntroTourAnalyticsEvent
+import piuk.blockchain.android.ui.tour.IntroTourHost
+import piuk.blockchain.android.ui.tour.IntroTourStep
+import piuk.blockchain.android.ui.tour.SwapTourFragment
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import timber.log.Timber
+import java.util.ArrayList
 
-class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, MainView,
+class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
+    HomeNavigator,
+    MainView,
+    IntroTourHost,
     ConfirmPaymentDialog.OnConfirmDialogInteractionListener {
 
     var drawerOpen = false
@@ -88,8 +98,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
     private val appUtil: AppUtil by inject()
     private val analytics: Analytics by inject()
-
-    internal lateinit var binding: ActivityMainBinding
 
     private var progressDlg: MaterialProgressDialog? = null
     private var backPressed: Long = 0
@@ -110,19 +118,19 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
                         // This is a bit of a hack to allow the selection of the correct button
                         // On the bottom nav bar, but without starting the fragment again
                         startSendFragment(null)
-                        ViewUtils.setElevation(binding.appbarLayout, 0f)
+                        ViewUtils.setElevation(appbar_layout, 0f)
                     }
                     ITEM_HOME -> {
                         startDashboardFragment()
-                        ViewUtils.setElevation(binding.appbarLayout, 4f)
+                        ViewUtils.setElevation(appbar_layout, 4f)
                     }
                     ITEM_ACTIVITY -> {
                         startBalanceFragment()
-                        ViewUtils.setElevation(binding.appbarLayout, 0f)
+                        ViewUtils.setElevation(appbar_layout, 0f)
                     }
                     ITEM_RECEIVE -> {
                         startReceiveFragment()
-                        ViewUtils.setElevation(binding.appbarLayout, 0f)
+                        ViewUtils.setElevation(appbar_layout, 0f)
                     }
                     ITEM_SWAP -> {
                         presenter.startSwapOrKyc(null)
@@ -142,21 +150,24 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         get() = (currentFragment as? ReceiveFragment)?.getSelectedAccountPosition() ?: -1
 
     private val menu: Menu
-        get() = binding.navigationView.menu
+        get() = navigation_view.menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        setContentView(R.layout.activity_main)
 
         receiver.registerIntents(this)
 
-        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+        drawer_layout.addDrawerListener(object : DrawerLayout.DrawerListener {
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
                 // No-op
             }
 
             override fun onDrawerOpened(drawerView: View) {
                 drawerOpen = true
+                if (tour_guide.isActive) {
+                    setTourMenuView()
+                }
             }
 
             override fun onDrawerClosed(drawerView: View) {
@@ -200,7 +211,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         super.onResume()
 
         // This can null out in low memory situations, so reset here
-        binding.navigationView.setNavigationItemSelectedListener { menuItem ->
+        navigation_view.setNavigationItemSelectedListener { menuItem ->
             selectDrawerItem(menuItem)
             true
         }
@@ -226,7 +237,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                binding.drawerLayout.openDrawer(GravityCompat.START)
+                drawer_layout.openDrawer(GravityCompat.START)
                 true
             }
             R.id.action_qr_main -> {
@@ -244,8 +255,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         ) {
             val strResult = data.getStringExtra(CaptureActivity.SCAN_RESULT)
             handlePredefinedInput(strResult, false)
-        } else if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_BACKUP) {
-            resetUi()
         } else if (requestCode == SETTINGS_EDIT ||
             requestCode == ACCOUNT_EDIT ||
             requestCode == KYC_STARTED
@@ -264,10 +273,13 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     }
 
     override fun onBackPressed() {
+        if (tour_guide.isActive) {
+            tour_guide.stop()
+        }
         val f = currentFragment
         val backHandled = when {
             drawerOpen -> {
-                binding.drawerLayout.closeDrawers()
+                drawer_layout.closeDrawers()
                 true
             }
             f is BalanceFragment -> f.onBackPressed()
@@ -290,6 +302,18 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
                 showExitConfirmToast()
                 backPressed = System.currentTimeMillis()
             }
+        }
+    }
+
+    private fun setTourMenuView() {
+        val item = menu.findItem(R.id.nav_buy)
+
+        val out = ArrayList<View>()
+        drawer_layout.findViewsWithText(out, item.title, FIND_VIEWS_WITH_TEXT)
+
+        if (out.isNotEmpty()) {
+            val menuView = out[0]
+            tour_guide.setDeferredTriggerView(menuView, offsetX = -menuView.width / 3)
         }
     }
 
@@ -362,10 +386,10 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     private fun String.isETHAddress(): Boolean = FormatsUtil.isValidEthereumAddress(this)
 
     private fun selectDrawerItem(menuItem: MenuItem) {
+        analytics.logEvent(SideNavEvent(menuItem.itemId))
         when (menuItem.itemId) {
             R.id.nav_lockbox -> LockboxLandingActivity.start(this)
-            R.id.nav_backup -> startActivityForResult(
-                Intent(this, BackupWalletActivity::class.java), REQUEST_BACKUP)
+            R.id.nav_backup -> launchBackupFunds()
             R.id.nav_exchange_homebrew_debug -> HomebrewNavHostActivity.start(
                 this,
                 mainPresenter.defaultCurrency
@@ -378,7 +402,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             R.id.nav_support -> onSupportClicked()
             R.id.nav_logout -> showLogoutDialog()
         }
-        binding.drawerLayout.closeDrawers()
+        drawer_layout.closeDrawers()
     }
 
     override fun launchThePitLinking(linkId: String) {
@@ -389,8 +413,39 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         PitLaunchBottomDialog.launch(this)
     }
 
+    override fun setPitItemTitle(title: String) {
+        menu.findItem(R.id.nav_the_pit).title = title
+    }
+
     override fun setPitEnabled(enabled: Boolean) {
         setPitVisible(enabled)
+    }
+
+    override fun launchBackupFunds() {
+        BackupWalletActivity.start(this)
+    }
+
+    override fun launchSetup2Fa() {
+        SettingsActivity.startFor2Fa(this)
+    }
+
+    override fun launchVerifyEmail() {
+        Intent(Intent.ACTION_MAIN).apply {
+            addCategory(Intent.CATEGORY_APP_EMAIL)
+            startActivity(Intent.createChooser(this, getString(R.string.security_centre_email_check)))
+        }
+    }
+
+    override fun launchSetupFingerprintLogin() {
+        OnboardingActivity.launchForFingerprints(this)
+    }
+
+    override fun launchBuySell() {
+        BuySellLauncherActivity.start(this)
+    }
+
+    override fun launchTransfer() {
+        bottom_navigation.getViewAtPosition(ITEM_RECEIVE).performClick()
     }
 
     private fun showLogoutDialog() {
@@ -434,7 +489,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         })
 
         val deniedPermissionListener = SnackbarOnDeniedPermissionListener.Builder
-            .with(binding.root, R.string.request_camera_permission)
+            .with(coordinator_layout, R.string.request_camera_permission)
             .withButton(android.R.string.ok) { requestScan() }
             .build()
 
@@ -482,11 +537,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     }
 
     override fun launchSwap(defCurrency: String, targetCrypto: CryptoCurrency?) {
-        HomebrewNavHostActivity.start(
-            (activity as? Context) ?: return,
-            defCurrency,
-            targetCrypto
-        )
+        HomebrewNavHostActivity.start(this, defCurrency, targetCrypto)
     }
 
     override fun launchSwapOrKyc(targetCurrency: CryptoCurrency?) {
@@ -582,7 +633,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
     override fun showTestnetWarning() {
         val snack = Snackbar.make(
-            binding.coordinatorLayout,
+            coordinator_layout,
             R.string.testnet_warning,
             Snackbar.LENGTH_SHORT
         )
@@ -596,14 +647,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             bottom_navigation.enableItemAtPosition(ITEM_SWAP)
         } else {
             bottom_navigation.disableItemAtPosition(ITEM_SWAP)
-        }
-    }
-
-    override fun showCustomPrompt(dlgFn: PromptDlgFactory) {
-        if (!isFinishing) {
-            dlgFn(this).apply {
-                show(supportFragmentManager, tag)
-            }
         }
     }
 
@@ -678,7 +721,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
     private fun startSendFragment(input: String?, isDeeplinked: Boolean = false) {
         setCurrentTabItem(ITEM_SEND)
 
-        ViewUtils.setElevation(binding.appbarLayout, 0f)
+        ViewUtils.setElevation(appbar_layout, 0f)
 
         val sendFragment = SendFragment.newInstance(input, isDeeplinked)
         replaceContentFragment(sendFragment)
@@ -720,14 +763,10 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
         replaceContentFragment(swapIntroFragment)
     }
 
-    override fun onStartBuySell() {
-        BuySellLauncherActivity.start(this)
-    }
-
     override fun launchSwapIntro() {
         setCurrentTabItem(ITEM_SWAP)
 
-        ViewUtils.setElevation(binding.appbarLayout, 0f)
+        ViewUtils.setElevation(appbar_layout, 0f)
 
         val swapIntroFragment = SwapIntroFragment.newInstance()
         replaceContentFragment(swapIntroFragment)
@@ -738,8 +777,8 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
     private fun replaceContentFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
-        val transaction = fragmentManager.beginTransaction()
-        transaction.replace(R.id.content_frame, fragment, fragment.javaClass.simpleName)
+        fragmentManager.beginTransaction()
+            .replace(R.id.content_frame, fragment, fragment.javaClass.simpleName)
             .commitAllowingStateLoss()
     }
 
@@ -765,7 +804,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
                     presenter.setCryptoCurrency(CryptoCurrency.BTC)
                     bottom_navigation.currentItem = ITEM_RECEIVE
                 }
-                ACTION_BUY -> presenter.routeToBuySell()
             }
         }
 
@@ -773,7 +811,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
             val broadcastManager = LocalBroadcastManager.getInstance(ctx)
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_SEND))
             broadcastManager.registerReceiver(this, IntentFilter(ACTION_RECEIVE))
-            broadcastManager.registerReceiver(this, IntentFilter(ACTION_BUY))
         }
     }
 
@@ -783,9 +820,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
 
         const val ACTION_SEND = "info.blockchain.wallet.ui.BalanceFragment.SEND"
         const val ACTION_RECEIVE = "info.blockchain.wallet.ui.BalanceFragment.RECEIVE"
-        const val ACTION_BUY = "info.blockchain.wallet.ui.BalanceFragment.BUY"
-
-        private const val REQUEST_BACKUP = 2225
 
         const val SCAN_URI = 2007
         const val ACCOUNT_EDIT = 2008
@@ -831,5 +865,81 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(), HomeNavigator, 
                 context.startActivity(this)
             }
         }
+    }
+
+    override fun launchIntroTour() {
+
+        bottom_navigation.restoreBottomNavigation(false)
+
+        val tourSteps = listOf(
+            IntroTourStep(
+                name = "Step_One",
+                lookupTriggerView = { bottom_navigation.getViewAtPosition(ITEM_HOME) },
+                analyticsEvent = IntroTourAnalyticsEvent.IntroPortfolioViewedAnalytics,
+                msgIcon = R.drawable.ic_vector_toolbar_home,
+                msgTitle = R.string.tour_step_one_title,
+                msgBody = R.string.tour_step_one_body,
+                msgButton = R.string.tour_step_one_btn
+            ),
+            IntroTourStep(
+                name = "Step_Two",
+                lookupTriggerView = { bottom_navigation.getViewAtPosition(ITEM_SEND) },
+                analyticsEvent = IntroTourAnalyticsEvent.IntroSendViewedAnalytics,
+                msgIcon = R.drawable.ic_vector_toolbar_send,
+                msgTitle = R.string.tour_step_two_title,
+                msgBody = R.string.tour_step_two_body,
+                msgButton = R.string.tour_step_two_btn
+            ),
+            IntroTourStep(
+                name = "Step_Three",
+                lookupTriggerView = { bottom_navigation.getViewAtPosition(ITEM_RECEIVE) },
+                analyticsEvent = IntroTourAnalyticsEvent.IntroRequestViewedAnalytics,
+                msgIcon = R.drawable.ic_vector_toolbar_receive,
+                msgTitle = R.string.tour_step_three_title,
+                msgBody = R.string.tour_step_three_body,
+                msgButton = R.string.tour_step_three_btn
+            ),
+            IntroTourStep(
+                name = "Step_Four",
+                lookupTriggerView = { bottom_navigation.getViewAtPosition(ITEM_SWAP) },
+                triggerClick = {
+                    replaceContentFragment(SwapTourFragment.newInstance())
+                },
+                analyticsEvent = IntroTourAnalyticsEvent.IntroSwapViewedAnalytics,
+                msgIcon = R.drawable.ic_vector_toolbar_swap,
+                msgTitle = R.string.tour_step_four_title,
+                msgBody = R.string.tour_step_four_body,
+                msgButton = R.string.tour_step_four_btn
+            ),
+            IntroTourStep(
+                name = "Step_Five",
+                lookupTriggerView = {
+                    bottom_navigation.getViewAtPosition(ITEM_HOME).performClick()
+                    drawer_layout.openDrawer(GravityCompat.START)
+                    null
+                },
+                triggerClick = {
+                    drawer_layout.closeDrawers()
+                    replaceContentFragment(BuySellTourFragment.newInstance())
+                },
+                analyticsEvent = IntroTourAnalyticsEvent.IntroBuySellViewedAnalytics,
+                msgIcon = R.drawable.ic_nav_buy_sell,
+                msgTitle = R.string.tour_step_five_title,
+                msgBody = R.string.tour_step_five_body,
+                msgButton = R.string.tour_step_five_btn
+            )
+        )
+
+        tour_guide.start(this, tourSteps)
+    }
+
+    override fun onTourFinished() {
+        drawer_layout.closeDrawers()
+        startDashboardFragment()
+    }
+
+    override fun showTourDialog(dlg: BottomSheetDialogFragment) {
+        val fm = supportFragmentManager
+        dlg.show(fm, "TOUR_SHEET")
     }
 }

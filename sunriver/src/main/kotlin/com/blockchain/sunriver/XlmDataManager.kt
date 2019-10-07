@@ -22,6 +22,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
+import org.stellar.sdk.KeyPair
 
 class XlmDataManager internal constructor(
     private val horizonProxy: HorizonProxy,
@@ -72,6 +73,14 @@ class XlmDataManager internal constructor(
                 memoMapper.mapMemo(sendDetails.memo),
                 sendDetails.fee
             ).mapToSendFundsResult(sendDetails).just().ensureUrlUpdated()
+        }
+
+    fun isAddressValid(address: String): Boolean =
+        try {
+            KeyPair.fromAccountId(address)
+            true
+        } catch (e: Exception) {
+            false
         }
 
     private fun <T> T.just(): Single<T> = Single.just(this)

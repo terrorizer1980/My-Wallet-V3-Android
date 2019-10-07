@@ -473,9 +473,7 @@
   <string name="onboarding_qr_codes">QR 코드</string>
   <string name="onboarding_scan_address">스캔 주소</string>
   <string name="onboarding_buy_content">우리는 전 세계 환전 파트너들과 일하고 있으므로 귀하는 직접 지갑에서 비트코인을 살 수 있습니다.</string>
-  <string name="onboarding_receive_content">돈을 받기 위해 친구에게 귀하 지갑 주소 보내기 주소는 임의 문자와 숫자 조합으로 매 거래마다 바뀝니다.</string>
-  <string name="onboarding_qr_codes_content">주소를 QR code로 표시할 수도 있습니다. 친구 QR code를 스캔 해서 친구 지갑 주소를 빨리 캡쳐 하세요.</string>
-  <string name="onboarding_buy_bitcoin">비트코인 사기</string>
+    <string name="onboarding_buy_bitcoin">비트코인 사기</string>
   <string name="onboarding_buy_and_sell_bitcoin">비트코인 구매 및 판매</string>
   <string name="onboarding_get_bitcoin">비트코인 받기</string>
   <string name="onboarding_get_eth">에테르 받기</string>
@@ -558,7 +556,6 @@
   <string name="bch_invalid_address">잘못된 Bitcoin 현금 주소</string>
   <string name="confirm_currency">통화 확인</string>
   <string name="confirm_currency_message">스캔 할 통화의 QR 코드를 선택하십시오.</string>
-  <string name="error_bitpay_not_supported">현재 Bitpay URI는 지원되지 않습니다.</string>
   <string name="announcement_trading_cta">더 나은 사고 팔다</string>
   <string name="announcement_trading_description">모바일 구매 및 판매 경험을위한 향상된 흐름이 이제 지갑에서 제공됩니다. 간단하고 완벽하며 안전합니다.</string>
   <string name="announcement_trading_link">시작하다</string>
@@ -619,14 +616,8 @@
   <string name="kyc_phone_number_validation_hint">확인 코드</string>
   <string name="kyc_phone_number_validation_error">전화 번호 확인 중 오류가 발생했습니다. 코드를 확인하십시오.</string>
   <string name="kyc_phone_number_validation_error_incorrect">인증 코드가 잘못되었습니다. 보내신 코드를 다시 확인하고 다시 시도하십시오.</string>
-  <string name="kyc_onfido_splash_title">신원 확인</string>
   <string name="kyc_onfido_splash_header">너를 확인하자.</string>
-  <string name="kyc_onfido_splash_subtitle">여권 또는 운전 면허증을 가져 가십시오.</string>
-  <string name="kyc_onfido_splash_message">신원이 확인되면 Blockchain 앱에서 cryptocurrencies를 교환 할 수 있습니다.</string>
   <string name="kyc_onfido_splash_verification_error">ID를 확인하는 동안 오류가 발생했습니다. 다시 시도하십시오.</string>
-  <string name="kyc_onfido_splash_passport">내 여권</string>
-  <string name="kyc_onfido_splash_drivers_license">내 운전 면허증</string>
-  <string name="kyc_onfido_splash_id_card">정부 발급 신분증</string>
   <string name="kyc_complete_title">신청 완료</string>
   <string name="kyc_complete_header">완료 및 완료!</string>
   <string name="kyc_complete_subtitle">정보를 제출했습니다. 귀하의 계정은 현재 검토 중입니다!</string>
@@ -669,9 +660,7 @@
   <string name="screen_overlay_warning">화면 오버레이 탐지 됨!</string>
   <string name="screen_overlay_note">화면 오버레이를 쓰는 앱은 보이지 않는 대상에 탭을 하도록 귀하를 속여 남이 귀하 자금을 훔쳐가게 할 수 있습니다. 이 경고는 \'화면 흐리게 하기 앱\'이 원인일 수도 있습니다. 아무 위협도 없는 것이 확실하면 계속해도 좋습니다. </string>
   <string name="dialog_continue">계속</string>
-  <string name="insufficient_funds_with_max">불충분 한 금액, 보낼 수있는 금액은 %1$s</string>
-  <string name="not_enough_funds_with_currency">%1$s 가) 충분하지 않습니다.</string>
-  <string name="invalid_address">잘못된 주소</string>
+    <string name="not_enough_funds_with_currency">%1$s 가) 충분하지 않습니다.</string>
   <string name="transaction_failed_min_send">보낼 수있는 최소값은 %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">새 계정에 필요한 최소 %1$s</string>
   <string name="lockbox_title">Lockbox</string>
@@ -971,7 +960,6 @@
   <string name="kyc_address_city_town_village">도시 / 마을 / 마을</string>
   <string name="kyc_address_state_region_province_county">주 /도 /도 / 군</string>
   <string name="kyc_address_postal_code">우편 번호</string>
-  <string name="kyc_onfido_splash_residence_permit">내 거주 허가</string>
   <string name="kyc_veriff_splash_title">\@ 문자열 / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ 문자열 / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">계속하려면 아래 ID 유형 중 하나가 필요합니다.</string>
@@ -1179,11 +1167,7 @@
   <string name="gold_unavailable">골드를 사용할 수 없음</string>
   <string name="veriff_identify">Veriff Identify</string>
   <string name="more_info_needed">추가 정보 필요</string>
-  <string name="coinify_kyc_body">구매 및 판매를 계속 사용하려면 프로필을 업데이트해야합니다. 완료되면 스왑에서 더 높은 거래 한도를 확보 할 수 있습니다.</string>
-  <string name="coinify_kyc_cta">지금 업데이트</string>
-  <string name="coinify_kyc_dismiss">더 알아보기</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">디지털 미국 달러</string>
+    <string name="pax_intro_popup_title">디지털 미국 달러</string>
   <string name="pax_intro_popup_text">안전하고 안정적인 암호 자산 인 USD PAX를 도입하여 가치를 쌓을 수 있습니다. 1 PAX는 1 USD와 같습니다.</string>
   <string name="pax_intro_popup_cta_btn">USD PAX 지금 가져 오기</string>
   <string name="buy_sell_error_country_not_supported">귀하의 국가는 현재 구매 / 판매가 지원되지 않습니다. 우리는 곧 더 많은 분야에 지원을 추가하기 위해 노력하고 있습니다.</string>
@@ -1200,22 +1184,16 @@
   <string name="sunriver_announcement_stellar_on_the_way_message">우리는 성공적으로 확인했다. 
  너의 정체성. 
 </string>
-  <string name="pit_announcement_description">더 나은 암호 교환으로 레벨 업 할 때입니다. 첫 10 만명의 상인이 30 일 동안 무료로 거래됩니다.</string>
-  <string name="pit_announcement_introducing_link">확인 해봐</string>
-  <string name="pit_logo_content_descr">구덩이 로고</string>
+    <string name="pit_logo_content_descr">구덩이 로고</string>
   <string name="pit_slogan_kyc_promo">월렛에 연결하는 유일한 Exchange입니다.</string>
   <string name="pit_thunder_kyc_promo">번개 빠른 무역</string>
-  <string name="pit_security_kyc_promo"><![CDATA[액체 및 신뢰성]]></string>
-  <string name="pit_built_kyc_promo">Blockchain.com에서 제작</string>
-  <string name="pit_dollar_kyc_promo">저비용</string>
-  <string name="pit_permission_app_can">이 응용 프로그램은 다음을 수행 할 수 있습니다.</string>
+    <string name="pit_built_kyc_promo">Blockchain에서 제작</string>
+    <string name="pit_permission_app_can">이 응용 프로그램은 다음을 수행 할 수 있습니다.</string>
   <string name="pit_permission_app_cant">이 응용 프로그램은 다음 작업을 수행 할 수 없습니다.</string>
   <string name="pit_permission_subtitle">할 수 없을 것이다:</string>
-  <string name="pit_permission_1">계정 간 암호화 전송 촉진</string>
-  <string name="pit_permission_2">골드 또는 실버 등급 상태 공유</string>
+    <string name="pit_permission_2">골드 또는 실버 등급 상태 공유</string>
   <string name="pit_permission_3">연결된 은행 추가</string>
-  <string name="pit_permission_4">지갑 암호보기</string>
-  <string name="pit_connect_now">지금 연결</string>
+    <string name="pit_connect_now">지금 연결</string>
   <string name="pit_setting_title">구덩이</string>
   <string name="pit_setting_connect">잇다</string>
   <string name="pit_setting_connected">연결됨</string>

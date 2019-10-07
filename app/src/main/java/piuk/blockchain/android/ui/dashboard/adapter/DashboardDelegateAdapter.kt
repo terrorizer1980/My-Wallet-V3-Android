@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.adapter
 
 import android.content.Context
+import com.blockchain.notifications.analytics.Analytics
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.ui.adapters.AdapterDelegatesManager
 import piuk.blockchain.android.ui.adapters.DelegationAdapter
@@ -8,15 +9,8 @@ import piuk.blockchain.android.ui.dashboard.BalanceFilter
 import piuk.blockchain.android.ui.dashboard.PieChartsState
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.AssetPriceCardDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.HeaderDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.ImageLeftAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.ImageRightAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.adapter.delegates.OnboardingDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.PieChartDelegate
-
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.PitAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.StableCoinAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.SunriverAnnouncementDelegate
-import piuk.blockchain.android.ui.dashboard.announcements.delegates.SwapAnnouncementDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementDelegate
 
 /**
  * @param context The Activity/Fragment [Context]
@@ -28,25 +22,21 @@ class DashboardDelegateAdapter(
     context: Context,
     assetSelector: (CryptoCurrency) -> Unit,
     coinSelector: (CryptoCurrency) -> Unit,
-    balanceModeSelector: (BalanceFilter) -> Unit
+    balanceModeSelector: (BalanceFilter) -> Unit,
+    analytics: Analytics
 ) : DelegationAdapter<Any>(AdapterDelegatesManager(), emptyList()) {
 
-    private val onboardingDelegate = OnboardingDelegate<Any>(context)
     private val pieChartDelegate = PieChartDelegate<Any>(context, coinSelector, balanceModeSelector)
     private val assetPriceDelegate = AssetPriceCardDelegate<Any>(context, assetSelector)
 
     init {
         // Add all necessary AdapterDelegate objects here
-        delegatesManager.addAdapterDelegate(ImageLeftAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(ImageRightAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(SunriverAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(StableCoinAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(PitAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(HeaderDelegate())
-        delegatesManager.addAdapterDelegate(SwapAnnouncementDelegate())
-        delegatesManager.addAdapterDelegate(onboardingDelegate)
-        delegatesManager.addAdapterDelegate(pieChartDelegate)
-        delegatesManager.addAdapterDelegate(assetPriceDelegate)
+        with(delegatesManager) {
+            addAdapterDelegate(HeaderDelegate())
+            addAdapterDelegate(AnnouncementDelegate(analytics))
+            addAdapterDelegate(pieChartDelegate)
+            addAdapterDelegate(assetPriceDelegate)
+        }
     }
 
     /**

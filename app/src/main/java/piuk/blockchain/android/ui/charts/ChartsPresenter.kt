@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.charts
 
+import android.annotation.SuppressLint
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
@@ -11,10 +12,9 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
-import javax.inject.Inject
 import kotlin.properties.Delegates
 
-class ChartsPresenter @Inject constructor(
+class ChartsPresenter(
     private val chartsDataManager: ChartsDataManager,
     private val exchangeRateFactory: ExchangeRateDataManager,
     private val prefs: PersistentPrefs,
@@ -29,6 +29,7 @@ class ChartsPresenter @Inject constructor(
         selectedTimeSpan = TimeSpan.MONTH
     }
 
+    @SuppressLint("CheckResult")
     private fun updateChartsData(timeSpan: TimeSpan) {
         compositeDisposable.clear()
         getCurrentPrice()

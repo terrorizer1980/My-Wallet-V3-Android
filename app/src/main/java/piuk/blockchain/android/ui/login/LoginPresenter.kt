@@ -3,7 +3,6 @@ package piuk.blockchain.android.ui.login
 import android.annotation.SuppressLint
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
-import dagger.Lazy
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
@@ -15,12 +14,11 @@ import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.PairingEvent
 import piuk.blockchain.androidcoreui.utils.logging.PairingMethod
-import javax.inject.Inject
 import javax.net.ssl.SSLPeerUnverifiedException
 
-class LoginPresenter @Inject constructor(
+class LoginPresenter(
     private val appUtil: AppUtil,
-    private val payloadDataManager: Lazy<PayloadDataManager>,
+    private val _payloadDataManager: Lazy<PayloadDataManager>,
     private val prefs: PersistentPrefs,
     private val analytics: Analytics
 ) : BasePresenter<LoginView>() {
@@ -29,13 +27,16 @@ class LoginPresenter @Inject constructor(
         // No-op
     }
 
+    private val payloadDataManager: PayloadDataManager
+        get() = _payloadDataManager.value
+
     @SuppressLint("CheckResult")
     internal fun pairWithQR(raw: String?) {
         appUtil.clearCredentials()
 
         if (raw == null) view.showToast(R.string.pairing_failed, ToastCustom.TYPE_ERROR)
 
-        val dataManager = payloadDataManager.get()
+        val dataManager = payloadDataManager
         dataManager.handleQrCode(raw!!)
             .addToCompositeDisposable(this)
             .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }

@@ -476,9 +476,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="onboarding_qr_codes">QRコード</string>
   <string name="onboarding_scan_address">アドレスをスキャン</string>
   <string name="onboarding_buy_content">当社は世界中の両替業者と提携しており、ウォレットから直接ビットコインを購入いただけます。</string>
-  <string name="onboarding_receive_content">友達にウォレットアドレスを送信して資金をリクエストアドレスは各取引によって変更される無作為の英数字の羅列です。</string>
-  <string name="onboarding_qr_codes_content">アドレスはQRコードとしても表示できます。友達のQRコードをスキャンすると瞬時にウォレットアドレスが取得できます。</string>
-  <string name="onboarding_buy_bitcoin">ビットコインを買う</string>
+    <string name="onboarding_buy_bitcoin">ビットコインを買う</string>
   <string name="onboarding_buy_and_sell_bitcoin">購入し、Bitcoinを売る</string>
   <string name="onboarding_get_bitcoin">ビットコインを手に入れる</string>
   <string name="onboarding_get_eth">Etherを取得</string>
@@ -561,7 +559,6 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="bch_invalid_address">無効なBitcoinキャッシュアドレス</string>
   <string name="confirm_currency">通貨を確認する</string>
   <string name="confirm_currency_message">スキャンする通貨のQRコードを選択してください。</string>
-  <string name="error_bitpay_not_supported">Bitpay URIは現在サポートされていません</string>
   <string name="announcement_trading_cta">より良い売買</string>
   <string name="announcement_trading_description">あなたのモバイルバイヤー＆セール体験のための改善されたフローがあなたの財布で利用可能になりました。シンプルでシームレスで安全です。</string>
   <string name="announcement_trading_link">始める</string>
@@ -622,14 +619,8 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="kyc_phone_number_validation_hint">確認コード</string>
   <string name="kyc_phone_number_validation_error">電話番号の検証中にエラーが発生しました。コードを確認してください</string>
   <string name="kyc_phone_number_validation_error_incorrect">確認コードが間違っています。送信したコードを再度確認してから、もう一度お試しください。</string>
-  <string name="kyc_onfido_splash_title">あなたのアイデンティティを確認する</string>
   <string name="kyc_onfido_splash_header">それはあなたのことを確認しよう</string>
-  <string name="kyc_onfido_splash_subtitle">パスポートまたは運転免許証を持ってください。</string>
-  <string name="kyc_onfido_splash_message">あなたの身元を確認したら、Blockchainアプリで暗号化交換を承認します！</string>
   <string name="kyc_onfido_splash_verification_error">IDを確認できませんでした。もう一度お試しください</string>
-  <string name="kyc_onfido_splash_passport">私のパスポート</string>
-  <string name="kyc_onfido_splash_drivers_license">私の運転免許証</string>
-  <string name="kyc_onfido_splash_id_card">私の政府発行のID</string>
   <string name="kyc_complete_title">アプリケーション完了</string>
   <string name="kyc_complete_header">完了して完了！</string>
   <string name="kyc_complete_subtitle">あなたは情報を正常に提出しました。あなたのアカウントは現在レビュー中です！</string>
@@ -672,9 +663,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="screen_overlay_warning">画面オーバーレイが検出されました！</string>
   <string name="screen_overlay_note">画面オーバーレイを使用するアプリは見えない対象物をタップするように欺き、資金が盗難される可能性があります。この警告は画面の調光アプリケーションによってトリガーされることもあります。これに脅威がないと確信できる場合は続行してください。 </string>
   <string name="dialog_continue">続行</string>
-  <string name="insufficient_funds_with_max">不十分な資金です。あなたが送ることができるものは%1$s</string>
-  <string name="not_enough_funds_with_currency">%1$sで十分ではありません</string>
-  <string name="invalid_address">無効なアドレス</string>
+    <string name="not_enough_funds_with_currency">%1$sで十分ではありません</string>
   <string name="transaction_failed_min_send">送信できる最小値は%1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">新しいアカウントに最低%1$s必要</string>
   <string name="lockbox_title">Lockbox</string>
@@ -974,7 +963,6 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="kyc_address_city_town_village">市/町/村</string>
   <string name="kyc_address_state_region_province_county">州/地域/県/郡</string>
   <string name="kyc_address_postal_code">郵便番号</string>
-  <string name="kyc_onfido_splash_residence_permit">私の居住許可</string>
   <string name="kyc_veriff_splash_title">\@ string / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ string / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">続行するには、以下のIDタイプのいずれかが必要です。</string>
@@ -1182,11 +1170,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="gold_unavailable">利用できない金</string>
   <string name="veriff_identify">ベリフ識別</string>
   <string name="more_info_needed">さらに情報が必要</string>
-  <string name="coinify_kyc_body">Buy＆Sellを使い続けるには、プロフィールを更新する必要があります。完了すると、Swapの上限取引のロックも解除されます。</string>
-  <string name="coinify_kyc_cta">今すぐアップデート</string>
-  <string name="coinify_kyc_dismiss">もっと詳しく知る</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">デジタル米ドル</string>
+    <string name="pax_intro_popup_title">デジタル米ドル</string>
   <string name="pax_intro_popup_text">安全性と安定性に優れた暗号資産であるUSD PAXを紹介して、価値を安定させることができます。 1 PAXは1 USDに相当します。</string>
   <string name="pax_intro_popup_cta_btn">今USD PAXを入手</string>
   <string name="buy_sell_error_country_not_supported">現時点ではあなたの国では売買がサポートされていません。私たちはまもなくより多くの分野への支援を追加するために取り組んでいます。</string>
@@ -1203,21 +1187,15 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="sunriver_announcement_stellar_on_the_way_message">確認しました
 あなたのアイデンティティ
 </string>
-  <string name="pit_announcement_description">レベルアップして、より良い暗号交換を行いましょう。最初にサインアップした10万人のトレーダーが30日間無料でトレードします。</string>
-  <string name="pit_announcement_introducing_link">見てみな</string>
   <string name="pit_logo_content_descr">ピットロゴ</string>
   <string name="pit_slogan_kyc_promo">あなたの財布に接続する唯一の取引所。</string>
   <string name="pit_thunder_kyc_promo">超高速トレード</string>
-  <string name="pit_security_kyc_promo"><![CDATA[リキッド＆信頼性]]></string>
-  <string name="pit_built_kyc_promo">Blockchain.comによって構築された</string>
-  <string name="pit_dollar_kyc_promo">低料金</string>
+  <string name="pit_built_kyc_promo">Blockchainによって構築された</string>
   <string name="pit_permission_app_can">このアプリケーションはできるようになります：</string>
   <string name="pit_permission_app_cant">このアプリケーションはできません。</string>
   <string name="pit_permission_subtitle">できない：</string>
-  <string name="pit_permission_1">アカウント間の暗号転送を促進する</string>
   <string name="pit_permission_2">ゴールドまたはシルバーレベルのステータスを共有する</string>
   <string name="pit_permission_3">リンクされた銀行を追加する</string>
-  <string name="pit_permission_4">ウォレットのパスワードを表示する</string>
   <string name="pit_connect_now">今すぐ接続</string>
   <string name="pit_setting_title">ピット</string>
   <string name="pit_setting_connect">接続する</string>

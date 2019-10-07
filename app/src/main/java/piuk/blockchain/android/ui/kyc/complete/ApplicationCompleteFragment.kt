@@ -10,9 +10,7 @@ import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import piuk.blockchain.android.ui.kyc.status.KycStatusActivity
-import com.blockchain.sunriver.ui.SunriverCampaignSignupBottomDialog
 import com.blockchain.ui.extensions.throttledClicks
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -57,21 +55,6 @@ class ApplicationCompleteFragment : Fragment() {
                     },
                     onError = { Timber.e(it) }
                 )
-
-        showCampaignRegisterPopup()
-    }
-
-    private fun showCampaignRegisterPopup() {
-        val dialog = SunriverCampaignSignupBottomDialog()
-        compositeDisposable += dialog
-            .shouldShow()
-            .doOnError(Timber::e)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy { show ->
-                if (show) {
-                    dialog.show(fragmentManager, "BOTTOM_DIALOG")
-                }
-            }
     }
 
     override fun onPause() {

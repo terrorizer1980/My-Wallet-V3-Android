@@ -64,6 +64,8 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
         val dismissRecorder: DismissRecorder = get()
 
         dismissRecorder.undismissAll(announcementList)
+
+        prefs.resetTour()
         context?.toast("Announcement reset")
         dismiss()
     }

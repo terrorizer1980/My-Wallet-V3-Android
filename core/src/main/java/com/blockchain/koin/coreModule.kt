@@ -40,7 +40,9 @@ import com.blockchain.metadata.MetadataRepository
 import com.blockchain.payload.PayloadDecrypt
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.NotificationPrefs
+import com.blockchain.preferences.OnBoardingPrefs
 import com.blockchain.preferences.ThePitLinkingPrefs
+import com.blockchain.preferences.WalletStatus
 import com.blockchain.sunriver.XlmHorizonUrlFetcher
 import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
 import com.blockchain.wallet.DefaultLabels
@@ -50,6 +52,7 @@ import com.blockchain.wallet.SeedAccessWithoutPrompt
 import info.blockchain.api.blockexplorer.BlockExplorer
 import info.blockchain.wallet.util.PrivateKeyFactory
 import org.koin.dsl.module.applicationContext
+import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.BuildConfig
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.access.AccessStateImpl
@@ -108,6 +111,8 @@ val coreModule = applicationContext {
     factory { MetadataUtils() }
 
     factory { PrivateKeyFactory() }
+
+    factory { RootUtil() }
 
     context("Payload") {
 
@@ -301,7 +306,9 @@ val coreModule = applicationContext {
     }.bind(PersistentPrefs::class)
         .bind(CurrencyPrefs::class)
         .bind(ThePitLinkingPrefs::class)
+        .bind(WalletStatus::class)
         .bind(NotificationPrefs::class)
+        .bind(OnBoardingPrefs::class)
 
     factory { CurrencyFormatUtil() }
 

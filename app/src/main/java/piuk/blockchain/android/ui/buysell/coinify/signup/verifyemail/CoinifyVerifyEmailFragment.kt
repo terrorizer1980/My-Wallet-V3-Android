@@ -10,31 +10,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_coinify_verify_email.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.injection.Injector
 import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifyFlowListener
 import piuk.blockchain.androidcoreui.ui.base.BaseFragment
-import piuk.blockchain.androidcoreui.ui.customviews.MaterialProgressDialog
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
-import javax.inject.Inject
 
 class CoinifyVerifyEmailFragment :
-    BaseFragment<CoinifyVerifyEmailView, CoinifyVerifyEmailPresenter>(),
-    CoinifyVerifyEmailView {
+    BaseFragment<CoinifyVerifyEmailView, CoinifyVerifyEmailPresenter>(), CoinifyVerifyEmailView {
 
-    @Inject
-    lateinit var presenter: CoinifyVerifyEmailPresenter
+    private val presenter: CoinifyVerifyEmailPresenter by inject()
     private var signUpListener: CoinifyFlowListener? = null
     private var progressDialog: MaterialProgressDialog? = null
-
-    init {
-        Injector.INSTANCE.presenterComponent.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -116,7 +109,7 @@ class CoinifyVerifyEmailFragment :
 
     private fun displayProgressDialog() {
         if (activity?.isFinishing == false) {
-            progressDialog = MaterialProgressDialog(context).apply {
+            progressDialog = MaterialProgressDialog(requireContext()).apply {
                 setMessage(getString(R.string.please_wait))
                 setCancelable(false)
                 show()

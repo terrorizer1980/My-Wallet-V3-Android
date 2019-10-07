@@ -30,7 +30,7 @@ class AddressAdapter(
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_address, parent)
+        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_address, parent, false)
 
         val item = getItem(position)
 

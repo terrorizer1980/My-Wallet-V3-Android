@@ -26,9 +26,8 @@ import piuk.blockchain.androidcore.utils.extensions.toSerialisedString
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-class CoinifyVerifyEmailPresenter @Inject constructor(
+class CoinifyVerifyEmailPresenter(
     private val settingsDataManager: SettingsDataManager,
     private val walletOptionsDataManager: WalletOptionsDataManager,
     private val payloadDataManager: PayloadDataManager,

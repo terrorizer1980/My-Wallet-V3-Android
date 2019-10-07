@@ -482,8 +482,6 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="onboarding_qr_codes">QR kódy</string>
   <string name="onboarding_scan_address">Naskenovat adresu</string>
   <string name="onboarding_buy_content">Spolupracujeme s partnerskými směnárnami po celém světě, abyste mohli kupovat bitcoiny přímo ze své peněženky.</string>
-  <string name="onboarding_receive_content">Chcete-li požádat o prostředky, pak pošlete adresu své peněženky kamarádovi. Adresa je řetězec náhodných písmen a číslic, které jsou pro každou transakci jiné.</string>
-  <string name="onboarding_qr_codes_content">Adresu lze zobrazit také jako QR kód. Naskenováním QR kódu přítele rychle zjistíte adresu peněženky.</string>
   <string name="onboarding_buy_bitcoin">Koupit bitcoin</string>
   <string name="onboarding_buy_and_sell_bitcoin">Koupit a prodávat Bitcoin</string>
   <string name="onboarding_get_bitcoin">Získat bitcoin</string>
@@ -567,7 +565,6 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="bch_invalid_address">Neplatná adresa Bitcoin Cash</string>
   <string name="confirm_currency">Potvrďte měnu</string>
   <string name="confirm_currency_message">Zvolte prosím, kterou QR kód skenujete.</string>
-  <string name="error_bitpay_not_supported">Bitové URI v síti BitPay nejsou aktuálně podporovány</string>
   <string name="announcement_trading_cta">Lepší nákup a prodej</string>
   <string name="announcement_trading_description">Zdokonalený tok vašich mobilních zkušeností s nakupováním a prodejem je nyní k dispozici v peněžence. Je to jednoduché, bezproblémové a bezpečné.</string>
   <string name="announcement_trading_link">Začít</string>
@@ -628,14 +625,8 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="kyc_phone_number_validation_hint">Potvrzovací kód</string>
   <string name="kyc_phone_number_validation_error">Chyba při ověřování telefonního čísla. Zkontrolujte prosím kód</string>
   <string name="kyc_phone_number_validation_error_incorrect">Kód ověření je nesprávný. Zkontrolujte prosím kód, který jsme vám poslali, a zkuste to znovu.</string>
-  <string name="kyc_onfido_splash_title">potvrďte vaši identitu</string>
   <string name="kyc_onfido_splash_header">Potvrdíme, že jste vy</string>
-  <string name="kyc_onfido_splash_subtitle">Uchopte svůj průkaz nebo řidičský průkaz.</string>
-  <string name="kyc_onfido_splash_message">Poté, co ověříme vaši totožnost, jste schváleni k výměně kryptocurrencí v aplikaci Blockchain!</string>
   <string name="kyc_onfido_splash_verification_error">Chyba při ověřování ID, zkuste to znovu</string>
-  <string name="kyc_onfido_splash_passport">Můj pas</string>
-  <string name="kyc_onfido_splash_drivers_license">Moje licence pro řidiče</string>
-  <string name="kyc_onfido_splash_id_card">Číslo mé vlády vydané</string>
   <string name="kyc_complete_title">Aplikace dokončena</string>
   <string name="kyc_complete_header">Hotovo a hotovo!</string>
   <string name="kyc_complete_subtitle">Úspěšně jste odeslali své informace. Váš účet je nyní přezkoumán!</string>
@@ -678,9 +669,7 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="screen_overlay_warning">Zjištěno překrytí obrazovky!</string>
   <string name="screen_overlay_note">Aplikace využívající překrytí obrazovky mají schopnost nalákat Vás tak, abyste klepli na nezobrazené objekty a aby Vás případně připravily o Vaše prostředky. Vezměte prosím na vědomí, že toto varování se zobrazí také u aplikací pro ztmavení obrazovky. Pokud máte jistotu, že neexistuje žádná hrozba, můžete pokračovat. </string>
   <string name="dialog_continue">Pokračovat</string>
-  <string name="insufficient_funds_with_max">Nedostatečné finanční prostředky, které můžete nejvíce odeslat, je %1$s</string>
-  <string name="not_enough_funds_with_currency">Nestačí %1$s</string>
-  <string name="invalid_address">Neplatná adresa</string>
+    <string name="not_enough_funds_with_currency">Nestačí %1$s</string>
   <string name="transaction_failed_min_send">Minimum, které můžete odeslat, je %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Pro nové účty %1$s zapotřebí minimálně %1$s</string>
   <string name="lockbox_title">Lockbox</string>
@@ -980,7 +969,6 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="kyc_address_city_town_village">Město / obec</string>
   <string name="kyc_address_state_region_province_county">Stát / Region / Provincie / Kraj</string>
   <string name="kyc_address_postal_code">poštovní směrovací číslo</string>
-  <string name="kyc_onfido_splash_residence_permit">Moje povolení k pobytu</string>
   <string name="kyc_veriff_splash_title">\@ string / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ string / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">Pro pokračování budete potřebovat 1 z níže uvedených typů ID.</string>
@@ -1188,11 +1176,7 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="gold_unavailable">Zlato není k dispozici</string>
   <string name="veriff_identify">Identifikace verif</string>
   <string name="more_info_needed">Potřebujeme více informací</string>
-  <string name="coinify_kyc_body">Abyste mohli nadále nakupovat a prodávat, musíte svůj profil aktualizovat. Po dokončení také odemknete vyšší obchodní limity ve swapu.</string>
-  <string name="coinify_kyc_cta">Nyní aktualizovat</string>
-  <string name="coinify_kyc_dismiss">Další informace</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">Digitální americké dolary</string>
+    <string name="pax_intro_popup_title">Digitální americké dolary</string>
   <string name="pax_intro_popup_text">Představujeme USD PAX, bezpečné a stabilní šifrovací aktivum, které můžete použít k zachování hodnoty. 1 PAX se rovná 1 USD.</string>
   <string name="pax_intro_popup_cta_btn">Získejte nyní USD PAX</string>
   <string name="buy_sell_error_country_not_supported">Nákup a prodej vaší země není v tuto chvíli podporován. Brzy se chystáme přidat podporu do více oblastí.</string>
@@ -1209,21 +1193,15 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="sunriver_announcement_stellar_on_the_way_message">Úspěšně jsme ověřili 
  vaši identitu. 
 </string>
-  <string name="pit_announcement_description">Je čas na Level Up pro lepší kryptoměnu. Prvních 100 000 obchodníků, kteří se zaregistrují, bude obchodovat zdarma po dobu 30 dnů.</string>
-  <string name="pit_announcement_introducing_link">Koukni na to</string>
   <string name="pit_logo_content_descr">Logo Pit</string>
   <string name="pit_slogan_kyc_promo">Jediná burza, která se připojuje k vaší Peněžence.</string>
   <string name="pit_thunder_kyc_promo">Bleskové rychlé obchody</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Tekuté a spolehlivé]]></string>
-  <string name="pit_built_kyc_promo">Vytvořil Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Nízké poplatky</string>
+  <string name="pit_built_kyc_promo">Vytvořil Blockchain</string>
   <string name="pit_permission_app_can">Tato aplikace bude moci:</string>
   <string name="pit_permission_app_cant">Tato aplikace nebude moci:</string>
   <string name="pit_permission_subtitle">Nebudu schopen:</string>
-  <string name="pit_permission_1">Usnadněte kryptoměny mezi účty</string>
   <string name="pit_permission_2">Sdílejte svůj stav na zlaté nebo stříbrné úrovni</string>
   <string name="pit_permission_3">Přidejte své propojené banky</string>
-  <string name="pit_permission_4">Zobrazte své heslo k peněžence</string>
   <string name="pit_connect_now">Připojte se nyní</string>
   <string name="pit_setting_title">Jáma</string>
   <string name="pit_setting_connect">Připojit</string>

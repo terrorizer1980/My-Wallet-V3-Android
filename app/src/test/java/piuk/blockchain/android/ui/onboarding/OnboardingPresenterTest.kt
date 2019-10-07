@@ -24,7 +24,7 @@ class OnboardingPresenterTest {
     private val mockFingerprintHelper: FingerprintHelper = mock()
     private val mockAccessState: AccessState = mock()
     private val mockSettingsDataManager: SettingsDataManager = mock()
-    private val mockActivity: OnboardingView = mock()
+    private val view: OnboardingView = mock()
 
     @Before
     fun setUp() {
@@ -33,22 +33,22 @@ class OnboardingPresenterTest {
             mockAccessState,
             mockSettingsDataManager
         )
-        subject.initView(mockActivity)
+        subject.initView(view)
     }
 
     @Test
     fun onViewReadySettingsFailureEmailOnly() {
         // Arrange
-        whenever(mockActivity.isEmailOnly).thenReturn(true)
+        whenever(view.showEmail).thenReturn(true)
         whenever(mockSettingsDataManager.getSettings()).thenReturn(Observable.error { Throwable() })
         // Act
         subject.onViewReady()
         // Assert
         verify(mockSettingsDataManager).getSettings()
         verifyNoMoreInteractions(mockSettingsDataManager)
-        verify(mockActivity).showEmailPrompt()
-        verify(mockActivity).isEmailOnly
-        verifyNoMoreInteractions(mockActivity)
+        verify(view).showEmailPrompt()
+        verify(view).showEmail
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -57,35 +57,20 @@ class OnboardingPresenterTest {
         val mockSettings: Settings = mock()
         whenever(mockSettingsDataManager.getSettings()).thenReturn(Observable.just(mockSettings))
         whenever(mockFingerprintHelper.isHardwareDetected()).thenReturn(true)
+        whenever(view.showEmail).thenReturn(false)
+        whenever(view.showFingerprints).thenReturn(true)
 
         // Act
         subject.onViewReady()
         // Assert
         verify(mockSettingsDataManager).getSettings()
         verifyNoMoreInteractions(mockSettingsDataManager)
-        verify(mockFingerprintHelper).isHardwareDetected()
         verifyNoMoreInteractions(mockFingerprintHelper)
-        verify(mockActivity).showFingerprintPrompt()
-        verify(mockActivity).isEmailOnly
-        verifyNoMoreInteractions(mockActivity)
-    }
+        verify(view).showFingerprintPrompt()
+        verify(view).showEmail
+        verify(view).showFingerprints
 
-    @Test
-    fun onViewReadyNoFingerprintHardware() {
-        // Arrange
-        val mockSettings: Settings = mock()
-        whenever(mockSettingsDataManager.getSettings()).thenReturn(Observable.just(mockSettings))
-        whenever(mockFingerprintHelper.isHardwareDetected()).thenReturn(false)
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(mockSettingsDataManager).getSettings()
-        verifyNoMoreInteractions(mockSettingsDataManager)
-        verify(mockFingerprintHelper).isHardwareDetected()
-        verifyNoMoreInteractions(mockFingerprintHelper)
-        verify(mockActivity).showEmailPrompt()
-        verify(mockActivity).isEmailOnly
-        verifyNoMoreInteractions(mockActivity)
+        verifyNoMoreInteractions(view)
     }
 
     @Test
@@ -102,8 +87,8 @@ class OnboardingPresenterTest {
         verifyNoMoreInteractions(mockFingerprintHelper)
         verify(mockAccessState).pin
         verifyNoMoreInteractions(mockAccessState)
-        verify(mockActivity).showFingerprintDialog(captor.capture())
-        verifyNoMoreInteractions(mockActivity)
+        verify(view).showFingerprintDialog(captor.capture())
+        verifyNoMoreInteractions(view)
         captor.firstValue shouldEqual pin
     }
 
@@ -119,7 +104,7 @@ class OnboardingPresenterTest {
         verifyNoMoreInteractions(mockFingerprintHelper)
         verify(mockAccessState, times(3)).pin
         verifyNoMoreInteractions(mockAccessState)
-        verifyZeroInteractions(mockActivity)
+        verifyZeroInteractions(view)
     }
 
     @Test
@@ -133,8 +118,8 @@ class OnboardingPresenterTest {
         verify(mockFingerprintHelper).isFingerprintAvailable()
         verify(mockFingerprintHelper).isHardwareDetected()
         verifyNoMoreInteractions(mockFingerprintHelper)
-        verify(mockActivity).showEnrollFingerprintsDialog()
-        verifyNoMoreInteractions(mockActivity)
+        verify(view).showEnrollFingerprintsDialog()
+        verifyNoMoreInteractions(view)
         verifyZeroInteractions(mockAccessState)
     }
 
@@ -149,7 +134,7 @@ class OnboardingPresenterTest {
         verify(mockFingerprintHelper).isFingerprintAvailable()
         verify(mockFingerprintHelper).isHardwareDetected()
         verifyNoMoreInteractions(mockFingerprintHelper)
-        verifyZeroInteractions(mockActivity)
+        verifyZeroInteractions(view)
         verifyZeroInteractions(mockAccessState)
     }
 

@@ -1,20 +1,19 @@
 package piuk.blockchain.android.ui.backup.completed
 
+import com.blockchain.preferences.WalletStatus
+import io.reactivex.rxkotlin.plusAssign
+import android.annotation.SuppressLint
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
-import piuk.blockchain.android.ui.backup.BackupWalletActivity
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
-import javax.inject.Inject
 
-class BackupWalletCompletedPresenter @Inject constructor(
+class BackupWalletCompletedPresenter(
     private val transferFundsDataManager: TransferFundsDataManager,
-    private val prefs: PersistentPrefs
+    private val walletStatus: WalletStatus
 ) : BasePresenter<BackupWalletCompletedView>() {
 
     override fun onViewReady() {
-        val lastBackup = prefs.getValue(BackupWalletActivity.BACKUP_DATE_KEY, 0L)
+        val lastBackup = walletStatus.lastBackupTime
         if (lastBackup != 0L) {
             view.showLastBackupDate(lastBackup)
         } else {
@@ -22,11 +21,11 @@ class BackupWalletCompletedPresenter @Inject constructor(
         }
     }
 
+    @SuppressLint("CheckResult")
     internal fun checkTransferableFunds() {
-        transferFundsDataManager.transferableFundTransactionListForDefaultAccount
-            .addToCompositeDisposable(this)
+        compositeDisposable += transferFundsDataManager.transferableFundTransactionListForDefaultAccount
             .subscribe({ triple ->
-                if (!triple.left.isEmpty()) {
+                if (triple.left.isNotEmpty()) {
                     view.showTransferFundsPrompt()
                 }
             }, { Timber.e(it) })

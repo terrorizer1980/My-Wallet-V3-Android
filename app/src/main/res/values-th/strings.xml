@@ -475,9 +475,7 @@
   <string name="onboarding_qr_codes">รหัส QR</string>
   <string name="onboarding_scan_address">สแกนที่อยู่</string>
   <string name="onboarding_buy_content">เราทำงานกับพันธมิตรการแลกเปลี่ยนทั่วทั้งโลก ดังนั้นคุณสามารถซื้อ bitcoin โดยตรงจากกระเป๋าเงินของคุณ</string>
-  <string name="onboarding_receive_content">ส่งที่อยู่กระเป๋าเงินของคุณให้กับเพื่อนเพื่อร้องขอเงินทุน ที่อยู่คือสตริงของตัวอักษรและหมายเลขแบบสุ่มซึ่งเปลี่ยนแปลงสำหรับแต่ละธุรกรรม</string>
-  <string name="onboarding_qr_codes_content">สามารถแสดงที่อยู่ในรูปแบบรหัส QR ค้นหารหัส QR ของเพื่อนเพื่อรับที่อยู่กระเป๋าเงินของพวกเขา</string>
-  <string name="onboarding_buy_bitcoin">ซื้อ Bitcoin</string>
+    <string name="onboarding_buy_bitcoin">ซื้อ Bitcoin</string>
   <string name="onboarding_buy_and_sell_bitcoin">ซื้อ &amp; ขาย Bitcoin</string>
   <string name="onboarding_get_bitcoin">รับ Bitcoin</string>
   <string name="onboarding_get_eth">รับ Ether</string>
@@ -560,7 +558,6 @@
   <string name="bch_invalid_address">ที่อยู่ Cash Bitcoin ไม่ถูกต้อง</string>
   <string name="confirm_currency">ยืนยันสกุลเงิน</string>
   <string name="confirm_currency_message">โปรดเลือกรหัส QR ของสกุลเงินที่คุณกำลังสแกน</string>
-  <string name="error_bitpay_not_supported">ขณะนี้ยังไม่สนับสนุน URI ของ Bitpay</string>
   <string name="announcement_trading_cta">การซื้อและขายที่ดีขึ้น</string>
   <string name="announcement_trading_description">ตอนนี้มีการไหลที่ดีขึ้นสำหรับการซื้อและขายมือถือของคุณแล้วในกระเป๋าเงินของคุณ เป็นเรื่องง่ายไม่มีรอยต่อและปลอดภัย</string>
   <string name="announcement_trading_link">เริ่ม</string>
@@ -621,14 +618,8 @@
   <string name="kyc_phone_number_validation_hint">รหัสยืนยัน</string>
   <string name="kyc_phone_number_validation_error">เกิดข้อผิดพลาดในการตรวจสอบหมายเลขโทรศัพท์ โปรดตรวจสอบรหัสของคุณ</string>
   <string name="kyc_phone_number_validation_error_incorrect">รหัสยืนยันไม่ถูกต้อง โปรดตรวจสอบรหัสที่เราส่งถึงคุณอีกครั้งและลองอีกครั้ง</string>
-  <string name="kyc_onfido_splash_title">ยืนยันตัวตนของคุณ</string>
   <string name="kyc_onfido_splash_header">ขอยืนยันว่านี่เป็นคุณ</string>
-  <string name="kyc_onfido_splash_subtitle">หยิบหนังสือเดินทางหรือใบขับขี่ของคุณ</string>
-  <string name="kyc_onfido_splash_message">เมื่อเรายืนยันตัวตนของคุณแล้วคุณจะได้รับอนุญาตให้แลกเปลี่ยนความลับในแอป Blockchain!</string>
   <string name="kyc_onfido_splash_verification_error">เกิดข้อผิดพลาดในการยืนยัน ID โปรดลองอีกครั้ง</string>
-  <string name="kyc_onfido_splash_passport">หนังสือเดินทางของฉัน</string>
-  <string name="kyc_onfido_splash_drivers_license">ใบขับขี่ของฉัน</string>
-  <string name="kyc_onfido_splash_id_card">รหัสประจำตัวที่ออกโดยรัฐบาลของฉัน</string>
   <string name="kyc_complete_title">แอ็พพลิเคชันเสร็จสมบูรณ์</string>
   <string name="kyc_complete_header">เสร็จสิ้นแล้ว!</string>
   <string name="kyc_complete_subtitle">คุณส่งข้อมูลของคุณสำเร็จแล้ว ขณะนี้บัญชีของคุณอยู่ในระหว่างการตรวจสอบ!</string>
@@ -671,9 +662,7 @@
   <string name="screen_overlay_warning">ตรวจพบหน้าจอซ้อน!</string>
   <string name="screen_overlay_note">แอปที่ใช้หน้าจอซ้อนจะสามารถหลอกล่อให้คุณแตะวัตถุที่มองไม่เห็นและอาจจะทำการขโมยเงินได้ โปรดทราบว่าแอปลดความสว่างหน้าจออาจกระตุ้นให้คำเตือนนี้แสดงขึ้นมาได้ หากคุณมั่นใจว่าไม่มีภัยอันตรายใด ๆ คุณสามารถดำเนินการต่อไปได้ </string>
   <string name="dialog_continue">ดำเนินการต่อ</string>
-  <string name="insufficient_funds_with_max">เงินไม่เพียงพอคุณสามารถส่งได้มากที่สุดคือ %1$s</string>
-  <string name="not_enough_funds_with_currency">ไม่เพียงพอ %1$s</string>
-  <string name="invalid_address">ที่อยู่ที่ไม่ถูกต้อง</string>
+    <string name="not_enough_funds_with_currency">ไม่เพียงพอ %1$s</string>
   <string name="transaction_failed_min_send">ขั้นต่ำที่คุณสามารถส่งได้คือ %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">ต้องการ %1$s ขั้นต่ำสำหรับบัญชีใหม่</string>
   <string name="lockbox_title">Lockbox</string>
@@ -973,7 +962,6 @@
   <string name="kyc_address_city_town_village">เมือง / เมือง / หมู่บ้าน</string>
   <string name="kyc_address_state_region_province_county">รัฐ / ภูมิภาค / จังหวัด / มณฑล</string>
   <string name="kyc_address_postal_code">รหัสไปรษณีย์</string>
-  <string name="kyc_onfido_splash_residence_permit">ใบอนุญาตผู้พำนักของฉัน</string>
   <string name="kyc_veriff_splash_title">\@ สตริง / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ สตริง / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">คุณจะต้องมี 1 ประเภท ID ด้านล่างนี้เพื่อดำเนินการต่อ</string>
@@ -1182,11 +1170,7 @@
   <string name="gold_unavailable">ทองไม่พร้อมใช้งาน</string>
   <string name="veriff_identify">Veriff Identify</string>
   <string name="more_info_needed">ต้องการข้อมูลเพิ่มเติม</string>
-  <string name="coinify_kyc_body">ในการใช้ซื้อและขายต่อไปคุณจะต้องอัปเดตโปรไฟล์ของคุณ เมื่อเสร็จแล้วคุณจะปลดล็อคข้อ จำกัด การซื้อขายที่สูงขึ้นใน Swap</string>
-  <string name="coinify_kyc_cta">อัปเดตทันที</string>
-  <string name="coinify_kyc_dismiss">เรียนรู้เพิ่มเติม</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">ดอลลาร์สหรัฐดิจิตอล</string>
+    <string name="pax_intro_popup_title">ดอลลาร์สหรัฐดิจิตอล</string>
   <string name="pax_intro_popup_text">ขอแนะนำ USD PAX ซึ่งเป็นสินทรัพย์ crypto ที่ปลอดภัยและมีเสถียรภาพที่คุณสามารถใช้เพื่อเก็บค่า 1 PAX เท่ากับ 1 USD ..</string>
   <string name="pax_intro_popup_cta_btn">รับ USD PAX ทันที</string>
   <string name="buy_sell_error_country_not_supported">ประเทศของคุณไม่รองรับการซื้อ / ขายในเวลานี้ เรากำลังดำเนินการเพื่อเพิ่มการสนับสนุนในพื้นที่อื่น ๆ ในไม่ช้า</string>
@@ -1203,22 +1187,16 @@
   <string name="sunriver_announcement_stellar_on_the_way_message">เราได้ตรวจสอบเรียบร้อยแล้ว 
  ตัวตนของคุณ 
 </string>
-  <string name="pit_announcement_description">ถึงเวลาที่จะยกระดับการแลกเปลี่ยน crypto ที่ดีขึ้น ผู้ค้า 100,000 รายแรกที่ลงทะเบียนจะทำการซื้อขายฟรีเป็นเวลา 30 วัน</string>
-  <string name="pit_announcement_introducing_link">ลองดูสิ</string>
-  <string name="pit_logo_content_descr">โลโก้ The Pit</string>
+    <string name="pit_logo_content_descr">โลโก้ The Pit</string>
   <string name="pit_slogan_kyc_promo">แลกเปลี่ยนเดียวที่เชื่อมต่อกับกระเป๋าเงินของคุณ</string>
   <string name="pit_thunder_kyc_promo">การซื้อขายที่รวดเร็วของ Lightning</string>
-  <string name="pit_security_kyc_promo"><![CDATA[ของเหลวและเชื่อถือได้]]></string>
-  <string name="pit_built_kyc_promo">สร้างโดย Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">ค่าธรรมเนียมต่ำ</string>
-  <string name="pit_permission_app_can">แอปพลิเคชันนี้จะสามารถ:</string>
+    <string name="pit_built_kyc_promo">สร้างโดย Blockchain</string>
+    <string name="pit_permission_app_can">แอปพลิเคชันนี้จะสามารถ:</string>
   <string name="pit_permission_app_cant">แอปพลิเคชันนี้จะไม่สามารถ:</string>
   <string name="pit_permission_subtitle">จะไม่สามารถ:</string>
-  <string name="pit_permission_1">อำนวยความสะดวกในการถ่ายโอนการเข้ารหัสลับระหว่างบัญชี</string>
-  <string name="pit_permission_2">แบ่งปันสถานะระดับทองหรือสีเงินของคุณ</string>
+    <string name="pit_permission_2">แบ่งปันสถานะระดับทองหรือสีเงินของคุณ</string>
   <string name="pit_permission_3">เพิ่มธนาคารที่เชื่อมโยงของคุณ</string>
-  <string name="pit_permission_4">ดูรหัสผ่านกระเป๋าเงินของคุณ</string>
-  <string name="pit_connect_now">เชื่อมต่อเลย</string>
+    <string name="pit_connect_now">เชื่อมต่อเลย</string>
   <string name="pit_setting_title">พิท</string>
   <string name="pit_setting_connect">ต่อ</string>
   <string name="pit_setting_connected">เกี่ยวข้อง</string>

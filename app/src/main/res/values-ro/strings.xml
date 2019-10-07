@@ -493,9 +493,7 @@
   <string name="onboarding_qr_codes">QR Codes</string>
   <string name="onboarding_scan_address">Adresă de scanare</string>
   <string name="onboarding_buy_content">Lucrăm cu parteneri de schimb valutar din întreaga lume, astfel încât să puteți cumpăra biți direct din portofel.</string>
-  <string name="onboarding_receive_content">Trimiteți adresa dvs. de portofel unui prieten pentru a solicita fonduri. O adresă este un șir de litere și numere aleatorii care se modifică pentru fiecare tranzacție.</string>
-  <string name="onboarding_qr_codes_content">O adresă poate fi afișată și ca un cod QR. Scanați un cod QR al unui prieten pentru a vă capta rapid adresa de portofel.</string>
-  <string name="onboarding_buy_bitcoin">Cumpărați Bitcoin</string>
+    <string name="onboarding_buy_bitcoin">Cumpărați Bitcoin</string>
   <string name="onboarding_buy_and_sell_bitcoin">Cumpărați și vindeți Bitcoin</string>
   <string name="onboarding_get_bitcoin">Ia Bitcoin</string>
   <string name="onboarding_get_eth">Ia eter</string>
@@ -578,8 +576,7 @@
   <string name="bch_invalid_address">Adresa Bitcoin Cash este nevalidă</string>
   <string name="confirm_currency">Confirmați moneda</string>
   <string name="confirm_currency_message">Selectați codul QR al cărei valută scanați.</string>
-  <string name="error_bitpay_not_supported">Bit URI URI nu sunt acceptate în prezent</string>
-  <string name="announcement_trading_cta">O cumpărare și o vânzare mai bună</string>
+    <string name="announcement_trading_cta">O cumpărare și o vânzare mai bună</string>
   <string name="announcement_trading_description">Un flux îmbunătățit pentru experiența mobilă de cumpărare și vânzare este acum disponibil în portofel. Este simplu, fără probleme și sigur.</string>
   <string name="announcement_trading_link">Incepe</string>
   <string name="testnet_warning">Avertizare! Acesta este blocul testnet3.</string>
@@ -639,15 +636,9 @@
   <string name="kyc_phone_number_validation_hint">Codul de confirmare</string>
   <string name="kyc_phone_number_validation_error">Eroare la validarea numărului de telefon. Verificați codul</string>
   <string name="kyc_phone_number_validation_error_incorrect">Codul de verificare este incorect. Verificați dublu codul pe care vi l-am trimis și încercați din nou.</string>
-  <string name="kyc_onfido_splash_title">verifica-ti identitatea</string>
-  <string name="kyc_onfido_splash_header">Să confirmăm că sunteți voi</string>
-  <string name="kyc_onfido_splash_subtitle">Luați pașaportul sau permisul de conducere.</string>
-  <string name="kyc_onfido_splash_message">După ce vă verificăm identitatea, sunteți aprobat să faceți schimb de criptocuritate pe aplicația Blockchain!</string>
-  <string name="kyc_onfido_splash_verification_error">Eroare la verificarea ID-ului, încercați din nou</string>
-  <string name="kyc_onfido_splash_passport">Pasaportul meu</string>
-  <string name="kyc_onfido_splash_drivers_license">Licența mea pentru drivere</string>
-  <string name="kyc_onfido_splash_id_card">Codul meu emis de stat</string>
-  <string name="kyc_complete_title">Aplicație finalizată</string>
+    <string name="kyc_onfido_splash_header">Să confirmăm că sunteți voi</string>
+    <string name="kyc_onfido_splash_verification_error">Eroare la verificarea ID-ului, încercați din nou</string>
+    <string name="kyc_complete_title">Aplicație finalizată</string>
   <string name="kyc_complete_header">Gata si gata!</string>
   <string name="kyc_complete_subtitle">Ați trimis cu succes informațiile dvs. Contul dvs. este acum în revizuire!</string>
   <string name="kyc_complete_button_done">Făcut</string>
@@ -692,10 +683,8 @@
  nu este o amenințare pe care o puteți continua.
 </string>
   <string name="dialog_continue">Continuare</string>
-  <string name="insufficient_funds_with_max">Fondurile insuficiente, cel mai mult puteți trimite este %1$s</string>
-  <string name="not_enough_funds_with_currency">Nu este suficient %1$s</string>
-  <string name="invalid_address">Adresă invalidă</string>
-  <string name="transaction_failed_min_send">Minimul pe care îl puteți trimite este %1$s</string>
+    <string name="not_enough_funds_with_currency">Nu este suficient %1$s</string>
+    <string name="transaction_failed_min_send">Minimul pe care îl puteți trimite este %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Minimum %1$s necesar pentru conturile noi</string>
   <string name="lockbox_title">Lockbox</string>
   <string name="lockbox_landing_get_yours_title">Ia Lockbox-ul tău</string>
@@ -994,8 +983,7 @@
   <string name="kyc_address_city_town_village">Localitate / Satul</string>
   <string name="kyc_address_state_region_province_county">Stat / Regiune / Provincie / Județ</string>
   <string name="kyc_address_postal_code">cod postal</string>
-  <string name="kyc_onfido_splash_residence_permit">Permisul meu de ședere</string>
-  <string name="kyc_veriff_splash_title">\@ String / kyc_documents_needed</string>
+    <string name="kyc_veriff_splash_title">\@ String / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ String / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">Veți avea nevoie de 1 din tipurile de identificare de mai jos pentru a continua.</string>
   <string name="kyc_veriff_splash_enable_camera_title">De asemenea, permiteți camerei dvs. foto!</string>
@@ -1202,11 +1190,7 @@
   <string name="gold_unavailable">Aurul nu este disponibil</string>
   <string name="veriff_identify">Verify Identify</string>
   <string name="more_info_needed">Mai multe informații necesare</string>
-  <string name="coinify_kyc_body">Pentru a continua să utilizați cumpărați și vindeți, va trebui să vă actualizați profilul. Odată finalizat, veți debloca și limite de tranzacționare mai mari în swap.</string>
-  <string name="coinify_kyc_cta">Actualizează acum</string>
-  <string name="coinify_kyc_dismiss">Aflați mai multe</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">Dolarii americani digitali</string>
+    <string name="pax_intro_popup_title">Dolarii americani digitali</string>
   <string name="pax_intro_popup_text">Introducerea USD PAX, un activ de criptare sigur și stabil, pe care îl puteți utiliza pentru a păstra valoarea. 1 PAX este egal cu 1 USD ..</string>
   <string name="pax_intro_popup_cta_btn">Ia USD PAX Acum</string>
   <string name="buy_sell_error_country_not_supported">Țara dvs. nu este acceptată pentru cumpărare / vânzare în acest moment. Lucrăm să adăugăm sprijin în mai multe domenii în curând.</string>
@@ -1223,22 +1207,16 @@
   <string name="sunriver_announcement_stellar_on_the_way_message">Am verificat cu succes 
  identitatea ta. 
 </string>
-  <string name="pit_announcement_description">Este timpul să ridicăm nivelul la un schimb de cripte mai bun. Primii 100.000 de comercianți care se vor înscrie vor tranzacționa gratuit timp de 30 de zile.</string>
-  <string name="pit_announcement_introducing_link">Verifică</string>
-  <string name="pit_logo_content_descr">Logo-ul Pit</string>
+    <string name="pit_logo_content_descr">Logo-ul Pit</string>
   <string name="pit_slogan_kyc_promo">Singurul schimb care se conectează la Wallet.</string>
   <string name="pit_thunder_kyc_promo">Comerț rapid</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Lichid și fiabil]]></string>
-  <string name="pit_built_kyc_promo">Construit de Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Taxe reduse</string>
-  <string name="pit_permission_app_can">Această aplicație va putea:</string>
+    <string name="pit_built_kyc_promo">Construit de Blockchain</string>
+    <string name="pit_permission_app_can">Această aplicație va putea:</string>
   <string name="pit_permission_app_cant">Această aplicație nu va putea:</string>
   <string name="pit_permission_subtitle">Nu voi putea să:</string>
-  <string name="pit_permission_1">Facilitați transferurile criptate între conturi</string>
-  <string name="pit_permission_2">Distribuiți-vă statutul de nivel de aur sau de argint</string>
+    <string name="pit_permission_2">Distribuiți-vă statutul de nivel de aur sau de argint</string>
   <string name="pit_permission_3">Adăugați băncile conectate</string>
-  <string name="pit_permission_4">Vizualizați parola portofelului</string>
-  <string name="pit_connect_now">Conectați acum</string>
+    <string name="pit_connect_now">Conectați acum</string>
   <string name="pit_setting_title">Pitul</string>
   <string name="pit_setting_connect">Conectați</string>
   <string name="pit_setting_connected">Conectat</string>

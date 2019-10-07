@@ -5,6 +5,7 @@ package com.blockchain.koin
 import com.blockchain.CrashLoggerImpl
 import com.blockchain.logging.CrashLogger
 import com.blockchain.logging.EventLogger
+import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.remoteconfig.RemoteConfiguration
 import com.blockchain.transactions.ResourceSendFundsResultLocalizer
@@ -51,6 +52,7 @@ val coreUiModule = applicationContext {
 
     factory { RemoteConfiguration(get()) }
         .bind(RemoteConfig::class)
+        .bind(ABTestExperiment::class)
 
     factory { ResourceSendFundsResultLocalizer(get()) as SendFundsResultLocalizer }
 

@@ -1,5 +1,6 @@
 package com.blockchain.debug
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -36,6 +37,7 @@ class AdbDebugService : BroadcastReceiver() {
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun clearMetadata(context: Context, intent: Intent) {
         val metadataType = intent.extras?.get("type").toString().toIntOrNull()
         if (metadataType == null) {

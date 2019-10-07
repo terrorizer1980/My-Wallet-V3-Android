@@ -482,9 +482,7 @@
   <string name="onboarding_qr_codes">QR коди</string>
   <string name="onboarding_scan_address">Сканувати адресу</string>
   <string name="onboarding_buy_content">Ми працюємо з партнерами-обмінниками у всьому світі, так що ви можете купити bitcoin прямо зі свого гаманця.</string>
-  <string name="onboarding_receive_content">Щоб запитати кошти, відправте адресу свого гаманця другові. Адреса - це набір випадкових букв і цифр, які змінюються для кожної транзакції.</string>
-  <string name="onboarding_qr_codes_content">Адреса може відображатись також у вигляді QR коду. Скануйте QR коди своїх друзів, щоб швидко внести адреси їхніх гаманців.</string>
-  <string name="onboarding_buy_bitcoin">Купити Bitcoin</string>
+    <string name="onboarding_buy_bitcoin">Купити Bitcoin</string>
   <string name="onboarding_buy_and_sell_bitcoin">Купуйте та продайте біткін</string>
   <string name="onboarding_get_bitcoin">Отримати Bitcoin</string>
   <string name="onboarding_get_eth">Отримати Ether</string>
@@ -567,7 +565,6 @@
   <string name="bch_invalid_address">Недійсна адреса Bitcoin Cash</string>
   <string name="confirm_currency">Підтвердити валюту</string>
   <string name="confirm_currency_message">Будь ласка, виберіть, який QR-код валюти ви скануєте.</string>
-  <string name="error_bitpay_not_supported">Утиліти Bitpay наразі не підтримуються</string>
   <string name="announcement_trading_cta">Краще купуйте і продавайте</string>
   <string name="announcement_trading_description">Покращений потік для мобільних операцій купівлі-продажу тепер доступний у вашому кошельнику. Це просто, бездоганно і безпечно.</string>
   <string name="announcement_trading_link">Почати</string>
@@ -628,14 +625,8 @@
   <string name="kyc_phone_number_validation_hint">Код підтвердження</string>
   <string name="kyc_phone_number_validation_error">Помилка перевірки номера телефону. Будь ласка, перевірте свій код</string>
   <string name="kyc_phone_number_validation_error_incorrect">Код підтвердження невірний. Будь ласка, двічі перевірте код, який ми надіслали вам, і повторіть спробу.</string>
-  <string name="kyc_onfido_splash_title">Перевірте свою особу</string>
   <string name="kyc_onfido_splash_header">Підтвердьмо, що це ти</string>
-  <string name="kyc_onfido_splash_subtitle">Візьміть свій паспорт або водійські права.</string>
-  <string name="kyc_onfido_splash_message">Як тільки ми підтвердимо вашу особу, ви схвалені для обміну криптовалютами в додатку Blockchain!</string>
   <string name="kyc_onfido_splash_verification_error">Помилка підтвердження ідентифікатора. Повторіть спробу</string>
-  <string name="kyc_onfido_splash_passport">Мій паспорт</string>
-  <string name="kyc_onfido_splash_drivers_license">Моє посвідчення водіїв</string>
-  <string name="kyc_onfido_splash_id_card">Мій уряд видав ідентифікаційний номер</string>
   <string name="kyc_complete_title">Заявка завершена</string>
   <string name="kyc_complete_header">Готово!</string>
   <string name="kyc_complete_subtitle">Ви успішно надіслали свою інформацію. Ваш обліковий запис зараз переглядається!</string>
@@ -678,9 +669,7 @@
   <string name="screen_overlay_warning">Виявлено екранну накладку!</string>
   <string name="screen_overlay_note">Програми, що використовують екранні накладки, можуть вас обманути, щоб ви натискали невидимі об\'єкти, і потенційно викрасти ваші кошти. Зверніть увагу, це попередження може також спровокуватись програмами-затемнювачами екранів. Якщо ви впевнені у відсутності загрози, можете продовжити далі. </string>
   <string name="dialog_continue">Продовжити</string>
-  <string name="insufficient_funds_with_max">Недостатньо коштів, найбільше, що ви можете надіслати, - %1$s</string>
-  <string name="not_enough_funds_with_currency">Недостатньо %1$s</string>
-  <string name="invalid_address">Недійсна адреса</string>
+    <string name="not_enough_funds_with_currency">Недостатньо %1$s</string>
   <string name="transaction_failed_min_send">Мінімальна сума, яку ви можете надіслати, - %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Необхідно мінімум %1$s для нових облікових записів</string>
   <string name="lockbox_title">Lockbox</string>
@@ -980,7 +969,6 @@
   <string name="kyc_address_city_town_village">Місто / село / село</string>
   <string name="kyc_address_state_region_province_county">Штат / регіон / провінція / округ</string>
   <string name="kyc_address_postal_code">Поштовий індекс</string>
-  <string name="kyc_onfido_splash_residence_permit">Мій дозвіл на проживання</string>
   <string name="kyc_veriff_splash_title">\@ string / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ string / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">Щоб продовжити, вам знадобиться 1 тип ідентифікаторів нижче.</string>
@@ -1189,10 +1177,6 @@
   <string name="gold_unavailable">Золото недоступне</string>
   <string name="veriff_identify">Ідентифікація Veriff</string>
   <string name="more_info_needed">Необхідна додаткова інформація</string>
-  <string name="coinify_kyc_body">Щоб продовжувати використовувати Buy &amp; Sell, потрібно оновити свій профіль. Після завершення ви також розблокуєте більш високі торговельні ліміти в Swap.</string>
-  <string name="coinify_kyc_cta">Оновити зараз</string>
-  <string name="coinify_kyc_dismiss">Вчи більше</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-What-Blockchain-products-require-identity-verification-</string>
   <string name="pax_intro_popup_title">Цифрові долари США</string>
   <string name="pax_intro_popup_text">Вводячи USD PAX, безпечний і стабільний крипто-актив, який можна використати для постійного значення. 1 PAX дорівнює 1 USD.</string>
   <string name="pax_intro_popup_cta_btn">Отримати USD PAX зараз</string>
@@ -1210,22 +1194,16 @@
   <string name="sunriver_announcement_stellar_on_the_way_message">Ми успішно перевірили 
  вашу особистість. 
 </string>
-  <string name="pit_announcement_description">Пора піднятися до кращого криптообміну. Перші 100 000 трейдерів, які зареєструються, продаватимуться безкоштовно протягом 30 днів.</string>
-  <string name="pit_announcement_introducing_link">Перевір</string>
-  <string name="pit_logo_content_descr">Логотип ями</string>
+    <string name="pit_logo_content_descr">Логотип ями</string>
   <string name="pit_slogan_kyc_promo">Єдина біржа, яка підключається до Вашого гаманця.</string>
   <string name="pit_thunder_kyc_promo">Швидка торгівля блискавками</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Рідкі та надійні]]></string>
-  <string name="pit_built_kyc_promo">Створений компанією Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Низькі збори</string>
-  <string name="pit_permission_app_can">Ця програма зможе:</string>
+    <string name="pit_built_kyc_promo">Створений компанією Blockchain</string>
+    <string name="pit_permission_app_can">Ця програма зможе:</string>
   <string name="pit_permission_app_cant">Ця програма не зможе:</string>
   <string name="pit_permission_subtitle">Не зможе:</string>
-  <string name="pit_permission_1">Полегшити криптопередачі між рахунками</string>
-  <string name="pit_permission_2">Поділіться статусом золотого або срібного рівня</string>
+    <string name="pit_permission_2">Поділіться статусом золотого або срібного рівня</string>
   <string name="pit_permission_3">Додайте пов\'язані банки</string>
-  <string name="pit_permission_4">Перегляд пароля гаманця</string>
-  <string name="pit_connect_now">Підключіться зараз</string>
+    <string name="pit_connect_now">Підключіться зараз</string>
   <string name="pit_setting_title">Яма</string>
   <string name="pit_setting_connect">Підключення</string>
   <string name="pit_setting_connected">Підключено</string>

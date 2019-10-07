@@ -160,6 +160,17 @@ public class PayloadManager {
         return walletBaseBody.getWalletBody();
     }
 
+    public boolean isWalletBackedUp() {
+        Wallet payload = getPayload();
+        if(payload != null) {
+            List<HDWallet> wallets = payload.getHdWallets();
+            if (!wallets.isEmpty()) {
+                return wallets.get(0).isMnemonicVerified();
+            }
+        }
+        return false;
+    }
+
     /**
      * Upgrades a V2 wallet to a V3 HD wallet and saves it to the server
      * NB! When called from Android - First apply PRNGFixes

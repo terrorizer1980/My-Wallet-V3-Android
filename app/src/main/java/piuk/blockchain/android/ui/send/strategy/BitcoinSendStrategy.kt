@@ -98,6 +98,7 @@ class BitcoinSendStrategy(
     private val nabuToken: NabuToken,
     private val bitPayDataManager: BitPayDataManager,
     private val analytics: Analytics,
+    private val envSettings: EnvironmentConfig,
     currencyState: CurrencyState
 ) : SendStrategy<SendView>(currencyState), BitPayProtocol {
 
@@ -304,6 +305,7 @@ class BitcoinSendStrategy(
                 { hash ->
                     logPaymentSentEvent(true, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
                     if (isBitpayPaymentRequest) {
+                        prefs.setBitPaySuccess()
                         analytics.logEvent(BitPayEvent.SuccessEvent(pendingTransaction.bigIntAmount))
                     }
                     clearBtcUnspentResponseCache()
@@ -633,6 +635,9 @@ class BitcoinSendStrategy(
     }
 
     override fun onAddressTextChange(address: String) {}
+
+    override fun isAddressValid(address: String) =
+        FormatsUtil.isValidBitcoinAddress(envSettings.bitcoinNetworkParameters, address)
 
     /**
      * Calculate amounts on crypto text change

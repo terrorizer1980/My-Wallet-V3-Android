@@ -37,6 +37,8 @@ class NabuDataManagerTest {
     private val nabuTokenStore: NabuSessionTokenStore = mock()
     private val settingsDataManager: SettingsDataManager = mock()
     private val payloadDataManager: PayloadDataManager = mock()
+    private val userReporter: NabuUserReporter = mock()
+    private val walletReporter: WalletReporter = mock()
     private val prefs: PersistentPrefs = mock()
     private val appVersion = "6.23.2"
     private val deviceId = "DEVICE_ID"
@@ -59,6 +61,8 @@ class NabuDataManagerTest {
             nabuTokenStore,
             appVersion,
             settingsDataManager,
+            userReporter,
+            walletReporter,
             payloadDataManager,
             prefs
         )
@@ -198,7 +202,7 @@ class NabuDataManagerTest {
     fun getUser() {
         // Arrange
         val userObject: NabuUser = mock()
-        val offlineToken = NabuOfflineTokenResponse("", "")
+        val offlineToken = NabuOfflineTokenResponse("1", "")
         val sessionToken = getEmptySessionToken()
         whenever(nabuTokenStore.requiresRefresh()).thenReturn(false)
         whenever(nabuTokenStore.getAccessToken())
@@ -212,6 +216,9 @@ class NabuDataManagerTest {
         testObserver.assertNoErrors()
         testObserver.assertValue(userObject)
         verify(nabuService).getUser(sessionToken)
+        verify(walletReporter).reportWalletGuid(payloadDataManager.guid)
+        verify(userReporter).reportUser(userObject)
+        verify(userReporter).reportUserId("1")
     }
 
     @Test

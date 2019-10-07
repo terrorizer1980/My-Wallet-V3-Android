@@ -12,5 +12,7 @@ interface OnboardingView : View {
 
     fun showEnrollFingerprintsDialog()
 
-    val isEmailOnly: Boolean
+    val showEmail: Boolean
+
+    val showFingerprints: Boolean
 }

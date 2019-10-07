@@ -477,9 +477,7 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="onboarding_qr_codes">Kode QR</string>
   <string name="onboarding_scan_address">Pindai Alamat</string>
   <string name="onboarding_buy_content">Kami bekerja dengan mitra pertukaran di seluruh dunia, sehingga Anda dapat membeli bitcoin langsung dari dompet Anda.</string>
-  <string name="onboarding_receive_content">Mengirim alamat dompet Anda ke teman untuk meminta dana. Alamat adalah deretan dari huruf dan angka acak yang berubah untuk setiap transaksi.</string>
-  <string name="onboarding_qr_codes_content">Alamat juga dapat ditampilkan sebagai kode QR. Pindai kode QR teman untuk menangkap secara cepat alamat dompet mereka.</string>
-  <string name="onboarding_buy_bitcoin">Beli Bitcoin</string>
+    <string name="onboarding_buy_bitcoin">Beli Bitcoin</string>
   <string name="onboarding_buy_and_sell_bitcoin">Beli &amp; Jual Bitcoin</string>
   <string name="onboarding_get_bitcoin">Dapatkan Bitcoin</string>
   <string name="onboarding_get_eth">Dapatkan Ether</string>
@@ -562,7 +560,6 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="bch_invalid_address">Alamat Bitcoin Cash tidak valid</string>
   <string name="confirm_currency">Konfirmasi mata uang</string>
   <string name="confirm_currency_message">Silakan pilih kode QR mata uang yang Anda pindai.</string>
-  <string name="error_bitpay_not_supported">Bitpay URI saat ini tidak didukung</string>
   <string name="announcement_trading_cta">Lebih baik beli &amp; jual</string>
   <string name="announcement_trading_description">Aliran yang ditingkatkan untuk pengalaman beli &amp; jual seluler Anda sekarang tersedia di dompet Anda. Ini sederhana, mulus dan aman.</string>
   <string name="announcement_trading_link">Memulai</string>
@@ -623,14 +620,8 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="kyc_phone_number_validation_hint">Kode konfirmasi</string>
   <string name="kyc_phone_number_validation_error">Kesalahan memvalidasi nomor telepon. Silakan periksa kode Anda</string>
   <string name="kyc_phone_number_validation_error_incorrect">Kode verifikasi salah. Harap periksa kembali kode yang kami kirimkan kepada Anda dan coba lagi.</string>
-  <string name="kyc_onfido_splash_title">Verifikasi Identitas Anda</string>
   <string name="kyc_onfido_splash_header">Mari Konfirmasi Itu Kamu</string>
-  <string name="kyc_onfido_splash_subtitle">Ambil Paspor atau SIM Anda.</string>
-  <string name="kyc_onfido_splash_message">Setelah kami memverifikasi identitas Anda, Anda disetujui untuk menukar cryptocurrency di aplikasi Blockchain!</string>
   <string name="kyc_onfido_splash_verification_error">Kesalahan memverifikasi ID, silakan coba lagi</string>
-  <string name="kyc_onfido_splash_passport">Paspor saya</string>
-  <string name="kyc_onfido_splash_drivers_license">SIM saya</string>
-  <string name="kyc_onfido_splash_id_card">ID Saya yang diterbitkan oleh Pemerintah</string>
   <string name="kyc_complete_title">Aplikasi Lengkap</string>
   <string name="kyc_complete_header">Selesai dan Selesai!</string>
   <string name="kyc_complete_subtitle">Anda berhasil mengirimkan informasi Anda. Akun Anda sekarang sedang ditinjau!</string>
@@ -673,9 +664,7 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="screen_overlay_warning">Pelapisan (overlay) layar terdeteksi!</string>
   <string name="screen_overlay_note">Aplikasi yang menggunakan pelapis (overlay) layar memiliki kemampuan untuk menipu Anda agar menekan objek yang tidak terlihat dan berpotensi mencuri dana. Perhatikan bahwa peringatan ini juga dapat dipicu oleh aplikasi peredup layar. Jika Anda yakin bahwa tidak ada ancaman, Anda dapat melanjutkan. </string>
   <string name="dialog_continue">Lanjutkan</string>
-  <string name="insufficient_funds_with_max">Dana tidak mencukupi, sebagian besar yang dapat Anda kirim adalah %1$s</string>
-  <string name="not_enough_funds_with_currency">Tidak cukup %1$s</string>
-  <string name="invalid_address">Alamat tidak valid</string>
+    <string name="not_enough_funds_with_currency">Tidak cukup %1$s</string>
   <string name="transaction_failed_min_send">Minimum yang dapat Anda kirim adalah %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Minimum %1$s diperlukan untuk akun baru</string>
   <string name="lockbox_title">Lockbox</string>
@@ -975,7 +964,6 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="kyc_address_city_town_village">Kota / Kota / Desa</string>
   <string name="kyc_address_state_region_province_county">Negara Bagian / Wilayah / Provinsi / Kabupaten</string>
   <string name="kyc_address_postal_code">Kode Pos</string>
-  <string name="kyc_onfido_splash_residence_permit">Izin Tinggal Saya</string>
   <string name="kyc_veriff_splash_title">\@ string / kyc_documents_needed</string>
   <string name="kyc_veriff_splash_header">\@ string / kyc_onfido_splash_header</string>
   <string name="kyc_veriff_splash_subtitle">Anda perlu 1 tipe ID di bawah untuk melanjutkan.</string>
@@ -1183,11 +1171,7 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="gold_unavailable">Emas Tidak Tersedia</string>
   <string name="veriff_identify">Identifikasi Veriff</string>
   <string name="more_info_needed">Info Lebih Lanjut Dibutuhkan</string>
-  <string name="coinify_kyc_body">Untuk tetap menggunakan Beli &amp; Jual, Anda harus memperbarui profil Anda. Setelah selesai, Anda juga akan membuka kunci batas perdagangan yang lebih tinggi di Swap.</string>
-  <string name="coinify_kyc_cta">Memperbarui sekarang</string>
-  <string name="coinify_kyc_dismiss">Belajarlah lagi</string>
-  <string name="coinify_kyc_learn_more_url">https://support.blockchain.com/hc/en-us/articles/360018359871-Apa--Blockchain-products-require-identity-verification-</string>
-  <string name="pax_intro_popup_title">Dolar AS Digital</string>
+    <string name="pax_intro_popup_title">Dolar AS Digital</string>
   <string name="pax_intro_popup_text">Memperkenalkan USD PAX, aset crypto yang aman dan stabil yang dapat Anda gunakan untuk mempertahankan nilai. 1 PAX sama dengan 1 USD ..</string>
   <string name="pax_intro_popup_cta_btn">Dapatkan USD PAX Sekarang</string>
   <string name="buy_sell_error_country_not_supported">Negara Anda tidak didukung untuk membeli / menjual saat ini. Kami sedang berupaya untuk segera menambahkan dukungan ke area lainnya.</string>
@@ -1204,22 +1188,16 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="sunriver_announcement_stellar_on_the_way_message">Kami telah berhasil memverifikasi 
  identitas anda. 
 </string>
-  <string name="pit_announcement_description">Saatnya Naik Level ke pertukaran kripto yang lebih baik. 100.000 trader pertama yang mendaftar akan berdagang gratis selama 30 hari.</string>
-  <string name="pit_announcement_introducing_link">Coba lihat</string>
-  <string name="pit_logo_content_descr">Logo Lubang</string>
+    <string name="pit_logo_content_descr">Logo Lubang</string>
   <string name="pit_slogan_kyc_promo">Satu-satunya Exchange yang terhubung ke Dompet Anda.</string>
   <string name="pit_thunder_kyc_promo">Perdagangan Cepat Kilat</string>
-  <string name="pit_security_kyc_promo"><![CDATA[Cairan & Andal]]></string>
-  <string name="pit_built_kyc_promo">Dibangun oleh Blockchain.com</string>
-  <string name="pit_dollar_kyc_promo">Biaya rendah</string>
-  <string name="pit_permission_app_can">Aplikasi ini akan dapat:</string>
+    <string name="pit_built_kyc_promo">Dibangun oleh Blockchain</string>
+    <string name="pit_permission_app_can">Aplikasi ini akan dapat:</string>
   <string name="pit_permission_app_cant">Aplikasi ini tidak dapat:</string>
   <string name="pit_permission_subtitle">Tidak akan bisa:</string>
-  <string name="pit_permission_1">Memfasilitasi transfer crypto antar akun</string>
-  <string name="pit_permission_2">Bagikan status Tingkat Emas atau Perak Anda</string>
+    <string name="pit_permission_2">Bagikan status Tingkat Emas atau Perak Anda</string>
   <string name="pit_permission_3">Tambahkan bank Anda yang ditautkan</string>
-  <string name="pit_permission_4">Lihat kata sandi dompet Anda</string>
-  <string name="pit_connect_now">Hubungkan Sekarang</string>
+    <string name="pit_connect_now">Hubungkan Sekarang</string>
   <string name="pit_setting_title">Pit</string>
   <string name="pit_setting_connect">Menghubungkan</string>
   <string name="pit_setting_connected">Terhubung</string>

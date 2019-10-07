@@ -1,39 +1,38 @@
 package piuk.blockchain.android.ui.auth
 
-import android.content.Context
-import android.support.v7.app.AlertDialog
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
+import com.nhaarman.mockito_kotlin.verifyZeroInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.wallet.api.Environment
-import io.reactivex.Observable
 import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import piuk.blockchain.android.data.datamanagers.PromptManager
+import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 class LandingPresenterTest {
 
     private lateinit var subject: LandingPresenter
-    private val mockActivity: LandingView = mock()
-    private val mockContext: Context = mock()
-    private var environmentSettings: EnvironmentConfig =
+    private val view: LandingView = mock()
+    private val environmentSettings: EnvironmentConfig =
         mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
-    private var promptManager: PromptManager =
-        mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
+
+    private val prefs: PersistentPrefs = mock()
+    private val rootUtil: RootUtil = mock()
 
     @Before
     fun setUp() {
         subject = LandingPresenter(
             environmentSettings,
-            promptManager
+            prefs,
+            rootUtil
         )
-        subject.initView(mockActivity)
+        subject.initView(view)
     }
 
     @Test
@@ -45,8 +44,8 @@ class LandingPresenterTest {
         // Act
         subject.onViewReady()
         // Assert
-        verify(mockActivity).showToast("Current environment: env_prod", ToastCustom.TYPE_GENERAL)
-        verify(mockActivity).showDebugMenu()
+        verify(view).showToast("Current environment: env_prod", ToastCustom.TYPE_GENERAL)
+        verify(view).showDebugMenu()
     }
 
     @Test
@@ -56,18 +55,60 @@ class LandingPresenterTest {
         // Act
         subject.onViewReady()
         // Assert
-        verifyNoMoreInteractions(mockActivity)
+        verifyNoMoreInteractions(view)
     }
 
     @Test
-    fun initPreLoginPrompts() {
+    fun `device is rooted and warnings are off - don't show dialog`() {
         // Arrange
-        whenever(promptManager.getPreLoginPrompts(any()))
-            .thenReturn(Observable.just(listOf(mock(AlertDialog::class))))
+        whenever(rootUtil.isDeviceRooted).thenReturn(true)
+        whenever(prefs.disableRootedWarning).thenReturn(false)
+
         // Act
-        subject.initPreLoginPrompts(mockContext)
+        subject.checkForRooted()
+
         // Assert
-        verify(promptManager).getPreLoginPrompts(mockContext)
-        verify(mockActivity).showWarningPrompt(any())
+        verify(view).showIsRootedWarning()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `device is not rooted and warnings are off - don't show dialog`() {
+        // Arrange
+        whenever(rootUtil.isDeviceRooted).thenReturn(false)
+        whenever(prefs.disableRootedWarning).thenReturn(false)
+
+        // Act
+        subject.checkForRooted()
+
+        // Assert
+        verifyZeroInteractions(view)
+    }
+
+    @Test
+    fun `device is rooted and warnings are on - show dialog`() {
+        // Arrange
+        whenever(rootUtil.isDeviceRooted).thenReturn(true)
+        whenever(prefs.disableRootedWarning).thenReturn(false)
+
+        // Act
+        subject.checkForRooted()
+
+        // Assert
+        verify(view).showIsRootedWarning()
+        verifyNoMoreInteractions(view)
+    }
+
+    @Test
+    fun `device is not rooted and warnings are on - don't show dialog`() {
+        // Arrange
+        whenever(rootUtil.isDeviceRooted).thenReturn(false)
+        whenever(prefs.disableRootedWarning).thenReturn(true)
+
+        // Act
+        subject.checkForRooted()
+
+        // Assert
+        verifyZeroInteractions(view)
     }
 }
