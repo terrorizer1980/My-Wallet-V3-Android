@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.auth
+package piuk.blockchain.android.ui.start
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
@@ -27,12 +27,7 @@ class LandingPresenterTest {
 
     @Before
     fun setUp() {
-        subject = LandingPresenter(
-            environmentSettings,
-            prefs,
-            rootUtil
-        )
-        subject.initView(view)
+        subject = LandingPresenter(environmentSettings, prefs, rootUtil)
     }
 
     @Test
@@ -42,7 +37,7 @@ class LandingPresenterTest {
         val environment = Environment.fromString("env_prod")
         whenever(environmentSettings.environment).thenReturn(environment)
         // Act
-        subject.onViewReady()
+        subject.attachView(view)
         // Assert
         verify(view).showToast("Current environment: env_prod", ToastCustom.TYPE_GENERAL)
         verify(view).showDebugMenu()
@@ -53,7 +48,7 @@ class LandingPresenterTest {
         // Arrange
         whenever(environmentSettings.shouldShowDebugMenu()).thenReturn(false)
         // Act
-        subject.onViewReady()
+        subject.attachView(view)
         // Assert
         verifyNoMoreInteractions(view)
     }
@@ -63,6 +58,8 @@ class LandingPresenterTest {
         // Arrange
         whenever(rootUtil.isDeviceRooted).thenReturn(true)
         whenever(prefs.disableRootedWarning).thenReturn(false)
+
+        subject.attachView(view)
 
         // Act
         subject.checkForRooted()
@@ -78,6 +75,8 @@ class LandingPresenterTest {
         whenever(rootUtil.isDeviceRooted).thenReturn(false)
         whenever(prefs.disableRootedWarning).thenReturn(false)
 
+        subject.attachView(view)
+
         // Act
         subject.checkForRooted()
 
@@ -90,6 +89,8 @@ class LandingPresenterTest {
         // Arrange
         whenever(rootUtil.isDeviceRooted).thenReturn(true)
         whenever(prefs.disableRootedWarning).thenReturn(false)
+
+        subject.attachView(view)
 
         // Act
         subject.checkForRooted()

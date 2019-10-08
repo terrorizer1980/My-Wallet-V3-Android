@@ -62,7 +62,7 @@
             <Button
                 android:id="@+id/confirm_continue"
                 style="@style/CustomDialogButton"
-                android:text="@string/CONTINUE"
+                android:text="@string/btn_continue"
                 android:textColor="@color/primary_blue_accent" />
 
         </LinearLayout>

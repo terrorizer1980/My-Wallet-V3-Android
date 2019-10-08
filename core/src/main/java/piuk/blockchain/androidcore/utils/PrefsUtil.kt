@@ -43,10 +43,20 @@ class PrefsUtil(
         get() = getValue(KEY_IS_DEVICE_ID_RANDOMISED, false)
         set(value) = setValue(KEY_IS_DEVICE_ID_RANDOMISED, value)
 
-    // Settings - TODO: Move to interface
+    // SecurityPrefs
     override var disableRootedWarning: Boolean
         get() = getValue(PersistentPrefs.KEY_ROOT_WARNING_DISABLED, false)
         set(v) = setValue(PersistentPrefs.KEY_ROOT_WARNING_DISABLED, v)
+
+    override var trustScreenOverlay: Boolean
+        get() = getValue(PersistentPrefs.KEY_OVERLAY_TRUSTED, false)
+        set(v) = setValue(PersistentPrefs.KEY_OVERLAY_TRUSTED, v)
+
+    override val areScreenshotsEnabled: Boolean
+        get() = getValue(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, false)
+
+    override fun setScreenshotsEnabled(enable: Boolean) =
+        setValue(PersistentPrefs.KEY_SCREENSHOTS_ENABLED, enable)
 
     // From CurrencyPrefs
     override var selectedFiatCurrency: String

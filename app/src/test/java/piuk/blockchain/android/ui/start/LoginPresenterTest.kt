@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.login
+package piuk.blockchain.android.ui.start
 
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
@@ -16,6 +16,7 @@ import info.blockchain.wallet.payload.data.Wallet
 import io.reactivex.Completable
 import org.junit.Before
 import org.junit.Test
+import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -28,16 +29,13 @@ class LoginPresenterTest {
     private lateinit var subject: LoginPresenter
     private val view: LoginView = mock()
     private val appUtil: AppUtil = mock()
-    private val _payloadDataManager: Lazy<PayloadDataManager> = mock()
     private val payloadDataManager: PayloadDataManager = mock()
     private val prefsUtil: PersistentPrefs = mock()
     private val analytics: Analytics = mock()
 
     @Before
     fun setUp() {
-        subject = LoginPresenter(appUtil, _payloadDataManager, prefsUtil, analytics)
-        whenever(_payloadDataManager.value).thenReturn(payloadDataManager)
-        subject.initView(view)
+        subject = LoginPresenter(appUtil, payloadDataManager, prefsUtil, analytics)
     }
 
     @Test
@@ -51,10 +49,13 @@ class LoginPresenterTest {
             this.sharedKey = sharedKey
             this.guid = guid
         })
+        subject.attachView(view)
+
         // Act
         subject.pairWithQR(qrCode)
+
         // Assert
-        verify(view).showProgressDialog(any())
+        verify(view).showProgressDialog(R.string.please_wait, null)
         verify(view).dismissProgressDialog()
         verify(view).startPinEntryActivity()
         verifyNoMoreInteractions(view)
@@ -76,10 +77,13 @@ class LoginPresenterTest {
         // Arrange
         val qrCode = "QR_CODE"
         whenever(payloadDataManager.handleQrCode(qrCode)).thenReturn(Completable.error(Throwable()))
+        subject.attachView(view)
+
         // Act
         subject.pairWithQR(qrCode)
+
         // Assert
-        verify(view).showProgressDialog(any())
+        verify(view).showProgressDialog(R.string.please_wait, null)
         verify(view).dismissProgressDialog()
         //noinspection WrongConstant
         verify(view).showToast(any(), eq(ToastCustom.TYPE_ERROR))
@@ -102,10 +106,13 @@ class LoginPresenterTest {
                 SSLPeerUnverifiedException("")
             )
         )
+        subject.attachView(view)
+
         // Act
         subject.pairWithQR(qrCode)
+
         // Assert
-        verify(view).showProgressDialog(any())
+        verify(view).showProgressDialog(R.string.please_wait, null)
         verify(view).dismissProgressDialog()
         verifyNoMoreInteractions(view)
         verify(appUtil, times(2)).clearCredentials()
@@ -113,8 +120,5 @@ class LoginPresenterTest {
         verifyZeroInteractions(prefsUtil)
         verify(payloadDataManager).handleQrCode(qrCode)
         verifyNoMoreInteractions(payloadDataManager)
-        verify(view).showProgressDialog(any())
-        verify(view).dismissProgressDialog()
-        verifyNoMoreInteractions(appUtil)
     }
 }

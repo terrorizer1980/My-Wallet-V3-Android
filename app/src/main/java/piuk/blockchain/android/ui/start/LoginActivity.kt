@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.login
+package piuk.blockchain.android.ui.start
 
 import android.Manifest
 import android.app.Activity
@@ -16,31 +16,29 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.auth.PinEntryActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
-import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber
 
-@Suppress("MemberVisibilityCanBePrivate")
-class LoginActivity : BaseMvpActivity<LoginView, LoginPresenter>(), LoginView {
+class LoginActivity : MvpActivity<LoginView, LoginPresenter>(), LoginView {
 
-    private val loginPresenter: LoginPresenter by inject()
+    override val presenter: LoginPresenter by inject()
+    override val view: LoginView = this
+
     private val appUtil: AppUtil by inject()
-    private var progressDialog: MaterialProgressDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        setupToolbar(toolbar_general, R.string.pair_your_wallet)
+        setupToolbar(toolbar_general, R.string.login_auto_pair_title)
 
-        pairingFirstStep.text =
-            getString(R.string.pair_wallet_step_1, WEB_WALLET_URL_PROD)
+        step_one.text = getString(R.string.pair_wallet_step_1, WEB_WALLET_URL_PROD)
 
-        button_manual_pair.setOnClickListener { onClickManualPair() }
-        button_scan.setOnClickListener { requestCameraPermissionIfNeeded() }
+        btn_manual_pair.setOnClickListener { onClickManualPair() }
+        btn_scan_qr.setOnClickListener { requestCameraPermissionIfNeeded() }
     }
 
     override fun showToast(message: Int, toastType: String) = toast(message, toastType)
@@ -54,24 +52,6 @@ class LoginActivity : BaseMvpActivity<LoginView, LoginPresenter>(), LoginView {
         }
     }
 
-    override fun showProgressDialog(message: Int) {
-        dismissProgressDialog()
-        progressDialog = MaterialProgressDialog(
-            this
-        ).apply {
-            setCancelable(false)
-            setMessage(getString(message))
-            if (!isFinishing) show()
-        }
-    }
-
-    override fun dismissProgressDialog() {
-        progressDialog?.apply {
-            dismiss()
-            progressDialog = null
-        }
-    }
-
     override fun startPinEntryActivity() {
         val intent = Intent(this, PinEntryActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -80,15 +60,9 @@ class LoginActivity : BaseMvpActivity<LoginView, LoginPresenter>(), LoginView {
 
     override fun onSupportNavigateUp() = consume { onBackPressed() }
 
-    override fun createPresenter() = loginPresenter
-
-    override fun getView() = this
-
-    override fun startLogoutTimer() = Unit
-
     private fun requestCameraPermissionIfNeeded() {
         val deniedPermissionListener = SnackbarOnDeniedPermissionListener.Builder
-            .with(mainLayout, R.string.request_camera_permission)
+            .with(main_layout, R.string.request_camera_permission)
             .withButton(android.R.string.ok) { requestCameraPermissionIfNeeded() }
             .build()
 

@@ -1,0 +1,51 @@
+<resources>
+
+    <style name="BaseText">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="android:textColor">@color/grey_800</item>
+    </style>
+
+    <style name="StandardText" parent="BaseText">
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="StandardText.24">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="CenteredText" parent="BaseText">
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="CenteredText.24">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="CenteredText.16">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- Can we make these generic? -->
+    <style name="PitTitleText" parent="CenteredText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/pit_text_title</item>
+        <item name="android:layout_marginStart">39dp</item>
+        <item name="android:layout_marginEnd">38dp</item>
+    </style>
+
+    <style name="PitHeadingText" parent="CenteredText">
+        <item name="android:fontFamily">@font/inter_bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/pit_text_heading</item>
+        <item name="android:layout_marginStart">88dp</item>
+        <item name="android:layout_marginEnd">87dp</item>
+    </style>
+
+    <style name="PitBodyText" parent="CenteredText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/pit_text_body</item>
+        <item name="android:layout_marginStart">48dp</item>
+        <item name="android:layout_marginEnd">48dp</item>
+        <item name="android:layout_marginTop">11dp</item>
+    </style>
+</resources>

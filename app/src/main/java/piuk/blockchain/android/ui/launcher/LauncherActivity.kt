@@ -7,10 +7,10 @@ import android.os.Handler
 import android.support.v7.app.AlertDialog
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.auth.LandingActivity
-import piuk.blockchain.android.ui.auth.PasswordRequiredActivity
+import piuk.blockchain.android.ui.start.PasswordRequiredActivity
 import piuk.blockchain.android.ui.auth.PinEntryActivity
 import piuk.blockchain.android.ui.home.MainActivity
+import piuk.blockchain.android.ui.start.LandingActivity
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -36,9 +36,7 @@ class LauncherActivity : BaseMvpActivity<LauncherView, LauncherPresenter>(), Lau
 
     override fun getPageIntent(): Intent = intent
 
-    override fun onNoGuid() {
-        startSingleActivity(LandingActivity::class.java, null)
-    }
+    override fun onNoGuid() = LandingActivity.start(this)
 
     override fun onRequestPin() {
         startSingleActivity(PinEntryActivity::class.java, null)

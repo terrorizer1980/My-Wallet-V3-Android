@@ -1,130 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar_general" />
 
-    <LinearLayout
-        android:id="@+id/mainLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/white"
-        android:gravity="center"
-        android:orientation="vertical">
+    <TextView
+        android:id="@+id/bullet_one"
+        android:layout_width="32dp"
+        android:layout_height="37dp"
+        style="@style/StandardText.24"
+        android:text="1"
+        android:gravity="center_horizontal|top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_general"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_margin"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp">
+    <TextView
+        android:id="@+id/step_one"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/pair_wallet_step_1"
+        style="@style/StandardText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/bullet_one"
+        app:layout_constraintStart_toEndOf="@+id/bullet_one"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="@dimen/standard_margin"
+        android:layout_marginStart="16dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:text="1"
-                android:textColor="@color/primary_navy_medium"
-                android:textSize="33sp" />
+    <TextView
+        android:id="@+id/bullet_two"
+        android:layout_width="32dp"
+        android:layout_height="37dp"
+        style="@style/StandardText.24"
+        android:text="2"
+        android:gravity="center_horizontal|top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bullet_one"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_margin"
+    />
 
-            <TextView
-                android:id="@+id/pairingFirstStep"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingRight="16dp"
-                android:text="@string/pair_wallet_step_1"
-                android:textColor="@color/black" />
+    <TextView
+        android:id="@+id/step_two"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/StandardText"
+        android:text="@string/pair_wallet_step_2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bullet_two"
+        app:layout_constraintTop_toTopOf="@+id/bullet_two"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="@dimen/standard_margin"/>
 
-        </LinearLayout>
+    <TextView
+        android:id="@+id/bullet_three"
+        android:layout_width="32dp"
+        android:layout_height="37dp"
+        style="@style/StandardText.24"
+        android:text="3"
+        android:gravity="center_horizontal|top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bullet_two"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_margin"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp">
+    <TextView
+        android:id="@+id/step_three"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/StandardText"
+        android:text="@string/pair_wallet_step_3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bullet_three"
+        app:layout_constraintTop_toTopOf="@+id/bullet_three"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="@dimen/standard_margin"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:text="2"
-                android:textColor="@color/primary_navy_medium"
-                android:textSize="33sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingRight="16dp"
-                android:text="@string/pair_wallet_step_2"
-                android:textColor="@color/black" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:text="3"
-                android:textColor="@color/primary_navy_medium"
-                android:textSize="33sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:paddingRight="16dp"
-                android:text="@string/pair_wallet_step_3"
-                android:textColor="@color/black" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-
-    <LinearLayout
+    <Button
+        android:id="@+id/btn_scan_qr"
+        style="@style/CtaButton.Blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:text="@string/btn_scan_pairing_code"
+        android:contentDescription="@string/btn_scan_pairing_code"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btn_manual_pair"/>
 
-        <Button
-            android:id="@+id/button_scan"
-            style="@style/ButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
-            android:text="@string/command2"
-            android:contentDescription="@string/command2"
-            android:theme="@style/ButtonLightBlueTheme" />
+    <Button
+        android:id="@+id/btn_manual_pair"
+        style="@style/CtaButton.White"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_manual_pairing"
+        android:contentDescription="@string/btn_manual_pairing"
+        android:layout_marginBottom="@dimen/standard_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <TextView
-            android:id="@+id/button_manual_pair"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center"
-            android:padding="16dp"
-            android:text="@string/command3"
-            android:contentDescription="@string/command3"
-            android:textColor="@color/product_gray_hint"
-            android:textSize="14sp" />
-
-    </LinearLayout>
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

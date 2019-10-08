@@ -7,6 +7,7 @@ import com.crashlytics.android.answers.ContentViewEvent;
 import piuk.blockchain.androidcoreui.BuildConfig;
 import piuk.blockchain.androidcoreui.utils.logging.Logging;
 
+@Deprecated // "Use the kotlin-friendly MvpActivity, MvpPresenter, MvpView instead"
 public abstract class BaseMvpActivity<VIEW extends View, PRESENTER extends BasePresenter<VIEW>>
         extends BaseAuthActivity {
 

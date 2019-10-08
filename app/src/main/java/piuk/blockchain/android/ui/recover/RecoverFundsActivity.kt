@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.recover
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.StringRes
@@ -96,5 +97,9 @@ internal class RecoverFundsActivity :
 
     companion object {
         const val RECOVERY_PHRASE = "RECOVERY_PHRASE"
+
+        fun start(ctx: Context) {
+            ctx.startActivity(Intent(ctx, RecoverFundsActivity::class.java))
+        }
     }
 }

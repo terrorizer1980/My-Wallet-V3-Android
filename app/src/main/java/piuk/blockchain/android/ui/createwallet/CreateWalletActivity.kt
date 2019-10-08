@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.createwallet
 
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -215,9 +216,7 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
 
     override fun showProgressDialog(message: Int) {
         dismissProgressDialog()
-        progressDialog = MaterialProgressDialog(
-            this
-        ).apply {
+        progressDialog = MaterialProgressDialog(this).apply {
             setCancelable(false)
             setMessage(getString(message))
             if (!isFinishing) show()
@@ -231,9 +230,7 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
         }
     }
 
-    override fun getDefaultAccountName(): String {
-        return getString(R.string.default_wallet_name)
-    }
+    override fun getDefaultAccountName(): String = getString(R.string.default_wallet_name)
 
     override fun enforceFlagSecure() = true
 
@@ -243,5 +240,12 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
         val password2 = wallet_pass_confirm.text.toString()
 
         presenter.validateCredentials(email, password1, password2)
+    }
+
+    companion object {
+        @JvmStatic
+        fun start(context: Context) {
+            context.startActivity(Intent(context, CreateWalletActivity::class.java))
+        }
     }
 }

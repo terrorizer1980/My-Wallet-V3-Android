@@ -40,9 +40,7 @@ import piuk.blockchain.android.ui.account.AccountEditPresenter
 import piuk.blockchain.android.ui.account.AccountPresenter
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
 import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
-import piuk.blockchain.android.ui.auth.LandingPresenter
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
-import piuk.blockchain.android.ui.auth.PasswordRequiredPresenter
 import piuk.blockchain.android.ui.auth.PinEntryPresenter
 import piuk.blockchain.android.ui.backup.completed.BackupWalletCompletedPresenter
 import piuk.blockchain.android.ui.backup.start.BackupWalletStartingPresenter
@@ -75,8 +73,6 @@ import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
 import piuk.blockchain.android.ui.home.MainPresenter
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.launcher.LauncherPresenter
-import piuk.blockchain.android.ui.login.LoginPresenter
-import piuk.blockchain.android.ui.login.ManualPairingPresenter
 import piuk.blockchain.android.ui.onboarding.OnboardingPresenter
 import piuk.blockchain.android.ui.pairingcode.PairingCodePresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
@@ -116,7 +112,6 @@ import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.PaxAccount
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
-import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -432,17 +427,6 @@ val applicationModule = applicationContext {
                 payloadDataManager = get(),
                 stringUtils = get(),
                 currencyFormatManager = get()
-            )
-        }
-
-        factory {
-            PasswordRequiredPresenter(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get()
             )
         }
 
@@ -792,16 +776,6 @@ val applicationModule = applicationContext {
         factory { TransactionHelper(get(), get()) }
 
         factory {
-            ManualPairingPresenter(
-                /* appUtil = */ get(),
-                /* authDataManager = */ get(),
-                /* payloadDataManager = */ get(),
-                /* prefs = */ get(),
-                /* analytics = */ get()
-            )
-        }
-
-        factory {
             SettingsPresenter(
                 /* fingerprintHelper = */ get(),
                 /* authDataManager = */ get(),
@@ -836,14 +810,6 @@ val applicationModule = applicationContext {
                 prngFixer = get(),
                 mobileNoticeRemoteConfig = get(),
                 crashLogger = get()
-            )
-        }
-
-        factory {
-            LandingPresenter(
-                environmentSettings = get(),
-                prefs = get(),
-                rootUtil = get()
             )
         }
 
@@ -887,15 +853,6 @@ val applicationModule = applicationContext {
                 nabuToken = get(),
                 nabu = get(),
                 emailSyncUpdater = get()
-            )
-        }
-
-        factory {
-            LoginPresenter(
-                _payloadDataManager = lazy { get<PayloadDataManager>() },
-                appUtil = get(),
-                analytics = get(),
-                prefs = get()
             )
         }
 

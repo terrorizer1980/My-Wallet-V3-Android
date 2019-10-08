@@ -90,16 +90,6 @@
         <item name="android:gravity">center_vertical|right</item>
     </style>
 
-    <style name="MegaButtonAccentBlue">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/selector_accent_blue</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
-
     <style name="SpinnerWhite">
         <item name="colorControlNormal">@color/white</item>
     </style>
@@ -331,34 +321,6 @@
     <style name="SwitchGreen" parent="Theme.AppCompat.Light">
         <item name="colorSwitchThumbNormal">@color/product_green_medium</item>
         <item name="colorAccent">@color/product_green_medium</item>
-    </style>
-
-    <style name="BaseCenteredText">
-        <item name="android:fontFamily">@font/inter</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <style name="PitTitleText" parent="BaseCenteredText">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/pit_text_title</item>
-        <item name="android:layout_marginStart">39dp</item>
-        <item name="android:layout_marginEnd">38dp</item>
-    </style>
-
-    <style name="PitHeadingText" parent="BaseCenteredText">
-        <item name="android:fontFamily">@font/inter_bold</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/pit_text_heading</item>
-        <item name="android:layout_marginStart">88dp</item>
-        <item name="android:layout_marginEnd">87dp</item>
-    </style>
-
-    <style name="PitBodyText" parent="BaseCenteredText">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/pit_text_body</item>
-        <item name="android:layout_marginStart">48dp</item>
-        <item name="android:layout_marginEnd">48dp</item>
-        <item name="android:layout_marginTop">11dp</item>
     </style>
 
     <style name="BuySellButtonText">

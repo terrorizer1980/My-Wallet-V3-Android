@@ -30,6 +30,7 @@ import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.ui.dashboard.announcements.dashboardAnnouncementsModule
 import piuk.blockchain.android.ui.kyc.koin.kycUiModule
 import piuk.blockchain.android.ui.kyc.koin.kycUiNabuModule
+import piuk.blockchain.android.ui.start.startupUiModule
 import timber.log.Timber
 
 object KoinStarter {
@@ -67,6 +68,7 @@ object KoinStarter {
                 notificationModule,
                 serviceModule,
                 shapeShiftModule,
+                startupUiModule,
                 sunriverModule,
                 swapModule,
                 walletModule,

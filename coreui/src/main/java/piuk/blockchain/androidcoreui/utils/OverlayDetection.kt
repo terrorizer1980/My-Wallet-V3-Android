@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.R
 
+@Deprecated("This is now built into the secure activity base class")
 class OverlayDetection constructor(private val prefs: PersistentPrefs) {
 
     private var alertDialog: AlertDialog? = null

@@ -5,6 +5,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import io.reactivex.disposables.CompositeDisposable;
 
+@Deprecated // "Use the kotlin-friendly MvpActivity, MvpPresenter, MvpView instead"
 public abstract class BasePresenter<VIEW extends View> implements Presenter<VIEW> {
 
     private CompositeDisposable compositeDisposable;

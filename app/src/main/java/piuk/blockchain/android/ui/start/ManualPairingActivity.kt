@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.login
+package piuk.blockchain.android.ui.start
 
 import android.content.Context
 import android.content.Intent
@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar
 import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import info.blockchain.wallet.api.data.Settings
@@ -19,19 +18,15 @@ import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.auth.PinEntryActivity
-import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 
-class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPresenter>(),
+class ManualPairingActivity : MvpActivity<ManualPairingView, ManualPairingPresenter>(),
     ManualPairingView {
 
-    private val presenter: ManualPairingPresenter by inject()
-    private val overlayDetection: OverlayDetection by inject()
-
-    private var progressDialog: MaterialProgressDialog? = null
+    override val view: ManualPairingView = this
+    override val presenter: ManualPairingPresenter by inject()
 
     override val guid: String
         get() = wallet_id.text.toString()
@@ -53,7 +48,6 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
             }
             true
         }
-        onViewReady()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -64,8 +58,8 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
         return super.onOptionsItemSelected(item)
     }
 
-    override fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
-        ToastCustom.makeText(this, getString(message), ToastCustom.LENGTH_SHORT, toastType)
+    override fun showToast(@StringRes messageId: Int, @ToastCustom.ToastType toastType: String) {
+        ToastCustom.makeText(this, getString(messageId), ToastCustom.LENGTH_SHORT, toastType)
     }
 
     override fun goToPinPage() {
@@ -73,7 +67,7 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
     }
 
     override fun updateWaitingForAuthDialog(secondsRemaining: Int) {
-        progressDialog?.setMessage(getString(R.string.check_email_to_auth_login) + " " + secondsRemaining)
+        updateProgressDialog(getString(R.string.check_email_to_auth_login) + " " + secondsRemaining)
     }
 
     override fun showTwoFactorCodeNeededDialog(
@@ -87,23 +81,21 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
 
         val editText = AppCompatEditText(this)
         editText.setHint(R.string.two_factor_dialog_hint)
-        val message: Int
 
-        when (authType) {
+        val message = when (authType) {
             Settings.AUTH_TYPE_GOOGLE_AUTHENTICATOR -> {
-                message = R.string.two_factor_dialog_message_authenticator
                 editText.inputType = InputType.TYPE_NUMBER_VARIATION_NORMAL
                 editText.keyListener = DigitsKeyListener.getInstance("1234567890")
+                R.string.two_factor_dialog_message_authenticator
             }
             Settings.AUTH_TYPE_SMS -> {
-                message = R.string.two_factor_dialog_message_sms
-                editText.inputType =
-                    InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+                editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+                R.string.two_factor_dialog_message_sms
             }
             else -> throw IllegalArgumentException("Auth Type $authType should not be passed to this function")
         }
 
-        AlertDialog.Builder(this, R.style.AlertDialogStyle)
+        showAlert(AlertDialog.Builder(this, R.style.AlertDialogStyle)
             .setTitle(R.string.two_factor_dialog_title)
             .setMessage(message)
             .setView(ViewUtils.getAlertDialogPaddedView(this, editText))
@@ -118,33 +110,7 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
             }
             .setNegativeButton(android.R.string.cancel, null)
             .create()
-            .show()
-    }
-
-    override fun showProgressDialog(
-        @StringRes messageId: Int,
-        suffix: String?,
-        cancellable: Boolean
-    ) {
-        dismissProgressDialog()
-        progressDialog = MaterialProgressDialog(this).apply {
-            setCancelable(cancellable)
-            val msg = getString(messageId) + if (suffix != null) "\n\n" + suffix else ""
-            setMessage(msg)
-            setOnCancelListener { presenter.onProgressCancelled() }
-
-            if (!isFinishing)
-                show()
-        }
-    }
-
-    override fun dismissProgressDialog() {
-        progressDialog?.let {
-            if (it.isShowing) {
-                it.dismiss()
-            }
-        }
-        progressDialog = null
+        )
     }
 
     override fun resetPasswordField() {
@@ -160,19 +126,4 @@ class ManualPairingActivity : BaseMvpActivity<ManualPairingView, ManualPairingPr
         dismissProgressDialog()
         super.onDestroy()
     }
-
-    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        // Test for screen overlays before user enters PIN
-        return overlayDetection.detectObscuredWindow(this, event) ||
-                super.dispatchTouchEvent(event)
-    }
-
-    override fun startLogoutTimer() { /* No-op */
-    }
-
-    override fun enforceFlagSecure(): Boolean = true
-
-    override fun createPresenter() = presenter
-
-    override fun getView() = this
 }

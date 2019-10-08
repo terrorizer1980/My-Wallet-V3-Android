@@ -55,6 +55,7 @@ import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.debug.DebugOptionsBottomDialog
 import piuk.blockchain.android.ui.home.MobileNoticeDialogFragment
+import piuk.blockchain.android.ui.start.PasswordRequiredActivity
 import piuk.blockchain.androidcoreui.utils.AppUtil
 
 internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(), PinEntryView {

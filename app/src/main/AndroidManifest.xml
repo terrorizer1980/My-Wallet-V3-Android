@@ -73,10 +73,10 @@
             android:name=".ui.auth.PinEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".ui.auth.LandingActivity"
+            android:name=".ui.start.LandingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".ui.start.LoginActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -96,7 +96,7 @@
             android:name=".ui.upgrade.UpgradeWalletActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".ui.login.ManualPairingActivity"
+            android:name=".ui.start.ManualPairingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".ui.auth.LogoutActivity"
@@ -104,7 +104,7 @@
             android:noHistory="true"
             android:theme="@style/NoDisplay" />
         <activity
-            android:name=".ui.auth.PasswordRequiredActivity"
+            android:name=".ui.start.PasswordRequiredActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".ui.recover.RecoverFundsActivity"
