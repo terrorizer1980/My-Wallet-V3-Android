@@ -1183,8 +1183,8 @@
     <string name="swap_info_swap_limits">Swap Limits</string>
     <string name="swap_info_order_history">Order History</string>
     <string name="pit_announcement_title">Introducing The PIT</string>
-    <string name="pit_announcement_body_variant_a">We built our own exchange that links to your Wallet. Instantly access more cryptos and deposit/withdraw cash.</string>
-    <string name="pit_announcement_body_variant_b">Upgrade your trading on our new crypto exchange. Link your Wallet to buy, sell, and trade crypto instantly.</string>
+    <string name="pit_announcement_body_variant_a">Trade crypto &amp; fiat on The PIT, Blockchain’s new lighting fast exchange.</string>
+    <string name="pit_announcement_body_variant_b">Link your Wallet and trade crypto &amp; fiat on The PIT, Blockchain’s new lighting fast exchange.</string>
 
     <!-- The Pit linking -->
     <string name="pit_announcement_cta_text">Get Started</string>
@@ -1208,7 +1208,8 @@
     <string name="pit_connect_now">Connect Now</string>
     <string name="the_pit_title">The PIT</string>
     <string name="the_pit_exchange_title">The PIT Exchange</string>
-    <string name="trading">Trading</string>
+    <string name="crypto_exchange">Crypto Exchange</string>
+    <string name="crypto_trading">Crypto Trading</string>
 
     <string name="pit_setting_connect">Connect</string>
     <string name="pit_setting_connected">Connected</string>
