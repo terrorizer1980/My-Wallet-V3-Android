@@ -50,7 +50,9 @@
     <string name="RECEIVED">Received</string>
     <string name="receiving">Receiving</string>
     <string name="MOVED">Transferred</string>
-
+    <string name="edit_transaction_hint">Edit transaction description</string>
+    <string name="pie_chart_content">pie chart</string>
+    
     <string name="paid">Paid</string>
 
     <string name="payment_request">Payment Request</string>

@@ -55,6 +55,7 @@ class ImportAddressDelegate<in T>(
                 itemView.setOnClickListener(null)
                 plus.gone()
             }
+            itemView.contentDescription = header.text
         }
     }
 }

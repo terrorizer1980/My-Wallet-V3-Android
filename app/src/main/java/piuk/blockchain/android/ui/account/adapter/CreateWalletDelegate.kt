@@ -57,6 +57,7 @@ class CreateWalletDelegate<in T>(
                 itemView.setOnClickListener(null)
                 plus.gone()
             }
+            itemView.contentDescription = header.text
         }
     }
 }

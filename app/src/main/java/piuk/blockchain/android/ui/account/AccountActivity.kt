@@ -36,7 +36,6 @@ import info.blockchain.wallet.payload.data.LegacyAddress
 import kotlinx.android.synthetic.main.activity_accounts.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.get
-import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.ADDRESS_LABEL_MAX_LENGTH
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.KEY_WARN_TRANSFER_ALL
@@ -59,11 +58,9 @@ import timber.log.Timber
 import java.util.EnumSet
 import java.util.Locale
 
-class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), AccountView,
+class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
+    AccountView,
     AccountHeadersListener {
-
-    @Suppress("MemberVisibilityCanBePrivate")
-    private val accountPresenter: AccountPresenter by inject()
 
     override val locale: Locale = Locale.getDefault()
 
@@ -72,7 +69,10 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             if (BalanceFragment.ACTION_INTENT == intent.action) {
                 onViewReady()
                 // Check if we need to hide/show the transfer funds icon in the Toolbar
-                presenter.checkTransferableLegacyFunds(false, false)
+                presenter.checkTransferableLegacyFunds(
+                    isAutoPopup = false,
+                    showWarningDialog = false
+                )
             }
         }
     }
@@ -121,7 +121,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         inflater.inflate(R.menu.menu_account, menu)
         transferFundsMenuItem = menu.findItem(R.id.action_transfer_funds)
         // Auto popup
-        presenter.checkTransferableLegacyFunds(true, true)
+        presenter.checkTransferableLegacyFunds(isAutoPopup = true, showWarningDialog = true)
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -131,7 +131,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         R.id.action_transfer_funds -> consume {
             showProgressDialog(R.string.please_wait)
             // Not auto popup
-            presenter.checkTransferableLegacyFunds(false, true)
+            presenter.checkTransferableLegacyFunds(isAutoPopup = false, showWarningDialog = true)
         }
         else -> super.onOptionsItemSelected(item)
     }
@@ -258,7 +258,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             .setView(ViewUtils.getAlertDialogPaddedView(this, editText))
             .setCancelable(false)
             .setPositiveButton(R.string.save_name) { _, _ ->
-                if (!editText.getTextString().trim { it <= ' ' }.isEmpty()) {
+                if (editText.getTextString().trim { it <= ' ' }.isNotEmpty()) {
                     addAccount(editText.getTextString().trim { it <= ' ' })
                 } else {
                     toast(R.string.label_cant_be_empty, ToastCustom.TYPE_ERROR)
@@ -346,7 +346,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             .setCancelable(false)
             .setPositiveButton(R.string.save_name) { _, _ ->
                 val label = editText.getTextString()
-                if (!label.trim { it <= ' ' }.isEmpty()) {
+                if (label.trim { it <= ' ' }.isNotEmpty()) {
                     address.label = label
                 }
 
@@ -441,7 +441,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         dismissProgressDialog()
     }
 
-    override fun createPresenter() = accountPresenter
+    override fun createPresenter() = get<AccountPresenter>()
 
     override fun getView() = this
 

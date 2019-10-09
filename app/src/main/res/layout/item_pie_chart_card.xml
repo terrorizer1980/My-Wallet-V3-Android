@@ -17,6 +17,7 @@
             android:layout_marginTop="16dp"
             android:minHeight="180dp"
             android:visibility="invisible"
+            android:contentDescription="@string/pie_chart_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

@@ -265,7 +265,7 @@
                         android:text="@string/transaction_detail_date" />
 
                     <TextView
-                        android:id="@+id/date"
+                        android:id="@+id/txt_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
@@ -289,7 +289,7 @@
                         android:text="@string/transaction_detail_status" />
 
                     <TextView
-                        android:id="@+id/status"
+                        android:id="@+id/txt_status"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
