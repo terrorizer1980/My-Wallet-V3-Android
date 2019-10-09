@@ -64,6 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/msg_body"
+            android:layout_marginBottom="16dp"
             android:layout_marginTop="@dimen/standard_margin"
             style="@style/CtaButton.Blue"
             tools:text="Tell Me More"/>
@@ -73,7 +74,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/btn_cta1"
-            android:layout_marginTop="16dp"
             android:layout_marginBottom="@dimen/standard_margin"
             style="@style/CtaButton.White"
             tools:text="Maybe Later"/>
