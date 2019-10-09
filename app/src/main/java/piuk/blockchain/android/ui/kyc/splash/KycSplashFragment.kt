@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.NavDirections
 import com.blockchain.activities.StartOnboarding
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.hyperlinks.renderTermsLinks
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
 import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
@@ -13,6 +14,7 @@ import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import com.blockchain.swap.nabu.StartBuySell
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
 import com.blockchain.ui.urllinks.URL_COINIFY_POLICY
@@ -43,6 +45,8 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
     private val settingsDataManager: SettingsDataManager by inject()
 
     private val onBoardingStarter: StartOnboarding by inject()
+
+    private val analytics: Analytics by inject()
 
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
 
@@ -94,7 +98,10 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
         disposable += buttonContinue
             .throttledClicks()
             .subscribeBy(
-                onNext = { presenter.onCTATapped(progressListener.campaignType) },
+                onNext = {
+                    analytics.logEvent(KYCAnalyticsEvents.VerifyIdentityStart)
+                    presenter.onCTATapped(progressListener.campaignType)
+                },
                 onError = { Timber.e(it) }
             )
     }

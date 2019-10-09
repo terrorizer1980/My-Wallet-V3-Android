@@ -6,6 +6,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.support.annotation.VisibleForTesting
 import android.view.View
+import com.blockchain.notifications.analytics.AddressAnalytics
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.WalletAnalytics
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.WriterException
@@ -69,6 +72,7 @@ class AccountEditPresenter constructor(
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     private val dynamicFeeCache: DynamicFeeCache,
     private val environmentSettings: EnvironmentConfig,
+    private val analytics: Analytics,
     private val currencyFormatManager: CurrencyFormatManager,
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig
 ) : BasePresenter<AccountEditView>() {
@@ -464,6 +468,7 @@ class AccountEditPresenter constructor(
                     {
                         accountModel.label = labelCopy
                         view.setActivityResult(Activity.RESULT_OK)
+                        analytics.logEvent(WalletAnalytics.EditWalletName)
                     },
                     { revertLabelAndShowError(revertLabel) }
                 )
@@ -524,7 +529,7 @@ class AccountEditPresenter constructor(
                     } else {
                         setDefault(isDefaultBch(bchAccount))
                     }
-
+                    analytics.logEvent(WalletAnalytics.ChangeDefault)
                     updateSwipeToReceiveAddresses()
                     getView().updateAppShortcuts()
                     getView().setActivityResult(Activity.RESULT_OK)
@@ -721,6 +726,7 @@ class AccountEditPresenter constructor(
         }
 
         view.showAddressDetails(heading, note, copy, bitmap, qrString)
+        analytics.logEvent(WalletAnalytics.ShowXpub)
     }
 
     internal fun handleIncomingScanIntent(data: Intent) {
@@ -764,9 +770,13 @@ class AccountEditPresenter constructor(
             .subscribe(
                 {
                     updateTransactions.emptySubscribe()
-
+                    analytics.logEvent(AddressAnalytics.DeleteAddressLabel)
                     updateArchivedUi(isArchived, archivable)
                     view.setActivityResult(Activity.RESULT_OK)
+                    if (!isArchived)
+                        analytics.logEvent(WalletAnalytics.UnArchiveWallet)
+                    else
+                        analytics.logEvent(WalletAnalytics.ArchiveWallet)
                 },
                 { view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR) }
             )

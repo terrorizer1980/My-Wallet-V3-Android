@@ -23,6 +23,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.RequestAnalyticsEvents
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
@@ -93,6 +95,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     private val currencyState: CurrencyState by inject()
     private val appUtil: AppUtil by inject()
     private val receivePresenter: ReceivePresenter by inject()
+    private val analytics: Analytics by inject()
 
     private var bottomSheetDialog: BottomSheetDialog? = null
 
@@ -122,7 +125,6 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
         arguments?.run {
             selectedAccountPosition = getInt(ARG_SELECTED_ACCOUNT_POSITION)
         }
@@ -206,7 +208,10 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
         // QR Code
         image_qr.apply {
-            setOnClickListener { showClipboardWarning() }
+            setOnClickListener {
+                showClipboardWarning()
+                analytics.logEvent(RequestAnalyticsEvents.QrAddressClicked)
+            }
             setOnLongClickListener { consume { onShareClicked() } }
         }
 
@@ -238,6 +243,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
         button_request.setOnClickListener {
             onShareClicked()
+            analytics.logEvent(RequestAnalyticsEvents.RequestPaymentClicked)
         }
     }
 
@@ -464,7 +470,9 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.receive_address_to_share)
                 .setCancelable(false)
-                .setPositiveButton(R.string.yes) { _, _ -> presenter.onShowBottomShareSheetSelected() }
+                .setPositiveButton(R.string.yes) { _, _ ->
+                    presenter.onShowBottomShareSheetSelected()
+                }
                 .setNegativeButton(R.string.no, null)
                 .show()
         }

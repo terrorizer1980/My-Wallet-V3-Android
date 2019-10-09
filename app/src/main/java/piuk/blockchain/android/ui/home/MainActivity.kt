@@ -34,6 +34,10 @@ import com.blockchain.lockbox.ui.LockboxLandingActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.RequestAnalyticsEvents
+import com.blockchain.notifications.analytics.SendAnalytics
+import com.blockchain.notifications.analytics.SwapAnalyticsEvents
+import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_SUPPORT_PORTAL
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.PermissionGrantedResponse
@@ -119,6 +123,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
                         // On the bottom nav bar, but without starting the fragment again
                         startSendFragment(null)
                         ViewUtils.setElevation(appbar_layout, 0f)
+                        analytics.logEvent(SendAnalytics.SendTabItem)
                     }
                     ITEM_HOME -> {
                         startDashboardFragment()
@@ -127,13 +132,16 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
                     ITEM_ACTIVITY -> {
                         startBalanceFragment()
                         ViewUtils.setElevation(appbar_layout, 0f)
+                        analytics.logEvent(TransactionsAnalyticsEvents.TabItemClick)
                     }
                     ITEM_RECEIVE -> {
                         startReceiveFragment()
                         ViewUtils.setElevation(appbar_layout, 0f)
+                        analytics.logEvent(RequestAnalyticsEvents.TabItemClicked)
                     }
                     ITEM_SWAP -> {
                         presenter.startSwapOrKyc(null)
+                        analytics.logEvent(SwapAnalyticsEvents.SwapTabItemClick)
                     }
                 }
             }
@@ -242,6 +250,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
             }
             R.id.action_qr_main -> {
                 requestScan()
+                analytics.logEvent(SendAnalytics.QRButtonClicked)
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -6,6 +6,8 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuApiException
 import com.blockchain.kyc.models.nabu.NabuErrorCodes
 import com.blockchain.kyc.models.nabu.State
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.XlmDataManager
@@ -56,6 +58,7 @@ class XlmSendStrategy(
     private val stringUtils: StringUtils,
     private val nabuToken: NabuToken,
     private val pitLinking: PitLinking,
+    private val analytics: Analytics,
     private val nabuDataManager: NabuDataManager
 ) : SendStrategy<SendView>(currencyState) {
 
@@ -336,10 +339,13 @@ class XlmSendStrategy(
                         view.dismissConfirmationDialog()
                     }
                     .doOnSuccess {
+                        analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.XLM.toString()))
+
                         view.showTransactionSuccess(confirmationDetails.amount.currency)
                     }
                     .doOnError {
                         view.showTransactionFailed()
+                        analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.XLM.toString()))
                     }
                     .ignoreElement()
                     .onErrorComplete()

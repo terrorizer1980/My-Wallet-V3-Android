@@ -15,6 +15,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_FAQ
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.fragment_balance.*
@@ -53,6 +55,7 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
     private var txFeedAdapter: TxFeedAdapter? = null
 
     private val balancePresenter: BalancePresenter by inject()
+    private val analytics: Analytics by inject()
 
     private var spacerDecoration: BottomSpacerDecoration? = null
 
@@ -327,6 +330,9 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
         val bundle = Bundle()
         bundle.putInt(KEY_TRANSACTION_LIST_POSITION, correctedPosition)
         TransactionDetailActivity.start(activity as Context, bundle)
+        currency_header?.getCurrentlySelectedCurrency()?.symbol?.let {
+            analytics.logEvent(TransactionsAnalyticsEvents.ItemClick(it))
+        }
     }
 
     /*

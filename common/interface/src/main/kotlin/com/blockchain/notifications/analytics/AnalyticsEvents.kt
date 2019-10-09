@@ -46,12 +46,14 @@ enum class AnalyticsEvents(
     BitpayAdrressScanned("bitpay_url_scanned"),
     BitpayUrlPasted("bitpay_url_pasted"),
     BitpayPaymentExpired("bitpay_payment_expired"),
-    BitpayPaymentFailed("bitpay_payment_failure"),
-    BitpayPaymentSucceed("bitpay_payment_success"),
+    BitpayPaymentFailed("send_bitpay_payment_failure"),
+    BitpayPaymentSucceed("send_bitpay_payment_success"),
     BitpayUrlDeeplink("bitpay_url_deeplink"),
     WalletCreation("wallet_creation"),
     WalletManualLogin("wallet_manual_login"),
-    WalletAutoPairing("wallet_auto_pairing")
+    PITDEEPLINK("pit_deeplink"),
+    WalletAutoPairing("wallet_auto_pairing"),
+    ChangeFiatCurrency("currency")
 }
 
 fun kycTierStart(tier: Int): AnalyticsEvent = object : AnalyticsEvent {

@@ -6,6 +6,8 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuApiException
 import com.blockchain.kyc.models.nabu.NabuErrorCodes
 import com.blockchain.kyc.models.nabu.State
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.serialization.JsonSerializableAccount
@@ -78,6 +80,7 @@ class BitcoinCashSendStrategy(
     private val nabuToken: NabuToken,
     private val envSettings: EnvironmentConfig,
     private val pitLinking: PitLinking,
+    private val analytics: Analytics,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
@@ -261,6 +264,7 @@ class BitcoinCashSendStrategy(
                     view.dismissProgressDialog()
                     view.dismissConfirmationDialog()
                     incrementBchReceiveAddress()
+                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.BCH.toString()))
                     handleSuccessfulPayment(hash, CryptoCurrency.BCH)
                 },
                 {
@@ -271,6 +275,7 @@ class BitcoinCashSendStrategy(
                         stringUtils.getString(R.string.transaction_failed),
                         it.message,
                         Snackbar.LENGTH_INDEFINITE)
+                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.BCH.toString()))
 
                     logPaymentSentEvent(false, CryptoCurrency.BCH, pendingTransaction.bigIntAmount)
                 }

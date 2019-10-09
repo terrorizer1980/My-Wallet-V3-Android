@@ -6,6 +6,8 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuApiException
 import com.blockchain.kyc.models.nabu.NabuErrorCodes
 import com.blockchain.kyc.models.nabu.State
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.serialization.JsonSerializableAccount
@@ -64,6 +66,7 @@ class PaxSendStrategy(
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
     private val pitLinking: PitLinking,
+    private val analytics: Analytics,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
@@ -217,13 +220,14 @@ class PaxSendStrategy(
                 {
                     logPaymentSentEvent(true, CryptoCurrency.PAX, pendingTx.amountPax)
 
-                    // handleSuccessfulPayment(...) clears PendingTransaction object
+                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.PAX.toString()))
                     handleSuccessfulPayment(it)
                 },
                 {
                     Timber.e(it)
                     logPaymentSentEvent(false, CryptoCurrency.PAX, pendingTx.amountPax)
                     view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
+                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.PAX.toString()))
                 }
             )
     }

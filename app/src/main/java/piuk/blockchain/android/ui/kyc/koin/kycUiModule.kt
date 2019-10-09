@@ -1,4 +1,5 @@
 @file:Suppress("USELESS_CAST")
+
 package piuk.blockchain.android.ui.kyc.koin
 
 import piuk.blockchain.android.ui.kyc.splash.KycSplashPresenter
@@ -75,7 +76,7 @@ val kycUiModule = applicationContext {
 
         factory { KycMobileEntryPresenter(get(), get()) }
 
-        factory { KycMobileValidationPresenter(get(), get()) }
+        factory { KycMobileValidationPresenter(get(), get(), get()) }
 
         factory { KycEmailEntryPresenter(get()) }
 

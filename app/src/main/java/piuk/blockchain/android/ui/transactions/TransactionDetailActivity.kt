@@ -15,6 +15,8 @@ import android.text.InputFilter
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary.Direction
 import org.koin.android.ext.android.inject
@@ -33,6 +35,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
     TransactionDetailView {
 
     private val transactionDetailPresenter: TransactionDetailPresenter by inject()
+    private val analytics: Analytics by inject()
 
     private lateinit var binding: ActivityTransactionDetailsBinding
 
@@ -191,6 +194,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
             val viewIntent = Intent(Intent.ACTION_VIEW)
             viewIntent.data = Uri.parse(presenter.transactionHash.explorerUrl)
             startActivity(viewIntent)
+            analytics.logEvent(TransactionsAnalyticsEvents.ViewOnWeb(cryptoCurrency.symbol))
         }
     }
 
@@ -208,6 +212,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
                 shareIntent.putExtra(Intent.EXTRA_TEXT, presenter.transactionHash.explorerUrl)
                 shareIntent.type = "text/plain"
                 startActivity(Intent.createChooser(shareIntent, getString(R.string.transaction_detail_share_chooser)))
+                analytics.logEvent(TransactionsAnalyticsEvents.ItemShare(presenter.displayable.cryptoCurrency.symbol))
                 return true
             }
             else -> return super.onOptionsItemSelected(item)

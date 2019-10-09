@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.extensions.skipFirstUnless
 import com.blockchain.notifications.analytics.logEvent
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
@@ -14,6 +15,7 @@ import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import piuk.blockchain.android.ui.kyc.profile.models.ProfileModel
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import com.jakewharton.rxbinding2.widget.afterTextChangeEvents
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
@@ -46,6 +48,7 @@ import kotlinx.android.synthetic.main.fragment_kyc_profile.input_layout_kyc_date
 class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), KycProfileView {
 
     private val presenter: KycProfilePresenter by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
     override val firstName: String
@@ -94,7 +97,12 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
             buttonNext
                 .throttledClicks()
                 .subscribeBy(
-                    onNext = { presenter.onContinueClicked(progressListener.campaignType) },
+                    onNext = {
+                        presenter.onContinueClicked(progressListener.campaignType)
+                        analytics.logEvent(KYCAnalyticsEvents.PersonalDetailsSet("${editTextFirstName.text}," +
+                                "${editTextLastName.text}," +
+                                "${editTextDob.text}"))
+                    },
                     onError = { Timber.e(it) }
                 )
 

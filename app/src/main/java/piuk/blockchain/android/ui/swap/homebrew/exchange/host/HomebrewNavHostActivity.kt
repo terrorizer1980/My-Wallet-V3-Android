@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.accounts.AsyncAllAccountList
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.swap.common.exchange.mvi.ChangeCryptoFromAccount
 import com.blockchain.swap.common.exchange.mvi.ChangeCryptoToAccount
 import com.blockchain.swap.common.exchange.mvi.SimpleFieldUpdateIntent
@@ -27,6 +28,7 @@ import piuk.blockchain.android.ui.swap.logging.WebsocketConnectionFailureEvent
 import piuk.blockchain.android.ui.swap.showErrorDialog
 import com.blockchain.swap.nabu.StartKyc
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.dialog.AccountChooserBottomDialog
 import info.blockchain.balance.AccountReference
@@ -55,11 +57,12 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     private val navController by unsafeLazy { findNavController(navHostFragment!!) }
     private val currentFragment: Fragment?
         get() = navHostFragment?.childFragmentManager?.findFragmentById(R.id.nav_host)
+    private val analytics: Analytics by inject()
 
     private val defaultCurrency by unsafeLazy { intent.getStringExtra(EXTRA_DEFAULT_CURRENCY) }
 
     private val preselectedToCurrency by lazy {
-        (intent.getSerializableExtra(EXTRA_PRESELECTED_TO_CURRENCY)as?CryptoCurrency) ?: CryptoCurrency.ETHER
+        (intent.getSerializableExtra(EXTRA_PRESELECTED_TO_CURRENCY) as? CryptoCurrency) ?: CryptoCurrency.ETHER
     }
 
     override val exchangeViewModel: ExchangeModel by viewModel()
@@ -124,6 +127,7 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
                     when (it) {
                         is ExchangeMenuState.ExchangeMenu.Error -> {
                             showErrorDialog(supportFragmentManager, it.error)
+                            analytics.logEvent(SwapAnalyticsEvents.SwapFormConfirmErrorClick)
                         }
                         is ExchangeMenuState.ExchangeMenu.Help -> {
                             // Invalid menu state
@@ -154,7 +158,11 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
 
     override fun setMenuState(state: ExchangeMenuState.ExchangeMenu) {
         menuState = state
-        errorItem?.isVisible = (state is ExchangeMenuState.ExchangeMenu.Error)
+        errorItem?.isVisible = (state is ExchangeMenuState.ExchangeMenu.Error).also {
+            if (it) {
+                analytics.logEvent(SwapAnalyticsEvents.SwapFormConfirmErrorAppear)
+            }
+        }
         helpItem?.isVisible = (state is ExchangeMenuState.ExchangeMenu.Help)
     }
 

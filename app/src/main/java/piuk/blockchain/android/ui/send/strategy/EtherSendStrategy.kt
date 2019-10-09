@@ -6,6 +6,8 @@ import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuApiException
 import com.blockchain.kyc.models.nabu.NabuErrorCodes
 import com.blockchain.kyc.models.nabu.State
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.serialization.JsonSerializableAccount
@@ -67,6 +69,7 @@ class EtherSendStrategy(
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
     private val pitLinking: PitLinking,
+    private val analytics: Analytics,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
@@ -243,7 +246,7 @@ class EtherSendStrategy(
             .subscribe(
                 {
                     logPaymentSentEvent(true, CryptoCurrency.ETHER, pendingTransaction.bigIntAmount)
-
+                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.ETHER.toString()))
                     // handleSuccessfulPayment(...) clears PendingTransaction object
                     handleSuccessfulPayment(it)
                 },
@@ -251,6 +254,7 @@ class EtherSendStrategy(
                     Timber.e(it)
                     logPaymentSentEvent(false, CryptoCurrency.ETHER, pendingTransaction.bigIntAmount)
                     view.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
+                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.ETHER.toString()))
                 }
             )
     }

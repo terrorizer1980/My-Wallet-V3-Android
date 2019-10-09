@@ -123,6 +123,7 @@ class XlmSendPresenterStrategyTest {
             nabuToken = nabuToken,
             nabuDataManager = nabuDataManager,
             stringUtils = stringUtils,
+            analytics = mock(),
             pitLinking = pitLinked
         ).apply {
             initView(view)
@@ -157,6 +158,7 @@ class XlmSendPresenterStrategyTest {
             nabuToken = nabuToken,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
+            analytics = mock(),
             stringUtils = stringUtils
         ).apply {
             initView(view)
@@ -192,6 +194,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -241,6 +244,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -307,6 +311,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -360,6 +365,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -415,6 +421,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -470,6 +477,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -537,6 +545,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -599,6 +608,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -653,6 +663,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -687,6 +698,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -742,6 +754,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -829,6 +842,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils,
             nabuToken,
             pitLinked,
+            mock(),
             nabuDataManager
         ).apply {
             initView(view)
@@ -883,6 +897,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
+            analytics = mock(),
             nabuToken = nabuToken
         ).apply {
             initView(view)
@@ -926,6 +941,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
+            analytics = mock(),
             nabuToken = nabuToken
         ).apply {
             initView(view)
@@ -969,6 +985,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
+            analytics = mock(),
             nabuToken = nabuToken
         ).apply {
             initView(view)
@@ -1014,6 +1031,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
+            analytics = mock(),
             nabuToken = nabuToken
         ).apply {
             initView(view)
@@ -1066,6 +1084,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
+            analytics = mock(),
             nabuToken = nabuToken
         ).apply {
             initView(view)
@@ -1112,6 +1131,7 @@ class XlmSendPresenterStrategyTest {
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitUnLinked,
+            analytics = mock(),
             nabuToken = nabuToken
         ).apply {
             initView(view)

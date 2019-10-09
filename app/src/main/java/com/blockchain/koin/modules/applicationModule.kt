@@ -589,7 +589,8 @@ val applicationModule = applicationContext {
                 nabuToken = get(),
                 nabuDataManager = get(),
                 pitLinking = get(),
-                envSettings = get()
+                envSettings = get(),
+                analytics = get()
             )
         }
 
@@ -608,7 +609,8 @@ val applicationModule = applicationContext {
                 currencyPrefs = get(),
                 nabuToken = get(),
                 nabuDataManager = get(),
-                pitLinking = get()
+                pitLinking = get(),
+                analytics = get()
             )
         }
 
@@ -624,7 +626,8 @@ val applicationModule = applicationContext {
                 sendFundsResultLocalizer = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
-                pitLinking = get()
+                pitLinking = get(),
+                analytics = get()
             )
         }
 
@@ -644,7 +647,8 @@ val applicationModule = applicationContext {
                 currencyPrefs = get(),
                 nabuToken = get(),
                 nabuDataManager = get(),
-                pitLinking = get()
+                pitLinking = get(),
+                analytics = get()
             )
         }
 
@@ -691,6 +695,7 @@ val applicationModule = applicationContext {
                 privateKeyFactory = get(),
                 environmentSettings = get(),
                 currencyState = get(),
+                analytics = get(),
                 currencyFormatManager = get()
             )
         }
@@ -792,6 +797,7 @@ val applicationModule = applicationContext {
                 /* currencyFormatManager = */ get(),
                 /* kycStatusHelper = */ get(),
                 /* pitLinking = */ get(),
+                /* analytics = */ get(),
                 /*featureFlag = */get("ff_pit_linking")
             )
         }
@@ -843,6 +849,7 @@ val applicationModule = applicationContext {
                 nabu = get(),
                 nabuToken = get(),
                 pitLinking = get(),
+                analytics = get(),
                 prefs = get(),
                 abTestExperiment = get()
             )
@@ -868,6 +875,7 @@ val applicationModule = applicationContext {
                 swipeToReceiveHelper = get(),
                 dynamicFeeCache = get(),
                 environmentSettings = get(),
+                analytics = get(),
                 currencyFormatManager = get(),
                 coinSelectionRemoteConfig = get()
             )

@@ -2,10 +2,17 @@ package piuk.blockchain.android.ui.settings;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+
 import com.blockchain.kyc.models.nabu.NabuApiException;
 import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes;
+
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
+
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.notifications.analytics.Analytics;
+import com.blockchain.notifications.analytics.AnalyticsEvents;
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents;
+import com.blockchain.notifications.analytics.SettingsAnalyticsEvents;
 import com.blockchain.remoteconfig.FeatureFlag;
 
 import info.blockchain.wallet.api.data.Settings;
@@ -54,6 +61,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     @VisibleForTesting
     Settings settings;
     private final PitLinking pitLinking;
+    private final Analytics analytics;
     private final FeatureFlag featureFlag;
     private PitLinkingState pitLinkState = new PitLinkingState();
 
@@ -74,6 +82,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             CurrencyFormatManager currencyFormatManager,
             KycStatusHelper kycStatusHelper,
             PitLinking pitLinking,
+            Analytics analytics,
             FeatureFlag featureFlag) {
 
         this.fingerprintHelper = fingerprintHelper;
@@ -91,6 +100,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         this.currencyFormatManager = currencyFormatManager;
         this.kycStatusHelper = kycStatusHelper;
         this.pitLinking = pitLinking;
+        this.analytics = analytics;
         this.featureFlag = featureFlag;
 
     }
@@ -129,11 +139,11 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     private void loadKyc2TierState() {
         getCompositeDisposable().add(
-            kycStatusHelper.getSettingsKycState2Tier()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    settingsKycState -> getView().setKycState(settingsKycState),
-                    Timber::e)
+                kycStatusHelper.getSettingsKycState2Tier()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                settingsKycState -> getView().setKycState(settingsKycState),
+                                Timber::e)
         );
     }
 
@@ -379,9 +389,13 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                             .flatMapCompletable(ignored -> syncPhoneNumberWithNabu())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(() -> {
+                                /*   analytics.logEvent(KYCAnalyticsEvents.SendSmsCode.INSTANCE);*/
                                 updateNotification(Settings.NOTIFICATION_TYPE_SMS, false);
                                 getView().showDialogVerifySms();
-                            }, throwable -> getView().showToast(R.string.update_failed, ToastCustom.TYPE_ERROR)));
+                            }, throwable -> {
+                                /*analytics.logEvent(KYCAnalyticsEvents.PhoneVerificationSuccess.INSTANCE);*/
+                                getView().showToast(R.string.update_failed, ToastCustom.TYPE_ERROR);
+                            }));
         }
     }
 
@@ -402,8 +416,14 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                             updateUi();
                         })
                         .subscribe(
-                                () -> getView().showDialogSmsVerified(),
-                                throwable -> getView().showWarningDialog(R.string.verify_sms_failed)));
+                                () -> {
+                                    getView().showDialogSmsVerified();
+                                    /*  analytics.logEvent(KYCAnalyticsEvents.PhoneVerificationSuccess.INSTANCE);*/
+                                },
+                                throwable -> {
+                                    getView().showWarningDialog(R.string.verify_sms_failed);
+                                    /*  analytics.logEvent(KYCAnalyticsEvents.PhoneVerificationFailure.INSTANCE);*/
+                                }));
     }
 
     private Completable syncPhoneNumberWithNabu() {
@@ -528,7 +548,10 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                 .andThen(payloadDataManager.syncPayloadWithServer())
                 .compose(RxUtil.addCompletableToCompositeDisposable(this))
                 .subscribe(
-                        () -> getView().showToast(R.string.password_changed, ToastCustom.TYPE_OK),
+                        () -> {
+                            getView().showToast(R.string.password_changed, ToastCustom.TYPE_OK);
+                            analytics.logEvent(SettingsAnalyticsEvents.PasswordChanged.INSTANCE);
+                        },
                         throwable -> showUpdatePasswordFailed(fallbackPassword));
     }
 
@@ -548,9 +571,12 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                         .doAfterTerminate(this::updateUi)
                         .subscribe(
                                 settings -> {
+                                    if (prefs.getSelectedFiatCurrency().equals(fiatUnit))
+                                        analytics.logEvent(AnalyticsEvents.ChangeFiatCurrency);
                                     prefs.setSelectedFiatCurrency(fiatUnit);
                                     currencyFormatManager.invalidateFiatCode();
                                     this.settings = settings;
+                                    analytics.logEvent(SettingsAnalyticsEvents.CurrencyChanged.INSTANCE);
                                 },
                                 throwable -> getView().showToast(R.string.update_failed, ToastCustom.TYPE_ERROR)));
     }
@@ -602,7 +628,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void onThePitClicked() {
-        if(pitLinkState.isLinked()) {
+        if (pitLinkState.isLinked()) {
             getView().launchThePit();
         } else {
             getView().launchThePitLandingActivity();

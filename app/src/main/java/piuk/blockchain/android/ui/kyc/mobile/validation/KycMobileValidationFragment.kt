@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import piuk.blockchain.android.ui.kyc.extensions.skipFirstUnless
 import piuk.blockchain.android.ui.kyc.hyperlinks.insertSingleLink
 import piuk.blockchain.android.ui.kyc.mobile.entry.models.PhoneVerificationModel
@@ -43,6 +45,7 @@ class KycMobileValidationFragment :
     KycMobileValidationView {
 
     private val presenter: KycMobileValidationPresenter by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
     private var progressDialog: MaterialProgressDialog? = null
@@ -75,7 +78,9 @@ class KycMobileValidationFragment :
         Observables.combineLatest(
             verificationCodeObservable.cache(),
             buttonNext.throttledClicks()
-        )
+        ).doOnNext {
+            analytics.logEvent(KYCAnalyticsEvents.PhoneNumberUpdateButtonClicked)
+        }
     }
 
     override fun onCreateView(

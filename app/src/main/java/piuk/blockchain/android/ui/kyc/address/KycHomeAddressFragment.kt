@@ -16,6 +16,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.extensions.nextAfterOrNull
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.address.models.AddressDialog
 import piuk.blockchain.android.ui.kyc.address.models.AddressIntent
 import piuk.blockchain.android.ui.kyc.address.models.AddressModel
@@ -27,6 +28,7 @@ import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import piuk.blockchain.android.ui.kyc.profile.models.ProfileModel
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
@@ -75,6 +77,7 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
     KycHomeAddressView {
 
     private val presenter: KycHomeAddressPresenter by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
     private var progressDialog: MaterialProgressDialog? = null
@@ -234,7 +237,10 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
                 buttonNext
                     .throttledClicks()
                     .subscribeBy(
-                        onNext = { presenter.onContinueClicked(progressListener.campaignType) },
+                        onNext = {
+                            presenter.onContinueClicked(progressListener.campaignType)
+                            analytics.logEvent(KYCAnalyticsEvents.AddressChanged)
+                        },
                         onError = { Timber.e(it) }
                     )
 

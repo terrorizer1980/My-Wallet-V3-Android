@@ -5,10 +5,13 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import kotlinx.android.synthetic.main.fragment_swap_intro.*
 import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity
@@ -21,6 +24,7 @@ class SwapIntroFragment : HomeFragment<SwapIntroView, SwapIntroPresenter>(), Swa
         false
 
     override fun createPresenter(): SwapIntroPresenter = get()
+    private val analytics: Analytics by inject()
 
     override fun getMvpView(): SwapIntroView = this
 
@@ -37,6 +41,7 @@ class SwapIntroFragment : HomeFragment<SwapIntroView, SwapIntroPresenter>(), Swa
         indicator.setViewPager(intro_viewpager)
         get_started.setOnClickListener {
             presenter.onGetStartedPressed()
+            analytics.logEvent(SwapAnalyticsEvents.SwapIntroStartButtonClick)
             startActivityForResult(
                 KycNavHostActivity.intentArgs(activity!!, CampaignType.Swap),
                 MainActivity.KYC_STARTED)

@@ -20,6 +20,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.blockchain.balance.coinIconWhite
 import com.blockchain.balance.colorRes
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.swap.common.exchange.mvi.ApplyMaxSpendable
 import com.blockchain.swap.common.exchange.mvi.ExchangeIntent
 import com.blockchain.swap.common.exchange.mvi.ExchangeViewState
@@ -37,6 +38,7 @@ import piuk.blockchain.android.ui.swap.logging.AmountErrorType
 import piuk.blockchain.android.ui.swap.logging.FixType
 import piuk.blockchain.android.ui.swap.logging.FixTypeEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.dialog.AccountChooserBottomDialog
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
@@ -99,7 +101,9 @@ internal class ExchangeFragment : Fragment() {
     private lateinit var exchangeMenuState: ExchangeMenuState
 
     private var latestBaseFix: Fix = Fix.BASE_FIAT
+    private var latestCryptoValue = CryptoValue.ZeroBtc
     private val stringUtils: StringUtils by inject()
+    private val analytics: Analytics by inject()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -141,27 +145,32 @@ internal class ExchangeFragment : Fragment() {
                 title = getString(R.string.dialog_title_exchange),
                 resultId = REQUEST_CODE_CHOOSE_SENDING_ACCOUNT
             ).show(fragmentManager, "BottomDialog")
+            analytics.logEvent(SwapAnalyticsEvents.SwapLeftAssetClick)
         }
         selectReceiveAccountButton.setOnClickListener {
             AccountChooserBottomDialog.create(
                 title = getString(R.string.dialog_title_receive),
                 resultId = REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT
             ).show(fragmentManager, "BottomDialog")
+            analytics.logEvent(SwapAnalyticsEvents.SwapRightAssetClick)
         }
         exchangeButton.setOnClickListener {
             exchangeModel.fixAsCrypto()
             activityListener.launchConfirmation()
+            analytics.logEvent(SwapAnalyticsEvents.SwapFormConfirmClick)
         }
         largeValue.setOnClickListener(toggleOnClickListener)
         smallValue.setOnClickListener(toggleOnClickListener)
 
         textViewBalance.setOnClickListener {
             exchangeModel.inputEventSink.onNext(ApplyMaxSpendable)
+            analytics.logEvent(SwapAnalyticsEvents.SwapMaxValueUsed)
         }
     }
 
     private val toggleOnClickListener = View.OnClickListener {
         exchangeModel.inputEventSink.onNext(ToggleFiatCryptoIntent())
+        analytics.logEvent(SwapAnalyticsEvents.SwapReversePairClick)
     }
 
     override fun onResume() {
@@ -201,6 +210,11 @@ internal class ExchangeFragment : Fragment() {
                 ExchangeCryptoButtonLayout(select_to_account_button,
                     select_to_account_text,
                     select_to_account_icon).setButtonGraphicsAndTextFromCryptoValue(it.toCrypto)
+
+                if (latestCryptoValue != it.toCrypto && it.toCrypto.isZero.not()) {
+                    analytics.logEvent(SwapAnalyticsEvents.SwapExchangeReceiveChange)
+                }
+                latestCryptoValue = it.toCrypto
 
                 keyboard.setValue(it.lastUserValue.userDecimalPlaces, it.lastUserValue.toBigDecimal())
                 exchangeButton.isEnabled = it.isValid()

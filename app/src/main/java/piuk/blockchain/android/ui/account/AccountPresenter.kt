@@ -3,6 +3,9 @@ package piuk.blockchain.android.ui.account
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.support.annotation.VisibleForTesting
+import com.blockchain.notifications.analytics.AddressAnalytics
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.WalletAnalytics
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.BitcoinCashWallet
 import info.blockchain.wallet.api.Environment
@@ -50,6 +53,7 @@ class AccountPresenter internal constructor(
     private val privateKeyFactory: PrivateKeyFactory,
     private val environmentSettings: EnvironmentConfig,
     private val currencyState: CurrencyState,
+    private val analytics: Analytics,
     private val currencyFormatManager: CurrencyFormatManager
 ) : BasePresenter<AccountView>() {
 
@@ -146,7 +150,7 @@ class AccountPresenter internal constructor(
                 {
                     view.showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
                     onViewReady()
-
+                    analytics.logEvent(WalletAnalytics.AddNewWallet)
                     Logging.logCustom(CreateAccountEvent(payloadDataManager.accounts.size))
                 },
                 { throwable ->
@@ -184,6 +188,7 @@ class AccountPresenter internal constructor(
             .subscribe(
                 {
                     view.showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
+                    analytics.logEvent(AddressAnalytics.ImportBTCAddress)
                     val intent = Intent(WebSocketService.ACTION_INTENT).apply {
                         putExtra(WebSocketService.EXTRA_BITCOIN_ADDRESS, address.address)
                     }
@@ -274,6 +279,7 @@ class AccountPresenter internal constructor(
             .doOnError { Timber.e(it) }
             .subscribe(
                 {
+                    analytics.logEvent(AddressAnalytics.ImportBTCAddress)
                     view.showRenameImportedAddressDialog(legacyAddress)
                     Logging.logCustom(ImportEvent(AddressType.WATCH_ONLY))
                 },
@@ -339,7 +345,7 @@ class AccountPresenter internal constructor(
                         )
                         onViewReady()
                         view.showRenameImportedAddressDialog(it)
-
+                        analytics.logEvent(AddressAnalytics.ImportBTCAddress)
                         Logging.logCustom(ImportEvent(AddressType.PRIVATE_KEY))
                     },
                     {

@@ -95,6 +95,7 @@ class AccountEditPresenterTest {
             swipeToReceiveHelper,
             dynamicFeeCache,
             environmentSettings,
+            mock(),
             currencyFormatManager,
             coinSelectionRemoteConfig
         )

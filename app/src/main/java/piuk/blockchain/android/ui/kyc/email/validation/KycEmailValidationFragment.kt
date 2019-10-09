@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.hyperlinks.insertSingleLink
 import com.blockchain.notifications.analytics.logEvent
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.Observables
@@ -34,6 +36,7 @@ class KycEmailValidationFragment :
     KycEmailValidationView {
 
     private val presenter: KycEmailValidationPresenter by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private var progressDialog: MaterialProgressDialog? = null
     private val email by unsafeLazy { KycEmailValidationFragmentArgs.fromBundle(arguments).email }
@@ -68,7 +71,10 @@ class KycEmailValidationFragment :
             resend.onNext(Unit)
         }
 
-        buttonNext.setOnClickListener { continueSignUp() }
+        buttonNext.setOnClickListener {
+            continueSignUp()
+            analytics.logEvent(KYCAnalyticsEvents.VerifyEmailButtonClicked)
+        }
 
         onViewReady()
     }

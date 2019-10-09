@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import com.blockchain.swap.nabu.StartKyc
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_RAISE_SUPPORT_TICKET
 import io.reactivex.disposables.CompositeDisposable
@@ -45,7 +46,7 @@ class SwapInfoBottomDialog : BottomSheetDialogFragment() {
 
         clicksDisposable += btn_history.throttledClicks()
             .subscribeBy(onNext = {
-                analytics.logEvent(AnalyticsEvents.SwapInfoDialogViewHistory)
+                analytics.logEvent(SwapAnalyticsEvents.SwapViewHistoryButtonClick)
                 TradeHistoryActivity.start(requireContext())
                 dismiss()
             })

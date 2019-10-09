@@ -82,6 +82,7 @@ class AccountPresenterTest {
             privateKeyFactory,
             environmentSettings,
             currencyState,
+            mock(),
             currencyFormatManager
         )
 

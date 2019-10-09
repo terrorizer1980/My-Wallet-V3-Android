@@ -61,6 +61,7 @@ class PitPermissionsPresenterTest {
             nabuToken,
             pitLinking,
             prefs,
+            mock(),
             abTestExpriment
         ).also {
             it.initView(view)

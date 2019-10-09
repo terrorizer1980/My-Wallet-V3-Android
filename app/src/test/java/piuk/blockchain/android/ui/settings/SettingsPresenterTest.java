@@ -2,8 +2,11 @@ package piuk.blockchain.android.ui.settings;
 
 import com.blockchain.kyc.models.nabu.Kyc2TierState;
 import com.blockchain.kyc.models.nabu.NabuApiException;
+
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
+
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.remoteconfig.FeatureFlag;
 
 import info.blockchain.wallet.api.data.Settings;
@@ -95,6 +98,8 @@ public class SettingsPresenterTest extends RxTest {
     private PitLinkingState pitLinkState;
     @Mock
     private FeatureFlag featureFlag;
+    @Mock
+    private Analytics analytics;
 
     @Before
     public void setUp() {
@@ -115,6 +120,7 @@ public class SettingsPresenterTest extends RxTest {
                 currencyFormatManager,
                 kycStatusHelper,
                 pitLinking,
+                analytics,
                 featureFlag);
         subject.initView(activity);
     }

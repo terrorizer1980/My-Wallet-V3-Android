@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.view.animation.DecelerateInterpolator
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.complete.ApplicationCompleteFragment
 import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
@@ -49,7 +50,10 @@ internal class KycStarter : StartKyc {
 class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(),
     KycProgressListener, KycNavHostView {
 
+    private var lastRelativeProgressValue = -1
     private val presenter: KycNavHostPresenter by inject()
+
+    private val analytics: Analytics by inject()
 
     private val navController by unsafeLazy { findNavController(navHostFragment) }
     private val currentFragment: Fragment?

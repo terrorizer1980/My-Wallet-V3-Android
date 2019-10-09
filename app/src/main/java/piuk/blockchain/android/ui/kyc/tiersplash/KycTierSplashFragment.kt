@@ -17,12 +17,14 @@ import com.blockchain.balance.setImageDrawable
 import com.blockchain.kyc.models.nabu.KycTierState
 import com.blockchain.kyc.models.nabu.TierJson
 import com.blockchain.kyc.models.nabu.TiersJson
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.hyperlinks.renderSingleLink
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
 import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.notifications.analytics.kycTierStart
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
@@ -68,6 +70,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
 
     private val presenter: KycTierSplashPresenter by inject()
     private val startSwap: StartSwap by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
 
     override fun onCreateView(
@@ -225,13 +228,19 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         disposable += view!!.findViewById<View>(R.id.card_tier_1)
             .throttledClicks()
             .subscribeBy(
-                onNext = { presenter.tier1Selected() },
+                onNext = {
+                    analytics.logEvent(KYCAnalyticsEvents.Tier1Clicked)
+                    presenter.tier1Selected()
+                },
                 onError = { Timber.e(it) }
             )
         disposable += view!!.findViewById<View>(R.id.card_tier_2)
             .throttledClicks()
             .subscribeBy(
-                onNext = { presenter.tier2Selected() },
+                onNext = {
+                    analytics.logEvent(KYCAnalyticsEvents.Tier2Clicked)
+                    presenter.tier2Selected()
+                },
                 onError = { Timber.e(it) }
             )
         disposable +=

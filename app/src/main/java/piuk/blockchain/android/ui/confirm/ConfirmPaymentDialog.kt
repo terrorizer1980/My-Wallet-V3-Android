@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SendAnalytics
 import kotlinx.android.synthetic.main.dialog_confirm_transaction.*
 
 import org.apache.commons.lang3.NotImplementedException
@@ -24,6 +26,7 @@ class ConfirmPaymentDialog : BaseDialogFragment<ConfirmPaymentView, ConfirmPayme
     ConfirmPaymentView {
 
     private val confirmPaymentPresenter: ConfirmPaymentPresenter by inject()
+    private val analytics: Analytics by inject()
 
     private var listener: OnConfirmDialogInteractionListener? = null
 
@@ -65,7 +68,10 @@ class ConfirmPaymentDialog : BaseDialogFragment<ConfirmPaymentView, ConfirmPayme
 
         toolbar.setNavigationOnClickListener { dismiss() }
         button_change_fee.setOnClickListener { listener?.onChangeFeeClicked() }
-        button_send.setOnClickListener { listener?.onSendClicked() }
+        button_send.setOnClickListener {
+            listener?.onSendClicked()
+            analytics.logEvent(SendAnalytics.SummarySendClick(paymentDetails?.cryptoUnit ?: ""))
+        }
 
         if (!arguments!!.getBoolean(SHOW_FEE_CHOICE, true)) {
             button_change_fee.gone()

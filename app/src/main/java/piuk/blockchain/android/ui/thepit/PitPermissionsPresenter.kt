@@ -2,6 +2,8 @@ package piuk.blockchain.android.ui.thepit
 
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.NabuUser
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.preferences.ThePitLinkingPrefs
 import com.blockchain.remoteconfig.ABTestExperiment
@@ -24,6 +26,7 @@ class PitPermissionsPresenter(
     private val nabuToken: NabuToken,
     private val pitLinking: PitLinking,
     private val prefs: ThePitLinkingPrefs,
+    private val analytics: Analytics,
     private val abTestExperiment: ABTestExperiment
 ) : BasePresenter<PitPermissionsView>() {
 
@@ -122,6 +125,7 @@ class PitPermissionsPresenter(
             }
             .doOnComplete { pitLinking.sendWalletAddressToThePit() }
             .doOnComplete { prefs.clearPitToWalletLinkId() }
+            .doOnComplete { analytics.logEvent(AnalyticsEvents.PITDEEPLINK) }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view?.showLoading() }
             .doFinally { view?.hideLoading() }

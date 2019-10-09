@@ -59,6 +59,7 @@ import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 
 import android.app.Activity.RESULT_OK
+import com.blockchain.notifications.analytics.SettingsAnalyticsEvents
 import com.blockchain.ui.urllinks.URL_PRIVACY_POLICY
 import com.blockchain.ui.urllinks.URL_TOS_POLICY
 import org.koin.android.ext.android.inject
@@ -148,25 +149,53 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     override fun setUpUi() {
         // Profile
-        kycStatusPref.onClick { settingsPresenter.onKycStatusClicked() }
+        kycStatusPref.onClick {
+            settingsPresenter.onKycStatusClicked()
+            analytics.logEvent(SettingsAnalyticsEvents.SwapLimitChecked)
+        }
         kycStatusPref.isVisible = false
 
-        guidPref.onClick { showDialogGuid() }
-        emailPref.onClick { onUpdateEmailClicked() }
-        smsPref.onClick { showDialogMobile() }
+        guidPref.onClick {
+            showDialogGuid()
+            analytics.logEvent(SettingsAnalyticsEvents.WappetIdCopyClicked)
+        }
+        emailPref.onClick {
+            onUpdateEmailClicked()
+            analytics.logEvent(SettingsAnalyticsEvents.EmailClicked)
+        }
+        smsPref.onClick {
+            showDialogMobile()
+            analytics.logEvent(SettingsAnalyticsEvents.PhoneClicked)
+        }
 
         thePit.onClick { settingsPresenter.onThePitClicked() }
 
         // Preferences
         fiatPref.onClick { showDialogFiatUnits() }
-        emailNotificationPref.onClick { showDialogEmailNotifications() }
+        emailNotificationPref.onClick {
+            showDialogEmailNotifications()
+            analytics.logEvent(SettingsAnalyticsEvents.EmailNotificationClicked)
+        }
         pushNotificationPref.onClick { showDialogPushNotifications() }
 
         // Security
-        fingerprintPref.onClick { onFingerprintClicked() }
-        findPreference("pin").onClick { showDialogChangePin() }
-        twoStepVerificationPref.onClick { showDialogTwoFA() }
-        findPreference("change_pw").onClick { showDialogChangePasswordWarning() }
+        fingerprintPref.onClick {
+            onFingerprintClicked()
+            analytics.logEvent(SettingsAnalyticsEvents.BiometryAuthSwitch)
+        }
+        findPreference("pin").onClick {
+            showDialogChangePin()
+            analytics.logEvent(SettingsAnalyticsEvents.ChangePinClicked)
+        }
+        twoStepVerificationPref.onClick {
+            showDialogTwoFA()
+            analytics.logEvent(SettingsAnalyticsEvents.TwoFactorAuthClicked)
+        }
+
+        findPreference("change_pw").onClick {
+            showDialogChangePasswordWarning()
+            analytics.logEvent(SettingsAnalyticsEvents.ChangePassClicked)
+        }
 
         torPref.setOnPreferenceChangeListener { _, newValue ->
             settingsPresenter.updateTor(newValue as Boolean)
@@ -203,6 +232,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                     .setCancelable(false)
                     .show()
             }
+            analytics.logEvent(SettingsAnalyticsEvents.SwipeToReceiveSwitch)
             true
         }
 
@@ -407,6 +437,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         val intent = Intent(activity, PinEntryActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
+        analytics.logEvent(SettingsAnalyticsEvents.PinChanged)
     }
 
     override fun launchThePitLandingActivity() {
@@ -531,6 +562,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                 val clip = ClipData.newPlainText("guid", guidPref!!.summary)
                 clipboard.primaryClip = clip
                 showCustomToast(R.string.copied_to_clipboard)
+                analytics.logEvent(SettingsAnalyticsEvents.WappetIdCopyCopied)
             }
             .setNegativeButton(R.string.no, null)
             .show()

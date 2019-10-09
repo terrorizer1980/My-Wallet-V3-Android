@@ -40,6 +40,7 @@ import com.blockchain.annotations.CommonCode
 import com.blockchain.balance.errorIcon
 import com.blockchain.koin.injectActivity
 import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.ui.dialog.MinBalanceExplanationDialog
@@ -199,12 +200,18 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             } else {
                 showSnackbar(R.string.check_connectivity_exit, Snackbar.LENGTH_LONG)
             }
+            analytics.logEvent(SendAnalytics.SendFormClicked(currencyState.cryptoCurrency.symbol))
         }
 
-        max.setOnClickListener { presenter.onSpendMaxClicked() }
+        max.setOnClickListener {
+            analytics.logEvent(SendAnalytics.SendSpendableBalanceClicked(currencyState.cryptoCurrency.symbol))
+            presenter.onSpendMaxClicked()
+        }
 
-        info_link.setOnClickListener { MinBalanceExplanationDialog()
-            .show(fragmentManager, "Dialog") }
+        info_link.setOnClickListener {
+            MinBalanceExplanationDialog()
+                .show(fragmentManager, "Dialog")
+        }
 
         amountContainer.currencyFiat.text = currencyState.fiatUnit
 
@@ -411,7 +418,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             REQUEST_CODE_BCH_RECEIVING -> presenter.selectReceivingAccount(unpackAccountResult(data))
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
-        println("QRRR onActivityResult $requestCode")
     }
 
     private fun resetPitAddressState() {
@@ -610,6 +616,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             visible()
             setOnClickListener {
                 onPitClicked()
+                analytics.logEvent(SendAnalytics.PitButtonClicked(currencyState.cryptoCurrency.symbol))
             }
         }
     }

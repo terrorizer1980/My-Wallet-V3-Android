@@ -21,7 +21,7 @@ import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeModel
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeViewModelProvider
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewHostActivityListener
 import com.blockchain.notifications.analytics.Analytics
-import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.ui.extensions.sampleThrottledClicks
 import com.blockchain.ui.password.SecondPasswordHandler
 import info.blockchain.balance.AccountReference
@@ -34,7 +34,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_homebrew_trade_confirmation.*
-import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.swap.homebrew.exchange.detail.HomebrewTradeDetailActivity
@@ -55,6 +54,7 @@ class ExchangeConfirmationFragment :
     ExchangeConfirmationView {
 
     private val presenter: ExchangeConfirmationPresenter by inject()
+    private val analytics: Analytics by inject()
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
     private val activityListener: HomebrewHostActivityListener by ParentActivityDelegate(this)
 
@@ -64,7 +64,9 @@ class ExchangeConfirmationFragment :
     override val exchangeViewState: Observable<ExchangeViewState> by unsafeLazy {
         exchangeModel.exchangeViewStates
             .observeOn(AndroidSchedulers.mainThread())
-            .sampleThrottledClicks(confirm_button)
+            .sampleThrottledClicks(confirm_button).doOnNext {
+                analytics.logEvent(SwapAnalyticsEvents.SwapSummaryConfirmClick)
+            }
     }
 
     override fun onCreateView(
@@ -92,8 +94,6 @@ class ExchangeConfirmationFragment :
         }
 
         activityListener.setToolbarTitle(R.string.confirm_exchange)
-        get<Analytics>().logEvent(AnalyticsEvents.ExchangeDetailConfirm)
-
         onViewReady()
     }
 
@@ -128,6 +128,9 @@ class ExchangeConfirmationFragment :
 
             val receivingCryptoValue = receiving.formatWithUnit(locale)
             to_amount.setBackgroundResource(receiving.currency.colorRes())
+            if (to_amount.text.isNullOrEmpty().not() && receivingCryptoValue != to_amount.text.toString()) {
+                analytics.logEvent(SwapAnalyticsEvents.SwapExchangeReceiveChange)
+            }
             to_amount.text = receivingCryptoValue
 
             receive_amount.text = receivingCryptoValue

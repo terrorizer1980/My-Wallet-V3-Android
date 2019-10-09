@@ -7,6 +7,7 @@ import com.blockchain.kyc.models.nabu.NabuApiException
 import com.blockchain.kyc.models.nabu.NabuErrorCodes
 import com.blockchain.kyc.models.nabu.State
 import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.swap.nabu.NabuToken
@@ -306,8 +307,11 @@ class BitcoinSendStrategy(
                     logPaymentSentEvent(true, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
                     if (isBitpayPaymentRequest) {
                         prefs.setBitPaySuccess()
-                        analytics.logEvent(BitPayEvent.SuccessEvent(pendingTransaction.bigIntAmount))
+                        analytics.logEvent(BitPayEvent.SuccessEvent(pendingTransaction.bigIntAmount,
+                            CryptoCurrency.BTC.symbol))
                     }
+                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.BTC.toString()))
+
                     clearBtcUnspentResponseCache()
                     view.dismissProgressDialog()
                     view.dismissConfirmationDialog()
@@ -324,7 +328,7 @@ class BitcoinSendStrategy(
                         Snackbar.LENGTH_INDEFINITE
                     )
                     logPaymentSentEvent(false, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
-
+                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.BTC.toString()))
                     (it as? BitPayApiException)?.let { bitpayException ->
                         analytics.logEvent(BitPayEvent.FailureEvent(bitpayException.message ?: ""))
                     }
