@@ -99,7 +99,7 @@ class AccountPresenter internal constructor(
             .doOnError { Timber.e(it) }
             .subscribe(
                 { triple ->
-                    if (payloadDataManager.wallet!!.isUpgraded && !triple.left.isEmpty()) {
+                    if (payloadDataManager.wallet!!.isUpgraded && triple.left.isNotEmpty()) {
                         view.onSetTransferLegacyFundsMenuItemVisible(true)
 
                         if ((prefs.getValue(KEY_WARN_TRANSFER_ALL, true) ||
@@ -436,9 +436,10 @@ class AccountPresenter internal constructor(
         // Create New Wallet button at top position, non-clickable
         accountsAndImportedList.add(AccountItem(AccountItem.TYPE_WALLET_HEADER))
 
-        val defaultAccount = getBchAccounts()[getDefaultBchIndex()]
+        val bchAccounts = getBchAccounts()
+        val defaultAccount = bchAccounts.getOrNull(getDefaultBchIndex())
 
-        for ((position, account) in getBchAccounts().withIndex()) {
+        for ((position, account) in bchAccounts.withIndex()) {
             val balance = getBchAccountBalance(account.xpub)
             var label: String? = account.label
 
@@ -454,7 +455,7 @@ class AccountPresenter internal constructor(
                     balance,
                     account.isArchived,
                     false,
-                    defaultAccount.xpub == account.xpub,
+                    defaultAccount?.xpub == account.xpub,
                     AccountItem.TYPE_ACCOUNT_BCH
                 )
             )

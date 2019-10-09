@@ -470,9 +470,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.receive_address_to_share)
                 .setCancelable(false)
-                .setPositiveButton(R.string.yes) { _, _ ->
-                    presenter.onShowBottomShareSheetSelected()
-                }
+                .setPositiveButton(R.string.yes) { _, _ -> presenter.onShowBottomShareSheetSelected() }
                 .setNegativeButton(R.string.no, null)
                 .show()
         }

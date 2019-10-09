@@ -21,8 +21,6 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
-import piuk.blockchain.android.ui.balance.BalanceFragment.Companion.KEY_TRANSACTION_HASH
-import piuk.blockchain.android.ui.balance.BalanceFragment.Companion.KEY_TRANSACTION_LIST_POSITION
 import piuk.blockchain.android.ui.balance.adapter.formatting
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -86,25 +84,31 @@ class TransactionDetailPresenter constructor(
         get() = TransactionHash(displayable.cryptoCurrency, displayable.hash)
 
     override fun onViewReady() {
-        val pageIntent = view?.getPageIntent()
-        if (pageIntent != null && pageIntent.hasExtra(KEY_TRANSACTION_LIST_POSITION)) {
-            val transactionPosition = pageIntent.getIntExtra(KEY_TRANSACTION_LIST_POSITION, -1)
-            if (transactionPosition != -1) {
-                displayable = transactionListDataManager.getTransactionList()[transactionPosition]
-                updateUiFromTransaction(displayable)
-            } else {
+        val pos = view?.positionDetailLookup() ?: -1
+        val txHash = view?.txHashDetailLookup()
+
+        when {
+            pos != -1 -> {
+                val transactionList = transactionListDataManager.getTransactionList()
+                if (pos < transactionList.size) {
+                    displayable = transactionListDataManager.getTransactionList()[pos]
+                    updateUiFromTransaction(displayable)
+                } else {
+                    view?.pageFinish()
+                }
+            }
+            txHash != null -> {
+                compositeDisposable +=
+                    transactionListDataManager.getTxFromHash(txHash)
+                        .doOnSuccess { displayable = it }
+                        .subscribe(
+                            { this.updateUiFromTransaction(it) },
+                            { view?.pageFinish() })
+            }
+            else -> {
+                Timber.e("Transaction hash not found")
                 view?.pageFinish()
             }
-        } else if (pageIntent != null && pageIntent.hasExtra(KEY_TRANSACTION_HASH)) {
-            compositeDisposable +=
-                transactionListDataManager.getTxFromHash(pageIntent.getStringExtra(KEY_TRANSACTION_HASH))
-                    .doOnSuccess { displayable = it }
-                    .subscribe(
-                        { this.updateUiFromTransaction(it) },
-                        { view?.pageFinish() })
-        } else {
-            Timber.e("Transaction hash not found")
-            view?.pageFinish()
         }
     }
 

@@ -21,6 +21,7 @@ import info.blockchain.wallet.multiaddress.TransactionSummary.Direction
 import kotlinx.android.synthetic.main.activity_transaction_details.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -237,9 +238,11 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
         finish()
     }
 
-    override fun getPageIntent(): Intent? {
-        return intent
-    }
+    override fun txHashDetailLookup(): String? =
+        intent?.getStringExtra(BalanceFragment.KEY_TRANSACTION_HASH)
+
+    override fun positionDetailLookup(): Int =
+        intent?.getIntExtra(BalanceFragment.KEY_TRANSACTION_LIST_POSITION, -1) ?: -1
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
