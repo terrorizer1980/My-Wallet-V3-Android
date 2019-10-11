@@ -3,8 +3,10 @@
 package com.blockchain.koin
 
 import com.blockchain.CrashLoggerImpl
+import com.blockchain.SwapDiagnosticsImpl
 import com.blockchain.logging.CrashLogger
 import com.blockchain.logging.EventLogger
+import com.blockchain.logging.SwapDiagnostics
 import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.remoteconfig.RemoteConfiguration
@@ -67,4 +69,8 @@ val coreUiModule = applicationContext {
     bean {
         CrashLoggerImpl(BuildConfig.DEBUG)
     }.bind(CrashLogger::class)
+
+    bean {
+        SwapDiagnosticsImpl(crashLogger = get())
+    }.bind(SwapDiagnostics::class)
 }

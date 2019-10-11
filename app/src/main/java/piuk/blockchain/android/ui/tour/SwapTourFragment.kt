@@ -58,11 +58,11 @@ class SwapTourFragment : Fragment() {
             0
         )
 
-        text_view_balance_title.text = getString(R.string.morph_balance_title, CryptoCurrency.BTC.symbol)
-        text_view_balance_value.text = formatSpendableString()
+        balance_title.text = getString(R.string.morph_balance_title, CryptoCurrency.BTC.symbol)
+        balance_value.text = formatSpendableString()
 
-        text_view_base_rate.text = "1 ${CryptoCurrency.BTC.symbol} ="
-        text_view_counter_rate.text = "48.32147365 ETH"
+        base_rate.text = "1 ${CryptoCurrency.BTC.symbol} ="
+        counter_rate.text = "48.32147365 ETH"
     }
 
     private fun formatSpendableString(): CharSequence {
@@ -83,14 +83,14 @@ class SwapTourFragment : Fragment() {
 
     private fun displayFiatLarge(fiatValue: FiatValue, cryptoValue: CryptoValue, decimalCursor: Int) {
         val parts = fiatValue.toStringParts()
-        largeValue.setText(
+        large_value.setText(
             ThreePartText(parts.symbol,
                 parts.major,
                 if (decimalCursor != 0) parts.minor else "")
         )
 
         val fromCryptoString = cryptoValue.toStringWithSymbol()
-        smallValue.text = fromCryptoString
+        small_value.text = fromCryptoString
     }
 
     private fun setupToolbar() {

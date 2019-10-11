@@ -1,4 +1,4 @@
-package com.blockchain.swap.common.exchange.mvi
+package piuk.blockchain.android.ui.swap.customviews
 
 import io.reactivex.Observable
 import org.amshove.kluent.`should be`
@@ -17,63 +17,99 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `press key`() {
-        lastStateGivenIntents(userKey('1'))
+        lastStateGivenIntents(
+            userKey(
+                '1'
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` BigDecimal.ONE
     }
 
     @Test
     fun `press two keys`() {
-        lastStateGivenIntents(*keys("12"))
+        lastStateGivenIntents(
+            *keys(
+                "12"
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` 12.toBigDecimal()
     }
 
     @Test
     fun `press two keys and period`() {
-        lastStateGivenIntents(*keys("12."))
+        lastStateGivenIntents(
+            *keys(
+                "12."
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` "12.00".toBigDecimal()
     }
 
     @Test
     fun `press two keys and period then one key`() {
-        lastStateGivenIntents(*keys("12.3"))
+        lastStateGivenIntents(
+            *keys(
+                "12.3"
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` "12.30".toBigDecimal()
     }
 
     @Test
     fun `press two keys and period then two keys`() {
-        lastStateGivenIntents(*keys("12.34"))
+        lastStateGivenIntents(
+            *keys(
+                "12.34"
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` "12.34".toBigDecimal()
     }
 
     @Test
     fun `press two keys and period then three keys`() {
-        lastStateGivenIntents(*keys("12.345"))
+        lastStateGivenIntents(
+            *keys(
+                "12.345"
+            )
+        )
             .assertShake()
             .userDecimal `should equal` "12.34".toBigDecimal()
     }
 
     @Test
     fun `backspace a decimal`() {
-        lastStateGivenIntents(*keys("12.34<"))
+        lastStateGivenIntents(
+            *keys(
+                "12.34<"
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` "12.30".toBigDecimal()
     }
 
     @Test
     fun `many backspaces`() {
-        lastStateGivenIntents(*keys("<12.34<<<99"))
+        lastStateGivenIntents(
+            *keys(
+                "<12.34<<<99"
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` "1299".toBigDecimal()
     }
 
     @Test
     fun `backspace from empty`() {
-        lastStateGivenIntents(userKey('<'))
+        lastStateGivenIntents(
+            userKey(
+                '<'
+            )
+        )
             .assertShake()
     }
 
@@ -83,63 +119,94 @@ class FloatKeyboardDialogTest {
             .states
             .test()
             .values()
-            .apply { size `should be` 3 }
+            .apply { size `should be` 2 }
             .apply { get(1).assertShake() }
-            .apply { get(2).assertShake() }
     }
 
     @Test
     fun `multiple periods in a row - no shake`() {
-        lastStateGivenIntents(*keys("1.."))
+        lastStateGivenIntents(
+            *keys(
+                "1.."
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` "1.00".toBigDecimal()
     }
 
     @Test
     fun `multiple periods not in a row - shake`() {
-        lastStateGivenIntents(*keys("1.2."))
+        lastStateGivenIntents(
+            *keys(
+                "1.2."
+            )
+        )
             .assertShake()
             .userDecimal `should equal` "1.20".toBigDecimal()
     }
 
     @Test
     fun `multiple periods in a row`() {
-        lastStateGivenIntents(*keys("12..34"))
+        lastStateGivenIntents(
+            *keys(
+                "12..34"
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` "12.34".toBigDecimal()
     }
 
     @Test
     fun `increase max dp`() {
-        lastStateGivenIntents(setMaxDp(3), *keys("12."))
+        lastStateGivenIntents(
+            setMaxDp(
+                3
+            ), *keys("12.")
+        )
             .assertNoShake()
             .userDecimal `should equal` "12.000".toBigDecimal()
     }
 
     @Test
     fun `increase max dp and press 3 keys`() {
-        lastStateGivenIntents(setMaxDp(3), *keys("12.345"))
+        lastStateGivenIntents(
+            setMaxDp(
+                3
+            ), *keys("12.345")
+        )
             .assertNoShake()
             .userDecimal `should equal` "12.345".toBigDecimal()
     }
 
     @Test
     fun `increase max dp and press extra key`() {
-        lastStateGivenIntents(setMaxDp(3), *keys("12.3456"))
+        lastStateGivenIntents(
+            setMaxDp(
+                3
+            ), *keys("12.3456")
+        )
             .assertShake()
             .userDecimal `should equal` "12.345".toBigDecimal()
     }
 
     @Test
     fun `decrease max dp`() {
-        lastStateGivenIntents(setMaxDp(0), *keys("12."))
+        lastStateGivenIntents(
+            setMaxDp(
+                0
+            ), *keys("12.")
+        )
             .assertShake()
             .userDecimal `should equal` "12".toBigDecimal()
     }
 
     @Test
     fun `clear clears all`() {
-        lastStateGivenIntents(*keys("12.30-"))
+        lastStateGivenIntents(
+            *keys(
+                "12.30-"
+            )
+        )
             .assertNoShake()
             .apply {
                 userDecimal `should equal` "0".toBigDecimal()
@@ -149,49 +216,78 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `clear clears all and can enter a new value`() {
-        lastStateGivenIntents(*keys("12.34-45.65"))
+        lastStateGivenIntents(
+            *keys(
+                "12.34-45.65"
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` "45.65".toBigDecimal()
     }
 
     @Test
     fun `after a clear the dp is still set`() {
-        lastStateGivenIntents(setMaxDp(3), FloatKeyboardIntent.Clear())
+        lastStateGivenIntents(
+            setMaxDp(
+                3
+            ), FloatKeyboardIntent.Clear
+        )
             .assertNoShake()
             .maxDecimal `should equal` 3
     }
 
     @Test
     fun `can set the value`() {
-        lastStateGivenIntents(setValue(4, 3.1234))
+        lastStateGivenIntents(
+            setValue(
+                4,
+                3.1234
+            )
+        )
             .assertNoShake()
             .userDecimal `should equal` 3.1234.toBigDecimal()
     }
 
     @Test
     fun `can set the value and then go back`() {
-        lastStateGivenIntents(setValue(4, 3.1234), *keys("<"))
+        lastStateGivenIntents(
+            setValue(
+                4,
+                3.1234
+            ), *keys("<")
+        )
             .assertNoShake()
             .userDecimal `should equal` "3.1230".toBigDecimal()
     }
 
     @Test
     fun `can set the value and then go back before the decimal point`() {
-        lastStateGivenIntents(setValue(3, 13.123), *keys("<<<<"))
+        lastStateGivenIntents(
+            setValue(
+                3,
+                13.123
+            ), *keys("<<<<")
+        )
             .assertNoShake()
             .userDecimal `should equal` "13".toBigDecimal()
     }
 
     @Test
     fun `can set the value and then go back before all the way and get shake`() {
-        lastStateGivenIntents(*keys("123"), setValue(3, 13.123), *keys("<<<<<<<"))
+        lastStateGivenIntents(
+            *keys(
+                "123"
+            ),
+            setValue(3, 13.123),
+            *keys("<<<<<<<")
+        )
             .assertShake()
             .userDecimal `should equal` "0".toBigDecimal()
     }
 
     @Test
     fun `only emits one state on setValue`() {
-        FloatKeyboardDialog(
+        piuk.blockchain.android.ui.swap.customviews.FloatKeyboardDialog(
             Observable.just(
                 setValue(
                     3,
@@ -274,7 +370,12 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `set value to 0 with 8 dp`() {
-        lastStateGivenIntents(setValue(8, BigDecimal.ZERO.setScale(8)))
+        lastStateGivenIntents(
+            setValue(
+                8,
+                BigDecimal.ZERO.setScale(8)
+            )
+        )
             .apply {
                 userDecimal `should equal` BigDecimal.ZERO
                 decimalCursor `should be` 0
@@ -283,7 +384,12 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `set value to non-0 with 8 dp`() {
-        lastStateGivenIntents(setValue(8, "0.1234000".toBigDecimal()))
+        lastStateGivenIntents(
+            setValue(
+                8,
+                "0.1234000".toBigDecimal()
+            )
+        )
             .apply {
                 userDecimal `should equal` "0.12340000".toBigDecimal()
                 decimalCursor `should be` 5
@@ -292,7 +398,12 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `set value to non-0 with 8 dp with zeros`() {
-        lastStateGivenIntents(setValue(8, "0.10101000".toBigDecimal()))
+        lastStateGivenIntents(
+            setValue(
+                8,
+                "0.10101000".toBigDecimal()
+            )
+        )
             .apply {
                 userDecimal `should equal` "0.10101000".toBigDecimal()
                 decimalCursor `should be` 6
@@ -301,7 +412,12 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `set value with leading fractional zeros`() {
-        lastStateGivenIntents(setValue(8, "0.00123".toBigDecimal()))
+        lastStateGivenIntents(
+            setValue(
+                8,
+                "0.00123".toBigDecimal()
+            )
+        )
             .apply {
                 userDecimal `should equal` "0.00123000".toBigDecimal()
                 decimalCursor `should be` 6
@@ -310,7 +426,12 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `set value to integer with trailing values`() {
-        lastStateGivenIntents(setValue(3, "10".toBigDecimal()))
+        lastStateGivenIntents(
+            setValue(
+                3,
+                "10".toBigDecimal()
+            )
+        )
             .apply {
                 userDecimal `should equal` "10".toBigDecimal()
                 decimalCursor `should be` 0
@@ -319,11 +440,13 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `maximum integer digits`() {
-        lastStateGivenIntents(setMaximums(
-            Maximums(
-                maxIntLength = 4
-            )
-        ), *keys("12345"))
+        lastStateGivenIntents(
+            setMaximums(
+                Maximums(
+                    maxIntLength = 4
+                )
+            ), *keys("12345")
+        )
             .assertShake()
             .apply {
                 userDecimal `should equal` "1234".toBigDecimal()
@@ -332,7 +455,13 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `maximum absolute value`() {
-        lastStateGivenIntents(setMaximums(Maximums(maxValue = 99.9.toBigDecimal())), *keys("99.91"))
+        lastStateGivenIntents(
+            setMaximums(
+                Maximums(
+                    maxValue = 99.9.toBigDecimal()
+                )
+            ), *keys("99.91")
+        )
             .assertShake()
             .apply {
                 userDecimal `should equal` "99.90".toBigDecimal()
@@ -341,7 +470,13 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `maximum absolute value - over`() {
-        lastStateGivenIntents(setMaximums(Maximums(maxValue = 99.9.toBigDecimal())), *keys("100"))
+        lastStateGivenIntents(
+            setMaximums(
+                Maximums(
+                    maxValue = 99.9.toBigDecimal()
+                )
+            ), *keys("100")
+        )
             .assertShake()
             .apply {
                 userDecimal `should equal` "99.90".toBigDecimal()
@@ -350,7 +485,13 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `maximum absolute value - over, then back`() {
-        lastStateGivenIntents(setMaximums(Maximums(maxValue = 99.9.toBigDecimal())), *keys("100<"))
+        lastStateGivenIntents(
+            setMaximums(
+                Maximums(
+                    maxValue = 99.9.toBigDecimal()
+                )
+            ), *keys("100<")
+        )
             .assertNoShake()
             .apply {
                 userDecimal `should equal` "99.00".toBigDecimal()
@@ -359,7 +500,13 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `maximum absolute value - over, then back all the way`() {
-        lastStateGivenIntents(setMaximums(Maximums(maxValue = 99.9.toBigDecimal())), *keys("100<<<<<"))
+        lastStateGivenIntents(
+            setMaximums(
+                Maximums(
+                    maxValue = 99.9.toBigDecimal()
+                )
+            ), *keys("100<<<<<")
+        )
             .assertShake()
             .apply {
                 userDecimal `should equal` "0".toBigDecimal()
@@ -368,7 +515,13 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `maximum digits`() {
-        lastStateGivenIntents(setMaximums(Maximums(maxDigits = 4)), *keys("112.34"))
+        lastStateGivenIntents(
+            setMaximums(
+                Maximums(
+                    maxDigits = 4
+                )
+            ), *keys("112.34")
+        )
             .assertShake()
             .apply {
                 userDecimal `should equal` "112.30".toBigDecimal()
@@ -377,7 +530,13 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `maximum digits all ints`() {
-        lastStateGivenIntents(setMaximums(Maximums(maxDigits = 4)), *keys("11234"))
+        lastStateGivenIntents(
+            setMaximums(
+                Maximums(
+                    maxDigits = 4
+                )
+            ), *keys("11234")
+        )
             .assertShake()
             .apply {
                 userDecimal `should equal` "1123".toBigDecimal()
@@ -388,8 +547,16 @@ class FloatKeyboardDialogTest {
     fun `applying same maximums yields same state`() {
         FloatKeyboardDialog(
             Observable.just(
-                setMaximums(Maximums(maxDigits = 8)),
-                setMaximums(Maximums(maxDigits = 8))
+                setMaximums(
+                    Maximums(
+                        maxDigits = 8
+                    )
+                ),
+                setMaximums(
+                    Maximums(
+                        maxDigits = 8
+                    )
+                )
             )
         )
             .states
@@ -400,7 +567,17 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `setValue keeps maximum`() {
-        lastStateGivenIntents(setMaximums(Maximums(maxDigits = 4)), setValue(3, "11.234".toBigDecimal()))
+        lastStateGivenIntents(
+            setMaximums(
+                Maximums(
+                    maxDigits = 4
+                )
+            ),
+            setValue(
+                3,
+                "11.234".toBigDecimal()
+            )
+        )
             .apply {
                 userDecimal `should equal` "11.230".toBigDecimal()
                 maximums.maxDigits `should equal` 4
@@ -410,9 +587,16 @@ class FloatKeyboardDialogTest {
     @Test
     fun `clear keeps maximum`() {
         lastStateGivenIntents(
-            setMaximums(Maximums(maxDigits = 5)),
-            setValue(3, "11.234".toBigDecimal()),
-            FloatKeyboardIntent.Clear()
+            setMaximums(
+                Maximums(
+                    maxDigits = 5
+                )
+            ),
+            setValue(
+                3,
+                "11.234".toBigDecimal()
+            ),
+            FloatKeyboardIntent.Clear
         ).apply {
             userDecimal `should equal` "0".toBigDecimal()
             maximums.maxDigits `should equal` 5
@@ -421,12 +605,18 @@ class FloatKeyboardDialogTest {
 
     @Test
     fun `set value does not emit an error`() {
-        lastStateGivenIntents(setValue(2, 13.123))
+        lastStateGivenIntents(
+            setValue(
+                2,
+                13.123
+            )
+        )
             .assertNoShake()
     }
 }
 
-private fun setValue(dp: Int, d: Double): FloatKeyboardIntent = setValue(dp, d.toBigDecimal())
+private fun setValue(dp: Int, d: Double): FloatKeyboardIntent =
+    setValue(dp, d.toBigDecimal())
 
 private fun setValue(dp: Int, bd: BigDecimal): FloatKeyboardIntent = FloatKeyboardIntent.SetValue(dp, bd)
 
@@ -445,9 +635,9 @@ private fun lastStateGivenIntents(vararg intents: FloatKeyboardIntent): FloatEnt
 
 private fun userKey(key: Char) =
     when (key) {
-        '<' -> FloatKeyboardIntent.Backspace()
-        '-' -> FloatKeyboardIntent.Clear()
-        '.' -> FloatKeyboardIntent.Period()
+        '<' -> FloatKeyboardIntent.Backspace
+        '-' -> FloatKeyboardIntent.Clear
+        '.' -> FloatKeyboardIntent.Period
         else -> FloatKeyboardIntent.NumericKey(key - '0')
     }
 

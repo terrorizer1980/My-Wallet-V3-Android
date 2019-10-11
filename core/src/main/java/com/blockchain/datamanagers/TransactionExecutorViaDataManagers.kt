@@ -279,7 +279,12 @@ internal class TransactionExecutorViaDataManagers(
         diagnostics: SwapDiagnostics?
     ): Single<String> = getSpendableCoins(account.xpub, amount, feePerKb)
         .flatMap { spendable ->
-            diagnostics?.accountBalance = CryptoValue(amount.currency, spendable.spendableOutputs.sum())
+            diagnostics?.apply {
+                log("sendBTC-style Tx")
+                logBalance(CryptoValue(amount.currency, spendable.spendableOutputs.sum()))
+                logAbsoluteFee(spendable.absoluteFee)
+                logSwapAmount(amount)
+            }
             getSigningKeys(account, spendable)
                 .flatMap { signingKeys ->
                     changeAddress

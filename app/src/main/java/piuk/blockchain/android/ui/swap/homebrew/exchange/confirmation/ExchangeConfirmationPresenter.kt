@@ -2,9 +2,8 @@ package piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation
 
 import android.support.annotation.VisibleForTesting
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees
-import com.blockchain.logging.CrashLogger
+import com.blockchain.logging.SwapDiagnostics
 import com.blockchain.morph.CoinPair
-import com.blockchain.swap.common.exchange.SwapFailureDiagnostics
 import com.blockchain.swap.nabu.service.Quote
 import com.blockchain.swap.nabu.service.TradeExecutionService
 import com.blockchain.swap.nabu.service.TradeTransaction
@@ -54,7 +53,8 @@ class ExchangeConfirmationPresenter internal constructor(
     private val stringUtils: StringUtils,
     private val locale: Locale,
     private val analytics: Analytics,
-    private val crashLogger: CrashLogger
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val diagnostics: SwapDiagnostics
 ) : BasePresenter<ExchangeConfirmationView>() {
 
     private var showPaxAirdropBottomDialog: Boolean = false
@@ -63,12 +63,15 @@ class ExchangeConfirmationPresenter internal constructor(
     private var maxSpendable: CryptoValue? = null
     private var executeTradeSingle: Single<TradeTransaction>? = null
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val diagnostics = SwapFailureDiagnostics()
-
     override fun onViewReady() {
         // Ensure user hasn't got a double encrypted wallet
         subscribeToViewState()
+        diagnostics.log("confirm screen enter")
+    }
+
+    override fun onViewDestroyed() {
+        diagnostics.log("confirm screen destroy")
+        super.onViewDestroyed()
     }
 
     private fun subscribeToViewState() {
@@ -82,7 +85,7 @@ class ExchangeConfirmationPresenter internal constructor(
                     minSpendableFiatValue = state.minTradeLimit
                     maxSpendable = state.maxSpendable
 
-                    diagnostics.maxSpendable = maxSpendable
+                    diagnostics.logMaxSpendable(maxSpendable)
 
                     showPaxAirdropBottomDialog = state.isPowerPaxTagged
                     if (!payloadDecrypt.isDoubleEncrypted) {
@@ -107,7 +110,7 @@ class ExchangeConfirmationPresenter internal constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onSuccess = {
-                        diagnostics.fee = it
+                        // This fee is never used in a calculation, just displayed.
                         view.updateFee(it)
                     },
                     onError = {
@@ -123,14 +126,15 @@ class ExchangeConfirmationPresenter internal constructor(
         receivingAccount: AccountReference
     ): Single<TradeTransaction> {
 
-        diagnostics.quote = quote
         return deriveAddressPair(sendingAccount, receivingAccount)
             .subscribeOn(Schedulers.io())
             .flatMap { (destination, refund) ->
                 tradeExecutionService.executeTrade(quote, destination, refund)
                     .subscribeOn(Schedulers.io())
                     .flatMap { transaction ->
-                        sendFundsForTrade(transaction, sendingAccount, diagnostics)
+                        diagnostics.log("Sending funds for swap")
+                        diagnostics.logQuote(quote)
+                        sendFundsForTrade(transaction, sendingAccount)
                             .subscribeOn(Schedulers.io())
                     }
             }
@@ -178,28 +182,31 @@ class ExchangeConfirmationPresenter internal constructor(
 
     private fun sendFundsForTrade(
         transaction: TradeTransaction,
-        sendingAccount: AccountReference,
-        diagnostics: SwapFailureDiagnostics
-    ): Single<TradeTransaction> {
-
-        return transactionExecutor.executeTransaction(
+        sendingAccount: AccountReference
+    ): Single<TradeTransaction> = transactionExecutor.executeTransaction(
             transaction.deposit,
             transaction.depositAddress,
             sendingAccount,
             memo = transaction.memo(),
             diagnostics = diagnostics
-        ).flatMap {
-            Single.just(transaction)
-        }.onErrorResumeNext {
-            Timber.e(it, "Transaction execution error, telling nabu")
-            analytics.logEvent(AnalyticsEvents.ExchangeExecutionError)
-            val hash = (it as? TransactionHashApiException)?.hashString ?: (it as? SendException)?.hash
+        ).flatMap { Single.just(transaction) }
+            .onErrorResumeNext { onSendFundsFailed(transaction, it) }
+            .doOnSuccess { onSendFundsSucceeded(it) }
 
-            crashLogger.logException(diagnostics.toLoggable())
+    private fun onSendFundsSucceeded(transaction: TradeTransaction) {
+        triggerPaxTradeEvent(transaction)
+        diagnostics.logSuccess(transaction.hashOut)
+    }
 
-            tradeExecutionService.putTradeFailureReason(transaction, hash, it.message)
-                .andThen(Single.error(it))
-        }.doOnSuccess { triggerPaxTradeEvent(it) }
+    private fun onSendFundsFailed(transaction: TradeTransaction, e: Throwable): Single<TradeTransaction> {
+        Timber.e(e, "Transaction execution error, telling nabu")
+        analytics.logEvent(AnalyticsEvents.ExchangeExecutionError)
+        val hash = (e as? TransactionHashApiException)?.hashString ?: (e as? SendException)?.hash
+
+        diagnostics.logFailure(hash, e.message)
+
+        return tradeExecutionService.putTradeFailureReason(transaction, hash, e.message)
+            .andThen(Single.error(e))
     }
 
     private fun triggerPaxTradeEvent(transaction: TradeTransaction) {
@@ -341,3 +348,16 @@ private class PaxTradeEvent : AnalyticsEvent {
     override val event = "pax_swap_traded"
     override val params = emptyMap<String, String>()
 }
+
+private fun SwapDiagnostics.logQuote(quote: Quote) {
+    with(quote) {
+        logStateVariable("QUOTE_CONFIRM_FIX", fix.toString())
+        logStateVariable("QUOTE_CONFIRM_VAL_FROM", from.toLogString())
+        logStateVariable("QUOTE_CONFIRM_VAL_TO", to.toLogString())
+        logStateVariable("QUOTE_CONFIRM_RATE_BASE_2_FIAT", baseToFiatRate.toEngineeringString())
+        logStateVariable("QUOTE_CONFIRM_RATE_BASE_2_COUNTER", baseToCounterRate.toEngineeringString())
+        logStateVariable("QUOTE_CONFIRM_RATE_COUNTER_2_FIAT", counterToFiatRate.toEngineeringString())
+    }
+}
+
+private fun Quote.Value.toLogString() = "${cryptoValue.toStringWithSymbol()} : ${fiatValue.toStringWithSymbol()}"

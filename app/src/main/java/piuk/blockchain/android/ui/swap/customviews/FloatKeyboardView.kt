@@ -1,13 +1,10 @@
-package piuk.blockchain.android.ui.swap.homebrew.exchange
+package piuk.blockchain.android.ui.swap.customviews
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
-import com.blockchain.swap.common.exchange.mvi.FloatKeyboardIntent
-import com.blockchain.swap.common.exchange.mvi.FloatKeyboardDialog
-import com.blockchain.swap.common.exchange.mvi.Maximums
 import io.reactivex.subjects.BehaviorSubject
 import piuk.blockchain.android.R
 import java.math.BigDecimal
@@ -58,12 +55,12 @@ class FloatKeyboardView @JvmOverloads constructor(
 
     private fun numberClick(intent: FloatKeyboardIntent.NumericKey) = OnClickListener { values.onNext(intent) }
 
-    private fun backspaceClick() = OnClickListener { values.onNext(FloatKeyboardIntent.Backspace()) }
+    private fun backspaceClick() = OnClickListener { values.onNext(FloatKeyboardIntent.Backspace) }
 
-    private fun periodClick() = OnClickListener { values.onNext(FloatKeyboardIntent.Period()) }
+    private fun periodClick() = OnClickListener { values.onNext(FloatKeyboardIntent.Period) }
 
     private fun clearValue() = OnLongClickListener {
-        values.onNext(FloatKeyboardIntent.Clear())
+        values.onNext(FloatKeyboardIntent.Clear)
         true
     }
 

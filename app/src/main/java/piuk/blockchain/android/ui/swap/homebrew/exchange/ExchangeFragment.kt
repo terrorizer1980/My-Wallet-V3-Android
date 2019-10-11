@@ -20,17 +20,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.blockchain.balance.coinIconWhite
 import com.blockchain.balance.colorRes
+import com.blockchain.logging.SwapDiagnostics
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.swap.common.exchange.mvi.ApplyMaxSpendable
 import com.blockchain.swap.common.exchange.mvi.ExchangeIntent
 import com.blockchain.swap.common.exchange.mvi.ExchangeViewState
 import com.blockchain.swap.nabu.service.Fix
-import com.blockchain.swap.common.exchange.mvi.Maximums
+import piuk.blockchain.android.ui.swap.customviews.Maximums
 import com.blockchain.swap.nabu.service.Quote
 import com.blockchain.swap.common.exchange.mvi.QuoteValidity
 import com.blockchain.swap.common.exchange.mvi.SimpleFieldUpdateIntent
 import com.blockchain.swap.common.exchange.mvi.ToggleFiatCryptoIntent
-import piuk.blockchain.android.ui.swap.customviews.CurrencyTextView
 import piuk.blockchain.android.ui.swap.customviews.ThreePartText
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewHostActivityListener
 import piuk.blockchain.android.ui.swap.logging.AmountErrorEvent
@@ -82,28 +82,17 @@ internal class ExchangeFragment : Fragment() {
     private val inputTypeRelay = PublishSubject.create<Fix>()
     private val activityListener: HomebrewHostActivityListener by ParentActivityDelegate(this)
 
-    private lateinit var largeValue: CurrencyTextView
-    private lateinit var smallValue: TextView
-    private lateinit var keyboard: FloatKeyboardView
-    private lateinit var selectSendAccountButton: Button
-    private lateinit var selectReceiveAccountButton: Button
-    private lateinit var exchangeButton: Button
-    private lateinit var textViewBalanceTitle: TextView
-    private lateinit var textViewBalance: TextView
-    private lateinit var textViewBaseRate: TextView
-    private lateinit var textViewCounterRate: TextView
-    private lateinit var root: ConstraintLayout
-    private lateinit var keyboardGroup: ConstraintLayout
-
     private lateinit var exchangeModel: ExchangeModel
-    private var lastUserValue: Pair<Int, BigDecimal>? = null
     private lateinit var exchangeLimitState: ExchangeLimitState
     private lateinit var exchangeMenuState: ExchangeMenuState
 
+    private var lastUserValue: Pair<Int, BigDecimal>? = null
     private var latestBaseFix: Fix = Fix.BASE_FIAT
     private var latestCryptoValue = CryptoValue.ZeroBtc
     private val stringUtils: StringUtils by inject()
     private val analytics: Analytics by inject()
+
+    private val diagnostics: SwapDiagnostics by inject()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -126,45 +115,38 @@ internal class ExchangeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         activityListener.setToolbarTitle(R.string.morph_new_exchange)
         logEvent(AnalyticsEvents.ExchangeCreate)
+        diagnostics.logIsMax(false)
 
-        largeValue = view.findViewById(R.id.largeValue)
-        smallValue = view.findViewById(R.id.smallValue)
-        keyboard = view.findViewById(R.id.numericKeyboard)
-        selectSendAccountButton = view.findViewById(R.id.select_from_account_button)
-        selectReceiveAccountButton = view.findViewById(R.id.select_to_account_button)
-        exchangeButton = view.findViewById(R.id.exchange_action_button)
-        textViewBalanceTitle = view.findViewById(R.id.text_view_balance_title)
-        textViewBalance = view.findViewById(R.id.text_view_balance_value)
-        textViewBaseRate = view.findViewById(R.id.text_view_base_rate)
-        textViewCounterRate = view.findViewById(R.id.text_view_counter_rate)
-        root = view.findViewById(R.id.constraint_layout_exchange)
-        keyboardGroup = view.findViewById(R.id.layout_keyboard_group)
-
-        selectSendAccountButton.setOnClickListener {
+        select_from_account_button.setOnClickListener {
             AccountChooserBottomDialog.create(
                 title = getString(R.string.dialog_title_exchange),
                 resultId = REQUEST_CODE_CHOOSE_SENDING_ACCOUNT
             ).show(fragmentManager, "BottomDialog")
             analytics.logEvent(SwapAnalyticsEvents.SwapLeftAssetClick)
         }
-        selectReceiveAccountButton.setOnClickListener {
+
+        select_to_account_button.setOnClickListener {
             AccountChooserBottomDialog.create(
                 title = getString(R.string.dialog_title_receive),
                 resultId = REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT
             ).show(fragmentManager, "BottomDialog")
             analytics.logEvent(SwapAnalyticsEvents.SwapRightAssetClick)
         }
-        exchangeButton.setOnClickListener {
+
+        exchange_button.setOnClickListener {
             exchangeModel.fixAsCrypto()
             activityListener.launchConfirmation()
             analytics.logEvent(SwapAnalyticsEvents.SwapFormConfirmClick)
         }
-        largeValue.setOnClickListener(toggleOnClickListener)
-        smallValue.setOnClickListener(toggleOnClickListener)
 
-        textViewBalance.setOnClickListener {
+        large_value.setOnClickListener(toggleOnClickListener)
+        small_value.setOnClickListener(toggleOnClickListener)
+
+        balance_value.setOnClickListener {
             exchangeModel.inputEventSink.onNext(ApplyMaxSpendable)
             analytics.logEvent(SwapAnalyticsEvents.SwapMaxValueUsed)
+            diagnostics.log("Max value clicked")
+            diagnostics.logIsMax(true)
         }
     }
 
@@ -175,21 +157,14 @@ internal class ExchangeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        keyboard.setMaximums(
-            Maximums(
-                maxDigits = 11,
-                maxIntLength = 6
-            )
-        )
+        keyboard.setMaximums(Maximums(maxDigits = 11, maxIntLength = 6))
 
         compositeDisposable += allTextUpdates()
             .subscribeBy {
                 exchangeModel.inputEventSink.onNext(it)
             }
 
-        lastUserValue?.let {
-            keyboard.setValue(it.first, it.second)
-        }
+        lastUserValue?.let { keyboard.setValue(it.first, it.second) }
 
         compositeDisposable += exchangeModel
             .exchangeViewStates
@@ -217,7 +192,8 @@ internal class ExchangeFragment : Fragment() {
                 latestCryptoValue = it.toCrypto
 
                 keyboard.setValue(it.lastUserValue.userDecimalPlaces, it.lastUserValue.toBigDecimal())
-                exchangeButton.isEnabled = it.isValid()
+
+                exchange_button.isEnabled = it.isValid()
 
                 updateUserFeedBack(it)
                 updateExchangeRate(it)
@@ -231,9 +207,8 @@ internal class ExchangeFragment : Fragment() {
             }
 
         compositeDisposable += exchangeModel
-            .exchangeViewStates.distinctUntilChanged { prev, current ->
-            prev.fix == current.fix
-        }.observeOn(AndroidSchedulers.mainThread())
+            .exchangeViewStates.distinctUntilChanged { prev, current -> prev.fix == current.fix }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy {
                 latestBaseFix = it.fix
             }
@@ -245,18 +220,16 @@ internal class ExchangeFragment : Fragment() {
         }
     }
 
-    private fun updateBalance(exchangeViewState: ExchangeViewState) {
-        exchangeViewState.apply {
-            textViewBalanceTitle.text = getString(R.string.morph_balance_title, fromCrypto.currencyCode)
-            textViewBalance.text = formatSpendableString()
-        }
+    private fun updateBalance(viewState: ExchangeViewState) {
+        balance_title.text = getString(R.string.morph_balance_title, viewState.fromCrypto.currencyCode)
+        balance_value.text = viewState.formatSpendableString()
     }
 
-    private fun updateExchangeRate(exchangeViewState: ExchangeViewState) {
-        textViewBaseRate.text = exchangeViewState.formatBase()
-        textViewCounterRate.text = exchangeViewState.latestQuote?.let {
-            exchangeViewState.formatCounterFromQuote(it)
-        } ?: exchangeViewState.formatCounterFromPrices(exchangeViewState.exchangePrices)
+    private fun updateExchangeRate(viewState: ExchangeViewState) {
+        base_rate.text = viewState.formatBase()
+        counter_rate.text = viewState.latestQuote?.let {
+            viewState.formatCounterFromQuote(it)
+        } ?: viewState.formatCounterFromPrices(viewState.exchangePrices)
     }
 
     private fun updateUserFeedBack(exchangeViewState: ExchangeViewState) {
@@ -272,26 +245,26 @@ internal class ExchangeFragment : Fragment() {
 
     private fun displayFiatLarge(fiatValue: FiatValue, cryptoValue: CryptoValue, decimalCursor: Int) {
         val parts = fiatValue.toStringParts()
-        largeValue.setText(
+        large_value.setText(
             ThreePartText(parts.symbol,
                 parts.major,
                 if (decimalCursor != 0) parts.minor else "")
         )
 
         val fromCryptoString = cryptoValue.toStringWithSymbol()
-        smallValue.text = fromCryptoString
+        small_value.text = fromCryptoString
     }
 
     @SuppressLint("SetTextI18n")
     private fun displayCryptoLarge(cryptoValue: CryptoValue, fiatValue: FiatValue, decimalCursor: Int) {
-        largeValue.setText(
+        large_value.setText(
             ThreePartText("",
                 cryptoValue.formatExactly(decimalCursor) + " " + cryptoValue.symbol(),
                 "")
         )
 
         val fromFiatString = fiatValue.toStringWithSymbol()
-        smallValue.text = fromFiatString
+        small_value.text = fromFiatString
     }
 
     private fun allTextUpdates(): Observable<ExchangeIntent> {
@@ -302,15 +275,12 @@ internal class ExchangeFragment : Fragment() {
                         requireContext(),
                         R.anim.fingerprint_failed_shake
                     )
-                    largeValue.startAnimation(animShake)
+                    large_value.startAnimation(animShake)
                 }
                 view!!.findViewById<View>(R.id.numberBackSpace).isEnabled = it.previous != null
             }
             .map {
-                SimpleFieldUpdateIntent(
-                    it.userDecimal,
-                    it.decimalCursor
-                )
+                SimpleFieldUpdateIntent(it.userDecimal, it.decimalCursor)
             }
     }
 

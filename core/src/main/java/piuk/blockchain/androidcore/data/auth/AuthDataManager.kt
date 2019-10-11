@@ -162,7 +162,7 @@ class AuthDataManager(
             return Observable.error(IllegalArgumentException("Invalid PIN"))
         } else {
             accessState.setPin(passedPin)
-            crashLogger.log("validatePin. pin set. validity: ${passedPin.isValidPin()}")
+            crashLogger.logEvent("validatePin. pin set. validity: ${passedPin.isValidPin()}")
         }
 
         return authService.validateAccess(key, passedPin)
@@ -197,7 +197,7 @@ class AuthDataManager(
             return Completable.error(IllegalArgumentException("Invalid PIN"))
         } else {
             accessState.setPin(passedPin)
-            crashLogger.log("createPin. pin set. validity: ${passedPin.isValidPin()}")
+            crashLogger.logEvent("createPin. pin set. validity: ${passedPin.isValidPin()}")
         }
 
         prngHelper.applyPRNGFixes()

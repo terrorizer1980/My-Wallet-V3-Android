@@ -20,5 +20,4 @@ internal fun showErrorDialog(fragmentManager: FragmentManager, error: ExchangeMe
 }
 
 private fun ExchangeMenuState.ExchangeMenuError.toContent(): ErrorBottomDialog.Content =
-    ErrorBottomDialog.Content(
-        title, message, 0, R.string.ok_cap, errorType.icon(fromCrypto, tier))
+    ErrorBottomDialog.Content(title, message, 0, R.string.ok_cap, errorType.icon(fromCrypto, tier))

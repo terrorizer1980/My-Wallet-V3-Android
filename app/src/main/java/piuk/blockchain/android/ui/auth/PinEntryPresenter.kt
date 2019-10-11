@@ -280,7 +280,7 @@ class PinEntryPresenter(
             is InvalidCipherTextException -> {
                 // Password changed on web, needs re-pairing
                 view.showToast(R.string.password_changed_explanation, ToastCustom.TYPE_ERROR)
-                crashLogger.log("password changed elsewhere. Pin is reset")
+                crashLogger.logEvent("password changed elsewhere. Pin is reset")
                 accessState.clearPin()
                 appUtil.clearCredentialsAndRestart(LauncherActivity::class.java)
             }
@@ -311,7 +311,7 @@ class PinEntryPresenter(
         view.showToast(R.string.pin_4_strikes_password_accepted, ToastCustom.TYPE_OK)
         prefs.removeValue(PersistentPrefs.KEY_PIN_FAILS)
         prefs.removeValue(PersistentPrefs.KEY_PIN_IDENTIFIER)
-        crashLogger.log("new password. pin reset")
+        crashLogger.logEvent("new password. pin reset")
         accessState.clearPin()
         view.restartPageAndClearTop()
     }

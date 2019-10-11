@@ -139,7 +139,7 @@
         app:layout_constraintVertical_bias="0.48" />
 
     <piuk.blockchain.android.ui.swap.customviews.CurrencyTextView
-        android:id="@+id/largeValue"
+        android:id="@+id/large_value"
         style="@style/ExchangeText.LargeValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -147,7 +147,7 @@
         android:layout_marginStart="48dp"
         android:layout_marginEnd="48dp"
         android:maxLines="1"
-        app:layout_constraintBottom_toTopOf="@+id/text_view_base_rate"
+        app:layout_constraintBottom_toTopOf="@+id/base_rate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -156,7 +156,7 @@
         tools:text="0.1 BTC" />
 
     <TextView
-        android:id="@+id/smallValue"
+        android:id="@+id/small_value"
         style="@style/ExchangeText.SmallValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -164,45 +164,45 @@
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/largeValue"
+        app:layout_constraintTop_toBottomOf="@+id/large_value"
         tools:text="0 BTC" />
 
 
     <TextView
-        android:id="@+id/text_view_balance_title"
+        android:id="@+id/balance_title"
         style="@style/ExchangeText.Footer.Titles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/text_view_base_rate"
+        app:layout_constraintBottom_toBottomOf="@+id/base_rate"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Your BTC Balance" />
 
     <TextView
-        android:id="@+id/text_view_balance_value"
+        android:id="@+id/balance_value"
         style="@style/ExchangeText.Footer.Values"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/text_view_counter_rate"
-        app:layout_constraintEnd_toStartOf="@+id/text_view_counter_rate"
+        app:layout_constraintBottom_toBottomOf="@+id/counter_rate"
+        app:layout_constraintEnd_toStartOf="@+id/counter_rate"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/text_view_balance_title"
+        app:layout_constraintStart_toStartOf="@+id/balance_title"
         tools:text="$6,293.40 6,293.40 eUSD" />
 
     <TextView
-        android:id="@+id/text_view_base_rate"
+        android:id="@+id/base_rate"
         style="@style/ExchangeText.Footer.Titles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:textAlignment="textEnd"
-        app:layout_constraintBottom_toTopOf="@+id/text_view_counter_rate"
+        app:layout_constraintBottom_toTopOf="@+id/counter_rate"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="1 BTC =" />
 
     <TextView
-        android:id="@+id/text_view_counter_rate"
+        android:id="@+id/counter_rate"
         style="@style/ExchangeText.Footer.Values"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -223,22 +223,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guidelineKeyboard">
 
-        <piuk.blockchain.android.ui.swap.homebrew.exchange.FloatKeyboardView
-            android:id="@+id/numericKeyboard"
+        <piuk.blockchain.android.ui.swap.customviews.FloatKeyboardView
+            android:id="@+id/keyboard"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:background="@color/exchange_screen_back"
-            app:layout_constraintBottom_toTopOf="@+id/exchange_action_button"
+            app:layout_constraintBottom_toTopOf="@+id/exchange_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_max="300dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/exchange_action_button"
+            android:id="@+id/exchange_button"
             style="@style/ExchangeButton.Exchange"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -253,7 +253,7 @@
     </android.support.constraint.ConstraintLayout>
 
     <ImageView
-        android:id="@+id/imageview_switch_from_to"
+        android:id="@+id/switch_from_to"
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_marginStart="8dp"

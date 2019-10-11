@@ -128,7 +128,7 @@ internal class AccessStateImpl(
     }
 
     override fun logout() {
-        crashLogger.log("logout. resetting pin")
+        crashLogger.logEvent("logout. resetting pin")
         clearPin()
         val intent = Intent(context, logoutActivity!!)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -139,7 +139,7 @@ internal class AccessStateImpl(
     override fun logIn() = prefs.logIn()
 
     override fun unpairWallet() {
-        crashLogger.log("unpair. resetting pin")
+        crashLogger.logEvent("unpair. resetting pin")
         clearPin()
         prefs.logOut()
         rxBus.emitEvent(AuthEvent::class.java, AuthEvent.UNPAIR)

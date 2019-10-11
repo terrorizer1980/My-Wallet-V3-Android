@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.auth;
+package piuk.blockchain.android.ui.start;
 
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
@@ -29,9 +29,9 @@ import static junit.framework.TestCase.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class LandingActivityTest extends BaseEspressoTest {
 
-    private static final ViewInteraction BUTTON_LOGIN = onView(withId(R.id.login));
-    private static final ViewInteraction BUTTON_CREATE = onView(withId(R.id.create));
-    private static final ViewInteraction BUTTON_RECOVER = onView(withId(R.id.recoverFunds));
+    private static final ViewInteraction BUTTON_LOGIN = onView(withId(R.id.btn_login));
+    private static final ViewInteraction BUTTON_CREATE = onView(withId(R.id.btn_create));
+    private static final ViewInteraction BUTTON_RECOVER = onView(withId(R.id.btn_recover));
 
     @Before
     public void setUp() throws Exception {
@@ -52,7 +52,7 @@ public class LandingActivityTest extends BaseEspressoTest {
         BUTTON_LOGIN.perform(click());
         sleep(500);
         // Check pairing fragment launched
-        onView(withText(R.string.pair_your_wallet)).check(matches(isDisplayed()));
+        onView(withText(R.string.log_in)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class LandingActivityTest extends BaseEspressoTest {
         BUTTON_CREATE.perform(click());
         sleep(500);
         // Check create wallet fragment launched
-        onView(withText(R.string.new_wallet)).check(matches(isDisplayed()));
+        onView(withText(R.string.create_a_wallet)).check(matches(isDisplayed()));
     }
 
     @Test

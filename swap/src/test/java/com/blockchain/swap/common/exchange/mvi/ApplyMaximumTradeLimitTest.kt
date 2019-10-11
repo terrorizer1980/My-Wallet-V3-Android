@@ -17,7 +17,7 @@ class ApplyMaximumTradeLimitTest {
             initial("CAD")
         ).onLastStateAfter(
             SetTradeLimits(10.cad(), 200.cad()),
-            ApplyMaximumLimit()
+            ApplyMaximumLimit
         ) {
             fix `should be` Fix.BASE_FIAT
             fromFiat `should equal` 200.cad()
@@ -30,7 +30,7 @@ class ApplyMaximumTradeLimitTest {
             initial("CAD")
         ).onLastStateAfter(
             SetFixIntent(Fix.BASE_CRYPTO),
-            ApplyMaximumLimit()
+            ApplyMaximumLimit
         ) {
             fix `should be` Fix.BASE_CRYPTO
             fromFiat `should equal` 0.cad()
@@ -70,7 +70,7 @@ class ApplyMaximumTradeLimitTest {
                 )
             ),
             SpendableValueIntent(0.01.bitcoin()),
-            ApplyMaximumLimit()
+            ApplyMaximumLimit
         ) {
             lastUserValue `should equal` 0.01.bitcoin()
             fix `should be` Fix.BASE_CRYPTO
@@ -151,7 +151,7 @@ class ApplyMaximumTradeLimitTest {
                 )
             ),
             SpendableValueIntent(1.bitcoin()),
-            ApplyMaximumLimit()
+            ApplyMaximumLimit
         ) {
             lastUserValue `should equal` 1000.cad()
             fix `should be` Fix.BASE_FIAT
@@ -173,7 +173,7 @@ class ApplyMaximumTradeLimitTest {
                 )
             ),
             SpendableValueIntent(1.bitcoin()),
-            ApplyMaximumLimit()
+            ApplyMaximumLimit
         ) {
             lastUserValue `should equal` 1.bitcoin()
             fix `should be` Fix.BASE_CRYPTO
@@ -219,7 +219,7 @@ class ApplyMaximumTradeLimitTest {
                     1001.toBigDecimal()
                 )
             ),
-            ApplyMaximumLimit()
+            ApplyMaximumLimit
         ) {
             lastUserValue `should equal` 1000.cad()
             fix `should be` Fix.BASE_FIAT

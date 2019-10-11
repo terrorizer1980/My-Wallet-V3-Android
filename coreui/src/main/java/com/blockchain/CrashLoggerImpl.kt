@@ -23,9 +23,15 @@ internal class CrashLoggerImpl(override val isDebugBuild: Boolean) : CrashLogger
         }
     }
 
-    override fun log(msg: String) {
+    override fun logEvent(msg: String) {
         if (BuildConfig.USE_CRASHLYTICS) {
             Crashlytics.log(msg)
+        }
+    }
+
+    override fun logState(name: String, data: String) {
+        if (BuildConfig.USE_CRASHLYTICS) {
+            Crashlytics.setString(name, data)
         }
     }
 

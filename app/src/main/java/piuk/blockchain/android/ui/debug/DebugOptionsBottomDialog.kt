@@ -75,7 +75,7 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
 
         AppRate.reset(context)
 
-        crashLogger.log("debug clear prefs. Pin reset")
+        crashLogger.logEvent("debug clear prefs. Pin reset")
         loginState.clearPin()
 
         context?.toast("Prefs Reset")
