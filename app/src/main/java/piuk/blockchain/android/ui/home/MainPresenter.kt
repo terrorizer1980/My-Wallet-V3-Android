@@ -126,9 +126,9 @@ class MainPresenter internal constructor(
     private fun setPitTitle() {
         compositeDisposable += pitABTestingExperiment.getABVariant(ABTestExperiment.AB_THE_PIT_SIDE_NAV_VARIANT).map {
             when (it) {
-                "B" -> return@map stringUtils.getString(R.string.trading)
-                "C" -> return@map stringUtils.getString(R.string.the_pit_exchange_title)
-                else -> return@map stringUtils.getString(R.string.the_pit_title)
+                "B" -> return@map stringUtils.getString(R.string.crypto_exchange)
+                "C" -> return@map stringUtils.getString(R.string.crypto_trading)
+                else -> return@map stringUtils.getString(R.string.the_pit_exchange_title)
             }
         }.subscribeBy { view.setPitItemTitle(it) }
     }
