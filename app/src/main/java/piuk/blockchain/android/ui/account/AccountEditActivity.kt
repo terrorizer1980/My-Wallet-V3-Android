@@ -98,6 +98,7 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
             inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
             filters = arrayOf<InputFilter>(InputFilter.LengthFilter(ADDRESS_LABEL_MAX_LENGTH))
             setHint(R.string.name)
+            contentDescription = resources.getString(R.string.content_desc_edit_account_label)
         }
         if (currentLabel != null && currentLabel.length <= ADDRESS_LABEL_MAX_LENGTH) {
             etLabel.setText(currentLabel)

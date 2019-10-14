@@ -396,10 +396,10 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         navigator().gotoDashboard()
     }
 
-    private fun startScanActivity(code: Int) {
+    private fun startScanActivity() {
         if (!appUtil.isCameraOpen) {
             val intent = Intent(activity, CaptureActivity::class.java)
-            startActivityForResult(intent, code)
+            startActivityForResult(intent, SCAN_PRIVX)
         } else {
             showSnackbar(R.string.camera_unavailable, Snackbar.LENGTH_LONG)
         }
@@ -1076,7 +1076,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
         val grantedPermissionListener = object : BasePermissionListener() {
             override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                startScanActivity(SCAN_PRIVX)
+                startScanActivity()
             }
         }
 
