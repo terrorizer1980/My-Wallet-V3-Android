@@ -20,8 +20,12 @@ import android.view.animation.Transformation
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.blockchain.balance.coinIconWhite
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.view_expanding_currency_header.view.*
+import org.koin.standalone.KoinComponent
+import org.koin.standalone.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -32,9 +36,11 @@ import piuk.blockchain.androidcoreui.utils.extensions.visible
 class ExpandableCurrencyHeader @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : RelativeLayout(context, attrs) {
+) : RelativeLayout(context, attrs), KoinComponent {
 
     private lateinit var selectionListener: (CryptoCurrency) -> Unit
+
+    private val analytics: Analytics by inject()
 
     private var expanded = false
     private var firstOpen = true
@@ -166,6 +172,8 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
             onAnimationEnd {
                 expanded = !expanded
                 if (expanded) linear_layout_coin_selection.visible()
+                if (expanded) analytics.logEvent(AnalyticsEvents.OpenAssetsSelector) else
+                    analytics.logEvent(AnalyticsEvents.CloseAssetsSelector)
             }
         }
 

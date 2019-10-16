@@ -19,6 +19,7 @@ import com.blockchain.kyc.models.nabu.SupportedDocuments
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_GOLD_UNAVAILABLE_SUPPORT
@@ -132,6 +133,7 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
     @SuppressLint("InflateParams")
     override fun continueToVeriff(applicant: VeriffApplicantAndToken) {
         launchVeriff(applicant)
+        logEvent(KYCAnalyticsEvents.VeriffInfoStarted)
     }
 
     private fun launchVeriff(applicant: VeriffApplicantAndToken) {

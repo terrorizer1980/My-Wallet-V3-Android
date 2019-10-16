@@ -22,4 +22,11 @@ data class SideNavEvent(private val menuItemId: Int) : AnalyticsEvent {
         R.id.nav_logout -> "logout"
         else -> "unknown"
     }
+
+    companion object SideMenuOpenEvent : AnalyticsEvent {
+        override val event: String
+            get() = "side_nav_shown"
+
+        override val params: Map<String, String> = emptyMap()
+    }
 }

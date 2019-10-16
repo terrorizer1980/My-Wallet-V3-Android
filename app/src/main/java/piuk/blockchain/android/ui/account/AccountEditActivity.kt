@@ -20,9 +20,8 @@ import android.text.InputFilter
 import android.text.InputType
 import android.view.View
 import android.widget.ImageView
+import com.blockchain.notifications.analytics.Analytics
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.single.BasePermissionListener
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import piuk.blockchain.android.R
@@ -42,6 +41,7 @@ import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -61,6 +61,7 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
     private val accountEditPresenter: AccountEditPresenter by inject()
     private val payloadDataManager: PayloadDataManager by inject()
     private val appUtil: AppUtil by inject()
+    private val analytics: Analytics by inject()
 
     private lateinit var binding: ActivityAccountEditBinding
     private var transactionSuccessDialog: AlertDialog? = null
@@ -142,11 +143,9 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
             .withButton(android.R.string.ok) { startScanActivity() }
             .build()
 
-        val grantedPermissionListener = object : BasePermissionListener() {
-            override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                startCameraIfAvailable()
-            }
-        }
+        val grantedPermissionListener = CameraPermissionListener(analytics, {
+            startCameraIfAvailable()
+        })
 
         val compositePermissionListener =
             CompositePermissionListener(deniedPermissionListener, grantedPermissionListener)

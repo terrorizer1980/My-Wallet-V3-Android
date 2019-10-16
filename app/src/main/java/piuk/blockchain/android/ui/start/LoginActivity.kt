@@ -4,9 +4,8 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import com.blockchain.notifications.analytics.Analytics
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.single.BasePermissionListener
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import kotlinx.android.synthetic.main.activity_login.*
@@ -19,6 +18,7 @@ import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber
 
@@ -28,6 +28,7 @@ class LoginActivity : MvpActivity<LoginView, LoginPresenter>(), LoginView {
     override val view: LoginView = this
 
     private val appUtil: AppUtil by inject()
+    private val analytics: Analytics by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,11 +67,9 @@ class LoginActivity : MvpActivity<LoginView, LoginPresenter>(), LoginView {
             .withButton(android.R.string.ok) { requestCameraPermissionIfNeeded() }
             .build()
 
-        val grantedPermissionListener = object : BasePermissionListener() {
-            override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                startScanActivity()
-            }
-        }
+        val grantedPermissionListener = CameraPermissionListener(analytics, {
+            startScanActivity()
+        })
 
         val compositePermissionListener =
             CompositePermissionListener(deniedPermissionListener, grantedPermissionListener)

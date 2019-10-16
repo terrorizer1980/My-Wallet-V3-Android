@@ -51,8 +51,6 @@ import com.blockchain.ui.password.SecondPasswordHandler
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import com.jakewharton.rxbinding2.widget.textChanges
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.single.BasePermissionListener
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import info.blockchain.balance.CryptoCurrency
@@ -97,6 +95,7 @@ import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import com.blockchain.ui.dialog.ErrorBottomDialog
 import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
@@ -898,6 +897,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             visible()
             text = message
         }
+        analytics.logEvent(SendAnalytics.SendFormErrorAppears(currencyState.cryptoCurrency.symbol))
     }
 
     override fun clearWarning() {
@@ -1074,11 +1074,9 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
             .withButton(android.R.string.ok) { requestScanPermissions() }
             .build()
 
-        val grantedPermissionListener = object : BasePermissionListener() {
-            override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                startScanActivity()
-            }
-        }
+        val grantedPermissionListener = CameraPermissionListener(analytics, {
+            startScanActivity()
+        })
 
         val compositePermissionListener =
             CompositePermissionListener(deniedPermissionListener, grantedPermissionListener)

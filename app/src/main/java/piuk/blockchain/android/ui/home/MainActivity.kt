@@ -40,8 +40,6 @@ import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_SUPPORT_PORTAL
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.single.BasePermissionListener
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import info.blockchain.balance.CryptoCurrency
@@ -83,6 +81,7 @@ import piuk.blockchain.android.ui.tour.SwapTourFragment
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import timber.log.Timber
 import java.util.ArrayList
@@ -176,6 +175,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
                 if (tour_guide.isActive) {
                     setTourMenuView()
                 }
+                analytics.logEvent(SideNavEvent.SideMenuOpenEvent)
             }
 
             override fun onDrawerClosed(drawerView: View) {
@@ -502,11 +502,9 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
             .withButton(android.R.string.ok) { requestScan() }
             .build()
 
-        val grantedPermissionListener = object : BasePermissionListener() {
-            override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                startScanActivity()
-            }
-        }
+        val grantedPermissionListener = CameraPermissionListener(analytics, {
+            startScanActivity()
+        })
 
         val compositePermissionListener =
             CompositePermissionListener(deniedPermissionListener, grantedPermissionListener)
