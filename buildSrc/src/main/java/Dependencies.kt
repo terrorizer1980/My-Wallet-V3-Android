@@ -6,9 +6,9 @@ object Versions {
     const val minSdk = 21
     const val targetSdk = 28
     const val compileSdk = 27
-    const val versionCode = 481
+    const val versionCode = 482
     const val versionName = "6.29.3"
-    const val buildTools = "28.0.3"
+    const val buildTools = "28.0.4"
 
     // Build tools and languages
     const val androidPlugin = "3.4.1"
