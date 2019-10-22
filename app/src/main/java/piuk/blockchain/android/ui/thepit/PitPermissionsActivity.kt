@@ -46,6 +46,7 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         compositeDisposable += learn_more.throttledClicks().flatMapSingle {
             presenter.learnMoreUrl()
         }.subscribeBy { (sideCampaign, announcementCampaign) ->
+            analytics.logEvent(PitAnalyticsEvent.LearnMoreEvent)
             launchUrlInBrowser(URL_THE_PIT_LANDING_LEARN_MORE +
                     "/?utm_source=android_wallet" +
                     "&utm_medium=wallet_linking" +
