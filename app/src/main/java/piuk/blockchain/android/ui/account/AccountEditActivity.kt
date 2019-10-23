@@ -12,7 +12,6 @@ import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.annotation.StringRes
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.Toolbar
@@ -25,7 +24,6 @@ import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.android.databinding.ActivityAccountEditBinding
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
@@ -38,6 +36,8 @@ import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import com.blockchain.ui.password.SecondPasswordHandler
 import org.koin.android.ext.android.inject
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -62,6 +62,7 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
     private val payloadDataManager: PayloadDataManager by inject()
     private val appUtil: AppUtil by inject()
     private val analytics: Analytics by inject()
+    private val rxBus: RxBus by inject()
 
     private lateinit var binding: ActivityAccountEditBinding
     private var transactionSuccessDialog: AlertDialog? = null
@@ -132,9 +133,8 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         finish()
     }
 
-    override fun sendBroadcast(key: String, data: String) {
-        val intent = Intent(WebSocketService.ACTION_INTENT).apply { putExtra(key, data) }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+    override fun sendBroadcast(event: ActionEvent) {
+        rxBus.emitEvent(ActionEvent::class.java, event)
     }
 
     override fun startScanActivity() {
@@ -318,7 +318,7 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         val dialogView = View.inflate(this, R.layout.modal_transaction_success, null)
         transactionSuccessDialog = dialogBuilder.setView(dialogView)
             .setPositiveButton(getString(R.string.done)) { dialog, _ -> dialog.dismiss() }
-            .setOnDismissListener { _ -> finish() }
+            .setOnDismissListener { finish() }
             .create()
 
         transactionSuccessDialog!!.show()

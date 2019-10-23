@@ -1,14 +1,10 @@
 package piuk.blockchain.android.ui.balance
 
 import android.annotation.TargetApi
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ShortcutManager
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SimpleItemAnimator
 import android.view.LayoutInflater
@@ -19,6 +15,8 @@ import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_FAQ
 import info.blockchain.balance.CryptoCurrency
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.fragment_balance.*
 import kotlinx.android.synthetic.main.fragment_balance.app_bar
 import kotlinx.android.synthetic.main.fragment_balance.currency_header
@@ -27,7 +25,6 @@ import kotlinx.android.synthetic.main.layout_pax_no_transactions.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.balance.adapter.AccountsAdapter
 import piuk.blockchain.android.ui.balance.adapter.TxFeedAdapter
@@ -39,6 +36,9 @@ import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
 import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -58,8 +58,10 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
 
     private val balancePresenter: BalancePresenter by inject()
     private val analytics: Analytics by inject()
+    private val rxBus: RxBus by inject()
 
     private var spacerDecoration: BottomSpacerDecoration? = null
+    private val compositeDisposable = CompositeDisposable()
 
     private val itemSelectedListener =
         onItemSelectedListener {
@@ -68,13 +70,8 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
             recyclerview.smoothScrollToPosition(0)
         }
 
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == ACTION_INTENT && activity != null) {
-                recyclerview?.scrollToPosition(0)
-                presenter.requestRefresh()
-            }
-        }
+    private val event by unsafeLazy {
+        rxBus.register(ActionEvent::class.java)
     }
 
     override fun onCreateView(
@@ -132,13 +129,18 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
         super.onResume()
 
         navigator().showNavigation()
-        LocalBroadcastManager.getInstance(context!!)
-            .registerReceiver(receiver, IntentFilter(ACTION_INTENT))
+        compositeDisposable += event.subscribe { event ->
+            if (activity != null) {
+                recyclerview?.scrollToPosition(0)
+                presenter.requestRefresh()
+            }
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        LocalBroadcastManager.getInstance(context!!).unregisterReceiver(receiver)
+        compositeDisposable.clear()
+        rxBus.unregister(ActionEvent::class.java, event)
         // Fixes issue with Swipe Layout messing with Fragment transitions
         swipe_container?.let {
             it.isRefreshing = false
@@ -354,7 +356,6 @@ class BalanceFragment : HomeFragment<BalanceView, BalancePresenter>(),
 
     companion object {
 
-        const val ACTION_INTENT = WebSocketService.ACTION_INTENT
         const val KEY_TRANSACTION_LIST_POSITION = "transaction_list_position"
         const val KEY_TRANSACTION_HASH = "transaction_hash"
 

@@ -2,18 +2,18 @@ package piuk.blockchain.android.data.connectivity;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.os.Build;
-import android.support.v4.content.LocalBroadcastManager;
 
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import piuk.blockchain.androidcore.data.events.ActionEvent;
+import piuk.blockchain.androidcore.data.events.SpottyNetworkConnectionEvent;
+import piuk.blockchain.androidcore.data.rxjava.RxBus;
 import piuk.blockchain.androidcore.utils.rxjava.IgnorableDefaultObserver;
-import piuk.blockchain.android.ui.balance.BalanceFragment;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class ConnectionStateMonitor extends ConnectivityManager.NetworkCallback {
@@ -22,9 +22,11 @@ class ConnectionStateMonitor extends ConnectivityManager.NetworkCallback {
     private final NetworkRequest networkRequest;
     private long lastBroadcastTime;
     private Context context;
+    private RxBus rxBus;
 
-    ConnectionStateMonitor(Context context) {
+    ConnectionStateMonitor(Context context, RxBus rxBus) {
         this.context = context;
+        this.rxBus = rxBus;
         networkRequest = new NetworkRequest.Builder()
                 .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
                 .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
@@ -48,8 +50,7 @@ class ConnectionStateMonitor extends ConnectivityManager.NetworkCallback {
 
     private Completable broadcastOnMainThread() {
         return Completable.fromAction(() ->
-                LocalBroadcastManager.getInstance(context)
-                        .sendBroadcastSync(new Intent(BalanceFragment.ACTION_INTENT)))
+                rxBus.emitEvent(ActionEvent.class, new SpottyNetworkConnectionEvent()))
                 .subscribeOn(AndroidSchedulers.mainThread());
     }
 

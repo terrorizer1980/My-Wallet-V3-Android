@@ -7,16 +7,19 @@ import android.content.Intent;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v4.content.LocalBroadcastManager;
+
 import com.blockchain.network.EnvironmentUrls;
 import com.blockchain.notifications.NotificationsUtil;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
 import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.exceptions.DecryptionException;
 import io.reactivex.Completable;
@@ -24,6 +27,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Action;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -38,6 +42,9 @@ import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.currency.BTCDenomination;
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
+import piuk.blockchain.androidcore.data.events.ActionEvent;
+import piuk.blockchain.androidcore.data.events.WalletAndTransactionsUpdatedEvent;
+import piuk.blockchain.androidcore.data.events.WebSocketMessageEvent;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
 import piuk.blockchain.androidcore.data.websockets.WebSocketReceiveEvent;
@@ -254,21 +261,20 @@ class WebSocketHandler {
     private void updateBtcBalancesAndTransactions() {
         payloadDataManager.updateAllBalances()
                 .andThen(payloadDataManager.updateAllTransactions())
-                .doOnComplete(this::sendBroadcast)
+                .doOnComplete(() -> sendBroadcast(new WalletAndTransactionsUpdatedEvent()))
                 .subscribe(new IgnorableDefaultObserver<>());
     }
 
     private void updateBchBalancesAndTransactions() {
         bchDataManager.updateAllBalances()
                 .andThen(bchDataManager.getWalletTransactions(50, 0))
-                .doOnComplete(this::sendBroadcast)
+                .doOnComplete(() -> sendBroadcast(new WalletAndTransactionsUpdatedEvent()))
                 .subscribe(new IgnorableDefaultObserver<>());
     }
 
     @Thunk
-    void sendBroadcast() {
-        Intent intent = new Intent(BalanceFragment.ACTION_INTENT);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    void sendBroadcast(ActionEvent event) {
+        rxBus.emitEvent(ActionEvent.class, event);
     }
 
     private void startWebSocket() {
@@ -551,7 +557,7 @@ class WebSocketHandler {
         @Override
         public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
             super.onMessage(webSocket, text);
-            sendBroadcast();
+            sendBroadcast(new WebSocketMessageEvent());
         }
 
         @Override

@@ -49,6 +49,7 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
+import piuk.blockchain.androidcore.data.events.PayloadSyncedEvent
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.payments.SendDataManager
@@ -846,7 +847,7 @@ class AccountEditPresenter constructor(
             .subscribe(
                 {
                     // Subscribe to new address only if successfully created
-                    view.sendBroadcast("address", legacyAddress.address)
+                    view.sendBroadcast(PayloadSyncedEvent())
                     view.setActivityResult(Activity.RESULT_OK)
                 },
                 { view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR) }

@@ -2,23 +2,22 @@ package piuk.blockchain.android.data.websocket
 
 import android.app.NotificationManager
 import android.app.Service
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Binder
 import android.os.IBinder
-import android.support.v4.content.LocalBroadcastManager
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import okhttp3.OkHttpClient
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.androidcore.data.access.AccessState
-import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
+import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.androidcore.utils.PersistentPrefs
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.AppUtil
 
 class WebSocketService : Service() {
@@ -39,25 +38,6 @@ class WebSocketService : Service() {
 
     private var webSocketHandler: WebSocketHandler? = null
 
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == ACTION_INTENT) {
-                if (intent.hasExtra(EXTRA_BITCOIN_ADDRESS)) {
-                    webSocketHandler?.subscribeToAddressBtc(intent.getStringExtra(EXTRA_BITCOIN_ADDRESS))
-                }
-                if (intent.hasExtra(EXTRA_X_PUB_BTC)) {
-                    webSocketHandler?.subscribeToXpubBtc(intent.getStringExtra(EXTRA_X_PUB_BTC))
-                }
-                if (intent.hasExtra(EXTRA_BITCOIN_CASH_ADDRESS)) {
-                    webSocketHandler?.subscribeToAddressBch(intent.getStringExtra(EXTRA_BITCOIN_CASH_ADDRESS))
-                }
-                if (intent.hasExtra(EXTRA_X_PUB_BCH)) {
-                    webSocketHandler?.subscribeToXpubBch(intent.getStringExtra(EXTRA_X_PUB_BCH))
-                }
-            }
-        }
-    }
-
     private val xpubsBtc: List<String>
         get() {
             val nbAccounts: Int
@@ -72,7 +52,7 @@ class WebSocketService : Service() {
                 for (i in 0 until nbAccounts) {
                     val xPub = payloadDataManager.wallet!!.hdWallets[0].accounts[i].xpub
                     if (xPub != null && xPub.isNotEmpty()) {
-                        xpubs[i] = xPub
+                        xpubs.add(xPub)
                     }
                 }
                 return xpubs
@@ -98,9 +78,9 @@ class WebSocketService : Service() {
                 swipeToReceiveHelper.getBitcoinReceiveAddresses().isNotEmpty() -> {
                     val addresses = mutableListOf<String>()
                     val receiveAddresses =
-                        swipeToReceiveHelper?.getBitcoinReceiveAddresses()
-                    for (i in receiveAddresses.indices) {
-                        addresses[i] = receiveAddresses[i]
+                        swipeToReceiveHelper.getBitcoinReceiveAddresses()
+                    receiveAddresses.forEach { address ->
+                        addresses.add(address)
                     }
                     return addresses
                 }
@@ -115,9 +95,9 @@ class WebSocketService : Service() {
                 nbAccounts = bchDataManager.getActiveXpubs().size
                 val xpubs = mutableListOf<String>()
                 for (i in 0 until nbAccounts) {
-                    val xPub = bchDataManager.getActiveXpubs()[i]
-                    if (xPub.isNotEmpty()) {
-                        xpubs[i] = xPub
+                    val activeXpubs = bchDataManager.getActiveXpubs()
+                    if (activeXpubs[i] != null && activeXpubs[i].isNotEmpty()) {
+                        xpubs.add(bchDataManager.getActiveXpubs()[i])
                     }
                 }
                 xpubs
@@ -145,9 +125,8 @@ class WebSocketService : Service() {
                     val addrs = mutableListOf<String>()
                     val receiveAddresses =
                         swipeToReceiveHelper.getBitcoinCashReceiveAddresses()
-                    for (i in receiveAddresses.indices) {
-                        val address = receiveAddresses[i]
-                        addrs[i] = address
+                    receiveAddresses.forEach { address ->
+                        addrs.add(address)
                     }
                     return addrs
                 }
@@ -159,11 +138,22 @@ class WebSocketService : Service() {
         return binder
     }
 
+    private val compositeDisposable = CompositeDisposable()
+
+    private val events by unsafeLazy {
+        rxBus.register(WebSocketEvent::class.java)
+    }
+
     override fun onCreate() {
         super.onCreate()
-
-        val filter = IntentFilter(ACTION_INTENT)
-        LocalBroadcastManager.getInstance(applicationContext).registerReceiver(receiver, filter)
+        compositeDisposable += events.subscribe { event ->
+            when (event) {
+                is WebSocketEvent.ExtraBtcAddress -> webSocketHandler?.subscribeToAddressBtc(event.address)
+                is WebSocketEvent.ExtraBhcAddress -> webSocketHandler?.subscribeToAddressBch(event.address)
+                is WebSocketEvent.ExtraXPubBCH -> webSocketHandler?.subscribeToXpubBch(event.address)
+                is WebSocketEvent.ExtraXPubBTC -> webSocketHandler?.subscribeToXpubBtc(event.address)
+            }
+        }
 
         webSocketHandler = WebSocketHandler(
             applicationContext,
@@ -187,7 +177,8 @@ class WebSocketService : Service() {
 
     override fun onDestroy() {
         if (webSocketHandler != null) webSocketHandler!!.stopPermanently()
-        LocalBroadcastManager.getInstance(applicationContext).unregisterReceiver(receiver)
+        rxBus.unregister(WebSocketEvent::class.java, events)
+        compositeDisposable.clear()
         super.onDestroy()
     }
 
@@ -198,12 +189,11 @@ class WebSocketService : Service() {
         val service: WebSocketService
             get() = this@WebSocketService
     }
+}
 
-    companion object {
-        const val ACTION_INTENT = "piuk.blockchain.android.action.SUBSCRIBE_TO_ADDRESS"
-        const val EXTRA_BITCOIN_ADDRESS = "piuk.blockchain.android.extras.EXTRA_BITCOIN_ADDRESS"
-        const val EXTRA_X_PUB_BTC = "piuk.blockchain.android.extras.EXTRA_X_PUB_BTC"
-        const val EXTRA_BITCOIN_CASH_ADDRESS = "piuk.blockchain.android.extras.EXTRA_BITCOIN_CASH_ADDRESS"
-        const val EXTRA_X_PUB_BCH = "piuk.blockchain.android.extras.EXTRA_X_PUB_BCH"
-    }
+sealed class WebSocketEvent(val address: String) {
+    class ExtraBtcAddress(address: String) : WebSocketEvent(address)
+    class ExtraXPubBTC(address: String) : WebSocketEvent(address)
+    class ExtraBhcAddress(address: String) : WebSocketEvent(address)
+    class ExtraXPubBCH(address: String) : WebSocketEvent(address)
 }

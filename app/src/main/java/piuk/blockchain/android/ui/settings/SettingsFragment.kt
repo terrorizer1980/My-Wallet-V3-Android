@@ -1,19 +1,16 @@
 package piuk.blockchain.android.ui.settings
 
-import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ShortcutManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.annotation.StringRes
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AlertDialog.Builder
 import android.support.v7.preference.Preference
@@ -47,7 +44,6 @@ import info.blockchain.wallet.util.PasswordUtil
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.auth.PinEntryActivity
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.fingerprint.FingerprintDialog
 import piuk.blockchain.android.ui.fingerprint.FingerprintStage
 import piuk.blockchain.android.util.RootUtil
@@ -62,6 +58,8 @@ import android.app.Activity.RESULT_OK
 import com.blockchain.notifications.analytics.SettingsAnalyticsEvents
 import com.blockchain.ui.urllinks.URL_PRIVACY_POLICY
 import com.blockchain.ui.urllinks.URL_TOS_POLICY
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R.string.success
 import piuk.blockchain.android.ui.auth.KEY_VALIDATING_PIN_FOR_RESULT
@@ -70,6 +68,9 @@ import piuk.blockchain.android.ui.settings.preferences.KycStatusPreference
 import piuk.blockchain.android.ui.settings.preferences.ThePitStatusPreference
 import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.thepit.PitPermissionsActivity
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 
 class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
@@ -123,17 +124,10 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     private val settingsPresenter: SettingsPresenter by inject()
     private val analytics: Analytics by inject()
+    private val rxBus: RxBus by inject()
 
     private var pwStrength = 0
     private var progressDialog: MaterialProgressDialog? = null
-
-    private var receiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == BalanceFragment.ACTION_INTENT) {
-                settingsPresenter.onViewReady()
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -295,14 +289,22 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
             .show()
     }
 
+    private val compositeDisposable = CompositeDisposable()
+
+    private val event by unsafeLazy {
+        rxBus.register(ActionEvent::class.java)
+    }
+
     override fun onResume() {
         super.onResume()
-        val filter = IntentFilter(BalanceFragment.ACTION_INTENT)
-        LocalBroadcastManager.getInstance(activity!!).registerReceiver(receiver, filter)
+        compositeDisposable += event.subscribe {
+            settingsPresenter.onViewReady()
+        }
     }
 
     override fun onPause() {
-        LocalBroadcastManager.getInstance(activity!!).unregisterReceiver(receiver)
+        rxBus.unregister(ActionEvent::class.java, event)
+        compositeDisposable.clear()
         super.onPause()
     }
 

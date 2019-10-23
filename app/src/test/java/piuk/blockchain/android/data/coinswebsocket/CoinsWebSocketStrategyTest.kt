@@ -23,12 +23,12 @@ import org.junit.Test
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.coinswebsocket.service.MessagesSocketHandler
 import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 
 class CoinsWebSocketStrategyTest {
 
@@ -76,7 +76,8 @@ class CoinsWebSocketStrategyTest {
         swipeToReceiveHelper,
         stringUtils,
         Gson(),
-        erc20Account
+        erc20Account,
+        RxBus()
     )
 
     @Before
@@ -110,7 +111,7 @@ class CoinsWebSocketStrategyTest {
         verify(mockWebSocket).open()
         verify(ethDataManager).fetchEthAddress()
         verify(erc20Account, never()).fetchAddressCompletable()
-        verify(messagesSocketHandler).sendBroadcast(BalanceFragment.ACTION_INTENT)
+        verify(messagesSocketHandler).sendBroadcast(any())
     }
 
     @Test
@@ -123,7 +124,7 @@ class CoinsWebSocketStrategyTest {
         verify(messagesSocketHandler).triggerNotification("Blockchain",
             "Received USD PAX 1.21 PAX",
             "Received USD PAX 1.21 PAX from 0x4058a004dd718babab47e14dd0d744742e5b9903")
-        verify(messagesSocketHandler).sendBroadcast(BalanceFragment.ACTION_INTENT)
+        verify(messagesSocketHandler).sendBroadcast(any())
     }
 
     private class FakeWebSocket(mock: WebSocket<String, String>) : WebSocket<String, String> by mock {

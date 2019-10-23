@@ -106,7 +106,7 @@ open class BlockchainApplication : Application(), FrameworkInterface {
                 }
             })
 
-        ConnectivityManager.getInstance().registerNetworkListener(this)
+        ConnectivityManager.getInstance().registerNetworkListener(this, rxBus)
 
         checkSecurityProviderAndPatchIfNeeded()
 

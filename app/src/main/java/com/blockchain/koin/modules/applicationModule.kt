@@ -271,7 +271,8 @@ val applicationModule = applicationContext {
                 swipeToReceiveHelper = get(),
                 stringUtils = get(),
                 gson = get(),
-                erc20Account = get("pax")
+                erc20Account = get("pax"),
+                rxBus = get()
             )
         }
 

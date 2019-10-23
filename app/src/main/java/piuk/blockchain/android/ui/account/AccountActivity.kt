@@ -3,16 +3,12 @@ package piuk.blockchain.android.ui.account
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Rect
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.LinearLayoutManager
@@ -24,6 +20,7 @@ import android.view.MotionEvent
 import android.widget.CheckBox
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import com.blockchain.ui.password.SecondPasswordHandler
 import com.google.zxing.BarcodeFormat
 import com.karumi.dexter.Dexter
@@ -31,23 +28,26 @@ import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.payload.data.LegacyAddress
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.activity_accounts.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.data.websocket.WebSocketEvent
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.ADDRESS_LABEL_MAX_LENGTH
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.KEY_WARN_TRANSFER_ALL
 import piuk.blockchain.android.ui.account.adapter.AccountAdapter
 import piuk.blockchain.android.ui.account.adapter.AccountHeadersListener
 import piuk.blockchain.android.ui.backup.transfer.ConfirmFundsTransferDialogFragment
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.ui.zxing.Intents
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import com.blockchain.ui.dialog.MaterialProgressDialog
-import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -65,19 +65,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
     override val locale: Locale = Locale.getDefault()
 
     private val analytics: Analytics by inject()
-
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (BalanceFragment.ACTION_INTENT == intent.action) {
-                onViewReady()
-                // Check if we need to hide/show the transfer funds icon in the Toolbar
-                presenter.checkTransferableLegacyFunds(
-                    isAutoPopup = false,
-                    showWarningDialog = false
-                )
-            }
-        }
-    }
+    private val rxBus: RxBus by inject()
 
     private var transferFundsMenuItem: MenuItem? = null
     private val accountsAdapter: AccountAdapter by unsafeLazy {
@@ -276,16 +264,29 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
         accountsAdapter.items = displayAccounts
     }
 
+    private val event by unsafeLazy {
+        rxBus.register(ActionEvent::class.java)
+    }
+
+    private val compositeDisposable = CompositeDisposable()
+
     override fun onResume() {
         super.onResume()
-        val filter = IntentFilter(BalanceFragment.ACTION_INTENT)
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter)
+        compositeDisposable += event.subscribe {
+            onViewReady()
+            // Check if we need to hide/show the transfer funds icon in the Toolbar
+            presenter.checkTransferableLegacyFunds(
+                isAutoPopup = false,
+                showWarningDialog = false
+            )
+        }
         onViewReady()
     }
 
     override fun onPause() {
         super.onPause()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
+        rxBus.unregister(ActionEvent::class.java, event)
+        compositeDisposable.clear()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -360,8 +361,8 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
         toast(message, toastType)
     }
 
-    override fun broadcastIntent(intent: Intent) {
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+    override fun broadcastEvent(event: WebSocketEvent) {
+        rxBus.emitEvent(WebSocketEvent::class.java, event)
     }
 
     private fun remoteSaveNewAddress(legacy: LegacyAddress) {

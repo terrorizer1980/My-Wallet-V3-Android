@@ -2,10 +2,8 @@ package piuk.blockchain.android.ui.home
 
 import android.Manifest
 import android.app.Activity
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ShortcutManager
 import android.os.Bundle
 import android.support.annotation.StringRes
@@ -13,7 +11,6 @@ import android.support.design.widget.BottomSheetDialogFragment
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -163,8 +160,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        receiver.registerIntents(this)
-
         drawer_layout.addDrawerListener(object : DrawerLayout.DrawerListener {
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
                 // No-op
@@ -230,11 +225,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
         }
 
         handlingResult = false
-    }
-
-    override fun onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
-        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -798,35 +788,9 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
         }
     }
 
-    private val receiver = object : BroadcastReceiver() {
-
-        override fun onReceive(context: Context, intent: Intent) {
-            @Suppress("SENSELESS_COMPARISON") // This was probably here for a (bugfix) reason, so leave for now
-            if (activity == null) return
-
-            when (intent.action ?: return) {
-                ACTION_SEND -> requestScan()
-                ACTION_RECEIVE -> {
-                    // Used from onboarding
-                    presenter.setCryptoCurrency(CryptoCurrency.BTC)
-                    bottom_navigation.currentItem = ITEM_RECEIVE
-                }
-            }
-        }
-
-        fun registerIntents(ctx: Context) {
-            val broadcastManager = LocalBroadcastManager.getInstance(ctx)
-            broadcastManager.registerReceiver(this, IntentFilter(ACTION_SEND))
-            broadcastManager.registerReceiver(this, IntentFilter(ACTION_RECEIVE))
-        }
-    }
-
     companion object {
 
         val TAG = MainActivity::class.java.simpleName!!
-
-        const val ACTION_SEND = "info.blockchain.wallet.ui.BalanceFragment.SEND"
-        const val ACTION_RECEIVE = "info.blockchain.wallet.ui.BalanceFragment.RECEIVE"
 
         const val SCAN_URI = 2007
         const val ACCOUNT_EDIT = 2008

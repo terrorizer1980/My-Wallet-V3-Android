@@ -1,7 +1,6 @@
 package piuk.blockchain.android.ui.account
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.support.annotation.VisibleForTesting
 import com.blockchain.notifications.analytics.AddressAnalytics
 import com.blockchain.notifications.analytics.Analytics
@@ -23,7 +22,7 @@ import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
-import piuk.blockchain.android.data.websocket.WebSocketService
+import piuk.blockchain.android.data.websocket.WebSocketEvent
 import piuk.blockchain.android.util.LabelUtil
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -130,10 +129,7 @@ class AccountPresenter internal constructor(
 
         payloadDataManager.createNewAccount(accountLabel, doubleEncryptionPassword)
             .doOnNext {
-                val intent = Intent(WebSocketService.ACTION_INTENT).apply {
-                    putExtra(WebSocketService.EXTRA_X_PUB_BTC, it.xpub)
-                }
-                view.broadcastIntent(intent)
+                view.broadcastEvent(WebSocketEvent.ExtraXPubBTC(it.xpub))
             }
             .flatMapCompletable {
                 bchDataManager.createAccount(it.xpub)
@@ -189,10 +185,7 @@ class AccountPresenter internal constructor(
                 {
                     view.showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
                     analytics.logEvent(AddressAnalytics.ImportBTCAddress)
-                    val intent = Intent(WebSocketService.ACTION_INTENT).apply {
-                        putExtra(WebSocketService.EXTRA_BITCOIN_ADDRESS, address.address)
-                    }
-                    view.broadcastIntent(intent)
+                    view.broadcastEvent(WebSocketEvent.ExtraBtcAddress(address.address))
                     onViewReady()
                 },
                 { view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR) }

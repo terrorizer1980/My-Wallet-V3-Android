@@ -1,13 +1,10 @@
 package piuk.blockchain.android.ui.dashboard
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.BottomSheetDialogFragment
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -17,12 +14,13 @@ import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.fragment_dashboard.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
 import piuk.blockchain.android.data.websocket.WebSocketService
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.charts.ChartsActivity
 import piuk.blockchain.android.ui.customviews.BottomSpacerDecoration
 import piuk.blockchain.android.ui.dashboard.adapter.DashboardDelegateAdapter
@@ -31,6 +29,8 @@ import piuk.blockchain.android.ui.home.MainActivity.Companion.ACCOUNT_EDIT
 import piuk.blockchain.android.ui.home.MainActivity.Companion.SETTINGS_EDIT
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.start
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -49,6 +49,8 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
 
     private val analytics: Analytics by inject()
 
+    private val rxBus: RxBus by inject()
+
     private val dashboardAdapter by unsafeLazy {
         DashboardDelegateAdapter(
             context!!,
@@ -59,17 +61,14 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
         )
     }
 
-    private fun showTransactionsFor(cryptoCurrency: CryptoCurrency) {
-        navigator().gotoTransactionsFor(cryptoCurrency)
+    private val compositeDisposable = CompositeDisposable()
+
+    private val event by unsafeLazy {
+        rxBus.register(ActionEvent::class.java)
     }
 
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == BalanceFragment.ACTION_INTENT && activity != null) {
-                // Update balances
-                presenter?.updateBalances()
-            }
-        }
+    private fun showTransactionsFor(cryptoCurrency: CryptoCurrency) {
+        navigator().gotoTransactionsFor(cryptoCurrency)
     }
 
     private val spacerDecoration: BottomSpacerDecoration by unsafeLazy {
@@ -103,17 +102,20 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
 
         navigator().showNavigation()
 
-        LocalBroadcastManager.getInstance(context!!)
-            .registerReceiver(receiver, IntentFilter(BalanceFragment.ACTION_INTENT))
+        compositeDisposable += event.subscribe {
+            if (activity != null) {
+                // Update balances
+                presenter?.updateBalances()
+            }
+        }
 
         recycler_view?.scrollToPosition(0)
     }
 
     override fun onPause() {
         super.onPause()
-        context?.run {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
-        }
+        compositeDisposable.clear()
+        rxBus.unregister(ActionEvent::class.java, event)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -195,7 +195,7 @@ class AccountPresenterTest {
         verify(activity).showProgressDialog(anyInt())
         verify(activity).dismissProgressDialog()
         verify(activity).showToast(anyInt(), eq(ToastCustom.TYPE_OK))
-        verify(activity).broadcastIntent(any())
+        verify(activity).broadcastEvent(any())
     }
 
     @Test
@@ -243,7 +243,9 @@ class AccountPresenterTest {
     @Test
     fun updateLegacyAddressSuccessful() {
         // Arrange
-        val legacyAddress = LegacyAddress()
+        val legacyAddress = LegacyAddress().apply {
+            address = "address1"
+        }
         whenever(payloadDataManager.updateLegacyAddress(legacyAddress))
             .thenReturn(Completable.complete())
         // Act
@@ -253,7 +255,7 @@ class AccountPresenterTest {
         verify(activity).showProgressDialog(anyInt())
         verify(activity).dismissProgressDialog()
         verify(activity).showToast(anyInt(), eq(ToastCustom.TYPE_OK))
-        verify(activity).broadcastIntent(any())
+        verify(activity).broadcastEvent(any())
     }
 
     @Test

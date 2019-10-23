@@ -20,12 +20,13 @@ import piuk.blockchain.android.data.coinswebsocket.models.SocketRequest
 import piuk.blockchain.android.data.coinswebsocket.models.SocketResponse
 import piuk.blockchain.android.data.coinswebsocket.models.TransactionState
 import piuk.blockchain.android.data.coinswebsocket.service.MessagesSocketHandler
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
+import piuk.blockchain.androidcore.data.events.TransactionsUpdatedEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import timber.log.Timber
 import java.math.BigDecimal
@@ -37,7 +38,8 @@ class CoinsWebSocketStrategy(
     private val swipeToReceiveHelper: SwipeToReceiveHelper,
     private val stringUtils: StringUtils,
     private val gson: Gson,
-    private val erc20Account: Erc20Account
+    private val erc20Account: Erc20Account,
+    private val rxBus: RxBus
 ) {
 
     private var coinWebSocketInput: CoinWebSocketInput? = null
@@ -122,14 +124,14 @@ class CoinsWebSocketStrategy(
     private fun updateEthTransactions() {
         compositeDisposable += downloadEthTransactions()
             .subscribe(
-                { messagesSocketHandler?.sendBroadcast(BalanceFragment.ACTION_INTENT) },
+                { messagesSocketHandler?.sendBroadcast(TransactionsUpdatedEvent()) },
                 { throwable -> Timber.e(throwable, "downloadEthTransactions failed") })
     }
 
     private fun updatePaxTransactions() {
         compositeDisposable += erc20Account.fetchAddressCompletable()
             .subscribe(
-                { messagesSocketHandler?.sendBroadcast(BalanceFragment.ACTION_INTENT) },
+                { messagesSocketHandler?.sendBroadcast(TransactionsUpdatedEvent()) },
                 { throwable -> Timber.e(throwable, "downloadPaxTransactions failed") })
     }
 

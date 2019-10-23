@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.backup.transfer
 
 import android.support.annotation.StringRes
+import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.util.Locale
@@ -22,6 +23,8 @@ interface ConfirmFundsTransferView : View {
     fun updateFeeAmountFiat(amount: String)
 
     fun dismissDialog()
+
+    fun sendBroadcast(event: ActionEvent)
 
     fun setPaymentButtonEnabled(enabled: Boolean)
 

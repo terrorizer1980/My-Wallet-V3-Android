@@ -3,11 +3,9 @@ package piuk.blockchain.android.ui.send
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.BroadcastReceiver
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.res.Resources
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -19,7 +17,6 @@ import android.support.annotation.Nullable
 import android.support.annotation.StringRes
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatEditText
@@ -76,7 +73,6 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.data.api.bitpay.models.events.BitPayEvent
 import piuk.blockchain.android.data.connectivity.ConnectivityStatus
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
 import piuk.blockchain.android.ui.home.HomeFragment
@@ -94,6 +90,9 @@ import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.AppUtil
 import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -122,6 +121,7 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
 
     private val currencyState: CurrencyState by inject()
     private val stringUtils: StringUtils by inject()
+    private val rxBus: RxBus by inject()
 
     private var progressDialog: MaterialProgressDialog? = null
     private var confirmPaymentDialog: ConfirmPaymentDialog? = null
@@ -137,6 +137,8 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
     private var pitAddressAvailable = false
     private var validAddressFilled = false
 
+    private val compositeDisposable = CompositeDisposable()
+
     private val dialogHandler = Handler()
     private val dialogRunnable = Runnable {
         transactionSuccessDialog?.apply {
@@ -147,14 +149,6 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         bitpayInvoiceExpiredDialog?.apply {
             if (isShowing && activity?.isFinishing == false) {
                 dismiss()
-            }
-        }
-    }
-
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == BalanceFragment.ACTION_INTENT) {
-                presenter.onBroadcastReceived()
             }
         }
     }
@@ -222,6 +216,10 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         setHasOptionsMenu(true)
     }
 
+    private val event by unsafeLazy {
+        rxBus.register(ActionEvent::class.java)
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -235,13 +233,15 @@ class SendFragment : HomeFragment<SendView, SendPresenter<SendView>>(),
         setupToolbar()
         closeKeypad()
 
-        val filter = IntentFilter(BalanceFragment.ACTION_INTENT)
-        LocalBroadcastManager.getInstance(activity!!).registerReceiver(receiver, filter)
+        compositeDisposable += event.subscribe {
+            presenter.onBroadcastReceived()
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        LocalBroadcastManager.getInstance(activity!!).unregisterReceiver(receiver)
+        rxBus.unregister(ActionEvent::class.java, event)
+        compositeDisposable.clear()
         currency_header?.close()
     }
 

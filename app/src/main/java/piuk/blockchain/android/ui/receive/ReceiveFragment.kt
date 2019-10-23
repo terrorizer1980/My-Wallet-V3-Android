@@ -1,19 +1,16 @@
 package piuk.blockchain.android.ui.receive
 
 import android.app.Activity
-import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.CoordinatorLayout
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -33,6 +30,8 @@ import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.alert_watch_only_spend.view.confirm_cancel
 import kotlinx.android.synthetic.main.alert_watch_only_spend.view.confirm_continue
@@ -61,12 +60,13 @@ import kotlinx.android.synthetic.main.include_to_row.toArrowImage
 import kotlinx.android.synthetic.main.view_expanding_currency_header.textview_selected_currency
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
 import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.util.EditTextFormatUtil
 import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -96,6 +96,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     private val appUtil: AppUtil by inject()
     private val receivePresenter: ReceivePresenter by inject()
     private val analytics: Analytics by inject()
+    private val rxBus: RxBus by inject()
 
     private var bottomSheetDialog: BottomSheetDialog? = null
 
@@ -104,22 +105,14 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     private var selectedAccountPosition = -1
     private var handlingActivityResult = false
 
-    private val intentFilter = IntentFilter(BalanceFragment.ACTION_INTENT)
     private val defaultDecimalSeparator = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
 
     private val receiveIntentHelper by unsafeLazy {
         ReceiveIntentHelper(context!!, appUtil)
     }
 
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == BalanceFragment.ACTION_INTENT) {
-                presenter?.apply {
-                    // Update UI with new Address + QR
-                    onResume(selectedAccountPosition)
-                }
-            }
-        }
+    private val event by unsafeLazy {
+        rxBus.register(ActionEvent::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -323,9 +316,16 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
         closeKeypad()
         setupToolbar()
-        LocalBroadcastManager.getInstance(context!!)
-            .registerReceiver(broadcastReceiver, intentFilter)
+
+        compositeDisposable += event.subscribe {
+            presenter?.apply {
+                // Update UI with new Address + QR
+                onResume(selectedAccountPosition)
+            }
+        }
     }
+
+    private val compositeDisposable = CompositeDisposable()
 
     override fun showQrLoading() {
         image_qr.invisible()
@@ -540,7 +540,8 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
     override fun onPause() {
         super.onPause()
-        LocalBroadcastManager.getInstance(context!!).unregisterReceiver(broadcastReceiver)
+        rxBus.unregister(ActionEvent::class.java, event)
+        compositeDisposable.clear()
         currency_header?.close()
     }
 

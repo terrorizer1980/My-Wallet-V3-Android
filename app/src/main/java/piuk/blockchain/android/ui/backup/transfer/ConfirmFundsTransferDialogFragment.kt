@@ -1,10 +1,8 @@
 package piuk.blockchain.android.ui.backup.transfer
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.DialogFragment
-import android.support.v4.content.LocalBroadcastManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,9 +13,10 @@ import piuk.blockchain.android.R
 import com.blockchain.koin.injectActivity
 import com.blockchain.ui.password.SecondPasswordHandler
 import org.koin.android.ext.android.inject
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.androidcoreui.ui.base.BaseDialogFragment
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -29,6 +28,7 @@ class ConfirmFundsTransferDialogFragment :
     ConfirmFundsTransferView {
 
     private val confirmFundsTransferPresenter: ConfirmFundsTransferPresenter by inject()
+    private val rxBus: RxBus by inject()
     override val locale: Locale = Locale.getDefault()
 
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
@@ -155,11 +155,11 @@ class ConfirmFundsTransferDialogFragment :
     override fun getIfArchiveChecked() = checkbox_archive.isChecked
 
     override fun dismissDialog() {
-        activity?.run {
-            val intent = Intent(BalanceFragment.ACTION_INTENT)
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
-        }
         dismiss()
+    }
+
+    override fun sendBroadcast(event: ActionEvent) {
+        rxBus.emitEvent(ActionEvent::class.java, event)
     }
 
     override fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
