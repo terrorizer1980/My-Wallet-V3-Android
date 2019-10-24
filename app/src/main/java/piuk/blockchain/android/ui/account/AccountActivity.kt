@@ -241,11 +241,11 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
         }
 
         AlertDialog.Builder(this, R.style.AlertDialogStyle)
-            .setTitle(R.string.label)
-            .setMessage(R.string.assign_display_name)
+            .setTitle(R.string.create_a_new_wallet)
+            .setMessage(R.string.create_a_new_wallet_helper_text)
             .setView(ViewUtils.getAlertDialogPaddedView(this, editText))
             .setCancelable(false)
-            .setPositiveButton(R.string.save_name) { _, _ ->
+            .setPositiveButton(R.string.create_now) { _, _ ->
                 if (editText.getTextString().trim { it <= ' ' }.isNotEmpty()) {
                     addAccount(editText.getTextString().trim { it <= ' ' })
                 } else {

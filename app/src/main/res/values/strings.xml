@@ -374,7 +374,6 @@
     </string>
 
     <string name="saving_address">Saving address…</string>
-    <string name="label">Label</string>
     <string name="edit">Edit</string>
     <string name="label_cant_be_empty">Label can\'t be blank.</string>
     <string name="label_name_match">Name already in use</string>
@@ -406,7 +405,11 @@
         transaction history. As authorized persons may be able to disrupt you from accessing your
         wallet, only share your xPub with people you trust.
     </string>
-    <string name="assign_display_name">Assign a friendly display name.</string>
+    <string name="edit_wallet_name">Edit Name</string>
+    <string name="edit_wallet_name_helper_text">Give this new wallet a name.</string>
+    <string name="create_a_new_wallet">Create a New Wallet</string>
+    <string name="create_a_new_wallet_helper_text">Give this new wallet a name.</string>
+    <string name="create_now">Create Now</string>
     <string name="copy_address">Copy address</string>
     <string name="archive">Archive</string>
     <string name="unarchive">Unarchive</string>

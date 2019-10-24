@@ -108,8 +108,8 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         }
 
         AlertDialog.Builder(this, R.style.AlertDialogStyle)
-            .setTitle(R.string.name)
-            .setMessage(R.string.assign_display_name)
+            .setTitle(R.string.edit_wallet_name)
+            .setMessage(R.string.edit_wallet_name_helper_text)
             .setView(ViewUtils.getAlertDialogPaddedView(this, etLabel))
             .setCancelable(false)
             .setPositiveButton(R.string.save_name) { _, _ ->
