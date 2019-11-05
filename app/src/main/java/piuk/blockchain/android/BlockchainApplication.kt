@@ -31,7 +31,6 @@ import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.connectivity.ConnectionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.annotations.Thunk
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
@@ -116,13 +115,6 @@ open class BlockchainApplication : Application(), FrameworkInterface {
 
         // Report Google Play Services availability
         Logging.logCustom(AppLaunchEvent(isGooglePlayServicesAvailable(this)))
-
-        // Set screen shots to enabled in staging builds, to simplify automation and QA processes
-        val prefs: PersistentPrefs = get()
-        prefs.setValue(
-            PersistentPrefs.KEY_SCREENSHOTS_ENABLED,
-            environmentSettings.shouldShowDebugMenu()
-        )
 
         initRxBus()
     }

@@ -18,7 +18,6 @@ import timber.log.Timber
 
 class LauncherActivity : BaseMvpActivity<LauncherView, LauncherPresenter>(), LauncherView {
 
-    @Suppress("MemberVisibilityCanBePrivate")
     private val launcherPresenter: LauncherPresenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {

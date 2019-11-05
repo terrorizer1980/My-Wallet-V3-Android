@@ -14,6 +14,15 @@ class PrefsUtil(
     private val uuidGenerator: UUIDGenerator
 ) : PersistentPrefs {
 
+    private var isUnderAutomationTesting = false // Don't persist!
+
+    override val isUnderTest: Boolean
+        get() = isUnderAutomationTesting
+
+    override fun setIsUnderTest() {
+        isUnderAutomationTesting = true
+    }
+
     override val deviceId: String
         get() {
             return if (qaRandomiseDeviceId) {

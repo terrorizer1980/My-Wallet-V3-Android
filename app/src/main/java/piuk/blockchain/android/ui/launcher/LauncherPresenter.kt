@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
+import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.Settings
 import io.reactivex.rxkotlin.plusAssign
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.access.AccessState
+import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -22,7 +24,8 @@ class LauncherPresenter(
     private val deepLinkPersistence: DeepLinkPersistence,
     private val accessState: AccessState,
     private val settingsDataManager: SettingsDataManager,
-    private val notificationTokenManager: NotificationTokenManager
+    private val notificationTokenManager: NotificationTokenManager,
+    private val envSettings: EnvironmentConfig
 ) : BasePresenter<LauncherView>() {
 
     override fun onViewReady() {
@@ -53,6 +56,12 @@ class LauncherPresenter(
 
         if (extras != null && extras.containsKey(INTENT_EXTRA_VERIFIED)) {
             isPinValidated = extras.getBoolean(INTENT_EXTRA_VERIFIED)
+        }
+
+        if (extras?.containsKey("IS_AUTOMATION_TESTING") == true) {
+            if (extras.getBoolean(INTENT_AUTOMATION_TEST) && Environment.STAGING == envSettings.environment) {
+                prefs.setIsUnderTest()
+            }
         }
 
         when {
@@ -112,5 +121,6 @@ class LauncherPresenter(
 
     companion object {
         const val INTENT_EXTRA_VERIFIED = "verified"
+        const val INTENT_AUTOMATION_TEST = "IS_AUTOMATION_TESTING"
     }
 }

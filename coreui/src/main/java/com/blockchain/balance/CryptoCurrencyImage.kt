@@ -7,7 +7,7 @@ import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.R
 
 @DrawableRes
-fun CryptoCurrency.drawableResFilled() =
+fun CryptoCurrency.drawableResFilled(): Int =
     when (this) {
         CryptoCurrency.BTC -> R.drawable.vector_bitcoin_colored
         CryptoCurrency.ETHER -> R.drawable.vector_eth_colored
@@ -17,7 +17,7 @@ fun CryptoCurrency.drawableResFilled() =
     }
 
 @DrawableRes
-fun CryptoCurrency.coinIconWhite() =
+fun CryptoCurrency.coinIconWhite(): Int =
     when (this) {
         CryptoCurrency.BTC -> R.drawable.vector_bitcoin_white
         CryptoCurrency.ETHER -> R.drawable.vector_eth_white

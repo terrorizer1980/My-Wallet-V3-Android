@@ -22,6 +22,8 @@ import piuk.blockchain.android.R;
 import piuk.blockchain.android.testutils.RxTest;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import com.blockchain.notifications.NotificationTokenManager;
+
+import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
@@ -56,12 +58,22 @@ public class LauncherPresenterTest {
     @Mock private Bundle extras;
     @Mock private Wallet wallet;
     @Mock private NotificationTokenManager notificationTokenManager;
+    @Mock private EnvironmentConfig environmentConfig;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        subject = new LauncherPresenter(appUtil, payloadDataManager, prefsUtil, deepLinkPersistence, accessState, settingsDataManager, notificationTokenManager);
+        subject = new LauncherPresenter(
+                appUtil,
+                payloadDataManager,
+                prefsUtil,
+                deepLinkPersistence,
+                accessState,
+                settingsDataManager,
+                notificationTokenManager,
+                environmentConfig
+        );
         subject.initView(launcherActivity);
     }
 

@@ -30,8 +30,9 @@ abstract class BlockchainActivity : ToolBarActivity() {
     protected val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
     protected abstract val alwaysDisableScreenshots: Boolean
+
     private val enableScreenshots: Boolean
-        get() = securityPrefs.areScreenshotsEnabled && !alwaysDisableScreenshots
+        get() = securityPrefs.isUnderTest || (securityPrefs.areScreenshotsEnabled && !alwaysDisableScreenshots)
 
     protected open val enableLogoutTimer: Boolean = true
 

@@ -356,7 +356,7 @@ class PieChartDelegate<in T>(
 }
 
 @StringRes
-private fun CryptoCurrency.label() =
+private fun CryptoCurrency.label(): Int =
     when (this) {
         CryptoCurrency.BTC -> R.string.bitcoin
         CryptoCurrency.ETHER -> R.string.ether

@@ -45,7 +45,7 @@ abstract class BaseAuthActivity : ToolBarActivity() {
         stopLogoutTimer()
         ApplicationLifeCycle.getInstance().onActivityResumed()
 
-        if (environment.shouldShowDebugMenu() || (prefs.areScreenshotAllowed && !enforceFlagSecure())) {
+        if (prefs.isUnderTest || (prefs.areScreenshotAllowed && !enforceFlagSecure())) {
             enableScreenshots()
         } else {
             disallowScreenshots()

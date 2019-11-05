@@ -905,7 +905,8 @@ val applicationModule = applicationContext {
                 deepLinkPersistence = get(),
                 accessState = get(),
                 settingsDataManager = get(),
-                notificationTokenManager = get()
+                notificationTokenManager = get(),
+                envSettings = get()
             )
         }
 
