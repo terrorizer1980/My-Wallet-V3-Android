@@ -417,7 +417,7 @@ class CoinifyOverviewPresenter(
             .flatMapCompletable {
                 metadataManager.saveToMetadata(
                     it.toSerialisedString(),
-                    ExchangeService.METADATA_TYPE_EXCHANGE
+                    MetadataManager.METADATA_TYPE_EXCHANGE
                 )
             }
             .subscribeBy(onError = { Timber.e(it) })

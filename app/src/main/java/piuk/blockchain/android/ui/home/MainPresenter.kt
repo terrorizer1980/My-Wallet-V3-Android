@@ -198,6 +198,7 @@ class MainPresenter internal constructor(
                 checkKycStatus()
                 setDebugExchangeVisibility()
                 initBuyService()
+
                 rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
 
                 checkForPendingLinks()

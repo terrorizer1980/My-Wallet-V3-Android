@@ -104,7 +104,7 @@ internal class NabuCoinifyAccountService(
             .flatMapCompletable {
                 metadataManager.saveToMetadata(
                     it.toSerialisedString(),
-                    ExchangeService.METADATA_TYPE_EXCHANGE
+                    MetadataManager.METADATA_TYPE_EXCHANGE
                 )
             }
             .toSingle { coinifyData }

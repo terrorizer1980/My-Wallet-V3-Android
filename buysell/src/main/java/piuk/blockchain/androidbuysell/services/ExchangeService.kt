@@ -13,6 +13,7 @@ import piuk.blockchain.androidbuysell.models.CoinifyData
 import piuk.blockchain.androidbuysell.models.ExchangeData
 import piuk.blockchain.androidbuysell.models.TradeData
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
+import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.websockets.WebSocketReceiveEvent
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
@@ -148,11 +149,6 @@ class ExchangeService(
 
     private fun getMetadata(metadataHDNode: DeterministicKey): Observable<Metadata> =
         Observable.fromCallable {
-            Metadata.Builder(metadataHDNode, METADATA_TYPE_EXCHANGE).build()
+            Metadata.Builder(metadataHDNode, MetadataManager.METADATA_TYPE_EXCHANGE).build()
         }.applySchedulers()
-
-    companion object {
-
-        const val METADATA_TYPE_EXCHANGE = 3
-    }
 }

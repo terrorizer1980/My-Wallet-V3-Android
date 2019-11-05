@@ -96,4 +96,9 @@ class MetadataManager(
                 }
             }.flatMapCompletable { Completable.complete() }
     }.applySchedulers()
+
+    companion object {
+        const val METADATA_TYPE_EXCHANGE = 3
+        const val METADATA_TYPE_SHAPE_SHIFT_EXTERNAL = 6
+    }
 }

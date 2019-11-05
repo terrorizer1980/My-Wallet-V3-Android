@@ -69,7 +69,7 @@ class CoinifyTradeCompleteListener(
     private fun updateMetadataEntry(exchangeData: ExchangeData) {
         metadataManager.saveToMetadata(
             exchangeData.toSerialisedString(),
-            ExchangeService.METADATA_TYPE_EXCHANGE
+            MetadataManager.METADATA_TYPE_EXCHANGE
         ).subscribeOn(Schedulers.io())
             // Not a big problem if updating this record fails here
             .emptySubscribe()
