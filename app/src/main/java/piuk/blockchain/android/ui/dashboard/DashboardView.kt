@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.dashboard
 
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetDialogFragment
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom

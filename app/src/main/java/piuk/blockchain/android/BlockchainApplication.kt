@@ -21,9 +21,12 @@ import org.bitcoinj.core.NetworkParameters
 import piuk.blockchain.android.data.connectivity.ConnectivityManager
 import com.blockchain.ui.CurrentContextAccess
 import com.facebook.stetho.Stetho
+import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.campaign.BlockstackCampaignRegistration
 import piuk.blockchain.android.ui.auth.LogoutActivity
+import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity
 import piuk.blockchain.android.util.lifecycle.AppLifecycleListener
 import piuk.blockchain.android.util.lifecycle.LifecycleInterestedComponent
@@ -33,6 +36,7 @@ import piuk.blockchain.androidcore.data.connectivity.ConnectionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.annotations.Thunk
+import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 import piuk.blockchain.androidcoreui.BuildConfig
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -52,6 +56,8 @@ open class BlockchainApplication : Application(), FrameworkInterface {
     private val currentContextAccess: CurrentContextAccess by inject()
     private val appUtils: AppUtil by inject()
     private val crashLogger: CrashLogger by inject()
+
+    private val stxRegistration: BlockstackCampaignRegistration by inject()
 
     private val lifecycleListener: AppLifecycleListener by lazy {
         AppLifecycleListener(lifeCycleInterestedComponent)
@@ -123,12 +129,19 @@ open class BlockchainApplication : Application(), FrameworkInterface {
     private fun initRxBus() {
         rxBus.register(ConnectionEvent::class.java)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { connectionEvent ->
-                SSLVerifyActivity.start(
-                    applicationContext,
-                    connectionEvent
-                )
-            }
+            .subscribeBy(onNext = ::onBusConnectionEvent)
+
+        rxBus.register(MetadataEvent::class.java)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(onNext = ::onBusMetadataEvent)
+    }
+
+    private fun onBusConnectionEvent(event: ConnectionEvent) {
+        SSLVerifyActivity.start(applicationContext, event)
+    }
+
+    private fun onBusMetadataEvent(event: MetadataEvent) {
+        stxRegistration.registerCampaign().emptySubscribe()
     }
 
     private fun initLifecycleListener() {

@@ -32,7 +32,7 @@ import android.widget.TextView
 
 import com.blockchain.kyc.models.nabu.Kyc2TierState
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.crashlytics.android.answers.ContentViewEvent

@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
 import android.support.annotation.VisibleForTesting
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Maybe
 import io.reactivex.Observable

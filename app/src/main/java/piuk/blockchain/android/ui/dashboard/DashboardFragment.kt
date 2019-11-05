@@ -10,7 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency

@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.kyc.sunriver
+package piuk.blockchain.android.campaign
 
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.kyc.models.nabu.CampaignData
@@ -9,7 +9,7 @@ import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
 import com.blockchain.remoteconfig.FeatureFlag
-import com.blockchain.sunriver.SunriverCampaignSignUp
+import com.blockchain.sunriver.XlmDataManager
 import info.blockchain.balance.AccountReference
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -18,17 +18,15 @@ import io.reactivex.schedulers.Schedulers
 
 private const val SunRiverCampaign = "SUNRIVER"
 
-class SunriverCampaignHelper(
+class SunriverCampaignRegistration(
     private val featureFlag: FeatureFlag,
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
     private val kycStatusHelper: KycStatusHelper,
-    private val xlmAccountProvider: XlmAccountProvider
-) : SunriverCampaignSignUp {
+    private val xlmDataManager: XlmDataManager
+) : CampaignRegistration {
 
-    interface XlmAccountProvider {
-        fun defaultAccount(): Single<AccountReference.Xlm>
-    }
+    private fun defaultAccount(): Single<AccountReference.Xlm> = xlmDataManager.defaultAccount()
 
     fun getCampaignCardType(): Single<SunriverCardType> =
         featureFlag.enabled
@@ -40,7 +38,7 @@ class SunriverCampaignHelper(
         Singles.zip(
             kycStatusHelper.getUserState(),
             kycStatusHelper.getKycStatus(),
-            userIsInSunRiverCampaign()
+            userIsInCampaign()
         ).map { (userState, kycState, inSunRiverCampaign) ->
             if (kycState == KycState.Verified && inSunRiverCampaign) {
                 SunriverCardType.Complete
@@ -54,22 +52,18 @@ class SunriverCampaignHelper(
             }
         }
 
-    override fun registerSunRiverCampaign(): Completable =
-        xlmAccountProvider.defaultAccount().flatMapCompletable { xlmAccount ->
+    override fun registerCampaign(): Completable =
+        registerCampaign(CampaignData(SunRiverCampaign, false))
+
+    override fun registerCampaign(campaignData: CampaignData): Completable =
+        defaultAccount().flatMapCompletable { xlmAccount ->
             nabuToken.fetchNabuToken()
                 .flatMapCompletable {
-                    Completable.complete()
-                    registerSunriverCampaign(it, xlmAccount, CampaignData(SunRiverCampaign, false))
+                    doRegisterCampaign(it, xlmAccount, campaignData)
                 }
         }
 
-    fun registerCampaignAndSignUpIfNeeded(xlmAccount: AccountReference.Xlm, campaignData: CampaignData): Completable =
-        nabuToken.fetchNabuToken()
-            .flatMapCompletable {
-                registerSunriverCampaign(it, xlmAccount, campaignData)
-            }
-
-    private fun registerSunriverCampaign(
+    private fun doRegisterCampaign(
         token: NabuOfflineTokenResponse,
         xlmAccount: AccountReference.Xlm,
         campaignData: CampaignData
@@ -83,7 +77,7 @@ class SunriverCampaignHelper(
             campaignData.campaignName
         ).subscribeOn(Schedulers.io())
 
-    override fun userIsInSunRiverCampaign(): Single<Boolean> =
+    override fun userIsInCampaign(): Single<Boolean> =
         getCampaignList().map { it.contains(SunRiverCampaign) }
 
     private fun getCampaignList(): Single<List<String>> =
@@ -93,7 +87,6 @@ class SunriverCampaignHelper(
 }
 
 sealed class SunriverCardType {
-
     object None : SunriverCardType()
     object JoinWaitList : SunriverCardType()
     object FinishSignUp : SunriverCardType()

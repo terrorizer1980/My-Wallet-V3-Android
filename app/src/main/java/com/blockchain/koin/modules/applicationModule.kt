@@ -1,5 +1,3 @@
-@file:Suppress("USELESS_CAST")
-
 package com.blockchain.koin.modules
 
 import android.content.Context
@@ -11,7 +9,6 @@ import com.blockchain.network.websocket.autoRetry
 import com.blockchain.network.websocket.debugLog
 import com.blockchain.network.websocket.newBlockchainWebSocket
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
-import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
@@ -31,7 +28,6 @@ import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrate
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
-import piuk.blockchain.android.sunriver.SunRiverCampaignAccountProviderAdapter
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.thepit.PitLinkingImpl
@@ -252,7 +248,7 @@ val applicationModule = applicationContext {
                 kycStatusHelper = get(),
                 lockboxDataManager = get(),
                 deepLinkProcessor = get(),
-                sunriverCampaignHelper = get(),
+                sunriverCampaignRegistration = get(),
                 xlmDataManager = get(),
                 paxAccount = get(),
                 pitFeatureFlag = get("ff_pit_linking"),
@@ -720,8 +716,6 @@ val applicationModule = applicationContext {
         factory { DeepLinkPersistence(get()) }
 
         factory { ConfirmPaymentPresenter() }
-
-        factory { SunRiverCampaignAccountProviderAdapter(get()) as SunriverCampaignHelper.XlmAccountProvider }
 
         factory {
             DashboardPresenter(

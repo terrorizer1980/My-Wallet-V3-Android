@@ -8,7 +8,7 @@ import android.support.v7.app.AlertDialog
 import com.blockchain.activities.StartSwap
 import com.blockchain.extensions.px
 import com.blockchain.kyc.models.nabu.KycState
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import org.koin.android.ext.android.inject
@@ -48,6 +48,7 @@ class KycStatusActivity : BaseMvpActivity<KycStatusView, KycStatusPresenter>(), 
             CampaignType.BuySell -> R.string.buy_sell_splash_title
             CampaignType.Swap -> R.string.kyc_splash_title
             CampaignType.Sunriver,
+            CampaignType.Blockstack,
             CampaignType.Resubmission -> R.string.sunriver_splash_title
         }
         setupToolbar(toolBar, title)
@@ -90,6 +91,7 @@ class KycStatusActivity : BaseMvpActivity<KycStatusView, KycStatusPresenter>(), 
             CampaignType.BuySell,
             CampaignType.Swap,
             CampaignType.Resubmission -> R.string.kyc_status_message_in_progress
+            CampaignType.Blockstack,
             CampaignType.Sunriver -> R.string.sunriver_status_message
         }
         textViewMessage.setText(message)

@@ -26,7 +26,7 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.blockchain.annotations.ButWhy
 import com.blockchain.annotations.CommonCode
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.lockbox.ui.LockboxLandingActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent

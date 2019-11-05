@@ -10,7 +10,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 
 class KycForAirdropsAnnouncement(
     dismissRecorder: DismissRecorder,

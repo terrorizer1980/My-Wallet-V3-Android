@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import kotlinx.android.synthetic.main.fragment_swap_intro.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject

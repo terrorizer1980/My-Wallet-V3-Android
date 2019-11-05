@@ -14,7 +14,7 @@ import com.blockchain.annotations.CommonCode
 import com.blockchain.balance.colorRes
 import com.blockchain.koin.injectActivity
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.swap.common.exchange.mvi.ExchangeViewState
 import com.blockchain.swap.nabu.service.Quote
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeModel

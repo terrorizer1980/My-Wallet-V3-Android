@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import piuk.blockchain.android.ui.kyc.status.KycStatusActivity

@@ -3,7 +3,6 @@
 package piuk.blockchain.android.ui.kyc.koin
 
 import piuk.blockchain.android.ui.kyc.splash.KycSplashPresenter
-import com.blockchain.sunriver.SunriverCampaignSignUp
 import com.blockchain.swap.nabu.CurrentTier
 import com.blockchain.swap.nabu.EthEligibility
 import com.blockchain.swap.nabu.StartKyc
@@ -29,7 +28,6 @@ import piuk.blockchain.android.ui.kyc.reentry.ReentryDecision
 import piuk.blockchain.android.ui.kyc.reentry.ReentryDecisionKycNavigator
 import piuk.blockchain.android.ui.kyc.reentry.TiersReentryDecision
 import piuk.blockchain.android.ui.kyc.status.KycStatusPresenter
-import piuk.blockchain.android.ui.kyc.sunriver.SunriverCampaignHelper
 import piuk.blockchain.android.ui.kyc.tiersplash.KycTierSplashPresenter
 import piuk.blockchain.android.ui.kyc.veriffsplash.VeriffSplashPresenter
 
@@ -93,7 +91,16 @@ val kycUiModule = applicationContext {
 
         factory { KycStatusPresenter(get(), get(), get()) }
 
-        factory { KycNavHostPresenter(get(), get(), get(), get(), get(), get()) }
+        factory { KycNavHostPresenter(
+            nabuToken = get(),
+            nabuDataManager = get(),
+            sunriverCampaign = get(),
+            blockstackCampaign = get(),
+            reentryDecision = get(),
+            tierUpdater = get(),
+            kycNavigator = get()
+            )
+        }
 
         factory { KycInvalidCountryPresenter(get(), get()) }
     }
@@ -117,8 +124,5 @@ val kycUiNabuModule = applicationContext {
                 nabuDataManager = get()
             ) as EthEligibility
         }
-
-        factory { SunriverCampaignHelper(get("sunriver"), get(), get(), get(), get()) }
-            .bind(SunriverCampaignSignUp::class)
     }
 }

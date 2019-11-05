@@ -20,7 +20,7 @@ import com.blockchain.kyc.models.nabu.TiersJson
 import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.hyperlinks.renderSingleLink
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import com.blockchain.notifications.analytics.AnalyticsEvents
@@ -86,7 +86,9 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         val title = when (progressListener.campaignType) {
             CampaignType.BuySell -> R.string.buy_sell_splash_title
             CampaignType.Swap -> R.string.kyc_splash_title
-            CampaignType.Sunriver, CampaignType.Resubmission -> R.string.sunriver_splash_title
+            CampaignType.Sunriver,
+            CampaignType.Blockstack,
+            CampaignType.Resubmission -> R.string.sunriver_splash_title
         }
 
         progressListener.setHostTitle(title)
