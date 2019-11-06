@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
 import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
+import com.blockchain.kyc.models.nabu.KycState
 import com.blockchain.kyc.models.nabu.Scope
 import com.blockchain.swap.nabu.NabuToken
 import io.reactivex.Single
@@ -31,6 +32,14 @@ class AnnouncementQueries(
         return nabuToken.fetchNabuToken()
             .flatMap { token -> nabu.getUser(token) }
             .map { it.tierInProgressOrCurrentTier == 2 }
+            .onErrorReturn { false }
+    }
+
+    // Have we attempted and been rejected for gold?
+    fun isGoldRejected(): Single<Boolean> {
+        return nabuToken.fetchNabuToken()
+            .flatMap { token -> nabu.getUser(token) }
+            .map { it.kycState == KycState.Rejected }
             .onErrorReturn { false }
     }
 }

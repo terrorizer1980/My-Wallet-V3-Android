@@ -1750,6 +1750,11 @@
     <string name="tiers_splash_header_text">Trading your crypto doesn\'t mean trading away control</string>
     <string name="announcing_swap">Swap by Blockchain enables you to trade crypto with best prices, and quick settlement, all while maintaining full control of your funds.</string>
 
+    <!-- Blockstack airdrop announcement -->
+    <string name="stacks_airdrop_card_title">Our Latest Airdrop is Here.\nReserve Your Free Stacks (STX)</string>
+    <string name="stacks_airdrop_card_description">As a Gold Level user in the Blockchain Wallet, all you have to do is log in to receive our latest airdrop.</string>
+    <string name="stacks_airdrop_card_button">Get $10 of STX</string>
+
     <!-- KYC Tiers -->
     <string name="tier_1">TIER 1</string>
     <string name="tier_2">TIER 2</string>
