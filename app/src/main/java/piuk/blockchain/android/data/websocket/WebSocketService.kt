@@ -70,7 +70,7 @@ class WebSocketService : Service() {
                     for (i in 0 until nbLegacy) {
                         val address = payloadDataManager.wallet?.legacyAddressList?.get(i)?.address
                         if (address.isNullOrEmpty().not()) {
-                            addresses[i] = address!!
+                            addresses.add(address!!)
                         }
                     }
                     return addresses
@@ -115,7 +115,7 @@ class WebSocketService : Service() {
                     for (i in 0 until nbLegacy) {
                         val address = bchDataManager.getLegacyAddressStringList().get(i)
                         if (address.isNotEmpty()) {
-                            addrs[i] = address
+                            addrs.add(address)
                         }
                     }
 
