@@ -21,7 +21,7 @@ interface LoginView : MvpView {
 
 class LoginPresenter(
     private val appUtil: AppUtil,
-    private val payloadDataManager: PayloadDataManager,
+    private val _payloadDataManager: Lazy<PayloadDataManager>,
     private val prefs: PersistentPrefs,
     private val analytics: Analytics
 ) : MvpPresenter<LoginView>() {
@@ -37,7 +37,7 @@ class LoginPresenter(
 
         if (raw == null) view?.showToast(R.string.pairing_failed, ToastCustom.TYPE_ERROR)
 
-        val dataManager = payloadDataManager
+        val dataManager = _payloadDataManager.value
 
         compositeDisposable += dataManager.handleQrCode(raw!!)
             .doOnSubscribe { view?.showProgressDialog(R.string.please_wait) }

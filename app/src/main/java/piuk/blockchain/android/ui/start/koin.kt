@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.start
 
 import org.koin.dsl.module.applicationContext
+import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 
 val startupUiModule = applicationContext {
 
@@ -15,7 +16,7 @@ val startupUiModule = applicationContext {
 
         factory {
             LoginPresenter(
-                payloadDataManager = get(),
+                _payloadDataManager = lazy { get<PayloadDataManager>() },
                 appUtil = get(),
                 analytics = get(),
                 prefs = get()
