@@ -20,9 +20,9 @@ import org.bitcoinj.core.ECKey
 import org.bitcoinj.crypto.BIP38PrivateKey
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
+import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
-import piuk.blockchain.android.data.websocket.WebSocketEvent
 import piuk.blockchain.android.util.LabelUtil
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -53,6 +53,7 @@ class AccountPresenter internal constructor(
     private val environmentSettings: EnvironmentConfig,
     private val currencyState: CurrencyState,
     private val analytics: Analytics,
+    private val coinsWebSocketStrategy: CoinsWebSocketStrategy,
     private val currencyFormatManager: CurrencyFormatManager
 ) : BasePresenter<AccountView>() {
 
@@ -130,7 +131,7 @@ class AccountPresenter internal constructor(
 
         payloadDataManager.createNewAccount(accountLabel, doubleEncryptionPassword)
             .doOnNext {
-                view.broadcastEvent(WebSocketEvent.ExtraXPubBTC(it.xpub))
+                coinsWebSocketStrategy.subscribeToXpubBtc(it.xpub)
             }
             .flatMapCompletable {
                 bchDataManager.createAccount(it.xpub)
@@ -186,7 +187,7 @@ class AccountPresenter internal constructor(
                 {
                     view.showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
                     analytics.logEvent(AddressAnalytics.ImportBTCAddress)
-                    view.broadcastEvent(WebSocketEvent.ExtraBtcAddress(address.address))
+                    coinsWebSocketStrategy.subscribeToExtraBtcAddress(address.address)
                     onViewReady()
                 },
                 { view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR) }

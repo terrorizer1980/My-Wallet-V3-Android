@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
 import okhttp3.OkHttpClient
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
@@ -17,7 +16,6 @@ import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.AppUtil
 
 class WebSocketService : Service() {
@@ -69,8 +67,8 @@ class WebSocketService : Service() {
                     val addresses = mutableListOf<String>()
                     for (i in 0 until nbLegacy) {
                         val address = payloadDataManager.wallet?.legacyAddressList?.get(i)?.address
-                        if (address.isNullOrEmpty().not()) {
-                            addresses[i] = address!!
+                        if (address?.isNotEmpty() == true) {
+                            addresses.add(address)
                         }
                     }
                     return addresses
@@ -113,9 +111,9 @@ class WebSocketService : Service() {
                     val nbLegacy = bchDataManager.getLegacyAddressStringList().size
                     val addrs = mutableListOf<String>()
                     for (i in 0 until nbLegacy) {
-                        val address = bchDataManager.getLegacyAddressStringList().get(i)
-                        if (address.isNotEmpty()) {
-                            addrs[i] = address
+                        val address = bchDataManager.getLegacyAddressStringList()[i]
+                        if (address.isEmpty().not()) {
+                            addrs.add(address)
                         }
                     }
 
@@ -140,20 +138,8 @@ class WebSocketService : Service() {
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val events by unsafeLazy {
-        rxBus.register(WebSocketEvent::class.java)
-    }
-
     override fun onCreate() {
         super.onCreate()
-        compositeDisposable += events.subscribe { event ->
-            when (event) {
-                is WebSocketEvent.ExtraBtcAddress -> webSocketHandler?.subscribeToAddressBtc(event.address)
-                is WebSocketEvent.ExtraBhcAddress -> webSocketHandler?.subscribeToAddressBch(event.address)
-                is WebSocketEvent.ExtraXPubBCH -> webSocketHandler?.subscribeToXpubBch(event.address)
-                is WebSocketEvent.ExtraXPubBTC -> webSocketHandler?.subscribeToXpubBtc(event.address)
-            }
-        }
 
         webSocketHandler = WebSocketHandler(
             applicationContext,
@@ -164,10 +150,6 @@ class WebSocketService : Service() {
             environmentConfig,
             currencyFormatManager,
             prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, ""),
-            xpubsBtc.toTypedArray(),
-            addressesBtc.toTypedArray(),
-            xpubsBch.toTypedArray(),
-            addressesBch.toTypedArray(),
             rxBus,
             accessState,
             appUtil).apply {
@@ -177,7 +159,6 @@ class WebSocketService : Service() {
 
     override fun onDestroy() {
         if (webSocketHandler != null) webSocketHandler!!.stopPermanently()
-        rxBus.unregister(WebSocketEvent::class.java, events)
         compositeDisposable.clear()
         super.onDestroy()
     }
@@ -189,11 +170,4 @@ class WebSocketService : Service() {
         val service: WebSocketService
             get() = this@WebSocketService
     }
-}
-
-sealed class WebSocketEvent(val address: String) {
-    class ExtraBtcAddress(address: String) : WebSocketEvent(address)
-    class ExtraXPubBTC(address: String) : WebSocketEvent(address)
-    class ExtraBhcAddress(address: String) : WebSocketEvent(address)
-    class ExtraXPubBCH(address: String) : WebSocketEvent(address)
 }

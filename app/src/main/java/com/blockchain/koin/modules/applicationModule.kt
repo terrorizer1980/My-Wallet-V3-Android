@@ -267,7 +267,10 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 gson = get(),
                 erc20Account = get("pax"),
-                rxBus = get()
+                payloadDataManager = get(),
+                bchDataManager = get(),
+                rxBus = get(),
+                currencyFormatManager = get()
             )
         }
 
@@ -692,7 +695,8 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 currencyState = get(),
                 analytics = get(),
-                currencyFormatManager = get()
+                currencyFormatManager = get(),
+                coinsWebSocketStrategy = get()
             )
         }
 

@@ -36,6 +36,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import piuk.blockchain.android.BlockchainTestApplication
 import piuk.blockchain.android.R
+import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.KEY_WARN_TRANSFER_ALL
@@ -70,6 +71,7 @@ class AccountPresenterTest {
     private val privateKeyFactory = PrivateKeyFactory()
     private val currencyState: CurrencyState = mock()
     private val currencyFormatManager: CurrencyFormatManager = mock()
+    private val coinsWebSocketStrategy: CoinsWebSocketStrategy = mock()
 
     @Before
     fun setUp() {
@@ -86,6 +88,7 @@ class AccountPresenterTest {
             environmentSettings,
             currencyState,
             mock(),
+            coinsWebSocketStrategy,
             currencyFormatManager
         )
 
@@ -198,7 +201,7 @@ class AccountPresenterTest {
         verify(activity).showProgressDialog(anyInt())
         verify(activity).dismissProgressDialog()
         verify(activity).showToast(anyInt(), eq(ToastCustom.TYPE_OK))
-        verify(activity).broadcastEvent(any())
+        verify(coinsWebSocketStrategy).subscribeToXpubBtc("xpub")
     }
 
     @Test
@@ -258,7 +261,6 @@ class AccountPresenterTest {
         verify(activity).showProgressDialog(anyInt())
         verify(activity).dismissProgressDialog()
         verify(activity).showToast(anyInt(), eq(ToastCustom.TYPE_OK))
-        verify(activity).broadcastEvent(any())
     }
 
     @Test

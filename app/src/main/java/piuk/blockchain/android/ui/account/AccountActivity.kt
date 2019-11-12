@@ -35,7 +35,6 @@ import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.websocket.WebSocketEvent
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.ADDRESS_LABEL_MAX_LENGTH
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.KEY_WARN_TRANSFER_ALL
 import piuk.blockchain.android.ui.account.adapter.AccountAdapter
@@ -352,10 +351,6 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
 
     override fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
         toast(message, toastType)
-    }
-
-    override fun broadcastEvent(event: WebSocketEvent) {
-        rxBus.emitEvent(WebSocketEvent::class.java, event)
     }
 
     private fun remoteSaveNewAddress(legacy: LegacyAddress) {

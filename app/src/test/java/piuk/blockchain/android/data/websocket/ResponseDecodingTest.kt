@@ -30,7 +30,7 @@ class ResponseDecodingTest {
         assertEquals(
             SocketResponse(
                 success = false,
-                entity = Entity.ACCOUNT,
+                entity = Entity.Account,
                 coin = Coin.ETH,
                 message = "Address xxx is not valid Ethereum address"
             ), gson.fromJson(errorMessage, SocketResponse::class.java))
@@ -61,7 +61,7 @@ class ResponseDecodingTest {
         assertEquals(
             SocketResponse(
                 success = true,
-                entity = Entity.HEADER,
+                entity = Entity.Header,
                 coin = Coin.ETH,
                 block = EthBlock(
                     "0x8458a6bdfc7437fb5511171a570834f4ec851300c4fbcc545720db6cfaff78ee",
