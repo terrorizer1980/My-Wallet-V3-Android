@@ -519,10 +519,24 @@ class AccountPresenter internal constructor(
 
     private fun getBalanceFromBchAddress(address: String): Long =
         bchDataManager.getAddressBalance(address).toLong()
-    // endregion
+
+    fun getDisplayableCurrencies(): Set<CryptoCurrency> =
+        CryptoCurrency.values()
+            .filter { !it.hasFeature(CryptoCurrency.STUB_ASSET) }
+            .filter { shouldShow(it) }
+            .toSet()
+
+    private fun shouldShow(cryptoCurrency: CryptoCurrency): Boolean =
+        when (cryptoCurrency) {
+            CryptoCurrency.BTC -> true
+            CryptoCurrency.BCH -> true
+            CryptoCurrency.ETHER -> false
+            CryptoCurrency.XLM -> false
+            CryptoCurrency.PAX -> false
+            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        }
 
     companion object {
-
         internal const val KEY_WARN_TRANSFER_ALL = "WARN_TRANSFER_ALL"
         internal const val ADDRESS_LABEL_MAX_LENGTH = 17
     }

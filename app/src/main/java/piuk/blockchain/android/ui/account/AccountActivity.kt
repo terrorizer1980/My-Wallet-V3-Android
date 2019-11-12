@@ -80,9 +80,11 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
         setupToolbar(toolbar_general, R.string.drawer_addresses)
         get<Analytics>().logEvent(AnalyticsEvents.AccountsAndAddresses)
 
+        val displaySet = presenter.getDisplayableCurrencies()
+
         with(currency_header) {
             CryptoCurrency.values().forEach {
-                if (!shouldShow(it)) hide(it)
+                if (it !in displaySet) hide(it)
             }
             setCurrentlySelectedCurrency(presenter.cryptoCurrency)
             setSelectionListener { presenter.cryptoCurrency = it }
@@ -96,16 +98,6 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
         }
         onViewReady()
     }
-
-    private fun shouldShow(cryptoCurrency: CryptoCurrency) =
-        when (cryptoCurrency) {
-            CryptoCurrency.BTC -> true
-            CryptoCurrency.BCH -> true
-            CryptoCurrency.ETHER -> false
-            CryptoCurrency.XLM -> false
-            CryptoCurrency.PAX -> false
-            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
