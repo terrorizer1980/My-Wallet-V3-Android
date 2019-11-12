@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.kyc.navhost
 
 import android.animation.ObjectAnimator
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -11,7 +12,6 @@ import android.view.MenuItem
 import android.view.animation.DecelerateInterpolator
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment.findNavController
-import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.complete.ApplicationCompleteFragment
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
@@ -34,14 +34,12 @@ import kotlinx.android.synthetic.main.activity_kyc_nav_host.progress_bar_loading
 import kotlinx.android.synthetic.main.activity_kyc_nav_host.toolbar_kyc as toolBar
 
 internal class KycStarterBuySell : StartKycForBuySell {
-
     override fun startKycActivity(context: Any) {
         KycNavHostActivity.start(context as Context, CampaignType.BuySell)
     }
 }
 
 internal class KycStarter : StartKyc {
-
     override fun startKycActivity(context: Any) {
         KycNavHostActivity.start(context as Context, CampaignType.Swap)
     }
@@ -50,22 +48,17 @@ internal class KycStarter : StartKyc {
 class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(),
     KycProgressListener, KycNavHostView {
 
-    private var lastRelativeProgressValue = -1
     private val presenter: KycNavHostPresenter by inject()
-
-    private val analytics: Analytics by inject()
 
     private val navController by unsafeLazy { findNavController(navHostFragment) }
     private val currentFragment: Fragment?
         get() = navHostFragment.childFragmentManager.findFragmentById(R.id.nav_host)
+
     override val campaignType by unsafeLazy {
-        intent.getSerializableExtra(EXTRA_CAMPAIGN_TYPE)
-                as CampaignType
+        intent.getSerializableExtra(EXTRA_CAMPAIGN_TYPE) as CampaignType
     }
     override val isFromSettingsLimits by unsafeLazy {
-        intent.getBooleanExtra(
-            EXTRA_IS_FROM_SETTINGS_LIMITS,
-            false)
+        intent.getBooleanExtra(EXTRA_IS_FROM_SETTINGS_LIMITS, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -189,6 +182,8 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
 
     companion object {
 
+        const val RESULT_KYC_STX_COMPLETE = 5
+
         private const val EXTRA_CAMPAIGN_TYPE = "piuk.blockchain.android.EXTRA_CAMPAIGN_TYPE"
         private const val EXTRA_IS_FROM_SETTINGS_LIMITS = "piuk.blockchain.android.EXTRA_IS_FROM_SETTINGS_LIMITS"
 
@@ -205,7 +200,23 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
         }
 
         @JvmStatic
-        fun intentArgs(context: Context, campaignType: CampaignType, isFromSettingsLimits: Boolean = false): Intent =
+        fun startForResult(activity: Activity, campaignType: CampaignType, requestCode: Int) {
+            intentArgs(activity, campaignType)
+                .run { activity.startActivityForResult(this, requestCode) }
+        }
+
+        @JvmStatic
+        fun startForResult(fragment: Fragment, campaignType: CampaignType, requestCode: Int) {
+            intentArgs(fragment.requireContext(), campaignType)
+                .run { fragment.startActivityForResult(this, requestCode) }
+        }
+
+        @JvmStatic
+        private fun intentArgs(
+            context: Context,
+            campaignType: CampaignType,
+            isFromSettingsLimits: Boolean = false
+        ): Intent =
             Intent(context, KycNavHostActivity::class.java)
                 .apply {
                     putExtra(EXTRA_CAMPAIGN_TYPE, campaignType)

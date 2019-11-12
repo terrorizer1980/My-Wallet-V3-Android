@@ -46,7 +46,7 @@ internal class ReentryDecisionKycNavigator(
             ReentryPoint.Profile -> KycNavXmlDirections.ActionStartProfile(user.requireCountryCode())
             ReentryPoint.Address -> KycNavXmlDirections.ActionStartAddressEntry(user.toProfileModel())
             ReentryPoint.MobileEntry -> KycNavXmlDirections.ActionStartMobileVerification(user.requireCountryCode())
-            ReentryPoint.Onfido -> {
+            ReentryPoint.Veriff -> {
                 val countryCode = user.requireCountryCode()
                 KycNavXmlDirections.ActionStartVeriff(countryCode)
             }

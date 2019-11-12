@@ -45,10 +45,10 @@ val kycUiModule = applicationContext {
 
         factory {
             KycTierSplashPresenter(
-                get(),
-                get(),
-                get(),
-                get("ff_sunriver_has_large_backlog")
+                tierUpdater = get(),
+                tierService = get(),
+                kycNavigator = get(),
+                sunriverLargeBacklogFlag = get("ff_sunriver_has_large_backlog")
             )
         }
 
@@ -95,7 +95,6 @@ val kycUiModule = applicationContext {
             nabuToken = get(),
             nabuDataManager = get(),
             sunriverCampaign = get(),
-            blockstackCampaign = get(),
             reentryDecision = get(),
             tierUpdater = get(),
             kycNavigator = get()

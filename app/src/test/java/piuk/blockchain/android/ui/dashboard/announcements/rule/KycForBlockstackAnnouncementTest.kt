@@ -40,11 +40,9 @@ class KycForBlockstackAnnouncementTest {
     }
 
     @Test
-    fun `should show, when not already shown, gold kyc isn't started and is in a kyc geo-zone`() {
+    fun `should show, when not already shown, and the Gold kyc process hasn't been completed`() {
         whenever(dismissEntry.isDismissed).thenReturn(false)
-        whenever(queries.canKyc()).thenReturn(Single.just(true))
-        whenever(queries.isKycGoldStartedOrComplete()).thenReturn(Single.just(false))
-        whenever(queries.isGoldRejected()).thenReturn(Single.just(false))
+        whenever(queries.isGoldComplete()).thenReturn(Single.just(false))
 
         subject.shouldShow()
             .test()
@@ -54,57 +52,13 @@ class KycForBlockstackAnnouncementTest {
     }
 
     @Test
-    fun `should not show, when not already shown, gold kyc isn't started, is in a kyc geo-zone and is gold-rejected`() {
+    fun `should not show, when not already shown, and the Gold kyc process has been completed`() {
         whenever(dismissEntry.isDismissed).thenReturn(false)
-        whenever(queries.canKyc()).thenReturn(Single.just(true))
-        whenever(queries.isKycGoldStartedOrComplete()).thenReturn(Single.just(false))
-        whenever(queries.isGoldRejected()).thenReturn(Single.just(true))
+        whenever(queries.isGoldComplete()).thenReturn(Single.just(false))
 
         subject.shouldShow()
             .test()
-            .assertValue { !it }
-            .assertValueCount(1)
-            .assertComplete()
-    }
-
-    @Test
-    fun `should not show, when not already shown, gold kyc has been started and is in a kyc geo-zone`() {
-        whenever(dismissEntry.isDismissed).thenReturn(false)
-        whenever(queries.canKyc()).thenReturn(Single.just(true))
-        whenever(queries.isKycGoldStartedOrComplete()).thenReturn(Single.just(true))
-        whenever(queries.isGoldRejected()).thenReturn(Single.just(false))
-
-        subject.shouldShow()
-            .test()
-            .assertValue { !it }
-            .assertValueCount(1)
-            .assertComplete()
-    }
-
-    @Test
-    fun `should not show, when not already shown, gold kyc isn't started and is not in a kyc geo-zone`() {
-        whenever(dismissEntry.isDismissed).thenReturn(false)
-        whenever(queries.canKyc()).thenReturn(Single.just(false))
-        whenever(queries.isKycGoldStartedOrComplete()).thenReturn(Single.just(false))
-        whenever(queries.isGoldRejected()).thenReturn(Single.just(false))
-
-        subject.shouldShow()
-            .test()
-            .assertValue { !it }
-            .assertValueCount(1)
-            .assertComplete()
-    }
-
-    @Test
-    fun `should not show, when not already shown, gold kyc has been started started and is not in a kyc geo-zone`() {
-        whenever(dismissEntry.isDismissed).thenReturn(false)
-        whenever(queries.canKyc()).thenReturn(Single.just(false))
-        whenever(queries.isKycGoldStartedOrComplete()).thenReturn(Single.just(true))
-        whenever(queries.isGoldRejected()).thenReturn(Single.just(false))
-
-        subject.shouldShow()
-            .test()
-            .assertValue { !it }
+            .assertValue { it }
             .assertValueCount(1)
             .assertComplete()
     }

@@ -98,16 +98,13 @@
 
         <Button
             android:id="@+id/button_kyc_profile_next"
+            style="@style/CtaButton.Blue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="32dp"
             android:layout_marginTop="48dp"
-            android:layout_marginRight="32dp"
             android:layout_marginBottom="32dp"
             android:enabled="false"
             android:text="@string/kyc_profile_next"
-            android:theme="@style/LightBlueButtonTheme"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

@@ -112,8 +112,8 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
             requireActivity(),
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
-        view?.findViewById<View>(R.id.text_view_veriff_splash_enable_camera_title)?.goneIf(granted)
-        view?.findViewById<View>(R.id.text_view_veriff_splash_enable_camera_body)?.goneIf(granted)
+        text_view_veriff_splash_enable_camera_title.goneIf(granted)
+        text_view_veriff_splash_enable_camera_body.goneIf(granted)
     }
 
     override fun showProgressDialog(cancelable: Boolean) {

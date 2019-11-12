@@ -17,7 +17,7 @@
 
     <TextView
         android:id="@+id/backup_subheader"
-        style="@style/StandardText"
+        style="@style/Text.Standard.14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"

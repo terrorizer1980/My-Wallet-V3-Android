@@ -46,7 +46,8 @@ val dashboardAnnouncementsModule = applicationContext {
             AnnouncementQueries(
                 nabuToken = get(),
                 settings = get(),
-                nabu = get()
+                nabu = get(),
+                tierService = get()
             )
         }
 
@@ -110,8 +111,8 @@ val dashboardAnnouncementsModule = applicationContext {
 
         factory {
             SwapAnnouncement(
-                tierService = get(),
                 dataManager = get("merge"),
+                queries = get(),
                 dismissRecorder = get()
             )
         }.bind(AnnouncementRule::class)

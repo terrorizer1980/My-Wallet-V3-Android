@@ -2,7 +2,6 @@ package piuk.blockchain.android.ui.dashboard.announcements.rule
 
 import android.support.annotation.VisibleForTesting
 import io.reactivex.Single
-import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
@@ -24,11 +23,7 @@ internal class KycForBlockstackAnnouncement(
             return Single.just(false)
         }
 
-        return Singles.zip(
-            queries.canKyc(),
-            queries.isKycGoldStartedOrComplete(),
-            queries.isGoldRejected()
-        ).map { (kyc, isGold, isReject) -> kyc && (!isGold && !isReject) }
+        return queries.isGoldComplete().map { !it }
     }
 
     override fun show(host: AnnouncementHost) {
@@ -44,7 +39,7 @@ internal class KycForBlockstackAnnouncement(
             },
             ctaFunction = {
                 host.dismissAnnouncementCard(dismissEntry.prefsKey)
-                host.startKyc(CampaignType.Blockstack)
+                host.startCampaignIntro(CampaignType.Blockstack)
             },
             dismissEntry = dismissEntry,
             dismissRule = DismissRule.CardPeriodic

@@ -19,7 +19,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
-import piuk.blockchain.android.campaign.BlockstackCampaignRegistration
 import piuk.blockchain.android.campaign.CampaignRegistration
 import piuk.blockchain.android.campaign.SunriverCampaignRegistration
 import piuk.blockchain.androidcoreui.utils.logging.Logging
@@ -29,7 +28,6 @@ class KycNavHostPresenter(
     nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
     private val sunriverCampaign: SunriverCampaignRegistration,
-    private val blockstackCampaign: BlockstackCampaignRegistration,
     private val reentryDecision: ReentryDecision,
     private val kycNavigator: KycNavigator,
     private val tierUpdater: TierUpdater
@@ -64,13 +62,9 @@ class KycNavHostPresenter(
      * Registers the user to the various campaigns if they are not yet registered with them, on completion of Gold
      */
     private fun registerForCampaignsIfNeeded() {
-
         if (view.campaignType == CampaignType.Sunriver) {
             checkAndRegisterForCampaign(sunriverCampaign)
         }
-
-        // Attempt to register for the Blockstack airdrop campaign
-        checkAndRegisterForCampaign(blockstackCampaign)
     }
 
     private fun checkAndRegisterForCampaign(campaign: CampaignRegistration) {
@@ -103,6 +97,12 @@ class KycNavHostPresenter(
             view.navigateToKycSplash()
         } else if (view.campaignType == CampaignType.Resubmission || user.isMarkedForResubmission) {
             view.navigateToResubmissionSplash()
+        } else if (view.campaignType == CampaignType.Blockstack) {
+            compositeDisposable += kycNavigator.findNextStep()
+                .subscribeBy(
+                    onError = { Timber.e(it) },
+                    onSuccess = { view.navigate(it) }
+                )
         } else if (user.state != UserState.None && user.kycState == KycState.None && !view.isFromSettingsLimits) {
             val current = user.tiers?.current
             if (current == null || current == 0) {

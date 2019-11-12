@@ -95,7 +95,6 @@ import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionHelper
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
@@ -901,14 +900,6 @@ val applicationModule = applicationContext {
                 settingsDataManager = get(),
                 notificationTokenManager = get(),
                 envSettings = get()
-            )
-        }
-
-        bean {
-            AnnouncementQueries(
-                nabuToken = get(),
-                settings = get(),
-                nabu = get()
             )
         }
     }

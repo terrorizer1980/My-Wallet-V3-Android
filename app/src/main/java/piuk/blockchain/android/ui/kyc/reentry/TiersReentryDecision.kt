@@ -29,6 +29,6 @@ class TiersReentryDecision : ReentryDecision {
             return ReentryPoint.MobileEntry
         }
 
-        return ReentryPoint.Onfido
+        return ReentryPoint.Veriff
     }
 }

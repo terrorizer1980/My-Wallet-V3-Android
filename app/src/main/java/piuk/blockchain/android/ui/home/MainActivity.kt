@@ -530,7 +530,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
     }
 
     override fun launchKyc(campaignType: CampaignType) {
-        startActivityForResult(KycNavHostActivity.intentArgs(this, campaignType), KYC_STARTED)
+        KycNavHostActivity.startForResult(this, campaignType, KYC_STARTED)
     }
 
     override fun launchSwap(defCurrency: String, targetCrypto: CryptoCurrency?) {

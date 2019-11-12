@@ -65,10 +65,10 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
         logEvent(
             when (campaignType) {
                 CampaignType.BuySell,
-                CampaignType.Blockstack,
                 CampaignType.Swap -> AnalyticsEvents.KycWelcome
                 CampaignType.Sunriver -> AnalyticsEvents.KycSunriverStart
                 CampaignType.Resubmission -> AnalyticsEvents.KycResubmission
+                CampaignType.Blockstack -> AnalyticsEvents.KycBlockstackStart
             }
         )
 
@@ -122,14 +122,14 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
     }
 
     override fun displayLoading(isLoading: Boolean) {
-        if (isLoading) {
-            progressDialog = MaterialProgressDialog(requireContext()).apply {
+        progressDialog = if (isLoading) {
+            MaterialProgressDialog(requireContext()).apply {
                 setMessage(R.string.buy_sell_please_wait)
                 show()
             }
         } else {
             progressDialog?.apply { dismiss() }
-            progressDialog = null
+            null
         }
     }
 

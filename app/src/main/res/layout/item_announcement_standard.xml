@@ -45,7 +45,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginStart="@dimen/standard_margin"
             android:layout_marginEnd="@dimen/standard_margin"
-            style="@style/AnnounceTitle"
+            style="@style/Text.Semibold.20"
             tools:text="Welcome To Blockchain" />
 
         <TextView
@@ -56,7 +56,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginStart="@dimen/standard_margin"
             android:layout_marginEnd="@dimen/standard_margin"
-            style="@style/AnnounceBody"
+            android:layout_marginBottom="@dimen/standard_margin"
+            style="@style/Text.Standard.16"
             tools:text="Here are a few tips to get your account up and running, we'll also help you make sure everything is secure." />
 
         <Button
@@ -65,7 +66,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/msg_body"
             android:layout_marginBottom="16dp"
-            android:layout_marginTop="@dimen/standard_margin"
             style="@style/CtaButton.Blue"
             tools:text="Tell Me More"/>
 
