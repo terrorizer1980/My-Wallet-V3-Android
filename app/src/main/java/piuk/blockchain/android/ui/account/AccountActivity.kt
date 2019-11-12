@@ -104,7 +104,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
             CryptoCurrency.ETHER -> false
             CryptoCurrency.XLM -> false
             CryptoCurrency.PAX -> false
-            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+            CryptoCurrency.STX -> false
         }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
