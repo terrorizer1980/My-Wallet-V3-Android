@@ -270,7 +270,10 @@ val applicationModule = applicationContext {
                 payloadDataManager = get(),
                 bchDataManager = get(),
                 rxBus = get(),
-                currencyFormatManager = get()
+                prefs = get(),
+                currencyFormatManager = get(),
+                appUtil = get(),
+                accessState = get()
             )
         }
 

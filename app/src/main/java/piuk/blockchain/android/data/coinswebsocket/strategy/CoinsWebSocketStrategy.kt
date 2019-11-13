@@ -7,25 +7,32 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.formatWithUnit
 import info.blockchain.wallet.ethereum.Erc20TokenData
+import info.blockchain.wallet.exceptions.DecryptionException
 import info.blockchain.wallet.multiaddress.TransactionSummary
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import org.web3j.utils.Convert
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.coinswebsocket.models.AddressParam
+import piuk.blockchain.android.data.coinswebsocket.models.Parameters
 import piuk.blockchain.android.data.coinswebsocket.models.BtcBchResponse
 import piuk.blockchain.android.data.coinswebsocket.models.Coin
 import piuk.blockchain.android.data.coinswebsocket.models.CoinWebSocketInput
 import piuk.blockchain.android.data.coinswebsocket.models.Entity
 import piuk.blockchain.android.data.coinswebsocket.models.EthResponse
 import piuk.blockchain.android.data.coinswebsocket.models.EthTransaction
+import piuk.blockchain.android.data.coinswebsocket.models.Input
+import piuk.blockchain.android.data.coinswebsocket.models.Output
 import piuk.blockchain.android.data.coinswebsocket.models.SocketRequest
 import piuk.blockchain.android.data.coinswebsocket.models.SocketResponse
 import piuk.blockchain.android.data.coinswebsocket.models.TransactionState
 import piuk.blockchain.android.data.coinswebsocket.service.MessagesSocketHandler
+import piuk.blockchain.android.data.rxjava.RxUtil
+import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.BTCDenomination
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
@@ -38,8 +45,10 @@ import piuk.blockchain.androidcore.data.events.WalletAndTransactionsUpdatedEvent
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.websockets.WebSocketReceiveEvent
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcore.utils.rxjava.IgnorableDefaultObserver
+import piuk.blockchain.androidcoreui.utils.AppUtil
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Locale
@@ -51,6 +60,9 @@ class CoinsWebSocketStrategy(
     private val stringUtils: StringUtils,
     private val gson: Gson,
     private val rxBus: RxBus,
+    private val prefs: PersistentPrefs,
+    private val accessState: AccessState,
+    private val appUtil: AppUtil,
     private val currencyFormatManager: CurrencyFormatManager,
     private val erc20Account: Erc20Account,
     private val payloadDataManager: PayloadDataManager,
@@ -81,26 +93,58 @@ class CoinsWebSocketStrategy(
             }
         }
 
-        compositeDisposable += coinsWebSocket.responses.subscribe { response ->
+        compositeDisposable += coinsWebSocket.responses.distinctUntilChanged().subscribe { response ->
             val socketResponse = gson.fromJson(response, SocketResponse::class.java)
-            if (socketResponse.coin == null) return@subscribe
+            if (socketResponse.op == "on_change") checkForWalletChange(socketResponse.checksum)
             when (socketResponse.coin) {
                 Coin.ETH -> handleEthTransaction(response)
                 Coin.BTC -> handleBtcTransaction(response)
                 Coin.BCH -> handleBchTransaction(response)
+                else -> {
+                }
             }
         }
     }
 
-    private fun handleBtcTransaction(response: String) {
-        val btcResponse = gson.fromJson(response, BtcBchResponse::class.java)
-        val transaction = btcResponse.transaction ?: return
+    private fun checkForWalletChange(checksum: String?) {
+        if (checksum == null) return
+        val localChecksum = payloadDataManager.payloadChecksum
+        val isSameChecksum = checksum == localChecksum
 
+        if (!isSameChecksum && payloadDataManager.tempPassword != null) {
+            compositeDisposable += downloadChangedPayload().applySchedulers().subscribe({
+                messagesSocketHandler?.showToast(R.string.wallet_updated)
+            }) { Timber.e(it) }
+        }
+    }
+
+    private fun downloadChangedPayload(): Completable {
+        return payloadDataManager.initializeAndDecrypt(
+            payloadDataManager.wallet!!.sharedKey,
+            payloadDataManager.wallet!!.guid,
+            payloadDataManager.tempPassword!!
+        ).compose(RxUtil.applySchedulersToCompletable())
+            .doOnComplete { this.updateBtcBalancesAndTransactions() }
+            .doOnError { throwable ->
+                if (throwable is DecryptionException) {
+                    messagesSocketHandler?.showToast(R.string.wallet_updated)
+                    accessState.unpairWallet()
+                    appUtil.restartApp(LauncherActivity::class.java)
+                }
+            }
+    }
+
+    private fun handleTransactionInputsAndOutputs(
+        inputs: List<Input>,
+        outputs: List<Output>,
+        hash: String?,
+        containsAddress: (address: String) -> Boolean?
+    ): Pair<String?, BigDecimal> {
         var value = 0.toBigDecimal()
         var totalValue = 0.toBigDecimal()
         var inAddr: String? = null
 
-        transaction.inputs.forEach { input ->
+        inputs.forEach { input ->
             input.prevOut?.let { output ->
                 if (output.value != null) {
                     value = output.value
@@ -108,7 +152,7 @@ class CoinsWebSocketStrategy(
                 if (output.xpub != null) {
                     totalValue -= value
                 } else if (output.addr != null) {
-                    if (payloadDataManager.wallet?.containsLegacyAddress(output.addr) == true) {
+                    if (containsAddress(output.addr) == true) {
                         totalValue -= value
                     } else if (inAddr == null) {
                         inAddr = output.addr
@@ -117,22 +161,35 @@ class CoinsWebSocketStrategy(
             }
         }
 
-        transaction.outputs.forEach { output ->
+        outputs.forEach { output ->
             output.value?.let {
                 value = output.value
             }
-            if (output.addr != null && transaction.hash != null) {
+            if (output.addr != null && hash != null) {
                 rxBus.emitEvent(WebSocketReceiveEvent::class.java, WebSocketReceiveEvent(
                     output.addr,
-                    transaction.hash
+                    hash
                 ))
             }
             if (output.xpub != null) {
                 totalValue += value
-            } else if (output.addr != null && payloadDataManager.wallet?.containsLegacyAddress(output.addr) == true) {
+            } else if (output.addr != null && containsAddress(output.addr) == true) {
                 totalValue += value
             }
         }
+        return inAddr to totalValue
+    }
+
+    private fun handleBtcTransaction(response: String) {
+        val btcResponse = gson.fromJson(response, BtcBchResponse::class.java)
+        val transaction = btcResponse.transaction ?: return
+
+        handleTransactionInputsAndOutputs(transaction.inputs,
+            transaction.outputs,
+            transaction.hash) { x ->
+            payloadDataManager.wallet?.containsLegacyAddress(x)
+        }
+
         updateBtcBalancesAndTransactions()
     }
 
@@ -140,43 +197,11 @@ class CoinsWebSocketStrategy(
         val bchResponse = gson.fromJson(response, BtcBchResponse::class.java)
         val transaction = bchResponse.transaction ?: return
 
-        var value = 0.toBigDecimal()
-        var totalValue = 0.toBigDecimal()
-        var inAddr: String? = null
+        val (inAddr, totalValue) =
+            handleTransactionInputsAndOutputs(transaction.inputs, transaction.outputs, transaction.hash) { x ->
+                bchDataManager.getLegacyAddressStringList().contains(x)
+            }
 
-        transaction.inputs.forEach { input ->
-            input.prevOut?.let { output ->
-                if (output.value != null) {
-                    value = output.value
-                }
-                if (output.xpub != null) {
-                    totalValue -= value
-                } else if (output.addr != null) {
-                    if (bchDataManager.getLegacyAddressStringList().contains(output.addr)) {
-                        totalValue -= value
-                    } else if (inAddr == null) {
-                        inAddr = output.addr
-                    }
-                }
-            }
-        }
-
-        transaction.outputs.forEach { output ->
-            output.value?.let {
-                value = output.value
-            }
-            if (output.addr != null && transaction.hash != null) {
-                rxBus.emitEvent(WebSocketReceiveEvent::class.java, WebSocketReceiveEvent(
-                    output.addr,
-                    transaction.hash
-                ))
-            }
-            if (output.xpub != null) {
-                totalValue += value
-            } else if (output.addr != null && bchDataManager.getLegacyAddressStringList().contains(output.addr)) {
-                totalValue += value
-            }
-        }
         updateBchBalancesAndTransactions()
 
         val title = stringUtils.getString(R.string.app_name)
@@ -270,7 +295,7 @@ class CoinsWebSocketStrategy(
         coinWebSocketInput = coinWebSocketInput?.copy(receiveBtcAddresses = updatedList)
         coinsWebSocket.send(gson.toJson(SocketRequest.SubscribeRequest(Entity.Account,
             Coin.BTC,
-            AddressParam.SimpleAddress(
+            Parameters.SimpleAddress(
                 address = address
             ))))
     }
@@ -283,8 +308,54 @@ class CoinsWebSocketStrategy(
     }
 
     fun close() {
+        unsubscribeFromAddresses()
         coinsWebSocket.close()
         compositeDisposable.clear()
+    }
+
+    private fun unsubscribeFromAddresses() {
+        coinWebSocketInput?.let { input ->
+            input.receiveBtcAddresses.forEach { address ->
+                coinsWebSocket.send(gson.toJson(SocketRequest.UnSubscribeRequest(Entity.Account,
+                    Coin.BTC,
+                    Parameters.SimpleAddress(
+                        address = address
+                    ))))
+            }
+
+            input.receiveBhcAddresses.forEach { address ->
+                coinsWebSocket.send(gson.toJson(SocketRequest.UnSubscribeRequest(Entity.Account,
+                    Coin.BTC,
+                    Parameters.SimpleAddress(
+                        address = address
+                    ))))
+            }
+
+            input.xPubsBtc.forEach { xPub ->
+                unsubscribeFromXpub(Coin.BTC, xPub)
+            }
+
+            input.xPubsBch.forEach { xPub ->
+                unsubscribeFromXpub(Coin.BCH, xPub)
+            }
+
+            coinsWebSocket.send(gson.toJson(SocketRequest.UnSubscribeRequest(Entity.Account,
+                Coin.ETH,
+                Parameters.SimpleAddress(
+                    input.ethAddress
+                ))))
+
+            coinsWebSocket.send(gson.toJson(SocketRequest.UnSubscribeRequest(Entity.TokenAccount,
+                Coin.ETH,
+                Parameters.TokenedAddress(
+                    address = input.erc20Address,
+                    tokenAddress = input.erc20ContractAddress
+                ))))
+
+            coinsWebSocket.send(gson.toJson(SocketRequest.UnSubscribeRequest(Entity.Wallet, Coin.None,
+                Parameters.Guid(input.guid)))
+            )
+        }
     }
 
     private fun downloadEthTransactions(): Observable<CombinedEthModel> {
@@ -293,7 +364,9 @@ class CoinsWebSocketStrategy(
     }
 
     private fun initInput() {
-        coinWebSocketInput = CoinWebSocketInput(ethAddress(),
+        coinWebSocketInput = CoinWebSocketInput(
+            guid(),
+            ethAddress(),
             erc20Address(),
             erc20ContractAddress(),
             btcReceiveAddresses(),
@@ -301,6 +374,8 @@ class CoinsWebSocketStrategy(
             xPubsBtc(),
             xPubsBch())
     }
+
+    private fun guid(): String = prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, "")
 
     private fun xPubsBch(): List<String> {
         val nbAccounts: Int
@@ -406,10 +481,14 @@ class CoinsWebSocketStrategy(
 
     private fun subscribe(coinWebSocketInput: CoinWebSocketInput) {
 
+        coinsWebSocket.send(gson.toJson(SocketRequest.SubscribeRequest(Entity.Wallet, Coin.None,
+            Parameters.Guid(coinWebSocketInput.guid)))
+        )
+
         coinWebSocketInput.receiveBtcAddresses.forEach { address ->
             coinsWebSocket.send(gson.toJson(SocketRequest.SubscribeRequest(Entity.Account,
                 Coin.BTC,
-                AddressParam.SimpleAddress(
+                Parameters.SimpleAddress(
                     address = address
                 ))))
         }
@@ -417,7 +496,7 @@ class CoinsWebSocketStrategy(
         coinWebSocketInput.receiveBhcAddresses.forEach { address ->
             coinsWebSocket.send(gson.toJson(SocketRequest.SubscribeRequest(Entity.Account,
                 Coin.BTC,
-                AddressParam.SimpleAddress(
+                Parameters.SimpleAddress(
                     address = address
                 ))))
         }
@@ -432,13 +511,13 @@ class CoinsWebSocketStrategy(
 
         coinsWebSocket.send(gson.toJson(SocketRequest.SubscribeRequest(Entity.Account,
             Coin.ETH,
-            AddressParam.SimpleAddress(
+            Parameters.SimpleAddress(
                 coinWebSocketInput.ethAddress
             ))))
 
         coinsWebSocket.send(gson.toJson(SocketRequest.SubscribeRequest(Entity.TokenAccount,
             Coin.ETH,
-            AddressParam.TokenedAddress(
+            Parameters.TokenedAddress(
                 address = coinWebSocketInput.erc20Address,
                 tokenAddress = coinWebSocketInput.erc20ContractAddress
             ))))
@@ -448,7 +527,16 @@ class CoinsWebSocketStrategy(
 
         coinsWebSocket.send(gson.toJson(SocketRequest.SubscribeRequest(Entity.Xpub,
             coin,
-            AddressParam.SimpleAddress(
+            Parameters.SimpleAddress(
+                address = xpub
+            ))))
+    }
+
+    private fun unsubscribeFromXpub(coin: Coin, xpub: String) {
+
+        coinsWebSocket.send(gson.toJson(SocketRequest.UnSubscribeRequest(Entity.Xpub,
+            coin,
+            Parameters.SimpleAddress(
                 address = xpub
             ))))
     }

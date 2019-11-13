@@ -20,7 +20,6 @@ import kotlinx.android.synthetic.main.fragment_dashboard.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
-import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.android.ui.campaign.CampaignBlockstackCompleteSheet
 import piuk.blockchain.android.ui.charts.ChartsActivity
 import piuk.blockchain.android.ui.customviews.BottomSpacerDecoration
@@ -210,7 +209,6 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     override fun startWebsocketService() {
         context?.run {
             CoinsWebSocketService::class.java.start(this, osUtil)
-            WebSocketService::class.java.start(this, osUtil)
         }
     }
 

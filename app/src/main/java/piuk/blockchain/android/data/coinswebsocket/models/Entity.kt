@@ -20,5 +20,7 @@ enum class Entity {
     @SerializedName("token_account_delta")
     TokenAccountDelta,
     @SerializedName("token_account")
-    TokenAccount
+    TokenAccount,
+    @SerializedName("wallet")
+    Wallet
 }

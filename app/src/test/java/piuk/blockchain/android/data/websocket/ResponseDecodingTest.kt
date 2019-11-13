@@ -18,7 +18,8 @@ class ResponseDecodingTest {
         assertEquals(
             SocketResponse(
                 success = true,
-                message = "pong"
+                message = "pong",
+                coin = Coin.None
             ), gson.fromJson(pongMessage, SocketResponse::class.java))
     }
 

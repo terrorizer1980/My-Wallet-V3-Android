@@ -295,7 +295,8 @@ class DashboardPresenter(
             CampaignType.Blockstack -> view.showBottomSheetDialog(
                 CampaignBlockstackIntroSheet.newInstance { view.startKycForStx() }
             )
-            else -> { /* no-op */ }
+            else -> { /* no-op */
+            }
         }
     }
 

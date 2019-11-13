@@ -9,7 +9,9 @@ data class SocketResponse(
     val entity: Entity? = null,
     val coin: Coin? = null,
     val block: EthBlock? = null,
-    val message: String? = null
+    val message: String? = null,
+    val checksum: String? = null,
+    val op: String? = null
 )
 
 data class BtcBchResponse(

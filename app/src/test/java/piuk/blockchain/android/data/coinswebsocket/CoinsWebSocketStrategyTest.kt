@@ -12,6 +12,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.ethereum.Erc20TokenData
 import info.blockchain.wallet.ethereum.EthereumWallet
 import info.blockchain.wallet.ethereum.data.EthAddressResponseMap
+import info.blockchain.wallet.payload.data.Wallet
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -31,6 +32,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class CoinsWebSocketStrategyTest {
 
@@ -69,14 +71,30 @@ class CoinsWebSocketStrategyTest {
         on { fetchAddressCompletable() } `it returns` Completable.complete()
     }
 
+    private val rxBus: RxBus = mock()
+
     private val payloadDataManager: PayloadDataManager = mock {
         on { updateAllBalances() } `it returns` Completable.complete()
         on { updateAllTransactions() } `it returns` Completable.complete()
+        on { payloadChecksum } `it returns` "741cd20c1f076c6393a07a2dc7b072188cd4e3ecea3184a1e6a5ed387daadb193245"
+        on { tempPassword } `it returns` "2333"
+        on { wallet } `it returns` Wallet()
+        on {
+            initializeAndDecrypt(
+                any(),
+                any(),
+                any()
+            )
+        } `it returns` Completable.complete()
     }
 
     private val bchDataManager: BchDataManager = mock {
         on { updateAllBalances() } `it returns` Completable.complete()
         on { getWalletTransactions(any(), any()) } `it returns` Observable.just(emptyList())
+    }
+
+    private val prefs: PersistentPrefs = mock {
+        on { getValue(PersistentPrefs.KEY_WALLET_GUID, "") } `it returns` "1234"
     }
 
     private val mockWebSocket: WebSocket<String, String> = mock()
@@ -89,10 +107,13 @@ class CoinsWebSocketStrategyTest {
         stringUtils = stringUtils,
         gson = Gson(),
         erc20Account = erc20Account,
-        rxBus = RxBus(),
         currencyFormatManager = mock(),
         bchDataManager = bchDataManager,
-        payloadDataManager = payloadDataManager
+        payloadDataManager = payloadDataManager,
+        accessState = mock(),
+        appUtil = mock(),
+        prefs = prefs,
+        rxBus = rxBus
     )
 
     @Before
@@ -158,6 +179,16 @@ class CoinsWebSocketStrategyTest {
         verify(bchDataManager).getWalletTransactions(50, 0)
     }
 
+    @Test
+    fun `test changed payload`() {
+        webSocket.send(changedPayloadMessage)
+        verify(mockWebSocket).open()
+        verify(payloadDataManager).updateAllBalances()
+        verify(payloadDataManager).updateAllTransactions()
+        verify(rxBus).emitEvent(any(), any())
+        verify(messagesSocketHandler).showToast(R.string.wallet_updated)
+    }
+
     private class FakeWebSocket(mock: WebSocket<String, String>) : WebSocket<String, String> by mock {
         private val _sendSubject = PublishSubject.create<String>()
 
@@ -192,6 +223,10 @@ class CoinsWebSocketStrategyTest {
                 "Address\":\"0x\",\"value\":\"6047410000000000\",\"nonce\":171,\"gasPrice\":\"4000000000\",\"gasLi" +
                 "mit\":21000,\"gasUsed\":21000,\"data\":\"\",\"transactionIndex\":59,\"success\":true,\"error\":" +
                 "\"\",\"firstSeen\":0,\"timestamp\":1566220763,\"state\":\"pending\"}}"
+
+    private val changedPayloadMessage =
+        "{\"checksum\":\"741cd20c1f076c6393a07a2dc7b072188cd4e3ecea3184a1e6a5ed387daadb19\",\"op\":\"on_change\"," +
+                "\"guid\":\"9e2751de-d47e-42c8-b7e2-22623d71a356\"}"
 
     private val paxTransaction =
         "{\"coin\":\"eth\",\"entity\":\"token_account\",\"param\":{\"accountAddress\":\"0x4058a004dd718babab47e14dd0" +

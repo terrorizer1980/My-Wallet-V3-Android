@@ -205,10 +205,6 @@
         <service
             android:name=".data.coinswebsocket.service.CoinsWebSocketService"
             android:stopWithTask="true" />
-        <service
-            android:name="piuk.blockchain.android.data.websocket.WebSocketService"
-            android:stopWithTask="true" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_notification" />
