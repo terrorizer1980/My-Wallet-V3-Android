@@ -39,7 +39,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
-        android:text="@string/campaign_stx_complete_body_1"
+        android:text="@string/campaign_stx_complete_body"
         android:layout_marginTop="16dp"
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginEnd="@dimen/standard_margin"/>
@@ -57,26 +57,12 @@
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginEnd="@dimen/standard_margin"/>
 
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/body_2"
-        style="@style/Text.Standard.Centered.12"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/cta_button"
-        app:layout_constraintTop_toBottomOf="@id/icon_parachute"
-        android:text="@string/campaign_stx_complete_body_2"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginEnd="49dp"/>
-
     <Button
         android:id="@+id/cta_button"
         style="@style/CtaButton.Blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="154dp"
         android:layout_marginBottom="24dp"
         android:contentDescription="@string/campaign_stx_complete_cta_button"
         android:text="@string/campaign_stx_complete_cta_button"

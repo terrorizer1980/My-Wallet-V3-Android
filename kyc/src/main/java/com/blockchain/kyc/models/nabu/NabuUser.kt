@@ -54,12 +54,25 @@ data class NabuUser(
                 }
             } ?: 0
 
+    val currentTier
+        get() =
+            tiers?.let {
+                if (kycState == KycState.Verified) {
+                    it.current
+                } else {
+                    0
+                }
+            } ?: 0
+
     fun requireCountryCode(): String {
         return address?.countryCode ?: throw IllegalStateException("User has no country code set")
     }
 
     val isMarkedForResubmission: Boolean
         get() = resubmission != null
+
+    val isStxAirdropRegistered: Boolean
+        get() = tags?.get("BLOCKSTACK") != null
 }
 
 data class Tiers(

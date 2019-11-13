@@ -1296,13 +1296,13 @@
     <string name="buy_sell_launcher_error">Error fetching buy/sell data</string>
 
     <!-- Blockstack campaign -->
-    <string name="campaign_stx_intro_title">Get Crypto for Free\nwith Blockchain Airdrops.</string>
-    <string name="campaign_stx_intro_body">Upgrade your profile to the Gold Level to be eligible for this and all future Airdrops.</string>
+    <string name="campaign_stx_intro_title">Unlock Access to Airdrops </string>
+    <string name="campaign_stx_intro_body">Our next airdrop with Blockstack is launching soon! Get free Stacks (STX) by upgrading your profile to Gold Level.</string>
+    <string name="campaign_stx_intro_small_print">*For regulatory reasons, USA, Canada and Japan nationals can\'t participate in the airdrop. <annotation link="stx_airdrop_learn_more">Learn more</annotation></string>
     <string name="campaign_stx_intro_cta_button">Complete my profile</string>
 
     <string name="campaign_stx_complete_title">Application complete</string>
-    <string name="campaign_stx_complete_body_1">You\'ve successfully submitted your application. A Blockchain Support Member will review your information.</string>
-    <string name="campaign_stx_complete_body_2">Once your verification is confirmed you\'ll have secured your Stacks Airdrop.</string>
+    <string name="campaign_stx_complete_body">Once your verification is confirmed, you\'ll automatically secure a spot in the Airdrop for Stacks.</string>
     <string name="campaign_stx_complete_cta_button">Learn More</string>
 
     <!-- buy/Sell -->
@@ -1761,12 +1761,12 @@
     <string name="announcing_swap">Swap by Blockchain enables you to trade crypto with best prices, and quick settlement, all while maintaining full control of your funds.</string>
 
     <!-- Blockstack airdrop announcement -->
-    <string name="stacks_airdrop_card_title">Our Latest Airdrop is Here.\nReserve Your Free Stacks (STX)</string>
-    <string name="stacks_airdrop_card_description">As a Gold Level user in the Blockchain Wallet, all you have to do is log in to receive our latest airdrop.</string>
-    <string name="stacks_airdrop_card_button">Get $10 of STX</string>
+    <string name="stacks_airdrop_card_title">Our Latest Airdrop is Here.</string>
+    <string name="stacks_airdrop_card_description">Upgrade your profile to Gold to access the Airdrop and get free Stacks (STX) from Blockstack.</string>
+    <string name="stacks_airdrop_card_button">Get Free Crypto </string>
 
     <!-- Blockstack airdrop share message -->
-    <string name ="stacks_airdrop_share_msg">http://blockchain.com/getcrypto\\n Hey! Get crypto for free with Blockchain Airdrops. Sign up and get verified to become eligible for $10 worth of Blockstack Tokens.</string>
+    <string name ="stacks_airdrop_share_msg">Hey! I just secured my spot for Blockchain\'s latest airdrop with Blockstack. Sign up and get verified to get $10 of Stacks for free!\nhttps://login.blockchain.com/#/signup </string>
 
     <!-- KYC Tiers -->
     <string name="tier_1">TIER 1</string>

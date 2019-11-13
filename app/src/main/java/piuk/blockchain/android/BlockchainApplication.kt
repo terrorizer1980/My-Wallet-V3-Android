@@ -21,11 +21,13 @@ import org.bitcoinj.core.NetworkParameters
 import piuk.blockchain.android.data.connectivity.ConnectivityManager
 import com.blockchain.ui.CurrentContextAccess
 import com.facebook.stetho.Stetho
+import io.reactivex.Completable
 import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.campaign.BlockstackCampaignRegistration
 import piuk.blockchain.android.ui.auth.LogoutActivity
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity
 import piuk.blockchain.android.util.lifecycle.AppLifecycleListener
@@ -141,7 +143,10 @@ open class BlockchainApplication : Application(), FrameworkInterface {
     }
 
     private fun onBusMetadataEvent(event: MetadataEvent) {
-        stxRegistration.registerCampaign().emptySubscribe()
+        val queries: AnnouncementQueries = get()
+        queries.isEligibleForStxSignup()
+            .flatMapCompletable { if (it) stxRegistration.registerCampaign() else Completable.complete() }
+            .emptySubscribe()
     }
 
     private fun initLifecycleListener() {

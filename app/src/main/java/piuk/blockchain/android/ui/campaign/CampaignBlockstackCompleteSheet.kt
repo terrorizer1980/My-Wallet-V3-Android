@@ -14,6 +14,7 @@ class CampaignBlockstackCompleteSheet : SlidingModalBottomDialog() {
     private val analytics: Analytics by inject()
 
     override val layoutResource: Int = R.layout.dialog_stx_campaign_complete
+
     override fun initControls(view: View) {
         view.cta_button.setOnClickListener { onCtaClick() }
     }

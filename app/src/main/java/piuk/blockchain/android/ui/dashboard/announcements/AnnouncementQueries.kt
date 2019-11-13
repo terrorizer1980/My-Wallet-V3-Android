@@ -45,4 +45,11 @@ class AnnouncementQueries(
 
     fun isTier1Or2Verified(): Single<Boolean> =
         tierService.tiers().map { it.combinedState in kycVerified }
+
+    fun isEligibleForStxSignup(): Single<Boolean> {
+        return nabuToken.fetchNabuToken()
+            .flatMap { token -> nabu.getUser(token) }
+            .map { it.currentTier == 2 && !it.isStxAirdropRegistered }
+            .onErrorReturn { false }
+    }
 }
