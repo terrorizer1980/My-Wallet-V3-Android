@@ -111,13 +111,8 @@ class WebSocketService : Service() {
                     val nbLegacy = bchDataManager.getLegacyAddressStringList().size
                     val addrs = mutableListOf<String>()
                     for (i in 0 until nbLegacy) {
-<<<<<<< HEAD
-                        val address = bchDataManager.getLegacyAddressStringList().get(i)
-                        if (address.isNotEmpty()) {
-=======
                         val address = bchDataManager.getLegacyAddressStringList()[i]
                         if (address.isEmpty().not()) {
->>>>>>> develop
                             addrs.add(address)
                         }
                     }
