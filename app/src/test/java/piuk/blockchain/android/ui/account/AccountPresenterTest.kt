@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.account
 
 import android.annotation.SuppressLint
+import com.blockchain.extensions.exhaustive
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.verify
@@ -16,6 +17,8 @@ import info.blockchain.wallet.payload.data.Wallet
 import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
+import junit.framework.Assert.assertFalse
+import junit.framework.Assert.assertTrue
 import org.amshove.kluent.mock
 import org.apache.commons.lang3.tuple.Triple
 import org.bitcoinj.core.ECKey
@@ -33,6 +36,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import piuk.blockchain.android.BlockchainTestApplication
 import piuk.blockchain.android.R
+import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.ui.account.AccountPresenter.Companion.KEY_WARN_TRANSFER_ALL
@@ -67,6 +71,7 @@ class AccountPresenterTest {
     private val privateKeyFactory = PrivateKeyFactory()
     private val currencyState: CurrencyState = mock()
     private val currencyFormatManager: CurrencyFormatManager = mock()
+    private val coinsWebSocketStrategy: CoinsWebSocketStrategy = mock()
 
     @Before
     fun setUp() {
@@ -83,6 +88,7 @@ class AccountPresenterTest {
             environmentSettings,
             currencyState,
             mock(),
+            coinsWebSocketStrategy,
             currencyFormatManager
         )
 
@@ -195,7 +201,7 @@ class AccountPresenterTest {
         verify(activity).showProgressDialog(anyInt())
         verify(activity).dismissProgressDialog()
         verify(activity).showToast(anyInt(), eq(ToastCustom.TYPE_OK))
-        verify(activity).broadcastEvent(any())
+        verify(coinsWebSocketStrategy).subscribeToXpubBtc("xpub")
     }
 
     @Test
@@ -255,7 +261,6 @@ class AccountPresenterTest {
         verify(activity).showProgressDialog(anyInt())
         verify(activity).dismissProgressDialog()
         verify(activity).showToast(anyInt(), eq(ToastCustom.TYPE_OK))
-        verify(activity).broadcastEvent(any())
     }
 
     @Test
@@ -496,5 +501,26 @@ class AccountPresenterTest {
         // Assert
         verify(activity).showToast(anyInt(), eq(ToastCustom.TYPE_ERROR))
         verifyNoMoreInteractions(activity)
+    }
+
+    @Test
+    fun checkDisplayListIsValid() {
+        // Arrange
+
+        // Act
+        val displayable = subject.getDisplayableCurrencies()
+
+        // Assert
+        // We want to catch new, unhandled, CryptoCurrencies so test in a loop:
+        CryptoCurrency.values().forEach {
+            when (it) {
+                CryptoCurrency.BTC -> assertTrue(it in displayable)
+                CryptoCurrency.BCH -> assertTrue(it in displayable)
+                CryptoCurrency.ETHER -> assertFalse(it in displayable)
+                CryptoCurrency.XLM -> assertFalse(it in displayable)
+                CryptoCurrency.PAX -> assertFalse(it in displayable)
+                CryptoCurrency.STX -> assertFalse(it in displayable)
+            }.exhaustive
+        }
     }
 }

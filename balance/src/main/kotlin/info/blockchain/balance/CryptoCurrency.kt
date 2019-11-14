@@ -3,8 +3,8 @@ package info.blockchain.balance
 enum class CryptoCurrency(
     val symbol: String,
     val unit: String,
-    val dp: Int,           // max decimal places
-    val userDp: Int,       // user decimal places
+    val dp: Int, // max decimal places
+    val userDp: Int, // user decimal places
     val requiredConfirmations: Int,
     private val featureFlags: Long
 ) {

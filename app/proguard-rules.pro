@@ -159,6 +159,7 @@
 -keep public class info.blockchain.wallet.metadata.data.** { *; }
 -keep public class info.blockchain.wallet.payload.data.** { *; }
 -keep public class piuk.blockchain.androidbuysell.models.** { *; }
+-keep public class piuk.blockchain.android.data.coinswebsocket.models.** { *; }
 -keep public class piuk.blockchain.androidbuysell.models.coinify.** { *; }
 -keep public class piuk.blockchain.android.data.websocket.models.** { *; }
 -keep public class info.blockchain.wallet.ethereum.** { *; }

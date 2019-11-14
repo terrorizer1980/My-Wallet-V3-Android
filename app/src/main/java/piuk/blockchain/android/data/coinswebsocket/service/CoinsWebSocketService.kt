@@ -17,6 +17,7 @@ import piuk.blockchain.android.util.lifecycle.AppState
 import piuk.blockchain.android.util.lifecycle.LifecycleInterestedComponent
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 class CoinsWebSocketService : Service(), MessagesSocketHandler {
 
@@ -38,6 +39,14 @@ class CoinsWebSocketService : Service(), MessagesSocketHandler {
                 coinsWebSocketStrategy.close()
             }
         }
+    }
+
+    override fun showToast(message: Int) {
+        ToastCustom.makeText(
+            this,
+            getString(message),
+            ToastCustom.LENGTH_SHORT,
+            ToastCustom.TYPE_GENERAL)
     }
 
     override fun onBind(intent: Intent?): IBinder? = binder

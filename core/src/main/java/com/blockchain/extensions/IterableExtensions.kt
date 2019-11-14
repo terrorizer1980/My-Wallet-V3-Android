@@ -8,3 +8,6 @@ inline fun <T> Iterable<T>.nextAfterOrNull(predicate: (T) -> Boolean): T? {
     }
     return null
 }
+
+val <T> T.exhaustive: T
+    get() = this

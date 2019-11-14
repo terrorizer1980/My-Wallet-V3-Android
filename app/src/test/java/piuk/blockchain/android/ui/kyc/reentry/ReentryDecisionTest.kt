@@ -86,7 +86,7 @@ class ReentryDecisionTest {
                 mobile = "123456",
                 mobileVerified = true
             )
-        ) `should be` ReentryPoint.Onfido
+        ) `should be` ReentryPoint.Veriff
     }
 
     @Test

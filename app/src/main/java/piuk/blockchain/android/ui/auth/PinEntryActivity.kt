@@ -15,7 +15,6 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
-import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.android.databinding.ActivityPinEntryBinding
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveFragment
 import piuk.blockchain.android.util.OSUtil
@@ -139,7 +138,6 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
 
     private fun startWebSocketService() {
         CoinsWebSocketService::class.java.start(this, osUtil)
-        WebSocketService::class.java.start(this, osUtil)
     }
 
     private class SwipeToReceiveFragmentPagerAdapter internal constructor(

@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/icon_blockchain"
-        style="@style/CenteredText.24"/>
+        style="@style/Text.Standard.Centered.24"/>
 
     <TextView
         android:id="@+id/text_body"
@@ -38,10 +38,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginLeft="@dimen/standard_margin"
+        android:layout_marginRight="@dimen/standard_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_title"
-        style="@style/CenteredText.16"/>
+        style="@style/Text.Standard.Centered.16"/>
 
     <Button
         android:id="@+id/btn_create"

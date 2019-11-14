@@ -28,7 +28,7 @@
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="@dimen/standard_margin"
                     android:layout_marginBottom="32dp"
-                    style="@style/StandardText"
+                    style="@style/Text.Standard.14"
                     android:gravity="center_horizontal"
                     android:text="@string/recover_funds_instructions" />
 

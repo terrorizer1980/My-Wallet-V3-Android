@@ -9,6 +9,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.rule.BitpayAnnouncemen
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BuyBitcoinAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.IntroTourAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForAirdropsAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForBlockstackAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycIncompleteAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycMoreInfoAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycResubmissionAnnouncement
@@ -45,7 +46,8 @@ val dashboardAnnouncementsModule = applicationContext {
             AnnouncementQueries(
                 nabuToken = get(),
                 settings = get(),
-                nabu = get()
+                nabu = get(),
+                tierService = get()
             )
         }
 
@@ -109,8 +111,8 @@ val dashboardAnnouncementsModule = applicationContext {
 
         factory {
             SwapAnnouncement(
-                tierService = get(),
                 dataManager = get("merge"),
+                queries = get(),
                 dismissRecorder = get()
             )
         }.bind(AnnouncementRule::class)
@@ -161,6 +163,13 @@ val dashboardAnnouncementsModule = applicationContext {
 
         factory {
             KycForAirdropsAnnouncement(
+                dismissRecorder = get(),
+                queries = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            KycForBlockstackAnnouncement(
                 dismissRecorder = get(),
                 queries = get()
             )

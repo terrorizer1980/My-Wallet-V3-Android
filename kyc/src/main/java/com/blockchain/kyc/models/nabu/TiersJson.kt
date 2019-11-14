@@ -64,3 +64,14 @@ enum class Kyc2TierState {
     Tier2Approved,
     Tier2Failed
 }
+
+val goldTierComplete = listOf(
+    Kyc2TierState.Tier2InReview,
+    Kyc2TierState.Tier2Approved,
+    Kyc2TierState.Tier2Failed
+)
+
+val kycVerified = listOf(
+    Kyc2TierState.Tier1Approved,
+    Kyc2TierState.Tier2Approved
+)

@@ -23,7 +23,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.KycNavXmlDirections
-import piuk.blockchain.android.campaign.BlockstackCampaignRegistration
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.SunriverCampaignRegistration
 import piuk.blockchain.android.ui.kyc.reentry.ReentryDecision
@@ -35,7 +34,6 @@ class KycNavHostPresenterTest {
     private lateinit var subject: KycNavHostPresenter
     private val view: KycNavHostView = mock()
     private val sunriverCampaign: SunriverCampaignRegistration = mock()
-    private val blockstackCampaign: BlockstackCampaignRegistration = mock()
     private val nabuDataManager: NabuDataManager = mock()
     private val nabuToken: NabuToken = mock()
     private val reentryDecision: ReentryDecision = mock()
@@ -54,7 +52,6 @@ class KycNavHostPresenterTest {
             nabuToken,
             nabuDataManager,
             sunriverCampaign,
-            blockstackCampaign,
             reentryDecision,
             ReentryDecisionKycNavigator(mock(), mock(), mock()),
             tierUpdater
@@ -91,8 +88,7 @@ class KycNavHostPresenterTest {
         // Arrange
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
         whenever(nabuDataManager.getUser(validOfflineToken)).thenReturn(Single.just(getBlankNabuUser()))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
+
         // Act
         subject.onViewReady()
         // Assert
@@ -105,8 +101,6 @@ class KycNavHostPresenterTest {
         // Arrange
         givenReentryDecision(ReentryPoint.CountrySelection)
         whenever(view.campaignType).thenReturn(CampaignType.Swap)
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
         whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(
@@ -143,8 +137,6 @@ class KycNavHostPresenterTest {
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
         whenever(tierUpdater.setUserTier(2)).thenReturn(Completable.complete())
         whenever(sunriverCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
         whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(
                 Single.just(
@@ -179,8 +171,6 @@ class KycNavHostPresenterTest {
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
         whenever(tierUpdater.setUserTier(2)).thenReturn(Completable.complete())
         whenever(sunriverCampaign.userIsInCampaign()).thenReturn(Single.just(true))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
         whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(
                 Single.just(
@@ -216,8 +206,6 @@ class KycNavHostPresenterTest {
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
         whenever(tierUpdater.setUserTier(2)).thenReturn(Completable.complete())
         whenever(sunriverCampaign.userIsInCampaign()).thenReturn(Single.just(true))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
         whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(
                 Single.just(
@@ -251,8 +239,6 @@ class KycNavHostPresenterTest {
         givenReentryDecision(ReentryPoint.CountrySelection)
         whenever(view.campaignType).thenReturn(CampaignType.Resubmission)
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
         whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(
                 Single.just(
@@ -286,8 +272,6 @@ class KycNavHostPresenterTest {
         givenReentryDecision(ReentryPoint.CountrySelection)
         whenever(view.campaignType).thenReturn(CampaignType.Swap)
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
         whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(
                 Single.just(
@@ -322,8 +306,6 @@ class KycNavHostPresenterTest {
         givenReentryDecision(ReentryPoint.CountrySelection)
         whenever(view.campaignType).thenReturn(CampaignType.BuySell)
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
         whenever(nabuDataManager.getUser(validOfflineToken))
             .thenReturn(
                 Single.just(
@@ -357,8 +339,7 @@ class KycNavHostPresenterTest {
         // Arrange
         givenReentryDecision(ReentryPoint.Address)
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
+
         val nabuUser = NabuUser(
             firstName = "firstName",
             lastName = "lastName",
@@ -391,8 +372,7 @@ class KycNavHostPresenterTest {
         // Arrange
         givenReentryDecision(ReentryPoint.MobileEntry)
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
+
         val nabuUser = NabuUser(
             firstName = "firstName",
             lastName = "lastName",
@@ -422,8 +402,7 @@ class KycNavHostPresenterTest {
         // Arrange
         givenReentryDecision(ReentryPoint.MobileEntry)
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
+
         val nabuUser = NabuUser(
             firstName = "firstName",
             lastName = "lastName",
@@ -451,10 +430,9 @@ class KycNavHostPresenterTest {
     @Test
     fun `onViewReady, should redirect to Onfido`() {
         // Arrange
-        givenReentryDecision(ReentryPoint.Onfido)
+        givenReentryDecision(ReentryPoint.Veriff)
         whenever(nabuToken.fetchNabuToken()).thenReturn(Single.just(validOfflineToken))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
+
         val nabuUser = NabuUser(
             firstName = "firstName",
             lastName = "lastName",
@@ -498,8 +476,6 @@ class KycNavHostPresenterTest {
             updatedAt = null
         )
         whenever(nabuDataManager.getUser(validOfflineToken)).thenReturn(Single.just(nabuUser))
-        whenever(blockstackCampaign.userIsInCampaign()).thenReturn(Single.just(false))
-        whenever(blockstackCampaign.registerCampaign()).thenReturn(Completable.complete())
 
         // Act
         subject.onViewReady()

@@ -19,6 +19,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.thepit.PitLinking
+import piuk.blockchain.android.ui.campaign.CampaignBlockstackIntroSheet
 import piuk.blockchain.android.ui.charts.models.ArbitraryPrecisionFiatValue
 import piuk.blockchain.android.ui.charts.models.toStringWithSymbol
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
@@ -287,6 +288,16 @@ class DashboardPresenter(
 
     override fun startTransferCrypto() {
         view.startTransferCrypto()
+    }
+
+    override fun startCampaignIntro(campaignType: CampaignType) {
+        when (campaignType) {
+            CampaignType.Blockstack -> view.showBottomSheetDialog(
+                CampaignBlockstackIntroSheet.newInstance { view.startKycForStx() }
+            )
+            else -> { /* no-op */
+            }
+        }
     }
 
     private fun getPriceString(cryptoCurrency: CryptoCurrency): String {

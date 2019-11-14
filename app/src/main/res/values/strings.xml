@@ -1295,6 +1295,16 @@
     <string name="coinify_account_created_success">Success!\n Account Created</string>
     <string name="buy_sell_launcher_error">Error fetching buy/sell data</string>
 
+    <!-- Blockstack campaign -->
+    <string name="campaign_stx_intro_title">Unlock Access to Airdrops </string>
+    <string name="campaign_stx_intro_body">Our next airdrop with Blockstack is launching soon! Get free Stacks (STX) by upgrading your profile to Gold Level.</string>
+    <string name="campaign_stx_intro_small_print">*For regulatory reasons, USA, Canada and Japan nationals can\'t participate in the airdrop. <annotation link="stx_airdrop_learn_more">Learn more</annotation></string>
+    <string name="campaign_stx_intro_cta_button">Complete my profile</string>
+
+    <string name="campaign_stx_complete_title">Application complete</string>
+    <string name="campaign_stx_complete_body">Once your verification is confirmed, you\'ll automatically secure a spot in the Airdrop for Stacks.</string>
+    <string name="campaign_stx_complete_cta_button">Learn More</string>
+
     <!-- buy/Sell -->
     <!-- Account created Success -->
     <string name="buy_sell_buy">Buy</string>
@@ -1641,7 +1651,7 @@
     <string name="kyc_onfido_splash_header">Let\'s Confirm It\'s You</string>
     <string name="kyc_onfido_splash_verification_error">Error verifying ID, please try again</string>
 
-    <!-- Onfido Splash -->
+    <!-- Veriff Splash -->
     <string name="kyc_veriff_splash_country_supported_header">Is my country supported?</string>
     <string name="kyc_veriff_splash_country_supported_subheader">Not all countries are supported at this time. Check our up to date <annotation link="country_list">list of countries</annotation> before proceeding.</string>
 
@@ -1659,7 +1669,7 @@
     <string name="kyc_veriff_splash_residence_permit">Residence Card</string>
     <string name="kyc_veriff_splash_continue">Continue</string>
     <string name="kyc_complete_title">Application Complete</string>
-    <string name="kyc_complete_header">Done and Done!</string>
+    <string name="kyc_complete_header">Done and done!</string>
 
     <!-- Application Complete -->
     <string name="kyc_complete_subtitle">You successfully submitted your information. Your account is now in review!</string>
@@ -1749,6 +1759,14 @@
     <string name="buy_sell_please_wait">Please wait…</string>
     <string name="tiers_splash_header_text">Trading your crypto doesn\'t mean trading away control</string>
     <string name="announcing_swap">Swap by Blockchain enables you to trade crypto with best prices, and quick settlement, all while maintaining full control of your funds.</string>
+
+    <!-- Blockstack airdrop announcement -->
+    <string name="stacks_airdrop_card_title">Our Latest Airdrop is Here.</string>
+    <string name="stacks_airdrop_card_description">Upgrade your profile to Gold to access the Airdrop and get free Stacks (STX) from Blockstack.</string>
+    <string name="stacks_airdrop_card_button">Get Free Crypto </string>
+
+    <!-- Blockstack airdrop share message -->
+    <string name ="stacks_airdrop_share_msg">Hey! I just secured my spot for Blockchain\'s latest airdrop with Blockstack. Sign up and get verified to get $10 of Stacks for free!\nhttps://login.blockchain.com/#/signup </string>
 
     <!-- KYC Tiers -->
     <string name="tier_1">TIER 1</string>

@@ -1,6 +1,7 @@
 package piuk.blockchain.android.data.coinswebsocket.models
 
 import com.google.gson.annotations.SerializedName
+import java.math.BigDecimal
 import java.math.BigInteger
 
 data class SocketResponse(
@@ -8,12 +9,41 @@ data class SocketResponse(
     val entity: Entity? = null,
     val coin: Coin? = null,
     val block: EthBlock? = null,
-    val transaction: EthTransaction? = null,
-    val tokenTransfer: TokenTransfer? = null,
     val message: String? = null,
+    val checksum: String? = null,
+    val op: String? = null
+)
+
+data class BtcBchResponse(
+    val transaction: BtcTransaction?
+)
+
+data class EthResponse(
+    val transaction: EthTransaction?,
     val account: EthAccount? = null,
+    val entity: Entity? = null,
+    val tokenTransfer: TokenTransfer? = null,
     val tokenAccount: TokenAccount? = null,
     val tokenAccountKey: TokenAccountKey? = null
+)
+
+data class BtcTransaction(
+    val inputs: List<Input> = emptyList(),
+    @SerializedName("out") val outputs: List<Output> = emptyList(),
+    val hash: String?
+)
+
+data class Output(
+    val spent: Boolean,
+    val addr: String?,
+    val xpub: String?,
+    val value: BigDecimal?
+)
+
+data class Input(
+    val address: String,
+    val value: BigInteger,
+    @SerializedName("prev_out") val prevOut: Output?
 )
 
 data class EthBlock(val hash: String, val parentHash: String, val nonce: String, val gasLimit: Long)

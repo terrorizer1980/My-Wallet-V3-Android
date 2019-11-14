@@ -267,13 +267,11 @@
 
             <Button
                 android:id="@+id/button_request_refund"
+                style="@style/CtaButton.Blue"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/status_request_refund"
-                android:theme="@style/LightBlueButtonTheme"
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -7,6 +7,7 @@ import com.blockchain.kyc.models.nabu.TiersJson
 import com.blockchain.swap.nabu.Authenticator
 import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 
 internal class NabuTierService(
     private val endpoint: Nabu,
@@ -16,7 +17,9 @@ internal class NabuTierService(
     override fun tiers(): Single<TiersJson> =
         authenticator.authenticate {
             endpoint.getTiers(it.authHeader)
-        }.wrapErrorMessage()
+        }
+        .subscribeOn(Schedulers.io())
+        .wrapErrorMessage()
 
     override fun setUserTier(tier: Int): Completable =
         authenticator.authenticate {

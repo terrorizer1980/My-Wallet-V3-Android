@@ -20,13 +20,14 @@ import kotlinx.android.synthetic.main.fragment_dashboard.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
-import piuk.blockchain.android.data.websocket.WebSocketService
+import piuk.blockchain.android.ui.campaign.CampaignBlockstackCompleteSheet
 import piuk.blockchain.android.ui.charts.ChartsActivity
 import piuk.blockchain.android.ui.customviews.BottomSpacerDecoration
 import piuk.blockchain.android.ui.dashboard.adapter.DashboardDelegateAdapter
 import piuk.blockchain.android.ui.home.HomeFragment
 import piuk.blockchain.android.ui.home.MainActivity.Companion.ACCOUNT_EDIT
 import piuk.blockchain.android.ui.home.MainActivity.Companion.SETTINGS_EDIT
+import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.start
 import piuk.blockchain.androidcore.data.events.ActionEvent
@@ -121,8 +122,11 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == SETTINGS_EDIT || requestCode == ACCOUNT_EDIT) {
-            presenter.updateBalances()
+        when (requestCode) {
+            SETTINGS_EDIT,
+            ACCOUNT_EDIT -> presenter.updateBalances()
+            KYC_FOR_STX -> if (resultCode == KycNavHostActivity.RESULT_KYC_STX_COMPLETE)
+                showBottomSheetDialog(CampaignBlockstackCompleteSheet())
         }
     }
 
@@ -170,6 +174,10 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
         navigator().launchKyc(campaignType)
     }
 
+    override fun startKycForStx() {
+        KycNavHostActivity.startForResult(this, CampaignType.Blockstack, KYC_FOR_STX)
+    }
+
     override fun startPitLinkingFlow(linkId: String) {
         navigator().launchThePitLinking(linkId)
     }
@@ -201,7 +209,6 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     override fun startWebsocketService() {
         context?.run {
             CoinsWebSocketService::class.java.start(this, osUtil)
-            WebSocketService::class.java.start(this, osUtil)
         }
     }
 
@@ -237,6 +244,8 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
     override fun onBackPressed() = false
 
     companion object {
+
+        internal const val KYC_FOR_STX = 9267
 
         @JvmStatic
         fun newInstance(): DashboardFragment {

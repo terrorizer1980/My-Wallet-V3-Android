@@ -24,9 +24,9 @@ sealed class AnnouncementAnalyticsEvent(
     )
 
     companion object {
-        private const val CARD_SHOWN = "wallet_intro_offered"
-        private const val CARD_ACTIONED = "wallet_intro_started"
-        private const val CARD_DISMISSED = "wallet_intro_dismissed"
+        private const val CARD_SHOWN = "announcement_offered"
+        private const val CARD_ACTIONED = "announcement_started"
+        private const val CARD_DISMISSED = "announcement_dismissed"
 
         private const val CARD_TITLE = "card_title"
     }

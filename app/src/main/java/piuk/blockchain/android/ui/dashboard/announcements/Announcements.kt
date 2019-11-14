@@ -30,6 +30,7 @@ interface AnnouncementHost {
     fun startEnableFingerprintLogin()
     fun startIntroTourGuide()
     fun startTransferCrypto()
+    fun startCampaignIntro(campaignType: CampaignType)
 }
 
 abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {
@@ -73,7 +74,7 @@ class AnnouncementList(
             .doOnSuccess { dismissRecorder.setPeriod(it.interval) }
             .map { buildAnnouncementList(it.order) }
             .flattenAsObservable { it }
-            .flatMap { a ->
+            .concatMap { a ->
                 Observable.defer {
                     a.shouldShow()
                         .filter { it }

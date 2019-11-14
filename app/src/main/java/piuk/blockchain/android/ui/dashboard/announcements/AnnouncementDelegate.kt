@@ -16,6 +16,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.isVisible
 import android.graphics.drawable.GradientDrawable
 import com.blockchain.notifications.analytics.Analytics
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 
 class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDelegate<T> {
 
@@ -29,20 +30,24 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
         val announcement = items[position] as AnnouncementCard
 
         (holder as AnnouncementViewHolder).apply {
+
             if (announcement.titleText != 0) {
-                title?.setText(announcement.titleText)
+                title.setText(announcement.titleText)
+                title.visible()
             } else {
-                title?.gone()
+                title.gone()
             }
 
             if (announcement.bodyText != 0) {
-                body?.setText(announcement.bodyText)
+                body.setText(announcement.bodyText)
+                body.visible()
             } else {
-                body?.gone()
+                body.gone()
             }
 
             if (announcement.iconImage != 0) {
                 icon.setImageDrawable(ContextCompat.getDrawable(itemView.context, announcement.iconImage))
+                icon.visible()
             } else {
                 icon.gone()
             }
@@ -53,16 +58,18 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
                     analytics.logEvent(AnnouncementAnalyticsEvent.CardActioned(announcement.name))
                     announcement.ctaClicked()
                 }
+                ctaBtn.visible()
             } else {
                 ctaBtn.gone()
             }
 
             if (announcement.dismissText != 0) {
-                dismissBtn?.setText(announcement.dismissText)
-                dismissBtn?.setOnClickListener {
+                dismissBtn.setText(announcement.dismissText)
+                dismissBtn.setOnClickListener {
                     analytics.logEvent(AnnouncementAnalyticsEvent.CardDismissed(announcement.name))
                     announcement.dismissClicked()
                 }
+                dismissBtn.visible()
                 closeBtn.gone()
             } else {
                 dismissBtn.gone()
@@ -73,6 +80,7 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
                     analytics.logEvent(AnnouncementAnalyticsEvent.CardDismissed(announcement.name))
                     announcement.dismissClicked()
                 }
+                closeBtn.visible()
             } else {
                 closeBtn.gone()
                 dismissBtn.gone()
@@ -98,11 +106,11 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
     ) : RecyclerView.ViewHolder(itemView) {
 
         internal val icon: ImageView = itemView.icon
-        internal val title: TextView? = itemView.msg_title
-        internal val body: TextView? = itemView.msg_body
+        internal val title: TextView = itemView.msg_title
+        internal val body: TextView = itemView.msg_body
         internal val closeBtn: ImageView = itemView.btn_close
         internal val ctaBtn: TextView = itemView.btn_cta1
-        internal val dismissBtn: TextView? = itemView.btn_dismiss
+        internal val dismissBtn: TextView = itemView.btn_dismiss
 
         fun paintButtons(@ColorRes btnColour: Int) {
             val colour = ContextCompat.getColor(ctaBtn.context, btnColour)
@@ -115,8 +123,8 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
                 val gd = GradientDrawable()
                 gd.setColor(bgColour)
                 gd.setStroke(2, colour)
-                dismissBtn?.background = gd
-                dismissBtn?.setTextColor(colour)
+                dismissBtn.background = gd
+                dismissBtn.setTextColor(colour)
             }
         }
     }

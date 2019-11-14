@@ -1,5 +1,6 @@
 package com.blockchain.kyc.services.nabu
 
+import com.blockchain.android.testutils.rxInit
 import com.blockchain.kyc.api.nabu.NABU_KYC_TIERS
 import com.blockchain.kyc.api.nabu.Nabu
 import com.blockchain.kyc.models.nabu.KycTierState
@@ -26,6 +27,7 @@ import org.junit.Test
 class NabuTiersServiceTest {
 
     private lateinit var subject: NabuTierService
+
     private val moshi: Moshi = Moshi.Builder()
         .add(BigDecimalAdaptor())
         .add(KycTierStateAdapter())
@@ -34,6 +36,12 @@ class NabuTiersServiceTest {
 
     @get:Rule
     val initMockServer = mockWebServerInit(server)
+
+    @get:Rule
+    val initSchedulers = rxInit {
+        mainTrampoline()
+        ioTrampoline()
+    }
 
     @Before
     fun setUp() {
@@ -53,7 +61,7 @@ class NabuTiersServiceTest {
                 .setResponseCode(200)
                 .setBody(getStringFromResource("com/blockchain/kyc/services/nabu/GetTiers.json"))
         )
-        (subject as TierService).tiers()
+        subject.tiers()
             .test()
             .assertComplete()
             .assertNoErrors()
@@ -103,7 +111,7 @@ class NabuTiersServiceTest {
                 .setResponseCode(200)
                 .setBody("")
         )
-        (subject as TierUpdater).setUserTier(1)
+        subject.setUserTier(1)
             .test()
             .assertComplete()
             .assertNoErrors()

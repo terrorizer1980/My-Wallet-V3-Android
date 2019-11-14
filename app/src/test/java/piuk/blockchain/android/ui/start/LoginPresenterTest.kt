@@ -29,13 +29,15 @@ class LoginPresenterTest {
     private lateinit var subject: LoginPresenter
     private val view: LoginView = mock()
     private val appUtil: AppUtil = mock()
+    private val _payloadDataManager: Lazy<PayloadDataManager> = mock()
     private val payloadDataManager: PayloadDataManager = mock()
     private val prefsUtil: PersistentPrefs = mock()
     private val analytics: Analytics = mock()
 
     @Before
     fun setUp() {
-        subject = LoginPresenter(appUtil, payloadDataManager, prefsUtil, analytics)
+        subject = LoginPresenter(appUtil, _payloadDataManager, prefsUtil, analytics)
+        whenever(_payloadDataManager.value).thenReturn(payloadDataManager)
     }
 
     @Test

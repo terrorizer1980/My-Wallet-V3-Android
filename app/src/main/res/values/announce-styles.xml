@@ -4,19 +4,4 @@
         <item name="cardBackgroundColor">@color/announce_background</item>
     </style>
 
-    <style name="AnnounceTitle" parent="BaseTextStyle">
-        <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/grey_800</item>
-        <item name="android:lineSpacingExtra">0sp</item>
-        <item name="android:gravity">center_vertical</item>
-    </style>
-
-    <style name="AnnounceBody" parent="BaseTextStyle">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/grey_600</item>
-        <item name="android:lineSpacingExtra">7sp</item>
-        <item name="android:gravity">top</item>
-        <item name="android:translationY">-3.53sp</item>
-    </style>
-
 </resources>

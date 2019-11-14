@@ -16,7 +16,6 @@ import piuk.blockchain.androidbuysell.services.BuyConditions
 import piuk.blockchain.androidcore.data.access.AccessState
 import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
-import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 
@@ -45,10 +44,6 @@ class LogoutActivity : AppCompatActivity() {
             prefs.setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, true)
 
             if (osUtil.isServiceRunning(CoinsWebSocketService::class.java)) {
-                stopService(intent)
-            }
-
-            if (osUtil.isServiceRunning(WebSocketService::class.java)) {
                 stopService(intent)
             }
 

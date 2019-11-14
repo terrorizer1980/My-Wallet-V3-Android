@@ -1,25 +1,15 @@
 package piuk.blockchain.android.data.websocket;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-
 import com.blockchain.network.EnvironmentUrls;
-import com.blockchain.notifications.NotificationsUtil;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.math.BigDecimal;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
 import info.blockchain.balance.CryptoCurrency;
 import info.blockchain.wallet.exceptions.DecryptionException;
 import io.reactivex.Completable;
@@ -27,7 +17,6 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Action;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -35,19 +24,15 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.data.rxjava.RxUtil;
-import piuk.blockchain.android.ui.balance.BalanceFragment;
-import piuk.blockchain.android.ui.home.MainActivity;
 import piuk.blockchain.android.ui.launcher.LauncherActivity;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
-import piuk.blockchain.androidcore.data.currency.BTCDenomination;
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
 import piuk.blockchain.androidcore.data.events.ActionEvent;
 import piuk.blockchain.androidcore.data.events.WalletAndTransactionsUpdatedEvent;
 import piuk.blockchain.androidcore.data.events.WebSocketMessageEvent;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.rxjava.RxBus;
-import piuk.blockchain.androidcore.data.websockets.WebSocketReceiveEvent;
 import piuk.blockchain.androidcore.utils.annotations.Thunk;
 import piuk.blockchain.androidcore.utils.rxjava.IgnorableDefaultObserver;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
@@ -65,10 +50,6 @@ class WebSocketHandler {
     private static final int STATUS_CODE_NORMAL_CLOSURE = 1000;
 
     private boolean stoppedDeliberately = false;
-    private String[] xpubsBtc;
-    private String[] addrsBtc;
-    private String[] xpubsBch;
-    private String[] addrsBch;
     @Thunk
     BchDataManager bchDataManager;
     private NotificationManager notificationManager;
@@ -98,10 +79,6 @@ class WebSocketHandler {
                             EnvironmentUrls environmentUrls,
                             CurrencyFormatManager currencyFormatManager,
                             String guid,
-                            String[] xpubsBtc,
-                            String[] addrsBtc,
-                            String[] xpubsBch,
-                            String[] addrsBch,
                             RxBus rxBus,
                             AccessState accessState,
                             AppUtil appUtil) {
@@ -114,43 +91,9 @@ class WebSocketHandler {
         this.environmentUrls = environmentUrls;
         this.currencyFormatManager = currencyFormatManager;
         this.guid = guid;
-        this.xpubsBtc = xpubsBtc;
-        this.addrsBtc = addrsBtc;
-        this.xpubsBch = xpubsBch;
-        this.addrsBch = addrsBch;
         this.rxBus = rxBus;
         this.accessState = accessState;
         this.appUtil = appUtil;
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Bitcoin
-    ///////////////////////////////////////////////////////////////////////////
-    public void subscribeToXpubBtc(String xpub) {
-        if (xpub != null && !xpub.isEmpty()) {
-            sendToBtcConnection("{\"op\":\"xpub_sub\", \"xpub\":\"" + xpub + "\"}");
-        }
-    }
-
-    public void subscribeToAddressBtc(String address) {
-        if (address != null && !address.isEmpty()) {
-            sendToBtcConnection("{\"op\":\"addr_sub\", \"addr\":\"" + address + "\"}");
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Bitcoin Cash
-    ///////////////////////////////////////////////////////////////////////////
-    public void subscribeToXpubBch(String xpub) {
-        if (xpub != null && !xpub.isEmpty()) {
-            sendToBchConnection("{\"op\":\"xpub_sub\", \"xpub\":\"" + xpub + "\"}");
-        }
-    }
-
-    public void subscribeToAddressBch(String address) {
-        if (address != null && !address.isEmpty()) {
-            sendToBchConnection("{\"op\":\"addr_sub\", \"addr\":\"" + address + "\"}");
-        }
     }
 
     /**
@@ -196,32 +139,6 @@ class WebSocketHandler {
         }
     }
 
-    private void sendToEthConnection(String message) {
-        // Make sure each message is only sent once per socket lifetime
-        if (!btcSubHashSet.contains(message)) {
-            try {
-                if (isConnected()) {
-                    btcSubHashSet.add(message);
-                }
-            } catch (Exception e) {
-                Timber.e(e, "Send to ETH websocket failed");
-            }
-        }
-    }
-
-    private void sendToBchConnection(String message) {
-        // Make sure each message is only sent once per socket lifetime
-        if (!bchSubHashSet.contains(message)) {
-            try {
-                if (isConnected()) {
-                    bchConnection.send(message);
-                    bchSubHashSet.add(message);
-                }
-            } catch (Exception e) {
-                Timber.e(e, "Send to BCH websocket failed");
-            }
-        }
-    }
 
     @Thunk
     void subscribe() {
@@ -229,12 +146,6 @@ class WebSocketHandler {
             return;
         }
         sendToBtcConnection("{\"op\":\"wallet_sub\",\"guid\":\"" + guid + "\"}");
-
-        for (String xpub : xpubsBtc) subscribeToXpubBtc(xpub);
-        for (String addr : addrsBtc) subscribeToAddressBtc(addr);
-
-        for (String xpub : xpubsBch) subscribeToXpubBch(xpub);
-        for (String addr : addrsBch) subscribeToAddressBch(addr);
     }
 
     @Thunk
@@ -265,13 +176,6 @@ class WebSocketHandler {
                 .subscribe(new IgnorableDefaultObserver<>());
     }
 
-    private void updateBchBalancesAndTransactions() {
-        bchDataManager.updateAllBalances()
-                .andThen(bchDataManager.getWalletTransactions(50, 0))
-                .doOnComplete(() -> sendBroadcast(new WalletAndTransactionsUpdatedEvent()))
-                .subscribe(new IgnorableDefaultObserver<>());
-    }
-
     @Thunk
     void sendBroadcast(ActionEvent event) {
         rxBus.emitEvent(ActionEvent.class, event);
@@ -283,13 +187,7 @@ class WebSocketHandler {
                 .addHeader("Origin", "https://blockchain.info")
                 .build();
 
-        Request bchRequest = new Request.Builder()
-                .url(environmentUrls.websocketUrl(CryptoCurrency.BCH))
-                .addHeader("Origin", "https://blockchain.info")
-                .build();
-
         btcConnection = okHttpClient.newWebSocket(btcRequest, new BtcWebsocketListener());
-        bchConnection = okHttpClient.newWebSocket(bchRequest, new BchWebsocketListener());
     }
 
     private Completable connectToWebSocket() {
@@ -307,63 +205,7 @@ class WebSocketHandler {
     void attemptParseBtcMessage(String message, JSONObject jsonObject) {
         try {
             String op = (String) jsonObject.get("op");
-            if (op.equals("utx") && jsonObject.has("x")) {
-                JSONObject objX = (JSONObject) jsonObject.get("x");
-
-                long value = 0L;
-                long totalValue = 0L;
-                String inAddr = null;
-
-                if (objX.has("inputs")) {
-                    JSONArray inputArray = (JSONArray) objX.get("inputs");
-                    JSONObject inputObj;
-                    for (int j = 0; j < inputArray.length(); j++) {
-                        inputObj = (JSONObject) inputArray.get(j);
-                        if (inputObj.has("prev_out")) {
-                            JSONObject prevOutObj = (JSONObject) inputObj.get("prev_out");
-                            if (prevOutObj.has("value")) {
-                                value = prevOutObj.getLong("value");
-                            }
-                            if (prevOutObj.has("xpub")) {
-                                totalValue -= value;
-                            } else if (prevOutObj.has("addr")) {
-                                if (payloadDataManager.getWallet().containsLegacyAddress((String) prevOutObj.get("addr"))) {
-                                    totalValue -= value;
-                                } else if (inAddr == null) {
-                                    inAddr = (String) prevOutObj.get("addr");
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (objX.has("out")) {
-                    JSONArray outArray = (JSONArray) objX.get("out");
-                    JSONObject outObj;
-                    for (int j = 0; j < outArray.length(); j++) {
-                        outObj = (JSONObject) outArray.get(j);
-                        if (outObj.has("value")) {
-                            value = outObj.getLong("value");
-                        }
-                        if (outObj.has("addr") && objX.has("hash")) {
-                            rxBus.emitEvent(WebSocketReceiveEvent.class, new WebSocketReceiveEvent(
-                                    (String) outObj.get("addr"),
-                                    (String) objX.get("hash")
-                            ));
-                        }
-                        if (outObj.has("xpub")) {
-                            totalValue += value;
-                        } else if (outObj.has("addr")) {
-                            if (payloadDataManager.getWallet().containsLegacyAddress((String) outObj.get("addr"))) {
-                                totalValue += value;
-                            }
-                        }
-                    }
-                }
-
-                updateBtcBalancesAndTransactions();
-
-            } else if (op.equals("on_change")) {
+            if (op.equals("on_change")) {
                 final String localChecksum = payloadDataManager.getPayloadChecksum();
                 boolean isSameChecksum = false;
                 if (jsonObject.has("x")) {
@@ -389,87 +231,6 @@ class WebSocketHandler {
             }
         } catch (Exception e) {
             Timber.e(e, "attemptParseBtcMessage");
-        }
-    }
-
-    @Thunk
-    void attemptParseBchMessage(JSONObject jsonObject) {
-        try {
-            String op = (String) jsonObject.get("op");
-            if (op.equals("utx") && jsonObject.has("x")) {
-                JSONObject objX = (JSONObject) jsonObject.get("x");
-
-                long value = 0L;
-                long totalValue = 0L;
-                String inAddr = null;
-
-                if (objX.has("inputs")) {
-                    JSONArray inputArray = (JSONArray) objX.get("inputs");
-                    JSONObject inputObj;
-                    for (int j = 0; j < inputArray.length(); j++) {
-                        inputObj = (JSONObject) inputArray.get(j);
-                        if (inputObj.has("prev_out")) {
-                            JSONObject prevOutObj = (JSONObject) inputObj.get("prev_out");
-                            if (prevOutObj.has("value")) {
-                                value = prevOutObj.getLong("value");
-                            }
-                            if (prevOutObj.has("xpub")) {
-                                totalValue -= value;
-                            } else if (prevOutObj.has("addr")) {
-                                //noinspection RedundantCast
-                                if (bchDataManager.getLegacyAddressStringList().contains((String) prevOutObj.get("addr"))) {
-                                    totalValue -= value;
-                                } else if (inAddr == null) {
-                                    inAddr = (String) prevOutObj.get("addr");
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (objX.has("out")) {
-                    JSONArray outArray = (JSONArray) objX.get("out");
-                    JSONObject outObj;
-                    for (int j = 0; j < outArray.length(); j++) {
-                        outObj = (JSONObject) outArray.get(j);
-                        if (outObj.has("value")) {
-                            value = outObj.getLong("value");
-                        }
-                        if (outObj.has("addr") && objX.has("hash")) {
-                            rxBus.emitEvent(WebSocketReceiveEvent.class, new WebSocketReceiveEvent(
-                                    (String) outObj.get("addr"),
-                                    (String) objX.get("hash")
-                            ));
-                        }
-                        if (outObj.has("xpub")) {
-                            totalValue += value;
-                        } else if (outObj.has("addr")) {
-                            //noinspection RedundantCast
-                            if (bchDataManager.getLegacyAddressStringList().contains((String) outObj.get("addr"))) {
-                                totalValue += value;
-                            }
-                        }
-                    }
-                }
-
-                String title = context.getString(R.string.app_name);
-                if (totalValue > 0L) {
-                    String marquee = context.getString(R.string.received_bitcoin_cash)
-                            + " "
-                            + currencyFormatManager.getFormattedBchValueWithUnit(BigDecimal.valueOf(totalValue), BTCDenomination.SATOSHI);
-                    String text = marquee;
-                    text += " "
-                            + context.getString(R.string.from).toLowerCase(Locale.US)
-                            + " "
-                            + inAddr;
-
-                    triggerNotification(title, marquee, text);
-                }
-
-                updateBchBalancesAndTransactions();
-            }
-        } catch (Exception e) {
-            Timber.e(e, "attemptParseBchMessage");
         }
     }
 
@@ -501,39 +262,6 @@ class WebSocketHandler {
                 });
     }
 
-    private void triggerNotification(String title, String marquee, String text) {
-        Intent notifyIntent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                context,
-                0,
-                notifyIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        new NotificationsUtil(context, notificationManager).triggerNotification(
-                title,
-                marquee,
-                text,
-                R.drawable.ic_launcher_round,
-                pendingIntent,
-                1000);
-    }
-
-    private class BchWebsocketListener extends BaseWebsocketListener {
-        @Override
-        public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
-            super.onMessage(webSocket, text);
-            Timber.d("BchWebsocketListener onMessage %s", text);
-
-            if (payloadDataManager.getWallet() != null) {
-                try {
-                    JSONObject jsonObject = new JSONObject(text);
-                    attemptParseBchMessage(jsonObject);
-                } catch (JSONException je) {
-                    Timber.e(je);
-                }
-            }
-        }
-    }
 
     private class BtcWebsocketListener extends BaseWebsocketListener {
         @Override

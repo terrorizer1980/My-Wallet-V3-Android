@@ -29,6 +29,7 @@ enum class AnalyticsEvents(
     KycWelcome("kyc_welcome"),
     KycResubmission("kyc_resubmission"),
     KycSunriverStart("kyc_sunriver_start"),
+    KycBlockstackStart("kyc_blockstack_start"),
     KycMoreInfo("kyc_more_info"),
     KycTiers("kyc_tiers"),
     Lockbox("lockbox"),

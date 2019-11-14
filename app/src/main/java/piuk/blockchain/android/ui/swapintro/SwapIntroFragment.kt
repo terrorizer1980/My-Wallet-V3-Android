@@ -42,9 +42,7 @@ class SwapIntroFragment : HomeFragment<SwapIntroView, SwapIntroPresenter>(), Swa
         get_started.setOnClickListener {
             presenter.onGetStartedPressed()
             analytics.logEvent(SwapAnalyticsEvents.SwapIntroStartButtonClick)
-            startActivityForResult(
-                KycNavHostActivity.intentArgs(activity!!, CampaignType.Swap),
-                MainActivity.KYC_STARTED)
+            KycNavHostActivity.startForResult(requireActivity(), CampaignType.Swap, MainActivity.KYC_STARTED)
         }
     }
 
