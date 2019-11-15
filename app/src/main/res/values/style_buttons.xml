@@ -11,22 +11,22 @@
     </style>
 
     <style name="CtaButton.Red">
-        <item name="android:background">@drawable/bkgd_button_red</item>
+        <item name="android:background">@drawable/bkgd_button_red_selector</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="CtaButton.Blue">
-        <item name="android:background">@drawable/bkgd_button_blue</item>
+        <item name="android:background">@drawable/bkgd_button_blue_selector</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="CtaButton.White">
-        <item name="android:background">@drawable/bkgd_button_white</item>
+        <item name="android:background">@drawable/bkgd_button_white_selector</item>
         <item name="android:textColor">@color/blue_600</item>
     </style>
 
     <style name="CtaButton.Black">
-        <item name="android:background">@drawable/bkgd_button_black</item>
+        <item name="android:background">@drawable/bkgd_button_black_selector</item>
         <item name="android:textColor">@color/white</item>
     </style>
 

@@ -48,6 +48,13 @@
     <color name="blue_900">#0D3578</color>
     <color name="blue_1000">#4C18BA</color>
 
+    <color name="grey_100_with_opacity">#66DFE3EB</color>
+    <color name="grey_800_with_opacity">#66353F52</color>
+
+    <color name="blue_600_with_opacity">#660C6CF2</color>
+
+    <color name="red_600_with_opacity">#66D93B30</color>
+
     <color name="black_100">#0E1716</color>
 
     <color name="teal_200">#AEE1E6</color>
