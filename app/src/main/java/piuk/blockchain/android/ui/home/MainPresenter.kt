@@ -179,7 +179,6 @@ class MainPresenter internal constructor(
 
     internal fun initMetadataElements() {
         compositeDisposable += metadataManager.attemptMetadataSetup()
-            .andThen(exchangeRateCompletable())
             .andThen(ethCompletable())
             .andThen(shapeShiftCompletable())
             .andThen(bchCompletable())
