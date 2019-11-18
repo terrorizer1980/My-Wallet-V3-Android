@@ -62,4 +62,16 @@ class KycForBlockstackAnnouncementTest {
             .assertValueCount(1)
             .assertComplete()
     }
+
+    @Test
+    fun `should not show on error`() {
+        whenever(dismissEntry.isDismissed).thenReturn(false)
+        whenever(queries.isGoldComplete()).thenReturn(Single.error(Throwable()))
+
+        subject.shouldShow()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
+    }
 }

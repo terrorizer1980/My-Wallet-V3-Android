@@ -41,7 +41,6 @@ class AnnouncementQueries(
     fun isGoldComplete(): Single<Boolean> =
         tierService.tiers()
             .map { it.combinedState in goldTierComplete }
-            .onErrorReturn { false }
 
     fun isTier1Or2Verified(): Single<Boolean> =
         tierService.tiers().map { it.combinedState in kycVerified }

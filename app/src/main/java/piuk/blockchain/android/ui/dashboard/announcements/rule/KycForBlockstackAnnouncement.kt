@@ -23,7 +23,7 @@ internal class KycForBlockstackAnnouncement(
             return Single.just(false)
         }
 
-        return queries.isGoldComplete().map { !it }
+        return queries.isGoldComplete().map { !it }.onErrorReturn { false }
     }
 
     override fun show(host: AnnouncementHost) {
