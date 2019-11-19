@@ -19,8 +19,9 @@ internal class DeepLinkProcessor(
     private val thePitDeepLinkParser: ThePitDeepLinkParser
 ) {
     fun getLink(intent: Intent): Single<LinkState> =
-        linkHandler.getPendingLinks(intent)
-            .flatMapSingle { urlProcessor(it) }
+        linkHandler.getPendingLinks(intent).switchIfEmpty(Single.never()).flatMap {
+            urlProcessor(it)
+        }
 
     fun getLink(link: String): Single<LinkState> =
         urlProcessor(Uri.parse(link))
@@ -45,9 +46,9 @@ internal class DeepLinkProcessor(
             }
             LinkState.NoUri
         }
-        .switchIfEmpty(Maybe.just(LinkState.NoUri))
-        .toSingle()
-        .onErrorResumeNext { Single.just(LinkState.NoUri) }
+            .switchIfEmpty(Maybe.just(LinkState.NoUri))
+            .toSingle()
+            .onErrorResumeNext { Single.just(LinkState.NoUri) }
 }
 
 sealed class LinkState {

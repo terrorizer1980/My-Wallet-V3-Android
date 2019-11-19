@@ -101,14 +101,11 @@ class DashboardPresenter(
             .doOnSuccess { updateAllBalances() }
             .doOnSuccess { storeSwipeToReceiveAddresses() }
             .doOnSuccess { updatePitAddressesForThePit() }
+            .doOnSuccess { announcements.checkLatest(this, compositeDisposable) }
             .subscribe(
                 { /* No-op */ },
                 { Timber.e(it) }
             )
-    }
-
-    override fun onViewResumed() {
-        announcements.checkLatest(this, compositeDisposable)
     }
 
     private fun updatePitAddressesForThePit() {
