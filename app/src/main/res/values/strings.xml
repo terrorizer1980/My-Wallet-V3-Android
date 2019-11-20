@@ -1303,7 +1303,7 @@
 
     <string name="campaign_stx_complete_title">Application complete</string>
     <string name="campaign_stx_complete_body">Once your verification is confirmed, you\'ll automatically secure a spot in the Airdrop for Stacks.</string>
-    <string name="campaign_stx_complete_cta_button">Learn More</string>
+    <string name="campaign_stx_complete_cta_button">Share</string>
 
     <!-- buy/Sell -->
     <!-- Account created Success -->
