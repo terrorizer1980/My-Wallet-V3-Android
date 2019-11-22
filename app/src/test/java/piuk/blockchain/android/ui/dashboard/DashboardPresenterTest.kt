@@ -2,10 +2,10 @@ package piuk.blockchain.android.ui.dashboard
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.balance.TotalBalance
-import com.blockchain.kyc.status.KycTiersQueries
 import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.swap.nabu.CurrentTier
+import com.blockchain.swap.nabu.status.KycTiersQueries
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.usdPax

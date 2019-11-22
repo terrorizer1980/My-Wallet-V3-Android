@@ -3,8 +3,8 @@ package com.blockchain.swap.nabu
 import com.blockchain.morph.CoinPair
 import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.swap.common.trade.MorphTradeOrder
-import com.blockchain.swap.nabu.api.NabuTransaction
-import com.blockchain.swap.nabu.api.TransactionState
+import com.blockchain.swap.nabu.api.nabu.NabuTransaction
+import com.blockchain.swap.nabu.api.trade.TransactionState
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import info.blockchain.balance.CryptoValue

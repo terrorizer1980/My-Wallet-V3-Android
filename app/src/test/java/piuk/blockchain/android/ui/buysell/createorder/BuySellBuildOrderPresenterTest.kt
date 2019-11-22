@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.buysell.createorder
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.models.nabu.Address
-import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.nabu.Address
+import com.blockchain.swap.nabu.models.nabu.NabuUser
+import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.anyOrNull
 import com.nhaarman.mockito_kotlin.atLeastOnce
@@ -97,7 +97,9 @@ class BuySellBuildOrderPresenterTest {
                     on { getUser(any()) } `it returns` Single.just(userWithOutState)
                 },
                 nabuToken = mock {
-                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse(
+                        "",
+                        ""))
                 },
                 stringUtils = mock(),
                 coinSelectionRemoteConfig = mock())
@@ -151,7 +153,9 @@ class BuySellBuildOrderPresenterTest {
                     on { getUser(any()) } `it returns` Single.just(userWithOutState)
                 },
                 nabuToken = mock {
-                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse(
+                        "",
+                        ""))
                 },
                 stringUtils = mock(),
                 coinSelectionRemoteConfig = mock())
@@ -202,7 +206,9 @@ class BuySellBuildOrderPresenterTest {
                     on { getUser(any()) } `it returns` Single.just(userWithOutState)
                 },
                 nabuToken = mock {
-                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+                    on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse(
+                        "",
+                        ""))
                 },
                 stringUtils = mock(),
                 coinSelectionRemoteConfig = mock())

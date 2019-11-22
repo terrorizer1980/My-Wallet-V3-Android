@@ -30,7 +30,7 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 
-import com.blockchain.kyc.models.nabu.Kyc2TierState
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.notifications.analytics.Analytics

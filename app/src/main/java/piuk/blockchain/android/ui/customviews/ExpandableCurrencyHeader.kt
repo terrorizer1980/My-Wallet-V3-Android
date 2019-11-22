@@ -23,7 +23,6 @@ import com.blockchain.balance.coinIconWhite
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
-import kotlinx.android.synthetic.main.include_amount_row.view.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.view.*
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
@@ -53,7 +52,7 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
         VectorDrawableCompat.create(
             resources,
             R.drawable.vector_expand_more,
-            ContextThemeWrapper(context, piuk.blockchain.kyc.R.style.AppTheme).theme
+            ContextThemeWrapper(context, R.style.AppTheme).theme
         )?.run {
             DrawableCompat.wrap(this)
         }

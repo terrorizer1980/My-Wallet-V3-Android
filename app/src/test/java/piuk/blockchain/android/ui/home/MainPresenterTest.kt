@@ -1,9 +1,8 @@
 package piuk.blockchain.android.ui.home
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.kyc.models.nabu.Tiers
+import com.blockchain.swap.nabu.models.nabu.NabuUser
+import com.blockchain.swap.nabu.models.nabu.Tiers
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import piuk.blockchain.android.campaign.SunriverCampaignRegistration
@@ -11,9 +10,10 @@ import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
 import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
@@ -86,7 +86,9 @@ class MainPresenterTest {
     private val abTesting: ABTestExperiment = mock()
 
     private val nabuToken: NabuToken = mock {
-        on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+        on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse(
+            "",
+            ""))
     }
 
     private val userTierZero: NabuUser = mock {

@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.kyc.status
 
 import piuk.blockchain.android.ui.kyc.BaseKycPresenter
-import com.blockchain.kyc.models.nabu.Kyc2TierState
-import com.blockchain.kyc.models.nabu.KycState
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
+import com.blockchain.swap.nabu.models.nabu.KycState
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.notifications.NotificationTokenManager

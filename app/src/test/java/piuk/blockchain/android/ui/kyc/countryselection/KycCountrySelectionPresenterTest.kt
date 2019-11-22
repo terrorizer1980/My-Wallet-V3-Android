@@ -1,10 +1,10 @@
 package piuk.blockchain.android.ui.kyc.countryselection
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuCountryResponse
-import com.blockchain.kyc.models.nabu.NabuStateResponse
-import com.blockchain.kyc.models.nabu.Scope
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.NabuCountryResponse
+import com.blockchain.swap.nabu.models.nabu.NabuStateResponse
+import com.blockchain.swap.nabu.models.nabu.Scope
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever

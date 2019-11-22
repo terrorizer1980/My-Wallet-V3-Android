@@ -7,7 +7,7 @@ import android.support.constraint.ConstraintSet
 import android.support.v7.app.AlertDialog
 import com.blockchain.activities.StartSwap
 import com.blockchain.extensions.px
-import com.blockchain.kyc.models.nabu.KycState
+import com.blockchain.swap.nabu.models.nabu.KycState
 import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent

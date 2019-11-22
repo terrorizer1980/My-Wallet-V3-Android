@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.kyc.reentry
 
 import androidx.navigation.NavDirections
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuUser
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.NabuUser
 import piuk.blockchain.android.ui.kyc.navhost.toProfileModel
 import com.blockchain.swap.nabu.NabuToken
 import io.reactivex.Single

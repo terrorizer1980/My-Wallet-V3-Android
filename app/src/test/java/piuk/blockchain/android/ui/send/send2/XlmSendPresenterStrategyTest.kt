@@ -2,13 +2,13 @@ package piuk.blockchain.android.ui.send.send2
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.fees.FeeType
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuApiException
-import com.blockchain.kyc.models.nabu.NabuErrorCodes
-import com.blockchain.kyc.models.nabu.SendToMercuryAddressResponse
-import com.blockchain.kyc.models.nabu.State
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.NabuApiException
+import com.blockchain.swap.nabu.models.nabu.NabuErrorCodes
+import com.blockchain.swap.nabu.models.nabu.SendToMercuryAddressResponse
+import com.blockchain.swap.nabu.models.nabu.State
 import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.XlmFeesFetcher
 import com.blockchain.testutils.lumens
@@ -88,7 +88,9 @@ class XlmSendPresenterStrategyTest {
 
     private val nabuToken: NabuToken =
         mock {
-            on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+            on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse(
+                "",
+                ""))
         }
 
     private val stringUtils: StringUtils =

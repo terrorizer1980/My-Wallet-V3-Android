@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
 import android.support.annotation.VisibleForTesting
-import com.blockchain.kyc.models.nabu.Kyc2TierState
-import com.blockchain.kyc.services.nabu.TierService
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import com.blockchain.remoteconfig.FeatureFlag
+import com.blockchain.swap.nabu.service.TierService
 import piuk.blockchain.androidbuysell.api.CoinifyWalletService
 import io.reactivex.Single
 import piuk.blockchain.android.R

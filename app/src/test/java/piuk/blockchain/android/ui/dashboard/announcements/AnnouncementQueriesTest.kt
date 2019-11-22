@@ -1,12 +1,12 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.KycTierState
-import com.blockchain.kyc.models.nabu.LimitsJson
-import com.blockchain.kyc.models.nabu.TierJson
-import com.blockchain.kyc.models.nabu.TiersJson
-import com.blockchain.kyc.services.nabu.TierService
+import com.blockchain.swap.nabu.models.nabu.KycTierState
+import com.blockchain.swap.nabu.models.nabu.LimitsJson
+import com.blockchain.swap.nabu.models.nabu.TierJson
+import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.service.TierService
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Single
 import org.amshove.kluent.mock

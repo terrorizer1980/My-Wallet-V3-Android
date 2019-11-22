@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.kyc.address
 
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.EthEligibility
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import io.reactivex.Single
 
 class EligibilityForFreeEthAdapter(

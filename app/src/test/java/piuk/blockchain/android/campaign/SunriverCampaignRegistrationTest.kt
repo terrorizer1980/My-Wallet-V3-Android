@@ -1,14 +1,14 @@
 package piuk.blockchain.android.campaign
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.CampaignData
-import com.blockchain.kyc.models.nabu.KycState
-import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
-import com.blockchain.kyc.models.nabu.UserState
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.CampaignData
+import com.blockchain.swap.nabu.models.nabu.KycState
+import com.blockchain.swap.nabu.models.nabu.RegisterCampaignRequest
+import com.blockchain.swap.nabu.models.nabu.UserState
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify

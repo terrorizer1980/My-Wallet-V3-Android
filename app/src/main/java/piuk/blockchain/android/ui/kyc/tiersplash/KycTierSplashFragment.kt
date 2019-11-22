@@ -14,9 +14,9 @@ import android.widget.TextView
 import androidx.navigation.NavDirections
 import com.blockchain.activities.StartSwap
 import com.blockchain.balance.setImageDrawable
-import com.blockchain.kyc.models.nabu.KycTierState
-import com.blockchain.kyc.models.nabu.TierJson
-import com.blockchain.kyc.models.nabu.TiersJson
+import com.blockchain.swap.nabu.models.nabu.KycTierState
+import com.blockchain.swap.nabu.models.nabu.TierJson
+import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.hyperlinks.renderSingleLink
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener

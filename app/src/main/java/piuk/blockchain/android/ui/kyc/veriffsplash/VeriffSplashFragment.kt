@@ -15,7 +15,7 @@ import android.view.ViewGroup
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.activities.StartSwap
-import com.blockchain.kyc.models.nabu.SupportedDocuments
+import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import com.blockchain.notifications.analytics.AnalyticsEvents

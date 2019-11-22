@@ -230,7 +230,7 @@ androidExtensions {
 dependencies {
     implementation project(':coreui')
     implementation project(':notifications')
-    implementation project(':kyc')
+    implementation project(':nabu')
     implementation project(':swap')
     implementation project(':sunriver')
     implementation project(':lockbox')
@@ -238,7 +238,6 @@ dependencies {
     api project(':buysell')
     api project(':coreui')
     api project(':notifications')
-    api project(':nabu')
     implementation project(':veriff')
 
     implementation Libraries.multidex

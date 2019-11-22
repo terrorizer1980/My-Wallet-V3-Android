@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
 import android.support.annotation.VisibleForTesting
-import com.blockchain.kyc.status.KycTiersQueries
+import com.blockchain.swap.nabu.status.KycTiersQueries
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.SunriverCampaignRegistration
 import piuk.blockchain.android.campaign.SunriverCardType
