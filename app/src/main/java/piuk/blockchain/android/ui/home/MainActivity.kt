@@ -28,7 +28,6 @@ import com.blockchain.annotations.CommonCode
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.lockbox.ui.LockboxLandingActivity
-import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.RequestAnalyticsEvents
@@ -48,7 +47,6 @@ import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.account.AccountActivity
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.buysell.launcher.BuySellLauncherActivity
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
@@ -66,8 +64,8 @@ import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
-import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.android.ui.home.analytics.SideNavEvent
 import piuk.blockchain.android.ui.onboarding.OnboardingActivity
 import piuk.blockchain.android.ui.tour.BuySellTourFragment
@@ -75,6 +73,7 @@ import piuk.blockchain.android.ui.tour.IntroTourAnalyticsEvent
 import piuk.blockchain.android.ui.tour.IntroTourHost
 import piuk.blockchain.android.ui.tour.IntroTourStep
 import piuk.blockchain.android.ui.tour.SwapTourFragment
+import piuk.blockchain.android.ui.transactions.TransactionsFragment
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.AppUtil
@@ -83,21 +82,21 @@ import piuk.blockchain.androidcoreui.utils.ViewUtils
 import timber.log.Timber
 import java.util.ArrayList
 
-class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
+class MainActivity : MvpActivity<MainView, MainPresenter>(),
     HomeNavigator,
     MainView,
     IntroTourHost,
     ConfirmPaymentDialog.OnConfirmDialogInteractionListener {
+
+    override val presenter: MainPresenter by inject()
+    override val view: MainView = this
 
     var drawerOpen = false
         internal set
 
     private var handlingResult = false
 
-    private val mainPresenter: MainPresenter by inject()
-
     private val appUtil: AppUtil by inject()
-    private val analytics: Analytics by inject()
 
     private var progressDlg: MaterialProgressDialog? = null
     private var backPressed: Long = 0
@@ -187,9 +186,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
         toolbar_general.title = ""
         setSupportActionBar(toolbar_general)
 
-        // Notify Presenter that page is setup
-        onViewReady()
-
         // Styling
         bottom_navigation.apply {
             addItems(toolbarNavigationItems())
@@ -254,10 +250,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
         ) {
             val strResult = data.getStringExtra(CaptureActivity.SCAN_RESULT)
             handlePredefinedInput(strResult, false)
-        } else if (requestCode == SETTINGS_EDIT ||
-            requestCode == ACCOUNT_EDIT ||
-            requestCode == KYC_STARTED
-        ) {
+        } else if (requestCode == SETTINGS_EDIT || requestCode == ACCOUNT_EDIT || requestCode == KYC_STARTED) {
             replaceContentFragment(DashboardFragment.newInstance())
             // Reset state in case of changing currency etc
             bottom_navigation.currentItem = ITEM_HOME
@@ -281,7 +274,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
                 drawer_layout.closeDrawers()
                 true
             }
-            f is BalanceFragment -> f.onBackPressed()
+            f is TransactionsFragment -> f.onBackPressed()
             f is SendFragment -> f.onBackPressed()
             f is ReceiveFragment -> f.onBackPressed()
             f is DashboardFragment -> f.onBackPressed()
@@ -389,10 +382,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
         when (menuItem.itemId) {
             R.id.nav_lockbox -> LockboxLandingActivity.start(this)
             R.id.nav_backup -> launchBackupFunds()
-            R.id.nav_exchange_homebrew_debug -> HomebrewNavHostActivity.start(
-                this,
-                mainPresenter.defaultCurrency
-            )
+            R.id.nav_exchange_homebrew_debug -> HomebrewNavHostActivity.start(this, presenter.defaultCurrency)
             R.id.nav_the_pit -> presenter.onThePitMenuClicked()
             R.id.nav_addresses -> startActivityForResult(Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
             R.id.nav_buy -> presenter.routeToBuySell()
@@ -471,7 +461,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
         with(bottom_navigation) {
             when (currentFragment) {
                 is DashboardFragment -> currentItem = ITEM_HOME
-                is BalanceFragment -> currentItem = ITEM_ACTIVITY
+                is TransactionsFragment -> currentItem = ITEM_ACTIVITY
                 is SendFragment -> currentItem = ITEM_SEND
                 is ReceiveFragment -> currentItem = ITEM_RECEIVE
             }
@@ -543,7 +533,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
 
     @ButWhy("What does this really do? Who calls it?")
     override fun refreshDashboard() {
-        replaceContentFragment(DashboardFragment.newInstance())
+//        replaceContentFragment(DashboardFragment.newInstance())
     }
 
     @CommonCode("Move to base")
@@ -588,7 +578,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
                 startBalanceFragment()
                 // Show transaction detail
                 val bundle = Bundle()
-                bundle.putString(BalanceFragment.KEY_TRANSACTION_HASH, txHash)
+                bundle.putString(TransactionsFragment.KEY_TRANSACTION_HASH, txHash)
                 TransactionDetailActivity.start(this, bundle)
             }.show()
     }
@@ -646,9 +636,6 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
             bottom_navigation.disableItemAtPosition(ITEM_SWAP)
         }
     }
-
-    override fun createPresenter() = mainPresenter
-    override fun getView() = this
 
     override fun showSecondPasswordDialog() {
         val editText = AppCompatEditText(this)
@@ -750,7 +737,7 @@ class MainActivity : BaseMvpActivity<MainView, MainPresenter>(),
     }
 
     override fun startBalanceFragment() {
-        val fragment = BalanceFragment.newInstance(true)
+        val fragment = TransactionsFragment.newInstance(true)
         replaceContentFragment(fragment)
         toolbar_general.title = ""
     }

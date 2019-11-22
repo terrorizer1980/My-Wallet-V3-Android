@@ -145,7 +145,7 @@ class MainPresenterTest {
             crashLogger
         )
 
-        subject.initView(view)
+        subject.attachView(view)
     }
 
     @Test

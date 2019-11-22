@@ -8,7 +8,6 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
-import piuk.blockchain.android.ui.dashboard.DashboardPresenter
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
@@ -62,7 +61,6 @@ class LogoutActivity : AppCompatActivity() {
         shapeShiftDataManager.clearShapeShiftData()
         coinifyDataManager.clearAccessToken()
         nabuDataManager.clearAccessToken()
-        DashboardPresenter.onLogout()
 
         buyConditions.wipe()
         walletOptionsState.wipe()

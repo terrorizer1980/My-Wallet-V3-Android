@@ -9,10 +9,9 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
-import piuk.blockchain.android.ui.send.external.BaseSendView
+import piuk.blockchain.android.ui.base.MvpView
 
-interface SendView : BaseSendView {
+interface SendView : MvpView {
 
     fun setSelectedCurrency(cryptoCurrency: CryptoCurrency)
 
@@ -151,22 +150,4 @@ interface SendView : BaseSendView {
     fun updateRequiredLabelVisibility(isVisible: Boolean)
 
     fun isPitEnabled(enabled: Boolean)
-}
-
-internal fun SendConfirmationDetails.toPaymentConfirmationDetails(): PaymentConfirmationDetails {
-    return PaymentConfirmationDetails().also {
-        it.fromLabel = from.label
-        it.toLabel = if (toLabel.isBlank()) to else toLabel
-
-        it.cryptoUnit = amount.symbol()
-        it.cryptoAmount = amount.toStringWithoutSymbol()
-        it.cryptoFee = fees.toStringWithoutSymbol()
-        it.cryptoTotal = total.toStringWithoutSymbol()
-
-        it.fiatUnit = fiatAmount.currencyCode
-        it.fiatSymbol = fiatAmount.symbol()
-        it.fiatAmount = fiatAmount.toStringWithoutSymbol()
-        it.fiatFee = fiatFees.toStringWithoutSymbol()
-        it.fiatTotal = fiatTotal.toStringWithoutSymbol()
-    }
 }

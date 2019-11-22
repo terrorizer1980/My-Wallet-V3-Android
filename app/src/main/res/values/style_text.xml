@@ -17,6 +17,10 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="Text.Standard.20">
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <style name="Text.Standard.24">
         <item name="android:textSize">24sp</item>
     </style>
@@ -37,6 +41,18 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="Text.Light">-->
+        <item name="android:textColor">@color/grey_400</item>
+    </style>
+
+    <style name="Text.Light.14">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Text.Light.16">
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="Text.Standard.Centered.20">
         <item name="android:textSize">20sp</item>
     </style>
@@ -51,6 +67,10 @@
 
     <style name="Text.Semibold.20">
         <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Text.Semibold.16">
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="Text.Semibold.Centered">
@@ -92,4 +112,20 @@
         <item name="android:layout_marginEnd">48dp</item>
         <item name="android:layout_marginTop">11dp</item>
     </style>
+
+    <style name="AnnounceTitle" parent="BaseTextStyle">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/grey_800</item>
+        <item name="android:lineSpacingExtra">0sp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="AnnounceBody" parent="BaseTextStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/grey_600</item>
+        <item name="android:lineSpacingExtra">7sp</item>
+        <item name="android:gravity">top</item>
+        <item name="android:translationY">-3.53sp</item>
+    </style>
+
 </resources>

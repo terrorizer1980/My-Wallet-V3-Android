@@ -256,6 +256,7 @@ dependencies {
     implementation Libraries.circleIndicator
     implementation Libraries.charts
     implementation Libraries.gson
+    implementation Libraries.sparkline
 
     // Google core
     implementation Libraries.googlePlayCore
@@ -263,6 +264,8 @@ dependencies {
     api Libraries.appCompat
     implementation Libraries.navigationControllerCore
     implementation Libraries.navigationControllerFragments
+
+//    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 
     api Libraries.lifecycleViewModel
     api Libraries.lifecycleExtensions
@@ -284,6 +287,8 @@ dependencies {
     implementation Libraries.navigationControllerFragments
     // RxJava
     implementation Libraries.rxReplayShare
+    implementation Libraries.rxRelay
+
     // Custom Views
     implementation Libraries.materialDatePicker
 

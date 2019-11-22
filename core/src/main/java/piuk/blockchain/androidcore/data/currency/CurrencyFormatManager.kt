@@ -1,6 +1,7 @@
 package piuk.blockchain.androidcore.data.currency
 
 import android.support.annotation.VisibleForTesting
+import com.blockchain.extensions.exhaustive
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -119,7 +120,7 @@ class CurrencyFormatManager(
                 CryptoCurrency.XLM -> throw IllegalArgumentException("XLM formatting should be done via CryptoValue.")
                 CryptoCurrency.PAX -> throw IllegalArgumentException("PAX formatting should be done via CryptoValue.")
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            }
+            }.exhaustive
         }
     }
 
@@ -178,15 +179,6 @@ class CurrencyFormatManager(
         return currencyFormatUtil.formatFiat(FiatValue.fromMajor(fiatUnit, fiatBalance))
     }
 
-    fun getFormattedFiatValueFromEthValue(
-        coinValue: BigDecimal,
-        convertEthDenomination: ETHDenomination? = null
-    ): String {
-        val fiatUnit = fiatCountryCode
-        val fiatBalance = getFiatValueFromEth(coinValue, convertEthDenomination)
-        return currencyFormatUtil.formatFiat(FiatValue.fromMajor(fiatUnit, fiatBalance))
-    }
-
     fun getFormattedFiatValueFromSelectedCoinValueWithSymbol(
         coinValue: BigDecimal,
         convertEthDenomination: ETHDenomination? = null,
@@ -198,50 +190,13 @@ class CurrencyFormatManager(
             convertEthDenomination,
             convertBtcDenomination
         )
-        return currencyFormatUtil.formatFiatWithSymbol(fiatBalance.toDouble(), fiatUnit, locale)
-    }
-
-    fun getFormattedFiatValueFromBchValueWithSymbol(
-        coinValue: BigDecimal,
-        convertBtcDenomination: BTCDenomination? = null
-    ): String {
-        val fiatBalance = getFiatValueFromBch(coinValue, convertBtcDenomination)
         return currencyFormatUtil.formatFiatWithSymbol(
-            FiatValue.fromMajor(fiatCountryCode, fiatBalance),
-            locale
+            FiatValue.fromMajor(
+                fiatUnit,
+                fiatBalance.toDouble().toBigDecimal()
+            ), locale
         )
     }
-
-    fun getFormattedFiatValueFromBtcValueWithSymbol(
-        coinValue: BigDecimal,
-        convertBtcDenomination: BTCDenomination? = null
-    ): String {
-        val fiatBalance = getFiatValueFromBtc(coinValue, convertBtcDenomination)
-        return currencyFormatUtil.formatFiatWithSymbol(
-            FiatValue.fromMajor(fiatCountryCode, fiatBalance),
-            locale
-        )
-    }
-
-    fun getFormattedFiatValueFromEthValueWithSymbol(
-        coinValue: BigDecimal,
-        convertEthDenomination: ETHDenomination? = null
-    ): String {
-        val fiatUnit = fiatCountryCode
-        val fiatBalance = getFiatValueFromEth(coinValue, convertEthDenomination)
-        return currencyFormatUtil.formatFiatWithSymbol(fiatBalance.toDouble(), fiatUnit, locale)
-    }
-
-    /**
-     * Accepts a [Double] value in fiat currency and returns a [String] formatted to the region
-     * with the correct currency symbol. For example, 1.2345 with country code "USD" and locale
-     * [Locale.UK] would return "US$1.23".
-     *
-     * @param amount The amount of fiat currency to be formatted as a [Double]
-     * @return The formatted currency [String]
-     */
-    fun getFormattedFiatValueWithSymbol(amount: Double): String =
-        currencyFormatUtil.formatFiatWithSymbol(amount, fiatCountryCode, locale)
 
     /**
      * Accepts a [Double] value in fiat currency and returns a [String] formatted to the region
@@ -257,7 +212,12 @@ class CurrencyFormatManager(
         amount: Double,
         currencyCode: String,
         locale: Locale
-    ): String = currencyFormatUtil.formatFiatWithSymbol(amount, currencyCode, locale)
+    ): String = currencyFormatUtil.formatFiatWithSymbol(
+        FiatValue.fromMajor(
+            currencyCode,
+            amount.toBigDecimal()
+        ), locale
+    )
     // endregion
 
     // region Coin specific methods
@@ -326,27 +286,7 @@ class CurrencyFormatManager(
             else -> coinValue.divide(BTC_DEC.toBigDecimal(), 8, RoundingMode.HALF_UP)
         }
 
-        return currencyFormatUtil.formatBch(value)
-    }
-
-    /**
-     * Returns formatted string of supplied coin value.
-     * (ie 1,000.00 ETH, 0.0001 ETH)
-     *
-     * @param coinValue Value of the coin
-     * @param coinDenomination Denomination of the coinValue supplied
-     * @return ETH decimal formatted amount with appended ETH unit
-     */
-    fun getFormattedEthShortValueWithUnit(
-        coinValue: BigDecimal,
-        coinDenomination: ETHDenomination
-    ): String {
-        val value = when (coinDenomination) {
-            ETHDenomination.ETH -> coinValue
-            else -> coinValue.divide(ETH_DEC.toBigDecimal(), 18, RoundingMode.HALF_UP)
-        }
-
-        return currencyFormatUtil.formatEthShortWithUnit(value)
+        return CryptoValue.bitcoinCashFromMajor(value).format()
     }
 
     /**
@@ -364,7 +304,7 @@ class CurrencyFormatManager(
             else -> coinValue.divide(ETH_DEC.toBigDecimal(), 18, RoundingMode.HALF_UP)
         }
 
-        return currencyFormatUtil.formatEth(value)
+        return CryptoValue.etherFromMajor(value).format(precision = FormatPrecision.Full)
     }
     // endregion
 

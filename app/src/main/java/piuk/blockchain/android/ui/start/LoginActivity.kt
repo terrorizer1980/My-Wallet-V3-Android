@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.blockchain.notifications.analytics.Analytics
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
@@ -28,7 +27,6 @@ class LoginActivity : MvpActivity<LoginView, LoginPresenter>(), LoginView {
     override val view: LoginView = this
 
     private val appUtil: AppUtil by inject()
-    private val analytics: Analytics by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

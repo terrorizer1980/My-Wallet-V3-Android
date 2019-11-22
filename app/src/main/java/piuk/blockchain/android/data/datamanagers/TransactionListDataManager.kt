@@ -4,7 +4,6 @@ import com.blockchain.balance.AsyncBalanceReporter
 import com.blockchain.balance.TotalBalance
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.balance.adapters.toAsyncBalanceReporter
-import info.blockchain.balance.AccountKey
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.payload.PayloadManager
@@ -31,6 +30,30 @@ import piuk.blockchain.androidcore.data.transactions.models.EthDisplayable
 import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
 import java.util.ArrayList
 import java.util.HashMap
+
+@Deprecated("Use CoinCore")
+private sealed class AccountKey {
+
+    /**
+     * Represents your entire wallet
+     */
+    object EntireWallet : AccountKey()
+
+    /**
+     * Represents the watch only part of your wallet
+     */
+    object WatchOnly : AccountKey()
+
+    /**
+     * Represents just the imported addresses
+     */
+    object OnlyImported : AccountKey()
+
+    /**
+     * Represents just a single [address] within your wallet
+     */
+    class SingleAddress(val address: String) : AccountKey()
+}
 
 class TransactionListDataManager(
     private val payloadManager: PayloadManager,
@@ -141,10 +164,11 @@ class TransactionListDataManager(
         ItemAccount.TYPE.SINGLE_ACCOUNT -> payloadManager.getAddressBalance(itemAccount.address).toLong()
     }
 
+    @Deprecated("Use CoinCore")
     override fun totalBalance(cryptoCurrency: CryptoCurrency) =
         Singles.zip(
-            asyncBalance(AccountKey.EntireWallet(cryptoCurrency)),
-            asyncBalance(AccountKey.WatchOnly(cryptoCurrency))
+            asyncBalance(cryptoCurrency, AccountKey.EntireWallet),
+            asyncBalance(cryptoCurrency, AccountKey.WatchOnly)
         ).map { (spendable, watchonly) ->
             TotalBalance.Balance(
                 spendable = spendable,
@@ -159,8 +183,8 @@ class TransactionListDataManager(
      * @param accountKey [AccountKey]
      * @return A value as a [CryptoValue] that matches the [CryptoCurrency] and specifications of the [accountKey].
      */
-    private fun asyncBalance(accountKey: AccountKey): Single<CryptoValue> =
-        accountKey.currency.toBalanceReporterAsync().let {
+    private fun asyncBalance(cryptoCurrency: CryptoCurrency, accountKey: AccountKey): Single<CryptoValue> =
+        cryptoCurrency.toBalanceReporterAsync().let {
             when (accountKey) {
                 is AccountKey.EntireWallet -> it.entireBalance()
                 is AccountKey.WatchOnly -> it.watchOnlyBalance()

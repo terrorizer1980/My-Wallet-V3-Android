@@ -77,6 +77,8 @@ enum class CryptoCurrency(
         fun fromSymbolOrThrow(symbol: String?): CryptoCurrency =
             fromSymbol(symbol) ?: throw IllegalArgumentException("Bad currency symbol \"$symbol\"")
 
+        fun activeCurrencies(): List<CryptoCurrency> = values().filter { !it.hasFeature(STUB_ASSET) }
+
         const val PRICE_CHARTING = 0x00000001L
         const val MULTI_WALLET = 0x00000002L
         const val STUB_ASSET = 0x10000000L

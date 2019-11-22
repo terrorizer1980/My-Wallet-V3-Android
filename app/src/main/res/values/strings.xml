@@ -52,7 +52,7 @@
     <string name="MOVED">Transferred</string>
     <string name="edit_transaction_hint">Edit transaction description</string>
     <string name="pie_chart_content">pie chart</string>
-    
+
     <string name="paid">Paid</string>
 
     <string name="payment_request">Payment Request</string>
@@ -307,7 +307,7 @@
     <string name="upgrade_page_1">Simplified backup and recovery.</string>
     <string name="upgrade_page_2">Enhanced privacy through hierarchical deterministic addresses.
     </string>
-    <!--<string name="confirm_upgrade_info">The upgrade takes just a second and your Bitcoin and history will be safe. Here is what’s better:\n\n✓ Completely updated design and user experience\n✓ Robust security center\n✓ Enhanced Privacy\n✓ Simplified backup and recovery\n✓ Customized fund management\n\nOne advanced transaction type (Shared Coin) is not supported in the new version at this time.</string>-->
+
     <string name="upgrade_page_3">Customize the way you organize your Bitcoin in your Blockchain
         Wallet.
     </string>
@@ -935,6 +935,8 @@
     <string name="metadata_load_failure">Error loading full wallet functionality. Service might
         temporarily be unavailable.
     </string>
+    <string name="dashboard_balance_for_asset">Your %1$s Balance</string>
+
 
     <!-- KV STORE -->
     <string name="more">More</string>
@@ -1767,6 +1769,7 @@
 
     <!-- Blockstack airdrop share message -->
     <string name ="stacks_airdrop_share_msg">Hey! I just secured my spot for Blockchain\'s latest airdrop with Blockstack. Sign up and get verified to get free Stacks!</string>
+
     <!-- KYC Tiers -->
     <string name="tier_1">TIER 1</string>
     <string name="tier_2">TIER 2</string>
@@ -1821,6 +1824,8 @@
     <string name="tour_step_five_body">Buy Bitcoin with your credit card or bank account to kickstart your crypto portfolio.</string>
 
     <string name="tour_step_five_btn">Done</string>
+    <string name="dashboard_total_balance">Total Balance</string>
+    <string name="asset_card_rate_period">24hrs</string>
     <string-array name="mnemonic_word_requests">
         <item>first word</item>
         <item>second word</item>

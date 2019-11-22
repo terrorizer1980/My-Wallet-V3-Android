@@ -64,6 +64,12 @@ data class FiatValue private constructor(
         return FiatValue(currencyCode, value + other.value)
     }
 
+    operator fun minus(other: FiatValue): FiatValue {
+        if (currencyCode != other.currencyCode)
+            throw ValueTypeMismatchException("subtract", currencyCode, other.currencyCode)
+        return FiatValue(currencyCode, value - other.value)
+    }
+
     override fun symbol(locale: Locale): String = Currency.getInstance(currencyCode).getSymbol(locale)
 
     override fun toZero(): FiatValue = fromMajor(currencyCode, BigDecimal.ZERO)
@@ -105,4 +111,31 @@ private fun ensureComparable(a: String, b: String) {
 operator fun FiatValue.compareTo(b: FiatValue): Int {
     ensureComparable(currencyCode, b.currencyCode)
     return valueMinor.compareTo(b.valueMinor)
+}
+
+fun FiatValue?.percentageDelta(previous: FiatValue?): Double =
+    if (this != null && previous != null && !previous.isZero) {
+        val current = this.toBigDecimal()
+        val prev = previous.toBigDecimal()
+
+        (current - prev)
+            .divide(prev, 4, RoundingMode.HALF_EVEN)
+            .movePointRight(2)
+            .toDouble()
+    } else {
+        Double.NaN
+    }
+
+fun FiatValue?.toFloat(): Float =
+    this?.toBigDecimal()?.toFloat() ?: 0.0f
+
+fun CryptoValue.toFiat(price: FiatValue) =
+    FiatValue.fromMajor(price.currencyCode, price.toBigDecimal() * toBigDecimal())
+
+fun Iterable<FiatValue>.sum(): FiatValue? {
+    if (!iterator().hasNext()) return null
+    var total = FiatValue.zero(first().currencyCode)
+    this.forEach { total += it }
+
+    return total
 }

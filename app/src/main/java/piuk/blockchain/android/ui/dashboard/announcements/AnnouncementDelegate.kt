@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import kotlinx.android.synthetic.main.item_announcement_standard.view.*
+import kotlinx.android.synthetic.main.item_dashboard_announcement_card.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -98,7 +98,7 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         AnnouncementViewHolder(
-            parent.inflate(R.layout.item_announcement_standard)
+            parent.inflate(R.layout.item_dashboard_announcement_card)
         )
 
     private class AnnouncementViewHolder internal constructor(

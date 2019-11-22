@@ -466,9 +466,9 @@ class PinEntryPresenter(
     @SuppressLint("CheckResult")
     fun fetchInfoMessage() {
         compositeDisposable += mobileNoticeRemoteConfig.mobileNoticeDialog()
-            .subscribeBy(onError = { Timber.e(it) }, onSuccess = {
-                view.showMobileNotice(it)
-            })
+            .subscribeBy(
+                onError = { Timber.e(it) },
+                onSuccess = { view.showMobileNotice(it) })
     }
 
     @SuppressLint("CheckResult")

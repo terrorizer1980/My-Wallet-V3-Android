@@ -6,8 +6,8 @@ object Versions {
     const val minSdk = 21
     const val targetSdk = 28
     const val compileSdk = 27
-    const val versionCode = 490
-    const val versionName = "6.29.6"
+    const val versionCode = 491
+    const val versionName = "6.30.0"
     const val buildTools = "28.0.3"
 
     // Build tools and languages
@@ -49,6 +49,7 @@ object Versions {
     const val rxBinding = "2.1.1"
     const val rxReplayShare = "2.0.1"
     const val rxFingerprint = "2.2.1"
+    const val rxRelay = "2.1.1"
 
     // Utils, Ethereum
     const val web3j = "3.3.1-android"
@@ -68,7 +69,7 @@ object Versions {
     const val dexter = "5.0.0"
 
     // Custom Views
-    const val charts = "3.0.3"
+    const val charts = "3.1.0"
     const val circleIndicator = "1.2.2"
     const val bottomNav = "2.2.0"
     const val countryPicker = "1.1.7"
@@ -79,6 +80,7 @@ object Versions {
     const val wheelPicker = "1.1.2"
     const val konfetti = "1.1.3"
     const val materialDatePicker = "3.6.4"
+    const val sparkline = "1.2.0"
 
     // Third Party SDKs
     const val veriff = "2.4.7"
@@ -147,10 +149,8 @@ object Libraries {
 
     // Networking, RxJava
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
-    const val retrofitJacksonConverter =
-        "com.squareup.retrofit2:converter-jackson:${Versions.retrofit}"
-    const val retrofitRxMoshiConverter =
-        "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
+    const val retrofitJacksonConverter = "com.squareup.retrofit2:converter-jackson:${Versions.retrofit}"
+    const val retrofitRxMoshiConverter = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
     const val retrofitRxJavaAdapter = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
     const val retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:2.5.0"
     const val okHttp = "com.squareup.okhttp3:okhttp:${Versions.okHttp}"
@@ -173,6 +173,7 @@ object Libraries {
     const val rxBindingV4 = "com.jakewharton.rxbinding2:rxbinding-support-v4-kotlin:${Versions.rxBinding}"
     const val rxBindingV7 = "com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:${Versions.rxBinding}"
     const val rxReplayShare = "com.jakewharton.rx2:replaying-share-kotlin:${Versions.rxReplayShare}"
+    const val rxRelay = "com.jakewharton.rxrelay2:rxrelay:${Versions.rxRelay}"
     const val rxFingerprint = "com.mtramin:rxfingerprint:${Versions.rxFingerprint}"
 
     // Utils, Ethereum
@@ -202,6 +203,7 @@ object Libraries {
     const val wheelPicker = "cn.aigestudio.wheelpicker:WheelPicker:${Versions.wheelPicker}"
     const val konfetti = "nl.dionsegijn:konfetti:${Versions.konfetti}"
     const val materialDatePicker = "com.wdullaer:materialdatetimepicker:${Versions.materialDatePicker}"
+    const val sparkline = "com.robinhood.spark:spark:${Versions.sparkline}"
 
     // Third Party SDKs
     const val veriff = "com.veriff:veriff-library:${Versions.veriff}"

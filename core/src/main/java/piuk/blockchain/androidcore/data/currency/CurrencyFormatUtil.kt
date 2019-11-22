@@ -20,27 +20,8 @@ class CurrencyFormatUtil {
     fun formatFiatWithSymbol(fiatValue: FiatValue, locale: Locale) =
         fiatValue.toStringWithSymbol(locale)
 
-    @Deprecated(
-        "", replaceWith =
-        ReplaceWith("formatFiatWithSymbol(FiatValue.fromMajor(currencyCode, fiatValue.toBigDecimal()), locale)")
-    )
-    fun formatFiatWithSymbol(fiatValue: Double, currencyCode: String, locale: Locale) =
-        formatFiatWithSymbol(FiatValue.fromMajor(currencyCode, fiatValue.toBigDecimal()), locale)
-
     fun getFiatSymbol(currencyCode: String, locale: Locale): String =
         Currency.getInstance(currencyCode).getSymbol(locale)
-
-    @Deprecated("Use format", replaceWith = ReplaceWith("CryptoValue.bitcoinFromMajor(btc).format()"))
-    fun formatBtc(btc: BigDecimal): String = format(CryptoValue.bitcoinFromMajor(btc))
-
-    @Deprecated("Use format", replaceWith = ReplaceWith("CryptoValue.bitcoinFromSatoshis(satoshi).format()"))
-    fun formatSatoshi(satoshi: Long): String = format(CryptoValue.bitcoinFromSatoshis(satoshi))
-
-    @Deprecated("Use format", replaceWith = ReplaceWith("CryptoValue.bitcoinCashFromMajor(bch).format()"))
-    fun formatBch(bch: BigDecimal): String = format(CryptoValue.bitcoinCashFromMajor(bch))
-
-    @Deprecated("Use format", replaceWith = ReplaceWith("CryptoValue.etherFromMajor(eth).format(FormatPrecision.Full)"))
-    fun formatEth(eth: BigDecimal): String = format(CryptoValue.etherFromMajor(eth), FormatPrecision.Full)
 
     @Deprecated("Use format", replaceWith = ReplaceWith("cryptoValue.format(displayMode)"))
     fun format(cryptoValue: CryptoValue, displayMode: FormatPrecision = FormatPrecision.Short): String =
@@ -58,16 +39,4 @@ class CurrencyFormatUtil {
         replaceWith = ReplaceWith("formatWithUnit(CryptoValue.bitcoinCashFromMajor(bch))")
     )
     fun formatBchWithUnit(bch: BigDecimal) = formatWithUnit(CryptoValue.bitcoinCashFromMajor(bch))
-
-    @Deprecated(
-        "Use formatWithUnit",
-        replaceWith = ReplaceWith("formatWithUnit(CryptoValue.etherFromMajor(eth), FormatPrecision.Full)")
-    )
-    fun formatEthWithUnit(eth: BigDecimal) = formatWithUnit(CryptoValue.etherFromMajor(eth), FormatPrecision.Full)
-
-    @Deprecated(
-        "Use formatWithUnit",
-        replaceWith = ReplaceWith("formatWithUnit(CryptoValue.etherFromMajor(eth), FormatPrecision.Short)")
-    )
-    fun formatEthShortWithUnit(eth: BigDecimal) = formatWithUnit(CryptoValue.etherFromMajor(eth), FormatPrecision.Short)
 }

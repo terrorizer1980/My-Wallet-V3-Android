@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.annotation.StringRes
 import android.support.annotation.UiThread
+import android.support.design.widget.BottomSheetDialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.MotionEvent
 import android.view.WindowManager
 import com.blockchain.koin.injectActivity
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.preferences.SecurityPrefs
 import com.blockchain.ui.dialog.MaterialProgressDialog
 import com.blockchain.ui.password.SecondPasswordHandler
@@ -17,6 +19,7 @@ import piuk.blockchain.androidcore.data.access.LogoutTimer
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
+import java.util.Locale
 
 /**
  * A base Activity for all activities which need auth timeouts & screenshot prevention
@@ -26,6 +29,9 @@ abstract class BlockchainActivity : ToolBarActivity() {
 
     private val logoutTimer: LogoutTimer by inject()
     private val securityPrefs: SecurityPrefs by inject()
+
+    val analytics: Analytics by inject()
+    val locale: Locale by inject()
 
     protected val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
@@ -123,13 +129,13 @@ abstract class BlockchainActivity : ToolBarActivity() {
             .create()
 
     @UiThread
-    protected fun showAlert(dlg: AlertDialog) {
+    fun showAlert(dlg: AlertDialog) {
         alertDialog = dlg
         alertDialog?.show()
     }
 
     @UiThread
-    protected fun clearAlert() {
+    fun clearAlert() {
         alertDialog = null
     }
 
@@ -154,6 +160,10 @@ abstract class BlockchainActivity : ToolBarActivity() {
     fun updateProgressDialog(msg: String) {
         progressDialog?.setMessage(msg)
     }
+
+    @UiThread
+    fun showBottomSheet(bottomSheet: BottomSheetDialogFragment) =
+        bottomSheet.show(supportFragmentManager, "BOTTOM_DIALOG")
 }
 
 private fun MotionEvent.isObscuredTouch() = (flags and MotionEvent.FLAG_WINDOW_IS_OBSCURED != 0)

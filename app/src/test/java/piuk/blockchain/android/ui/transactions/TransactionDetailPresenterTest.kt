@@ -178,7 +178,8 @@ class TransactionDetailPresenterTest {
         whenever(transactionHelper.filterNonChangeAddresses(any())).thenReturn(pair)
         whenever(payloadDataManager.addressToLabel("addr1")).thenReturn("account1")
         whenever(payloadDataManager.addressToLabel("addr2")).thenReturn("account2")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any())).thenReturn(Single.just(1000.usd()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
+            .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_transferred))
             .thenReturn("Value when moved: ")
 
@@ -237,7 +238,7 @@ class TransactionDetailPresenterTest {
         whenever(transactionHelper.filterNonChangeAddresses(any())).thenReturn(pair)
         whenever(payloadDataManager.addressToLabel("addr1")).thenReturn("account1")
         whenever(payloadDataManager.addressToLabel("addr2")).thenReturn("account2")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_transferred))
             .thenReturn("Value when moved: ")
@@ -296,7 +297,7 @@ class TransactionDetailPresenterTest {
         outputs["addr2"] = BigInteger.valueOf(2000L)
         val pair = Pair.of(inputs, outputs)
         whenever(transactionHelper.filterNonChangeAddresses(any())).thenReturn(pair)
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")
@@ -352,7 +353,7 @@ class TransactionDetailPresenterTest {
             .thenReturn("Value when sent: ")
         whenever(xlmDataManager.defaultAccount())
             .thenReturn(Single.just(AccountReference.Xlm("My Lumens Wallet", "Account ID")))
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
 
         // Act
@@ -403,7 +404,7 @@ class TransactionDetailPresenterTest {
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")
         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
 
@@ -435,14 +436,14 @@ class TransactionDetailPresenterTest {
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(any())).thenReturn("Value when sent: ")
         // Act
         val observer = subject.getTransactionValueString("USD", displayable).test()
 
         // Assert
-        verify(exchangeRateFactory).getHistoricPrice(any(), any(), any())
+        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
         assertEquals("Value when sent: $1,000.00", observer.values()[0])
         observer.onComplete()
         observer.assertNoErrors()
@@ -455,13 +456,13 @@ class TransactionDetailPresenterTest {
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(any())).thenReturn("Value when received: ")
         // Act
         val observer = subject.getTransactionValueString("USD", displayable).test()
         // Assert
-        verify(exchangeRateFactory).getHistoricPrice(any(), any(), any())
+        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
         assertEquals("Value when received: $1,000.00", observer.values()[0])
         observer.onComplete()
         observer.assertNoErrors()
@@ -474,13 +475,13 @@ class TransactionDetailPresenterTest {
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(any())).thenReturn("Value when received: ")
         // Act
         val observer = subject.getTransactionValueString("USD", displayable).test()
         // Assert
-        verify(exchangeRateFactory).getHistoricPrice(any(), any(), any())
+        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
         assertEquals("Value when received: $1,000.00", observer.values()[0])
         observer.onComplete()
         observer.assertNoErrors()
@@ -493,14 +494,14 @@ class TransactionDetailPresenterTest {
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(any())).thenReturn("Value when transferred: ")
         whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         // Act
         val observer = subject.getTransactionValueString("USD", displayable).test()
         // Assert
-        verify(exchangeRateFactory).getHistoricPrice(any(), any(), any())
+        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
         assertEquals("Value when transferred: $1,000.00", observer.values()[0])
         observer.onComplete()
         observer.assertNoErrors()
@@ -810,7 +811,7 @@ class TransactionDetailPresenterTest {
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")
         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
 
@@ -848,7 +849,7 @@ class TransactionDetailPresenterTest {
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")
         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
 
@@ -885,7 +886,7 @@ class TransactionDetailPresenterTest {
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")
         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
 

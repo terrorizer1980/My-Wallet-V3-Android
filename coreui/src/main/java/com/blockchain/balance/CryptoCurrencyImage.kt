@@ -32,6 +32,10 @@ fun ImageView.setImageDrawable(@DrawableRes res: Int) {
     setImageDrawable(AppCompatResources.getDrawable(context, res))
 }
 
+fun ImageView.setCoinIcon(currency: CryptoCurrency) {
+    setImageDrawable(currency.drawableResFilled())
+}
+
 @DrawableRes
 fun CryptoCurrency.errorIcon(): Int =
     when (this) {

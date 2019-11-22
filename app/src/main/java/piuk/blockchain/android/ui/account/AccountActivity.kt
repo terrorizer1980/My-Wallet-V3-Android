@@ -264,6 +264,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
 
     override fun onResume() {
         super.onResume()
+
         compositeDisposable += event.subscribe {
             onViewReady()
             // Check if we need to hide/show the transfer funds icon in the Toolbar

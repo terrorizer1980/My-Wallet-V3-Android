@@ -68,6 +68,7 @@ import piuk.blockchain.android.ui.settings.preferences.KycStatusPreference
 import piuk.blockchain.android.ui.settings.preferences.ThePitStatusPreference
 import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.thepit.PitPermissionsActivity
+
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -297,6 +298,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     override fun onResume() {
         super.onResume()
+
         compositeDisposable += event.subscribe {
             settingsPresenter.onViewReady()
         }

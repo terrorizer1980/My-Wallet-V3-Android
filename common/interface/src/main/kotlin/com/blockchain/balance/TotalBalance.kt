@@ -25,6 +25,7 @@ interface TotalBalance {
     ) {
 
         val spendableAndColdStorage = spendable + coldStorage
+        fun total() = spendable + coldStorage // + watchOnly
 
         companion object {
 
