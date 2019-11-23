@@ -18,7 +18,7 @@ interface MviIntent<S : MviState> {
     fun reduce(oldState: S): S
 }
 
-abstract class MviModel<S : MviState, I : MviIntent<S> >(
+abstract class MviModel<S : MviState, I : MviIntent<S>>(
     initialState: S,
     observeScheduler: Scheduler
 ) {

@@ -41,15 +41,13 @@ interface HomeNavigator {
     fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency)
 }
 
-abstract class HomeScreenMvpFragment<V : MvpView, P : MvpPresenter<V> >
-    : MvpFragment<V, P>(), HomeScreenFragment {
+abstract class HomeScreenMvpFragment<V : MvpView, P : MvpPresenter<V>> : MvpFragment<V, P>(), HomeScreenFragment {
 
     override fun navigator(): HomeNavigator =
         (activity as? HomeNavigator) ?: throw IllegalStateException("Parent must implement HomeNavigator")
 }
 
-abstract class HomeScreenMviFragment <M : MviModel<S, I>, I : MviIntent<S>, S : MviState>
-    : MviFragment<M, I, S>(),
+abstract class HomeScreenMviFragment<M : MviModel<S, I>, I : MviIntent<S>, S : MviState> : MviFragment<M, I, S>(),
     HomeScreenFragment {
 
     override fun navigator(): HomeNavigator =

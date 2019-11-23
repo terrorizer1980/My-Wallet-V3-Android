@@ -713,11 +713,15 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     override fun gotoReceiveFor(cryptoCurrency: CryptoCurrency) {
         presenter.setCryptoCurrency(cryptoCurrency)
-
+        setCurrentTabItem(ITEM_RECEIVE)
+        ViewUtils.setElevation(appbar_layout, 0f)
         startReceiveFragment()
     }
 
     private fun startReceiveFragment() {
+        setCurrentTabItem(ITEM_RECEIVE)
+
+        ViewUtils.setElevation(appbar_layout, 0f)
         val receiveFragment = ReceiveFragment.newInstance(selectedAccountFromFragments)
         replaceContentFragment(receiveFragment)
     }

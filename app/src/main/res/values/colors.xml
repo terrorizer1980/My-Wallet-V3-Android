@@ -33,4 +33,9 @@
 
     <color name="dashboard_delta_positive">@color/green_400</color>
     <color name="dashboard_delta_negative">@color/red_600</color>
+
+    <color name="dashboard_chart_negative">@color/red_500</color>
+    <color name="dashboard_chart_positive">@color/green_500</color>
+    <color name="dashboard_chart_unknown">@color/grey_400</color>
+    <color name="dashboard_chart_indicator_color">@color/blue_600</color>
 </resources>

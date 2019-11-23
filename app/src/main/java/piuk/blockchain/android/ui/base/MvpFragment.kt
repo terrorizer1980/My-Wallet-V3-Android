@@ -11,8 +11,7 @@ import com.blockchain.notifications.analytics.Analytics
 import java.lang.IllegalStateException
 import java.util.Locale
 
-abstract class MvpFragment <V : MvpView, P : MvpPresenter<V> >
-    : Fragment() {
+abstract class MvpFragment<V : MvpView, P : MvpPresenter<V>> : Fragment() {
 
     protected abstract val presenter: P
     protected abstract val view: V

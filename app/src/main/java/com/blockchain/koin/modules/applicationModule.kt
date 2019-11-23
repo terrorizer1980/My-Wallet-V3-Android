@@ -64,6 +64,7 @@ import piuk.blockchain.android.ui.createwallet.CreateWalletPresenter
 import piuk.blockchain.android.ui.dashboard.DashboardInteractor
 import piuk.blockchain.android.ui.dashboard.DashboardModel
 import piuk.blockchain.android.ui.dashboard.DashboardState
+import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsViewModel
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
 import piuk.blockchain.android.ui.home.MainPresenter
@@ -175,6 +176,13 @@ val applicationModule = applicationContext {
             SwipeToReceivePresenter(
                 qrGenerator = get(),
                 swipeToReceiveHelper = get()
+            )
+        }
+
+        factory {
+            AssetDetailsViewModel(
+                buyDataManager = get(),
+                locale = get()
             )
         }
 

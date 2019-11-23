@@ -920,10 +920,15 @@
     <string name="dashboard_price_charts">Price charts</string>
     <string name="dashboard_see_charts">See charts</string>
     <string name="dashboard_price">%1$s price</string>
+    <string name="current_price">Current price</string>
     <string name="dashboard_non_spendable_value">%1$s Non-Spendable</string>
     <string name="dashboard_lockbox_disclaimer">The total balance shown on this device does not
         include your linked %1$s.
     </string>
+    <string name="dashboard_time_span_last_day">Last day</string>
+    <string name="dashboard_time_span_last_month">Last month</string>
+    <string name="dashboard_time_span_last_week">Last week</string>
+    <string name="dashboard_time_span_last_year">Last year</string>
     <string name="kyc_more_info_title">More Information Needed</string>
 
     <string name="kyc_more_info_body">To keep using Buy &amp; Sell, you’ll need to update your profile. Once completed, you’ll also unlock higher trading limits in Swap.</string>
@@ -936,8 +941,7 @@
         temporarily be unavailable.
     </string>
     <string name="dashboard_balance_for_asset">Your %1$s Balance</string>
-
-
+    <string name="dashboard_buy_for_asset">Buy %1$s</string>
     <!-- KV STORE -->
     <string name="more">More</string>
 
@@ -1768,8 +1772,7 @@
     <string name="stacks_airdrop_card_button">Get Free Crypto</string>
 
     <!-- Blockstack airdrop share message -->
-    <string name ="stacks_airdrop_share_msg">Hey! I just secured my spot for Blockchain\'s latest airdrop with Blockstack. Sign up and get verified to get free Stacks!</string>
-
+    <string name="stacks_airdrop_share_msg">http://blockchain.com/getcrypto\\n Hey! Get crypto for free with Blockchain Airdrops. Sign up and get verified to become eligible for $10 worth of Blockstack Tokens.</string>
     <!-- KYC Tiers -->
     <string name="tier_1">TIER 1</string>
     <string name="tier_2">TIER 2</string>

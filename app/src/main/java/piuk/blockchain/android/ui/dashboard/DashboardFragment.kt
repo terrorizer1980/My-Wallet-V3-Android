@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.fragment_dashboard.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -205,8 +204,20 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         navigator().gotoSendFor(cryptoCurrency)
     }
 
+    override fun goToReceiveFor(cryptoCurrency: CryptoCurrency) {
+        navigator().gotoReceiveFor(cryptoCurrency)
+    }
+
     override fun onSheetClosed() {
         model.process(HideAssetDetails)
+    }
+
+    override fun goToBuy() {
+        navigator().launchBuySell()
+    }
+
+    override fun gotoSwapFor(cryptoCurrency: CryptoCurrency) {
+        navigator().launchSwapOrKyc(cryptoCurrency)
     }
 
     companion object {
