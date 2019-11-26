@@ -11,6 +11,7 @@ import piuk.blockchain.android.ui.dashboard.adapter.delegates.AssetPriceCardDele
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.HeaderDelegate
 import piuk.blockchain.android.ui.dashboard.adapter.delegates.PieChartDelegate
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.MiniAnnouncementDelegate
 
 /**
  * @param context The Activity/Fragment [Context]
@@ -34,6 +35,7 @@ class DashboardDelegateAdapter(
         with(delegatesManager) {
             addAdapterDelegate(HeaderDelegate())
             addAdapterDelegate(AnnouncementDelegate(analytics))
+            addAdapterDelegate(MiniAnnouncementDelegate(analytics))
             addAdapterDelegate(pieChartDelegate)
             addAdapterDelegate(assetPriceDelegate)
         }

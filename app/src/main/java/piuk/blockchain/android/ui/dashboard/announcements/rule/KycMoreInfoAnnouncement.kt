@@ -7,7 +7,7 @@ import com.blockchain.remoteconfig.FeatureFlag
 import piuk.blockchain.androidbuysell.api.CoinifyWalletService
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
@@ -52,7 +52,7 @@ internal class KycMoreInfoAnnouncement(
 
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
-            AnnouncementCard(
+            StandardAnnouncementCard(
                 name = name,
                 titleText = R.string.kyc_more_info_title,
                 bodyText = R.string.kyc_more_info_body,

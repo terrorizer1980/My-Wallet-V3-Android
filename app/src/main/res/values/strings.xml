@@ -52,7 +52,7 @@
     <string name="MOVED">Transferred</string>
     <string name="edit_transaction_hint">Edit transaction description</string>
     <string name="pie_chart_content">pie chart</string>
-    
+
     <string name="paid">Paid</string>
 
     <string name="payment_request">Payment Request</string>
@@ -1764,9 +1764,11 @@
     <string name="stacks_airdrop_card_title">Our Latest Airdrop is Here.</string>
     <string name="stacks_airdrop_card_description">Upgrade your profile to Gold to access the Airdrop and get free Stacks (STX) from Blockstack.</string>
     <string name="stacks_airdrop_card_button">Get Free Crypto</string>
+    <string name="stacks_airdrop_mini_card_title">Our Latest Airdrop is Here</string>
+    <string name="stacks_airdrop_mini_card_body">Get Free Crypto</string>
 
     <!-- Blockstack airdrop share message -->
-    <string name ="stacks_airdrop_share_msg">Hey! I just secured my spot for Blockchain\'s latest airdrop with Blockstack. Sign up and get verified to get free Stacks!</string>
+    <string name="stacks_airdrop_share_msg">Hey! I just secured my spot for Blockchain\'s latest airdrop with Blockstack. Sign up and get verified to get free Stacks!</string>
     <!-- KYC Tiers -->
     <string name="tier_1">TIER 1</string>
     <string name="tier_2">TIER 2</string>

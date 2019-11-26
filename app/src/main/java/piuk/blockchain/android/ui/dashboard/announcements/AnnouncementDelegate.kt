@@ -27,7 +27,7 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
         holder: RecyclerView.ViewHolder,
         payloads: List<*>
     ) {
-        val announcement = items[position] as AnnouncementCard
+        val announcement = items[position] as StandardAnnouncementCard
 
         (holder as AnnouncementViewHolder).apply {
 
@@ -93,7 +93,7 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
 
     override fun isForViewType(items: List<T>, position: Int): Boolean {
         val item = items[position]
-        return (item is AnnouncementCard)
+        return item is StandardAnnouncementCard
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
