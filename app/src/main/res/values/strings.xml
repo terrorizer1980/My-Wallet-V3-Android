@@ -1765,7 +1765,7 @@
     <string name="stacks_airdrop_card_description">Upgrade your profile to Gold to access the Airdrop and get free Stacks (STX) from Blockstack.</string>
     <string name="stacks_airdrop_card_button">Get Free Crypto</string>
     <string name="stacks_airdrop_mini_card_title">Our Latest Airdrop is Here</string>
-    <string name="stacks_airdrop_mini_card_body">Get Free Crypto</string>
+    <string name="stacks_airdrop_mini_card_body">Upgrade to get free crypto</string>
     <string name="stacks_airdrop_registered_mini_card_title">A Reward for Being Gold Level</string>
     <string name="stacks_airdrop_registered_mini_card_body">We\'re airdropping you free crypto in 2020</string>
 
