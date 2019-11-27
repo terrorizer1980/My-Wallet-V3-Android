@@ -17,6 +17,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.rule.KycResubmissionAn
 import piuk.blockchain.android.ui.dashboard.announcements.rule.PaxAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.PitAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.RegisterFingerprintsAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.RegisteredForAirdropMiniAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.SwapAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.TransferBitcoinAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.TwoFAAnnouncement
@@ -174,6 +175,13 @@ val dashboardAnnouncementsModule = applicationContext {
                 dismissRecorder = get(),
                 queries = get(),
                 kycForBlockstackAnnouncement = get("kyc_blockstack_announcement")
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            RegisteredForAirdropMiniAnnouncement(
+                dismissRecorder = get(),
+                queries = get()
             )
         }.bind(AnnouncementRule::class)
 

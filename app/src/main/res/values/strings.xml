@@ -1766,6 +1766,8 @@
     <string name="stacks_airdrop_card_button">Get Free Crypto</string>
     <string name="stacks_airdrop_mini_card_title">Our Latest Airdrop is Here</string>
     <string name="stacks_airdrop_mini_card_body">Get Free Crypto</string>
+    <string name="stacks_airdrop_registered_mini_card_title">A Reward for Being Gold Level</string>
+    <string name="stacks_airdrop_registered_mini_card_body">We\'re airdropping you free crypto in 2020</string>
 
     <!-- Blockstack airdrop share message -->
     <string name="stacks_airdrop_share_msg">Hey! I just secured my spot for Blockchain\'s latest airdrop with Blockstack. Sign up and get verified to get free Stacks!</string>
