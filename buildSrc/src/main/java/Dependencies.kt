@@ -81,7 +81,7 @@ object Versions {
     const val materialDatePicker = "3.6.4"
 
     // Third Party SDKs
-    const val veriff = "2.4.7"
+    const val veriff = "2.6.1"
     const val probity = "1.0.0"
 
     // Logging
