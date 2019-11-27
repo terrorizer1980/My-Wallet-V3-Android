@@ -86,13 +86,13 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
             dialog.setAuthCallback(object : FingerprintDialog.FingerprintAuthCallback {
                 override fun onAuthenticated(data: String?) {
                     dialog.dismissAllowingStateLoss()
-                    presenter.setFingerprintUnlockEnabled(true)
+                    presenter?.setFingerprintUnlockEnabled(true)
                     showEmailPrompt()
                 }
 
                 override fun onCanceled() {
                     dialog.dismissAllowingStateLoss()
-                    presenter.setFingerprintUnlockEnabled(true)
+                    presenter?.setFingerprintUnlockEnabled(true)
                 }
             })
 
