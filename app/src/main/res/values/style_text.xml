@@ -6,7 +6,7 @@
     </style>
 
     <style name="Text.Standard">
-        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
     </style>
 
     <style name="Text.Standard.14">
@@ -55,11 +55,11 @@
     </style>
 
     <style name="Text.Blue.Semibold">
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
     </style>
 
     <style name="Text.White.Semibold">
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
     </style>
 
     <style name="Text.Blue.Semibold.Centered">
@@ -95,7 +95,7 @@
     </style>
 
     <style name="Text.Semibold">
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
     </style>
 
     <style name="Text.Semibold.20">
@@ -119,7 +119,7 @@
     </style>
 
     <style name="Text.Bold">
-        <item name="android:fontFamily">@font/inter_bold</item>
+        <item name="fontFamily">@font/inter_bold</item>
     </style>
 
     <style name="Text.Bold.Centered">

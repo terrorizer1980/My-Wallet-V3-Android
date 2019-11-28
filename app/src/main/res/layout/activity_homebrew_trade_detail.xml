@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_layout_morph_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -278,7 +278,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 tools:visibility="visible" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 </LinearLayout>

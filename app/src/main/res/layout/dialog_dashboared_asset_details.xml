@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,11 +12,11 @@
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="@dimen/standard_margin"
         android:importantForAccessibility="no"
-        android:src="@drawable/vector_bitcoin_colored"
+        app:srcCompat="@drawable/vector_bitcoin_colored"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/asset_name"
         style="@style/Text.Semibold.Centered.20"
         android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
         app:layout_constraintStart_toEndOf="@id/asset_icon"
         app:layout_constraintTop_toTopOf="@id/asset_icon" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/balance_for_asset"
         style="@style/Text.Light.14"
         android:layout_width="wrap_content"
@@ -35,7 +35,7 @@
         app:layout_constraintTop_toBottomOf="@+id/asset_name"
         tools:text="Your BTC Balance" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/asset_balance_fiat"
         style="@style/Text.Semibold.16"
         android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
         app:layout_constraintTop_toTopOf="@id/asset_name"
         tools:text="$15,879.90" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/asset_balance_crypto"
         style="@style/Text.Light.14"
         android:layout_width="wrap_content"
@@ -65,7 +65,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/asset_balance_crypto" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/current_price_title"
         style="@style/Text.Light.14"
         android:layout_width="wrap_content"
@@ -77,7 +77,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/send_request_tabs" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/current_price"
         style="@style/Text.Semibold"
         android:layout_width="wrap_content"
@@ -90,7 +90,7 @@
         app:layout_constraintTop_toBottomOf="@id/current_price_title"
         tools:text="$10,468.07" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/price_change"
         style="@style/Text.Semibold.14"
         android:layout_width="wrap_content"
@@ -100,7 +100,7 @@
         app:layout_constraintEnd_toStartOf="@+id/price_change_guide"
         app:layout_constraintTop_toBottomOf="@+id/current_price" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/price_change_guide"
         android:layout_width="1dp"
         android:layout_height="match_parent"
@@ -110,7 +110,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/current_price" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/price_change_period"
         style="@style/Text.Light.14"
         android:layout_width="wrap_content"
@@ -121,48 +121,48 @@
         app:layout_constraintTop_toBottomOf="@+id/current_price" />
 
 
-    <android.support.design.widget.TabLayout
+    <com.google.android.material.tabs.TabLayout
         android:id="@+id/chart_price_periods"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/price_change"
         app:tabIndicatorColor="@color/dashboard_chart_indicator_color">
 
-        <android.support.design.widget.TabItem
+        <com.google.android.material.tabs.TabItem
             android:id="@+id/day_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1D" />
 
 
-        <android.support.design.widget.TabItem
+        <com.google.android.material.tabs.TabItem
             android:id="@+id/week_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1W" />
 
 
-        <android.support.design.widget.TabItem
+        <com.google.android.material.tabs.TabItem
             android:id="@+id/month_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1M" />
 
 
-        <android.support.design.widget.TabItem
+        <com.google.android.material.tabs.TabItem
             android:id="@+id/year_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1Y" />
 
 
-        <android.support.design.widget.TabItem
+        <com.google.android.material.tabs.TabItem
             android:id="@+id/all_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="ALL" />
 
-    </android.support.design.widget.TabLayout>
+    </com.google.android.material.tabs.TabLayout>
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
@@ -201,4 +201,4 @@
         app:layout_constraintTop_toBottomOf="@+id/chart"
         app:layout_constraintVertical_bias="0" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

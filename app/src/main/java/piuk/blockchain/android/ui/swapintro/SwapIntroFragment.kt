@@ -1,10 +1,10 @@
 package piuk.blockchain.android.ui.swapintro
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.android.campaign.CampaignType
@@ -33,7 +33,9 @@ class SwapIntroFragment : HomeScreenMvpFragment<SwapIntroView, SwapIntroPresente
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupToolbar()
-        intro_viewpager.adapter = SwapIntroPagerAdapter(fragmentManager, items())
+        fragmentManager?.let {
+            intro_viewpager.adapter = SwapIntroPagerAdapter(it, items())
+        }
         indicator.setViewPager(intro_viewpager)
         get_started.setOnClickListener {
             presenter.onGetStartedPressed()

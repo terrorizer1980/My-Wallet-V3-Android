@@ -20,13 +20,13 @@
             android:layout_marginEnd="@dimen/standard_margin"
             android:orientation="vertical">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/standard_margin"
                 android:hint="@string/wallet_id">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/wallet_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
                     android:inputType="textNoSuggestions|textVisiblePassword"
                     android:maxLines="1" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <piuk.blockchain.android.ui.customviews.AnimatedPasswordInputLayout
                 android:layout_width="match_parent"
@@ -43,7 +43,7 @@
                 android:layout_marginTop="@dimen/standard_margin"
                 android:hint="@string/password">
 
-                <android.support.design.widget.TextInputEditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/wallet_pass"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

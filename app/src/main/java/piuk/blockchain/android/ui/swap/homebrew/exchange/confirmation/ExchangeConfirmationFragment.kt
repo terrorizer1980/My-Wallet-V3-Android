@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.annotation.UiThread
-import android.support.v7.app.AlertDialog
+import androidx.annotation.StringRes
+import androidx.annotation.UiThread
+import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,7 +77,7 @@ class ExchangeConfirmationFragment :
 
     private lateinit var exchangeModel: ExchangeModel
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         val provider = (context as? ExchangeViewModelProvider)
             ?: throw Exception("Host activity must support ExchangeViewModelProvider")
@@ -206,7 +206,9 @@ class ExchangeConfirmationFragment :
         swapErrorDialogContent.dismissClick?.let {
             bottomSheetDialog.onDismissClick = it
         }
-        bottomSheetDialog.show(fragmentManager, "BottomDialog")
+        fragmentManager?.let {
+            bottomSheetDialog.show(it, "BottomDialog")
+        }
     }
 
     override fun openTiersCard() {

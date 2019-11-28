@@ -195,9 +195,9 @@ fun tiers(tier1: Pair<KycTierState, FiatValue>, tier2: Pair<KycTierState, FiatVa
         )
     )
 
-private fun email(): NavDirections = KycNavXmlDirections.ActionStartEmailVerification()
-private fun mobile(): NavDirections = KycNavXmlDirections.ActionStartMobileVerification("DE")
-private fun veriff(): NavDirections = KycNavXmlDirections.ActionStartVeriff("DE")
+private fun email(): NavDirections = KycNavXmlDirections.actionStartEmailVerification()
+private fun mobile(): NavDirections = KycNavXmlDirections.actionStartMobileVerification("DE")
+private fun veriff(): NavDirections = KycNavXmlDirections.actionStartVeriff("DE")
 
 private fun givenRedirect(email: NavDirections): KycNavigator =
     mock {

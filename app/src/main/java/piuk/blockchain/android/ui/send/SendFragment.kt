@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.send
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
@@ -12,14 +12,11 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.support.annotation.ColorRes
-import android.support.annotation.Nullable
-import android.support.annotation.StringRes
-import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.AppCompatEditText
+import androidx.annotation.ColorRes
+import androidx.annotation.Nullable
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
@@ -33,6 +30,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.Spinner
+import androidx.appcompat.widget.AppCompatEditText
 import com.blockchain.balance.errorIcon
 import com.blockchain.koin.injectActivity
 import com.blockchain.notifications.analytics.SendAnalytics
@@ -81,7 +79,7 @@ import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import com.blockchain.ui.dialog.ErrorBottomDialog
-
+import com.google.android.material.snackbar.Snackbar
 import piuk.blockchain.android.ui.home.HomeScreenMvpFragment
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -196,8 +194,10 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
         }
 
         info_link.setOnClickListener {
-            MinBalanceExplanationDialog()
-                .show(fragmentManager, "Dialog")
+            fragmentManager?.let {
+                MinBalanceExplanationDialog()
+                    .show(it, "Dialog")
+            }
         }
 
         amountContainer.currencyFiat.text = currencyState.fiatUnit
@@ -398,7 +398,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         handlingActivityResult = true
-        if (resultCode != Activity.RESULT_OK) return
+        if (resultCode != AppCompatActivity.RESULT_OK) return
         resetPitAddressState()
         when (requestCode) {
             SCAN_PRIVX -> presenter.handlePrivxScan(data?.getStringExtra(CaptureActivity.SCAN_RESULT))
@@ -1090,11 +1090,13 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
         noteDescription: String?,
         allowFeeChange: Boolean
     ) {
-        confirmPaymentDialog =
-            ConfirmPaymentDialog.newInstance(confirmationDetails, note, noteDescription, allowFeeChange)
-                .also {
-                    it.show(fragmentManager, ConfirmPaymentDialog::class.java.simpleName)
-                }
+        fragmentManager?.let { fragmentManager ->
+            confirmPaymentDialog =
+                ConfirmPaymentDialog.newInstance(confirmationDetails, note, noteDescription, allowFeeChange)
+                    .also {
+                        it.show(fragmentManager, ConfirmPaymentDialog::class.java.simpleName)
+                    }
+        }
     }
 
     override fun showLargeTransactionWarning() {
@@ -1242,19 +1244,19 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
         textviewFeeTime.invisible()
         textInputLayout.visible()
         buttonContinue.isEnabled = false
-        textInputLayout.hint = getString(R.string.fee_options_sat_byte_hint)
+        textInputLayout.editText?.hint = getString(R.string.fee_options_sat_byte_hint)
 
         edittextCustomFee.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus || !edittextCustomFee.text.toString().isEmpty()) {
-                textInputLayout.hint = getString(
+                textInputLayout.editText?.hint = getString(
                     R.string.fee_options_sat_byte_inline_hint,
                     presenter.getBitcoinFeeOptions()?.regularFee.toString(),
                     presenter.getBitcoinFeeOptions()?.priorityFee.toString()
                 )
             } else if (edittextCustomFee.text.toString().isEmpty()) {
-                textInputLayout.hint = getString(R.string.fee_options_sat_byte_hint)
+                textInputLayout.editText?.hint = getString(R.string.fee_options_sat_byte_hint)
             } else {
-                textInputLayout.hint = getString(R.string.fee_options_sat_byte_hint)
+                textInputLayout.editText?.hint = getString(R.string.fee_options_sat_byte_hint)
             }
         }
 
@@ -1334,15 +1336,16 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
             linksMap,
             requireActivity()
         )
-
-        ErrorBottomDialog.newInstance(
-            ErrorBottomDialog.Content(
-                title = getString(R.string.pax_need_more_eth_error_title),
-                description = body,
-                icon = CryptoCurrency.ETHER.errorIcon(),
-                dismissText = R.string.btn_ok
-            )
-        ).show(fragmentManager, "BottomDialog")
+        fragmentManager?.let {
+            ErrorBottomDialog.newInstance(
+                ErrorBottomDialog.Content(
+                    title = getString(R.string.pax_need_more_eth_error_title),
+                    description = body,
+                    icon = CryptoCurrency.ETHER.errorIcon(),
+                    dismissText = R.string.btn_ok
+                )
+            ).show(it, "BottomDialog")
+        }
     }
 
     override fun enableInput() {

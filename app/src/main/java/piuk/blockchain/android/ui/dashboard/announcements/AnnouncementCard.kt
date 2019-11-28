@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
-import android.support.annotation.StringRes
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import piuk.blockchain.android.R
 
 data class AnnouncementCard(

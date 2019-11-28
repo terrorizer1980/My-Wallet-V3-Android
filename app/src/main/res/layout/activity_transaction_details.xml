@@ -182,7 +182,7 @@
                             android:textSize="16sp"
                             tools:text="My Bitcoin Wallet" />
 
-                        <android.support.v7.widget.AppCompatSpinner
+                        <androidx.appcompat.widget.AppCompatSpinner
                             android:id="@+id/to_spinner"
                             android:layout_width="24dp"
                             android:layout_height="match_parent"
@@ -215,7 +215,7 @@
                             android:textSize="16sp"
                             tools:text="1XUzFYTvEjWxLkqtL4100MQ7zyzRvq9xXX" />
 
-                        <android.support.v7.widget.AppCompatSpinner
+                        <androidx.appcompat.widget.AppCompatSpinner
                             android:id="@+id/from_spinner"
                             android:layout_width="24dp"
                             android:layout_height="match_parent"

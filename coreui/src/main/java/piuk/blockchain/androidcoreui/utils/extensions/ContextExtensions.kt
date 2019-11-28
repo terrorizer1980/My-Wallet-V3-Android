@@ -2,14 +2,14 @@
 
 package piuk.blockchain.androidcoreui.utils.extensions
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
-import android.support.annotation.StringRes
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 /**
@@ -19,7 +19,7 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
  * @param text The text to display, as a [String]
  * @param type An optional [ToastCustom.ToastType] which can be omitted for general Toasts
  */
-fun Activity.toast(text: String, @ToastCustom.ToastType type: String = ToastCustom.TYPE_GENERAL) {
+fun AppCompatActivity.toast(text: String, @ToastCustom.ToastType type: String = ToastCustom.TYPE_GENERAL) {
     ToastCustom.makeText(this, text, ToastCustom.LENGTH_SHORT, type)
 }
 
@@ -30,7 +30,7 @@ fun Activity.toast(text: String, @ToastCustom.ToastType type: String = ToastCust
  * @param text The text to display, as a String resource [Int]
  * @param type An optional [ToastCustom.ToastType] which can be omitted for general Toasts
  */
-fun Activity.toast(@StringRes text: Int, @ToastCustom.ToastType type: String = ToastCustom.TYPE_GENERAL) {
+fun AppCompatActivity.toast(@StringRes text: Int, @ToastCustom.ToastType type: String = ToastCustom.TYPE_GENERAL) {
     ToastCustom.makeText(this, getString(text), ToastCustom.LENGTH_SHORT, type)
 }
 

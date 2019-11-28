@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.buysell.createorder
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import piuk.blockchain.android.ui.buysell.createorder.models.BuyConfirmationDisplayModel
 import piuk.blockchain.android.ui.buysell.createorder.models.OrderType
 import piuk.blockchain.android.ui.buysell.createorder.models.SellConfirmationDisplayModel

@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
 import android.annotation.SuppressLint
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.preferences.WalletStatus

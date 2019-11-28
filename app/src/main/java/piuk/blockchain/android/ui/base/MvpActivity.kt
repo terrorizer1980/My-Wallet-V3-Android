@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.base
 
-import android.support.annotation.CallSuper
+import androidx.annotation.CallSuper
 
 abstract class MvpActivity<V : MvpView, P : MvpPresenter<V>> : BlockchainActivity() {
 

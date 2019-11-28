@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.backup.transfer
 
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.app.DialogFragment
+import androidx.annotation.StringRes
+import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,7 +52,7 @@ class ConfirmFundsTransferDialogFragment :
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val window = dialog.window
+        val window = dialog?.window
         window?.let {
             val params = window.attributes
             params.width = WindowManager.LayoutParams.MATCH_PARENT

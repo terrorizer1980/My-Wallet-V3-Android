@@ -1,8 +1,9 @@
 package piuk.blockchain.android.ui.transactions.adapter;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

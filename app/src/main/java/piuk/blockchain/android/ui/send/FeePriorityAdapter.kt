@@ -1,11 +1,11 @@
 package piuk.blockchain.android.ui.send
 
 import android.content.Context
-import android.databinding.DataBindingUtil
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.databinding.DataBindingUtil
 
 import piuk.blockchain.android.R
 import piuk.blockchain.android.databinding.ItemFeePriorityDropdownBinding

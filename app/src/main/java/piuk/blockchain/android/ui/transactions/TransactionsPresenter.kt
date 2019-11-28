@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.transactions
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.annotations.CommonCode
 import com.blockchain.notifications.models.NotificationPayload
 import info.blockchain.balance.CryptoCurrency

@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.send
 
-import android.support.annotation.ColorRes
-import android.support.annotation.StringRes
-import android.support.design.widget.Snackbar
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import com.blockchain.transactions.Memo
+import com.google.android.material.snackbar.Snackbar
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue

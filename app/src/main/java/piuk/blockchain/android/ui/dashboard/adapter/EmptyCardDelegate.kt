@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.dashboard.adapter
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import piuk.blockchain.android.R

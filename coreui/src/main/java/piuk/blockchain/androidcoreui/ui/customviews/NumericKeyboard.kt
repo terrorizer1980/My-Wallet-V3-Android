@@ -1,7 +1,7 @@
 package piuk.blockchain.androidcoreui.ui.customviews
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
@@ -74,7 +74,7 @@ class NumericKeyboard @JvmOverloads constructor(
         view.setTextIsSelectable(true)
         view.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                val view1 = (context as Activity).currentFocus
+                val view1 = (context as AppCompatActivity).currentFocus
                 if (view1 != null) {
                     val inputManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputManager.hideSoftInputFromWindow(

@@ -103,7 +103,7 @@ class KycEmailEntryFragment : BaseFragment<KycEmailEntryView, KycEmailEntryPrese
     }
 
     override fun continueSignUp(email: String) {
-        navigate(KycEmailEntryFragmentDirections.ActionValidateEmail(email))
+        navigate(KycEmailEntryFragmentDirections.actionValidateEmail(email))
     }
 
     override fun showProgressDialog() {

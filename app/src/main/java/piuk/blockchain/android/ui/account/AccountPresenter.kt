@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.account
 
 import android.annotation.SuppressLint
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.notifications.analytics.AddressAnalytics
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.WalletAnalytics

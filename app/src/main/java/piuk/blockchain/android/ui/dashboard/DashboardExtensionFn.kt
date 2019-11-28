@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.dashboard
 
 import android.annotation.SuppressLint
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.widget.TextView
 import com.elyeproj.loaderviewlibrary.LoaderTextView
 import info.blockchain.balance.CryptoValue

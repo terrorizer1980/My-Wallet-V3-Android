@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.start
 
-import android.support.annotation.StringRes
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents

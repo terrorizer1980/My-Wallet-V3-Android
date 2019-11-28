@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.kyc.address
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import piuk.blockchain.android.ui.kyc.address.models.AddressModel
 import piuk.blockchain.android.ui.kyc.profile.models.ProfileModel
 import io.reactivex.Observable

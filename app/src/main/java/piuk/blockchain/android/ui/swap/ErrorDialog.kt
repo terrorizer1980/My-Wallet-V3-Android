@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.swap
 
-import android.support.v4.app.FragmentManager
+import androidx.fragment.app.FragmentManager
 import com.blockchain.balance.errorIcon
 import piuk.blockchain.android.ui.swap.homebrew.exchange.ExchangeMenuState
 import com.blockchain.ui.dialog.ErrorBottomDialog

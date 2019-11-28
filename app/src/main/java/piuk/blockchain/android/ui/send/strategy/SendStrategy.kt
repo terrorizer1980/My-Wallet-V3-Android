@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.send.strategy
 
-import android.support.annotation.CallSuper
+import androidx.annotation.CallSuper
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.transactions.Memo
 import info.blockchain.balance.CryptoCurrency

@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.account;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatEditText;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatEditText;
 import android.text.InputType;
 import com.blockchain.ui.CurrentContextAccess;
 import info.blockchain.wallet.payload.PayloadManager;

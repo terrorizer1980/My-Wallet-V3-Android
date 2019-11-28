@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.kyc.settings
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.exceptions.MetadataNotFoundException
 import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import com.blockchain.swap.nabu.models.nabu.KycState

@@ -1,13 +1,14 @@
 package piuk.blockchain.android.ui.transactions;
 
 import android.annotation.SuppressLint;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+
+import androidx.core.content.res.ResourcesCompat;
 
 import java.util.List;
 

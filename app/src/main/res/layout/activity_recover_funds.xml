@@ -32,7 +32,7 @@
                     android:gravity="center_horizontal"
                     android:text="@string/recover_funds_instructions" />
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/standard_margin"
@@ -41,7 +41,7 @@
                     android:layout_marginBottom="16dp"
                     android:hint="@string/recovery_passphrase">
 
-                    <android.support.design.widget.TextInputEditText
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/field_passphrase"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                         android:maxLines="1"
                         android:scrollHorizontally="true" />
 
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
         </ScrollView>

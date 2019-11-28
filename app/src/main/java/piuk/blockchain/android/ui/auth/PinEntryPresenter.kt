@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.auth
 
 import android.annotation.SuppressLint
-import android.support.annotation.StringRes
-import android.support.annotation.UiThread
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.StringRes
+import androidx.annotation.UiThread
+import androidx.annotation.VisibleForTesting
 import android.view.View
 import com.blockchain.logging.CrashLogger
 import com.crashlytics.android.answers.LoginEvent

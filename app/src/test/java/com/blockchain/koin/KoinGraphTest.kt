@@ -1,6 +1,6 @@
 package com.blockchain.koin
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.AutoCloseKoinTest
@@ -19,5 +19,5 @@ class KoinGraphTest : AutoCloseKoinTest() {
         dryRun(defaultParameters = { anActivity().toInjectionParameters() })
     }
 
-    private fun anActivity() = Robolectric.buildActivity(Activity::class.java).get()
+    private fun anActivity() = Robolectric.buildActivity(AppCompatActivity::class.java).get()
 }

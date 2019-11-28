@@ -1,6 +1,6 @@
 package com.blockchain.balance
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.R
 

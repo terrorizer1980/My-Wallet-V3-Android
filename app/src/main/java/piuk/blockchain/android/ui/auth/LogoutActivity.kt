@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager

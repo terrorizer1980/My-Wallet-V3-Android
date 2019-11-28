@@ -125,7 +125,7 @@ class KycNavHostPresenterTest {
         subject.onViewReady()
         // Assert
         verify(view).displayLoading(true)
-        verify(view).navigate(KycNavXmlDirections.ActionStartCountrySelection())
+        verify(view).navigate(KycNavXmlDirections.actionStartCountrySelection())
         verify(view).displayLoading(false)
     }
 
@@ -362,7 +362,7 @@ class KycNavHostPresenterTest {
         // Assert
         verify(view).displayLoading(true)
         verify(view).navigate(
-            KycNavXmlDirections.ActionStartAddressEntry(nabuUser.toProfileModel())
+            KycNavXmlDirections.actionStartAddressEntry(nabuUser.toProfileModel())
         )
         verify(view).displayLoading(false)
     }
@@ -393,7 +393,7 @@ class KycNavHostPresenterTest {
         subject.onViewReady()
         // Assert
         verify(view).displayLoading(true)
-        verify(view).navigate(KycNavXmlDirections.ActionStartMobileVerification("regionCode"))
+        verify(view).navigate(KycNavXmlDirections.actionStartMobileVerification("regionCode"))
         verify(view).displayLoading(false)
     }
 
@@ -453,7 +453,7 @@ class KycNavHostPresenterTest {
         subject.onViewReady()
         // Assert
         verify(view).displayLoading(true)
-        verify(view).navigate(KycNavXmlDirections.ActionStartVeriff("regionCode"))
+        verify(view).navigate(KycNavXmlDirections.actionStartVeriff("regionCode"))
         verify(view).displayLoading(false)
     }
 

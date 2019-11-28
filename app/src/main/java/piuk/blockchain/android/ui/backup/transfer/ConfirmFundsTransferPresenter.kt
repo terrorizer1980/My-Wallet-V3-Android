@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.backup.transfer
 
 import android.annotation.SuppressLint
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import info.blockchain.wallet.payload.data.LegacyAddress
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager

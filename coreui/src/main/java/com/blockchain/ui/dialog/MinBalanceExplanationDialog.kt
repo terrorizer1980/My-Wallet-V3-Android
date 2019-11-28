@@ -3,9 +3,9 @@ package com.blockchain.ui.dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.annotation.IdRes
-import android.support.v4.app.DialogFragment
-import android.support.v7.widget.Toolbar
+import androidx.annotation.IdRes
+import androidx.fragment.app.DialogFragment
+import androidx.appcompat.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,7 +46,7 @@ class MinBalanceExplanationDialog : DialogFragment() {
     ).apply {
         isFocusableInTouchMode = true
         requestFocus()
-        dialog.window.setWindowAnimations(R.style.DialogNoAnimations)
+        dialog?.window?.setWindowAnimations(R.style.DialogNoAnimations)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

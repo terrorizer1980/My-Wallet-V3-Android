@@ -14,7 +14,7 @@
     </style>
 
     <style name="ExchangeButton" parent="@style/ButtonStyle">
-        <item name="android:textAllCaps">true</item>
+        <item name="textAllCaps">true</item>
     </style>
 
     <array name="exchange_send_receive_autosize_text_sizes">
@@ -31,7 +31,7 @@
 
 
     <style name="ExchangeText.Footer">
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
         <item name="android:textSize">12sp</item>
     </style>
 
@@ -46,7 +46,7 @@
     <style name="ExchangeText.ExchangeReceiveHeaders">
         <item name="android:textColor">@color/exchange_blue</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="fontFamily">@font/inter_medium</item>
     </style>
 
     <dimen name="large_exchange_text_size">64sp</dimen>
@@ -74,17 +74,17 @@
 
     <style name="ExchangeButton.MinMax">
         <item name="android:textColor">@color/exchange_blue</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:background">@color/exchange_screen_back</item>
+        <item name="textAllCaps">false</item>
+        <item name="background">@color/exchange_screen_back</item>
         <item name="android:textSize">14sp</item>
     </style>
 
     <style name="ExchangeButton.Exchange">
-        <item name="android:theme">@style/LightBlueButtonTheme</item>
+        <item name="theme">@style/LightBlueButtonTheme</item>
     </style>
 
     <style name="ExchangeButton.Rates">
-        <item name="android:theme">@style/WhiteButtonTheme</item>
+        <item name="theme">@style/WhiteButtonTheme</item>
     </style>
 
     <!-- keyboard -->

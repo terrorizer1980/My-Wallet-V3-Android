@@ -1,12 +1,10 @@
 package com.blockchain.ui.dialog
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.IdRes
-import android.support.v4.app.DialogFragment
-import android.support.v7.widget.Toolbar
+import androidx.annotation.IdRes
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
@@ -19,6 +17,8 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.DialogFragment
 import com.blockchain.transactions.Memo
 import info.blockchain.wallet.util.HexUtils
 import io.reactivex.disposables.CompositeDisposable
@@ -46,7 +46,7 @@ class MemoEditDialog : DialogFragment() {
     ).apply {
         isFocusableInTouchMode = true
         requestFocus()
-        dialog.window.setWindowAnimations(R.style.DialogNoAnimations)
+        dialog?.window?.setWindowAnimations(R.style.DialogNoAnimations)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -179,7 +179,7 @@ class MemoEditDialog : DialogFragment() {
 
     private fun setResultAndDismiss() {
         targetFragment?.onActivityResult(targetRequestCode,
-            Activity.RESULT_OK,
+            AppCompatActivity.RESULT_OK,
             Intent().apply {
                 putExtra(ARGUMENT_TYPE, selectedType())
                 putExtra(ARGUMENT_VALUE, enteredValue())

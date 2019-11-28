@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.buysell.overview
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

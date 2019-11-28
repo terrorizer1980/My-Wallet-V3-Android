@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.receive
 
 import android.graphics.Bitmap
-import android.support.annotation.StringRes
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.isValidXlmQr
 import com.blockchain.sunriver.toUri

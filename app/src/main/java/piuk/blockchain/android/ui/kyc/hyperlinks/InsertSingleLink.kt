@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.kyc.hyperlinks
 
 import android.graphics.Color
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.method.LinkMovementMethod

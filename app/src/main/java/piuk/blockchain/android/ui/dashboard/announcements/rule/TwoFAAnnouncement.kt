@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.WalletStatus
 import info.blockchain.wallet.api.data.Settings
 import io.reactivex.Single

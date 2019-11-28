@@ -3,14 +3,14 @@ package piuk.blockchain.android.ui.kyc.tiersplash
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.CardView
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.navigation.NavDirections
 import com.blockchain.activities.StartSwap
 import com.blockchain.balance.setImageDrawable

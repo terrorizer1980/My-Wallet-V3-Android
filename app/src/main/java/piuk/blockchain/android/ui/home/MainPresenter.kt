@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.home
 
 import android.content.Intent
 import android.net.Uri
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import com.blockchain.swap.nabu.models.nabu.CampaignData
 import com.blockchain.swap.nabu.models.nabu.KycState
 import com.blockchain.swap.nabu.models.nabu.NabuApiException

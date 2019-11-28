@@ -24,14 +24,16 @@ class CampaignBlockstackCompleteSheet : SlidingModalBottomDialog() {
         analytics.logEvent(BlockstackAnalyticsEvent.CompletionSheetShown)
     }
 
-    override fun onCancel(dialog: DialogInterface?) {
+    override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         analytics.logEvent(BlockstackAnalyticsEvent.CompletionSheetDismissed)
     }
 
     override fun onSheetHidden() {
         super.onSheetHidden()
-        onCancel(dialog)
+        dialog?.let {
+            onCancel(it)
+        }
     }
 
     private fun onCtaClick() {

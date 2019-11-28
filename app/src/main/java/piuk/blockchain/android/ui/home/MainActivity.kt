@@ -1,26 +1,23 @@
 package piuk.blockchain.android.ui.home
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutManager
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.design.widget.BottomSheetDialogFragment
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.FIND_VIEWS_WITH_TEXT
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.blockchain.annotations.ButWhy
@@ -40,9 +37,6 @@ import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.util.FormatsUtil
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.toolbar_general.*
-import org.koin.android.ext.android.inject
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.account.AccountActivity
@@ -65,6 +59,11 @@ import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.toolbar_general.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.android.ui.home.analytics.SideNavEvent
 import piuk.blockchain.android.ui.onboarding.OnboardingActivity
@@ -245,7 +244,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         handlingResult = true
-        if (resultCode == Activity.RESULT_OK && requestCode == SCAN_URI &&
+        if (resultCode == RESULT_OK && requestCode == SCAN_URI &&
             data != null && data.getStringExtra(CaptureActivity.SCAN_RESULT) != null
         ) {
             val strResult = data.getStringExtra(CaptureActivity.SCAN_RESULT)

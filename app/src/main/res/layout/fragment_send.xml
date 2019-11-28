@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
@@ -8,7 +8,7 @@
     android:background="@color/white"
     tools:context=".ui.send.SendFragment">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.design.widget.CollapsingToolbarLayout
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -32,14 +32,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top" />
 
-        </android.support.design.widget.CollapsingToolbarLayout>
-    </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.widget.NestedScrollView
+        <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -63,9 +63,10 @@
                     android:id="@+id/fromContainer"
                     layout="@layout/include_from_row" />
 
-                <View style="@style/Divider"
+                <View
                     android:id="@+id/divider1"
-                    android:layout_marginTop="8dp"/>
+                    style="@style/Divider"
+                    android:layout_marginTop="8dp" />
 
                 <include
                     android:id="@+id/toContainer"
@@ -85,10 +86,11 @@
                     tools:text="Text memo: Hey this is a memo text!"
                     tools:visibility="visible" />
 
-                <View style="@style/Divider"
+                <View
                     android:id="@+id/divider2"
+                    style="@style/Divider"
                     android:layout_width="match_parent"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="8dp" />
 
                 <include
                     android:id="@+id/amountContainer"
@@ -121,9 +123,10 @@
                     tools:textColor="@color/primary_blue_accent"
                     tools:visibility="visible" />
 
-                <View style="@style/Divider"
+                <View
                     android:id="@+id/divider3"
-                    android:layout_marginTop="8dp"/>
+                    style="@style/Divider"
+                    android:layout_marginTop="8dp" />
 
                 <!-- FEES TYPE -->
                 <LinearLayout
@@ -192,7 +195,7 @@
                             android:textSize="16sp"
                             tools:text="0.000081BTC (0.43 USD)" />
 
-                        <android.support.design.widget.TextInputLayout
+                        <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textInputLayout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -215,7 +218,7 @@
                                 android:inputType="number"
                                 android:textSize="16sp" />
 
-                        </android.support.design.widget.TextInputLayout>
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <Spinner
                             android:id="@+id/spinnerPriority"
@@ -229,14 +232,15 @@
 
                     </LinearLayout>
 
-                    <View style="@style/Divider"
+                    <View
                         android:id="@+id/divider4"
+                        style="@style/Divider"
                         android:layout_marginTop="8dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/customFeeContainer" />
 
-                    <android.support.constraint.ConstraintLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/memo_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -275,8 +279,9 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <View style="@style/Divider"
+                        <View
                             android:id="@+id/divider5"
+                            style="@style/Divider"
                             android:layout_marginTop="8dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -309,7 +314,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/xlm_sending_to_exchange_title" />
 
-                    </android.support.constraint.ConstraintLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
                         android:id="@+id/info_link"
@@ -331,50 +336,51 @@
                         tools:visibility="visible" />
 
                     <TextView
-                            android:id="@+id/bitpayTimeRemaining"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="16dp"
-                            android:layout_marginTop="12dp"
-                            android:layout_marginRight="16dp"
-                            android:textSize="12sp"
-                            android:visibility="gone"
-                            android:gravity="center_vertical"
-                            android:contentDescription="Bitpay time remaining"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/divider4"
-                            app:layout_constraintVertical_bias="0.0"
-                            tools:visibility="visible"/>
+                        android:id="@+id/bitpayTimeRemaining"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginRight="16dp"
+                        android:contentDescription="Bitpay time remaining"
+                        android:gravity="center_vertical"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/divider4"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:visibility="visible" />
 
                     <TextView
-                            android:id="@+id/bitpayMerchantText"
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_marginLeft="16dp"
-                            android:layout_marginRight="16dp"
-                            android:layout_marginBottom="8dp"
-                            android:textColor="@color/black"
-                            android:textSize="17sp"
-                            android:visibility="gone"
-                            android:gravity="center_vertical"
-                            android:contentDescription="Bitpay merchant name"
-                            android:drawableEnd="@drawable/ic_bitpay_logo"
-                            android:drawablePadding="5dp"
-                            android:singleLine="true"
-                            android:ellipsize="end"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/bitpayTimeRemaining"
-                            app:layout_constraintVertical_bias="0.0"
-                            tools:visibility="visible"/>
+                        android:id="@+id/bitpayMerchantText"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:contentDescription="Bitpay merchant name"
+                        android:drawableEnd="@drawable/ic_bitpay_logo"
+                        android:drawablePadding="5dp"
+                        android:ellipsize="end"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"
+                        android:textColor="@color/black"
+                        android:textSize="17sp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/bitpayTimeRemaining"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:visibility="visible" />
 
-                    <View style="@style/Divider"
-                          android:id="@+id/bitpayDivider"
-                          android:visibility="gone"
-                          tools:visibility="visible"/>
+                    <View
+                        android:id="@+id/bitpayDivider"
+                        style="@style/Divider"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
 
                     <TextView
                         android:id="@+id/arbitraryWarning"
@@ -413,7 +419,7 @@
 
                 </LinearLayout>
             </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
     </FrameLayout>
 
     <piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboard
@@ -424,4 +430,4 @@
         android:visibility="gone"
         tools:visibility="gone" />
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

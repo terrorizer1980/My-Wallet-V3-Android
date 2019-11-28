@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.send
 
-import android.support.design.widget.Snackbar
 import android.text.Editable
 import android.widget.EditText
 import com.blockchain.notifications.analytics.Analytics
@@ -9,6 +8,7 @@ import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.isValidXlmQr
 import com.blockchain.transactions.Memo
+import com.google.android.material.snackbar.Snackbar
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue

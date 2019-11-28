@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_layout_payment_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:minHeight="100dp"
-                android:src="@drawable/trade_progress_complete"
+                app:srcCompat="@drawable/trade_progress_complete"
                 app:layout_constraintTop_toBottomOf="@id/text_view_success_title" />
 
             <TextView
@@ -94,6 +94,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 tools:text="Your card payment has been declined. Please try again or contact your card supplier." />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </LinearLayout>

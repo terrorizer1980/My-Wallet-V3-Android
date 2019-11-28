@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.start
 
 import android.Manifest
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
 import com.karumi.dexter.Dexter
@@ -44,7 +44,7 @@ class LoginActivity : MvpActivity<LoginView, LoginPresenter>(), LoginView {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == PAIRING_QR) {
+        if (resultCode == AppCompatActivity.RESULT_OK && requestCode == PAIRING_QR) {
             if (data?.getStringExtra(CaptureActivity.SCAN_RESULT) != null) {
                 presenter.pairWithQR(data.getStringExtra(CaptureActivity.SCAN_RESULT))
             }

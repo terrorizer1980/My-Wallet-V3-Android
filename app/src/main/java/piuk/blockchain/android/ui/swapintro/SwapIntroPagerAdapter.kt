@@ -1,10 +1,10 @@
 package piuk.blockchain.android.ui.swapintro
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 
-class SwapIntroPagerAdapter(fm: FragmentManager?, private val items: List<SwapIntroModel>) :
+class SwapIntroPagerAdapter(fm: FragmentManager, private val items: List<SwapIntroModel>) :
     FragmentStatePagerAdapter(fm) {
     override fun getItem(position: Int): Fragment =
         SwapIntroItemFragment.newInstance(items[position])

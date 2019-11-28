@@ -4,13 +4,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.support.annotation.PluralsRes
-import android.support.annotation.StringRes
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannedString
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 
 class StringUtils(private val context: Context) {
 

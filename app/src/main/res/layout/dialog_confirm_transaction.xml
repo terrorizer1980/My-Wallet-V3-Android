@@ -9,7 +9,7 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -54,7 +54,7 @@
                     android:visibility="gone"
                     tools:visibility="visible">
 
-                    <android.support.v7.widget.GridLayout
+                    <androidx.gridlayout.widget.GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="14dp"
@@ -138,7 +138,7 @@
                             app:layout_gravity="fill_horizontal"
                             tools:text="0.0003685 BTC ($0.23)" />
 
-                    </android.support.v7.widget.GridLayout>
+                    </androidx.gridlayout.widget.GridLayout>
 
                     <TextView
                         android:id="@+id/button_change_fee"

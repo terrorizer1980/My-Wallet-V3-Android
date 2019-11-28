@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.transactions.adapter
 
-import android.app.Activity
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -19,7 +19,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 
 class DisplayableDelegate<in T>(
-    activity: Activity,
+    activity: AppCompatActivity,
     private var showCrypto: Boolean,
     private val listClickListener: TxFeedClickListener
 ) : AdapterDelegate<T> {

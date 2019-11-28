@@ -1,6 +1,6 @@
 package piuk.blockchain.androidcore.data.bitcoincash
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.wallet.DefaultLabels
 import com.google.common.base.Optional
 import info.blockchain.api.blockexplorer.BlockExplorer

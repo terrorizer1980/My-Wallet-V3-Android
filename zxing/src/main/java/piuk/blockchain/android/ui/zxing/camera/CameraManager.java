@@ -16,9 +16,6 @@
 
 package piuk.blockchain.android.ui.zxing.camera;
 
-import java.io.IOException;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -29,7 +26,11 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.zxing.PlanarYUVLuminanceSource;
+
+import java.io.IOException;
 
 import piuk.blockchain.android.ui.zxing.CaptureActivity;
 import piuk.blockchain.android.ui.zxing.camera.open.OpenCameraManager;
@@ -73,8 +74,8 @@ public final class CameraManager {
     previewCallback = new PreviewCallback(configManager);
   }
 
-  public static void setCameraDisplayOrientation(Activity activity,
-      int cameraId, android.hardware.Camera camera) {
+  public static void setCameraDisplayOrientation(AppCompatActivity activity,
+                                                 int cameraId, android.hardware.Camera camera) {
     android.hardware.Camera.CameraInfo info =
         new android.hardware.Camera.CameraInfo();
     android.hardware.Camera.getCameraInfo(cameraId, info);
@@ -105,7 +106,7 @@ public final class CameraManager {
    * @param holder The surface object which the camera will draw preview frames into.
    * @throws IOException Indicates the camera driver failed to open.
    */
-  public synchronized void openDriver(Activity activity, SurfaceHolder holder) throws IOException {
+  public synchronized void openDriver(AppCompatActivity activity, SurfaceHolder holder) throws IOException {
     Camera theCamera = camera;
     if (theCamera == null) {
       theCamera = new OpenCameraManager().build().open();

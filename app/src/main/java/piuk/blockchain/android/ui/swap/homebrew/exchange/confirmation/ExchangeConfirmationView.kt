@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import com.blockchain.swap.common.exchange.mvi.ExchangeViewState
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Observable

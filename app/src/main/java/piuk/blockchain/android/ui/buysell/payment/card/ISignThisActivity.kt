@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.buysell.payment.card
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -94,7 +94,7 @@ class ISignThisActivity : BaseAuthActivity() {
         private const val TRADE_COMPLETE_PARTIAL_URL = "https://www.coinify.com/trade/"
 
         fun start(
-            activity: Activity,
+            activity: AppCompatActivity,
             redirectUrl: String,
             paymentId: String,
             fromCurrency: String,

@@ -1,11 +1,11 @@
 package piuk.blockchain.android.ui.kyc.countryselection
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.countryselection.adapter.CountryCodeAdapter
 import piuk.blockchain.android.ui.kyc.countryselection.models.CountrySelectionState
@@ -107,7 +107,7 @@ internal class KycCountrySelectionFragment :
     override fun continueFlow(countryCode: String) {
         analytics.logEvent(KYCAnalyticsEvents.CountrySelected)
         navigate(
-            KycCountrySelectionFragmentDirections.ActionKycCountrySelectionFragmentToKycProfileFragment(
+            KycCountrySelectionFragmentDirections.actionKycCountrySelectionFragmentToKycProfileFragment(
                 countryCode
             )
         )
@@ -115,7 +115,7 @@ internal class KycCountrySelectionFragment :
 
     override fun invalidCountry(displayModel: CountryDisplayModel) {
         navigate(
-            KycCountrySelectionFragmentDirections.ActionKycCountrySelectionFragmentToKycInvalidCountryFragment(
+            KycCountrySelectionFragmentDirections.actionKycCountrySelectionFragmentToKycInvalidCountryFragment(
                 displayModel
             )
         )

@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.base
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import io.reactivex.disposables.CompositeDisposable
 
 interface MvpView {

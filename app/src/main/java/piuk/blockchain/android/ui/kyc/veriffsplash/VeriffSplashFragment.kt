@@ -2,12 +2,12 @@ package piuk.blockchain.android.ui.kyc.veriffsplash
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity.RESULT_OK
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
@@ -56,7 +56,9 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
     private val swapStarter: StartSwap by inject()
     private val stringUtils: StringUtils by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
-    override val countryCode by unsafeLazy { VeriffSplashFragmentArgs.fromBundle(arguments).countryCode }
+    override val countryCode by unsafeLazy {
+        VeriffSplashFragmentArgs.fromBundle(arguments ?: Bundle()).countryCode
+    }
     private var progressDialog: MaterialProgressDialog? = null
 
     override val nextClick: Observable<Unit>

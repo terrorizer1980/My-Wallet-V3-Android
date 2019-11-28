@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.transactions.adapter
 
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
-import android.support.annotation.StringRes
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.transactions.models.Displayable

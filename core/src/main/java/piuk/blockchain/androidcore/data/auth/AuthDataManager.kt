@@ -1,6 +1,6 @@
 package piuk.blockchain.androidcore.data.auth
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
 import info.blockchain.wallet.api.data.WalletOptions
 import info.blockchain.wallet.crypto.AESUtil

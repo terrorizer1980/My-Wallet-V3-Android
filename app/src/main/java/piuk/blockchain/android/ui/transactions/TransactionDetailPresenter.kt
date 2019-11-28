@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.transactions
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.data.TransactionHash
 import com.blockchain.sunriver.XlmDataManager
 import info.blockchain.balance.CryptoCurrency

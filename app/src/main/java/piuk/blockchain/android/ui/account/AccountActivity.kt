@@ -2,22 +2,22 @@ package piuk.blockchain.android.ui.account
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
-import android.support.v7.widget.LinearLayoutManager
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.text.InputFilter
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.CheckBox
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.dialog.MaterialProgressDialog
@@ -283,7 +283,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK &&
+        if (resultCode == AppCompatActivity.RESULT_OK &&
             requestCode == IMPORT_PRIVATE_REQUEST_CODE &&
             data != null && data.getStringExtra(CaptureActivity.SCAN_RESULT) != null
         ) {
@@ -291,9 +291,11 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
             val strResult = data.getStringExtra(CaptureActivity.SCAN_RESULT)
             presenter.onAddressScanned(strResult)
             setResult(resultCode)
-        } else if (resultCode == Activity.RESULT_OK && requestCode == EDIT_ACTIVITY_REQUEST_CODE) {
+        } else if (resultCode == AppCompatActivity.RESULT_OK && requestCode == EDIT_ACTIVITY_REQUEST_CODE) {
             onViewReady()
             setResult(resultCode)
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 

@@ -25,7 +25,7 @@ interface KycNavigator {
     fun userAndReentryPointToDirections(user: NabuUser, reentryPoint: ReentryPoint): NavDirections
 }
 
-internal class ReentryDecisionKycNavigator(
+class ReentryDecisionKycNavigator(
     private val token: NabuToken,
     private val dataManager: NabuDataManager,
     private val reentryDecision: ReentryDecision
@@ -41,14 +41,14 @@ internal class ReentryDecisionKycNavigator(
 
     override fun userAndReentryPointToDirections(user: NabuUser, reentryPoint: ReentryPoint) =
         when (reentryPoint) {
-            ReentryPoint.EmailEntry -> KycNavXmlDirections.ActionStartEmailVerification()
-            ReentryPoint.CountrySelection -> KycNavXmlDirections.ActionStartCountrySelection()
-            ReentryPoint.Profile -> KycNavXmlDirections.ActionStartProfile(user.requireCountryCode())
-            ReentryPoint.Address -> KycNavXmlDirections.ActionStartAddressEntry(user.toProfileModel())
-            ReentryPoint.MobileEntry -> KycNavXmlDirections.ActionStartMobileVerification(user.requireCountryCode())
+            ReentryPoint.EmailEntry -> KycNavXmlDirections.actionStartEmailVerification()
+            ReentryPoint.CountrySelection -> KycNavXmlDirections.actionStartCountrySelection()
+            ReentryPoint.Profile -> KycNavXmlDirections.actionStartProfile(user.requireCountryCode())
+            ReentryPoint.Address -> KycNavXmlDirections.actionStartAddressEntry(user.toProfileModel())
+            ReentryPoint.MobileEntry -> KycNavXmlDirections.actionStartMobileVerification(user.requireCountryCode())
             ReentryPoint.Veriff -> {
                 val countryCode = user.requireCountryCode()
-                KycNavXmlDirections.ActionStartVeriff(countryCode)
+                KycNavXmlDirections.actionStartVeriff(countryCode)
             }
         }
 }

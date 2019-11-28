@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -35,12 +36,12 @@
             android:layout_marginTop="20dp"
             android:contentDescription="@string/fingerprint_login_title"
             android:paddingStart="24dp"
-            android:src="@drawable/ic_fingerprint_logo"
+            app:srcCompat="@drawable/ic_fingerprint_logo"
             tools:ignore="RtlCompat,RtlSymmetry" />
 
         <TextView
             android:id="@+id/textview_status"
-            style="@android:style/TextAppearance.Material.Body1"
+            style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/icon_fingerprint"

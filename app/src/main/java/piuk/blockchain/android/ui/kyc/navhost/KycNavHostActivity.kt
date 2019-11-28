@@ -5,8 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.app.Fragment
+import androidx.annotation.StringRes
+import androidx.fragment.app.Fragment
 import android.view.Menu
 import android.view.MenuItem
 import android.view.animation.DecelerateInterpolator
@@ -95,11 +95,11 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
     }
 
     override fun navigateToKycSplash() {
-        navController.navigate(KycNavXmlDirections.ActionDisplayKycSplash())
+        navController.navigate(KycNavXmlDirections.actionDisplayKycSplash())
     }
 
     override fun navigateToResubmissionSplash() {
-        navController.navigate(KycNavXmlDirections.ActionDisplayResubmissionSplash())
+        navController.navigate(KycNavXmlDirections.actionDisplayResubmissionSplash())
     }
 
     override fun incrementProgress(kycStep: KycStep) {

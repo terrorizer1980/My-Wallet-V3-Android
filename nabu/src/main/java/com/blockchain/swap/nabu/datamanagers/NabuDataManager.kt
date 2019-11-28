@@ -1,6 +1,6 @@
 package com.blockchain.swap.nabu.datamanagers
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.swap.nabu.models.nabu.NabuApiException
 import com.blockchain.swap.nabu.models.nabu.NabuCountryResponse
 import com.blockchain.swap.nabu.models.nabu.NabuErrorStatusCodes

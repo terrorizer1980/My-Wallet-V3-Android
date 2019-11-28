@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.remoteconfig.FeatureFlag

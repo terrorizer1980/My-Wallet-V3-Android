@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
-import android.support.design.widget.Snackbar
+import com.google.android.material.snackbar.Snackbar
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.models.nabu.NabuApiException
 import com.blockchain.swap.nabu.models.nabu.NabuErrorCodes

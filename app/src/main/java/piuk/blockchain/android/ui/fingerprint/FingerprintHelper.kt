@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.fingerprint
 
 import android.content.Context
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import android.util.Base64
 import com.mtramin.rxfingerprint.RxFingerprint
 import com.mtramin.rxfingerprint.data.FingerprintResult

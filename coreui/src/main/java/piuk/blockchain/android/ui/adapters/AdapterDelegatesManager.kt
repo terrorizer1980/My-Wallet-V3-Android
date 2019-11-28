@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.adapters
 
-import android.support.v4.util.SparseArrayCompat
-import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.collection.SparseArrayCompat
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * This class manages the [AdapterDelegate] objects and delegates functions to the appropriate

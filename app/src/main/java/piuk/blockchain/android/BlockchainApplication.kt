@@ -2,10 +2,10 @@ package piuk.blockchain.android
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.arch.lifecycle.ProcessLifecycleOwner
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockchain.koin.KoinStarter
 import com.blockchain.logging.CrashLogger
 import com.google.android.gms.common.ConnectionResult

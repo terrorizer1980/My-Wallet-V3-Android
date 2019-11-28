@@ -62,7 +62,7 @@
         android:textColor="@color/primary_grey_dark"
         android:textSize="12sp" />
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_backup_again"
         style="@style/ButtonStyle"
         android:layout_width="match_parent"

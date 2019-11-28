@@ -1,10 +1,10 @@
 package piuk.blockchain.android.ui.base.mvi
 
-import android.support.annotation.StringRes
-import android.support.annotation.UiThread
-import android.support.design.widget.BottomSheetDialogFragment
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
+import androidx.annotation.StringRes
+import androidx.annotation.UiThread
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AlertDialog
 import com.blockchain.notifications.analytics.Analytics
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy

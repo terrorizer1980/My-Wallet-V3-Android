@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import com.blockchain.accounts.AllAccountList
 import com.blockchain.datamanagers.MaximumSpendableCalculator
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees

@@ -2,17 +2,17 @@ package com.blockchain.ui.dialog
 
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialogFragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.accounts.AsyncAllAccountList
 import com.blockchain.balance.drawableResFilled
 import com.blockchain.balance.setImageDrawable
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import info.blockchain.balance.AccountReference
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -36,7 +36,7 @@ class AccountChooserBottomDialog : BottomSheetDialogFragment() {
 
     private val compositeDisposable = CompositeDisposable()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         callback = context as? Callback
             ?: NullCallBack

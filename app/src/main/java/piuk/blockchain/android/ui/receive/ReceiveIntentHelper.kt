@@ -6,9 +6,9 @@ import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.support.v4.content.FileProvider
 import android.util.Pair
 import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
 import com.blockchain.sunriver.StellarPayment
 import com.blockchain.sunriver.fromStellarUri
 import com.crashlytics.android.answers.ShareEvent

@@ -1,6 +1,6 @@
 package piuk.blockchain.androidcore.data.currency
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.extensions.exhaustive
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue

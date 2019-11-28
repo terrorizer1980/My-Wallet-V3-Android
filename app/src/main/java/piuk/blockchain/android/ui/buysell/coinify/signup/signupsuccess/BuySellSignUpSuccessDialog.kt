@@ -4,7 +4,7 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -50,7 +50,7 @@ class BuySellSignUpSuccessDialog : DialogFragment() {
         isFocusableInTouchMode = true
         requestFocus()
         isCancelable = false
-        dialog.window.setWindowAnimations(R.style.DialogNoAnimations)
+        dialog?.window?.setWindowAnimations(R.style.DialogNoAnimations)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -104,7 +104,7 @@ class BuySellSignUpSuccessDialog : DialogFragment() {
         super.onDestroy()
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is CoinifyFlowListener) {
             signUpListener = context

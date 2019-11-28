@@ -1,13 +1,10 @@
 package piuk.blockchain.android.ui.upgrade
 
 import android.content.Context
-import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.PagerAdapter
-import android.support.v4.view.ViewPager
-import android.support.v7.app.AlertDialog
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +14,9 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
+import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager.widget.ViewPager
 import piuk.blockchain.android.R
 import piuk.blockchain.android.databinding.ActivityUpgradeWalletBinding
 import com.blockchain.ui.password.SecondPasswordHandler

@@ -1,6 +1,6 @@
 package piuk.blockchain.android.data.datamanagers;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig;
 

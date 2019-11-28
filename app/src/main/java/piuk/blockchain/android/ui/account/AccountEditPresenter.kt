@@ -1,10 +1,10 @@
 package piuk.blockchain.android.ui.account
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import android.view.View
 import com.blockchain.notifications.analytics.AddressAnalytics
 import com.blockchain.notifications.analytics.Analytics
@@ -421,7 +421,7 @@ class AccountEditPresenter constructor(
                         .emptySubscribe()
 
                     accountModel.transferFundsVisibility = View.GONE
-                    view.setActivityResult(Activity.RESULT_OK)
+                    view.setActivityResult(AppCompatActivity.RESULT_OK)
                 },
                 { view.showToast(R.string.send_failed, ToastCustom.TYPE_ERROR) }
             )
@@ -468,7 +468,7 @@ class AccountEditPresenter constructor(
                 .subscribe(
                     {
                         accountModel.label = labelCopy
-                        view.setActivityResult(Activity.RESULT_OK)
+                        view.setActivityResult(AppCompatActivity.RESULT_OK)
                         analytics.logEvent(WalletAnalytics.EditWalletName)
                     },
                     { revertLabelAndShowError(revertLabel) }
@@ -533,7 +533,7 @@ class AccountEditPresenter constructor(
                     analytics.logEvent(WalletAnalytics.ChangeDefault)
                     updateSwipeToReceiveAddresses()
                     getView().updateAppShortcuts()
-                    getView().setActivityResult(Activity.RESULT_OK)
+                    getView().setActivityResult(AppCompatActivity.RESULT_OK)
                 },
                 { revertDefaultAndShowError(revertDefault) }
             )
@@ -627,7 +627,7 @@ class AccountEditPresenter constructor(
             .doOnError { Timber.e(it) }
             .subscribe(
                 {
-                    view.setActivityResult(Activity.RESULT_OK)
+                    view.setActivityResult(AppCompatActivity.RESULT_OK)
                     accountModel.scanPrivateKeyVisibility = View.GONE
                     accountModel.archiveVisibility = View.VISIBLE
 
@@ -773,7 +773,7 @@ class AccountEditPresenter constructor(
                     updateTransactions.emptySubscribe()
                     analytics.logEvent(AddressAnalytics.DeleteAddressLabel)
                     updateArchivedUi(isArchived, archivable)
-                    view.setActivityResult(Activity.RESULT_OK)
+                    view.setActivityResult(AppCompatActivity.RESULT_OK)
                     if (!isArchived)
                         analytics.logEvent(WalletAnalytics.UnArchiveWallet)
                     else
@@ -848,7 +848,7 @@ class AccountEditPresenter constructor(
                 {
                     // Subscribe to new address only if successfully created
                     view.sendBroadcast(PayloadSyncedEvent())
-                    view.setActivityResult(Activity.RESULT_OK)
+                    view.setActivityResult(AppCompatActivity.RESULT_OK)
                 },
                 { view.showToast(R.string.remote_save_ko, ToastCustom.TYPE_ERROR) }
             )

@@ -3,9 +3,8 @@ package piuk.blockchain.android.ui.dashboard.assetdetails
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.design.widget.TabLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.AppCompatTextView
 import android.view.View
 import com.blockchain.balance.currencyName
 import com.blockchain.balance.setCoinIcon
@@ -16,6 +15,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.google.android.material.tabs.TabLayout
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.data.PriceDatum
@@ -339,7 +339,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
         super.onSheetHidden()
     }
 
-    override fun onCancel(dialog: DialogInterface?) {
+    override fun onCancel(dialog: DialogInterface) {
         host.onSheetClosed()
         super.onCancel(dialog)
     }

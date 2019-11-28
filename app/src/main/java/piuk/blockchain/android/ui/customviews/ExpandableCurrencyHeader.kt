@@ -5,11 +5,7 @@ import android.content.Context
 import android.graphics.Outline
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.support.annotation.DrawableRes
-import android.support.graphics.drawable.VectorDrawableCompat
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.content.res.AppCompatResources
-import android.support.v7.view.ContextThemeWrapper
+import androidx.annotation.DrawableRes
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +15,10 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.blockchain.balance.coinIconWhite
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents

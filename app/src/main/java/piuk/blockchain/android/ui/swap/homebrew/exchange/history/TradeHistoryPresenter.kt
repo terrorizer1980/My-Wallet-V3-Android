@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange.history
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.swap.common.trade.MorphTradeDataHistoryList
 import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade

@@ -1,13 +1,12 @@
 package piuk.blockchain.android.ui.customviews;
 
 import android.content.Context;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
-
+import com.google.android.material.textfield.TextInputLayout;
 import piuk.blockchain.android.R;
 
 /**

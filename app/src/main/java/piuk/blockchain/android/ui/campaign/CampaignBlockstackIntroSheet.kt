@@ -40,7 +40,7 @@ class CampaignBlockstackIntroSheet : SlidingModalBottomDialog() {
         analytics.logEvent(BlockstackAnalyticsEvent.IntroSheetShown)
     }
 
-    override fun onCancel(dialog: DialogInterface?) {
+    override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         analytics.logEvent(BlockstackAnalyticsEvent.IntroSheetDismissed)
     }
@@ -53,7 +53,9 @@ class CampaignBlockstackIntroSheet : SlidingModalBottomDialog() {
 
     override fun onSheetHidden() {
         super.onSheetHidden()
-        onCancel(dialog)
+        dialog?.let {
+            onCancel(it)
+        }
     }
 
     companion object {

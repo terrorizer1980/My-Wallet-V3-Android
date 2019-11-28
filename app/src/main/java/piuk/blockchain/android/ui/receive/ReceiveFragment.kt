@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.receive
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -8,23 +8,22 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.design.widget.BottomSheetDialog
-import android.support.design.widget.CoordinatorLayout
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.extensions.exhaustive
 import com.blockchain.notifications.analytics.RequestAnalyticsEvents
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.payload.data.Account
@@ -417,7 +416,7 @@ class ReceiveFragment : HomeScreenMvpFragment<ReceiveView, ReceivePresenter>(),
         handlingActivityResult = true
 
         // Set receiving account
-        if (resultCode == Activity.RESULT_OK &&
+        if (resultCode == AppCompatActivity.RESULT_OK &&
             requestCode == REQUEST_CODE_RECEIVE_BITCOIN &&
             data != null
         ) {
@@ -426,7 +425,7 @@ class ReceiveFragment : HomeScreenMvpFragment<ReceiveView, ReceivePresenter>(),
                 is Account -> presenter.onAccountBtcSelected(account)
                 else -> presenter.onSelectDefault(selectedAccountPosition)
             }
-        } else if (resultCode == Activity.RESULT_OK &&
+        } else if (resultCode == AppCompatActivity.RESULT_OK &&
             requestCode == REQUEST_CODE_RECEIVE_BITCOIN_CASH &&
             data != null
         ) {

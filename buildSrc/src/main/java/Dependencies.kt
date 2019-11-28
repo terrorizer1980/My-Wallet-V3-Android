@@ -5,7 +5,7 @@ object Versions {
     // Release info
     const val minSdk = 21
     const val targetSdk = 28
-    const val compileSdk = 27
+    const val compileSdk = 28
     const val versionCode = 491
     const val versionName = "6.30.0"
     const val buildTools = "28.0.3"
@@ -20,19 +20,28 @@ object Versions {
     const val kotlinJvmTarget = "1.6"
     const val javaCompatibilityVersion = 1.7
 
+    // Androidx Libraries
+    const val appCompact = "1.1.0"
+    const val recyclerview = "1.1.0"
+    const val cardview = "1.0.0"
+    const val gridlayout = "1.0.0"
+    const val design = "1.0.0"
+    const val preference = "1.1.0"
+    const val dynamicanimation = "1.0.0"
+    const val annotations = "1.1.0"
+    const val constraintLayout = "1.1.0"
+    const val multidex = "2.0.1"
+    const val navigation = "2.1.0"
+    const val lifecycle = "2.1.0"
+
     // Support Libraries
-    const val supportLibs = "27.1.1"
     const val googleServices = "16.0.0"
     const val googlePlayCore = "1.6.1"
     const val firebaseMessaging = "17.3.3"
     const val firebaseCore = "16.0.4"
     const val firebaseConfig = "16.0.1"
     const val firebaseDynamicLink = "16.1.2"
-    const val constraintLayout = "1.1.3"
     const val supportTesting = "1.0.2"
-    const val multidex = "1.0.3"
-    const val navigation = "1.0.0-alpha06"
-    const val lifecycle_version = "1.1.1"
 
     // Networking, RxJava
     const val retrofit = "2.6.1"
@@ -103,8 +112,9 @@ object Versions {
     const val junit = "4.12"
     const val robolectric = "4.3"
     const val json = "20140107"
-    const val espresso = "3.0.1"
+    const val espresso = "3.2.0"
     const val jacoco = "0.8.1"
+    const val androidxTesting = "1.1.1"
 }
 
 object Libraries {
@@ -120,23 +130,23 @@ object Libraries {
     const val ktlint = "com.github.shyiko:ktlint:${Versions.ktlint}"
 
     // Support Libraries
-    const val appCompat = "com.android.support:appcompat-v7:${Versions.supportLibs}"
-    const val recyclerView = "com.android.support:recyclerview-v7:${Versions.supportLibs}"
-    const val cardView = "com.android.support:cardview-v7:${Versions.supportLibs}"
-    const val gridLayout = "com.android.support:gridlayout-v7:${Versions.supportLibs}"
-    const val design = "com.android.support:design:${Versions.supportLibs}"
-    const val v13 = "com.android.support:support-v13:${Versions.supportLibs}"
-    const val v14 = "com.android.support:preference-v14:${Versions.supportLibs}"
-    const val dynamicAnims = "com.android.support:support-dynamic-animation:${Versions.supportLibs}"
-    const val annotations = "com.android.support:support-annotations:${Versions.supportLibs}"
-    const val constraintLayout = "com.android.support.constraint:constraint-layout:${Versions.constraintLayout}"
-    const val multidex = "com.android.support:multidex:${Versions.multidex}"
-    const val navigationControllerCore = "android.arch.navigation:navigation-ui:${Versions.navigation}"
-    const val navigationControllerFragments = "android.arch.navigation:navigation-fragment:${Versions.navigation}"
+    const val appCompat = "androidx.appcompat:appcompat:${Versions.appCompact}"
+    const val recyclerView = "androidx.recyclerview:recyclerview:${Versions.recyclerview}"
+    const val cardView = "androidx.cardview:cardview:${Versions.cardview}"
+    const val gridLayout = "androidx.gridlayout:gridlayout:${Versions.gridlayout}"
+    const val design = "com.google.android.material:material:${Versions.design}"
+    const val v14 = "androidx.preference:preference:${Versions.preference}"
+    const val dynamicAnims = "androidx.dynamicanimation:dynamicanimation:${Versions.dynamicanimation}"
+    const val annotations = "androidx.annotations:annotations:${Versions.annotations}"
+    const val constraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
+    const val multidex = "androidx.multidex:multidex:${Versions.multidex}"
+
+    const val navigationControllerCore = "androidx.navigation:navigation-ui:${Versions.navigation}"
+    const val navigationControllerFragments = "androidx.navigation:navigation-fragment:${Versions.navigation}"
     const val navigationControllerSafeArgsPlugin =
-        "android.arch.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
-    const val lifecycleViewModel = "android.arch.lifecycle:viewmodel:${Versions.lifecycle_version}"
-    const val lifecycleExtensions = "android.arch.lifecycle:extensions:${Versions.lifecycle_version}"
+        "androidx.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
+    const val lifecycleViewModel = "androidx.lifecycle:lifecycle-viewmodel:${Versions.lifecycle}"
+    const val lifecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycle}"
 
     // Google & Firebase
     const val firebaseCore = "com.google.firebase:firebase-core:${Versions.firebaseCore}"
@@ -229,9 +239,9 @@ object Libraries {
     const val junit = "junit:junit:${Versions.junit}"
     const val robolectric = "org.robolectric:robolectric:${Versions.robolectric}"
     const val json = "org.json:json:${Versions.json}"
-    const val testRules = "com.android.support.test:rules:${Versions.supportTesting}"
-    const val testRunner = "com.android.support.test:runner:${Versions.supportTesting}"
-    const val espresso = "com.android.support.test.espresso:espresso-core:${Versions.espresso}"
+    const val testRules = "androidx.test:rules:${Versions.androidxTesting}"
+    const val testRunner = "androidx.test:runner:${Versions.androidxTesting}"
+    const val espresso = "androidx.test.espresso:espresso-core:${Versions.espresso}"
     const val retrofitMock = "com.squareup.retrofit2:retrofit-mock:${Versions.retrofit}"
     const val okHttpMock = "com.squareup.okhttp3:mockwebserver:${Versions.okHttp}"
     const val mockWebServer = "com.github.fabric8io:mockwebserver:${Versions.mockWebServer}"
