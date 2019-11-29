@@ -171,7 +171,7 @@
 
             <Button
                 android:id="@+id/button_confirm_sell"
-                style="@style/ButtonStyle"
+                style="@style/CtaButton.Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
@@ -180,7 +180,6 @@
                 android:layout_marginBottom="16dp"
                 android:text="@string/submit"
                 android:enabled="false"
-                android:theme="@style/ButtonLightBlueTheme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

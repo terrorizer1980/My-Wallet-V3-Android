@@ -15,8 +15,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
             android:paddingTop="32dp"
+            android:paddingBottom="16dp"
             android:text="@string/backup_verify_heading"
             android:textColor="@color/primary_grey_dark"
             android:textSize="14sp" />
@@ -40,14 +40,13 @@
 
     <Button
         android:id="@+id/button_verify"
-        style="@style/ButtonStyle"
+        style="@style/CtaButton.Blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
         android:layout_marginTop="24dp"
-        android:text="@string/verify"
-        android:theme="@style/ButtonLightBlueTheme" />
+        android:layout_marginRight="32dp"
+        android:text="@string/verify" />
 
 </LinearLayout>

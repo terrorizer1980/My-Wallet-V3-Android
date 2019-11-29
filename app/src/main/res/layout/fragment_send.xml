@@ -403,7 +403,7 @@
 
                     <Button
                         android:id="@+id/buttonContinue"
-                        style="@style/ButtonStyle"
+                        style="@style/CtaButton.Blue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -412,7 +412,6 @@
                         android:paddingLeft="32dp"
                         android:paddingRight="32dp"
                         android:text="@string/btn_continue"
-                        android:theme="@style/ButtonLightBlueTheme"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/arbitraryWarning" />

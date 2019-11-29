@@ -7,21 +7,20 @@
 
     <Button
         android:id="@+id/button_buy"
-        style="@style/ButtonStyle"
+        style="@style/CtaButton.Blue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="12dp"
         android:layout_marginTop="24dp"
         android:text="@string/buy_sell_buy"
-        android:theme="@style/ButtonBlueTheme"
         app:layout_constraintEnd_toStartOf="@id/button_sell"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button_sell"
-        style="@style/ButtonStyle"
+        style="@style/CtaButton.Blue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"

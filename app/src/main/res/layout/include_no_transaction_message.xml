@@ -48,13 +48,12 @@
 
             <Button
                 android:id="@+id/button_get_bitcoin"
-                style="@style/ButtonStyle"
+                style="@style/CtaButton.Blue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:text="@string/onboarding_get_bitcoin"
-                android:theme="@style/ButtonLightBlueTheme" />
+                android:text="@string/onboarding_get_bitcoin" />
 
         </LinearLayout>
 

@@ -209,7 +209,7 @@
 
             <Button
                 android:id="@+id/button_finish_payment"
-                style="@style/ButtonStyle"
+                style="@style/CtaButton.Blue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
@@ -217,7 +217,6 @@
                 android:layout_marginRight="32dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/buy_sell_awaiting_funds_finish_payment"
-                android:theme="@style/ButtonLightBlueTheme"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

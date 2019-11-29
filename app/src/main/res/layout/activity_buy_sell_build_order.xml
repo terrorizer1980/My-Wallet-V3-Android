@@ -270,7 +270,7 @@
 
             <Button
                 android:id="@+id/button_review_order"
-                style="@style/ButtonStyle"
+                style="@style/CtaButton.Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
@@ -279,7 +279,6 @@
                 android:layout_marginBottom="32dp"
                 android:enabled="false"
                 android:text="@string/buy_sell_review_transaction"
-                android:theme="@style/ButtonLightBlueTheme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -58,7 +58,7 @@
 
         <Button
             android:id="@+id/button_swap_now"
-            style="@style/ButtonStyle"
+            style="@style/CtaButton.Blue"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginStart="16dp"
@@ -66,7 +66,6 @@
             android:layout_marginEnd="16dp"
             android:text="@string/swap_now"
             android:textAllCaps="false"
-            android:theme="@style/ButtonLightBlueTheme"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,7 +73,7 @@
 
         <Button
             android:id="@+id/button_learn_more"
-            style="@style/ButtonStyle"
+            style="@style/CtaButton.Blue"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginStart="16dp"
@@ -82,7 +81,6 @@
             android:layout_marginEnd="16dp"
             android:text="@string/learn_more"
             android:textAllCaps="false"
-            android:theme="@style/ButtonLightBlueTheme"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

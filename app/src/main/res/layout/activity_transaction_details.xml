@@ -301,14 +301,13 @@
                 <!-- CONFIRMATION BUTTON -->
                 <Button
                     android:id="@+id/button_verify"
-                    style="@style/ButtonStyle"
+                    style="@style/CtaButton.Blue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="@string/transaction_detail_verify"
-                    android:theme="@style/ButtonLightBlueTheme" />
+                    android:text="@string/transaction_detail_verify"/>
 
             </LinearLayout>
         </ScrollView>
