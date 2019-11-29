@@ -157,10 +157,10 @@ class MainPresenterTest {
 
         // Act
         subject.onViewReady()
-        subject.startSwapOrKyc(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(toCurrency = CryptoCurrency.ETHER, fromCurrency = CryptoCurrency.BTC)
 
         // Assert
-        verify(view, never()).launchSwap(any(), any())
+        verify(view, never()).launchSwap(any(), any(), any())
         verify(view, never()).launchSwapIntro()
         verify(view).launchKyc(CampaignType.Swap)
     }
@@ -172,10 +172,12 @@ class MainPresenterTest {
         whenever(nabuDatamanager.getUser(any())).thenReturn(Single.just(userTierOne))
         // Act
         subject.onViewReady()
-        subject.startSwapOrKyc(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(toCurrency = CryptoCurrency.ETHER, fromCurrency = CryptoCurrency.BTC)
 
         // Assert
-        verify(view).launchSwap("USD", CryptoCurrency.ETHER)
+        verify(view).launchSwap(defCurrency = "USD",
+            toCryptoCurrency = CryptoCurrency.ETHER,
+            fromCryptoCurrency = CryptoCurrency.BTC)
         verify(view, never()).launchKyc(CampaignType.Swap)
         verify(view, never()).launchSwapIntro()
     }
@@ -188,10 +190,13 @@ class MainPresenterTest {
 
         // Act
         subject.onViewReady()
-        subject.startSwapOrKyc(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(toCurrency = CryptoCurrency.ETHER, fromCurrency = CryptoCurrency.BTC)
 
         // Assert
-        verify(view).launchSwap("USD", CryptoCurrency.ETHER)
+        verify(view).launchSwap("USD",
+            toCryptoCurrency = CryptoCurrency.ETHER,
+            fromCryptoCurrency = CryptoCurrency.BTC
+        )
         verify(view, never()).launchKyc(CampaignType.Swap)
         verify(view, never()).launchSwapIntro()
     }
@@ -205,7 +210,7 @@ class MainPresenterTest {
 
         // Act
         subject.onViewReady()
-        subject.startSwapOrKyc(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(toCurrency = CryptoCurrency.ETHER, fromCurrency = CryptoCurrency.BTC)
 
         // Assert
         verify(view, never()).launchSwap("USD", CryptoCurrency.ETHER)

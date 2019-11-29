@@ -36,7 +36,7 @@ enum class CryptoCurrency(
         requiredConfirmations = 3,
         featureFlags =
             CryptoCurrency.PRICE_CHARTING or
-            CryptoCurrency.MULTI_WALLET
+                    CryptoCurrency.MULTI_WALLET
     ),
     XLM(
         symbol = "XLM",
@@ -69,8 +69,13 @@ enum class CryptoCurrency(
 
     fun hasFeature(feature: Long): Boolean = (0L != (featureFlags and feature))
 
-    companion object {
+    val defaultSwapTo: CryptoCurrency
+        get() = when (this) {
+            BTC -> ETHER
+            else -> BTC
+        }
 
+    companion object {
         fun fromSymbol(symbol: String?): CryptoCurrency? =
             values().firstOrNull { it.symbol.equals(symbol, ignoreCase = true) }
 

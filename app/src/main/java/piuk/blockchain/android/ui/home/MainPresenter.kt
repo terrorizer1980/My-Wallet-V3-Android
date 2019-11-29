@@ -71,6 +71,7 @@ interface MainView : MvpView, HomeNavigator {
 
     @Deprecated("Used for processing deep links. Find a way to get rid of this")
     fun getStartIntent(): Intent
+
     fun onHandleInput(strUri: String)
     fun startBalanceFragment()
     fun kickToLauncherPage()
@@ -155,7 +156,7 @@ class MainPresenter internal constructor(
         }
     }
 
-    override fun onViewDetached() { }
+    override fun onViewDetached() {}
 
     private fun setPitTitle() {
         compositeDisposable += pitABTestingExperiment.getABVariant(ABTestExperiment.AB_THE_PIT_SIDE_NAV_VARIANT).map {
@@ -504,7 +505,7 @@ class MainPresenter internal constructor(
         accessState.logout()
     }
 
-    internal fun startSwapOrKyc(targetCurrency: CryptoCurrency? /* = null*/) {
+    internal fun startSwapOrKyc(toCurrency: CryptoCurrency?, fromCurrency: CryptoCurrency?) {
         val nabuUser = nabuToken.fetchNabuToken().flatMap {
             nabuDataManager.getUser(it)
         }
@@ -512,8 +513,9 @@ class MainPresenter internal constructor(
             .subscribeBy(onError = { it.printStackTrace() }, onSuccess = { nabuUser ->
                 if (nabuUser.tiers?.current ?: 0 > 0) {
                     view?.launchSwap(
-                        prefs.selectedFiatCurrency,
-                        targetCurrency
+                        defCurrency = prefs.selectedFiatCurrency,
+                        toCryptoCurrency = toCurrency,
+                        fromCryptoCurrency = fromCurrency
                     )
                 } else {
                     if (nabuUser.kycState == KycState.Rejected ||

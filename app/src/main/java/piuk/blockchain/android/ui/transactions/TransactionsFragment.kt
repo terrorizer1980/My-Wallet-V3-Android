@@ -349,7 +349,8 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         currency_header?.setCurrentlySelectedCurrency(cryptoCurrency)
     }
 
-    override fun startSwapOrKyc(targetCurrency: CryptoCurrency) = navigator().launchSwapOrKyc(targetCurrency)
+    override fun startSwapOrKyc(targetCurrency: CryptoCurrency) =
+        navigator().launchSwapOrKyc(targetCurrency = targetCurrency)
 
     override fun getCurrentAccountPosition() = accounts_spinner.selectedItemPosition
 

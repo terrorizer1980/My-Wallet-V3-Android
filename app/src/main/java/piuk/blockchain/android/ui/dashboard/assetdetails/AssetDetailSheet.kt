@@ -62,7 +62,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
         fun goToReceiveFor(cryptoCurrency: CryptoCurrency)
         fun onSheetClosed()
         fun goToBuy()
-        fun gotoSwapFor(cryptoCurrency: CryptoCurrency)
+        fun gotoSwapWithCurrencies(fromCryptoCurrency: CryptoCurrency, toCryptoCurrency: CryptoCurrency)
     }
 
     private val host: Host by lazy {
@@ -99,7 +99,8 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             }
 
             buy_swap_tabs.swap_btn.setOnClickListener {
-                host.gotoSwapFor(cryptoCurrency)
+                host.gotoSwapWithCurrencies(fromCryptoCurrency = cryptoCurrency,
+                    toCryptoCurrency = cryptoCurrency.defaultSwapTo)
             }
 
             buy_swap_tabs.buy_button.setOnClickListener {

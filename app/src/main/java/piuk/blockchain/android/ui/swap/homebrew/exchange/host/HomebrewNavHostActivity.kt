@@ -65,6 +65,10 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
         (intent.getSerializableExtra(EXTRA_PRESELECTED_TO_CURRENCY) as? CryptoCurrency) ?: CryptoCurrency.ETHER
     }
 
+    private val preselectedFromCurrency by lazy {
+        (intent.getSerializableExtra(EXTRA_PRESELECTED_FROM_CURRENCY) as? CryptoCurrency) ?: CryptoCurrency.BTC
+    }
+
     override val exchangeViewModel: ExchangeModel by viewModel()
 
     private val startKyc: StartKyc by inject()
@@ -77,8 +81,12 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
         val args = ExchangeFragment.bundleArgs(defaultCurrency)
         compositeDisposable += allAccountList.allAccounts()
             .map { accounts ->
-                accounts.first { it.cryptoCurrency == preselectedToCurrency }
-            }.subscribeBy { exchangeViewModel.initWithPreselectedCurrency(it.cryptoCurrency) }
+                accounts.first { it.cryptoCurrency == preselectedFromCurrency } to
+                        accounts.first { it.cryptoCurrency == preselectedToCurrency }
+            }.subscribeBy { (from, to) ->
+                exchangeViewModel.initWithPreselectedToCurrency(to.cryptoCurrency)
+                exchangeViewModel.initWithPreselectedFromCurrency(from.cryptoCurrency)
+            }
 
         navController.navigate(R.id.exchangeFragment, args)
     }
@@ -240,12 +248,19 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     companion object {
         private const val EXTRA_DEFAULT_CURRENCY = "EXTRA_DEFAULT_CURRENCY"
         private const val EXTRA_PRESELECTED_TO_CURRENCY = "EXTRA_PRESELECTED_TO_CURRENCY"
+        private const val EXTRA_PRESELECTED_FROM_CURRENCY = "EXTRA_PRESELECTED_FROM_CURRENCY"
 
         @JvmStatic
-        fun start(context: Context, defaultCurrency: String, toCryptoCurrency: CryptoCurrency? = null) {
+        fun start(
+            context: Context,
+            defaultCurrency: String,
+            toCryptoCurrency: CryptoCurrency? = null,
+            fromCryptoCurrency: CryptoCurrency? = null
+        ) {
             Intent(context, HomebrewNavHostActivity::class.java).apply {
                 putExtra(EXTRA_DEFAULT_CURRENCY, defaultCurrency)
                 putExtra(EXTRA_PRESELECTED_TO_CURRENCY, toCryptoCurrency ?: CryptoCurrency.ETHER)
+                putExtra(EXTRA_PRESELECTED_FROM_CURRENCY, fromCryptoCurrency ?: CryptoCurrency.BTC)
             }.run { context.startActivity(this) }
         }
     }

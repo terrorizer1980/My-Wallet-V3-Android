@@ -134,7 +134,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                         analytics.logEvent(RequestAnalyticsEvents.TabItemClicked)
                     }
                     ITEM_SWAP -> {
-                        presenter.startSwapOrKyc(null)
+                        presenter.startSwapOrKyc(null, null)
                         analytics.logEvent(SwapAnalyticsEvents.SwapTabItemClick)
                     }
                 }
@@ -522,12 +522,19 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         KycNavHostActivity.startForResult(this, campaignType, KYC_STARTED)
     }
 
-    override fun launchSwap(defCurrency: String, targetCrypto: CryptoCurrency?) {
-        HomebrewNavHostActivity.start(this, defCurrency, targetCrypto)
+    override fun launchSwap(
+        defCurrency: String,
+        fromCryptoCurrency: CryptoCurrency?,
+        toCryptoCurrency: CryptoCurrency?
+    ) {
+        HomebrewNavHostActivity.start(context = this,
+            defaultCurrency = defCurrency,
+            fromCryptoCurrency = fromCryptoCurrency,
+            toCryptoCurrency = toCryptoCurrency)
     }
 
-    override fun launchSwapOrKyc(targetCurrency: CryptoCurrency?) {
-        presenter.startSwapOrKyc(targetCurrency)
+    override fun launchSwapOrKyc(targetCurrency: CryptoCurrency?, fromCryptoCurrency: CryptoCurrency?) {
+        presenter.startSwapOrKyc(toCurrency = targetCurrency, fromCurrency = fromCryptoCurrency)
     }
 
     @ButWhy("What does this really do? Who calls it?")

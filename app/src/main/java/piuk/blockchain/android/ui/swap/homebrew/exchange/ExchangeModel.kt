@@ -68,6 +68,7 @@ class ExchangeModel(
     private val maxSpendableDisposable = CompositeDisposable()
 
     private var preselectedToCryptoCurrency = CryptoCurrency.ETHER
+    private var preselectedFromCryptoCurrency = CryptoCurrency.BTC
 
     val quoteService: QuoteService by lazy {
         quoteServiceFactory.createQuoteService()
@@ -82,8 +83,12 @@ class ExchangeModel(
 
     private var accountThatHasCalculatedSpendable = AtomicReference<AccountReference?>()
 
-    fun initWithPreselectedCurrency(cryptoCurrency: CryptoCurrency) {
+    fun initWithPreselectedToCurrency(cryptoCurrency: CryptoCurrency) {
         preselectedToCryptoCurrency = cryptoCurrency
+    }
+
+    fun initWithPreselectedFromCurrency(cryptoCurrency: CryptoCurrency) {
+        preselectedFromCryptoCurrency = cryptoCurrency
     }
 
     override fun onCleared() {
@@ -105,7 +110,7 @@ class ExchangeModel(
                 ),
                 initial(
                     fiatCurrency,
-                    allAccountList[CryptoCurrency.BTC].defaultAccountReference(),
+                    allAccountList[preselectedFromCryptoCurrency].defaultAccountReference(),
                     allAccountList[preselectedToCryptoCurrency].defaultAccountReference()
                 )
             )

@@ -216,8 +216,8 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         navigator().launchBuySell()
     }
 
-    override fun gotoSwapFor(cryptoCurrency: CryptoCurrency) {
-        navigator().launchSwapOrKyc(cryptoCurrency)
+    override fun gotoSwapWithCurrencies(fromCryptoCurrency: CryptoCurrency, toCryptoCurrency: CryptoCurrency) {
+        navigator().launchSwapOrKyc(fromCryptoCurrency = fromCryptoCurrency, targetCurrency = toCryptoCurrency)
     }
 
     companion object {
