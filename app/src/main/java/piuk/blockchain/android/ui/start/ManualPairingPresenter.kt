@@ -9,6 +9,7 @@ import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.exceptions.DecryptionException
 import info.blockchain.wallet.exceptions.HDWalletException
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
@@ -50,8 +51,13 @@ class ManualPairingPresenter(
     private val analytics: Analytics
 ) : MvpPresenter<ManualPairingView>() {
 
-    override fun onViewAttached() { /* no-op */ }
-    override fun onViewDetached() { /* no-op */ }
+    val authCompositeDispossable = CompositeDisposable()
+
+    override fun onViewAttached() { /* no-op */
+    }
+
+    override fun onViewDetached() { /* no-op */
+    }
 
     override val alwaysDisableScreenshots = true
     override val enableLogoutTimer = false
@@ -137,7 +143,7 @@ class ManualPairingPresenter(
             // 2FA
             showCheckEmailDialog()
 
-            compositeDisposable += authDataManager.startPollingAuthStatus(guid, sessionId!!)
+            authCompositeDispossable += authDataManager.startPollingAuthStatus(guid, sessionId!!)
                 .subscribe({ payloadResponse ->
                     waitingForAuth = false
 
@@ -148,10 +154,10 @@ class ManualPairingPresenter(
                         checkTwoFactor(password, guid, Response.success(responseBody))
                     }
                 },
-                {
-                    waitingForAuth = false
-                    showErrorToast(R.string.auth_failed)
-                })
+                    {
+                        waitingForAuth = false
+                        showErrorToast(R.string.auth_failed)
+                    })
         } else {
             // No 2FA
             waitingForAuth = false
@@ -202,7 +208,7 @@ class ManualPairingPresenter(
     }
 
     private fun showCheckEmailDialog() {
-        compositeDisposable += authDataManager.createCheckEmailTimer()
+        authCompositeDispossable += authDataManager.createCheckEmailTimer()
             .doOnSubscribe {
                 view?.showProgressDialog(R.string.check_email_to_auth_login, ::onProgressCancelled)
             }
@@ -215,10 +221,10 @@ class ManualPairingPresenter(
                     view?.updateWaitingForAuthDialog(integer!!)
                 }
             },
-            {
-                showErrorToast(R.string.auth_failed)
-                waitingForAuth = false
-            })
+                {
+                    showErrorToast(R.string.auth_failed)
+                    waitingForAuth = false
+                })
     }
 
     internal fun onProgressCancelled() {
@@ -246,6 +252,10 @@ class ManualPairingPresenter(
     companion object {
         @VisibleForTesting
         internal val KEY_AUTH_REQUIRED = "authorization_required"
+    }
+
+    fun onViewDestroyed() {
+        authCompositeDispossable.clear()
     }
 }
 

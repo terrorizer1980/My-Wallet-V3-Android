@@ -124,6 +124,7 @@ class ManualPairingActivity : MvpActivity<ManualPairingView, ManualPairingPresen
             imm.hideSoftInputFromWindow(it.windowToken, 0)
         }
         dismissProgressDialog()
+        presenter.onViewDestroyed()
         super.onDestroy()
     }
 }

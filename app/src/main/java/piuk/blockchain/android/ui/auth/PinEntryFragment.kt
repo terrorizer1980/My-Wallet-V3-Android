@@ -231,9 +231,9 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
     }
 
     fun onBackPressed() {
-        if (presenter.isForValidatingPinForResult) {
+        if (presenter?.isForValidatingPinForResult == true) {
             finishWithResultCanceled()
-        } else if (presenter.allowExit()) {
+        } else if (presenter?.allowExit() == true) {
             if (backPressed + BuildConfig.EXIT_APP_COOLDOWN_MILLIS > System.currentTimeMillis()) {
                 presenter.clearLoginState()
                 return
