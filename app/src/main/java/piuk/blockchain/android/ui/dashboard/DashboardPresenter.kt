@@ -289,8 +289,8 @@ class DashboardPresenter(
 
     override fun startCampaignIntro(campaignType: CampaignType) {
         when (campaignType) {
-            CampaignType.Blockstack -> view.showBottomSheetDialog(
-                CampaignBlockstackIntroSheet.newInstance { view.startKycForStx() }
+            CampaignType.Blockstack -> view?.showBottomSheetDialog(
+                CampaignBlockstackIntroSheet.newInstance { view?.startKycForStx() }
             )
             else -> { /* no-op */
             }
