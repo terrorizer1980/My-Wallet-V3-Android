@@ -103,7 +103,7 @@ class KycNavHostPresenter(
                     onError = { Timber.e(it) },
                     onSuccess = { view.navigate(it) }
                 )
-        } else if (user.state != UserState.None && user.kycState == KycState.None && !view.isFromSettingsLimits) {
+        } else if (user.state != UserState.None && user.kycState == KycState.None && !view.showTiersLimitsSplash) {
             val current = user.tiers?.current
             if (current == null || current == 0) {
                 val reentryPoint = reentryDecision.findReentryPoint(user)

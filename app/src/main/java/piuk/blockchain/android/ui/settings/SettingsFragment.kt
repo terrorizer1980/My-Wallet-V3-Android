@@ -882,7 +882,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun launchKycFlow() {
-        KycNavHostActivity.start(requireContext(), CampaignType.Swap)
+        KycNavHostActivity.start(requireContext(), CampaignType.Swap, true)
         requireActivity().finish()
     }
 

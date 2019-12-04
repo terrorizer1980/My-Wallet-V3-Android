@@ -9,7 +9,7 @@ interface KycNavHostView : View {
 
     val campaignType: CampaignType
 
-    val isFromSettingsLimits: Boolean
+    val showTiersLimitsSplash: Boolean
 
     fun displayLoading(loading: Boolean)
 
