@@ -145,7 +145,7 @@ class MainPresenter internal constructor(
             logEvents()
 
             checkLockboxAvailability()
-            view?.showProgressDialog(R.string.please_wait)
+
             initMetadataElements()
 
             doPushNotifications()
@@ -213,12 +213,16 @@ class MainPresenter internal constructor(
     }
 
     internal fun initMetadataElements() {
-        compositeDisposable += metadataManager.attemptMetadataSetup()
+        compositeDisposable += metadataManager
+            .attemptMetadataSetup()
             .andThen(ethCompletable())
             .andThen(shapeShiftCompletable())
             .andThen(bchCompletable())
             .andThen(feesCompletable())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                view?.showProgressDialog(R.string.please_wait)
+            }
             .doAfterTerminate {
                 view?.hideProgressDialog()
 
@@ -228,26 +232,29 @@ class MainPresenter internal constructor(
                     view?.onHandleInput(strUri)
                 }
             }
-            .subscribe({
-                checkKycStatus()
-                setDebugExchangeVisibility()
-                initBuyService()
+            .subscribeBy(
+                onComplete = {
+                    checkKycStatus()
+                    setDebugExchangeVisibility()
+                    initBuyService()
 
-                rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
+                    rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
 
-                checkForPendingLinks()
-            }, { throwable ->
-                if (throwable is InvalidCredentialsException || throwable is HDWalletException) {
-                    if (payloadDataManager.isDoubleEncrypted) {
-                        // Wallet double encrypted and needs to be decrypted to set up ether wallet, contacts etc
-                        view?.showSecondPasswordDialog()
+                    checkForPendingLinks()
+                },
+                onError = { throwable ->
+                    if (throwable is InvalidCredentialsException || throwable is HDWalletException) {
+                        if (payloadDataManager.isDoubleEncrypted) {
+                            // Wallet double encrypted and needs to be decrypted to set up ether wallet, contacts etc
+                            view?.showSecondPasswordDialog()
+                        } else {
+                            logException(throwable)
+                        }
                     } else {
                         logException(throwable)
                     }
-                } else {
-                    logException(throwable)
                 }
-            })
+            )
     }
 
     fun handlePossibleDeepLink(url: String) {

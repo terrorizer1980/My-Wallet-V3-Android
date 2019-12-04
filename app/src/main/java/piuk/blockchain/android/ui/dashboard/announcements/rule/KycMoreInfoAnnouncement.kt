@@ -59,10 +59,10 @@ internal class KycMoreInfoAnnouncement(
                 ctaText = R.string.kyc_more_info_cta,
                 iconImage = R.drawable.ic_announce_kyc,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startKyc(CampaignType.Sunriver)
                 },
                 dismissEntry = dismissEntry,

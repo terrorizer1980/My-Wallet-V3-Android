@@ -16,7 +16,7 @@ data class PriceDatum(
     @JsonProperty("timestamp")
     val timestamp: Long = 0,
     @JsonProperty("price")
-    val price: Double = 0.0,
+    val price: Double? = 0.0,
     @JsonProperty("volume24h")
-    val volume24h: Double = 0.0
+    val volume24h: Double? = 0.0
 )

@@ -34,7 +34,7 @@ class BitpayAnnouncement(
                 bodyText = R.string.bitpay_announcement_body,
                 iconImage = R.drawable.ic_bitpay_logo,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 }
             )
         )

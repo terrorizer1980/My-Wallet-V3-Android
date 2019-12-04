@@ -37,11 +37,11 @@ class IntroTourAnnouncement(
                 ctaText = R.string.tour_card_cta,
                 dismissText = R.string.tour_card_dismiss,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     analytics.logEvent(IntroTourAnalyticsEvent.IntroDismissedAnalytics)
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startIntroTourGuide()
                     analytics.logEvent(IntroTourAnalyticsEvent.IntroStartedAnalytics)
                 },

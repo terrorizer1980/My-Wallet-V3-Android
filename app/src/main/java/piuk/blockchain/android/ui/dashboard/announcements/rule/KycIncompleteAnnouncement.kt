@@ -54,10 +54,10 @@ internal class KycIncompleteAnnouncement(
             ctaText = R.string.kyc_drop_off_card_button,
             iconImage = R.drawable.ic_announce_kyc,
             dismissFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                host.dismissAnnouncementCard()
             },
             ctaFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                host.dismissAnnouncementCard()
                 val campaignType = if (cardType == SunriverCardType.FinishSignUp) {
                     CampaignType.Sunriver
                 } else {

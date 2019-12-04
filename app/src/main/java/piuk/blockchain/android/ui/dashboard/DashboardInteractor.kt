@@ -23,7 +23,10 @@ class DashboardInteractor(
         val cd = CompositeDisposable()
         CryptoCurrency.activeCurrencies().forEach {
             cd += tokens[it].totalBalance(balanceFilter)
-                    .subscribeBy { balance -> model.process(BalanceUpdate(it, balance)) }
+                    .subscribeBy(
+                        onSuccess = { balance -> model.process(BalanceUpdate(it, balance)) },
+                        onError = { e -> Timber.e("Failed getting balance for $it: $e") }
+                    )
         }
         return cd
     }

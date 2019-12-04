@@ -26,28 +26,30 @@ abstract class MviModel<S : MviState, I : MviIntent<S>>(
     private val _state: BehaviorRelay<S> = BehaviorRelay.createDefault(initialState)
     val state: Observable<S> = _state.observeOn(observeScheduler)
 
-    private val compositeDisposable = CompositeDisposable()
+    private val disposables = CompositeDisposable()
     private val intents = ReplaySubject.create<I>()
 
     init {
-        compositeDisposable +=
+        disposables +=
             intents.distinctUntilChanged()
                 .observeOn(Schedulers.computation())
                 .scan(initialState) { previousState, intent ->
                     Timber.d("***> Model: ProcessIntent: ${intent.javaClass.simpleName}")
 
-                    performAction(intent)?.let { compositeDisposable += it }
+                    performAction(intent)?.let { disposables += it }
                     intent.reduce(previousState)
                 }.subscribeBy(
                     onNext = { newState ->
                         _state.accept(newState)
                     },
-                    onError = { Timber.e("***> Scan loop failed: $it") }
+                    onError = ::onScanLoopError
                 )
     }
 
     fun process(intent: I) = intents.onNext(intent)
-    fun destroy() = compositeDisposable.clear()
+    fun destroy() = disposables.clear()
+
+    protected open fun onScanLoopError(t: Throwable) {}
 
     protected abstract fun performAction(intent: I): Disposable?
 }

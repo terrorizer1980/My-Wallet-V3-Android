@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.dashboard
 
+import androidx.annotation.VisibleForTesting
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -11,6 +12,7 @@ import io.reactivex.disposables.Disposable
 import piuk.blockchain.android.coincore.BalanceFilter
 import piuk.blockchain.android.ui.base.mvi.MviModel
 import piuk.blockchain.android.ui.base.mvi.MviState
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import timber.log.Timber
 
@@ -20,6 +22,11 @@ class AssetMap(private val map: Map<CryptoCurrency, AssetModel>) : Map<CryptoCur
     }
 
     // TODO: This is horrendously inefficient. Fix it!
+    fun copy(): AssetMap {
+        val assets = toMutableMap()
+        return AssetMap(assets)
+    }
+
     fun copy(patchBalance: CryptoValue): AssetMap {
         val assets = toMutableMap()
         val value = get(patchBalance.currency).copy(cryptoBalance = patchBalance)
@@ -32,9 +39,16 @@ class AssetMap(private val map: Map<CryptoCurrency, AssetModel>) : Map<CryptoCur
         assets[patchAsset.currency] = patchAsset
         return AssetMap(assets)
     }
+
+    fun reset(): AssetMap {
+        val assets = toMutableMap()
+        map.values.forEach { assets[it.currency] = it.reset() }
+        return AssetMap(assets)
+    }
 }
 
-private fun mapOfAssets(vararg pairs: Pair<CryptoCurrency, AssetModel>) = AssetMap(mapOf(*pairs))
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+fun mapOfAssets(vararg pairs: Pair<CryptoCurrency, AssetModel>) = AssetMap(mapOf(*pairs))
 
 interface DashboardItem
 
@@ -46,6 +60,11 @@ interface BalanceModel : DashboardItem {
     operator fun get(currency: CryptoCurrency): AssetModel
 }
 
+enum class PromoSheet {
+    PROMO_STX_CAMPAIGN_INTO,
+    PROMO_STX_CAMPAIGN_COMPLETE,
+}
+
 data class DashboardState(
     val assets: AssetMap = mapOfAssets(
         CryptoCurrency.BTC to AssetModel(CryptoCurrency.BTC),
@@ -54,13 +73,16 @@ data class DashboardState(
         CryptoCurrency.XLM to AssetModel(CryptoCurrency.XLM),
         CryptoCurrency.PAX to AssetModel(CryptoCurrency.PAX)
     ),
-    val isRefreshing: Boolean = true,
-    val showAssetSheetFor: CryptoCurrency? = null
+    val showAssetSheetFor: CryptoCurrency? = null,
+    val showPromoSheet: PromoSheet? = null,
+    val announcement: AnnouncementCard? = null
 
 ) : MviState, BalanceModel {
 
-    override val isLoading
-        get() = isRefreshing
+    // If ALL the assets are refreshing, then report true. Else false
+    override val isLoading: Boolean by unsafeLazy {
+        assets.values.all { it.isLoading }
+    }
 
     override val fiatBalance: FiatValue? by unsafeLazy {
         assets.values
@@ -111,6 +133,8 @@ data class AssetModel(
     val isLoading: Boolean by unsafeLazy {
         cryptoBalance == null || price == null || price24h == null
     }
+
+    fun reset(): AssetModel = AssetModel(currency)
 }
 
 class DashboardModel(
@@ -133,8 +157,13 @@ class DashboardModel(
             is RefreshPrices -> interactor.refreshPrices(this, intent.cryptoCurrency)
             is PriceUpdate -> interactor.refreshPriceHistory(this, intent.cryptoCurrency)
             is PriceHistoryUpdate,
+            is ClearAnnouncement,
+            is ShowAnnouncement,
             is ShowAssetDetails,
-            is HideAssetDetails -> null
+            is ShowPromoSheet,
+            is ClearBottomSheet -> null
         }
     }
+
+    override fun onScanLoopError(t: Throwable) { Timber.e("***> Scan loop failed: $t") }
 }

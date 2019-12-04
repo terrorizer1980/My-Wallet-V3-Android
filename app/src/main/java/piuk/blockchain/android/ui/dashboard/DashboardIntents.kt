@@ -4,15 +4,14 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import piuk.blockchain.android.ui.base.mvi.MviIntent
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.androidcore.data.charts.PriceSeries
-import timber.log.Timber
 
 sealed class DashboardIntent : MviIntent<DashboardState>
 
 object RefreshAllIntent : DashboardIntent() {
     override fun reduce(oldState: DashboardState): DashboardState {
-        Timber.d("***> RefreshAllIntent.reduce()")
-        return DashboardState(isRefreshing = true)
+        return oldState.copy(assets = oldState.assets.reset())
     }
 }
 
@@ -21,16 +20,15 @@ class BalanceUpdate(
     private val newBalance: CryptoValue
 ) : DashboardIntent() {
     override fun reduce(oldState: DashboardState): DashboardState {
-        Timber.d("***> BalanceUpdate.reduce()")
 
-        return DashboardState(
-            assets = oldState.assets.copy(patchAsset = updateAsset(newBalance)),
-            isRefreshing = false
-        )
+        require(cryptoCurrency == newBalance.currency) { throw IllegalStateException("CryptoCurrency mismatch") }
+
+        val oldAsset = oldState[cryptoCurrency]
+        val newAsset = oldAsset.copy(cryptoBalance = newBalance)
+        val newAssets = oldState.assets.copy(patchAsset = newAsset)
+
+        return oldState.copy(assets = newAssets)
     }
-
-    private fun updateAsset(balance: CryptoValue) =
-        AssetModel(cryptoBalance = balance, currency = balance.currency)
 }
 
 class RefreshPrices(
@@ -45,15 +43,10 @@ class PriceUpdate(
     private val oldPrice: FiatValue
 ) : DashboardIntent() {
     override fun reduce(oldState: DashboardState): DashboardState {
-        Timber.d("***> PriceUpdate.reduce()")
-
         val oldAsset = oldState.assets[cryptoCurrency]
         val newAsset = updateAsset(oldAsset, latestPrice, oldPrice)
 
-        return oldState.copy(
-            assets = oldState.assets.copy(patchAsset = newAsset),
-            isRefreshing = false
-        )
+        return oldState.copy(assets = oldState.assets.copy(patchAsset = newAsset))
     }
 
     private fun updateAsset(
@@ -73,16 +66,11 @@ class PriceHistoryUpdate(
     private val historicPrices: PriceSeries
 ) : DashboardIntent() {
     override fun reduce(oldState: DashboardState): DashboardState {
-        Timber.d("***> PriceHistoryUpdate.reduce()")
-
         val oldAsset = oldState.assets[cryptoCurrency]
         val newAsset = updateAsset(oldAsset, historicPrices)
 
-            return oldState.copy(
-                assets = oldState.assets.copy(patchAsset = newAsset),
-                isRefreshing = false
-            )
-        }
+        return oldState.copy(assets = oldState.assets.copy(patchAsset = newAsset))
+    }
 
     private fun updateAsset(
         old: AssetModel,
@@ -94,16 +82,36 @@ class PriceHistoryUpdate(
     }
 }
 
+class ShowAnnouncement(private val card: AnnouncementCard) : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState {
+        return oldState.copy(announcement = card)
+    }
+}
+
+object ClearAnnouncement : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState {
+        return oldState.copy(announcement = null)
+    }
+}
+
 class ShowAssetDetails(
     private val cryptoCurrency: CryptoCurrency
 ) : DashboardIntent() {
     override fun reduce(oldState: DashboardState): DashboardState {
-        return oldState.copy(showAssetSheetFor = cryptoCurrency)
+        return oldState.copy(showAssetSheetFor = cryptoCurrency, showPromoSheet = null)
     }
 }
 
-object HideAssetDetails : DashboardIntent() {
+class ShowPromoSheet(
+    private val promoSheet: PromoSheet
+) : DashboardIntent() {
     override fun reduce(oldState: DashboardState): DashboardState {
-        return oldState.copy(showAssetSheetFor = null)
+        return oldState.copy(showPromoSheet = promoSheet, showAssetSheetFor = null)
+    }
+}
+
+object ClearBottomSheet : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState {
+        return oldState.copy(showPromoSheet = null, showAssetSheetFor = null)
     }
 }

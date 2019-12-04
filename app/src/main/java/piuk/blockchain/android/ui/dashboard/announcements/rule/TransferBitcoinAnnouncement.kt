@@ -36,10 +36,10 @@ class TransferBitcoinAnnouncement(
                 ctaText = R.string.transfer_btc_card_cta,
                 iconImage = R.drawable.ic_announce_transfer_btc,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startTransferCrypto()
                 }
             )

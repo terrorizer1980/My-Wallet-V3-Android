@@ -74,6 +74,9 @@ data class FiatValue private constructor(
 
     override fun toZero(): FiatValue = fromMajor(currencyCode, BigDecimal.ZERO)
 
+    override fun equals(other: Any?): Boolean =
+        (other is FiatValue) && (other.currencyCode == currencyCode) && (other.value.compareTo(value) == 0)
+
     companion object {
 
         fun fromMinor(currencyCode: String, minor: Long) =

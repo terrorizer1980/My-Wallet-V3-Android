@@ -36,10 +36,10 @@ internal class KycResubmissionAnnouncement(
             ctaText = R.string.kyc_resubmission_card_button,
             iconImage = R.drawable.ic_announce_kyc,
             dismissFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                host.dismissAnnouncementCard()
             },
             ctaFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                host.dismissAnnouncementCard()
                 host.startKyc(CampaignType.Resubmission)
             },
             dismissEntry = dismissEntry,

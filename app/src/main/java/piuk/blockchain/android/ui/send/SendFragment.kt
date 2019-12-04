@@ -763,7 +763,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
     }
 
     private fun setupFeesView() {
-        val adapter = FeePriorityAdapter(activity!!, presenter.getFeeOptionsForDropDown())
+        val adapter = FeePriorityAdapter(activity, presenter.getFeeOptionsForDropDown())
 
         spinnerPriority.adapter = adapter
 
@@ -1101,7 +1101,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
 
     override fun showLargeTransactionWarning() {
         coordinator_layout.postDelayed({
-            activity?.run {
+            activity.run {
                 AlertDialog.Builder(this, R.style.AlertDialogStyle)
                     .setCancelable(false)
                     .setTitle(R.string.warning)
@@ -1117,7 +1117,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
     }
 
     internal fun alertCustomSpend() {
-        activity?.run {
+        activity.run {
             AlertDialog.Builder(this, R.style.AlertDialogStyle)
                 .setTitle(R.string.transaction_fee)
                 .setMessage(R.string.fee_options_advanced_warning)
@@ -1217,7 +1217,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
             .setMinTransactionsUntilPrompt(3)
             .incrementTransactionCount()
         analytics.logEvent(BitPayEvent.ExpiredEvent)
-        activity?.run {
+        activity.run {
             val dialogBuilder = AlertDialog.Builder(this)
             val dialogView = View.inflate(activity, R.layout.modal_transaction_failed, null)
             bitpayInvoiceExpiredDialog = dialogBuilder.setView(dialogView)

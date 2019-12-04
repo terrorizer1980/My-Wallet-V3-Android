@@ -3,6 +3,7 @@ package piuk.blockchain.android.ui.receive
 import android.graphics.Bitmap
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import com.blockchain.extensions.exhaustive
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.isValidXlmQr
 import com.blockchain.sunriver.toUri
@@ -105,7 +106,8 @@ class ReceivePresenter(
             CryptoCurrency.BCH -> onSelectBchDefault()
             CryptoCurrency.XLM -> onXlmSelected()
             CryptoCurrency.PAX -> onPaxSelected()
-        }
+            CryptoCurrency.STX -> TODO("STX is not yet fully supported")
+        }.exhaustive
     }
 
     internal fun isValidAmount(btcAmount: String) = btcAmount.toSafeLong(Locale.getDefault()) > 0

@@ -41,10 +41,10 @@ class KycForAirdropsAnnouncement(
                 ctaText = R.string.kyc_airdrop_card_cta,
                 iconImage = R.drawable.ic_announce_kyc_airdrop,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startKyc(CampaignType.Sunriver)
                 }
             )

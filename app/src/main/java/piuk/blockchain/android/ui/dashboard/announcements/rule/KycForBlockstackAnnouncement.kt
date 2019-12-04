@@ -3,7 +3,6 @@ package piuk.blockchain.android.ui.dashboard.announcements.rule
 import androidx.annotation.VisibleForTesting
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
@@ -35,11 +34,11 @@ internal class KycForBlockstackAnnouncement(
             ctaText = R.string.stacks_airdrop_card_button,
             iconImage = R.drawable.ic_airdrop_parachute,
             dismissFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                host.dismissAnnouncementCard()
             },
             ctaFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
-                host.startCampaignIntro(CampaignType.Blockstack)
+                host.dismissAnnouncementCard()
+                host.startBlockstackIntro()
             },
             dismissEntry = dismissEntry,
             dismissRule = DismissRule.CardPeriodic

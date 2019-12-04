@@ -71,5 +71,4 @@ abstract class MviFragment<M : MviModel<S, I>, I : MviIntent<S>, S : MviState> :
     @UiThread
     fun showBottomSheet(bottomSheet: BottomSheetDialogFragment) =
         bottomSheet.show(childFragmentManager, "BOTTOM_SHEET")
-//        activity.showBottomSheet(bottomSheet)
 }

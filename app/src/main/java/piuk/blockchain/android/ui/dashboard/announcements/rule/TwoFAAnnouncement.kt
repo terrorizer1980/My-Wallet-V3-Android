@@ -41,10 +41,10 @@ class TwoFAAnnouncement(
                 ctaText = R.string.two_fa_card_cta,
                 iconImage = R.drawable.ic_announce_two_step,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startSetup2Fa()
                 }
             )

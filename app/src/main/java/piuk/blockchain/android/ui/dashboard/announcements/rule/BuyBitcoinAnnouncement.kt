@@ -40,10 +40,10 @@ class BuyBitcoinAnnouncement(
                 ctaText = R.string.buy_btc_card_cta,
                 iconImage = R.drawable.ic_announce_buy_btc,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startBuySell()
                 }
             )

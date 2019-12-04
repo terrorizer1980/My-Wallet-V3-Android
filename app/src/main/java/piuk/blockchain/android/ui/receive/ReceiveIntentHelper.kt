@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.util.Pair
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
+import com.blockchain.extensions.exhaustive
 import com.blockchain.sunriver.StellarPayment
 import com.blockchain.sunriver.fromStellarUri
 import com.crashlytics.android.answers.ShareEvent
@@ -61,7 +62,8 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
                 CryptoCurrency.BCH -> emailIntent.setupIntentForEmailBch(uri)
                 CryptoCurrency.XLM -> emailIntent.setupIntentForEmailXlm(payment = uri.fromStellarUri())
                 CryptoCurrency.PAX -> emailIntent.setupIntentForEmailPax(uri)
-            }
+                CryptoCurrency.STX -> TODO("STX is not fully supported yet")
+            }.exhaustive
 
             val imageIntent = Intent().apply { setupIntentForImage(type, file) }
 

@@ -1,20 +1,12 @@
 package piuk.blockchain.android.data.datamanagers
 
-import com.blockchain.balance.AsyncBalanceReporter
-import com.blockchain.balance.TotalBalance
 import com.blockchain.sunriver.XlmDataManager
-import com.blockchain.sunriver.balance.adapters.toAsyncBalanceReporter
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.payload.PayloadManager
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Observables
-import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.android.data.balance.adapters.toAsync
-import piuk.blockchain.android.data.balance.adapters.toAsyncBalanceReporter
-import piuk.blockchain.android.data.balance.adapters.toBalanceReporter
 import piuk.blockchain.android.data.datamanagers.models.XlmDisplayable
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
@@ -31,30 +23,6 @@ import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
 import java.util.ArrayList
 import java.util.HashMap
 
-@Deprecated("Use CoinCore")
-private sealed class AccountKey {
-
-    /**
-     * Represents your entire wallet
-     */
-    object EntireWallet : AccountKey()
-
-    /**
-     * Represents the watch only part of your wallet
-     */
-    object WatchOnly : AccountKey()
-
-    /**
-     * Represents just the imported addresses
-     */
-    object OnlyImported : AccountKey()
-
-    /**
-     * Represents just a single [address] within your wallet
-     */
-    class SingleAddress(val address: String) : AccountKey()
-}
-
 class TransactionListDataManager(
     private val payloadManager: PayloadManager,
     private val ethDataManager: EthDataManager,
@@ -63,8 +31,7 @@ class TransactionListDataManager(
     private val paxAccount: Erc20Account,
     private val transactionListStore: TransactionListStore,
     private val currencyState: CurrencyState
-) : TotalBalance {
-
+) {
     fun fetchTransactions(
         itemAccount: ItemAccount,
         limit: Int,
@@ -163,35 +130,6 @@ class TransactionListDataManager(
         ItemAccount.TYPE.ALL_LEGACY -> payloadManager.importedAddressesBalance.toLong()
         ItemAccount.TYPE.SINGLE_ACCOUNT -> payloadManager.getAddressBalance(itemAccount.address).toLong()
     }
-
-    @Deprecated("Use CoinCore")
-    override fun totalBalance(cryptoCurrency: CryptoCurrency) =
-        Singles.zip(
-            asyncBalance(cryptoCurrency, AccountKey.EntireWallet),
-            asyncBalance(cryptoCurrency, AccountKey.WatchOnly)
-        ).map { (spendable, watchonly) ->
-            TotalBalance.Balance(
-                spendable = spendable,
-                coldStorage = CryptoValue.zero(cryptoCurrency),
-                watchOnly = watchonly
-            )
-        }
-
-    /**
-     * Get total BTC balance from [AccountKey].
-     *
-     * @param accountKey [AccountKey]
-     * @return A value as a [CryptoValue] that matches the [CryptoCurrency] and specifications of the [accountKey].
-     */
-    private fun asyncBalance(cryptoCurrency: CryptoCurrency, accountKey: AccountKey): Single<CryptoValue> =
-        cryptoCurrency.toBalanceReporterAsync().let {
-            when (accountKey) {
-                is AccountKey.EntireWallet -> it.entireBalance()
-                is AccountKey.WatchOnly -> it.watchOnlyBalance()
-                is AccountKey.OnlyImported -> it.importedAddressBalance()
-                is AccountKey.SingleAddress -> it.addressBalance(accountKey.address)
-            }
-        }
 
     /**
      * Get total BCH balance from [ItemAccount].
@@ -340,16 +278,5 @@ class TransactionListDataManager(
         return flatMapIterable { list ->
             list.map { func(it) }
         }.toList().toObservable()
-    }
-
-    private fun CryptoCurrency.toBalanceReporterAsync(): AsyncBalanceReporter {
-        return when (this) {
-            CryptoCurrency.BTC -> payloadManager.toBalanceReporter().toAsync()
-            CryptoCurrency.BCH -> bchDataManager.toBalanceReporter().toAsync()
-            CryptoCurrency.ETHER -> ethDataManager.toAsyncBalanceReporter()
-            CryptoCurrency.XLM -> xlmDataManager.toAsyncBalanceReporter()
-            CryptoCurrency.PAX -> paxAccount.toAsyncBalanceReporter()
-            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        }
     }
 }

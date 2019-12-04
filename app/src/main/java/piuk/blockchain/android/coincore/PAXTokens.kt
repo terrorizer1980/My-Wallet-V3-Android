@@ -26,9 +26,8 @@ class PAXTokens(
     }
 
     override fun totalBalance(filter: BalanceFilter): Single<CryptoValue> =
-        erc20Account.fetchErc20Address()
-            .singleOrError()
-            .map { it.totalBalance }
+        erc20Account.getBalance()
+            .map { CryptoValue.usdPaxFromMinor(it) }
 
     override fun balance(account: AccountReference): Single<CryptoValue> {
         TODO("not implemented")

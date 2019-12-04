@@ -34,10 +34,10 @@ class VerifyEmailAnnouncement(
                 ctaText = R.string.verify_email_card_cta,
                 iconImage = R.drawable.ic_announce_verify_email,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startVerifyEmail()
                 }
             )

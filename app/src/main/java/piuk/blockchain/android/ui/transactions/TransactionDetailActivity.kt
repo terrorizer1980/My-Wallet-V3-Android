@@ -175,7 +175,8 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
         txt_status.text = status
 
         when (cryptoCurrency) {
-            CryptoCurrency.BTC, CryptoCurrency.ETHER -> button_verify.setText(R.string.transaction_detail_verify)
+            CryptoCurrency.BTC,
+            CryptoCurrency.ETHER -> button_verify.setText(R.string.transaction_detail_verify)
             CryptoCurrency.BCH -> {
                 button_verify.setText(R.string.transaction_detail_verify_bch)
                 transaction_note_layout.gone()
@@ -184,8 +185,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
                 button_verify.setText(R.string.transaction_detail_verify_stellar_chain)
                 transaction_note_layout.gone()
             }
-            else -> {
-            }
+            else -> { }
         }
 
         button_verify.setOnClickListener {

@@ -46,11 +46,11 @@ class SwapAnnouncement(
                 ctaText = R.string.swap_announcement_introducing_link,
                 iconImage = R.drawable.ic_announce_swap,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
-                    host.startSwapOrKyc()
+                    host.dismissAnnouncementCard()
+                    host.startSwap()
                 },
                 dismissEntry = dismissEntry,
                 dismissRule = DismissRule.CardPeriodic

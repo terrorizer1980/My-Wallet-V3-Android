@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.assetdetails
 
 import com.jakewharton.rxrelay2.BehaviorRelay
-import info.blockchain.balance.FiatValue
+import info.blockchain.balance.toFiat
 import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.prices.data.PriceDatum
 import io.reactivex.Observable
@@ -18,15 +18,17 @@ class AssetDetailsViewModel(buyDataManager: BuyDataManager, locale: Locale) {
     // input
     val token = BehaviorRelay.create<AssetTokens>()
     val timeSpan = BehaviorRelay.createDefault<TimeSpan>(TimeSpan.MONTH)
+
     // output
     val balance: Observable<Pair<String, String>> = token.flatMapSingle {
-        it.totalBalance().zipWith(it.exchangeRate())
+        it.totalBalance()
+            .zipWith(it.exchangeRate())
     }.map { (cryptoBalance, fiatPrice) ->
-        cryptoBalance.toStringWithSymbol() to FiatValue.fromMajor(fiatPrice.currencyCode,
-            fiatPrice.toBigDecimal() * cryptoBalance.toBigDecimal()).toStringWithSymbol(locale)
+        cryptoBalance.toStringWithSymbol() to cryptoBalance.toFiat(fiatPrice).toStringWithSymbol(locale)
     }.subscribeOn(Schedulers.io())
 
     private val _chartLoading: BehaviorRelay<Boolean> = BehaviorRelay.createDefault<Boolean>(false)
+
     val chartLoading: Observable<Boolean>
         get() = _chartLoading
 
@@ -45,5 +47,9 @@ class AssetDetailsViewModel(buyDataManager: BuyDataManager, locale: Locale) {
             .doOnNext { _chartLoading.accept(false) }
             .subscribeOn(Schedulers.io())
 
-    val userCanBuy: Observable<Boolean> = buyDataManager.canBuy.onErrorReturn { true }.subscribeOn(Schedulers.io())
+    val userCanBuy: Observable<Boolean> =
+        buyDataManager
+            .canBuy
+            .onErrorReturn { true }
+            .subscribeOn(Schedulers.io())
 }

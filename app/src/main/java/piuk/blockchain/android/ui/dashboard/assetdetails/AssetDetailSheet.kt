@@ -89,21 +89,29 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             asset_name.text = getString(cryptoCurrency.currencyName())
             balance_for_asset.text = getString(R.string.dashboard_balance_for_asset, cryptoCurrency.symbol)
             asset_icon.setCoinIcon(cryptoCurrency)
+
             buy_swap_tabs.buy_button.text = getString(R.string.dashboard_buy_for_asset, cryptoCurrency.symbol)
+
             send_request_tabs.request_btn.setOnClickListener {
+                dismiss()
                 host.goToReceiveFor(cryptoCurrency)
             }
 
             send_request_tabs.send_btn.setOnClickListener {
+                dismiss()
                 host.gotoSendFor(cryptoCurrency)
             }
 
             buy_swap_tabs.swap_btn.setOnClickListener {
-                host.gotoSwapWithCurrencies(fromCryptoCurrency = cryptoCurrency,
-                    toCryptoCurrency = cryptoCurrency.defaultSwapTo)
+                dismiss()
+                host.gotoSwapWithCurrencies(
+                    fromCryptoCurrency = cryptoCurrency,
+                    toCryptoCurrency = cryptoCurrency.defaultSwapTo
+                )
             }
 
             buy_swap_tabs.buy_button.setOnClickListener {
+                dismiss()
                 host.goToBuy()
             }
 
@@ -141,7 +149,9 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
                 view.buy_swap_tabs.separator.goneIf(!canBuy)
             }
 
-            compositeDisposable += assetDetailsViewModel.chartLoading.observeOn(AndroidSchedulers.mainThread())
+            compositeDisposable += assetDetailsViewModel
+                .chartLoading
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy { isLoading ->
                     if (isLoading) {
                         chartToLoadingState()
@@ -150,7 +160,9 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
                     }
                 }
 
-            compositeDisposable += assetDetailsViewModel.historicPrices.observeOn(AndroidSchedulers.mainThread())
+            compositeDisposable += assetDetailsViewModel
+                .historicPrices
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy { data ->
                     chart.apply {
                         updateChart(chart, data)
@@ -170,7 +182,14 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
                 dialogView.price_change?.text = "--"
                 return
             }
-            val entries = data.map { Entry(it.timestamp.toFloat(), it.price.toFloat()) }
+            val entries = data
+                .filter { it.price != null }
+                .map {
+                    Entry(
+                        it.timestamp.toFloat(),
+                        it.price!!.toFloat())
+                }
+
             this.data = LineData(LineDataSet(entries, null).apply {
                 color = ContextCompat.getColor(context, getDataRepresentationColor(data))
                 lineWidth = 2f
@@ -223,14 +242,19 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
         }
 
     private fun getDataRepresentationColor(data: PriceSeries): Int {
-        val diff = data.last().price - data.first().price
+        // We have filtered out nulls by here, so we can 'safely' default to zeros for the price
+        val firstPrice: Double = data.first().price ?: 0.0
+        val lastPrice: Double = data.last().price ?: 0.0
+
+        val diff = lastPrice - firstPrice
         return if (diff < 0) R.color.dashboard_chart_negative else R.color.dashboard_chart_positive
     }
 
     @SuppressLint("SetTextI18n")
     private fun updatePriceChange(percentageView: AppCompatTextView, data: PriceSeries) {
-        val firstPrice = data.first().price
-        val lastPrice = data.last().price
+        // We have filtered out nulls by here, so we can 'safely' default to zeros for the price
+        val firstPrice: Double = data.first().price ?: 0.0
+        val lastPrice: Double = data.last().price ?: 0.0
         val difference = lastPrice - firstPrice
 
         val percentChange = (difference / firstPrice) * 100
@@ -305,24 +329,28 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             TimeSpan.DAY -> 60 * 60 * 4F
         }
 
-        view.chart.chart.xAxis.apply {
-            this.granularity = granularity
-            valueFormatter = object : ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return dateFormat.format(Date(value.toLong() * 1000))
+        with(view) {
+            chart.chart.xAxis.apply {
+                this.granularity = granularity
+                valueFormatter = object : ValueFormatter() {
+                    override fun getFormattedValue(value: Float): String {
+                        return dateFormat.format(Date(value.toLong() * 1000))
+                    }
                 }
             }
+
+            price_change_period.text = resources.getString(
+                when (selection) {
+                    TimeSpan.YEAR -> R.string.dashboard_time_span_last_year
+                    TimeSpan.MONTH -> R.string.dashboard_time_span_last_month
+                    TimeSpan.WEEK -> R.string.dashboard_time_span_last_week
+                    TimeSpan.DAY -> R.string.dashboard_time_span_last_day
+                    TimeSpan.ALL_TIME -> R.string.dashboard_time_span_all_time
+                }
+            )
+
+            chart_price_periods.getTabAt(selection.ordinal)?.select()
         }
-
-        view.price_change_period.text = resources.getString(when (selection) {
-            TimeSpan.YEAR -> R.string.dashboard_time_span_last_year
-            TimeSpan.MONTH -> R.string.dashboard_time_span_last_month
-            TimeSpan.WEEK -> R.string.dashboard_time_span_last_week
-            TimeSpan.DAY -> R.string.dashboard_time_span_last_day
-            TimeSpan.ALL_TIME -> R.string.dashboard_time_span_all_time
-        })
-
-        view.chart_price_periods.getTabAt(selection.ordinal)?.select()
     }
 
     private fun CryptoCurrency.getDecimalPlaces(): Int =

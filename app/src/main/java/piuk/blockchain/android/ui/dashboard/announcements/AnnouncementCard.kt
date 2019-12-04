@@ -4,6 +4,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.dashboard.DashboardItem
 
 data class AnnouncementCard(
     val name: String,
@@ -17,7 +18,7 @@ data class AnnouncementCard(
     @ColorRes val buttonColor: Int = R.color.default_announce_button,
     private val ctaFunction: () -> Unit = { },
     private val dismissFunction: () -> Unit = { }
-) {
+) : DashboardItem {
     fun ctaClicked() {
         dismissEntry.done()
         ctaFunction.invoke()

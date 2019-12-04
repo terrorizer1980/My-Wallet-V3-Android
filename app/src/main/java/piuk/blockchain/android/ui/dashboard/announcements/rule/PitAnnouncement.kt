@@ -52,12 +52,12 @@ class PitAnnouncement(
                         ctaText = R.string.pit_announcement_cta_text,
                         iconImage = R.drawable.ic_announce_the_pit,
                         dismissFunction = {
-                            host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                            host.dismissAnnouncementCard()
                             compositeDisposable.clear()
                         },
                         ctaFunction = {
                         analytics.logEvent(PitAnalyticsEvent.AnnouncementTappedEvent)
-                            host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                            host.dismissAnnouncementCard()
                             host.startPitLinking()
                             compositeDisposable.clear()
                         },

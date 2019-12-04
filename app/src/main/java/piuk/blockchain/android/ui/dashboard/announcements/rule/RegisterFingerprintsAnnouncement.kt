@@ -39,10 +39,10 @@ class RegisterFingerprintsAnnouncement(
                 ctaText = R.string.register_fingerprint_card_cta,
                 iconImage = R.drawable.ic_announce_fingerprint,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startEnableFingerprintLogin()
                 }
             )

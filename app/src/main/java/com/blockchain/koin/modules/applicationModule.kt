@@ -2,8 +2,6 @@ package com.blockchain.koin.modules
 
 import android.content.Context
 import com.blockchain.activities.StartSwap
-import com.blockchain.balance.TotalBalance
-import com.blockchain.balance.plus
 import com.blockchain.network.websocket.Options
 import com.blockchain.network.websocket.autoRetry
 import com.blockchain.network.websocket.debugLog
@@ -211,17 +209,6 @@ val applicationModule = applicationContext {
         factory { KycStatusHelper(get(), get(), get(), get()) }
 
         factory { TransactionListDataManager(get(), get(), get(), get(), get(), get(), get()) }
-
-        factory("spendable") { get<TransactionListDataManager>() as TotalBalance }
-
-        @Suppress("ConstantConditionIf")
-        factory("all") {
-            if (BuildConfig.SHOW_LOCKBOX_BALANCE) {
-                get<TotalBalance>("lockbox") + get("spendable")
-            } else {
-                get("spendable")
-            }
-        }
 
         factory {
             FingerprintHelper(

@@ -50,7 +50,7 @@ class PaxAnnouncement(
             iconImage = R.drawable.vector_pax_colored,
             buttonColor = R.color.pax,
             dismissFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                host.dismissAnnouncementCard()
                 analytics.logEvent(
                     PaxCardSeenAnalyticsEvent(
                         PaxCardSeenAnalyticsEvent.ANALYTICS_DISMISS_CLOSED
@@ -58,8 +58,8 @@ class PaxAnnouncement(
                 )
             },
             ctaFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
-                host.startSwapOrKyc(CryptoCurrency.PAX)
+                host.dismissAnnouncementCard()
+                host.startSwap(CryptoCurrency.PAX)
                 analytics.logEvent(
                     PaxCardSeenAnalyticsEvent(
                         PaxCardSeenAnalyticsEvent.ANALYTICS_DISMISS_CTA_CLICK

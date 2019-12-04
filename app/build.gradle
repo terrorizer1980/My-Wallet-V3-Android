@@ -31,7 +31,6 @@ android {
         archivesBaseName = "blockchain-$versionName"
 
         // Flag to hide or show the Contacts feature
-        buildConfigBoolean "SHOW_LOCKBOX_BALANCE", false
         buildConfigBoolean "LOG_KOIN_STARTUP", false
         buildConfigLong "EXIT_APP_COOLDOWN_MILLIS", 2 * 1000
 
