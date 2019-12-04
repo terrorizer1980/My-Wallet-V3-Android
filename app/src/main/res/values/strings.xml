@@ -1772,7 +1772,7 @@
     <string name="stacks_airdrop_card_button">Get Free Crypto</string>
 
     <!-- Blockstack airdrop share message -->
-    <string name="stacks_airdrop_share_msg">http://blockchain.com/getcrypto\\n Hey! Get crypto for free with Blockchain Airdrops. Sign up and get verified to become eligible for $10 worth of Blockstack Tokens.</string>
+    <string name="stacks_airdrop_share_msg">Hey! I just secured my spot for Blockchain’s latest airdrop with Blockstack. Sign up and get verified to get free stacks! \n http://blockchain.com/getcrypto</string>
     <!-- KYC Tiers -->
     <string name="tier_1">TIER 1</string>
     <string name="tier_2">TIER 2</string>
