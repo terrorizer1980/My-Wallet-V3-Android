@@ -35,10 +35,12 @@ import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import com.blockchain.swap.shapeshift.ShapeShiftDataManager
+import com.blockchain.swap.shapeshift.data.Trade
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
+import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
+import piuk.blockchain.androidcore.data.transactions.models.Displayable
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import timber.log.Timber
 
@@ -95,6 +97,15 @@ class TransactionsPresenter(
 
     private var shortcutsGenerated = false
 
+    private val updateBalanceAndTransactionsCompletable: (ItemAccount) -> Completable = {
+        Completable.concat(
+            listOf(
+                updateBalancesCompletable(),
+                updateTransactionsListCompletable(it)
+            )
+        )
+    }
+
     override fun onViewResumed() {
         super.onViewResumed()
 
@@ -130,25 +141,14 @@ class TransactionsPresenter(
         }
 
         notificationObservable = rxBus.register(NotificationPayload::class.java).apply {
-            subscribe {
-                // no-op
-            }
+            subscribe { /* no-op */ }
         }
     }
-    // endregion
 
-    // region API calls
     private fun refreshAll(account: ItemAccount): Single<Boolean> =
         getUpdateTickerCompletable()
-        .andThen(
-            Completable.merge(
-                listOf(
-                    updateBalancesCompletable(),
-                    updateTransactionsListCompletable(account)
-                )
-            )
-        )
-        .andThen(getAccounts().map { it.size > 1 })
+            .andThen(updateBalanceAndTransactionsCompletable(account))
+            .andThen(getAccounts().map { it.size > 1 })
 
     internal fun requestRefresh() {
         compositeDisposable +=
@@ -171,10 +171,8 @@ class TransactionsPresenter(
 
     private val tokenSingle: Single<String>
         get() = exchangeService.getExchangeMetaData()
-            .cache()
-            .applySchedulers()
             .singleOrError()
-            .map { it.coinify!!.token }
+            .map { it.coinify?.token ?: "" }
 
     @VisibleForTesting
     internal fun getUpdateTickerCompletable(): Completable = exchangeRateDataManager.updateTickers()
@@ -198,36 +196,42 @@ class TransactionsPresenter(
      */
     @VisibleForTesting
     internal fun updateTransactionsListCompletable(account: ItemAccount): Completable {
-        return Completable.fromObservable(
+        return Completable.fromObservable(Observable.defer {
             transactionListDataManager.fetchTransactions(account, 50, 0)
-                .map { txs ->
+                .flatMap { txs ->
                     Observable.zip(
                         getShapeShiftTxNotesObservable(),
                         getCoinifyTxNotesObservable(),
                         mergeReduce()
-                    ).subscribeBy(
-                        onNext = { txNotesMap ->
-                            for (tx in txs) {
-                                // Add shapeShift notes
-                                txNotesMap[tx.hash]?.let { tx.note = it }
+                    ).observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext { txNotesMap -> processTxNotes(txs, txNotesMap) }
+                        .doOnError {
+                            Timber.e(it)
+                            view?.setUiState(UiState.FAILURE)
+                        }
+                    }
+        })
+    }
 
-                                val cryptoValue = CryptoValue(currencyState.cryptoCurrency, tx.total)
-                                tx.totalDisplayableCrypto = cryptoValue.formatWithUnit()
-                                tx.totalDisplayableFiat = cryptoValue.getFiatDisplayString()
-                            }
+    private fun processTxNotes(txs: List<Displayable>, txNotesMap: Map<String, String>) {
+        for (tx in txs) {
+        // Add shapeShift notes
+            txNotesMap[tx.hash]?.let { tx.note = it }
 
-                            when {
-                                txs.isEmpty() -> view?.setUiState(UiState.EMPTY)
-                                else -> view?.setUiState(UiState.CONTENT)
-                            }
+            val cryptoValue = CryptoValue(currencyState.cryptoCurrency, tx.total)
+            tx.totalDisplayableCrypto = cryptoValue.formatWithUnit()
+            tx.totalDisplayableFiat = cryptoValue.getFiatDisplayString()
+        }
 
-                            view?.updateTransactionDataSet(
-                                currencyState.isDisplayingCryptoCurrency,
-                                txs
-                            )
-                        },
-                        onError = { Timber.e(it) })
-                })
+        when {
+            txs.isEmpty() -> view?.setUiState(UiState.EMPTY)
+            else -> view?.setUiState(UiState.CONTENT)
+        }
+
+        view?.updateTransactionDataSet(
+            currencyState.isDisplayingCryptoCurrency,
+            txs
+        )
     }
 
     /*
@@ -245,13 +249,72 @@ class TransactionsPresenter(
                     view?.setDropdownVisibility(it.size > 1)
                     refreshViewHeaders(it.first())
                 }
-                .flatMapCompletable { updateTransactionsListCompletable(it.first()) }
+                .flatMapCompletable {
+                    updateBalanceAndTransactionsCompletable(it.first())
+                }
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { view?.setUiState(UiState.LOADING) }
-                .doOnSubscribe { refreshAccountDataSet() }
-                .doOnError { Timber.e(it) }
-                .doOnComplete { view?.selectDefaultAccount() }
-                .subscribeBy(onError = { view?.setUiState(UiState.FAILURE) })
+                .doOnSubscribe {
+                    view?.setUiState(UiState.LOADING)
+                    refreshAccountDataSet()
+                }
+                .subscribeBy(
+                    onError = {
+                        Timber.e(it)
+                        view?.setUiState(UiState.FAILURE)
+                    },
+                    onComplete = {
+                        view?.selectDefaultAccount()
+                    }
+                )
+    }
+
+    private fun getShapeShiftTxNotesObservable() =
+        shapeShiftDataManager.getTradesList()
+            .map { processShapeShiftTxNotes(it) }
+            .doOnError { Timber.e(it) }
+            .onErrorReturn { emptyMap() }
+
+    private fun processShapeShiftTxNotes(list: List<Trade>): Map<String, String> { // TxHash -> description
+        val mutableMap: MutableMap<String, String> = mutableMapOf()
+
+        for (trade in list) {
+            trade.hashIn?.let {
+                mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_to))
+            }
+            trade.hashOut?.let {
+                mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_from))
+            }
+        }
+        return mutableMap.toMap()
+    }
+
+    private fun getCoinifyTxNotesObservable() =
+        tokenSingle.flatMap {
+            coinifyDataManager.getTrades(it).toList()
+        }.doOnError { Timber.e(it) }
+            .map { processCoinifyTxNotes(it) }
+            .toObservable()
+            .onErrorReturn { emptyMap() }
+
+    private fun processCoinifyTxNotes(list: List<CoinifyTrade>): Map<String, String> { // TxId -> description
+        val mutableMap: MutableMap<String, String> = mutableMapOf()
+        for (trade in list) {
+            val transfer = if (trade.isSellTransaction()) {
+                trade.transferIn.details as BlockchainDetails
+            } else {
+                trade.transferOut.details as BlockchainDetails
+            }
+            transfer.eventData?.txId?.let {
+                mutableMap.put(
+                    it,
+                    stringUtils.getFormattedString(
+                        R.string.buy_sell_transaction_list_label,
+                        trade.id
+                    )
+                )
+            }
+        }
+        return mutableMap.toMap()
     }
 
     @CommonCode("This can be moved elsewhere, so other 'get BTC' actions can make the same call")
@@ -286,7 +349,7 @@ class TransactionsPresenter(
             getAccountAt(position)
                 .doOnSubscribe { view?.setUiState(UiState.LOADING) }
                 .flatMapCompletable {
-                    updateTransactionsListCompletable(it)
+                    updateBalanceAndTransactionsCompletable(it)
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnComplete {
                             refreshViewHeaders(it)
@@ -321,7 +384,6 @@ class TransactionsPresenter(
     Toggle between fiat - crypto currency
      */
     internal fun onBalanceClick() = setViewType(!currencyState.isDisplayingCryptoCurrency)
-    // endregion
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun refreshViewHeaders(account: ItemAccount) {
@@ -340,9 +402,7 @@ class TransactionsPresenter(
     private fun refreshLauncherShortcuts() {
         view?.generateLauncherShortcuts()
     }
-    // endregion
 
-    // region Adapter data
     private fun onTxFeedAdapterSetup() {
         view?.setupTxFeedAdapter(currencyState.isDisplayingCryptoCurrency)
     }
@@ -356,52 +416,6 @@ class TransactionsPresenter(
 
     private fun getAccountAt(position: Int): Single<ItemAccount> = getAccounts()
         .map { it[if (position < 0 || position >= it.size) 0 else position] }
-
-    private fun getShapeShiftTxNotesObservable() =
-        shapeShiftDataManager.getTradesList()
-            .map { list ->
-                val mutableMap: MutableMap<String, String> = mutableMapOf()
-
-                for (trade in list) {
-                    trade.hashIn?.let {
-                        mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_to))
-                    }
-                    trade.hashOut?.let {
-                        mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_from))
-                    }
-                }
-                return@map mutableMap.toMap()
-            }
-            .doOnError { Timber.e(it) }
-            .onErrorReturn { mutableMapOf() }
-
-    private fun getCoinifyTxNotesObservable() =
-        tokenSingle.flatMap { coinifyDataManager.getTrades(it).toList() }
-            .map { list ->
-                val mutableMap: MutableMap<String, String> = mutableMapOf()
-                for (trade in list) {
-                    val transfer = if (trade.isSellTransaction()) {
-                        trade.transferIn.details as BlockchainDetails
-                    } else {
-                        trade.transferOut.details as BlockchainDetails
-                    }
-                    transfer.eventData?.txId?.let {
-                        mutableMap.put(
-                            it,
-                            stringUtils.getFormattedString(
-                                R.string.buy_sell_transaction_list_label,
-                                trade.id
-                            )
-                        )
-                    }
-                }
-                return@map mutableMap.toMap()
-            }
-            .toObservable()
-            .doOnError { Timber.e(it) }
-            .onErrorReturn { mutableMapOf() }
-
-    // endregion
 
     private fun CryptoValue.getFiatDisplayString(): String =
         fiatExchangeRates.getFiat(this).toStringWithSymbol()

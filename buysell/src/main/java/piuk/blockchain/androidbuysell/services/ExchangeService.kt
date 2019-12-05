@@ -36,6 +36,7 @@ class ExchangeService(
             .flatMap { it.coinify?.let { coinifyData -> Maybe.just(coinifyData) } ?: Maybe.empty() }
 
     private var metadataSubject: ReplaySubject<Metadata> = ReplaySubject.create(1)
+
     private var didStartLoad: Boolean = false
 
     fun getWebViewLoginDetails(): Observable<WebViewLoginDetails> = Observable.zip(
@@ -65,6 +66,7 @@ class ExchangeService(
             didStartLoad = true
         }
         return metadataSubject
+            .doOnError { Timber.e(it) }
     }
 
     private fun getPendingTradeAddresses(): Observable<String> = getExchangeData()
@@ -96,7 +98,8 @@ class ExchangeService(
         }
         .distinct()
 
-    fun getExchangeMetaData(): Observable<ExchangeData> = getExchangeData()
+    fun getExchangeMetaData(): Observable<ExchangeData> =
+        getExchangeData()
         .flatMap { metadata ->
             Observable.fromCallable {
                 val exchangeData = metadata.metadata

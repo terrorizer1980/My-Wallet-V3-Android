@@ -258,10 +258,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
             UiState.FAILURE,
             UiState.EMPTY -> onEmptyState()
             UiState.CONTENT -> onContentLoaded()
-            UiState.LOADING -> {
-                textview_balance.text = ""
-                setShowRefreshing(true)
-            }
+            UiState.LOADING -> onContentLoading()
         }
     }
 
@@ -315,16 +312,21 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         }
     }
 
+    private fun onContentLoaded() {
+        setShowRefreshing(false)
+        no_transaction_include.gone()
+    }
+
+    private fun onContentLoading() {
+        textview_balance.text = ""
+        setShowRefreshing(true)
+    }
+
     // Called back by presenter.onGetBitcoinClicked() if buy/sell is not available
     override fun startReceiveFragmentBtc() = navigator().gotoReceiveFor(CryptoCurrency.BTC)
 
     override fun updateBalanceHeader(balance: String) {
         textview_balance.text = balance
-    }
-
-    private fun onContentLoaded() {
-        setShowRefreshing(false)
-        no_transaction_include.gone()
     }
 
     override fun startBuyActivity() = navigator().launchBuySell()

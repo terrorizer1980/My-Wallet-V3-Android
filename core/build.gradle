@@ -72,5 +72,4 @@ dependencies {
         ['kotlin-stdlib', 'kotlin-reflect'].each { exclude module: it }
     }
     testImplementation project(':testutils-android')
- /*   implementation 'androidx.appcompat:appcompat:1.1.0'*/
 }

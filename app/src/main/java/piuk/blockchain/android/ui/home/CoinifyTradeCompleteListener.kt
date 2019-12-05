@@ -55,14 +55,13 @@ class CoinifyTradeCompleteListener(
         val tradeMetadata = exchangeData.coinify?.trades ?: emptyList()
 
         // Check if unconfirmed in metadata
-        val metadata = tradeMetadata.firstOrNull { it.id == trade.id }
-        return metadata
+        return tradeMetadata.firstOrNull { it.id == trade.id }
     }
 
     private fun pairExchangeDataWithTrades(exchangeData: ExchangeData): Observable<Pair<ExchangeData, CoinifyTrade>> {
         return exchangeData.coinify?.token?.let {
             coinifyDataManager.getTrades(it)
-                .map { exchangeData to it }
+                .map { trade -> exchangeData to trade }
         } ?: Observable.empty()
     }
 

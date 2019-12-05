@@ -63,7 +63,7 @@ private class BalanceCardViewHolder internal constructor(
     private fun renderLoaded(state: BalanceModel) {
 
         with(itemView) {
-            total_balance.text = state.fiatBalance?.formatOrSymbolForZero() ?: ""
+            total_balance.text = state.fiatBalance?.toStringWithSymbol() ?: ""
 
             if (state.delta == null) {
                 balance_delta_value.text = ""
@@ -71,7 +71,7 @@ private class BalanceCardViewHolder internal constructor(
             } else {
                 val (deltaVal, deltaPercent) = state.delta!!
 
-                balance_delta_value.text = deltaVal.formatOrSymbolForZero()
+                balance_delta_value.text = deltaVal.toStringWithSymbol()
                 balance_delta_value.setDeltaColour(deltaPercent)
                 balance_delta_percent.asDeltaPercent(deltaPercent, "(", ")")
 
@@ -86,12 +86,14 @@ private class BalanceCardViewHolder internal constructor(
         with(itemView) {
             val entries = listOf(PieEntry(100f))
 
+            val sliceColours = listOf(ContextCompat.getColor(itemView.context, R.color.grey_100))
+
             pie_chart.data = PieData(
                 PieDataSet(entries, null).apply {
                     sliceSpace = 5f
                     setDrawIcons(false)
                     setDrawValues(false)
-                    color = R.color.grey_100
+                    colors = sliceColours
                 })
             pie_chart.invalidate()
         }
@@ -107,18 +109,22 @@ private class BalanceCardViewHolder internal constructor(
                 }
             }
 
-            val sliceColours = CryptoCurrency.activeCurrencies().map {
-                ContextCompat.getColor(itemView.context, it.colorRes())
-            }
+            if (entries.all { it.value == 0.0f }) {
+                populateEmptyPieChart()
+            } else {
+                val sliceColours = CryptoCurrency.activeCurrencies().map {
+                    ContextCompat.getColor(itemView.context, it.colorRes())
+                }
 
-            pie_chart.data = PieData(
-                PieDataSet(entries, null).apply {
-                    sliceSpace = SLICE_SPACE_DP
-                    setDrawIcons(false)
-                    setDrawValues(false)
-                    colors = sliceColours
-                })
-            pie_chart.invalidate()
+                pie_chart.data = PieData(
+                    PieDataSet(entries, null).apply {
+                        sliceSpace = SLICE_SPACE_DP
+                        setDrawIcons(false)
+                        setDrawValues(false)
+                        colors = sliceColours
+                    })
+                pie_chart.invalidate()
+            }
         }
     }
 
