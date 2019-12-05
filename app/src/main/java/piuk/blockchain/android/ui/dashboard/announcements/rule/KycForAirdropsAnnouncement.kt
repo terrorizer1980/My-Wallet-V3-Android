@@ -4,13 +4,13 @@ import androidx.annotation.VisibleForTesting
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
 import piuk.blockchain.android.campaign.CampaignType
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 
 class KycForAirdropsAnnouncement(
     dismissRecorder: DismissRecorder,
@@ -32,7 +32,7 @@ class KycForAirdropsAnnouncement(
 
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
-            card = AnnouncementCard(
+            card = StandardAnnouncementCard(
                 name = name,
                 dismissRule = DismissRule.CardPeriodic,
                 dismissEntry = dismissEntry,

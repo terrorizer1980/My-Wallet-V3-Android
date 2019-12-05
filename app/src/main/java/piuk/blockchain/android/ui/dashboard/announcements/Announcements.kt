@@ -42,6 +42,7 @@ abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {
 
     abstract fun shouldShow(): Single<Boolean>
     abstract fun show(host: AnnouncementHost)
+    fun isDismissed(): Boolean = dismissEntry.isDismissed
 }
 
 class AnnouncementList(

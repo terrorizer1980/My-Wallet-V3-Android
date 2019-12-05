@@ -4,8 +4,8 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import org.amshove.kluent.mock
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 
 const val FIAT_CURRENCY = "USD"
 
@@ -39,13 +39,13 @@ val initialXlmState = AssetModel(
     priceTrend = emptyList()
 )
 
-val testAnnouncementCard_1 = AnnouncementCard(
+val testAnnouncementCard_1 = StandardAnnouncementCard(
     name = "test_1",
     dismissRule = DismissRule.CardOneTime,
     dismissEntry = mock()
 )
 
-val testAnnouncementCard_2 = AnnouncementCard(
+val testAnnouncementCard_2 = StandardAnnouncementCard(
     name = "test_2",
     dismissRule = DismissRule.CardOneTime,
     dismissEntry = mock()

@@ -5,11 +5,11 @@ import com.blockchain.swap.nabu.status.KycTiersQueries
 import piuk.blockchain.android.campaign.CampaignType
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 
 internal class KycResubmissionAnnouncement(
     private val kycTiersQueries: KycTiersQueries,
@@ -29,7 +29,7 @@ internal class KycResubmissionAnnouncement(
 
     override fun show(host: AnnouncementHost) {
 
-        val card = AnnouncementCard(
+        val card = StandardAnnouncementCard(
             name = name,
             titleText = R.string.kyc_resubmission_card_title,
             bodyText = R.string.kyc_resubmission_card_description,

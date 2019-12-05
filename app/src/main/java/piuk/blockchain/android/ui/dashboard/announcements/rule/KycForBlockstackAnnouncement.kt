@@ -3,12 +3,12 @@ package piuk.blockchain.android.ui.dashboard.announcements.rule
 import androidx.annotation.VisibleForTesting
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 
 internal class KycForBlockstackAnnouncement(
     dismissRecorder: DismissRecorder,
@@ -27,7 +27,7 @@ internal class KycForBlockstackAnnouncement(
 
     override fun show(host: AnnouncementHost) {
 
-        val card = AnnouncementCard(
+        val card = StandardAnnouncementCard(
             name = name,
             titleText = R.string.stacks_airdrop_card_title,
             bodyText = R.string.stacks_airdrop_card_description,

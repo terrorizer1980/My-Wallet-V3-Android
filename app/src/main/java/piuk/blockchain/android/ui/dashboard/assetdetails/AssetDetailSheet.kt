@@ -34,7 +34,6 @@ import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.ui.dashboard.setDeltaColour
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
@@ -45,6 +44,7 @@ import piuk.blockchain.androidcoreui.utils.helperfunctions.setOnTabSelectedListe
 import java.math.RoundingMode
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.util.Currency
 import java.util.Date
 import java.util.Locale
 
@@ -53,7 +53,6 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
     val compositeDisposable = CompositeDisposable()
 
     private val currencyPrefs: CurrencyPrefs by inject()
-    private val currencyFormatManager: CurrencyFormatManager by inject()
     private val assetDetailsViewModel: AssetDetailsViewModel by inject()
     private val locale: Locale by inject()
 
@@ -116,7 +115,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             }
 
             configureChart(chart,
-                currencyFormatManager.getFiatSymbol(currencyPrefs.selectedFiatCurrency),
+                getFiatSymbol(currencyPrefs.selectedFiatCurrency),
                 token.asset.getDecimalPlaces())
 
             configureTabs(view.chart_price_periods)
@@ -201,7 +200,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
                 marker = ValueMarker(
                     context,
                     R.layout.price_chart_marker,
-                    currencyFormatManager.getFiatSymbol(currencyPrefs.selectedFiatCurrency),
+                    getFiatSymbol(currencyPrefs.selectedFiatCurrency),
                     cryptoCurrency.getDecimalPlaces()
                 )
             })
@@ -383,5 +382,8 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
                 }
             }
         }
+
+        private fun getFiatSymbol(currencyCode: String, locale: Locale = Locale.getDefault()) =
+            Currency.getInstance(currencyCode).getSymbol(locale)
     }
 }

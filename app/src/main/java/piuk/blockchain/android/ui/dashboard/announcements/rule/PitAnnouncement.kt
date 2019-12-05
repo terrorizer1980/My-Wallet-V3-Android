@@ -12,11 +12,11 @@ import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.R
 import piuk.blockchain.android.thepit.PitAnalyticsEvent
 import piuk.blockchain.android.thepit.PitLinking
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 
 class PitAnnouncement(
     private val pitLink: PitLinking,
@@ -44,7 +44,7 @@ class PitAnnouncement(
         compositeDisposable += abTestExperiment.getABVariant(ABTestExperiment.AB_THE_PIT_ANNOUNCEMENT_VARIANT)
             .subscribeBy {
                 host.showAnnouncementCard(
-                    card = AnnouncementCard(
+                    card = StandardAnnouncementCard(
                         name = name,
                         titleText = R.string.pit_announcement_title,
                         bodyText = if (it == "B") R.string.pit_announcement_body_variant_b else

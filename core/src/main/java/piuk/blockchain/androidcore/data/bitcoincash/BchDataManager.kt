@@ -307,8 +307,9 @@ class BchDataManager(
             .map { it.address }
             .toSet()
         val xpubs = getActiveXpubs().toSet()
-        return rxPinning.call { bchDataStore.bchWallet!!.updateAllBalances(xpubs, legacyAddresses) }
-            .applySchedulers()
+        return rxPinning.call {
+            bchDataStore.bchWallet!!.updateAllBalances(xpubs, legacyAddresses)
+        }.applySchedulers()
     }
 
     fun getAddressBalance(address: String): BigInteger =

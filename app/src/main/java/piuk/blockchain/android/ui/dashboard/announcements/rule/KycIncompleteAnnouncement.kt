@@ -10,11 +10,11 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 import timber.log.Timber
 
 internal class KycIncompleteAnnouncement(
@@ -47,7 +47,7 @@ internal class KycIncompleteAnnouncement(
     }
 
     private fun createCard(host: AnnouncementHost, cardType: SunriverCardType) =
-        AnnouncementCard(
+        StandardAnnouncementCard(
             name = name,
             titleText = R.string.kyc_drop_off_card_title,
             bodyText = R.string.kyc_drop_off_card_description,
