@@ -96,6 +96,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     private var handlingResult = false
 
     private val appUtil: AppUtil by inject()
+    private var activityResultAction: () -> Unit = {}
 
     private var progressDlg: MaterialProgressDialog? = null
     private var backPressed: Long = 0
@@ -207,7 +208,9 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     override fun onResume() {
         super.onResume()
-
+        activityResultAction().also {
+            activityResultAction = {}
+        }
         // This can null out in low memory situations, so reset here
         navigation_view.setNavigationItemSelectedListener { menuItem ->
             selectDrawerItem(menuItem)
@@ -244,22 +247,25 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         handlingResult = true
-        if (resultCode == RESULT_OK && requestCode == SCAN_URI &&
-            data != null && data.getStringExtra(CaptureActivity.SCAN_RESULT) != null
-        ) {
-            val strResult = data.getStringExtra(CaptureActivity.SCAN_RESULT)
-            handlePredefinedInput(strResult, false)
-        } else if (requestCode == SETTINGS_EDIT || requestCode == ACCOUNT_EDIT || requestCode == KYC_STARTED) {
-            replaceContentFragment(DashboardFragment.newInstance())
-            // Reset state in case of changing currency etc
-            bottom_navigation.currentItem = ITEM_HOME
+        // We create a lambda so we handle the result after the view is attached to the presenter (onResume)
+        activityResultAction = {
+            if (resultCode == RESULT_OK && requestCode == SCAN_URI &&
+                data != null && data.getStringExtra(CaptureActivity.SCAN_RESULT) != null
+            ) {
+                val strResult = data.getStringExtra(CaptureActivity.SCAN_RESULT)
+                handlePredefinedInput(strResult, false)
+            } else if (requestCode == SETTINGS_EDIT || requestCode == ACCOUNT_EDIT || requestCode == KYC_STARTED) {
+                replaceContentFragment(DashboardFragment.newInstance())
+                // Reset state in case of changing currency etc
+                bottom_navigation.currentItem = ITEM_HOME
 
-            // Pass this result to balance fragment
-            for (fragment in supportFragmentManager.fragments) {
-                fragment.onActivityResult(requestCode, resultCode, data)
+                // Pass this result to balance fragment
+                for (fragment in supportFragmentManager.fragments) {
+                    fragment.onActivityResult(requestCode, resultCode, data)
+                }
+            } else {
+                super.onActivityResult(requestCode, resultCode, data)
             }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
