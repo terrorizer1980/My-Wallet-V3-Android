@@ -97,18 +97,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
         android:text="+$158.45 (1.56%)"
-        app:layout_constraintEnd_toStartOf="@+id/price_change_guide"
-        app:layout_constraintTop_toBottomOf="@+id/current_price" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/price_change_guide"
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_percent="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/current_price" />
+        app:layout_constraintEnd_toStartOf="@+id/price_change_period"
+        app:layout_constraintTop_toBottomOf="@+id/current_price"
+        app:layout_constraintHorizontal_chainStyle="packed"/>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/price_change_period"
@@ -117,9 +109,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:text="last 24hrs"
-        app:layout_constraintStart_toEndOf="@+id/price_change_guide"
-        app:layout_constraintTop_toBottomOf="@+id/current_price" />
-
+        app:layout_constraintTop_toBottomOf="@+id/current_price"
+        app:layout_constraintStart_toEndOf="@id/price_change"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/chart_price_periods"
