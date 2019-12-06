@@ -1,8 +1,8 @@
 package com.blockchain.balance
 
-import android.support.annotation.DrawableRes
-import android.support.v7.content.res.AppCompatResources
+import androidx.annotation.DrawableRes
 import android.widget.ImageView
+import androidx.appcompat.content.res.AppCompatResources
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.R
 
@@ -30,6 +30,10 @@ fun CryptoCurrency.coinIconWhite(): Int =
 
 fun ImageView.setImageDrawable(@DrawableRes res: Int) {
     setImageDrawable(AppCompatResources.getDrawable(context, res))
+}
+
+fun ImageView.setCoinIcon(currency: CryptoCurrency) {
+    setImageDrawable(currency.drawableResFilled())
 }
 
 @DrawableRes

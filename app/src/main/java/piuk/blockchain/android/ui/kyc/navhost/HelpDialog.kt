@@ -1,13 +1,13 @@
 package piuk.blockchain.android.ui.kyc.navhost
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.view.View
 import piuk.blockchain.android.R
 
-internal fun showHelpDialog(activity: Activity) {
+internal fun showHelpDialog(activity: AppCompatActivity) {
     AlertDialog.Builder(activity, R.style.AlertDialogStyle)
         .setView(View.inflate(activity, R.layout.dialog_help, null))
         .setNeutralButton(R.string.kyc_help_dialog_read_now) { _, _ ->

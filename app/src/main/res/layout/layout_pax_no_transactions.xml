@@ -51,12 +51,10 @@
 
     <Button
         android:id="@+id/swap_for_pax_now"
-        style="@style/ButtonBlueTheme"
+        style="@style/CtaButton.Blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="26dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:text="@string/pax_swap_now"/>
 
 </LinearLayout>

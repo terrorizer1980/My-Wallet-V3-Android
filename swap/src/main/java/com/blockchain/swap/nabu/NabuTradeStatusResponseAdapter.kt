@@ -2,7 +2,7 @@ package com.blockchain.swap.nabu
 
 import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.swap.common.trade.MorphTradeStatus
-import com.blockchain.swap.nabu.api.NabuTransaction
+import com.blockchain.swap.nabu.api.nabu.NabuTransaction
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 

@@ -1,18 +1,18 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
 import android.annotation.SuppressLint
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.preferences.WalletStatus
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 
 class PaxAnnouncement(
     dismissRecorder: DismissRecorder,
@@ -50,7 +50,7 @@ class PaxAnnouncement(
             iconImage = R.drawable.vector_pax_colored,
             buttonColor = R.color.pax,
             dismissFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                host.dismissAnnouncementCard()
                 analytics.logEvent(
                     PaxCardSeenAnalyticsEvent(
                         PaxCardSeenAnalyticsEvent.ANALYTICS_DISMISS_CLOSED
@@ -58,8 +58,8 @@ class PaxAnnouncement(
                 )
             },
             ctaFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
-                host.startSwapOrKyc(CryptoCurrency.PAX)
+                host.dismissAnnouncementCard()
+                host.startSwap(CryptoCurrency.PAX)
                 analytics.logEvent(
                     PaxCardSeenAnalyticsEvent(
                         PaxCardSeenAnalyticsEvent.ANALYTICS_DISMISS_CTA_CLICK

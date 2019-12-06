@@ -1,6 +1,9 @@
 package com.blockchain.balance
 
-import android.support.annotation.ColorRes
+import android.content.Context
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.R
 
@@ -14,3 +17,6 @@ fun CryptoCurrency.colorRes(): Int =
         CryptoCurrency.PAX -> R.color.color_pax_logo
         CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
     }
+
+@ColorInt
+fun CryptoCurrency.getColor(context: Context) = ContextCompat.getColor(context, colorRes())

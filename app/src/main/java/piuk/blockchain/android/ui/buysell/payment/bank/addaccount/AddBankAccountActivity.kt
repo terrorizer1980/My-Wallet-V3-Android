@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.buysell.payment.bank.addaccount
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
@@ -66,7 +66,7 @@ class AddBankAccountActivity : BaseMvpActivity<AddBankAccountView, AddBankAccoun
     }
 
     override fun onSupportNavigateUp(): Boolean = consume {
-        setResult(Activity.RESULT_CANCELED)
+        setResult(AppCompatActivity.RESULT_CANCELED)
         finish()
     }
 
@@ -85,7 +85,7 @@ class AddBankAccountActivity : BaseMvpActivity<AddBankAccountView, AddBankAccoun
             "piuk.blockchain.android.ui.buysell.payment.bank.addaccount.accountoverview.EXTRA_DISPLAY_MODEL"
 
         fun start(
-            activity: Activity,
+            activity: AppCompatActivity,
             displayModel: SellConfirmationDisplayModel
         ) {
             Intent(activity, AddBankAccountActivity::class.java)
@@ -95,7 +95,7 @@ class AddBankAccountActivity : BaseMvpActivity<AddBankAccountView, AddBankAccoun
         }
 
         fun startForResult(
-            activity: Activity,
+            activity: AppCompatActivity,
             displayModel: SellConfirmationDisplayModel,
             requestCode: Int
         ) {

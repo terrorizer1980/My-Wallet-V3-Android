@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context="piuk.blockchain.android.ui.kyc.status.KycStatusActivity">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_kyc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_layout_kyc_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -126,7 +126,7 @@
                 app:layout_constraintVertical_bias="0.0"
                 tools:visibility="visible" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 

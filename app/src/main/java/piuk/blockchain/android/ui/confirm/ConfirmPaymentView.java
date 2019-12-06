@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.confirm;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import piuk.blockchain.android.ui.account.PaymentConfirmationDetails;
 import piuk.blockchain.androidcoreui.ui.base.UiState;

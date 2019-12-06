@@ -1,9 +1,6 @@
 package com.blockchain.koin
 
 import android.app.Application
-import com.blockchain.injection.kycCoinifyModule
-import com.blockchain.injection.kycModule
-import com.blockchain.injection.kycNabuModule
 import com.blockchain.koin.modules.apiInterceptorsModule
 import com.blockchain.koin.modules.appBuySellModule
 import com.blockchain.koin.modules.appProperties
@@ -58,10 +55,9 @@ object KoinStarter {
                 dashboardAnnouncementsModule,
                 environmentModule,
                 featureFlagsModule,
-                kycCoinifyModule,
-                kycModule,
+                coinifyModule,
+                authenticationModule,
                 kycUiModule,
-                kycNabuModule,
                 kycUiNabuModule,
                 localShapeShift,
                 lockboxModule,

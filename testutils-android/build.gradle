@@ -44,4 +44,5 @@ dependencies {
     // Unit Test dependencies
     api Libraries.junit
     api Libraries.kluent
+    implementation 'com.android.support:appcompat-v7'
 }

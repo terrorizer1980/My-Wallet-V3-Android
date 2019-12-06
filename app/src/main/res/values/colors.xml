@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="ic_launcher_background">#FFFFFF</color>
+
     <color name="default_tour_pulse_color">@color/blue_600</color>
     <color name="exchange_history_sent">#FF004A7C</color>
     <color name="exchange_history_received">#FF03A972</color>
@@ -29,4 +31,11 @@
     <color name="notification_tint">@color/blue_600</color>
     <color name="tour_icon_tint">@color/blue_600</color>
 
+    <color name="dashboard_delta_positive">@color/green_400</color>
+    <color name="dashboard_delta_negative">@color/red_600</color>
+
+    <color name="dashboard_chart_negative">@color/red_500</color>
+    <color name="dashboard_chart_positive">@color/green_500</color>
+    <color name="dashboard_chart_unknown">@color/grey_400</color>
+    <color name="dashboard_chart_indicator_color">@color/blue_600</color>
 </resources>

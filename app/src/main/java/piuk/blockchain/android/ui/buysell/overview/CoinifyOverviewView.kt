@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.buysell.overview
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import piuk.blockchain.android.ui.buysell.details.models.AwaitingFundsModel
 import piuk.blockchain.android.ui.buysell.details.models.BuySellDetailsModel
 import piuk.blockchain.android.ui.buysell.details.models.RecurringTradeDisplayModel

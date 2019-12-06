@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.kyc.tiersplash
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import androidx.navigation.NavDirections
-import com.blockchain.kyc.models.nabu.TiersJson
+import com.blockchain.swap.nabu.models.nabu.TiersJson
 
 interface KycTierSplashView : piuk.blockchain.androidcoreui.ui.base.View {
 

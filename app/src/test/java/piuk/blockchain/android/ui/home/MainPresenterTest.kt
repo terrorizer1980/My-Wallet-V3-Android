@@ -1,9 +1,8 @@
 package piuk.blockchain.android.ui.home
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.kyc.models.nabu.Tiers
+import com.blockchain.swap.nabu.models.nabu.NabuUser
+import com.blockchain.swap.nabu.models.nabu.Tiers
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import piuk.blockchain.android.campaign.SunriverCampaignRegistration
@@ -11,9 +10,10 @@ import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
 import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
@@ -86,7 +86,9 @@ class MainPresenterTest {
     private val abTesting: ABTestExperiment = mock()
 
     private val nabuToken: NabuToken = mock {
-        on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse("", ""))
+        on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse(
+            "",
+            ""))
     }
 
     private val userTierZero: NabuUser = mock {
@@ -143,7 +145,7 @@ class MainPresenterTest {
             crashLogger
         )
 
-        subject.initView(view)
+        subject.attachView(view)
     }
 
     @Test
@@ -155,10 +157,10 @@ class MainPresenterTest {
 
         // Act
         subject.onViewReady()
-        subject.startSwapOrKyc(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(toCurrency = CryptoCurrency.ETHER, fromCurrency = CryptoCurrency.BTC)
 
         // Assert
-        verify(view, never()).launchSwap(any(), any())
+        verify(view, never()).launchSwap(any(), any(), any())
         verify(view, never()).launchSwapIntro()
         verify(view).launchKyc(CampaignType.Swap)
     }
@@ -170,10 +172,12 @@ class MainPresenterTest {
         whenever(nabuDatamanager.getUser(any())).thenReturn(Single.just(userTierOne))
         // Act
         subject.onViewReady()
-        subject.startSwapOrKyc(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(toCurrency = CryptoCurrency.ETHER, fromCurrency = CryptoCurrency.BTC)
 
         // Assert
-        verify(view).launchSwap("USD", CryptoCurrency.ETHER)
+        verify(view).launchSwap(defCurrency = "USD",
+            toCryptoCurrency = CryptoCurrency.ETHER,
+            fromCryptoCurrency = CryptoCurrency.BTC)
         verify(view, never()).launchKyc(CampaignType.Swap)
         verify(view, never()).launchSwapIntro()
     }
@@ -186,10 +190,13 @@ class MainPresenterTest {
 
         // Act
         subject.onViewReady()
-        subject.startSwapOrKyc(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(toCurrency = CryptoCurrency.ETHER, fromCurrency = CryptoCurrency.BTC)
 
         // Assert
-        verify(view).launchSwap("USD", CryptoCurrency.ETHER)
+        verify(view).launchSwap("USD",
+            toCryptoCurrency = CryptoCurrency.ETHER,
+            fromCryptoCurrency = CryptoCurrency.BTC
+        )
         verify(view, never()).launchKyc(CampaignType.Swap)
         verify(view, never()).launchSwapIntro()
     }
@@ -203,7 +210,7 @@ class MainPresenterTest {
 
         // Act
         subject.onViewReady()
-        subject.startSwapOrKyc(CryptoCurrency.ETHER)
+        subject.startSwapOrKyc(toCurrency = CryptoCurrency.ETHER, fromCurrency = CryptoCurrency.BTC)
 
         // Assert
         verify(view, never()).launchSwap("USD", CryptoCurrency.ETHER)

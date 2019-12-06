@@ -1,8 +1,8 @@
 package piuk.blockchain.androidcoreui.utils
 
-import android.app.Activity
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import android.view.MotionEvent
+import androidx.appcompat.app.AlertDialog
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.R
 
@@ -11,7 +11,7 @@ class OverlayDetection constructor(private val prefs: PersistentPrefs) {
 
     private var alertDialog: AlertDialog? = null
 
-    fun detectObscuredWindow(activity: Activity, event: MotionEvent): Boolean {
+    fun detectObscuredWindow(activity: AppCompatActivity, event: MotionEvent): Boolean {
         // Detect if touch events are being obscured by hidden overlays - These could be used for tapjacking
         if (!prefs.getValue(PersistentPrefs.KEY_OVERLAY_TRUSTED, false) &&
             event.flags and MotionEvent.FLAG_WINDOW_IS_OBSCURED != 0

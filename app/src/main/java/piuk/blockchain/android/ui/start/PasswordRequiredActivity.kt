@@ -2,12 +2,12 @@ package piuk.blockchain.android.ui.start
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import android.text.InputType
 import android.text.method.DigitsKeyListener
+import androidx.annotation.StringRes
+import androidx.appcompat.widget.AppCompatEditText
 import info.blockchain.wallet.api.data.Settings
 import kotlinx.android.synthetic.main.activity_password_required.*
 import org.json.JSONObject

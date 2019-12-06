@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.swap.homebrew.exchange.history
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import piuk.blockchain.android.ui.swap.homebrew.exchange.detail.HomebrewTradeDetailActivity
 import piuk.blockchain.android.ui.swap.homebrew.exchange.history.adapter.TradeHistoryAdapter
 import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade

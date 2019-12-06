@@ -1,13 +1,13 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 
 class RegisterFingerprintsAnnouncement(
@@ -39,10 +39,10 @@ class RegisterFingerprintsAnnouncement(
                 ctaText = R.string.register_fingerprint_card_cta,
                 iconImage = R.drawable.ic_announce_fingerprint,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startEnableFingerprintLogin()
                 }
             )

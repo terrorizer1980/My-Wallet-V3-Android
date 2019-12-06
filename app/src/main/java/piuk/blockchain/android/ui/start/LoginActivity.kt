@@ -1,10 +1,9 @@
 package piuk.blockchain.android.ui.start
 
 import android.Manifest
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
-import com.blockchain.notifications.analytics.Analytics
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
@@ -28,7 +27,6 @@ class LoginActivity : MvpActivity<LoginView, LoginPresenter>(), LoginView {
     override val view: LoginView = this
 
     private val appUtil: AppUtil by inject()
-    private val analytics: Analytics by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +44,7 @@ class LoginActivity : MvpActivity<LoginView, LoginPresenter>(), LoginView {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == PAIRING_QR) {
+        if (resultCode == AppCompatActivity.RESULT_OK && requestCode == PAIRING_QR) {
             if (data?.getStringExtra(CaptureActivity.SCAN_RESULT) != null) {
                 presenter.pairWithQR(data.getStringExtra(CaptureActivity.SCAN_RESULT))
             }

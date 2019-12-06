@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.kyc.email.validation
 
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +39,11 @@ class KycEmailValidationFragment :
     private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private var progressDialog: MaterialProgressDialog? = null
-    private val email by unsafeLazy { KycEmailValidationFragmentArgs.fromBundle(arguments).email }
+    private val email by unsafeLazy {
+        KycEmailValidationFragmentArgs.fromBundle(
+            arguments ?: Bundle()
+        ).email
+    }
 
     private val resend = PublishSubject.create<Unit>()
 
@@ -95,7 +99,7 @@ class KycEmailValidationFragment :
     fun continueSignUp() {
         ViewUtils.hideKeyboard(requireActivity())
         navigate(
-            KycEmailValidationFragmentDirections.ActionAfterValidation()
+            KycEmailValidationFragmentDirections.actionAfterValidation()
         )
     }
 

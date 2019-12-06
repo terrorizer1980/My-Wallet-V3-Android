@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -13,12 +13,12 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_success_check"
+        app:srcCompat="@drawable/ic_success_check"
         android:layout_marginTop="72dp"
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginEnd="@dimen/standard_margin"/>
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/title"
         style="@style/Text.Semibold.Centered.20"
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginEnd="@dimen/standard_margin"/>
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/body_1"
         style="@style/Text.Standard.Centered.16"
         android:layout_width="match_parent"
@@ -54,7 +54,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_airdrop_parachute"
+        app:srcCompat="@drawable/ic_airdrop_parachute"
         android:layout_marginTop="36dp"
         android:layout_marginBottom="36dp"
         android:layout_marginStart="@dimen/standard_margin"
@@ -74,4 +74,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintVertical_bias="1.0" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

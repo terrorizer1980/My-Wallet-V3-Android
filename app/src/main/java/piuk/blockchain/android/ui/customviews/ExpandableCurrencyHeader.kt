@@ -5,11 +5,7 @@ import android.content.Context
 import android.graphics.Outline
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.support.annotation.DrawableRes
-import android.support.graphics.drawable.VectorDrawableCompat
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.content.res.AppCompatResources
-import android.support.v7.view.ContextThemeWrapper
+import androidx.annotation.DrawableRes
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +15,14 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.blockchain.balance.coinIconWhite
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
-import kotlinx.android.synthetic.main.include_amount_row.view.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.view.*
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
@@ -53,7 +52,7 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
         VectorDrawableCompat.create(
             resources,
             R.drawable.vector_expand_more,
-            ContextThemeWrapper(context, piuk.blockchain.kyc.R.style.AppTheme).theme
+            ContextThemeWrapper(context, R.style.AppTheme).theme
         )?.run {
             DrawableCompat.wrap(this)
         }

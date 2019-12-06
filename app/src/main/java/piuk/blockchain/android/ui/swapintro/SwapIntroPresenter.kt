@@ -1,12 +1,17 @@
 package piuk.blockchain.android.ui.swapintro
 
+import piuk.blockchain.android.ui.base.MvpPresenter
+import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 
-class SwapIntroPresenter(private val prefs: PersistentPrefs) : BasePresenter<SwapIntroView>() {
+interface SwapIntroView : MvpView
 
-    override fun onViewReady() {
-    }
+class SwapIntroPresenter(private val prefs: PersistentPrefs) : MvpPresenter<SwapIntroView>() {
+    override fun onViewAttached() { }
+    override fun onViewDetached() { }
+
+    override val alwaysDisableScreenshots: Boolean = false
+    override val enableLogoutTimer: Boolean = true
 
     fun onGetStartedPressed() {
         prefs.swapIntroCompleted = true

@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.buysell.launcher
 
-import com.blockchain.kyc.models.nabu.Kyc2TierState
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

@@ -3,13 +3,12 @@ package piuk.blockchain.android.ui.recover
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v7.widget.Toolbar
+import androidx.annotation.StringRes
+import androidx.appcompat.widget.Toolbar
 import android.view.inputmethod.EditorInfo
 import com.blockchain.annotations.CommonCode
 import kotlinx.android.synthetic.main.activity_recover_funds.*
 import org.koin.android.ext.android.get
-
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.android.ui.createwallet.CreateWalletActivity
@@ -25,7 +24,7 @@ internal class RecoverFundsActivity :
     private var progressDialog: MaterialProgressDialog? = null
 
     private val recoveryPhrase: String
-        get() = field_passphrase.text.toString().toLowerCase(Locale.US).trim()
+        get() = field_passphrase.editText?.text.toString().toLowerCase(Locale.US).trim()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +36,7 @@ internal class RecoverFundsActivity :
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         button_continue.setOnClickListener { presenter.onContinueClicked(recoveryPhrase) }
-        field_passphrase.setOnEditorActionListener { _, i, _ ->
+        field_passphrase.editText?.setOnEditorActionListener { _, i, _ ->
             if (i == EditorInfo.IME_ACTION_GO) {
                 presenter.onContinueClicked(recoveryPhrase)
             }

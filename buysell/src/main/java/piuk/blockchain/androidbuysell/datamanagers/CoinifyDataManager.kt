@@ -110,9 +110,11 @@ class CoinifyDataManager constructor(
      * @return A stream of [CoinifyTrade] object wrapped in an [Observable].
      */
     fun getTrades(offlineToken: String): Observable<CoinifyTrade> =
-        authenticate(offlineToken) { coinifyService.getTrades(accessToken = it.accessToken) }
-            .flattenAsObservable { it }
-            .applySchedulers()
+        authenticate(offlineToken) {
+            coinifyService.getTrades(accessToken = it.accessToken)
+        }
+        .flattenAsObservable { it }
+        .subscribeOn(Schedulers.io())
 
     /**
      * Returns a [CoinifyTrade] object given the correct trade ID.

@@ -1,18 +1,18 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
-import android.support.annotation.VisibleForTesting
-import com.blockchain.kyc.models.nabu.Kyc2TierState
-import com.blockchain.kyc.services.nabu.TierService
+import androidx.annotation.VisibleForTesting
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import com.blockchain.remoteconfig.FeatureFlag
+import com.blockchain.swap.nabu.service.TierService
 import piuk.blockchain.androidbuysell.api.CoinifyWalletService
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
 import piuk.blockchain.android.campaign.CampaignType
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 
 internal class KycMoreInfoAnnouncement(
     private val tierService: TierService,
@@ -59,10 +59,10 @@ internal class KycMoreInfoAnnouncement(
                 ctaText = R.string.kyc_more_info_cta,
                 iconImage = R.drawable.ic_announce_kyc,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startKyc(CampaignType.Sunriver)
                 },
                 dismissEntry = dismissEntry,

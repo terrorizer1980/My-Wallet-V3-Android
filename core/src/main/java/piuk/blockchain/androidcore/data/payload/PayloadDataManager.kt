@@ -88,10 +88,10 @@ class PayloadDataManager(
 
     val isBackedUp: Boolean
         get() = (
-            payloadManager.payload != null &&
-                payloadManager.payload!!.hdWallets != null &&
-                payloadManager.payload!!.hdWallets[0].isMnemonicVerified
-            )
+                payloadManager.payload != null &&
+                        payloadManager.payload!!.hdWallets != null &&
+                        payloadManager.payload!!.hdWallets[0].isMnemonicVerified
+                )
 
     val mnemonic: List<String>
         get() = payloadManager.payload!!.hdWallets[0].mnemonic

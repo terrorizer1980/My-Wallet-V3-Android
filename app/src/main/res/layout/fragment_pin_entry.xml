@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -59,7 +59,7 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/pin_box_0"
             android:scaleType="fitXY"
-            android:src="@drawable/rounded_view_blue_white_border"
+            app:srcCompat="@drawable/rounded_view_blue_white_border"
             app:layout_constraintBottom_toTopOf="@id/fingerprint_logo"
             app:layout_constraintEnd_toStartOf="@+id/pinBox1"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -75,7 +75,7 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/pin_box_1"
             android:scaleType="fitXY"
-            android:src="@drawable/rounded_view_blue_white_border"
+            app:srcCompat="@drawable/rounded_view_blue_white_border"
             app:layout_constraintBottom_toTopOf="@id/fingerprint_logo"
             app:layout_constraintEnd_toStartOf="@+id/pinBox2"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -91,7 +91,7 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/pin_box_2"
             android:scaleType="fitXY"
-            android:src="@drawable/rounded_view_blue_white_border"
+            app:srcCompat="@drawable/rounded_view_blue_white_border"
             app:layout_constraintBottom_toTopOf="@id/fingerprint_logo"
             app:layout_constraintEnd_toEndOf="@+id/titleBox"
             app:layout_constraintEnd_toStartOf="@+id/pinBox3"
@@ -108,7 +108,7 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/pin_box_3"
             android:scaleType="fitXY"
-            android:src="@drawable/rounded_view_blue_white_border"
+            app:srcCompat="@drawable/rounded_view_blue_white_border"
             app:layout_constraintBottom_toTopOf="@id/fingerprint_logo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -183,5 +183,5 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:visibility="visible" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

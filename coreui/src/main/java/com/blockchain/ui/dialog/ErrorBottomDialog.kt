@@ -2,9 +2,8 @@ package com.blockchain.ui.dialog
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.annotation.DrawableRes
-import android.support.annotation.StringRes
-import android.support.design.widget.BottomSheetDialogFragment
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import android.text.method.LinkMovementMethod
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -13,6 +12,7 @@ import android.view.ViewGroup
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy

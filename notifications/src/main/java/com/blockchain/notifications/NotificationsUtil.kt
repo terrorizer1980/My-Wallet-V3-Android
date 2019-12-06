@@ -6,9 +6,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.net.Uri
-import android.support.annotation.DrawableRes
-import android.support.v4.app.NotificationCompat
-import android.support.v4.content.ContextCompat
+import androidx.annotation.DrawableRes
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 
 class NotificationsUtil(

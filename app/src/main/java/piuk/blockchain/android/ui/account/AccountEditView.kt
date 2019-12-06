@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.account
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import piuk.blockchain.androidcore.data.events.ActionEvent
 
 import piuk.blockchain.androidcoreui.ui.base.View

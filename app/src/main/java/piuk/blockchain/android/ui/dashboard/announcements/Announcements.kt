@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import piuk.blockchain.android.campaign.CampaignType
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Maybe
@@ -17,12 +17,11 @@ interface AnnouncementHost {
 
     fun clearAllAnnouncements()
     fun showAnnouncementCard(card: AnnouncementCard)
-    fun dismissAnnouncementCard(prefsKey: String)
+    fun dismissAnnouncementCard()
 
     // Actions
     fun startKyc(campaignType: CampaignType)
-
-    fun startSwapOrKyc(swapTarget: CryptoCurrency? = null)
+    fun startSwap(swapTarget: CryptoCurrency = CryptoCurrency.ETHER)
     fun startBuySell()
     fun startPitLinking()
     fun startFundsBackup()
@@ -31,7 +30,7 @@ interface AnnouncementHost {
     fun startEnableFingerprintLogin()
     fun startIntroTourGuide()
     fun startTransferCrypto()
-    fun startCampaignIntro(campaignType: CampaignType)
+    fun startBlockstackIntro()
 }
 
 abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {

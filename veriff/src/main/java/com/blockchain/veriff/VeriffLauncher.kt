@@ -1,7 +1,7 @@
 package com.blockchain.veriff
 
 import android.app.Activity
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import mobi.lab.veriff.data.Branding
 import mobi.lab.veriff.data.Veriff
 import timber.log.Timber

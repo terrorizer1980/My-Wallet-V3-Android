@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.onboarding
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import org.koin.android.ext.android.inject
 
 import piuk.blockchain.android.R
@@ -140,6 +140,7 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
         if (requestCode == EMAIL_CLIENT_REQUEST) {
             presenter.enableAutoLogout()
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     companion object {

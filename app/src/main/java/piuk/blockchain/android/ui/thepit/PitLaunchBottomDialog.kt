@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.thepit
 
 import android.os.Bundle
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.FragmentActivity
 import com.blockchain.ui.urllinks.URL_THE_PIT_LAUNCH_SUPPORT
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R

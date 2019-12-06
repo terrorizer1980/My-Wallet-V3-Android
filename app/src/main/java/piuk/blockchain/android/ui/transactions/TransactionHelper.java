@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.transactions;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import info.blockchain.wallet.multiaddress.TransactionSummary;
 import info.blockchain.wallet.payment.Payment;
 import org.apache.commons.lang3.tuple.Pair;

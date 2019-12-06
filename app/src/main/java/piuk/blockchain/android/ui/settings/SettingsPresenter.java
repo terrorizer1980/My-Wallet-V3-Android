@@ -1,11 +1,7 @@
 package piuk.blockchain.android.ui.settings;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
-
-import com.blockchain.kyc.models.nabu.NabuApiException;
-import com.blockchain.kyc.models.nabu.NabuErrorStatusCodes;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
 
 import com.blockchain.notifications.NotificationTokenManager;
@@ -14,6 +10,8 @@ import com.blockchain.notifications.analytics.AnalyticsEvents;
 import com.blockchain.notifications.analytics.KYCAnalyticsEvents;
 import com.blockchain.notifications.analytics.SettingsAnalyticsEvents;
 import com.blockchain.remoteconfig.FeatureFlag;
+import com.blockchain.swap.nabu.models.nabu.NabuApiException;
+import com.blockchain.swap.nabu.models.nabu.NabuErrorStatusCodes;
 
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.PayloadManager;

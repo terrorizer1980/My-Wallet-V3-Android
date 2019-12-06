@@ -17,12 +17,6 @@ import com.blockchain.accounts.EthAccountListAdapter
 import com.blockchain.accounts.EthAsyncAccountListAdapter
 import com.blockchain.accounts.PaxAccountListAdapter
 import com.blockchain.accounts.PaxAsyncAccountList
-import com.blockchain.balance.AsyncAccountBalanceReporter
-import com.blockchain.balance.AsyncAddressBalanceReporter
-import com.blockchain.balance.BchBalanceAdapter
-import com.blockchain.balance.BtcBalanceAdapter
-import com.blockchain.balance.EthBalanceAdapter
-import com.blockchain.balance.plus
 import com.blockchain.datamanagers.AccountLookup
 import com.blockchain.datamanagers.AddressResolver
 import com.blockchain.datamanagers.DataManagerPayloadDecrypt
@@ -186,21 +180,6 @@ val coreModule = applicationContext {
         factory("BCH") { BchAsyncAccountListAdapter(get()) as AsyncAccountList }
         factory("ETH") { EthAsyncAccountListAdapter(EthAccountListAdapter(get())) as AsyncAccountList }
         factory("PAX") { PaxAsyncAccountList(ethDataManager = get(), stringUtils = get()) as AsyncAccountList }
-
-        factory("BTC") { BtcBalanceAdapter(get()) }
-            .bind(AsyncAddressBalanceReporter::class)
-            .bind(AsyncAccountBalanceReporter::class)
-        factory("BCH") { BchBalanceAdapter(get()) }
-            .bind(AsyncAddressBalanceReporter::class)
-            .bind(AsyncAccountBalanceReporter::class)
-        factory("ETH") { EthBalanceAdapter(get()) }
-            .bind(AsyncAddressBalanceReporter::class)
-            .bind(AsyncAccountBalanceReporter::class)
-
-        factory("all") {
-            get<AsyncAccountBalanceReporter>("BTC") +
-                    get("BCH") + get("ETH") + get("XLM")
-        }
 
         factory {
             AllAccountsImplementation(

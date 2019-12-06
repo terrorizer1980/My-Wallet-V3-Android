@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.swipetoreceive
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.toUri
 import info.blockchain.api.data.Balance

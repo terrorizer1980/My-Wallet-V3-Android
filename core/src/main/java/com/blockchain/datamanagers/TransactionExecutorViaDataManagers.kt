@@ -239,7 +239,8 @@ internal class TransactionExecutorViaDataManagers(
             .singleOrError()
 
     private fun getMaxSpendablePax(): Single<CryptoValue> =
-        erc20Account.getBalance().map { CryptoValue.usdPaxFromMinor(it) }
+        erc20Account.getBalance()
+            .map { CryptoValue.usdPaxFromMinor(it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroPax }
 

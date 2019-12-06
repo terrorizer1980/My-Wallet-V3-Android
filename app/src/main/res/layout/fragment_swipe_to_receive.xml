@@ -1,4 +1,4 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:context="piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveFragment">
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewpager_icons"
         android:layout_width="match_parent"
         android:layout_height="96dp"
@@ -24,7 +24,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="16dp"
         android:rotation="180"
-        android:src="@drawable/swipe_receive_arrow"
+        app:srcCompat="@drawable/swipe_receive_arrow"
         android:tint="@color/product_gray_hint"
         android:visibility="invisible"
         android:contentDescription="@string/swipe_receive_left_arrow"
@@ -41,7 +41,7 @@
         android:layout_marginRight="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="16dp"
-        android:src="@drawable/swipe_receive_arrow"
+        app:srcCompat="@drawable/swipe_receive_arrow"
         android:tint="@color/product_gray_hint"
         android:contentDescription="@string/swipe_receive_right_arrow"
         app:layout_constraintEnd_toEndOf="parent"
@@ -166,4 +166,4 @@
         app:layout_constraintTop_toBottomOf="@+id/textview_account"
         tools:text="1rfMgXAGLmbJoaQmtJGbszuZoYsBAadWx" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

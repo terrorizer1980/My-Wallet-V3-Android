@@ -32,11 +32,12 @@ class PaxAccount(
             Observable.just(Erc20DataModel(Erc20AddressResponse(), cryptoCurrency))
                 .doOnNext { dataStore.erc20DataModel = null }
         } else {
-            ethDataManager.getErc20Address(CryptoCurrency.PAX).map {
-                Erc20DataModel(it, cryptoCurrency)
-            }.doOnNext {
-                dataStore.erc20DataModel = it
-            }.subscribeOn(Schedulers.io())
+            ethDataManager.getErc20Address(CryptoCurrency.PAX)
+                .map {
+                    Erc20DataModel(it, cryptoCurrency)
+                }.doOnNext {
+                    dataStore.erc20DataModel = it
+                }.subscribeOn(Schedulers.io())
         }
 
     override fun getTransactions(): Observable<List<Erc20Transfer>> =
@@ -61,11 +62,11 @@ class PaxAccount(
     override fun fetchAddressCompletable(): Completable = Completable.fromObservable(fetchErc20Address())
 
     override fun getBalance(): Single<BigInteger> =
-        ethDataManager.getErc20Address(cryptoCurrency).map {
-            it.balance
-        }.singleOrError().onErrorReturn {
-            0.toBigInteger()
-        }
+        ethDataManager.getErc20Address(cryptoCurrency)
+            .map {
+                it.balance
+            }
+            .singleOrError()
 
     override fun createTransaction(
         nonce: BigInteger,

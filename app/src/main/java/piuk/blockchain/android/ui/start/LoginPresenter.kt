@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.start
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import io.reactivex.rxkotlin.plusAssign

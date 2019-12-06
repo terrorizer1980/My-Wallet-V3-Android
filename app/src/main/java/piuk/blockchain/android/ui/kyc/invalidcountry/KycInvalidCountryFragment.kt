@@ -23,7 +23,7 @@ class KycInvalidCountryFragment :
     KycInvalidCountryView {
 
     override val displayModel by unsafeLazy {
-        KycInvalidCountryFragmentArgs.fromBundle(arguments).countryDisplayModel
+        KycInvalidCountryFragmentArgs.fromBundle(arguments ?: Bundle()).countryDisplayModel
     }
     private val presenter: KycInvalidCountryPresenter by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)

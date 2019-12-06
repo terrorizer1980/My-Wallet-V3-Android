@@ -1,12 +1,12 @@
 package com.blockchain.ui.chooser
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
+import androidx.annotation.StringRes
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.serialization.toMoshiJson
 import com.blockchain.wallet.toAccountReference
@@ -51,7 +51,7 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
 
     override fun onSupportNavigateUp(): Boolean =
         consume {
-            setResult(Activity.RESULT_CANCELED)
+            setResult(AppCompatActivity.RESULT_CANCELED)
             onBackPressed()
         }
 
@@ -69,7 +69,7 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
                     )
                 }
 
-                setResult(Activity.RESULT_OK, intent)
+                setResult(AppCompatActivity.RESULT_OK, intent)
                 finish()
             } catch (e: JsonProcessingException) {
                 throw RuntimeException(e)
@@ -110,7 +110,7 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
         }
 
         fun startForResult(
-            activity: Activity,
+            activity: AppCompatActivity,
             accountMode: AccountMode,
             requestCode: Int,
             @StringRes title: Int
@@ -119,7 +119,7 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
         }
 
         fun startForResult(
-            activity: Activity,
+            activity: AppCompatActivity,
             accountMode: AccountMode,
             requestCode: Int,
             title: String

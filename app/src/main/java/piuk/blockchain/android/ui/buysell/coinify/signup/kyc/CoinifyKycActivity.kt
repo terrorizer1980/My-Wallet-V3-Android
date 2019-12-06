@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.buysell.coinify.signup.kyc
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -58,7 +58,7 @@ class CoinifyKycActivity : BaseAuthActivity() {
                 super.onLoadResource(view, url)
                 Timber.d("URL loaded $url")
                 if (url?.contains("$REDIRECT_URL_PARTIAL$externalKycId") == true) {
-                    setResult(Activity.RESULT_OK)
+                    setResult(AppCompatActivity.RESULT_OK)
                     finish()
                 }
             }
@@ -71,7 +71,7 @@ class CoinifyKycActivity : BaseAuthActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_PICK_FILE) {
+        if (resultCode == AppCompatActivity.RESULT_OK && requestCode == REQUEST_CODE_PICK_FILE) {
             val uri = if (data?.data == null) capturedImageUri!! else data.data
             valueCallback!!.onReceiveValue(arrayOf(uri))
             valueCallback = null
@@ -83,7 +83,7 @@ class CoinifyKycActivity : BaseAuthActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean = consume {
-        setResult(Activity.RESULT_CANCELED)
+        setResult(AppCompatActivity.RESULT_CANCELED)
         finish()
     }
 
@@ -125,7 +125,7 @@ class CoinifyKycActivity : BaseAuthActivity() {
         private const val REQUEST_CODE_PICK_FILE = 9123
 
         fun startForResult(
-            activity: Activity,
+            activity: AppCompatActivity,
             redirectUrl: String,
             externalKycId: String,
             requestCode: Int

@@ -1,8 +1,8 @@
 package piuk.blockchain.android.ui.backup.transfer
 
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.app.DialogFragment
+import androidx.annotation.StringRes
+import androidx.fragment.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +15,7 @@ import com.blockchain.ui.password.SecondPasswordHandler
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.ui.base.BaseDialogFragment
 import com.blockchain.ui.dialog.MaterialProgressDialog
+
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -51,7 +52,7 @@ class ConfirmFundsTransferDialogFragment :
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val window = dialog.window
+        val window = dialog?.window
         window?.let {
             val params = window.attributes
             params.width = WindowManager.LayoutParams.MATCH_PARENT

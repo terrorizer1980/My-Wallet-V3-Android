@@ -3,7 +3,6 @@ package piuk.blockchain.android.ui.dashboard.announcements.rule
 import io.reactivex.Single
 
 import piuk.blockchain.android.R
-import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
@@ -39,8 +38,9 @@ class KycForBlockstackMiniAnnouncement(
                 titleText = R.string.stacks_airdrop_mini_card_title,
                 bodyText = R.string.stacks_airdrop_mini_card_body,
                 iconImage = R.drawable.ic_airdrop_parachute_green,
+                background = R.drawable.blockstack_announcement_mini_card_background,
                 ctaFunction = {
-                    host.startCampaignIntro(CampaignType.Blockstack)
+                    host.startBlockstackIntro()
                 },
                 hasCta = true
             )

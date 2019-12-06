@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.base
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import io.reactivex.disposables.CompositeDisposable
 
 interface MvpView {
@@ -28,8 +28,15 @@ abstract class MvpPresenter<T : MvpView> {
         this.view = null
     }
 
-    protected abstract fun onViewAttached()
-    protected abstract fun onViewDetached()
+    // These 3 methods are provided for compatibility with existing
+    // code. Try not to use them in new code, because they are
+    // going once the send and receive screen have been updated
+    open fun onViewResumed() { }
+    open fun onViewPaused() { }
+    open fun onViewReady() { }
+
+    protected abstract fun onViewAttached() // initView() in old framework
+    protected abstract fun onViewDetached() // onViewDestroyed() in old framework
 
     abstract val alwaysDisableScreenshots: Boolean
     abstract val enableLogoutTimer: Boolean

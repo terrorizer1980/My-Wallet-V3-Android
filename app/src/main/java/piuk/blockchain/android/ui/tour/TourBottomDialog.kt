@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.tour
 
 import android.os.Bundle
-import android.support.annotation.DrawableRes
-import android.support.annotation.StringRes
-import android.support.design.widget.BottomSheetDialogFragment
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View

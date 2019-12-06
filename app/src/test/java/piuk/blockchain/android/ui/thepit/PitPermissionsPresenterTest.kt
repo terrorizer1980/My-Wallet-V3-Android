@@ -1,13 +1,13 @@
 package piuk.blockchain.android.ui.thepit
 
 import com.blockchain.annotations.CommonCode
-import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.nabu.NabuUser
+import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.preferences.ThePitLinkingPrefs
 import com.blockchain.remoteconfig.ABTestExperiment
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.mock
@@ -26,7 +26,7 @@ import org.junit.Test
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.thepit.PitLinking
 
-@CommonCode("Also exists in kyc/test/TestHelper.kt")
+@CommonCode("Also exists in nabu/test/TestHelper.kt")
 private val validOfflineToken
     get() = NabuOfflineTokenResponse("userId", "lifetimeToken")
 

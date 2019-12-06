@@ -1,7 +1,9 @@
 package piuk.blockchain.android.ui.receive
 
-import android.annotation.SuppressLint
-import android.support.annotation.VisibleForTesting
+import android.graphics.Bitmap
+import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
+import com.blockchain.extensions.exhaustive
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.isValidXlmQr
 import com.blockchain.sunriver.toUri
@@ -15,13 +17,15 @@ import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import info.blockchain.wallet.util.FormatsUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import org.bitcoinj.core.Address
 import org.bitcoinj.core.Coin
 import org.bitcoinj.uri.BitcoinURI
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
+import piuk.blockchain.android.ui.base.MvpPresenter
+import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
@@ -32,13 +36,28 @@ import piuk.blockchain.androidcore.data.exchangerate.toCrypto
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.math.BigInteger
 import java.util.Locale
 
-@Suppress("MemberVisibilityCanPrivate")
+interface ReceiveView : MvpView {
+    fun getQrBitmap(): Bitmap
+    fun getBtcAmount(): String
+    fun showQrLoading()
+    fun showQrCode(bitmap: Bitmap?)
+    fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
+    fun updateFiatTextField(text: String)
+    fun updateBtcTextField(text: String)
+    fun updateReceiveAddress(address: String)
+    fun showWatchOnlyWarning()
+    fun updateReceiveLabel(label: String)
+    fun showShareBottomSheet(uri: String)
+    fun setSelectedCurrency(cryptoCurrency: CryptoCurrency)
+    fun finishPage()
+    fun disableCurrencyHeader()
+}
+
 class ReceivePresenter(
     private val prefs: PersistentPrefs,
     private val qrCodeDataManager: QrCodeDataManager,
@@ -50,7 +69,10 @@ class ReceivePresenter(
     private val environmentSettings: EnvironmentConfig,
     private val currencyState: CurrencyState,
     private val fiatExchangeRates: FiatExchangeRates
-) : BasePresenter<ReceiveView>() {
+) : MvpPresenter<ReceiveView>() {
+
+    override val alwaysDisableScreenshots = false
+    override val enableLogoutTimer = true
 
     @VisibleForTesting
     internal var selectedAddress: String? = null
@@ -67,11 +89,15 @@ class ReceivePresenter(
         get() = prefs.selectedFiatCurrency
 
     override fun onViewReady() {
+        super.onViewReady()
         if (environmentSettings.environment == Environment.TESTNET) {
             currencyState.cryptoCurrency = CryptoCurrency.BTC
-            view.disableCurrencyHeader()
+            view?.disableCurrencyHeader()
         }
     }
+
+    override fun onViewAttached() { }
+    override fun onViewDetached() { }
 
     internal fun onResume(defaultAccountPosition: Int) {
         when (currencyState.cryptoCurrency) {
@@ -80,7 +106,8 @@ class ReceivePresenter(
             CryptoCurrency.BCH -> onSelectBchDefault()
             CryptoCurrency.XLM -> onXlmSelected()
             CryptoCurrency.PAX -> onPaxSelected()
-        }
+            CryptoCurrency.STX -> TODO("STX is not yet fully supported")
+        }.exhaustive
     }
 
     internal fun isValidAmount(btcAmount: String) = btcAmount.toSafeLong(Locale.getDefault()) > 0
@@ -90,12 +117,12 @@ class ReceivePresenter(
 
     internal fun onLegacyAddressSelected(legacyAddress: LegacyAddress) {
         if (legacyAddress.isWatchOnly && shouldWarnWatchOnly()) {
-            view.showWatchOnlyWarning()
+            view?.showWatchOnlyWarning()
         }
 
         selectedAccount = null
         selectedBchAccount = null
-        view.updateReceiveLabel(
+        view?.updateReceiveLabel(
             if (!legacyAddress.label.isNullOrEmpty()) {
                 legacyAddress.label
             } else {
@@ -105,8 +132,10 @@ class ReceivePresenter(
 
         legacyAddress.address.let {
             selectedAddress = it
-            view.updateReceiveAddress(it)
-            generateQrCode(getBitcoinUri(it, view.getBtcAmount()))
+            view?.apply {
+                updateReceiveAddress(it)
+                generateQrCode(getBitcoinUri(it, getBtcAmount()))
+            }
         }
     }
 
@@ -121,12 +150,12 @@ class ReceivePresenter(
         val bech32Display = bech32.removeBchUri()
 
         if (legacyAddress.isWatchOnly && shouldWarnWatchOnly()) {
-            view.showWatchOnlyWarning()
+            view?.showWatchOnlyWarning()
         }
 
         selectedAccount = null
         selectedBchAccount = null
-        view.updateReceiveLabel(
+        view?.updateReceiveLabel(
             if (!legacyAddress.label.isNullOrEmpty()) {
                 legacyAddress.label
             } else {
@@ -135,38 +164,38 @@ class ReceivePresenter(
         )
 
         selectedAddress = bech32
-        view.updateReceiveAddress(bech32Display)
+        view?.updateReceiveAddress(bech32Display)
         generateQrCode(bech32)
     }
 
-    @SuppressLint("CheckResult")
     internal fun onAccountBtcSelected(account: Account) {
         currencyState.cryptoCurrency = CryptoCurrency.BTC
-        view.setSelectedCurrency(currencyState.cryptoCurrency)
+        view?.setSelectedCurrency(currencyState.cryptoCurrency)
         selectedAccount = account
         selectedBchAccount = null
-        view.updateReceiveLabel(account.label)
+        view?.updateReceiveLabel(account.label)
 
-        payloadDataManager.updateAllTransactions()
-            .doOnSubscribe { view.showQrLoading() }
+        compositeDisposable += payloadDataManager.updateAllTransactions()
+            .doOnSubscribe { view?.showQrLoading() }
             .onErrorComplete()
             .andThen(payloadDataManager.getNextReceiveAddress(account))
-            .addToCompositeDisposable(this)
             .doOnNext {
                 selectedAddress = it
-                view.updateReceiveAddress(it)
-                generateQrCode(getBitcoinUri(it, view.getBtcAmount()))
+                view?.apply {
+                    updateReceiveAddress(it)
+                    generateQrCode(getBitcoinUri(it, getBtcAmount()))
+                }
             }
             .doOnError { Timber.e(it) }
             .subscribe(
                 { /* No-op */ },
-                { view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR) })
+                { view?.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR) })
     }
 
     internal fun onEthSelected() {
         currencyState.cryptoCurrency = CryptoCurrency.ETHER
         compositeDisposable.clear()
-        view.setSelectedCurrency(CryptoCurrency.ETHER)
+        view?.setSelectedCurrency(CryptoCurrency.ETHER)
         selectedAccount = null
         selectedBchAccount = null
 
@@ -176,7 +205,7 @@ class ReceivePresenter(
     internal fun onPaxSelected() {
         currencyState.cryptoCurrency = CryptoCurrency.PAX
         compositeDisposable.clear()
-        view.setSelectedCurrency(CryptoCurrency.PAX)
+        view?.setSelectedCurrency(CryptoCurrency.PAX)
         selectedAccount = null
         selectedBchAccount = null
 
@@ -189,34 +218,32 @@ class ReceivePresenter(
         if (account != null) {
             account.let {
                 selectedAddress = it
-                view.updateReceiveAddress(it)
+                view?.updateReceiveAddress(it)
                 generateQrCode(it)
             }
         } else {
-            view.finishPage()
+            view?.finishPage()
         }
     }
 
-    @SuppressLint("CheckResult")
     internal fun onXlmSelected() {
         currencyState.cryptoCurrency = CryptoCurrency.XLM
         compositeDisposable.clear()
-        view.setSelectedCurrency(CryptoCurrency.XLM)
+        view?.setSelectedCurrency(CryptoCurrency.XLM)
         selectedAccount = null
         selectedBchAccount = null
-        xlmDataManager.defaultAccount()
-            .addToCompositeDisposable(this)
+        compositeDisposable += xlmDataManager.defaultAccount()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { account ->
                     account.let {
                         selectedAddress = it.toUri()
-                        view.updateReceiveAddress(it.accountId)
+                        view?.updateReceiveAddress(it.accountId)
                         generateQrCode(it.toUri())
                     }
                 },
                 onError = {
-                    view.finishPage()
+                    view?.finishPage()
                 })
     }
 
@@ -225,35 +252,33 @@ class ReceivePresenter(
         onBchAccountSelected(bchDataManager.getDefaultGenericMetadataAccount()!!)
     }
 
-    @SuppressLint("CheckResult")
     internal fun onBchAccountSelected(account: GenericMetadataAccount) {
         currencyState.cryptoCurrency = CryptoCurrency.BCH
-        view.setSelectedCurrency(CryptoCurrency.BCH)
+        view?.setSelectedCurrency(CryptoCurrency.BCH)
         selectedAccount = null
         selectedBchAccount = account
-        view.updateReceiveLabel(account.label)
+        view?.updateReceiveLabel(account.label)
         val position =
             bchDataManager.getAccountMetadataList().indexOfFirst { it.xpub == account.xpub }
 
-        bchDataManager.updateAllBalances()
-            .doOnSubscribe { view.showQrLoading() }
+        compositeDisposable += bchDataManager.updateAllBalances()
+            .doOnSubscribe { view?.showQrLoading() }
             .andThen(
                 bchDataManager.getWalletTransactions(50, 0)
                     .onErrorReturn { emptyList() }
             )
             .flatMap { bchDataManager.getNextReceiveAddress(position) }
-            .addToCompositeDisposable(this)
             .doOnNext {
                 val address = Address.fromBase58(environmentSettings.bitcoinCashNetworkParameters, it)
                 val bech32 = address.toCashAddress()
                 selectedAddress = bech32
-                view.updateReceiveAddress(bech32.removeBchUri())
+                view?.updateReceiveAddress(bech32.removeBchUri())
                 generateQrCode(bech32)
             }
             .doOnError { Timber.e(it) }
             .subscribe(
                 { /* No-op */ },
-                { view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR) }
+                { view?.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR) }
             )
     }
 
@@ -272,7 +297,7 @@ class ReceivePresenter(
         val amountBigInt = amount.toSafeLong(Locale.getDefault())
 
         if (isValidAmount(amountBigInt)) {
-            view.showToast(R.string.invalid_amount, ToastCustom.TYPE_ERROR)
+            view?.showToast(R.string.invalid_amount, ToastCustom.TYPE_ERROR)
         }
 
         generateQrCode(getBitcoinUri(selectedAddress!!, amount))
@@ -313,7 +338,7 @@ class ReceivePresenter(
     }
 
     internal fun updateFiatTextField(bitcoin: String) {
-        view.updateFiatTextField(
+        view?.updateFiatTextField(
             currencyState.cryptoCurrency.withMajorValueOrZero(bitcoin)
                 .toFiat(fiatExchangeRates)
                 .toStringWithoutSymbol()
@@ -321,7 +346,7 @@ class ReceivePresenter(
     }
 
     internal fun updateBtcTextField(fiat: String) {
-        view.updateBtcTextField(
+        view?.updateBtcTextField(
             FiatValue.fromMajorOrZero(fiatUnit, fiat)
                 .toCrypto(fiatExchangeRates, currencyState.cryptoCurrency)
                 .format()
@@ -347,15 +372,14 @@ class ReceivePresenter(
         }
     }
 
-    @SuppressLint("CheckResult")
     private fun generateQrCode(uri: String) {
-        view.showQrLoading()
+        view?.showQrLoading()
         compositeDisposable.clear()
-        qrCodeDataManager.generateQrCode(uri, DIMENSION_QR_CODE)
-            .addToCompositeDisposable(this)
-            .subscribe(
-                { view.showQrCode(it) },
-                { view.showQrCode(null) })
+        compositeDisposable += qrCodeDataManager.generateQrCode(uri, DIMENSION_QR_CODE)
+            .subscribeBy(
+                onNext = { view?.showQrCode(it) },
+                onError = { view?.showQrCode(null) }
+            )
     }
 
     private fun shouldWarnWatchOnly() = prefs.getValue(KEY_WARN_WATCH_ONLY_SPEND, true)

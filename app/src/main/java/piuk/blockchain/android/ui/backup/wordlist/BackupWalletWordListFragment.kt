@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.backup.wordlist
 
-import android.app.FragmentTransaction
+import androidx.fragment.app.FragmentTransaction
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater

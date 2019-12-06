@@ -1,15 +1,15 @@
 package piuk.blockchain.android.ui.buysell.confirmation.buy
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.DrawableRes
-import android.support.graphics.drawable.VectorDrawableCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.view.ContextThemeWrapper
+import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AlertDialog
 import android.view.View
 import android.widget.Button
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -157,7 +157,7 @@ class CoinifyBuyConfirmationActivity :
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.buy_sell_confirmation_order_expired)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
-                    setResult(Activity.RESULT_CANCELED)
+                    setResult(AppCompatActivity.RESULT_CANCELED)
                     finish()
                 }
                 .setCancelable(false)
@@ -179,7 +179,7 @@ class CoinifyBuyConfirmationActivity :
             }
             .setNegativeButton(R.string.buy_sell_confirmation_amount_too_high_use_card) { _, _ ->
                 setResult(
-                    Activity.RESULT_CANCELED,
+                    AppCompatActivity.RESULT_CANCELED,
                     Intent().apply { putExtra(EXTRA_CARD_LIMIT, cardLimit) }
                 )
                 finish()
@@ -197,7 +197,7 @@ class CoinifyBuyConfirmationActivity :
             canTradeWithCard = false,
             canTradeWithBak = false
         )
-        setResult(Activity.RESULT_OK)
+        setResult(AppCompatActivity.RESULT_OK)
         finish()
     }
 
@@ -210,13 +210,13 @@ class CoinifyBuyConfirmationActivity :
             canTradeWithCard = false,
             canTradeWithBak = false
         )
-        setResult(Activity.RESULT_OK)
+        setResult(AppCompatActivity.RESULT_OK)
         finish()
     }
 
     override fun launchTransferDetailsPage(tradeId: Int, awaitingFundsModel: AwaitingFundsModel) {
         CoinifyAwaitingBankTransferActivity.start(this, awaitingFundsModel)
-        setResult(Activity.RESULT_OK)
+        setResult(AppCompatActivity.RESULT_OK)
         finish()
     }
 
@@ -227,7 +227,7 @@ class CoinifyBuyConfirmationActivity :
         cost: Double
     ) {
         ISignThisActivity.start(this, redirectUrl, paymentId, fromCurrency, cost)
-        setResult(Activity.RESULT_OK)
+        setResult(AppCompatActivity.RESULT_OK)
         finish()
     }
 
@@ -260,7 +260,7 @@ class CoinifyBuyConfirmationActivity :
 
     override fun onBackPressed() {
         // Allow user to go back without clearing previous activity so that they can make changes
-        setResult(Activity.RESULT_CANCELED)
+        setResult(AppCompatActivity.RESULT_CANCELED)
         super.onBackPressed()
     }
 
@@ -284,7 +284,7 @@ class CoinifyBuyConfirmationActivity :
         const val REQUEST_CODE_CONFIRM_BUY_ORDER = 803
 
         fun startForResult(
-            activity: Activity,
+            activity: AppCompatActivity,
             requestCode: Int,
             orderType: OrderType,
             displayModel: BuyConfirmationDisplayModel,

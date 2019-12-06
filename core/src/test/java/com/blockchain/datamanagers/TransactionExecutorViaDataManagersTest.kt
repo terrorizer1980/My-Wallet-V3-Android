@@ -546,12 +546,10 @@ class TransactionExecutorViaDataManagersTest {
         // Arrange
         val account = AccountReference.Pax("", "", "")
 
-        whenever(
-            erc20Account.getBalance()
-        ).thenReturn(Single.just(100.toBigInteger()))
+        whenever(erc20Account.getBalance()).thenReturn(Single.just(100.toBigInteger()))
+
         // Act
-        val testObserver =
-            subject.getMaximumSpendable(account, mock())
+        val testObserver = subject.getMaximumSpendable(account, mock())
                 .test()
         // Assert
         testObserver.assertComplete()

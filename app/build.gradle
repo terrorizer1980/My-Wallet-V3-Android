@@ -31,7 +31,6 @@ android {
         archivesBaseName = "blockchain-$versionName"
 
         // Flag to hide or show the Contacts feature
-        buildConfigBoolean "SHOW_LOCKBOX_BALANCE", false
         buildConfigBoolean "LOG_KOIN_STARTUP", false
         buildConfigLong "EXIT_APP_COOLDOWN_MILLIS", 2 * 1000
 
@@ -230,7 +229,7 @@ androidExtensions {
 dependencies {
     implementation project(':coreui')
     implementation project(':notifications')
-    implementation project(':kyc')
+    implementation project(':nabu')
     implementation project(':swap')
     implementation project(':sunriver')
     implementation project(':lockbox')
@@ -238,7 +237,6 @@ dependencies {
     api project(':buysell')
     api project(':coreui')
     api project(':notifications')
-    api project(':nabu')
     implementation project(':veriff')
 
     implementation Libraries.multidex
@@ -257,6 +255,7 @@ dependencies {
     implementation Libraries.circleIndicator
     implementation Libraries.charts
     implementation Libraries.gson
+    implementation Libraries.sparkline
 
     // Google core
     implementation Libraries.googlePlayCore
@@ -264,6 +263,8 @@ dependencies {
     api Libraries.appCompat
     implementation Libraries.navigationControllerCore
     implementation Libraries.navigationControllerFragments
+
+//    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 
     api Libraries.lifecycleViewModel
     api Libraries.lifecycleExtensions
@@ -285,6 +286,8 @@ dependencies {
     implementation Libraries.navigationControllerFragments
     // RxJava
     implementation Libraries.rxReplayShare
+    implementation Libraries.rxRelay
+
     // Custom Views
     implementation Libraries.materialDatePicker
 
@@ -313,8 +316,8 @@ dependencies {
     }
 
     // For AS running of robolectric
-    testImplementation Libraries.testRunner
-    testImplementation Libraries.testRules
+    androidTestImplementation Libraries.testRunner
+    androidTestImplementation Libraries.testRules
 
     testImplementation Libraries.json
     testImplementation project(':testutils-android')

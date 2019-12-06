@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.kyc.mobile.validation
 
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,7 +49,10 @@ class KycMobileValidationFragment :
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
     private var progressDialog: MaterialProgressDialog? = null
-    private val args by unsafeLazy { KycMobileValidationFragmentArgs.fromBundle(arguments) }
+    private val args by unsafeLazy {
+        KycMobileValidationFragmentArgs.fromBundle(
+            arguments ?: Bundle())
+    }
     private val displayModel by unsafeLazy { args.mobileNumber }
     private val countryCode by unsafeLazy { args.countryCode }
     private val verificationCodeObservable by unsafeLazy {
@@ -137,7 +140,7 @@ class KycMobileValidationFragment :
         findNavController(this).apply {
             // Remove phone entry and validation pages from back stack as it would be confusing for the user
             popBackStack(R.id.kycPhoneNumberFragment, true)
-            navigate(KycNavXmlDirections.ActionStartVeriff(countryCode))
+            navigate(KycNavXmlDirections.actionStartVeriff(countryCode))
         }
     }
 

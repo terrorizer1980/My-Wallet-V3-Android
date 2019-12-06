@@ -1,15 +1,15 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.preferences.OnBoardingPrefs
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 import piuk.blockchain.android.ui.tour.IntroTourAnalyticsEvent
 
 class IntroTourAnnouncement(
@@ -37,11 +37,11 @@ class IntroTourAnnouncement(
                 ctaText = R.string.tour_card_cta,
                 dismissText = R.string.tour_card_dismiss,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     analytics.logEvent(IntroTourAnalyticsEvent.IntroDismissedAnalytics)
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startIntroTourGuide()
                     analytics.logEvent(IntroTourAnalyticsEvent.IntroStartedAnalytics)
                 },

@@ -9,10 +9,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="32dp"
         android:paddingLeft="72dp"
-        android:paddingRight="72dp"
         android:paddingTop="32dp"
+        android:paddingRight="72dp"
+        android:paddingBottom="32dp"
         android:text="@string/backup_write_down_words"
         android:textColor="@color/primary_grey_dark"
         android:textSize="14sp" />
@@ -32,10 +32,10 @@
         android:id="@+id/card_layout"
         android:layout_width="match_parent"
         android:layout_height="128dp"
-        android:layout_marginBottom="10dp"
         android:layout_marginLeft="72dp"
-        android:layout_marginRight="72dp"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="72dp"
+        android:layout_marginBottom="10dp"
         android:background="@color/primary_navy_medium"
         android:gravity="center">
 
@@ -58,26 +58,24 @@
 
         <Button
             android:id="@+id/button_previous"
-            style="@style/ButtonStyle"
+            style="@style/CtaButton.Blue"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="left|center_vertical"
             android:layout_margin="8dp"
             android:layout_weight="1"
             android:text="@string/backup_previous_word"
-            android:theme="@style/ButtonLightBlueTheme"
             android:visibility="invisible"
             tools:visibility="visible" />
 
         <Button
             android:id="@+id/button_next"
-            style="@style/ButtonStyle"
+            style="@style/CtaButton.Blue"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="right|center_vertical"
             android:layout_margin="8dp"
             android:layout_weight="1"
-            android:text="@string/backup_next_word"
-            android:theme="@style/ButtonLightBlueTheme" />
+            android:text="@string/backup_next_word" />
     </LinearLayout>
 </LinearLayout>

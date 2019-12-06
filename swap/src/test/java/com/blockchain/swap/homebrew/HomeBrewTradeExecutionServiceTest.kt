@@ -3,9 +3,9 @@ package com.blockchain.swap.homebrew
 import com.blockchain.swap.nabu.service.Fix
 import com.blockchain.swap.nabu.service.Quote
 import com.blockchain.swap.nabu.service.TradeTransaction
-import com.blockchain.swap.nabu.api.NabuTransaction
+import com.blockchain.swap.nabu.api.nabu.NabuTransaction
 import com.blockchain.swap.nabu.api.QuoteJson
-import com.blockchain.swap.nabu.api.TradeRequest
+import com.blockchain.swap.nabu.api.trade.TradeRequest
 import com.blockchain.swap.nabu.service.NabuMarketsService
 import com.blockchain.serialization.BigDecimalAdaptor
 import com.blockchain.testutils.getStringFromResource

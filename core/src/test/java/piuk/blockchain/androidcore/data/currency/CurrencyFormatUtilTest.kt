@@ -3,6 +3,7 @@ package piuk.blockchain.androidcore.data.currency
 import com.blockchain.testutils.usd
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
+import info.blockchain.balance.FiatValue
 import info.blockchain.balance.FormatPrecision
 import org.amshove.kluent.`should equal`
 import java.math.BigDecimal
@@ -13,19 +14,6 @@ import kotlin.test.assertEquals
 class CurrencyFormatUtilTest {
 
     private val subject: CurrencyFormatUtil = CurrencyFormatUtil()
-
-    @Test
-    fun formatBtc() {
-        // Assert
-        assertEquals("1.0", subject.formatBtc(BigDecimal.valueOf(1L)))
-        assertEquals("10,000.0", subject.formatBtc(BigDecimal.valueOf(10_000L)))
-        assertEquals("100,000,000.0", subject.formatBtc(BigDecimal.valueOf(1e8.toLong())))
-        assertEquals(
-            "10,000,000,000,000.0",
-            subject.formatBtc(BigDecimal.valueOf((100_000 * 1e8).toLong()))
-        )
-        assertEquals("0", subject.formatBtc(BigDecimal.valueOf(0)))
-    }
 
     @Test
     fun `format BTC from Crypto Value`() {
@@ -193,49 +181,6 @@ class CurrencyFormatUtilTest {
     }
 
     @Test
-    fun formatSatoshi() {
-        // Assert
-        assertEquals("0.00000001", subject.formatSatoshi(1L))
-        assertEquals("0.0001", subject.formatSatoshi(10_000L))
-        assertEquals("100,000.0", subject.formatSatoshi((100_000 * 1e8).toLong()))
-        assertEquals("1.0", subject.formatSatoshi(1e8.toLong()))
-        assertEquals("0", subject.formatSatoshi(0L))
-    }
-
-    @Test
-    fun formatEth() {
-        // Assert
-        assertEquals("1.0", subject.formatEth(BigDecimal.valueOf(1L)))
-        assertEquals(
-            "1,000,000,000,000,000,000.0",
-            subject.formatEth(BigDecimal.valueOf(1_000_000_000_000_000_000L))
-        )
-        assertEquals("0", subject.formatEth(BigDecimal.valueOf(0L)))
-    }
-
-    @Test
-    fun formatEthWithUnit() {
-        // Assert
-        assertEquals("1.0 ETH", subject.formatEthWithUnit(BigDecimal.valueOf(1L)))
-        assertEquals(
-            "1,000,000,000,000,000,000.0 ETH",
-            subject.formatEthWithUnit(BigDecimal.valueOf(1_000_000_000_000_000_000L))
-        )
-        assertEquals("0 ETH", subject.formatEthWithUnit(BigDecimal.valueOf(0L)))
-    }
-
-    @Test
-    fun formatEthShortWithUnit() {
-        // Assert
-        assertEquals("1.0 ETH", subject.formatEthShortWithUnit(BigDecimal.valueOf(1L)))
-        assertEquals(
-            "1,000,000,000,000,000,000.0 ETH",
-            subject.formatEthWithUnit(BigDecimal.valueOf(1_000_000_000_000_000_000L))
-        )
-        assertEquals("0 ETH", subject.formatEthWithUnit(BigDecimal.valueOf(0L)))
-    }
-
-    @Test
     fun formatFiat() {
         // Assert
         assertEquals("100,000.00", subject.formatFiat(100_000L.usd()))
@@ -245,7 +190,11 @@ class CurrencyFormatUtilTest {
     @Test
     fun formatFiatWithSymbol() {
         // Assert
-        assertEquals("$100,000.00", subject.formatFiatWithSymbol(100_000.00, "USD", Locale.US))
-        assertEquals("$0.00", subject.formatFiatWithSymbol(0.0, "USD", Locale.US))
+        assertEquals("$100,000.00", subject.formatFiatWithSymbol(
+            FiatValue.fromMajor("USD", 100_000.00.toBigDecimal()), Locale.US)
+        )
+        assertEquals("$0.00", subject.formatFiatWithSymbol(
+            FiatValue.fromMajor("USD", 0.0.toBigDecimal()), Locale.US)
+        )
     }
 }

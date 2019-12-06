@@ -4,23 +4,25 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
-import android.support.annotation.IntDef;
-import android.support.v4.view.ViewCompat;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntDef;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import static android.support.design.widget.Snackbar.LENGTH_INDEFINITE;
-import static android.support.design.widget.Snackbar.LENGTH_LONG;
-import static android.support.design.widget.Snackbar.LENGTH_SHORT;
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
+import static com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG;
+import static com.google.android.material.snackbar.Snackbar.LENGTH_INDEFINITE;
+import static com.google.android.material.snackbar.Snackbar.LENGTH_SHORT;
 
 /**
  * Created by adambennett on 29/07/2016.
@@ -109,7 +111,7 @@ public class ViewUtils {
     }
 
     /**
-     * Hides the keyboard in a specified {@link Activity}
+     * Hides the keyboard in a specified {@link AppCompatActivity}
      *
      * @param activity The Activity in which you want to hide the keyboard
      */

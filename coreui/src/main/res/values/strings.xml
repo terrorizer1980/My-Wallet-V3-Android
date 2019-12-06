@@ -22,6 +22,7 @@
     <string name="bitcoin_cash" translatable="false">Bitcoin Cash</string>
     <string name="lumens" translatable="false">Stellar</string>
     <string name="usd_pax" translatable="false">USD PAX</string>
+    <string name="stacks" translatable="false">Blockstack</string>
 
     <string name="contacts_no_confirmed_contacts_found">No confirmed contacts found!</string>
 

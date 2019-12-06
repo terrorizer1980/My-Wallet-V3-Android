@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.receive
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -8,23 +8,22 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.design.widget.BottomSheetDialog
-import android.support.design.widget.CoordinatorLayout
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import com.blockchain.notifications.analytics.Analytics
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockchain.extensions.exhaustive
 import com.blockchain.notifications.analytics.RequestAnalyticsEvents
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.payload.data.Account
@@ -61,7 +60,7 @@ import kotlinx.android.synthetic.main.view_expanding_currency_header.textview_se
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
-import piuk.blockchain.android.ui.home.HomeFragment
+import piuk.blockchain.android.ui.home.HomeScreenMvpFragment
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.util.EditTextFormatUtil
 import piuk.blockchain.androidcore.data.currency.CurrencyState
@@ -83,19 +82,18 @@ import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import java.text.DecimalFormatSymbols
-import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
+class ReceiveFragment : HomeScreenMvpFragment<ReceiveView, ReceivePresenter>(),
     ReceiveView,
     NumericKeyboardCallback {
 
-    override val locale: Locale = Locale.getDefault()
+    override val presenter: ReceivePresenter by inject()
+    override val view: ReceiveView = this
 
     private val currencyState: CurrencyState by inject()
     private val appUtil: AppUtil by inject()
-    private val receivePresenter: ReceivePresenter by inject()
-    private val analytics: Analytics by inject()
+
     private val rxBus: RxBus by inject()
 
     private var bottomSheetDialog: BottomSheetDialog? = null
@@ -132,7 +130,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activity?.apply {
+        activity.apply {
             (activity as MainActivity).setOnTouchOutsideViewListener(
                 currency_header,
                 object : OnTouchOutsideViewListener {
@@ -151,11 +149,11 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
         currency_header.setSelectionListener { currency ->
             when (currency) {
-                CryptoCurrency.BTC -> presenter?.onSelectDefault(selectedAccountPosition)
-                CryptoCurrency.ETHER -> presenter?.onEthSelected()
-                CryptoCurrency.BCH -> presenter?.onSelectBchDefault()
-                CryptoCurrency.XLM -> presenter?.onXlmSelected()
-                CryptoCurrency.PAX -> presenter?.onPaxSelected()
+                CryptoCurrency.BTC -> presenter.onSelectDefault(selectedAccountPosition)
+                CryptoCurrency.ETHER -> presenter.onEthSelected()
+                CryptoCurrency.BCH -> presenter.onSelectBchDefault()
+                CryptoCurrency.XLM -> presenter.onXlmSelected()
+                CryptoCurrency.PAX -> presenter.onPaxSelected()
             }
         }
     }
@@ -309,6 +307,8 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     override fun onResume() {
         super.onResume()
 
+        navigator().showNavigation()
+
         if (!handlingActivityResult)
             presenter.onResume(selectedAccountPosition)
 
@@ -393,6 +393,10 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         }
     }
 
+    private fun displayStxLayout() {
+        TODO("STX not implemented")
+    }
+
     override fun setSelectedCurrency(cryptoCurrency: CryptoCurrency) {
         currency_header.setCurrentlySelectedCurrency(cryptoCurrency)
         when (cryptoCurrency) {
@@ -401,7 +405,8 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
             CryptoCurrency.BCH -> displayBitcoinCashLayout()
             CryptoCurrency.XLM -> displayXlmLayout()
             CryptoCurrency.PAX -> displayERC20Layout()
-        }
+            CryptoCurrency.STX -> displayStxLayout()
+        }.exhaustive
         updateUnits()
     }
 
@@ -413,7 +418,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
         handlingActivityResult = true
 
         // Set receiving account
-        if (resultCode == Activity.RESULT_OK &&
+        if (resultCode == AppCompatActivity.RESULT_OK &&
             requestCode == REQUEST_CODE_RECEIVE_BITCOIN &&
             data != null
         ) {
@@ -422,7 +427,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
                 is Account -> presenter.onAccountBtcSelected(account)
                 else -> presenter.onSelectDefault(selectedAccountPosition)
             }
-        } else if (resultCode == Activity.RESULT_OK &&
+        } else if (resultCode == AppCompatActivity.RESULT_OK &&
             requestCode == REQUEST_CODE_RECEIVE_BITCOIN_CASH &&
             data != null
         ) {
@@ -465,7 +470,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     private fun onShareClicked() {
-        activity?.run {
+        activity.run {
             AlertDialog.Builder(this, R.style.AlertDialogStyle)
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.receive_address_to_share)
@@ -477,7 +482,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
     }
 
     override fun showWatchOnlyWarning() {
-        activity?.run {
+        activity.run {
             val dialogView = layoutInflater.inflate(R.layout.alert_watch_only_spend, null)
             val alertDialog = AlertDialog.Builder(this, R.style.AlertDialogStyle)
                 .setView(dialogView.rootView)
@@ -509,7 +514,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
     private fun showClipboardWarning() {
         val address = textview_receiving_address.text
-        activity?.run {
+        activity.run {
             AlertDialog.Builder(this, R.style.AlertDialogStyle)
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.receive_address_to_clipboard)
@@ -570,15 +575,11 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
     private fun isKeyboardVisible(): Boolean = custom_keyboard.isVisible
 
-    override fun createPresenter() = receivePresenter
-
-    override fun getMvpView() = this
-
     override fun onKeypadClose() {
         // Show bottom nav if applicable
         navigator().showNavigation()
 
-        val height = activity!!.resources.getDimension(R.dimen.action_bar_height).toInt()
+        val height = activity.resources.getDimension(R.dimen.action_bar_height).toInt()
         // Resize activity to default
         scrollview.apply {
             setPadding(0, 0, 0, 0)
@@ -598,7 +599,7 @@ class ReceiveFragment : HomeFragment<ReceiveView, ReceivePresenter>(),
 
     override fun onKeypadOpenCompleted() {
         // Resize activity around view
-        val height = activity!!.resources.getDimension(R.dimen.action_bar_height).toInt()
+        val height = activity.resources.getDimension(R.dimen.action_bar_height).toInt()
         scrollview.apply {
             setPadding(0, 0, 0, custom_keyboard.height)
             layoutParams = CoordinatorLayout.LayoutParams(

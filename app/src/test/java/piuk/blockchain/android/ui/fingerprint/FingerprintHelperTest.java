@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.fingerprint;
 import android.content.Context;
 import android.os.Build;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import com.mtramin.rxfingerprint.data.FingerprintAuthenticationResult;
 import com.mtramin.rxfingerprint.data.FingerprintDecryptionResult;

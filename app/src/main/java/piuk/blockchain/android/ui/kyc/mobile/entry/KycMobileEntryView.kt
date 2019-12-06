@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.kyc.mobile.entry
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import piuk.blockchain.android.ui.kyc.mobile.entry.models.PhoneDisplayModel
 import piuk.blockchain.androidcore.data.settings.PhoneNumber
 import io.reactivex.Observable

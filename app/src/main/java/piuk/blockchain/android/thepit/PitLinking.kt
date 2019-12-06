@@ -1,9 +1,9 @@
 package piuk.blockchain.android.thepit
 
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuUser
+import com.blockchain.swap.nabu.models.nabu.NabuUser
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.sunriver.XlmDataManager
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Observable
 import io.reactivex.Single

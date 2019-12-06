@@ -1,11 +1,11 @@
 package piuk.blockchain.android.ui.settings
 
 import android.content.Context
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
+import androidx.appcompat.app.AlertDialog
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import androidx.appcompat.widget.AppCompatEditText
 import info.blockchain.wallet.util.FormatsUtil
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom

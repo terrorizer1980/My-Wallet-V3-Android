@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -162,7 +162,7 @@
                 app:layout_constraintTop_toBottomOf="@id/text_view_duration_title"
                 tools:text="Until you cancel or reach your limit, whichever happens first." />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 

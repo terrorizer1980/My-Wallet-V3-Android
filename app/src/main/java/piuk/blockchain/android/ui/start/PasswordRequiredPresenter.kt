@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.start
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.exceptions.DecryptionException

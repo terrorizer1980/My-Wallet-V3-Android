@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.backup.transfer
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom

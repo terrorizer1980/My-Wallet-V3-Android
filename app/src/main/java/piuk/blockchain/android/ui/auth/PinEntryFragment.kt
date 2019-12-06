@@ -4,15 +4,13 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.support.annotation.StringRes
-import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
+import androidx.annotation.StringRes
+import com.google.android.material.snackbar.Snackbar
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
@@ -49,8 +47,10 @@ import piuk.blockchain.androidcoreui.ui.base.BaseFragment
 import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.ViewUtils
-import android.app.Activity.RESULT_CANCELED
-import android.app.Activity.RESULT_OK
+import androidx.appcompat.app.AppCompatActivity.RESULT_CANCELED
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.databinding.DataBindingUtil
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.debug.DebugOptionsBottomDialog
@@ -146,12 +146,12 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
         return binding?.root
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnPinEntryFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context!!.toString() + " must implement OnPinEntryFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnPinEntryFragmentInteractionListener")
         }
     }
 
@@ -331,10 +331,10 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
                 .setMessage(getString(R.string.password_entry))
                 .setView(ViewUtils.getAlertDialogPaddedView(context, password))
                 .setCancelable(false)
-                .setNegativeButton(android.R.string.cancel) { dialog, whichButton ->
+                .setNegativeButton(android.R.string.cancel) { _, _ ->
                     restartApp()
                 }
-                .setPositiveButton(android.R.string.ok) { dialog, whichButton ->
+                .setPositiveButton(android.R.string.ok) { _, _ ->
                     val pw = password.text.toString()
 
                     if (pw.isNotEmpty()) {
@@ -541,9 +541,9 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
     }
 
     override fun showMobileNotice(mobileNoticeDialog: MobileNoticeDialog) {
-        if (activity?.isFinishing == false) {
+        if (activity?.isFinishing == false && fragmentManager != null) {
             val alertFragment = MobileNoticeDialogFragment.newInstance(mobileNoticeDialog)
-            alertFragment.show(fragmentManager, alertFragment.tag)
+            alertFragment.show(fragmentManager!!, alertFragment.tag)
         }
     }
 
