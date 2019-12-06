@@ -32,7 +32,8 @@ internal class KycForBlockstackAnnouncement(
             titleText = R.string.stacks_airdrop_card_title,
             bodyText = R.string.stacks_airdrop_card_description,
             ctaText = R.string.stacks_airdrop_card_button,
-            iconImage = R.drawable.ic_airdrop_parachute,
+            iconImage = R.drawable.ic_airdrop_parachute_green,
+            background = R.drawable.blockstack_announcement_card_background,
             dismissFunction = {
                 host.dismissAnnouncementCard()
             },

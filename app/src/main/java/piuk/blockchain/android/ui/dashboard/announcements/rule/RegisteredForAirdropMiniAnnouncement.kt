@@ -26,6 +26,7 @@ class RegisteredForAirdropMiniAnnouncement(
             card = MiniAnnouncementCard(
                 name = name,
                 dismissRule = DismissRule.CardPersistent,
+                background = R.drawable.blockstack_announcement_mini_card_background,
                 dismissEntry = dismissEntry,
                 titleText = R.string.stacks_airdrop_registered_mini_card_title,
                 bodyText = R.string.stacks_airdrop_registered_mini_card_body,

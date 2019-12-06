@@ -5,8 +5,8 @@ import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.ui.adapters.AdapterDelegatesManager
 import piuk.blockchain.android.ui.adapters.DelegationAdapter
-import piuk.blockchain.android.ui.dashboard.announcements.StdAnnouncementDelegate
 import piuk.blockchain.android.ui.dashboard.announcements.MiniAnnouncementDelegate
+import piuk.blockchain.android.ui.dashboard.announcements.StdAnnouncementDelegate
 
 class DashboardDelegateAdapter(
     prefs: CurrencyPrefs,

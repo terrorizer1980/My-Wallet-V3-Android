@@ -38,6 +38,7 @@ class KycForBlockstackMiniAnnouncement(
                 titleText = R.string.stacks_airdrop_mini_card_title,
                 bodyText = R.string.stacks_airdrop_mini_card_body,
                 iconImage = R.drawable.ic_airdrop_parachute_green,
+                background = R.drawable.blockstack_announcement_mini_card_background,
                 ctaFunction = {
                     host.startBlockstackIntro()
                 },

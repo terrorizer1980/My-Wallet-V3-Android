@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.isVisible
 import android.graphics.drawable.GradientDrawable
+import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.blockchain.notifications.analytics.Analytics
 import kotlinx.android.synthetic.main.item_announcement_mini.view.*
@@ -41,6 +43,12 @@ class StdAnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterD
                 title.visible()
             } else {
                 title.gone()
+            }
+
+            if (announcement.background != 0) {
+                container.setBackgroundResource(announcement.background)
+            } else {
+                container.setBackgroundColor(Color.WHITE)
             }
 
             if (announcement.bodyText != 0) {
@@ -110,6 +118,7 @@ class StdAnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterD
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
+        internal val container: View = itemView.card_container
         internal val icon: ImageView = itemView.icon
         internal val title: TextView = itemView.msg_title
         internal val body: TextView = itemView.msg_body
@@ -168,6 +177,12 @@ class MiniAnnouncementDelegate<in T>(private val analytics: Analytics) : Adapter
                 icon.gone()
             }
 
+            if (announcement.background != 0) {
+                cardContainer.setBackgroundResource(announcement.background)
+            } else {
+                cardContainer.setBackgroundColor(Color.WHITE)
+            }
+
             if (announcement.hasCta) {
                 cardContainer.setOnClickListener {
                     analytics.logEvent(AnnouncementAnalyticsEvent.CardActioned(announcement.name))
@@ -187,7 +202,7 @@ class MiniAnnouncementDelegate<in T>(private val analytics: Analytics) : Adapter
         internal val icon: ImageView = itemView.icon
         internal val title: TextView = itemView.msg_title
         internal val body: TextView = itemView.msg_body
-        internal val cardContainer: ConstraintLayout = itemView.card_container
+        internal val cardContainer: View = itemView.mini_card_container
         internal val actionIcon: ImageView = itemView.action_icon
     }
 }
