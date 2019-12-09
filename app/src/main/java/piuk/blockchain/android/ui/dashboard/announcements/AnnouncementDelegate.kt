@@ -16,8 +16,6 @@ import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.isVisible
 import android.graphics.drawable.GradientDrawable
-import android.widget.RelativeLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.blockchain.notifications.analytics.Analytics
 import kotlinx.android.synthetic.main.item_announcement_mini.view.*
 import kotlinx.android.synthetic.main.item_announcement_standard.view.icon

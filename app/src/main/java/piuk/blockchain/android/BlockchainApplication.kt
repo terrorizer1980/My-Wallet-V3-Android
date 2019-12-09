@@ -44,7 +44,7 @@ import piuk.blockchain.androidcore.utils.annotations.Thunk
 import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 import piuk.blockchain.androidcoreui.BuildConfig
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.AppLaunchEvent
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import retrofit2.Retrofit

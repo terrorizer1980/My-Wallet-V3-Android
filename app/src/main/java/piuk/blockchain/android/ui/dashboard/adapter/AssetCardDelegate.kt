@@ -3,9 +3,9 @@ package piuk.blockchain.android.ui.dashboard.adapter
 import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
-import com.blockchain.balance.getColor
-import com.blockchain.balance.currencyName
-import com.blockchain.balance.setCoinIcon
+import piuk.blockchain.android.util.getColor
+import piuk.blockchain.android.util.currencyName
+import piuk.blockchain.android.util.setCoinIcon
 import com.blockchain.preferences.CurrencyPrefs
 import kotlinx.android.synthetic.main.item_dashboard_asset_card.view.*
 import piuk.blockchain.android.R

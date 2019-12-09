@@ -100,16 +100,6 @@ public class ViewUtils {
     public @interface Visibility {
     }
 
-
-    /**
-     * These annotations are hidden in the Android Jar for some reason. Defining them here instead
-     * for use in {@link piuk.blockchain.androidcoreui.ui.base.View} interfaces etc.
-     */
-    @IntDef({LENGTH_SHORT, LENGTH_LONG, LENGTH_INDEFINITE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SnackbarLength {
-    }
-
     /**
      * Hides the keyboard in a specified {@link AppCompatActivity}
      *

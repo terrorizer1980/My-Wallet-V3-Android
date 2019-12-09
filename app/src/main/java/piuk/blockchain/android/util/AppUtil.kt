@@ -1,4 +1,4 @@
-package piuk.blockchain.androidcoreui.utils
+package piuk.blockchain.android.util
 
 import android.content.Context
 import android.content.Intent

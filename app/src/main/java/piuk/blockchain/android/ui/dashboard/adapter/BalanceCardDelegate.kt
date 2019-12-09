@@ -12,7 +12,7 @@ import piuk.blockchain.android.ui.dashboard.BalanceModel
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import com.github.mikephil.charting.data.PieData
 import android.graphics.Color
-import com.blockchain.balance.colorRes
+import piuk.blockchain.android.util.colorRes
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import info.blockchain.balance.CryptoCurrency

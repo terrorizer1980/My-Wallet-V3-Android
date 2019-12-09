@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
+import android.content.res.Resources
 import com.blockchain.fees.FeeType
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.models.nabu.NabuApiException
@@ -16,7 +17,6 @@ import com.blockchain.sunriver.fromStellarUri
 import com.blockchain.transactions.Memo
 import com.blockchain.transactions.SendDetails
 import com.blockchain.transactions.SendFundsResult
-import com.blockchain.transactions.SendFundsResultLocalizer
 import com.blockchain.transactions.TransactionSender
 import com.blockchain.transactions.sendFundsOrThrow
 import com.blockchain.ui.extensions.sampleThrottledClicks
@@ -378,5 +378,36 @@ class XlmSendStrategy(
                 view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1,
                     it.state == State.ACTIVE && it.address.isNotEmpty()) { view?.fillOrClearAddress() }
             }
+    }
+}
+
+interface SendFundsResultLocalizer {
+    fun localize(sendFundsResult: SendFundsResult): String
+}
+
+internal class ResourceSendFundsResultLocalizer(private val resources: Resources) : SendFundsResultLocalizer {
+
+    override fun localize(sendFundsResult: SendFundsResult): String =
+        if (sendFundsResult.success) {
+            resources.getString(R.string.transaction_submitted)
+        } else
+            localizeXlmSend(sendFundsResult) ?: resources.getString(R.string.transaction_failed)
+
+    private fun localizeXlmSend(sendFundsResult: SendFundsResult): String? {
+        val cryptoCurrency = sendFundsResult.sendDetails.from.cryptoCurrency
+        if (cryptoCurrency != CryptoCurrency.XLM) return null
+        return when (sendFundsResult.errorCode) {
+            2 -> resources.getString(
+                R.string.transaction_failed_min_send,
+                sendFundsResult.errorValue?.toStringWithSymbol()
+            )
+            3 -> resources.getString(
+                R.string.xlm_transaction_failed_min_balance_new_account,
+                sendFundsResult.errorValue?.toStringWithSymbol()
+            )
+            4 -> resources.getString(R.string.not_enough_funds_with_currency, cryptoCurrency)
+            5 -> resources.getString(R.string.invalid_address)
+            else -> null
+        }
     }
 }

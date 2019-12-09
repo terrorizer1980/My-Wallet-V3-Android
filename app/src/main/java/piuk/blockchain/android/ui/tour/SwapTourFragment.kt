@@ -16,8 +16,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.blockchain.balance.coinIconWhite
-import com.blockchain.balance.colorRes
+import piuk.blockchain.android.util.coinIconWhite
+import piuk.blockchain.android.util.colorRes
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue

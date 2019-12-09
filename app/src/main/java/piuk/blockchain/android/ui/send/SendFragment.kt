@@ -31,12 +31,11 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.Spinner
 import androidx.appcompat.widget.AppCompatEditText
-import com.blockchain.balance.errorIcon
+import piuk.blockchain.android.util.errorIcon
 import com.blockchain.koin.injectActivity
 import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.serialization.JsonSerializableAccount
-import com.blockchain.ui.dialog.MinBalanceExplanationDialog
 import com.blockchain.transactions.Memo
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
@@ -84,7 +83,7 @@ import piuk.blockchain.android.ui.home.HomeScreenMvpFragment
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getResolvedColor
@@ -320,11 +319,11 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
 
     private fun arrayToDisplay(selectedIndex: Int): Int {
         val manualArraySize =
-            resources.getStringArray(piuk.blockchain.androidcoreui.R.array.xlm_memo_types_manual) ?: return 0
+            resources.getStringArray(R.array.xlm_memo_types_manual) ?: return 0
         return if (selectedIndex < manualArraySize.size) {
-            piuk.blockchain.androidcoreui.R.array.xlm_memo_types_manual
+            R.array.xlm_memo_types_manual
         } else {
-            piuk.blockchain.androidcoreui.R.array.xlm_memo_types_all
+            R.array.xlm_memo_types_all
         }
     }
 

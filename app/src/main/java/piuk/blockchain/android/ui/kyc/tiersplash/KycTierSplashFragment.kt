@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.navigation.NavDirections
 import com.blockchain.activities.StartSwap
-import com.blockchain.balance.setImageDrawable
+import piuk.blockchain.android.util.setImageDrawable
 import com.blockchain.swap.nabu.models.nabu.KycTierState
 import com.blockchain.swap.nabu.models.nabu.TierJson
 import com.blockchain.swap.nabu.models.nabu.TiersJson

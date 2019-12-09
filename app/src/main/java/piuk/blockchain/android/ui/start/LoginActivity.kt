@@ -16,7 +16,7 @@ import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber

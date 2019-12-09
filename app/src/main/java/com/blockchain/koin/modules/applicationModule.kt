@@ -82,6 +82,8 @@ import piuk.blockchain.android.ui.send.strategy.EtherSendStrategy
 import piuk.blockchain.android.ui.send.strategy.SendStrategy
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.send.strategy.PaxSendStrategy
+import piuk.blockchain.android.ui.send.strategy.ResourceSendFundsResultLocalizer
+import piuk.blockchain.android.ui.send.strategy.SendFundsResultLocalizer
 import piuk.blockchain.android.ui.settings.SettingsPresenter
 import piuk.blockchain.android.ui.ssl.SSLVerifyPresenter
 import piuk.blockchain.android.ui.swap.SwapStarter
@@ -108,7 +110,7 @@ import piuk.blockchain.androidcore.data.erc20.PaxAccount
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import java.util.Locale
@@ -601,6 +603,12 @@ val applicationModule = applicationContext {
                 analytics = get()
             )
         }
+
+        factory {
+            ResourceSendFundsResultLocalizer(
+                resources = get()
+            )
+        }.bind(SendFundsResultLocalizer::class)
 
         factory<SendStrategy<SendView>>("XLMStrategy") {
             XlmSendStrategy(

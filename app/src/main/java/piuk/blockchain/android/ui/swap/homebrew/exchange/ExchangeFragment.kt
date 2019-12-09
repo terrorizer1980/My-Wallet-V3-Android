@@ -18,8 +18,8 @@ import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import com.blockchain.balance.coinIconWhite
-import com.blockchain.balance.colorRes
+import piuk.blockchain.android.util.coinIconWhite
+import piuk.blockchain.android.util.colorRes
 import com.blockchain.logging.SwapDiagnostics
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.swap.common.exchange.mvi.ApplyMaxSpendable
@@ -40,7 +40,6 @@ import piuk.blockchain.android.ui.swap.logging.FixTypeEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
-import com.blockchain.ui.dialog.AccountChooserBottomDialog
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue

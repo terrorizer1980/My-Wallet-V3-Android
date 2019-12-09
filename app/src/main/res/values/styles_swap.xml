@@ -83,10 +83,6 @@
         <item name="theme">@style/LightBlueButtonTheme</item>
     </style>
 
-    <style name="ExchangeButton.Rates">
-        <item name="theme">@style/WhiteButtonTheme</item>
-    </style>
-
     <!-- keyboard -->
 
     <style name="KeyboardButton" parent="Widget.AppCompat.Button.Borderless">

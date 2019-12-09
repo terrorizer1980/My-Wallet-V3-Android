@@ -6,8 +6,8 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.appcompat.widget.AppCompatTextView
 import android.view.View
-import com.blockchain.balance.currencyName
-import com.blockchain.balance.setCoinIcon
+import piuk.blockchain.android.util.currencyName
+import piuk.blockchain.android.util.setCoinIcon
 import com.blockchain.preferences.CurrencyPrefs
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis

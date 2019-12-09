@@ -11,7 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.annotations.CommonCode
-import com.blockchain.balance.colorRes
+import piuk.blockchain.android.util.colorRes
 import com.blockchain.koin.injectActivity
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.android.campaign.CampaignType

@@ -10,8 +10,6 @@ import com.blockchain.logging.SwapDiagnostics
 import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.remoteconfig.RemoteConfiguration
-import com.blockchain.transactions.ResourceSendFundsResultLocalizer
-import com.blockchain.transactions.SendFundsResultLocalizer
 import com.blockchain.ui.chooser.AccountChooserPresenter
 import com.crashlytics.android.answers.Answers
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -42,8 +40,6 @@ val coreUiModule = applicationContext {
     factory { RemoteConfiguration(get()) }
         .bind(RemoteConfig::class)
         .bind(ABTestExperiment::class)
-
-    factory { ResourceSendFundsResultLocalizer(get()) as SendFundsResultLocalizer }
 
     factory { Answers.getInstance() }
 

@@ -19,7 +19,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="8dp"
             android:text="@string/ok_cap"
-            android:theme="@style/ButtonLightBlueTheme"
+            android:theme="@style/LightBlueButtonTheme"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

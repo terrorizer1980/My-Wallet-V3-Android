@@ -1,4 +1,4 @@
-package com.blockchain.ui.dialog
+package piuk.blockchain.android.ui.send
 
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
@@ -22,7 +22,7 @@ import androidx.fragment.app.DialogFragment
 import com.blockchain.transactions.Memo
 import info.blockchain.wallet.util.HexUtils
 import io.reactivex.disposables.CompositeDisposable
-import piuk.blockchain.androidcoreui.R
+import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import java.lang.Exception
@@ -32,7 +32,7 @@ class MemoEditDialog : DialogFragment() {
     private val compositeDisposable = CompositeDisposable()
 
     init {
-        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.FullscreenDialog)
+        setStyle(STYLE_NO_FRAME, R.style.FullscreenDialog)
     }
 
     override fun onCreateView(

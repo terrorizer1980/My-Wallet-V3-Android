@@ -30,7 +30,6 @@ import com.blockchain.swap.nabu.StartKyc
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
-import com.blockchain.ui.dialog.AccountChooserBottomDialog
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.disposables.CompositeDisposable
@@ -39,6 +38,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.swap.homebrew.exchange.AccountChooserBottomDialog
 import piuk.blockchain.android.ui.swap.homebrew.exchange.SwapInfoBottomDialog
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy

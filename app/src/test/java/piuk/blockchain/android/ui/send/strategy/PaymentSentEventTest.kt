@@ -1,4 +1,4 @@
-package piuk.blockchain.androidcoreui.utils.logging
+package piuk.blockchain.android.ui.send.strategy
 
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash

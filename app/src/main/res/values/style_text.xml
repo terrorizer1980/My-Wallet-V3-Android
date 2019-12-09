@@ -134,39 +134,4 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <!-- Can we make these generic? -->
-    <style name="PitTitleText" parent="Text.Standard.Centered.16">
-        <item name="android:textColor">@color/pit_text_title</item>
-        <item name="android:layout_marginStart">39dp</item>
-        <item name="android:layout_marginEnd">38dp</item>
-    </style>
-
-    <style name="PitHeadingText" parent="Text.Bold.Centered.14">
-        <item name="android:textColor">@color/pit_text_heading</item>
-        <item name="android:layout_marginStart">88dp</item>
-        <item name="android:layout_marginEnd">87dp</item>
-    </style>
-
-    <style name="PitBodyText" parent="Text.Standard.Centered.14">
-        <item name="android:textColor">@color/pit_text_body</item>
-        <item name="android:layout_marginStart">48dp</item>
-        <item name="android:layout_marginEnd">48dp</item>
-        <item name="android:layout_marginTop">11dp</item>
-    </style>
-
-    <style name="AnnounceTitle" parent="BaseTextStyle">
-        <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/grey_800</item>
-        <item name="android:lineSpacingExtra">0sp</item>
-        <item name="android:gravity">center_vertical</item>
-    </style>
-
-    <style name="AnnounceBody" parent="BaseTextStyle">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/grey_600</item>
-        <item name="android:lineSpacingExtra">7sp</item>
-        <item name="android:gravity">top</item>
-        <item name="android:translationY">-3.53sp</item>
-    </style>
-
 </resources>

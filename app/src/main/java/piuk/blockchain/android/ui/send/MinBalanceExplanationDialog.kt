@@ -1,4 +1,4 @@
-package com.blockchain.ui.dialog
+package piuk.blockchain.android.ui.send
 
 import android.content.Intent
 import android.net.Uri
@@ -18,9 +18,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
-import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 

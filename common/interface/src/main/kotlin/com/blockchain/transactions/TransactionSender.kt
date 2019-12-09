@@ -87,11 +87,6 @@ data class SendFundsResult(
     val success = errorCode == 0 && hash != null
 }
 
-interface SendFundsResultLocalizer {
-
-    fun localize(sendFundsResult: SendFundsResult): String
-}
-
 data class SendConfirmationDetails(
     val sendDetails: SendDetails,
     val fees: CryptoValue

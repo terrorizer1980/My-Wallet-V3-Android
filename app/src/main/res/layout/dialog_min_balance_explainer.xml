@@ -20,7 +20,7 @@
 
             <TextView
                 android:id="@+id/textView_min_balance_body"
-                style="@style/MinBalanceExplanationTextStyle"
+                style="@style/Text.Standard.14"
                 android:layout_width="352dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -43,7 +43,7 @@
                 tools:visibility="visible">
 
                 <TextView
-                    style="@style/MinBalanceExplanationTextStyle"
+                    style="@style/Text.Semibold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/minimum_balance_total_funds"
@@ -51,13 +51,13 @@
 
                 <TextView
                     android:id="@+id/textview_balance"
-                    style="@style/MinBalanceExplanationTextStyle"
+                    style="@style/Text.Standard.14"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="827.6802382 XLM ($200.00)" />
 
                 <TextView
-                    style="@style/MinBalanceExplanationTextStyle"
+                    style="@style/Text.Semibold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -65,13 +65,13 @@
 
                 <TextView
                     android:id="@+id/textview_reserve"
-                    style="@style/MinBalanceExplanationTextStyle"
+                    style="@style/Text.Standard.14"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="2.0 XLM ($0.48)" />
 
                 <TextView
-                    style="@style/MinBalanceExplanationTextStyle"
+                    style="@style/Text.Semibold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -79,13 +79,13 @@
 
                 <TextView
                     android:id="@+id/textview_fee"
-                    style="@style/MinBalanceExplanationTextStyle"
+                    style="@style/Text.Standard.14"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="0.00001 XLM ($0.02)" />
 
                 <TextView
-                    style="@style/MinBalanceExplanationTextStyle.Bold"
+                    style="@style/Text.Semibold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -93,7 +93,7 @@
 
                 <TextView
                     android:id="@+id/textview_spendable"
-                    style="@style/MinBalanceExplanationTextStyle.Bold"
+                    style="@style/Text.Standard.14"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="825.6792382 XLM ($199.50)" />
@@ -117,7 +117,7 @@
 
             <TextView
                 android:id="@+id/textView_min_balance_blurb"
-                style="@style/MinBalanceExplanationTextStyle"
+                style="@style/Text.Standard.14"
                 android:layout_width="352dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -130,12 +130,10 @@
 
             <Button
                 android:id="@+id/button_continue"
-                style="@style/ButtonStyle"
-                android:layout_width="320dp"
+                style="@style/CtaButton.Blue"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:text="@string/minimum_balance_read_more"
-                android:theme="@style/ButtonLightBlueTheme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

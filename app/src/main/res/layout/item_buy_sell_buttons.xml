@@ -27,7 +27,6 @@
         android:layout_marginRight="24dp"
         android:layout_marginTop="24dp"
         android:text="@string/buy_sell_sell"
-        android:theme="@style/ButtonBlueTheme"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/button_buy"
         app:layout_constraintTop_toTopOf="parent" />

@@ -1,4 +1,4 @@
-package com.blockchain.ui.dialog
+package piuk.blockchain.android.ui.swap.homebrew.exchange
 
 import android.content.Context
 import android.os.Bundle
@@ -10,8 +10,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.accounts.AsyncAllAccountList
-import com.blockchain.balance.drawableResFilled
-import com.blockchain.balance.setImageDrawable
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import info.blockchain.balance.AccountReference
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,7 +17,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.inject
-import piuk.blockchain.androidcoreui.R
+import piuk.blockchain.android.R
+import piuk.blockchain.android.util.setCoinIcon
 import timber.log.Timber
 
 private const val ArgumentTitle = "Title"
@@ -137,7 +136,9 @@ private class AccountReferenceAdapter(
     ): AccountReferenceViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.account_chooser_card, parent, false)
-        return AccountReferenceViewHolder(view)
+        return AccountReferenceViewHolder(
+            view
+        )
     }
 
     override fun onBindViewHolder(holder: AccountReferenceViewHolder, position: Int) {
@@ -145,7 +146,7 @@ private class AccountReferenceAdapter(
         val textView = holder.view.findViewById(R.id.account_name) as TextView
         val imageView = holder.view.findViewById(R.id.account_symbol) as ImageView
         textView.text = accountReference.label
-        imageView.setImageDrawable(accountReference.cryptoCurrency.drawableResFilled())
+        imageView.setCoinIcon(accountReference.cryptoCurrency)
         holder.view.setOnClickListener {
             callback.onAccountSelected(resultId, accountReference)
         }
