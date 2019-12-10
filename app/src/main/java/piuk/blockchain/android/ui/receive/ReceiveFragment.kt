@@ -307,8 +307,6 @@ class ReceiveFragment : HomeScreenMvpFragment<ReceiveView, ReceivePresenter>(),
     override fun onResume() {
         super.onResume()
 
-        navigator().showNavigation()
-
         if (!handlingActivityResult)
             presenter.onResume(selectedAccountPosition)
 

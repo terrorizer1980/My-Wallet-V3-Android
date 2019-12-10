@@ -15,7 +15,7 @@ val TEST_ASSETS = listOf(
     CryptoCurrency.XLM
 )
 
-val initialBtcState = AssetModel(
+val initialBtcState = AssetState(
     currency = CryptoCurrency.BTC,
     cryptoBalance = CryptoValue.zero(CryptoCurrency.BTC),
     price = FiatValue.fromMajor(FIAT_CURRENCY, 300.toBigDecimal()),
@@ -23,7 +23,7 @@ val initialBtcState = AssetModel(
     priceTrend = emptyList()
 )
 
-val initialEthState = AssetModel(
+val initialEthState = AssetState(
     currency = CryptoCurrency.ETHER,
     cryptoBalance = CryptoValue.zero(CryptoCurrency.ETHER),
     price = FiatValue.fromMajor(FIAT_CURRENCY, 200.toBigDecimal()),
@@ -31,7 +31,7 @@ val initialEthState = AssetModel(
     priceTrend = emptyList()
 )
 
-val initialXlmState = AssetModel(
+val initialXlmState = AssetState(
     currency = CryptoCurrency.XLM,
     cryptoBalance = CryptoValue.zero(CryptoCurrency.XLM),
     price = FiatValue.fromMajor(FIAT_CURRENCY, 100.toBigDecimal()),

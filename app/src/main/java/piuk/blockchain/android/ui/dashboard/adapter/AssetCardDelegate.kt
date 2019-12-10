@@ -10,7 +10,7 @@ import com.blockchain.preferences.CurrencyPrefs
 import kotlinx.android.synthetic.main.item_dashboard_asset_card.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
-import piuk.blockchain.android.ui.dashboard.AssetModel
+import piuk.blockchain.android.ui.dashboard.AssetState
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import com.robinhood.spark.SparkAdapter
@@ -30,7 +30,7 @@ class AssetCardDelegate<in T>(
 ) : AdapterDelegate<T> {
 
     override fun isForViewType(items: List<T>, position: Int): Boolean =
-        items[position] is AssetModel
+        items[position] is AssetState
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         AssetCardViewHolder(parent.inflate(R.layout.item_dashboard_asset_card))
@@ -41,7 +41,7 @@ class AssetCardDelegate<in T>(
         holder: RecyclerView.ViewHolder,
         payloads: List<*>
     ) = (holder as AssetCardViewHolder).bind(
-        items[position] as AssetModel,
+        items[position] as AssetState,
         prefs.selectedFiatCurrency,
         onCardClicked
     )
@@ -51,7 +51,7 @@ private class AssetCardViewHolder(
     itemView: View
 ) : RecyclerView.ViewHolder(itemView) {
 
-    internal fun bind(state: AssetModel, fiatSymbol: String, onCardClicked: (CryptoCurrency) -> Unit) {
+    internal fun bind(state: AssetState, fiatSymbol: String, onCardClicked: (CryptoCurrency) -> Unit) {
         with(itemView) {
             icon.setCoinIcon(state.currency)
             currency.setText(state.currency.currencyName())
@@ -78,7 +78,7 @@ private class AssetCardViewHolder(
         }
     }
 
-    private fun renderLoaded(state: AssetModel, fiatSymbol: String, onCardClicked: (CryptoCurrency) -> Unit) {
+    private fun renderLoaded(state: AssetState, fiatSymbol: String, onCardClicked: (CryptoCurrency) -> Unit) {
         with(itemView) {
             cardLayout.isEnabled = true
             setOnClickListener { onCardClicked(state.currency) }

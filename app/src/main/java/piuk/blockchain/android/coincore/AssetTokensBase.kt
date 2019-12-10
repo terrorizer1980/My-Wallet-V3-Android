@@ -22,8 +22,9 @@ enum class BalanceFilter {
 //    fun importedAddressBalance(): Single<CryptoValue>
 }
 
-typealias AccountsList = List<AccountReference>
 typealias TransactionList = List<Transaction>
+
+// TODO: For account fetching/default accounts look steal the code from xxxAccountListAdapter in core
 
 interface AssetTokens {
     val asset: CryptoCurrency

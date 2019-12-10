@@ -131,10 +131,10 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
 
             compositeDisposable += assetDetailsViewModel.exchangeRate
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy({
-                }) {
-                    current_price.text = it
-                }
+                .subscribeBy(
+                    onError = { },
+                    onNext = { current_price.text = it }
+                )
 
             compositeDisposable += assetDetailsViewModel.timeSpan.subscribeBy {
                 configureUiForSelection(view, it)
@@ -209,11 +209,13 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
     }
 
     private fun chartToLoadingState() {
-        dialogView.prices_loading?.visible()
-        dialogView.chart?.invisible()
-        dialogView.price_change?.apply {
-            text = "--"
-            setTextColor(resources.getColor(R.color.dashboard_chart_unknown))
+        with(dialogView) {
+            prices_loading?.visible()
+            chart?.invisible()
+            price_change?.apply {
+                text = "--"
+                setTextColor(ContextCompat.getColor(context, R.color.dashboard_chart_unknown))
+            }
         }
     }
 
@@ -259,10 +261,10 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
         val percentChange = (difference / firstPrice) * 100
 
         percentageView.text =
-            FiatValue.fromMajor(currencyPrefs.selectedFiatCurrency,
-                difference.toBigDecimal()).formatOrSymbolForZero() +
-                    " (${String.format("%.1f",
-                        percentChange)}%)"
+            FiatValue.fromMajor(
+                currencyPrefs.selectedFiatCurrency,
+                difference.toBigDecimal()
+            ).toStringWithSymbol() + " (${String.format("%.1f", percentChange)}%)"
 
         percentageView.setDeltaColour(
             delta = difference,

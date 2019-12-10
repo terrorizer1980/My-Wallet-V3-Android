@@ -2,6 +2,7 @@ package com.blockchain.accounts
 
 import com.blockchain.wallet.toAccountReference
 import info.blockchain.balance.AccountReference
+import info.blockchain.balance.AccountReferenceList
 import io.reactivex.Single
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.R
@@ -11,62 +12,58 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 
 internal class BtcAccountListAdapter(private val payloadDataManager: PayloadDataManager) : AccountList {
 
+    override fun defaultAccount(): Single<AccountReference> =
+        Single.just(defaultAccountReference())
+
     override fun defaultAccountReference() =
         payloadDataManager.defaultAccount.toAccountReference()
-}
 
-internal class BchAccountListAdapter(private val bchPayloadDataManager: BchDataManager) : AccountList {
-
-    override fun defaultAccountReference() =
-        with(bchPayloadDataManager) {
-            getAccountMetadataList()[getDefaultAccountPosition()].toAccountReference()
-        }
-}
-
-internal class PaxAccountListAdapter(private val ethDataManager: EthDataManager, private val stringUtils: StringUtils) :
-    AccountList {
-
-    override fun defaultAccountReference() =
-        AccountReference.Pax(stringUtils.getString(R.string.pax_default_account_label),
-            ethDataManager.getEthWallet()?.account?.address
-                ?: throw Exception("No ether wallet found"), "")
-}
-
-internal class EthAccountListAdapter(private val ethDataManager: EthDataManager) : AccountList {
-
-    override fun defaultAccountReference() =
-        (ethDataManager.getEthWallet() ?: throw Exception("No ether wallet found"))
-            .account.toAccountReference()
-}
-
-internal class BtcAsyncAccountListAdapter(private val payloadDataManager: PayloadDataManager) :
-    AsyncAccountList {
-
-    override fun accounts(): Single<List<AccountReference>> =
+    override fun accounts(): Single<AccountReferenceList> =
         Single.just(payloadDataManager.accounts
             .filter { !it.isArchived }
             .map { it.toAccountReference() })
 }
 
-internal class BchAsyncAccountListAdapter(private val bchPayloadDataManager: BchDataManager) :
-    AsyncAccountList {
+internal class BchAccountListAdapter(private val bchPayloadDataManager: BchDataManager) : AccountList {
 
-    override fun accounts(): Single<List<AccountReference>> =
+    override fun defaultAccount(): Single<AccountReference> =
+        Single.just(defaultAccountReference())
+
+    override fun defaultAccountReference() =
+        with(bchPayloadDataManager) {
+            getAccountMetadataList()[getDefaultAccountPosition()].toAccountReference()
+        }
+
+    override fun accounts(): Single<AccountReferenceList> =
         Single.just(bchPayloadDataManager.getAccountMetadataList()
             .filter { !it.isArchived }
             .map { it.toAccountReference() })
 }
 
-internal class EthAsyncAccountListAdapter(private val ethAccountListAdapter: EthAccountListAdapter) :
-    AsyncAccountList {
+internal class PaxAccountListAdapter(private val ethDataManager: EthDataManager, private val stringUtils: StringUtils) :
+    AccountList {
 
-    override fun accounts(): Single<List<AccountReference>> =
-        Single.just(listOf(ethAccountListAdapter.defaultAccountReference()))
+    override fun defaultAccount(): Single<AccountReference> =
+        Single.just(defaultAccountReference())
+
+    override fun defaultAccountReference() =
+        AccountReference.Pax(stringUtils.getString(R.string.pax_default_account_label),
+            ethDataManager.getEthWallet()?.account?.address
+                ?: throw Exception("No ether wallet found"), "")
+
+    override fun accounts(): Single<AccountReferenceList> =
+        Single.just(listOf(defaultAccountReference()))
 }
 
-internal class PaxAsyncAccountList(private val ethDataManager: EthDataManager, private val stringUtils: StringUtils) :
-    AsyncAccountList {
-    override fun accounts(): Single<List<AccountReference>> =
-        Single.just(listOf(AccountReference.Pax(stringUtils.getString(R.string.pax_default_account_label),
-            ethDataManager.getEthWallet()?.account?.address ?: throw Exception("No ether wallet found"), "")))
+internal class EthAccountListAdapter(private val ethDataManager: EthDataManager) : AccountList {
+
+    override fun defaultAccount(): Single<AccountReference> =
+        Single.just(defaultAccountReference())
+
+    override fun defaultAccountReference() =
+        (ethDataManager.getEthWallet() ?: throw Exception("No ether wallet found"))
+            .account.toAccountReference()
+
+    override fun accounts(): Single<AccountReferenceList> =
+        Single.just(listOf(defaultAccountReference()))
 }

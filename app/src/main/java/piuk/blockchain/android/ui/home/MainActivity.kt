@@ -780,6 +780,8 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         fragmentManager.beginTransaction()
             .replace(R.id.content_frame, fragment, fragment.javaClass.simpleName)
             .commitAllowingStateLoss()
+
+        showNavigation()
     }
 
     /*** Silently switch the current tab in the tab_bar */

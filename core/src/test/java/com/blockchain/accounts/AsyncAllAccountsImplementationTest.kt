@@ -12,7 +12,7 @@ class AsyncAllAccountsImplementationTest {
 
     @Test
     fun `can get full list of all accounts`() {
-        val btcAccountList = mock<AsyncAccountList> {
+        val btcAccountList = mock<AccountList> {
             on { accounts() } `it returns` Single.just(
                 listOf(
                     AccountReference.BitcoinLike(CryptoCurrency.BTC, "Bitcoin 1", "xpub 1") as AccountReference,
@@ -20,7 +20,8 @@ class AsyncAllAccountsImplementationTest {
                 )
             )
         }
-        val bchAccountList = mock<AsyncAccountList> {
+
+        val bchAccountList = mock<AccountList> {
             on { accounts() } `it returns` Single.just(
                 listOf(
                     AccountReference.BitcoinLike(CryptoCurrency.BCH, "Bitcoin Cash 1", "xpub 1") as AccountReference,
@@ -28,22 +29,33 @@ class AsyncAllAccountsImplementationTest {
                 )
             )
         }
-        val ethAccountList = mock<AsyncAccountList> {
+
+        val ethAccountList = mock<AccountList> {
             on { accounts() } `it returns` Single.just(
                 listOf(
                     AccountReference.Ethereum("Ether 1", "0xAddress") as AccountReference
                 )
             )
         }
-        val xlmAccountList = mock<AsyncAccountList> {
+
+        val xlmAccountList = mock<AccountList> {
             on { accounts() } `it returns` Single.just(
                 listOf(
                     AccountReference.Xlm("Xlm 1", "GABC") as AccountReference
                 )
             )
         }
+
         val allAccountList: AsyncAllAccountList =
-            AsyncAllAccountListImplementation(listOf(btcAccountList, bchAccountList, ethAccountList, xlmAccountList))
+            AsyncAllAccountListImplementation(
+                mapOf(
+                    CryptoCurrency.BTC to btcAccountList,
+                    CryptoCurrency.ETHER to bchAccountList,
+                    CryptoCurrency.BCH to ethAccountList,
+                    CryptoCurrency.XLM to xlmAccountList
+                )
+            )
+
         allAccountList.allAccounts()
             .test()
             .assertComplete()

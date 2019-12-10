@@ -44,7 +44,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
     override val model: DashboardModel by inject()
 
-    // TODO: Temp - this also belongs in the model. But make it work, then refactor:
     private val announcements: AnnouncementList by inject()
 
     private val theAdapter: DashboardDelegateAdapter by lazy {
@@ -59,7 +58,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
     private val displayList = mutableListOf<DashboardItem>()
 
-    // TODO: This should be handled by the model
     private val compositeDisposable = CompositeDisposable()
     private val rxBus: RxBus by inject()
 
@@ -131,7 +129,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         }
     }
 
-    private fun handleUpdatedAssetState(index: Int, newState: AssetModel): Boolean =
+    private fun handleUpdatedAssetState(index: Int, newState: AssetState): Boolean =
         if (displayList[index] != newState) {
             displayList[index] = newState
             theAdapter.notifyItemChanged(index)
@@ -211,7 +209,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         super.onResume()
         setupToolbar()
 
-        // TODO: This should be handled by the model
         compositeDisposable += metadataEvent.subscribe {
             model.process(RefreshAllIntent)
         }
@@ -220,13 +217,11 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
             model.process(RefreshAllIntent)
         }
 
-        // TODO: Also move model-side
         announcements.checkLatest(announcementHost, compositeDisposable)
 
         model.process(RefreshAllIntent)
     }
 
-    // TODO: This should be handled by the model
     override fun onPause() {
         compositeDisposable.clear()
         rxBus.unregister(ActionEvent::class.java, actionEvent)
@@ -254,7 +249,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         override val disposables: CompositeDisposable
             get() = compositeDisposable
 
-        override fun clearAllAnnouncements() {
+        override fun clearAllAnnouncements() { // TODO: Do we actually need this?
             model.process(ClearAnnouncement)
         }
 
