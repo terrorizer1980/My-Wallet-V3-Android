@@ -1,10 +1,10 @@
 package piuk.blockchain.android.util
 
 import android.content.Context
+import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.PRNGFixes
 import piuk.blockchain.androidcore.utils.PrngFixer
-import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber

@@ -4,25 +4,12 @@ package com.blockchain.koin
 
 import android.preference.PreferenceManager
 import com.blockchain.accounts.AccountList
-import com.blockchain.accounts.AllAccountList
-import com.blockchain.accounts.AllAccountsImplementation
-import com.blockchain.accounts.AsyncAccountList
 import com.blockchain.accounts.AsyncAllAccountList
 import com.blockchain.accounts.AsyncAllAccountListImplementation
 import com.blockchain.accounts.BchAccountListAdapter
-import com.blockchain.accounts.BchAsyncAccountListAdapter
 import com.blockchain.accounts.BtcAccountListAdapter
-import com.blockchain.accounts.BtcAsyncAccountListAdapter
 import com.blockchain.accounts.EthAccountListAdapter
-import com.blockchain.accounts.EthAsyncAccountListAdapter
 import com.blockchain.accounts.PaxAccountListAdapter
-import com.blockchain.accounts.PaxAsyncAccountList
-import com.blockchain.balance.AsyncAccountBalanceReporter
-import com.blockchain.balance.AsyncAddressBalanceReporter
-import com.blockchain.balance.BchBalanceAdapter
-import com.blockchain.balance.BtcBalanceAdapter
-import com.blockchain.balance.EthBalanceAdapter
-import com.blockchain.balance.plus
 import com.blockchain.datamanagers.AccountLookup
 import com.blockchain.datamanagers.AddressResolver
 import com.blockchain.datamanagers.DataManagerPayloadDecrypt
@@ -51,6 +38,7 @@ import com.blockchain.wallet.ResourceDefaultLabels
 import com.blockchain.wallet.SeedAccess
 import com.blockchain.wallet.SeedAccessWithoutPrompt
 import info.blockchain.api.blockexplorer.BlockExplorer
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.util.PrivateKeyFactory
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.util.RootUtil
@@ -177,51 +165,22 @@ val coreModule = applicationContext {
             get<TransactionExecutorWithoutFees>("Priority") as MaximumSpendableCalculator
         }
 
-        factory("BTC") { BtcAccountListAdapter(get()) as AccountList }
-        factory("BCH") { BchAccountListAdapter(get()) as AccountList }
-        factory("ETH") { EthAccountListAdapter(get()) as AccountList }
-        factory("PAX") { PaxAccountListAdapter(get(), get()) as AccountList }
-
-        factory("BTC") { BtcAsyncAccountListAdapter(get()) as AsyncAccountList }
-        factory("BCH") { BchAsyncAccountListAdapter(get()) as AsyncAccountList }
-        factory("ETH") { EthAsyncAccountListAdapter(EthAccountListAdapter(get())) as AsyncAccountList }
-        factory("PAX") { PaxAsyncAccountList(ethDataManager = get(), stringUtils = get()) as AsyncAccountList }
-
-        factory("BTC") { BtcBalanceAdapter(get()) }
-            .bind(AsyncAddressBalanceReporter::class)
-            .bind(AsyncAccountBalanceReporter::class)
-        factory("BCH") { BchBalanceAdapter(get()) }
-            .bind(AsyncAddressBalanceReporter::class)
-            .bind(AsyncAccountBalanceReporter::class)
-        factory("ETH") { EthBalanceAdapter(get()) }
-            .bind(AsyncAddressBalanceReporter::class)
-            .bind(AsyncAccountBalanceReporter::class)
-
-        factory("all") {
-            get<AsyncAccountBalanceReporter>("BTC") +
-                    get("BCH") + get("ETH") + get("XLM")
-        }
-
-        factory {
-            AllAccountsImplementation(
-                btcAccountList = get("BTC"),
-                bchAccountList = get("BCH"),
-                etherAccountList = get("ETH"),
-                paxAccountList = get("PAX")
-            ) as AllAccountList
-        }
+        factory("BTC") { BtcAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("BCH") { BchAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("ETH") { EthAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("PAX") { PaxAccountListAdapter(get(), get()) }.bind(AccountList::class)
 
         factory {
             AsyncAllAccountListImplementation(
-                listOf(
-                    get("BTC"),
-                    get("ETH"),
-                    get("BCH"),
-                    get("XLM"),
-                    get("PAX")
+                mapOf(
+                    CryptoCurrency.BTC to get("BTC"),
+                    CryptoCurrency.ETHER to get("ETH"),
+                    CryptoCurrency.BCH to get("BCH"),
+                    CryptoCurrency.XLM to get("XLM"),
+                    CryptoCurrency.PAX to get("PAX")
                 )
-            ) as AsyncAllAccountList
-        }
+            )
+        }.bind(AsyncAllAccountList::class)
 
         bean { EthDataStore() }
 

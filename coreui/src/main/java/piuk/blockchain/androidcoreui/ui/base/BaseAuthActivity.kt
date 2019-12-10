@@ -2,7 +2,7 @@ package piuk.blockchain.androidcoreui.ui.base
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.support.annotation.CallSuper
+import androidx.annotation.CallSuper
 import android.view.WindowManager
 import com.blockchain.koin.injectActivity
 import com.blockchain.ui.password.SecondPasswordHandler

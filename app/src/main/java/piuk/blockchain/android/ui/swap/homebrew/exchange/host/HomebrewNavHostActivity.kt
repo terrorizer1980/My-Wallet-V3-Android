@@ -3,10 +3,10 @@ package piuk.blockchain.android.ui.swap.homebrew.exchange.host
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v7.widget.Toolbar
+import androidx.annotation.StringRes
+import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.Fragment
+import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import androidx.navigation.fragment.NavHostFragment.findNavController
@@ -30,7 +30,6 @@ import com.blockchain.swap.nabu.StartKyc
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
-import com.blockchain.ui.dialog.AccountChooserBottomDialog
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.disposables.CompositeDisposable
@@ -39,6 +38,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.swap.homebrew.exchange.AccountChooserBottomDialog
 import piuk.blockchain.android.ui.swap.homebrew.exchange.SwapInfoBottomDialog
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -65,6 +65,10 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
         (intent.getSerializableExtra(EXTRA_PRESELECTED_TO_CURRENCY) as? CryptoCurrency) ?: CryptoCurrency.ETHER
     }
 
+    private val preselectedFromCurrency by lazy {
+        (intent.getSerializableExtra(EXTRA_PRESELECTED_FROM_CURRENCY) as? CryptoCurrency) ?: CryptoCurrency.BTC
+    }
+
     override val exchangeViewModel: ExchangeModel by viewModel()
 
     private val startKyc: StartKyc by inject()
@@ -77,8 +81,12 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
         val args = ExchangeFragment.bundleArgs(defaultCurrency)
         compositeDisposable += allAccountList.allAccounts()
             .map { accounts ->
-                accounts.first { it.cryptoCurrency == preselectedToCurrency }
-            }.subscribeBy { exchangeViewModel.initWithPreselectedCurrency(it.cryptoCurrency) }
+                accounts.first { it.cryptoCurrency == preselectedFromCurrency } to
+                        accounts.first { it.cryptoCurrency == preselectedToCurrency }
+            }.subscribeBy { (from, to) ->
+                exchangeViewModel.initWithPreselectedToCurrency(to.cryptoCurrency)
+                exchangeViewModel.initWithPreselectedFromCurrency(from.cryptoCurrency)
+            }
 
         navController.navigate(R.id.exchangeFragment, args)
     }
@@ -240,12 +248,19 @@ class HomebrewNavHostActivity : BaseAuthActivity(),
     companion object {
         private const val EXTRA_DEFAULT_CURRENCY = "EXTRA_DEFAULT_CURRENCY"
         private const val EXTRA_PRESELECTED_TO_CURRENCY = "EXTRA_PRESELECTED_TO_CURRENCY"
+        private const val EXTRA_PRESELECTED_FROM_CURRENCY = "EXTRA_PRESELECTED_FROM_CURRENCY"
 
         @JvmStatic
-        fun start(context: Context, defaultCurrency: String, toCryptoCurrency: CryptoCurrency? = null) {
+        fun start(
+            context: Context,
+            defaultCurrency: String,
+            toCryptoCurrency: CryptoCurrency? = null,
+            fromCryptoCurrency: CryptoCurrency? = null
+        ) {
             Intent(context, HomebrewNavHostActivity::class.java).apply {
                 putExtra(EXTRA_DEFAULT_CURRENCY, defaultCurrency)
                 putExtra(EXTRA_PRESELECTED_TO_CURRENCY, toCryptoCurrency ?: CryptoCurrency.ETHER)
+                putExtra(EXTRA_PRESELECTED_FROM_CURRENCY, fromCryptoCurrency ?: CryptoCurrency.BTC)
             }.run { context.startActivity(this) }
         }
     }

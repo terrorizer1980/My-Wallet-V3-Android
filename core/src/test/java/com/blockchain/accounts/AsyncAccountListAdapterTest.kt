@@ -4,6 +4,8 @@ import com.nhaarman.mockito_kotlin.mock
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.coin.GenericMetadataAccount
+import info.blockchain.wallet.ethereum.EthereumAccount
+import info.blockchain.wallet.ethereum.EthereumWallet
 import info.blockchain.wallet.payload.data.Account
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`should equal`
@@ -13,7 +15,7 @@ class AsyncAccountListAdapterTest {
 
     @Test
     fun `BtcAsyncAccountListAdapter account list`() {
-        (BtcAsyncAccountListAdapter(mock {
+        (BtcAccountListAdapter(mock {
             on { this.accounts } `it returns` listOf(
                 Account().apply {
                     label = "Account 1"
@@ -23,7 +25,7 @@ class AsyncAccountListAdapterTest {
                     label = "Account 2"
                     xpub = "xpub 2"
                 })
-        }) as AsyncAccountList)
+        }) as AccountList)
             .testAccountList() `should equal`
             listOf(
                 AccountReference.BitcoinLike(CryptoCurrency.BTC, "Account 1", xpub = "xpub 1"),
@@ -33,7 +35,7 @@ class AsyncAccountListAdapterTest {
 
     @Test
     fun `BtcAsyncAccountListAdapter account list - excludes archived`() {
-        (BtcAsyncAccountListAdapter(mock {
+        (BtcAccountListAdapter(mock {
             on { this.accounts } `it returns` listOf(
                 Account().apply {
                     label = "Account 1"
@@ -44,7 +46,7 @@ class AsyncAccountListAdapterTest {
                     xpub = "xpub 2"
                     isArchived = true
                 })
-        }) as AsyncAccountList)
+        }) as AccountList)
             .testAccountList() `should equal`
             listOf(
                 AccountReference.BitcoinLike(CryptoCurrency.BTC, "Account 1", xpub = "xpub 1")
@@ -53,7 +55,7 @@ class AsyncAccountListAdapterTest {
 
     @Test
     fun `BchAsyncAccountListAdapter account list`() {
-        (BchAsyncAccountListAdapter(mock {
+        (BchAccountListAdapter(mock {
             on { this.getAccountMetadataList() } `it returns` listOf(
                 GenericMetadataAccount().apply {
                     label = "The first bch account"
@@ -64,7 +66,7 @@ class AsyncAccountListAdapterTest {
                     xpub = "xpub 2"
                 }
             )
-        }) as AsyncAccountList)
+        }) as AccountList)
             .testAccountList() `should equal`
             listOf(
                 AccountReference.BitcoinLike(CryptoCurrency.BCH, "The first bch account", xpub = "xpub 1"),
@@ -74,7 +76,7 @@ class AsyncAccountListAdapterTest {
 
     @Test
     fun `BchAsyncAccountListAdapter account list - excludes archived`() {
-        (BchAsyncAccountListAdapter(mock {
+        (BchAccountListAdapter(mock {
             on { this.getAccountMetadataList() } `it returns` listOf(
                 GenericMetadataAccount().apply {
                     label = "The first bch account"
@@ -86,7 +88,7 @@ class AsyncAccountListAdapterTest {
                     isArchived = true
                 }
             )
-        }) as AsyncAccountList)
+        }) as AccountList)
             .testAccountList() `should equal`
             listOf(
                 AccountReference.BitcoinLike(CryptoCurrency.BCH, "The first bch account", xpub = "xpub 1")
@@ -95,11 +97,25 @@ class AsyncAccountListAdapterTest {
 
     @Test
     fun `EtherAsyncAccountListAdapter account list`() {
-        val accountReference = AccountReference.Ethereum("Ether Account", "0xAddress")
-        (EthAsyncAccountListAdapter(mock {
-            on { defaultAccountReference() } `it returns`
-                accountReference
-        }) as AsyncAccountList)
+        val accountLabel = "The default eth account"
+        val accountAddr = "0x1Address"
+
+        val ethereumAccount = mock<EthereumAccount> {
+            on { label } `it returns` accountLabel
+            on { address } `it returns` accountAddr
+        }
+
+        val wallet = mock<EthereumWallet> {
+            on { account } `it returns` ethereumAccount
+        }
+
+        val accountReference = AccountReference.Ethereum(accountLabel, accountAddr)
+
+        (EthAccountListAdapter(
+            mock {
+                on { getEthWallet() } `it returns` wallet
+            }
+        ) as AccountList)
             .testAccountList() `should equal`
             listOf(
                 accountReference
@@ -107,7 +123,7 @@ class AsyncAccountListAdapterTest {
     }
 }
 
-private fun AsyncAccountList.testAccountList(): List<AccountReference> =
+private fun AccountList.testAccountList(): List<AccountReference> =
     accounts()
         .test()
         .assertComplete()

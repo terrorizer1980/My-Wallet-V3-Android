@@ -2,23 +2,23 @@ package piuk.blockchain.android.ui.account
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutManager
-import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
-import android.support.v7.widget.Toolbar
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import android.text.InputFilter
 import android.text.InputType
 import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.databinding.DataBindingUtil
 import com.blockchain.notifications.analytics.Analytics
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.single.CompositePermissionListener
@@ -40,7 +40,7 @@ import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
@@ -129,7 +129,7 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         consume { onBackPressed() }
 
     override fun finishPage() {
-        setResult(Activity.RESULT_CANCELED)
+        setResult(AppCompatActivity.RESULT_CANCELED)
         finish()
     }
 
@@ -303,11 +303,11 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
             .show()
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         data?.let {
-            if (requestCode == SCAN_PRIVX && resultCode == Activity.RESULT_OK) {
+            if (requestCode == SCAN_PRIVX && resultCode == AppCompatActivity.RESULT_OK) {
                 presenter.handleIncomingScanIntent(data)
             }
         } ?: toast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
@@ -369,7 +369,7 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         private const val SCAN_PRIVX = 302
 
         fun startForResult(
-            activity: Activity,
+            activity: AppCompatActivity,
             accountIndex: Int,
             addressIndex: Int,
             cryptoCurrency: CryptoCurrency,

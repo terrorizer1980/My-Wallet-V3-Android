@@ -2,17 +2,17 @@ package piuk.blockchain.android.ui.kyc.navhost
 
 import piuk.blockchain.android.ui.kyc.BaseKycPresenter
 import com.blockchain.exceptions.MetadataNotFoundException
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.KycState
-import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.kyc.models.nabu.UserState
-import com.blockchain.kyc.services.nabu.TierUpdater
+import com.blockchain.swap.nabu.models.nabu.KycState
+import com.blockchain.swap.nabu.models.nabu.NabuUser
+import com.blockchain.swap.nabu.models.nabu.UserState
 import piuk.blockchain.android.ui.kyc.logging.KycResumedEvent
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.profile.models.ProfileModel
 import piuk.blockchain.android.ui.kyc.reentry.KycNavigator
 import piuk.blockchain.android.ui.kyc.reentry.ReentryDecision
 import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.service.TierUpdater
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -103,7 +103,7 @@ class KycNavHostPresenter(
                     onError = { Timber.e(it) },
                     onSuccess = { view.navigate(it) }
                 )
-        } else if (user.state != UserState.None && user.kycState == KycState.None && !view.isFromSettingsLimits) {
+        } else if (user.state != UserState.None && user.kycState == KycState.None && !view.showTiersLimitsSplash) {
             val current = user.tiers?.current
             if (current == null || current == 0) {
                 val reentryPoint = reentryDecision.findReentryPoint(user)

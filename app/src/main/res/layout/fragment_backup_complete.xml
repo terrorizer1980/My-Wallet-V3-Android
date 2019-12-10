@@ -62,12 +62,11 @@
         android:textColor="@color/primary_grey_dark"
         android:textSize="12sp" />
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_backup_again"
-        style="@style/ButtonStyle"
+        style="@style/CtaButton.Blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="@string/backup_again"
-        android:theme="@style/ButtonLightBlueTheme" />
+        android:text="@string/backup_again" />
 </LinearLayout>

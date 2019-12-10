@@ -1,10 +1,10 @@
 package piuk.blockchain.androidcoreui.ui.base
 
-import android.support.annotation.IdRes
-import android.support.annotation.StringRes
-import android.support.v7.app.ActionBar
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
+import androidx.annotation.IdRes
+import androidx.annotation.StringRes
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
 abstract class ToolBarActivity : AppCompatActivity() {
 

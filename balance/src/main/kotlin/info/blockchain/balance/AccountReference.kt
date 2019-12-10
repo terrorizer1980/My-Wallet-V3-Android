@@ -38,6 +38,8 @@ enum class AccountType {
     WatchOnly
 }
 
+typealias AccountReferenceList = List<AccountReference>
+
 data class Account(val reference: AccountReference, val type: AccountType)
 
 fun AccountReference.toAccount(type: AccountType): Account = Account(this, type)

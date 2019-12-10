@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -22,9 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/action_bar_height"
-            android:orientation="vertical"
-            android:paddingLeft="72dp"
-            android:paddingRight="72dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/no_tx_title"
@@ -41,6 +39,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="72dp"
+                android:layout_marginStart="72dp"
                 android:gravity="center_horizontal"
                 android:text="@string/transaction_occur_when_bitcoin"
                 android:textColor="@color/primary_grey_dark"
@@ -48,13 +48,12 @@
 
             <Button
                 android:id="@+id/button_get_bitcoin"
-                style="@style/ButtonStyle"
+                style="@style/CtaButton.Blue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:text="@string/onboarding_get_bitcoin"
-                android:theme="@style/ButtonLightBlueTheme" />
+                android:layout_marginTop="@dimen/standard_margin"
+                android:text="@string/onboarding_get_bitcoin" />
 
         </LinearLayout>
 
@@ -62,4 +61,4 @@
             android:id="@+id/pax_no_transactions"
             layout="@layout/layout_pax_no_transactions" />
     </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+</androidx.core.widget.NestedScrollView>

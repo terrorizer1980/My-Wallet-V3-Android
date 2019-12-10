@@ -3,7 +3,7 @@ package piuk.blockchain.android.ui.swap.homebrew.exchange
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialogFragment
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View

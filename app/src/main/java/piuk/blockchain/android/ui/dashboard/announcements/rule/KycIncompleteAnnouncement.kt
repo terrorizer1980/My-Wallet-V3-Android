@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
-import android.support.annotation.VisibleForTesting
-import com.blockchain.kyc.status.KycTiersQueries
+import androidx.annotation.VisibleForTesting
+import com.blockchain.swap.nabu.status.KycTiersQueries
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.SunriverCampaignRegistration
 import piuk.blockchain.android.campaign.SunriverCardType
@@ -10,11 +10,11 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 import timber.log.Timber
 
 internal class KycIncompleteAnnouncement(
@@ -47,17 +47,17 @@ internal class KycIncompleteAnnouncement(
     }
 
     private fun createCard(host: AnnouncementHost, cardType: SunriverCardType) =
-        AnnouncementCard(
+        StandardAnnouncementCard(
             name = name,
             titleText = R.string.kyc_drop_off_card_title,
             bodyText = R.string.kyc_drop_off_card_description,
             ctaText = R.string.kyc_drop_off_card_button,
             iconImage = R.drawable.ic_announce_kyc,
             dismissFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                host.dismissAnnouncementCard()
             },
             ctaFunction = {
-                host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                host.dismissAnnouncementCard()
                 val campaignType = if (cardType == SunriverCardType.FinishSignUp) {
                     CampaignType.Sunriver
                 } else {

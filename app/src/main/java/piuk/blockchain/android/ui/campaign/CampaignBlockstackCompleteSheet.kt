@@ -7,9 +7,8 @@ import com.blockchain.notifications.analytics.Analytics
 import kotlinx.android.synthetic.main.dialog_stx_campaign_complete.view.cta_button
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 
-class CampaignBlockstackCompleteSheet : SlidingModalBottomDialog() {
+class CampaignBlockstackCompleteSheet : PromoBottomSheet() {
 
     private val analytics: Analytics by inject()
 
@@ -24,14 +23,16 @@ class CampaignBlockstackCompleteSheet : SlidingModalBottomDialog() {
         analytics.logEvent(BlockstackAnalyticsEvent.CompletionSheetShown)
     }
 
-    override fun onCancel(dialog: DialogInterface?) {
+    override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         analytics.logEvent(BlockstackAnalyticsEvent.CompletionSheetDismissed)
     }
 
     override fun onSheetHidden() {
         super.onSheetHidden()
-        onCancel(dialog)
+        dialog?.let {
+            onCancel(it)
+        }
     }
 
     private fun onCtaClick() {

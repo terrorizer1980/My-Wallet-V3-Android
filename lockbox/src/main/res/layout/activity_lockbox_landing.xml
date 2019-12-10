@@ -13,11 +13,11 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.constraint.Group
+            <androidx.constraintlayout.widget.Group
                 android:id="@+id/group_lockpox_paired"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -25,7 +25,7 @@
                 app:constraint_referenced_ids="card_view_coming_soon,text_view_learn_more_paired"
                 tools:visibility="visible" />
 
-            <android.support.constraint.Group
+            <androidx.constraintlayout.widget.Group
                 android:id="@+id/group_no_lockbox"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -33,7 +33,7 @@
                 app:constraint_referenced_ids="card_view_get_lockbox,card_view_already_own_one,text_view_learn_more_not_paired"
                 tools:visibility="gone" />
 
-            <android.support.constraint.Group
+            <androidx.constraintlayout.widget.Group
                 android:id="@+id/group_loading"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -53,7 +53,7 @@
 
             <!-- NO LOCKBOX -->
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/card_view_get_lockbox"
                 style="@style/DefaultCardStyle"
                 android:layout_width="match_parent"
@@ -63,7 +63,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:theme="@style/AppTheme">
@@ -105,10 +105,10 @@
                         android:layout_marginLeft="32dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginRight="32dp"
-                        android:src="@drawable/image_lockbox"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/text_view_get_yours_message"
+                        app:srcCompat="@drawable/image_lockbox"
                         tools:layout_height="100dp" />
 
                     <Button
@@ -128,10 +128,10 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/image_view_lockbox" />
 
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/card_view_already_own_one"
                 style="@style/DefaultCardStyle"
                 android:layout_width="match_parent"
@@ -141,7 +141,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/card_view_get_lockbox">
 
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -184,15 +184,15 @@
                         android:layout_marginTop="16dp"
                         android:layout_marginBottom="16dp"
                         android:scaleType="fitEnd"
-                        android:src="@drawable/image_laptop_cutoff"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/text_view_already_owned_title"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/image_laptop_cutoff"
                         tools:layout_height="100dp" />
 
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/text_view_learn_more_not_paired"
@@ -216,7 +216,7 @@
 
             <!-- NO LOCKBOX -->
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/card_view_coming_soon"
                 style="@style/DefaultCardStyle"
                 android:layout_width="match_parent"
@@ -226,7 +226,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <android.support.constraint.ConstraintLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:theme="@style/AppTheme">
@@ -268,10 +268,10 @@
                         android:layout_marginLeft="32dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginRight="32dp"
-                        android:src="@drawable/image_laptop_centered"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/card_view_coming_soon_message"
+                        app:srcCompat="@drawable/image_laptop_centered"
                         tools:layout_height="100dp" />
 
                     <Button
@@ -291,8 +291,8 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/image_view_coming_soon" />
 
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/text_view_learn_more_paired"
@@ -313,6 +313,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/card_view_coming_soon"
                 app:layout_constraintVertical_bias="1.0" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </LinearLayout>

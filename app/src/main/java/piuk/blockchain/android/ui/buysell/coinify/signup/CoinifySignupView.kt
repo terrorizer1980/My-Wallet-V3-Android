@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.buysell.coinify.signup
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import piuk.blockchain.androidcoreui.ui.base.View
 
 interface CoinifySignupView : View {

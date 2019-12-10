@@ -2,81 +2,164 @@ package piuk.blockchain.android.ui.dashboard
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialogFragment
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
+import androidx.annotation.UiThread
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import piuk.blockchain.android.campaign.CampaignType
-import com.blockchain.notifications.analytics.Analytics
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockchain.extensions.exhaustive
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.fragment_dashboard.*
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.campaign.CampaignBlockstackCompleteSheet
-import piuk.blockchain.android.ui.charts.ChartsActivity
-import piuk.blockchain.android.ui.customviews.BottomSpacerDecoration
+import piuk.blockchain.android.ui.campaign.CampaignBlockstackIntroSheet
+import piuk.blockchain.android.ui.campaign.PromoBottomSheet
+import piuk.blockchain.android.ui.home.HomeScreenMviFragment
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.android.ui.dashboard.adapter.DashboardDelegateAdapter
-import piuk.blockchain.android.ui.home.HomeFragment
-import piuk.blockchain.android.ui.home.MainActivity.Companion.ACCOUNT_EDIT
-import piuk.blockchain.android.ui.home.MainActivity.Companion.SETTINGS_EDIT
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
+import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailSheet
+import piuk.blockchain.android.ui.home.MainActivity
+import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
-import piuk.blockchain.android.util.OSUtil
-import piuk.blockchain.android.util.start
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
-import piuk.blockchain.androidcoreui.utils.ViewUtils
-import piuk.blockchain.androidcoreui.utils.extensions.inflate
-import piuk.blockchain.androidcoreui.utils.extensions.toast
-import java.util.Locale
 
-class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
-    DashboardView {
+class EmptyDashboardItem : DashboardItem
 
-    override val locale: Locale by inject()
+class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent, DashboardState>(),
+    AssetDetailSheet.Host,
+    PromoBottomSheet.Host {
 
-    private val dashboardPresenter: DashboardPresenter by inject()
+    override val model: DashboardModel by inject()
 
-    private val osUtil: OSUtil by inject()
+    private val announcements: AnnouncementList by inject()
 
-    private val analytics: Analytics by inject()
-
-    private val rxBus: RxBus by inject()
-
-    private val dashboardAdapter by unsafeLazy {
+    private val theAdapter: DashboardDelegateAdapter by lazy {
         DashboardDelegateAdapter(
-            context!!,
-            { ChartsActivity.start(context!!, it) },
-            { showTransactionsFor(it) },
-            { presenter.setBalanceFilter(it) },
-            analytics
+            prefs = get(),
+            onCardClicked = { onAssetClicked(it) },
+            analytics = get()
         )
     }
 
-    private val compositeDisposable = CompositeDisposable()
+    private lateinit var theLayoutManager: RecyclerView.LayoutManager
 
-    private val event by unsafeLazy {
+    private val displayList = mutableListOf<DashboardItem>()
+
+    private val compositeDisposable = CompositeDisposable()
+    private val rxBus: RxBus by inject()
+
+    private val actionEvent by unsafeLazy {
         rxBus.register(ActionEvent::class.java)
     }
 
-    private fun showTransactionsFor(cryptoCurrency: CryptoCurrency) {
-        navigator().gotoTransactionsFor(cryptoCurrency)
+    private val metadataEvent by unsafeLazy {
+        rxBus.register(MetadataEvent::class.java)
     }
 
-    private val spacerDecoration: BottomSpacerDecoration by unsafeLazy {
-        BottomSpacerDecoration(ViewUtils.convertDpToPixel(56f, context).toInt())
+    private var state: DashboardState? = null // Hold the 'current' display state, to enable optimising of state updates
+
+    @UiThread
+    override fun render(newState: DashboardState) {
+
+        swipe.isRefreshing = false
+
+        if (displayList.isEmpty()) {
+            createDisplayList(newState)
+        } else {
+            updateDisplayList(newState)
+        }
+
+        // Update/show bottom sheet
+        if (this.state?.showAssetSheetFor != newState.showAssetSheetFor) {
+            showAssetSheet(newState.showAssetSheetFor)
+        } else {
+            if (this.state?.showPromoSheet != newState.showPromoSheet) {
+                showPromoSheet(newState.showPromoSheet)
+            }
+        }
+
+        // Update/show announcement
+        if (this.state?.announcement != newState.announcement) {
+            showAnnouncement(newState.announcement)
+        }
+
+        this.state = newState
     }
 
-    private val safeLayoutManager by unsafeLazy { SafeLayoutManager(context!!) }
+    private fun createDisplayList(newState: DashboardState) {
+        with(displayList) {
+            add(IDX_CARD_ANNOUNCE, EmptyDashboardItem()) // Placeholder for announcements
+            add(IDX_CARD_BALANCE, newState)
+            add(IDX_CARD_BTC, newState.assets[CryptoCurrency.BTC])
+            add(IDX_CARD_ETH, newState.assets[CryptoCurrency.ETHER])
+            add(IDX_CARD_BCH, newState.assets[CryptoCurrency.BCH])
+            add(IDX_CARD_XLM, newState.assets[CryptoCurrency.XLM])
+            add(IDX_CARD_PAX, newState.assets[CryptoCurrency.PAX])
+        }
+        theAdapter.notifyDataSetChanged()
+    }
+
+    private fun updateDisplayList(newState: DashboardState) {
+        with(displayList) {
+
+            var isModified = false
+            isModified = isModified || handleUpdatedAssetState(IDX_CARD_BTC, newState.assets[CryptoCurrency.BTC])
+            isModified = isModified || handleUpdatedAssetState(IDX_CARD_ETH, newState.assets[CryptoCurrency.ETHER])
+            isModified = isModified || handleUpdatedAssetState(IDX_CARD_BCH, newState.assets[CryptoCurrency.BCH])
+            isModified = isModified || handleUpdatedAssetState(IDX_CARD_XLM, newState.assets[CryptoCurrency.XLM])
+            isModified = isModified || handleUpdatedAssetState(IDX_CARD_PAX, newState.assets[CryptoCurrency.PAX])
+
+            if (isModified) {
+                set(IDX_CARD_BALANCE, newState)
+                theAdapter.notifyItemChanged(IDX_CARD_BALANCE)
+            }
+        }
+    }
+
+    private fun handleUpdatedAssetState(index: Int, newState: AssetState): Boolean =
+        if (displayList[index] != newState) {
+            displayList[index] = newState
+            theAdapter.notifyItemChanged(index)
+            true
+        } else {
+            false
+        }
+
+    private fun showAssetSheet(sheetFor: CryptoCurrency?) {
+        if (sheetFor != null) {
+            showBottomSheet(AssetDetailSheet.newInstance(sheetFor))
+        } else {
+            // Nothing, unless we need to remove the sheet? TODO
+        }
+    }
+
+    private fun showPromoSheet(promoSheet: PromoSheet?) {
+        when (promoSheet) {
+            PromoSheet.PROMO_STX_CAMPAIGN_INTO -> showBottomSheet(CampaignBlockstackIntroSheet())
+            PromoSheet.PROMO_STX_CAMPAIGN_COMPLETE -> showBottomSheet(CampaignBlockstackCompleteSheet())
+            null -> { /* no-op */ }
+        }.exhaustive
+    }
+
+    private fun showAnnouncement(card: AnnouncementCard?) {
+        displayList[IDX_CARD_ANNOUNCE] = card ?: EmptyDashboardItem()
+        theAdapter.notifyItemChanged(IDX_CARD_ANNOUNCE)
+    }
+
+    override fun onBackPressed(): Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -89,178 +172,152 @@ class DashboardFragment : HomeFragment<DashboardView, DashboardPresenter>(),
 
         analytics.logEvent(AnalyticsEvents.Dashboard)
 
-        recycler_view?.apply {
-            layoutManager = safeLayoutManager
-            adapter = dashboardAdapter
-        }
+        setupSwipeRefresh()
+        setupRecycler()
+    }
 
-        onViewReady()
+    private fun setupRecycler() {
+        theLayoutManager = SafeLayoutManager(requireContext())
+
+        recycler_view.apply {
+            layoutManager = theLayoutManager
+            adapter = theAdapter
+        }
+        theAdapter.items = displayList
+    }
+
+    private fun setupToolbar() {
+        activity.supportActionBar?.let {
+            activity.setupToolbar(it, R.string.dashboard_title)
+        }
+    }
+
+    private fun setupSwipeRefresh() {
+
+        swipe.setOnRefreshListener { model.process(RefreshAllIntent) }
+
+        // Configure the refreshing colors
+        swipe.setColorSchemeResources(
+            R.color.blue_800,
+            R.color.blue_600,
+            R.color.blue_400,
+            R.color.blue_200
+        )
     }
 
     override fun onResume() {
         super.onResume()
         setupToolbar()
 
-        navigator().showNavigation()
-
-        compositeDisposable += event.subscribe {
-            if (activity != null) {
-                // Update balances
-                presenter?.updateBalances()
-            }
+        compositeDisposable += metadataEvent.subscribe {
+            model.process(RefreshAllIntent)
         }
 
-        recycler_view?.scrollToPosition(0)
+        compositeDisposable += actionEvent.subscribe {
+            model.process(RefreshAllIntent)
+        }
+
+        announcements.checkLatest(announcementHost, compositeDisposable)
+
+        model.process(RefreshAllIntent)
     }
 
     override fun onPause() {
-        super.onPause()
         compositeDisposable.clear()
-        rxBus.unregister(ActionEvent::class.java, event)
+        rxBus.unregister(ActionEvent::class.java, actionEvent)
+        rxBus.unregister(MetadataEvent::class.java, actionEvent)
+
+        super.onPause()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
-            SETTINGS_EDIT,
-            ACCOUNT_EDIT -> presenter.updateBalances()
+            MainActivity.SETTINGS_EDIT,
+            MainActivity.ACCOUNT_EDIT -> model.process(RefreshAllIntent)
             KYC_FOR_STX -> if (resultCode == KycNavHostActivity.RESULT_KYC_STX_COMPLETE)
-                showBottomSheetDialog(CampaignBlockstackCompleteSheet())
+                model.process(ShowPromoSheet(PromoSheet.PROMO_STX_CAMPAIGN_COMPLETE))
         }
     }
 
-    override fun scrollToTop() {
-        safeLayoutManager.scrollToPositionWithOffset(0, 0)
+    private fun onAssetClicked(cryptoCurrency: CryptoCurrency) {
+        model.process(ShowAssetDetails(cryptoCurrency))
     }
 
-    override fun notifyItemAdded(displayItems: MutableList<Any>, position: Int) {
-        dashboardAdapter.items = displayItems
-        dashboardAdapter.notifyItemInserted(position)
-        handleRecyclerViewUpdates()
-    }
+    private val announcementHost = object : AnnouncementHost {
+        override val disposables: CompositeDisposable
+            get() = compositeDisposable
 
-    override fun notifyItemUpdated(displayItems: MutableList<Any>, positions: List<Int>) {
-        dashboardAdapter.items = displayItems
-        positions.forEach { dashboardAdapter.notifyItemChanged(it) }
-        handleRecyclerViewUpdates()
-    }
-
-    override fun notifyItemRemoved(displayItems: MutableList<Any>, position: Int) {
-        dashboardAdapter.items = displayItems
-        dashboardAdapter.notifyItemRemoved(position)
-    }
-
-    override fun updatePieChartState(chartsState: PieChartsState) {
-        dashboardAdapter.updatePieChartState(chartsState)
-        handleRecyclerViewUpdates()
-    }
-
-    override fun showToast(message: Int, toastType: String) = toast(message, toastType)
-
-    override fun startBuySell() {
-        navigator().launchBuySell()
-    }
-
-    override fun startSwap(defCurrency: String, currency: CryptoCurrency?) {
-        navigator().launchSwap(defCurrency, currency)
-    }
-
-    override fun startBitcoinCashReceive() {
-        navigator().gotoReceiveFor(CryptoCurrency.BCH)
-    }
-
-    override fun startKycFlow(campaignType: CampaignType) {
-        navigator().launchKyc(campaignType)
-    }
-
-    override fun startKycForStx() {
-        KycNavHostActivity.startForResult(this, CampaignType.Blockstack, KYC_FOR_STX)
-    }
-
-    override fun startPitLinkingFlow(linkId: String) {
-        navigator().launchThePitLinking(linkId)
-    }
-
-    override fun startBackupWallet() {
-        navigator().launchBackupFunds()
-    }
-
-    override fun startSetup2Fa() {
-        navigator().launchSetup2Fa()
-    }
-
-    override fun startVerifyEmail() {
-        navigator().launchVerifyEmail()
-    }
-
-    override fun startEnableFingerprintLogin() {
-        navigator().launchSetupFingerprintLogin()
-    }
-
-    override fun startIntroTour() {
-        navigator().launchIntroTour()
-    }
-
-    override fun startTransferCrypto() {
-        navigator().launchTransfer()
-    }
-
-    override fun startWebsocketService() {
-        context?.run {
-            CoinsWebSocketService::class.java.start(this, osUtil)
+        override fun clearAllAnnouncements() { // TODO: Do we actually need this?
+            model.process(ClearAnnouncement)
         }
-    }
 
-    override fun launchWaitlist() {
-        startActivity(
-            Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://www.blockchain.com/getcrypto")
-            )
-        )
-    }
-
-    override fun createPresenter() = dashboardPresenter
-
-    override fun getMvpView() = this
-
-    /**
-     * Inserts a spacer into the last position in the list
-     */
-    private fun handleRecyclerViewUpdates() {
-        recycler_view?.apply {
-            removeItemDecoration(spacerDecoration)
-            addItemDecoration(spacerDecoration)
+        override fun showAnnouncementCard(card: AnnouncementCard) {
+            model.process(ShowAnnouncement(card))
         }
-    }
 
-    private fun setupToolbar() {
-        (activity as AppCompatActivity).supportActionBar?.let {
-            (activity as ToolBarActivity).setupToolbar(it, R.string.dashboard_title)
+        override fun dismissAnnouncementCard() {
+            model.process(ClearAnnouncement)
         }
+
+        override fun startKyc(campaignType: CampaignType) = navigator().launchKyc(campaignType)
+
+        override fun startSwap(swapTarget: CryptoCurrency) = navigator().launchSwapOrKyc(targetCurrency = swapTarget)
+
+        override fun startBuySell() = navigator().launchBuySell()
+
+        override fun startPitLinking() = navigator().launchThePitLinking()
+
+        override fun startFundsBackup() = navigator().launchBackupFunds()
+
+        override fun startSetup2Fa() = navigator().launchSetup2Fa()
+
+        override fun startVerifyEmail() = navigator().launchVerifyEmail()
+
+        override fun startEnableFingerprintLogin() = navigator().launchSetupFingerprintLogin()
+
+        override fun startIntroTourGuide() = navigator().launchIntroTour()
+
+        override fun startTransferCrypto() = navigator().launchTransfer()
+
+        override fun startBlockstackIntro() = model.process(ShowPromoSheet(PromoSheet.PROMO_STX_CAMPAIGN_INTO))
     }
 
-    override fun onBackPressed() = false
+    // AssetDetailSheet.Host
+    override fun gotoSendFor(cryptoCurrency: CryptoCurrency) = navigator().gotoSendFor(cryptoCurrency)
+
+    override fun goToReceiveFor(cryptoCurrency: CryptoCurrency) = navigator().gotoReceiveFor(cryptoCurrency)
+
+    override fun onSheetClosed() = model.process(ClearBottomSheet)
+
+    override fun goToBuy() = navigator().launchBuySell()
+
+    override fun gotoSwapWithCurrencies(fromCryptoCurrency: CryptoCurrency, toCryptoCurrency: CryptoCurrency) =
+        navigator().launchSwapOrKyc(fromCryptoCurrency = fromCryptoCurrency, targetCurrency = toCryptoCurrency)
+
+    // PromoSheet.Host
+    override fun onStartKycForStx() =
+        KycNavHostActivity.startForResult(this@DashboardFragment, CampaignType.Blockstack, KYC_FOR_STX)
 
     companion object {
+        fun newInstance() = DashboardFragment()
+
+        private const val IDX_CARD_ANNOUNCE = 0
+        private const val IDX_CARD_BALANCE = 1
+        private const val IDX_CARD_BTC = 2
+        private const val IDX_CARD_ETH = 3
+        private const val IDX_CARD_BCH = 4
+        private const val IDX_CARD_XLM = 5
+        private const val IDX_CARD_PAX = 6
 
         internal const val KYC_FOR_STX = 9267
-
-        @JvmStatic
-        fun newInstance(): DashboardFragment {
-            return DashboardFragment()
-        }
     }
+}
 
-    override fun showBottomSheetDialog(bottomSheetDialogFragment: BottomSheetDialogFragment) {
-        bottomSheetDialogFragment.show(fragmentManager, "BOTTOM_DIALOG")
-    }
-
-    /**
-     * supportsPredictiveItemAnimations = false to avoid crashes when computing changes.
-     */
-    private inner class SafeLayoutManager(context: Context) : LinearLayoutManager(context) {
-        override fun supportsPredictiveItemAnimations() = false
-    }
+/**
+ * supportsPredictiveItemAnimations = false to avoid crashes when computing changes.
+ */
+private class SafeLayoutManager(context: Context) : LinearLayoutManager(context) {
+    override fun supportsPredictiveItemAnimations() = false
 }

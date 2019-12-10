@@ -1,7 +1,7 @@
 package piuk.blockchain.androidcore.utils
 
 import android.content.SharedPreferences
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import info.blockchain.balance.CryptoCurrency
 
 interface UUIDGenerator {

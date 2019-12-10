@@ -1,11 +1,12 @@
 package com.blockchain.lockbox.data
 
-import com.blockchain.accounts.AsyncAccountList
+import com.blockchain.accounts.AccountList
 import com.blockchain.lockbox.data.models.Device
 import com.blockchain.lockbox.data.models.LockboxMetadata
 import com.blockchain.metadata.MetadataRepository
 import com.blockchain.remoteconfig.FeatureFlag
 import info.blockchain.balance.AccountReference
+import info.blockchain.balance.AccountReferenceList
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -13,7 +14,7 @@ import io.reactivex.Single
 class LockboxDataManager(
     private val metadataRepository: MetadataRepository,
     private val featureFlag: FeatureFlag
-) : AsyncAccountList {
+) : AccountList {
 
     fun isLockboxAvailable(): Single<Boolean> = featureFlag.enabled
 
@@ -26,13 +27,21 @@ class LockboxDataManager(
     private fun fetchLockbox(): Maybe<LockboxMetadata> =
         metadataRepository.loadMetadata(LockboxMetadata.MetaDataType, LockboxMetadata::class.java)
 
-    override fun accounts(): Single<List<AccountReference>> =
+    override fun accounts(): Single<AccountReferenceList> =
         fetchLockbox()
             .map {
                 it.devices.flatMap { device -> device.accounts() }
             }
             .defaultIfEmpty(emptyList())
             .toSingle()
+
+    override fun defaultAccountReference(): AccountReference {
+        TODO("not implemented - not used")
+    }
+
+    override fun defaultAccount(): Single<AccountReference> {
+        TODO("not implemented - not used")
+    }
 }
 
 private fun Device.accounts() =

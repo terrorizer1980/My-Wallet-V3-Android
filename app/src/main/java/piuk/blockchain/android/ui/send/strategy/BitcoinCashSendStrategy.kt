@@ -1,16 +1,16 @@
 package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
-import android.support.design.widget.Snackbar
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.NabuApiException
-import com.blockchain.kyc.models.nabu.NabuErrorCodes
-import com.blockchain.kyc.models.nabu.State
+import com.blockchain.swap.nabu.models.nabu.NabuApiException
+import com.blockchain.swap.nabu.models.nabu.NabuErrorCodes
+import com.blockchain.swap.nabu.models.nabu.State
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
 import com.blockchain.serialization.JsonSerializableAccount
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.google.android.material.snackbar.Snackbar
 import info.blockchain.api.data.UnspentOutputs
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -42,7 +42,6 @@ import piuk.blockchain.android.ui.send.PendingTransaction
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.FeeType
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
@@ -85,6 +84,12 @@ class BitcoinCashSendStrategy(
     environmentConfig: EnvironmentConfig
 ) : SendStrategy<SendView>(currencyState) {
 
+    override fun onViewAttached() { }
+    override fun onViewDetached() { }
+
+    override val alwaysDisableScreenshots = false
+    override val enableLogoutTimer = false
+
     private var pitAccount: PitAccount? = null
 
     override fun onPitAddressSelected() {
@@ -98,13 +103,13 @@ class BitcoinCashSendStrategy(
                 it.address
             )
             pendingTransaction.receivingAddress = it.address
-            view.updateReceivingAddress(it.label)
+            view?.updateReceivingAddress(it.label)
         }
     }
 
     override fun onPitAddressCleared() {
         pendingTransaction.receivingObject = null
-        view.updateReceivingAddress("")
+        view?.updateReceivingAddress("")
     }
 
     override fun onCurrencySelected() {
@@ -189,7 +194,7 @@ class BitcoinCashSendStrategy(
 
         checkManualAddressInput()
 
-        isValidBitcoincashAddress()
+        compositeDisposable += isValidBitcoincashAddress()
             .map {
                 if (!it) {
                     // Warn user if address is in base58 format since this might be a btc address
@@ -200,23 +205,22 @@ class BitcoinCashSendStrategy(
             .flatMap { Observable.just(validateBitcoinCashTransaction()) }
             .observeOn(AndroidSchedulers.mainThread())
             .doAfterTerminate { view?.dismissProgressDialog() }
-            .addToCompositeDisposable(this)
             .subscribe(
                 { (validated, errorMessage) ->
                     if (validated) {
                         if (pendingTransaction.isWatchOnly) {
                             // returns to spendFromWatchOnly*BIP38 -> showPaymentReview()
                             val address = pendingTransaction.senderAsLegacyAddress
-                            view.showSpendFromWatchOnlyWarning((address).address)
+                            view?.showSpendFromWatchOnlyWarning((address).address)
                         } else if (pendingTransaction.isWatchOnly && verifiedSecondPassword != null) {
                             // Second password already verified
                             showPaymentReview()
                         } else {
                             // Checks if second pw needed then -> onNoSecondPassword()
-                            view.showSecondPasswordDialog()
+                            view?.showSecondPasswordDialog()
                         }
                     } else {
-                        view.showSnackbar(errorMessage, Snackbar.LENGTH_LONG)
+                        view?.showSnackbar(errorMessage, Snackbar.LENGTH_LONG)
                     }
                 },
                 { Timber.e(it) }
@@ -232,17 +236,16 @@ class BitcoinCashSendStrategy(
 
     @SuppressLint("CheckResult")
     private fun submitTransaction() {
-        view.showProgressDialog(R.string.app_name)
+        view?.showProgressDialog(R.string.app_name)
 
         pendingTransaction.receivingAddress =
             getFullBitcoinCashAddressFormat(pendingTransaction.receivingAddress)
 
-        getBchChangeAddress()!!
-            .addToCompositeDisposable(this)
+        compositeDisposable += getBchChangeAddress()!!
             .doOnError {
-                view.dismissProgressDialog()
-                view.dismissConfirmationDialog()
-                view.showTransactionFailed()
+                view?.dismissProgressDialog()
+                view?.dismissConfirmationDialog()
+                view?.showTransactionFailed()
             }
             .map { pendingTransaction.changeAddress = it }
             .flatMap { getBchKeys() }
@@ -261,17 +264,17 @@ class BitcoinCashSendStrategy(
                     logPaymentSentEvent(true, CryptoCurrency.BCH, pendingTransaction.bigIntAmount)
 
                     clearBchUnspentResponseCache()
-                    view.dismissProgressDialog()
-                    view.dismissConfirmationDialog()
+                    view?.dismissProgressDialog()
+                    view?.dismissConfirmationDialog()
                     incrementBchReceiveAddress()
                     analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.BCH.toString()))
                     handleSuccessfulPayment(hash, CryptoCurrency.BCH)
                 },
                 {
                     Timber.e(it)
-                    view.dismissProgressDialog()
-                    view.dismissConfirmationDialog()
-                    view.showSnackbar(
+                    view?.dismissProgressDialog()
+                    view?.dismissConfirmationDialog()
+                    view?.showSnackbar(
                         stringUtils.getString(R.string.transaction_failed),
                         it.message,
                         Snackbar.LENGTH_INDEFINITE)
@@ -388,11 +391,11 @@ class BitcoinCashSendStrategy(
     }
 
     private fun showPaymentReview() {
-        view.showPaymentDetails(getConfirmationDetails(), null, null, false)
+        view?.showPaymentDetails(getConfirmationDetails(), null, null, false)
     }
 
     private fun checkManualAddressInput() {
-        val address = view.getReceivingAddress()
+        val address = view?.getReceivingAddress()
         address?.let {
             // Only if valid address so we don't override with a label
             if (FormatsUtil.isValidBitcoinCashAddress(
@@ -449,7 +452,7 @@ class BitcoinCashSendStrategy(
     override fun processURIScanAddress(address: String) {
         pendingTransaction.receivingObject = null
         pendingTransaction.receivingAddress = address
-        view.updateReceivingAddress(address)
+        view?.updateReceivingAddress(address)
     }
 
     private fun resetAccountList() {
@@ -458,30 +461,30 @@ class BitcoinCashSendStrategy(
         }.flatMap {
             nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.BCH.symbol)
         }.applySchedulers().doOnSubscribe {
-            view.updateReceivingHintAndAccountDropDowns(
+            view?.updateReceivingHintAndAccountDropDowns(
                 CryptoCurrency.BCH,
                 getAddressList().size,
                 false
             )
         }.subscribeBy(onError = {
-            view.updateReceivingHintAndAccountDropDowns(
+            view?.updateReceivingHintAndAccountDropDowns(
                 CryptoCurrency.BCH,
                 getAddressList().size,
                 it is NabuApiException && it.getErrorCode() == NabuErrorCodes.Bad2fa
-            ) { view.show2FANotAvailableError() }
+            ) { view?.show2FANotAvailableError() }
         }) {
             pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
                 CryptoCurrency.BCH.symbol), it.address)
-            view.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BCH,
+            view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.BCH,
                 getAddressList().size,
                 it.state == State.ACTIVE && it.address.isNotEmpty()) {
-                view.fillOrClearAddress()
+                view?.fillOrClearAddress()
             }
         }
     }
 
     private fun clearReceivingAddress() {
-        view.updateReceivingAddress("")
+        view?.updateReceivingAddress("")
     }
 
     override fun clearReceivingObject() {
@@ -489,14 +492,14 @@ class BitcoinCashSendStrategy(
     }
 
     private fun clearCryptoAmount() {
-        view.updateCryptoAmount(CryptoValue.zero(CryptoCurrency.BCH))
+        view?.updateCryptoAmount(CryptoValue.zero(CryptoCurrency.BCH))
     }
 
     private fun getAddressList(): List<ItemAccount> = walletAccountHelper.getAccountItems(CryptoCurrency.BCH)
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
         val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount() ?: return
-        view.updateSendingAddress(accountItem.label ?: accountItem.address!!)
+        view?.updateSendingAddress(accountItem.label ?: accountItem.address!!)
         pendingTransaction.sendingObject = accountItem
     }
 
@@ -505,18 +508,15 @@ class BitcoinCashSendStrategy(
      */
     @SuppressLint("CheckResult")
     private fun getSuggestedFee() {
-        val observable =
-            feeDataManager.bchFeeOptions
-                .doOnSubscribe { feeOptions = dynamicFeeCache.bchFeeOptions!! }
-                .doOnNext { dynamicFeeCache.bchFeeOptions = it }
-
-        observable.addToCompositeDisposable(this)
+        compositeDisposable += feeDataManager.bchFeeOptions
+            .doOnSubscribe { feeOptions = dynamicFeeCache.bchFeeOptions!! }
+            .doOnNext { dynamicFeeCache.bchFeeOptions = it }
             .subscribe(
                 { /* No-op */ },
                 {
                     Timber.e(it)
-                    view.showSnackbar(R.string.confirm_payment_fee_sync_error, Snackbar.LENGTH_LONG)
-                    view.finishPage()
+                    view?.showSnackbar(R.string.confirm_payment_fee_sync_error, Snackbar.LENGTH_LONG)
+                    view?.finishPage()
                 }
             )
     }
@@ -532,7 +532,7 @@ class BitcoinCashSendStrategy(
         }
 
         return when (feePriorityTemp) {
-            FeeType.FEE_OPTION_CUSTOM -> BigInteger.valueOf(view.getCustomFeeValue() * 1000)
+            FeeType.FEE_OPTION_CUSTOM -> BigInteger.valueOf(view!!.getCustomFeeValue() * 1000)
             FeeType.FEE_OPTION_PRIORITY -> BigInteger.valueOf(feeOptions!!.priorityFee * 1000)
             FeeType.FEE_OPTION_REGULAR -> BigInteger.valueOf(feeOptions!!.regularFee * 1000)
             else -> BigInteger.valueOf(feeOptions!!.regularFee * 1000)
@@ -572,24 +572,24 @@ class BitcoinCashSendStrategy(
         absoluteSuggestedFee = fee
 
         val cryptoValue = CryptoValue(CryptoCurrency.BCH, absoluteSuggestedFee)
-        view.updateFeeAmount(cryptoValue, cryptoValue.toFiat(exchangeRates))
+        view?.updateFeeAmount(cryptoValue, cryptoValue.toFiat(exchangeRates))
     }
 
     private fun updateMaxAvailable(balanceAfterFee: BigInteger) {
         maxAvailable = balanceAfterFee
-        view.showMaxAvailable()
+        view?.showMaxAvailable()
 
         // Format for display
-        view.updateMaxAvailable(
+        view?.updateMaxAvailable(
             stringUtils.getString(R.string.max_available) +
                     " ${currencyFormatter.getFormattedSelectedCoinValueWithUnit(maxAvailable)}"
         )
 
         if (balanceAfterFee <= Payment.DUST) {
-            view.updateMaxAvailable(stringUtils.getString(R.string.insufficient_funds))
-            view.updateMaxAvailableColor(R.color.product_red_medium)
+            view?.updateMaxAvailable(stringUtils.getString(R.string.insufficient_funds))
+            view?.updateMaxAvailableColor(R.color.product_red_medium)
         } else {
-            view.updateMaxAvailableColor(R.color.primary_blue_accent)
+            view?.updateMaxAvailableColor(R.color.primary_blue_accent)
         }
     }
 
@@ -617,11 +617,11 @@ class BitcoinCashSendStrategy(
     }
 
     private fun calculateSpendableAmounts(spendAll: Boolean, amountToSendText: String?) {
-        view.setSendButtonEnabled(true)
-        view.hideMaxAvailable()
-        view.clearWarning()
+        view?.setSendButtonEnabled(true)
+        view?.hideMaxAvailable()
+        view?.clearWarning()
 
-        val feePerKb = getFeePerKbFromPriority(view.getFeePriority())
+        val feePerKb = getFeePerKbFromPriority(view!!.getFeePriority())
 
         calculateUnspentBch(spendAll, amountToSendText, feePerKb)
     }
@@ -657,9 +657,9 @@ class BitcoinCashSendStrategy(
                     // Future use. There might be some unconfirmed funds. Not displaying a warning currently
                     // (to line up with iOS and Web wallet)
                     if (coins.notice != null) {
-                        view.updateWarning(coins.notice)
+                        view?.updateWarning(coins.notice)
                     } else {
-                        view.clearWarning()
+                        view?.clearWarning()
                     }
 
                     updateFee(getSuggestedAbsoluteFee(
@@ -755,20 +755,18 @@ class BitcoinCashSendStrategy(
         }
     }
 
-    @SuppressLint("CheckResult")
     override fun spendFromWatchOnlyBIP38(pw: String, scanData: String) {
-        sendDataManager.getEcKeyFromBip38(
+        compositeDisposable += sendDataManager.getEcKeyFromBip38(
             pw,
             scanData,
             environmentSettings.bitcoinNetworkParameters
-        ).addToCompositeDisposable(this)
-            .subscribe(
-                {
-                    val legacyAddress = pendingTransaction.senderAsLegacyAddress
-                    setTempLegacyAddressPrivateKey(legacyAddress, it)
-                },
-                { view?.showSnackbar(R.string.bip38_error, Snackbar.LENGTH_LONG) }
-            )
+        ).subscribe(
+            {
+                val legacyAddress = pendingTransaction.senderAsLegacyAddress
+                setTempLegacyAddressPrivateKey(legacyAddress, it)
+            },
+            { view?.showSnackbar(R.string.bip38_error, Snackbar.LENGTH_LONG) }
+        )
     }
 
     private fun setTempLegacyAddressPrivateKey(legacyAddress: LegacyAddress, key: ECKey) {
@@ -821,7 +819,7 @@ class BitcoinCashSendStrategy(
             legacyAddress.address
         )
 
-        view.updateSendingAddress(label)
+        view?.updateSendingAddress(label)
         calculateSpendableAmounts(false, "0")
     }
 
@@ -840,7 +838,7 @@ class BitcoinCashSendStrategy(
             account.xpub
         )
 
-        view.updateSendingAddress(label)
+        view?.updateSendingAddress(label)
         calculateSpendableAmounts(false, "0")
     }
 
@@ -875,10 +873,10 @@ class BitcoinCashSendStrategy(
         )
         pendingTransaction.receivingAddress = cashAddress
 
-        view.updateReceivingAddress(label.removeBchUri())
+        view?.updateReceivingAddress(label.removeBchUri())
 
         if (legacyAddress.isWatchOnly && shouldWarnWatchOnly()) {
-            view.showWatchOnlyWarning(cashAddress)
+            view?.showWatchOnlyWarning(cashAddress)
         }
     }
 
@@ -899,41 +897,18 @@ class BitcoinCashSendStrategy(
             account.xpub
         )
 
-        view.updateReceivingAddress(label)
+        view?.updateReceivingAddress(label)
 
         val position =
             bchDataManager.getAccountMetadataList().indexOfFirst { it.xpub == account.xpub }
 
-        bchDataManager.getNextReceiveCashAddress(position)
+        compositeDisposable += bchDataManager.getNextReceiveCashAddress(position)
             .doOnNext { pendingTransaction.receivingAddress = it }
-            .addToCompositeDisposable(this)
             .subscribe(
                 { /* No-op */ },
-                { view.showSnackbar(R.string.unexpected_error, Snackbar.LENGTH_LONG) }
+                { view?.showSnackbar(R.string.unexpected_error, Snackbar.LENGTH_LONG) }
             )
     }
-
-//    private fun selectSendingAccount(data: Intent?) {
-//        try {
-//            val type: Class<*> = Class.forName(data?.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_OBJECT_TYPE))
-//            val any = ObjectMapper().readValue(
-//                data!!.getStringExtra(AccountChooserActivity.EXTRA_SELECTED_ITEM),
-//                type
-//            )
-//
-//            when (any) {
-//                is LegacyAddress -> onSendingBchLegacyAddressSelected(any)
-//                is GenericMetadataAccount -> onSendingBchAccountSelected(any)
-//                else -> throw IllegalArgumentException("No method for handling $type available")
-//            }
-//        } catch (e: ClassNotFoundException) {
-//            Timber.e(e)
-//            selectDefaultOrFirstFundedSendingAccount()
-//        } catch (e: IOException) {
-//            Timber.e(e)
-//            selectDefaultOrFirstFundedSendingAccount()
-//        }
-//    }
 
     private fun isValidBitcoinAmount(bAmount: BigInteger?): Boolean {
         if (bAmount == null) {
@@ -975,9 +950,7 @@ class BitcoinCashSendStrategy(
         } else if (!isValidBitcoinAmount(pendingTransaction.bigIntAmount)) {
             errorMessage = R.string.invalid_amount
             validated = false
-        } else if (pendingTransaction.unspentOutputBundle == null ||
-            pendingTransaction.unspentOutputBundle!!.spendableOutputs == null
-        ) {
+        } else if (pendingTransaction.unspentOutputBundle == null) {
             errorMessage = R.string.no_confirmed_funds
             validated = false
         } else if (maxAvailable == null || maxAvailable.compareTo(pendingTransaction.bigIntAmount) == -1) {

@@ -2,8 +2,6 @@ package com.blockchain.koin.modules
 
 import android.content.Context
 import com.blockchain.activities.StartSwap
-import com.blockchain.balance.TotalBalance
-import com.blockchain.balance.plus
 import com.blockchain.network.websocket.Options
 import com.blockchain.network.websocket.autoRetry
 import com.blockchain.network.websocket.debugLog
@@ -15,6 +13,7 @@ import com.blockchain.ui.chooser.AccountListing
 import com.blockchain.ui.password.SecondPasswordHandler
 import com.google.gson.GsonBuilder
 import info.blockchain.wallet.util.PrivateKeyFactory
+import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
@@ -43,7 +42,6 @@ import piuk.blockchain.android.ui.backup.start.BackupWalletStartingPresenter
 import piuk.blockchain.android.ui.backup.transfer.ConfirmFundsTransferPresenter
 import piuk.blockchain.android.ui.backup.verify.BackupVerifyPresenter
 import piuk.blockchain.android.ui.backup.wordlist.BackupWalletWordListPresenter
-import piuk.blockchain.android.ui.balance.BalancePresenter
 import piuk.blockchain.android.ui.buysell.coinify.signup.CoinifySignUpPresenter
 import piuk.blockchain.android.ui.buysell.coinify.signup.identityinreview.CoinifyIdentityInReviewPresenter
 import piuk.blockchain.android.ui.buysell.coinify.signup.invalidcountry.CoinifyInvalidCountryPresenter
@@ -58,12 +56,13 @@ import piuk.blockchain.android.ui.buysell.overview.CoinifyOverviewPresenter
 import piuk.blockchain.android.ui.buysell.payment.bank.accountoverview.BankAccountSelectionPresenter
 import piuk.blockchain.android.ui.buysell.payment.bank.addaccount.AddBankAccountPresenter
 import piuk.blockchain.android.ui.buysell.payment.bank.addaddress.AddAddressPresenter
-import piuk.blockchain.android.ui.charts.ChartsPresenter
 import piuk.blockchain.android.ui.chooser.WalletAccountHelperAccountListingAdapter
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentPresenter
 import piuk.blockchain.android.ui.createwallet.CreateWalletPresenter
-import piuk.blockchain.android.ui.dashboard.DashboardPresenter
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
+import piuk.blockchain.android.ui.dashboard.DashboardInteractor
+import piuk.blockchain.android.ui.dashboard.DashboardModel
+import piuk.blockchain.android.ui.dashboard.DashboardState
+import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsViewModel
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
 import piuk.blockchain.android.ui.home.MainPresenter
@@ -76,14 +75,15 @@ import piuk.blockchain.android.ui.receive.ReceiveQrPresenter
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.recover.RecoverFundsPresenter
 import piuk.blockchain.android.ui.send.SendView
-import piuk.blockchain.android.ui.send.external.PerCurrencySendPresenter
-import piuk.blockchain.android.ui.send.external.SendPresenter
+import piuk.blockchain.android.ui.send.SendPresenter
 import piuk.blockchain.android.ui.send.strategy.BitcoinCashSendStrategy
 import piuk.blockchain.android.ui.send.strategy.BitcoinSendStrategy
 import piuk.blockchain.android.ui.send.strategy.EtherSendStrategy
 import piuk.blockchain.android.ui.send.strategy.SendStrategy
 import piuk.blockchain.android.ui.send.strategy.XlmSendStrategy
 import piuk.blockchain.android.ui.send.strategy.PaxSendStrategy
+import piuk.blockchain.android.ui.send.strategy.ResourceSendFundsResultLocalizer
+import piuk.blockchain.android.ui.send.strategy.SendFundsResultLocalizer
 import piuk.blockchain.android.ui.settings.SettingsPresenter
 import piuk.blockchain.android.ui.ssl.SSLVerifyPresenter
 import piuk.blockchain.android.ui.swap.SwapStarter
@@ -95,6 +95,7 @@ import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionHelper
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
+import piuk.blockchain.android.ui.transactions.TransactionsPresenter
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
@@ -109,7 +110,7 @@ import piuk.blockchain.androidcore.data.erc20.PaxAccount
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import java.util.Locale
@@ -179,6 +180,13 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            AssetDetailsViewModel(
+                buyDataManager = get(),
+                locale = get()
+            )
+        }
+
+        factory {
             WalletAccountHelper(
                 payloadManager = get(),
                 stringUtils = get(),
@@ -203,17 +211,6 @@ val applicationModule = applicationContext {
         factory { KycStatusHelper(get(), get(), get(), get()) }
 
         factory { TransactionListDataManager(get(), get(), get(), get(), get(), get(), get()) }
-
-        factory("spendable") { get<TransactionListDataManager>() as TotalBalance }
-
-        @Suppress("ConstantConditionIf")
-        factory("all") {
-            if (BuildConfig.SHOW_LOCKBOX_BALANCE) {
-                get<TotalBalance>("lockbox") + get("spendable")
-            } else {
-                get("spendable")
-            }
-        }
 
         factory {
             FingerprintHelper(
@@ -414,15 +411,6 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            ChartsPresenter(
-                chartsDataManager = get(),
-                exchangeRateFactory = get(),
-                prefs = get(),
-                currencyFormatManager = get()
-            )
-        }
-
-        factory {
             ConfirmFundsTransferPresenter(
                 walletAccountHelper = get(),
                 fundsDataManager = get(),
@@ -529,7 +517,7 @@ val applicationModule = applicationContext {
         }
 
         factory<SendPresenter<SendView>> {
-            PerCurrencySendPresenter(
+            SendPresenter(
                 btcStrategy = get("BTCStrategy"),
                 bchStrategy = get("BCHStrategy"),
                 etherStrategy = get("EtherStrategy"),
@@ -615,6 +603,12 @@ val applicationModule = applicationContext {
                 analytics = get()
             )
         }
+
+        factory {
+            ResourceSendFundsResultLocalizer(
+                resources = get()
+            )
+        }.bind(SendFundsResultLocalizer::class)
 
         factory<SendStrategy<SendView>>("XLMStrategy") {
             XlmSendStrategy(
@@ -724,22 +718,21 @@ val applicationModule = applicationContext {
         factory { ConfirmPaymentPresenter() }
 
         factory {
-            DashboardPresenter(
-                dashboardBalanceCalculator = get(),
-                prefs = get(),
-                exchangeRateFactory = get(),
-                stringUtils = get(),
-                rxBus = get(),
-                swipeToReceiveHelper = get(),
-                lockboxDataManager = get(),
-                currentTier = get(),
-                announcements = get(),
-                pitLinking = get()
+            DashboardModel(
+                initialState = DashboardState(),
+                mainScheduler = AndroidSchedulers.mainThread(),
+                interactor = get()
             )
-        }.bind(AnnouncementHost::class)
+        }
 
         factory {
-            BalancePresenter(
+            DashboardInteractor(
+                tokens = get()
+            )
+        }
+
+        factory {
+            TransactionsPresenter(
                 exchangeRateDataManager = get(),
                 transactionListDataManager = get(),
                 ethDataManager = get(),

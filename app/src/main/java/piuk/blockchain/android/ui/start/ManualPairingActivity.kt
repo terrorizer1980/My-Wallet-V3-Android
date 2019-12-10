@@ -3,15 +3,15 @@ package piuk.blockchain.android.ui.start
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
-import android.support.v7.widget.Toolbar
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.widget.AppCompatEditText
 import info.blockchain.wallet.api.data.Settings
 import kotlinx.android.synthetic.main.activity_manual_pairing.*
 import org.json.JSONObject
@@ -124,6 +124,7 @@ class ManualPairingActivity : MvpActivity<ManualPairingView, ManualPairingPresen
             imm.hideSoftInputFromWindow(it.windowToken, 0)
         }
         dismissProgressDialog()
+        presenter.onViewDestroyed()
         super.onDestroy()
     }
 }

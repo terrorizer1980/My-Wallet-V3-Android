@@ -1,11 +1,11 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.Scope
-import com.blockchain.kyc.models.nabu.goldTierComplete
-import com.blockchain.kyc.models.nabu.kycVerified
-import com.blockchain.kyc.services.nabu.TierService
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.Scope
+import com.blockchain.swap.nabu.models.nabu.goldTierComplete
+import com.blockchain.swap.nabu.models.nabu.kycVerified
 import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.service.TierService
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
@@ -49,6 +49,13 @@ class AnnouncementQueries(
         return nabuToken.fetchNabuToken()
             .flatMap { token -> nabu.getUser(token) }
             .map { it.currentTier == 2 && !it.isStxAirdropRegistered }
+            .onErrorReturn { false }
+    }
+
+    fun isRegistedForStxAirdrop(): Single<Boolean> {
+        return nabuToken.fetchNabuToken()
+            .flatMap { token -> nabu.getUser(token) }
+            .map { it.isStxAirdropRegistered }
             .onErrorReturn { false }
     }
 }

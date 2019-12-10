@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -18,8 +18,8 @@ import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import com.blockchain.balance.coinIconWhite
-import com.blockchain.balance.colorRes
+import piuk.blockchain.android.util.coinIconWhite
+import piuk.blockchain.android.util.colorRes
 import com.blockchain.logging.SwapDiagnostics
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.swap.common.exchange.mvi.ApplyMaxSpendable
@@ -40,7 +40,6 @@ import piuk.blockchain.android.ui.swap.logging.FixTypeEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
-import com.blockchain.ui.dialog.AccountChooserBottomDialog
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_NEEDS_ETH_FAQ
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -94,7 +93,7 @@ internal class ExchangeFragment : Fragment() {
 
     private val diagnostics: SwapDiagnostics by inject()
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         val provider = (context as? ExchangeViewModelProvider)
             ?: throw Exception("Host activity must support ExchangeViewModelProvider")
@@ -117,26 +116,28 @@ internal class ExchangeFragment : Fragment() {
         logEvent(AnalyticsEvents.ExchangeCreate)
         diagnostics.logIsMax(false)
 
-        select_from_account_button.setOnClickListener {
-            AccountChooserBottomDialog.create(
-                title = getString(R.string.dialog_title_exchange),
-                resultId = REQUEST_CODE_CHOOSE_SENDING_ACCOUNT
-            ).show(fragmentManager, "BottomDialog")
-            analytics.logEvent(SwapAnalyticsEvents.SwapLeftAssetClick)
-        }
+        fragmentManager?.let { fragmentManager ->
+            select_from_account_button.setOnClickListener {
+                AccountChooserBottomDialog.create(
+                    title = getString(R.string.dialog_title_exchange),
+                    resultId = REQUEST_CODE_CHOOSE_SENDING_ACCOUNT
+                ).show(fragmentManager, "BottomDialog")
+                analytics.logEvent(SwapAnalyticsEvents.SwapLeftAssetClick)
+            }
 
-        select_to_account_button.setOnClickListener {
-            AccountChooserBottomDialog.create(
-                title = getString(R.string.dialog_title_receive),
-                resultId = REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT
-            ).show(fragmentManager, "BottomDialog")
-            analytics.logEvent(SwapAnalyticsEvents.SwapRightAssetClick)
-        }
+            select_to_account_button.setOnClickListener {
+                AccountChooserBottomDialog.create(
+                    title = getString(R.string.dialog_title_receive),
+                    resultId = REQUEST_CODE_CHOOSE_RECEIVING_ACCOUNT
+                ).show(fragmentManager, "BottomDialog")
+                analytics.logEvent(SwapAnalyticsEvents.SwapRightAssetClick)
+            }
 
-        exchange_button.setOnClickListener {
-            exchangeModel.fixAsCrypto()
-            activityListener.launchConfirmation()
-            analytics.logEvent(SwapAnalyticsEvents.SwapFormConfirmClick)
+            exchange_button.setOnClickListener {
+                exchangeModel.fixAsCrypto()
+                activityListener.launchConfirmation()
+                analytics.logEvent(SwapAnalyticsEvents.SwapFormConfirmClick)
+            }
         }
 
         large_value.setOnClickListener(toggleOnClickListener)

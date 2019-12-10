@@ -6,7 +6,7 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 import android.text.TextPaint
 
 internal class FitTextDrawable(paint: TextPaint) : Drawable() {

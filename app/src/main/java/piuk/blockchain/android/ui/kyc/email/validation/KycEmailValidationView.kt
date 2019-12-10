@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.kyc.email.validation
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import io.reactivex.Observable
 import piuk.blockchain.androidcoreui.ui.base.View
 

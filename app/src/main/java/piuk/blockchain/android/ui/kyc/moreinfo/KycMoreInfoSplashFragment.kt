@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.kyc.moreinfo
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,8 +46,8 @@ class KycMoreInfoSplashFragment : Fragment() {
             .subscribeBy(
                 onNext = {
                     navigate(
-                        KycMoreInfoSplashFragmentDirections.ActionKycMoreInfoSplashFragmentToMobileVerification(
-                            KycMoreInfoSplashFragmentArgs.fromBundle(arguments).countryCode
+                        KycMoreInfoSplashFragmentDirections.actionKycMoreInfoSplashFragmentToMobileVerification(
+                            KycMoreInfoSplashFragmentArgs.fromBundle(arguments ?: Bundle()).countryCode
                         )
                     )
                 },

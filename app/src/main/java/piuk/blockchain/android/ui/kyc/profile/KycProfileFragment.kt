@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.extensions.skipFirstUnless
 import com.blockchain.notifications.analytics.logEvent
@@ -55,7 +56,11 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
         get() = editTextFirstName.getTextString()
     override val lastName: String
         get() = editTextLastName.getTextString()
-    override val countryCode: String by lazy { KycProfileFragmentArgs.fromBundle(arguments).countryCode }
+    override val countryCode: String by lazy {
+        KycProfileFragmentArgs.fromBundle(
+            arguments ?: Bundle()
+        ).countryCode
+    }
     override var dateOfBirth: Calendar? = null
     private var progressDialog: MaterialProgressDialog? = null
 
@@ -117,7 +122,7 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
 
     override fun continueSignUp(profileModel: ProfileModel) {
         navigate(
-            KycProfileFragmentDirections.ActionKycProfileFragmentToKycHomeAddressFragment(
+            KycProfileFragmentDirections.actionKycProfileFragmentToKycHomeAddressFragment(
                 profileModel
             )
         )
@@ -168,7 +173,9 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
             .doOnNext { updateProgress(it, kycStep) }
 
     private fun onDateOfBirthClicked() {
-        ViewUtils.hideKeyboard(requireActivity())
+        (requireActivity() as? AppCompatActivity)?.let {
+            ViewUtils.hideKeyboard(it)
+        }
 
         val calendar = Calendar.getInstance().apply { add(Calendar.YEAR, -18) }
         DatePickerDialog.newInstance(

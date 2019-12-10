@@ -16,6 +16,8 @@
 
 package piuk.blockchain.android.ui.zxing;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * This class provides the constants to use when sending an Intent to Barcode Scanner.
  * These strings are effectively API and cannot be changed.
@@ -97,13 +99,13 @@ public final class Intents {
     public static final String PROMPT_MESSAGE = "PROMPT_MESSAGE";
 
     /**
-     * If a barcode is found, Barcodes returns {@link android.app.Activity#RESULT_OK} to
-     * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * If a barcode is found, Barcodes returns {@link AppCompatActivity#RESULT_OK} to
+     * {@link AppCompatActivity#onActivityResult(int, int, android.content.Intent)}
      * of the app which requested the scan via
-     * {@link android.app.Activity#startActivityForResult(android.content.Intent, int)}
+     * {@link AppCompatActivity#startActivityForResult(android.content.Intent, int)}
      * The barcodes contents can be retrieved with
      * {@link android.content.Intent#getStringExtra(String)}. 
-     * If the user presses Back, the result code will be {@link android.app.Activity#RESULT_CANCELED}.
+     * If the user presses Back, the result code will be {@link AppCompatActivity#RESULT_CANCELED}.
      */
     public static final String RESULT = "SCAN_RESULT";
 

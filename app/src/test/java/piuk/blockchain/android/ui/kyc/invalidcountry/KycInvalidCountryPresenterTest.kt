@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.kyc.invalidcountry
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
-import com.blockchain.swap.nabu.models.mapToMetadata
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.tokenresponse.mapToMetadata
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever

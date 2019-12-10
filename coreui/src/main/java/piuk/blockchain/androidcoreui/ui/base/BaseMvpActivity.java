@@ -1,8 +1,8 @@
 package piuk.blockchain.androidcoreui.ui.base;
 
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.Nullable;
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 import com.crashlytics.android.answers.ContentViewEvent;
 import piuk.blockchain.androidcoreui.BuildConfig;
 import piuk.blockchain.androidcoreui.utils.logging.Logging;

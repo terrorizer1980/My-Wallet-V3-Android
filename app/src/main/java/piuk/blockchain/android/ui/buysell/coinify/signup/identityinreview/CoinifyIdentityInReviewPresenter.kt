@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.buysell.coinify.signup.identityinreview
 
 import android.annotation.SuppressLint
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.google.common.base.Optional
 import io.reactivex.Completable
 import io.reactivex.Observable

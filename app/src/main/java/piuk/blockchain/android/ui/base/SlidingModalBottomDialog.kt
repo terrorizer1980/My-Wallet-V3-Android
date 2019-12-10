@@ -2,11 +2,11 @@ package piuk.blockchain.android.ui.base
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.annotation.CallSuper
-import android.support.design.widget.BottomSheetDialogFragment
+import androidx.annotation.CallSuper
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.view.View
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 abstract class SlidingModalBottomDialog : BottomSheetDialogFragment() {
 

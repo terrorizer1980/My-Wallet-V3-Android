@@ -14,9 +14,10 @@ import timber.log.Timber
  * Applies standard Schedulers to an [Observable], ie IO for subscription, Main Thread for
  * onNext/onComplete/onError
  */
-fun <T> Observable<T>.applySchedulers(): Observable<T> = this.subscribeOn(Schedulers.io())
-    .observeOn(AndroidSchedulers.mainThread())
-    .doOnError(Timber::e)
+fun <T> Observable<T>.applySchedulers(): Observable<T> =
+    this.subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnError(Timber::e)
 
 /**
  * Applies standard Schedulers to a [Single], ie IO for subscription, Main Thread for

@@ -42,7 +42,6 @@ dependencies {
     api project(':sunriver')
     api project(':common:network')
     api project(':common:interface')
-    api Libraries.annotations
     // Networking
     api(Libraries.retrofit) { exclude module: 'okhttp' }
     api Libraries.retrofitJacksonConverter

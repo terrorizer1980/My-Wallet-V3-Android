@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees
 import com.blockchain.logging.SwapDiagnostics
 import com.blockchain.morph.CoinPair

@@ -7,7 +7,7 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -82,7 +82,7 @@
                 android:textColor="@color/primary_grey_medium"
                 android:textSize="14sp" />
 
-            <android.support.v7.widget.AppCompatSpinner
+            <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/spinner_destination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -182,14 +182,13 @@
 
         <Button
             android:id="@+id/button_transfer_all"
-            style="@style/ButtonStyle"
+            style="@style/CtaButton.Blue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="32dp"
             android:layout_marginRight="32dp"
             android:layout_marginTop="16dp"
-            android:text="@string/transfer_all"
-            android:theme="@style/ButtonLightBlueTheme" />
+            android:text="@string/transfer_all"/>
 
     </LinearLayout>
 

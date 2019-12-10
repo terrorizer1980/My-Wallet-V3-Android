@@ -6,7 +6,7 @@ import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.prices.PriceApi
-import info.blockchain.wallet.prices.Scale
+import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.prices.data.PriceDatum
 import io.reactivex.Single
 import org.amshove.kluent.any
@@ -36,20 +36,22 @@ class ChartsDataManagerTest : RxTest() {
             historicPriceApi.getHistoricPriceSeries(
                 btc.symbol,
                 fiat,
-                FIRST_BTC_ENTRY_TIME,
-                Scale.FIVE_DAYS
+                ChartsDataManager.FIRST_BTC_ENTRY_TIME,
+                TimeInterval.FIVE_DAYS.intervalSeconds
             )
         ).thenReturn(Single.just(listOf(PriceDatum())))
+
         // Act
-        val testObserver = subject.getAllTimePrice(btc, fiat).test()
+        val testObserver = subject.getHistoricPriceSeries(btc, fiat, TimeSpan.ALL_TIME).test()
+
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
         verify(historicPriceApi).getHistoricPriceSeries(
             btc.symbol,
             fiat,
-            FIRST_BTC_ENTRY_TIME,
-            Scale.FIVE_DAYS
+            ChartsDataManager.FIRST_BTC_ENTRY_TIME,
+            TimeInterval.FIVE_DAYS.intervalSeconds
         )
         verifyNoMoreInteractions(historicPriceApi)
     }
@@ -63,20 +65,22 @@ class ChartsDataManagerTest : RxTest() {
             historicPriceApi.getHistoricPriceSeries(
                 eth.symbol,
                 fiat,
-                FIRST_ETH_ENTRY_TIME,
-                Scale.FIVE_DAYS
+                ChartsDataManager.FIRST_ETH_ENTRY_TIME,
+                TimeInterval.FIVE_DAYS.intervalSeconds
             )
         ).thenReturn(Single.just(listOf(PriceDatum())))
+
         // Act
-        val testObserver = subject.getAllTimePrice(eth, fiat).test()
+        val testObserver = subject.getHistoricPriceSeries(eth, fiat, TimeSpan.ALL_TIME).test()
+
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
         verify(historicPriceApi).getHistoricPriceSeries(
             eth.symbol,
             fiat,
-            FIRST_ETH_ENTRY_TIME,
-            Scale.FIVE_DAYS
+            ChartsDataManager.FIRST_ETH_ENTRY_TIME,
+            TimeInterval.FIVE_DAYS.intervalSeconds
         )
         verifyNoMoreInteractions(historicPriceApi)
     }
@@ -91,11 +95,13 @@ class ChartsDataManagerTest : RxTest() {
                 eq(btc.symbol),
                 eq(fiat),
                 any(),
-                eq(Scale.ONE_DAY)
+                eq(TimeInterval.ONE_DAY.intervalSeconds)
             )
         ).thenReturn(Single.just(listOf(PriceDatum())))
+
         // Act
-        val testObserver = subject.getYearPrice(btc, fiat).test()
+        val testObserver = subject.getHistoricPriceSeries(btc, fiat, TimeSpan.YEAR).test()
+
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -103,7 +109,7 @@ class ChartsDataManagerTest : RxTest() {
             eq(btc.symbol),
             eq(fiat),
             any(),
-            eq(Scale.ONE_DAY)
+            eq(TimeInterval.ONE_DAY.intervalSeconds)
         )
         verifyNoMoreInteractions(historicPriceApi)
     }
@@ -118,11 +124,13 @@ class ChartsDataManagerTest : RxTest() {
                 eq(btc.symbol),
                 eq(fiat),
                 any(),
-                eq(Scale.TWO_HOURS)
+                eq(TimeInterval.TWO_HOURS.intervalSeconds)
             )
         ).thenReturn(Single.just(listOf(PriceDatum())))
+
         // Act
-        val testObserver = subject.getMonthPrice(btc, fiat).test()
+        val testObserver = subject.getHistoricPriceSeries(btc, fiat, TimeSpan.MONTH).test()
+
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -130,7 +138,7 @@ class ChartsDataManagerTest : RxTest() {
             eq(btc.symbol),
             eq(fiat),
             any(),
-            eq(Scale.TWO_HOURS)
+            eq(TimeInterval.TWO_HOURS.intervalSeconds)
         )
         verifyNoMoreInteractions(historicPriceApi)
     }
@@ -145,11 +153,13 @@ class ChartsDataManagerTest : RxTest() {
                 eq(btc.symbol),
                 eq(fiat),
                 any(),
-                eq(Scale.ONE_HOUR)
+                eq(TimeInterval.ONE_HOUR.intervalSeconds)
             )
         ).thenReturn(Single.just(listOf(PriceDatum())))
+
         // Act
-        val testObserver = subject.getWeekPrice(btc, fiat).test()
+        val testObserver = subject.getHistoricPriceSeries(btc, fiat, TimeSpan.WEEK).test()
+
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -157,7 +167,7 @@ class ChartsDataManagerTest : RxTest() {
             eq(btc.symbol),
             eq(fiat),
             any(),
-            eq(Scale.ONE_HOUR)
+            eq(TimeInterval.ONE_HOUR.intervalSeconds)
         )
         verifyNoMoreInteractions(historicPriceApi)
     }
@@ -172,11 +182,13 @@ class ChartsDataManagerTest : RxTest() {
                 eq(btc.symbol),
                 eq(fiat),
                 any(),
-                eq(Scale.FIFTEEN_MINUTES)
+                eq(TimeInterval.FIFTEEN_MINUTES.intervalSeconds)
             )
         ).thenReturn(Single.just(listOf(PriceDatum())))
+
         // Act
-        val testObserver = subject.getDayPrice(btc, fiat).test()
+        val testObserver = subject.getHistoricPriceSeries(btc, fiat, TimeSpan.DAY).test()
+
         // Assert
         testObserver.assertComplete()
         testObserver.assertNoErrors()
@@ -184,7 +196,7 @@ class ChartsDataManagerTest : RxTest() {
             eq(btc.symbol),
             eq(fiat),
             any(),
-            eq(Scale.FIFTEEN_MINUTES)
+            eq(TimeInterval.FIFTEEN_MINUTES.intervalSeconds)
         )
         verifyNoMoreInteractions(historicPriceApi)
     }

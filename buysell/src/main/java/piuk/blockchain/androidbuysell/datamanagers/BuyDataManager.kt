@@ -1,7 +1,7 @@
 package piuk.blockchain.androidbuysell.datamanagers
 
 import android.annotation.SuppressLint
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.Observables
 import org.bitcoinj.core.Sha256Hash

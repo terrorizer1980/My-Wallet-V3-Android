@@ -1,10 +1,10 @@
 package piuk.blockchain.android.campaign
 
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.CampaignData
-import com.blockchain.kyc.models.nabu.RegisterCampaignRequest
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.CampaignData
+import com.blockchain.swap.nabu.models.nabu.RegisterCampaignRequest
 import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.swap.nabu.models.NabuOfflineTokenResponse
+import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.AccountReference
 import io.reactivex.Completable
 import io.reactivex.Single

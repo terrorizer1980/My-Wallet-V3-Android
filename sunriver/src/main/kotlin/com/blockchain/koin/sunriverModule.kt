@@ -1,10 +1,8 @@
 package com.blockchain.koin
 
 import com.blockchain.account.DefaultAccountDataManager
-import com.blockchain.accounts.AsyncAccountList
+import com.blockchain.accounts.AccountList
 import com.blockchain.accounts.XlmAsyncAccountListAdapter
-import com.blockchain.balance.AsyncAccountBalanceReporter
-import com.blockchain.balance.AsyncAddressBalanceReporter
 import com.blockchain.sunriver.HorizonProxy
 import com.blockchain.sunriver.MemoMapper
 import com.blockchain.sunriver.XlmDataManager
@@ -22,9 +20,6 @@ val sunriverModule = applicationContext {
 
         factory { XlmDataManager(get(), get(), get(), get(), get(), get(), get(), getProperty("HorizonURL")) }
             .bind(DefaultAccountDataManager::class)
-            .bind(AsyncAddressBalanceReporter::class)
-
-        factory("XLM") { get<XlmDataManager>() as AsyncAccountBalanceReporter }
 
         factory { get<XlmDataManager>().updateLastTxOnSend(get()).logMemoType(get()) }
 
@@ -32,7 +27,9 @@ val sunriverModule = applicationContext {
 
         bean { XlmMetaDataInitializer(get(), get(), get(), get()) }
 
-        factory("XLM") { XlmAsyncAccountListAdapter(get()) as AsyncAccountList }
+        factory("XLM") {
+            XlmAsyncAccountListAdapter(xlmDataManager = get())
+        }.bind(AccountList::class)
     }
 
     factory { MemoMapper() }

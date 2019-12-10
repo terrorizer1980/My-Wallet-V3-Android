@@ -182,7 +182,7 @@
                             android:textSize="16sp"
                             tools:text="My Bitcoin Wallet" />
 
-                        <android.support.v7.widget.AppCompatSpinner
+                        <androidx.appcompat.widget.AppCompatSpinner
                             android:id="@+id/to_spinner"
                             android:layout_width="24dp"
                             android:layout_height="match_parent"
@@ -215,7 +215,7 @@
                             android:textSize="16sp"
                             tools:text="1XUzFYTvEjWxLkqtL4100MQ7zyzRvq9xXX" />
 
-                        <android.support.v7.widget.AppCompatSpinner
+                        <androidx.appcompat.widget.AppCompatSpinner
                             android:id="@+id/from_spinner"
                             android:layout_width="24dp"
                             android:layout_height="match_parent"
@@ -301,14 +301,13 @@
                 <!-- CONFIRMATION BUTTON -->
                 <Button
                     android:id="@+id/button_verify"
-                    style="@style/ButtonStyle"
+                    style="@style/CtaButton.Blue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="@string/transaction_detail_verify"
-                    android:theme="@style/ButtonLightBlueTheme" />
+                    android:text="@string/transaction_detail_verify"/>
 
             </LinearLayout>
         </ScrollView>

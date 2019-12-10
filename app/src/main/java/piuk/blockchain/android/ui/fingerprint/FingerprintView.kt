@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.fingerprint
 
 import android.os.Bundle
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
-import android.support.annotation.StringRes
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import piuk.blockchain.androidcoreui.ui.base.View
 
 interface FingerprintView : View {

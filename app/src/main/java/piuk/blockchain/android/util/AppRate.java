@@ -1,6 +1,5 @@
 package piuk.blockchain.android.util;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,8 +8,10 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 import android.text.format.DateUtils;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import piuk.blockchain.android.R;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
@@ -23,13 +24,13 @@ public class AppRate implements android.content.DialogInterface.OnClickListener,
     private static final String PREF_DONT_SHOW_AGAIN = "dont_show_again";
     private static final String PREF_DAYS_UNTIL_PROMPT = "days_until_prompt";
 
-    private Activity hostActivity;
+    private AppCompatActivity hostActivity;
     private OnClickListener clickListener;
     private SharedPreferences preferences;
 
     private long minTransactionsUntilPrompt = 0;
 
-    public AppRate(Activity hostActivity) {
+    public AppRate(AppCompatActivity hostActivity) {
         this.hostActivity = hostActivity;
         preferences = hostActivity.getSharedPreferences(AppRate.SHARED_PREFS_NAME, 0);
     }

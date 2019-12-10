@@ -1,14 +1,14 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.WalletStatus
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 
 class TransferBitcoinAnnouncement(
     dismissRecorder: DismissRecorder,
@@ -27,7 +27,7 @@ class TransferBitcoinAnnouncement(
 
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
-            card = AnnouncementCard(
+            card = StandardAnnouncementCard(
                 name = name,
                 dismissRule = DismissRule.CardPeriodic,
                 dismissEntry = dismissEntry,
@@ -36,10 +36,10 @@ class TransferBitcoinAnnouncement(
                 ctaText = R.string.transfer_btc_card_cta,
                 iconImage = R.drawable.ic_announce_transfer_btc,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startTransferCrypto()
                 }
             )

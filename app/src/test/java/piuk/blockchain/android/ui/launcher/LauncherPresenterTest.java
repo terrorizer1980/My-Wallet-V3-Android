@@ -19,7 +19,6 @@ import io.reactivex.Observable;
 import piuk.blockchain.android.BlockchainTestApplication;
 import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.R;
-import piuk.blockchain.android.testutils.RxTest;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import com.blockchain.notifications.NotificationTokenManager;
 
@@ -27,11 +26,10 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
-import piuk.blockchain.androidcoreui.utils.AppUtil;
+import piuk.blockchain.android.util.AppUtil;
 import piuk.blockchain.androidcore.utils.PersistentPrefs;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;

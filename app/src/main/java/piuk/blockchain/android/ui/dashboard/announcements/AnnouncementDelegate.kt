@@ -1,9 +1,10 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
 import android.annotation.SuppressLint
-import android.support.annotation.ColorRes
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
+import android.graphics.Color
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -16,9 +17,13 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.isVisible
 import android.graphics.drawable.GradientDrawable
 import com.blockchain.notifications.analytics.Analytics
+import kotlinx.android.synthetic.main.item_announcement_mini.view.*
+import kotlinx.android.synthetic.main.item_announcement_standard.view.icon
+import kotlinx.android.synthetic.main.item_announcement_standard.view.msg_body
+import kotlinx.android.synthetic.main.item_announcement_standard.view.msg_title
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 
-class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDelegate<T> {
+class StdAnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDelegate<T> {
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(
@@ -27,7 +32,7 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
         holder: RecyclerView.ViewHolder,
         payloads: List<*>
     ) {
-        val announcement = items[position] as AnnouncementCard
+        val announcement = items[position] as StandardAnnouncementCard
 
         (holder as AnnouncementViewHolder).apply {
 
@@ -36,6 +41,12 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
                 title.visible()
             } else {
                 title.gone()
+            }
+
+            if (announcement.background != 0) {
+                container.setBackgroundResource(announcement.background)
+            } else {
+                container.setBackgroundColor(Color.WHITE)
             }
 
             if (announcement.bodyText != 0) {
@@ -93,7 +104,7 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
 
     override fun isForViewType(items: List<T>, position: Int): Boolean {
         val item = items[position]
-        return (item is AnnouncementCard)
+        return item is StandardAnnouncementCard
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
@@ -105,6 +116,7 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
+        internal val container: View = itemView.card_container
         internal val icon: ImageView = itemView.icon
         internal val title: TextView = itemView.msg_title
         internal val body: TextView = itemView.msg_body
@@ -127,5 +139,68 @@ class AnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDele
                 dismissBtn.setTextColor(colour)
             }
         }
+    }
+}
+
+class MiniAnnouncementDelegate<in T>(private val analytics: Analytics) : AdapterDelegate<T> {
+    override fun isForViewType(items: List<T>, position: Int): Boolean {
+        val item = items[position]
+        return item is MiniAnnouncementCard
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+        AnnouncementViewHolder(
+            parent.inflate(R.layout.item_announcement_mini)
+        )
+
+    override fun onBindViewHolder(items: List<T>, position: Int, holder: RecyclerView.ViewHolder, payloads: List<*>) {
+        val announcement = items[position] as MiniAnnouncementCard
+        (holder as AnnouncementViewHolder).apply {
+            if (announcement.titleText != 0) {
+                title.setText(announcement.titleText)
+                title.visible()
+            } else {
+                title.gone()
+            }
+            if (announcement.bodyText != 0) {
+                body.setText(announcement.bodyText)
+                body.visible()
+            } else {
+                body.gone()
+            }
+            if (announcement.iconImage != 0) {
+                icon.setImageDrawable(ContextCompat.getDrawable(itemView.context, announcement.iconImage))
+                icon.visible()
+            } else {
+                icon.gone()
+            }
+
+            if (announcement.background != 0) {
+                cardContainer.setBackgroundResource(announcement.background)
+            } else {
+                cardContainer.setBackgroundColor(Color.WHITE)
+            }
+
+            if (announcement.hasCta) {
+                cardContainer.setOnClickListener {
+                    analytics.logEvent(AnnouncementAnalyticsEvent.CardActioned(announcement.name))
+                    announcement.ctaClicked()
+                }
+                actionIcon.visible()
+            } else {
+                actionIcon.gone()
+            }
+        }
+        analytics.logEvent(AnnouncementAnalyticsEvent.CardShown(announcement.name))
+    }
+
+    private class AnnouncementViewHolder internal constructor(
+        itemView: View
+    ) : RecyclerView.ViewHolder(itemView) {
+        internal val icon: ImageView = itemView.icon
+        internal val title: TextView = itemView.msg_title
+        internal val body: TextView = itemView.msg_body
+        internal val cardContainer: View = itemView.mini_card_container
+        internal val actionIcon: ImageView = itemView.action_icon
     }
 }

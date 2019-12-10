@@ -3,7 +3,7 @@ package piuk.blockchain.android.util
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import piuk.blockchain.android.R
 
 fun calloutToExternalSupportLinkDlg(ctx: Context, supportUrl: String) {

@@ -9,15 +9,12 @@ import com.blockchain.ui.urllinks.URL_STX_AIRDROP_UNAVAILABLE_SUPPORT
 import piuk.blockchain.android.R
 import kotlinx.android.synthetic.main.dialog_stx_campaign_intro.view.*
 import org.koin.android.ext.android.inject
-import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.util.StringUtils
 
-class CampaignBlockstackIntroSheet : SlidingModalBottomDialog() {
+class CampaignBlockstackIntroSheet : PromoBottomSheet() {
 
     private val stringUtils: StringUtils by inject()
     private val analytics: Analytics by inject()
-
-    private var ctaClickHandler: () -> Unit = { }
 
     override val layoutResource: Int = R.layout.dialog_stx_campaign_intro
 
@@ -40,7 +37,7 @@ class CampaignBlockstackIntroSheet : SlidingModalBottomDialog() {
         analytics.logEvent(BlockstackAnalyticsEvent.IntroSheetShown)
     }
 
-    override fun onCancel(dialog: DialogInterface?) {
+    override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         analytics.logEvent(BlockstackAnalyticsEvent.IntroSheetDismissed)
     }
@@ -48,18 +45,6 @@ class CampaignBlockstackIntroSheet : SlidingModalBottomDialog() {
     private fun onCtaClick() {
         analytics.logEvent(BlockstackAnalyticsEvent.IntroSheetActioned)
         dismiss()
-        ctaClickHandler.invoke()
-    }
-
-    override fun onSheetHidden() {
-        super.onSheetHidden()
-        onCancel(dialog)
-    }
-
-    companion object {
-        fun newInstance(ctaClick: () -> Unit) =
-            CampaignBlockstackIntroSheet().apply {
-                ctaClickHandler = ctaClick
-        }
+        host.onStartKycForStx()
     }
 }

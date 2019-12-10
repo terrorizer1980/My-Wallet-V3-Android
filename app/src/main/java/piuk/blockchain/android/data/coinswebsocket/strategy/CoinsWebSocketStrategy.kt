@@ -48,7 +48,7 @@ import piuk.blockchain.androidcore.data.websockets.WebSocketReceiveEvent
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcore.utils.rxjava.IgnorableDefaultObserver
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.Locale

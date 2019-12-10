@@ -7,10 +7,10 @@ import android.content.Intent
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
-import android.support.constraint.ConstraintSet
-import android.support.transition.AutoTransition
-import android.support.transition.TransitionManager
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.blockchain.swap.common.trade.MorphTrade
 import piuk.blockchain.android.ui.swap.homebrew.exchange.extensions.toDrawable
 import piuk.blockchain.android.ui.swap.homebrew.exchange.extensions.toStatusString

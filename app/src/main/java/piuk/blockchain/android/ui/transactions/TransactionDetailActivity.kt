@@ -4,16 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.annotation.ColorRes
-import android.support.annotation.StringRes
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
-import android.support.v7.widget.Toolbar
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import android.text.InputFilter
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.content.res.ResourcesCompat
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
@@ -21,7 +21,6 @@ import info.blockchain.wallet.multiaddress.TransactionSummary.Direction
 import kotlinx.android.synthetic.main.activity_transaction_details.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -61,7 +60,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
             fArray[0] = InputFilter.LengthFilter(maxLength)
             filters = fArray
             setText(presenter.transactionNote)
-            setSelection(text.length)
+            setSelection(text?.length ?: 0)
             contentDescription = resources.getString(R.string.edit_transaction_hint)
         }
 
@@ -82,9 +81,9 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
                 Direction.TRANSFERRED -> resources.getString(R.string.MOVED)
                 Direction.RECEIVED -> resources.getString(R.string.RECEIVED)
                 Direction.SENT -> if (isFeeTransaction)
-                        resources.getString(R.string.pax_fee)
-                    else
-                        resources.getString(R.string.SENT)
+                    resources.getString(R.string.pax_fee)
+                else
+                    resources.getString(R.string.SENT)
             }
     }
 
@@ -176,7 +175,8 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
         txt_status.text = status
 
         when (cryptoCurrency) {
-            CryptoCurrency.BTC, CryptoCurrency.ETHER -> button_verify.setText(R.string.transaction_detail_verify)
+            CryptoCurrency.BTC,
+            CryptoCurrency.ETHER -> button_verify.setText(R.string.transaction_detail_verify)
             CryptoCurrency.BCH -> {
                 button_verify.setText(R.string.transaction_detail_verify_bch)
                 transaction_note_layout.gone()
@@ -185,8 +185,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
                 button_verify.setText(R.string.transaction_detail_verify_stellar_chain)
                 transaction_note_layout.gone()
             }
-            else -> {
-            }
+            else -> { }
         }
 
         button_verify.setOnClickListener {
@@ -239,10 +238,10 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
     }
 
     override fun txHashDetailLookup(): String? =
-        intent?.getStringExtra(BalanceFragment.KEY_TRANSACTION_HASH)
+        intent?.getStringExtra(TransactionsFragment.KEY_TRANSACTION_HASH)
 
     override fun positionDetailLookup(): Int =
-        intent?.getIntExtra(BalanceFragment.KEY_TRANSACTION_LIST_POSITION, -1) ?: -1
+        intent?.getIntExtra(TransactionsFragment.KEY_TRANSACTION_LIST_POSITION, -1) ?: -1
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
@@ -256,9 +255,9 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
     companion object {
         private const val INPUT_FIELD_FLAGS: Int = (
                 InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
-                InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE or
-                InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
-            )
+                        InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE or
+                        InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
+                )
 
         fun start(context: Context, args: Bundle) {
             context.startActivity(

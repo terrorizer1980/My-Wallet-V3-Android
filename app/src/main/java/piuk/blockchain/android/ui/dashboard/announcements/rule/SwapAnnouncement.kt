@@ -1,15 +1,15 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.swap.common.trade.MorphTradeDataHistoryList
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 
 class SwapAnnouncement(
     private val dataManager: MorphTradeDataHistoryList,
@@ -39,18 +39,18 @@ class SwapAnnouncement(
 
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
-            AnnouncementCard(
+            StandardAnnouncementCard(
                 name = name,
                 titleText = R.string.swap_announcement_title,
                 bodyText = R.string.swap_announcement_description,
                 ctaText = R.string.swap_announcement_introducing_link,
                 iconImage = R.drawable.ic_announce_swap,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
-                    host.startSwapOrKyc()
+                    host.dismissAnnouncementCard()
+                    host.startSwap()
                 },
                 dismissEntry = dismissEntry,
                 dismissRule = DismissRule.CardPeriodic

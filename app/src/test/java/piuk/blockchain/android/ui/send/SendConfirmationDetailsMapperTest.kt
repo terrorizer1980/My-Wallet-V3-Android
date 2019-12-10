@@ -8,7 +8,6 @@ import info.blockchain.balance.AccountReference
 import org.amshove.kluent.`should equal`
 import org.junit.Before
 import org.junit.Test
-import piuk.blockchain.android.ui.send.external.SendConfirmationDetails
 import java.util.Locale
 
 class SendConfirmationDetailsMapperTest {

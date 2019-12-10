@@ -3,14 +3,14 @@ package piuk.blockchain.android.ui.kyc.navhost
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.exceptions.MetadataNotFoundException
 import piuk.blockchain.android.ui.getBlankNabuUser
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.Address
-import com.blockchain.kyc.models.nabu.KycState
-import com.blockchain.kyc.models.nabu.NabuUser
-import com.blockchain.kyc.models.nabu.Tiers
-import com.blockchain.kyc.models.nabu.UserState
-import com.blockchain.kyc.services.nabu.TierUpdater
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.Address
+import com.blockchain.swap.nabu.models.nabu.KycState
+import com.blockchain.swap.nabu.models.nabu.NabuUser
+import com.blockchain.swap.nabu.models.nabu.Tiers
+import com.blockchain.swap.nabu.models.nabu.UserState
 import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.service.TierUpdater
 import piuk.blockchain.android.ui.validOfflineToken
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.never
@@ -125,7 +125,7 @@ class KycNavHostPresenterTest {
         subject.onViewReady()
         // Assert
         verify(view).displayLoading(true)
-        verify(view).navigate(KycNavXmlDirections.ActionStartCountrySelection())
+        verify(view).navigate(KycNavXmlDirections.actionStartCountrySelection())
         verify(view).displayLoading(false)
     }
 
@@ -362,7 +362,7 @@ class KycNavHostPresenterTest {
         // Assert
         verify(view).displayLoading(true)
         verify(view).navigate(
-            KycNavXmlDirections.ActionStartAddressEntry(nabuUser.toProfileModel())
+            KycNavXmlDirections.actionStartAddressEntry(nabuUser.toProfileModel())
         )
         verify(view).displayLoading(false)
     }
@@ -393,7 +393,7 @@ class KycNavHostPresenterTest {
         subject.onViewReady()
         // Assert
         verify(view).displayLoading(true)
-        verify(view).navigate(KycNavXmlDirections.ActionStartMobileVerification("regionCode"))
+        verify(view).navigate(KycNavXmlDirections.actionStartMobileVerification("regionCode"))
         verify(view).displayLoading(false)
     }
 
@@ -453,7 +453,7 @@ class KycNavHostPresenterTest {
         subject.onViewReady()
         // Assert
         verify(view).displayLoading(true)
-        verify(view).navigate(KycNavXmlDirections.ActionStartVeriff("regionCode"))
+        verify(view).navigate(KycNavXmlDirections.actionStartVeriff("regionCode"))
         verify(view).displayLoading(false)
     }
 

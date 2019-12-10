@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.start
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import io.reactivex.rxkotlin.plusAssign
@@ -11,7 +11,7 @@ import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import javax.net.ssl.SSLPeerUnverifiedException
 
 interface LoginView : MvpView {

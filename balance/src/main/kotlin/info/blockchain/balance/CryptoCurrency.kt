@@ -3,8 +3,8 @@ package info.blockchain.balance
 enum class CryptoCurrency(
     val symbol: String,
     val unit: String,
-    val dp: Int, // max decimal places
-    val userDp: Int, // user decimal places
+    val dp: Int,           // max decimal places
+    val userDp: Int,       // user decimal places
     val requiredConfirmations: Int,
     private val featureFlags: Long
 ) {
@@ -36,7 +36,7 @@ enum class CryptoCurrency(
         requiredConfirmations = 3,
         featureFlags =
             CryptoCurrency.PRICE_CHARTING or
-            CryptoCurrency.MULTI_WALLET
+                    CryptoCurrency.MULTI_WALLET
     ),
     XLM(
         symbol = "XLM",
@@ -69,13 +69,20 @@ enum class CryptoCurrency(
 
     fun hasFeature(feature: Long): Boolean = (0L != (featureFlags and feature))
 
-    companion object {
+    val defaultSwapTo: CryptoCurrency
+        get() = when (this) {
+            BTC -> ETHER
+            else -> BTC
+        }
 
+    companion object {
         fun fromSymbol(symbol: String?): CryptoCurrency? =
             values().firstOrNull { it.symbol.equals(symbol, ignoreCase = true) }
 
         fun fromSymbolOrThrow(symbol: String?): CryptoCurrency =
             fromSymbol(symbol) ?: throw IllegalArgumentException("Bad currency symbol \"$symbol\"")
+
+        fun activeCurrencies(): List<CryptoCurrency> = values().filter { !it.hasFeature(STUB_ASSET) }
 
         const val PRICE_CHARTING = 0x00000001L
         const val MULTI_WALLET = 0x00000002L

@@ -2,10 +2,9 @@ package piuk.blockchain.android.ui.tour
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -16,8 +15,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import com.blockchain.balance.coinIconWhite
-import com.blockchain.balance.colorRes
+import androidx.appcompat.app.AppCompatActivity
+import piuk.blockchain.android.util.coinIconWhite
+import piuk.blockchain.android.util.colorRes
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
