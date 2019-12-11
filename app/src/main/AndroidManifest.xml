@@ -197,10 +197,14 @@
         <activity
             android:name="piuk.blockchain.android.ui.kyc.status.KycStatusActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
+            android:name="piuk.blockchain.android.simplebuy.SimpleBuyActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <service
             android:name=".data.coinswebsocket.service.CoinsWebSocketService"
             android:stopWithTask="true" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_notification" />

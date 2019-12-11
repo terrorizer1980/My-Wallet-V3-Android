@@ -11,15 +11,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import piuk.blockchain.android.BlockchainTestApplication;
-import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.R;
+import piuk.blockchain.android.simplebuy.SimpleBuyConfiguration;
 import piuk.blockchain.androidcore.data.access.AccessState;
+
 import com.blockchain.notifications.NotificationTokenManager;
 
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
@@ -45,18 +48,32 @@ public class LauncherPresenterTest {
 
     private LauncherPresenter subject;
 
-    @Mock private LauncherView launcherActivity;
-    @Mock private PersistentPrefs prefsUtil;
-    @Mock private AppUtil appUtil;
-    @Mock private PayloadDataManager payloadDataManager;
-    @Mock private DeepLinkPersistence deepLinkPersistence;
-    @Mock private SettingsDataManager settingsDataManager;
-    @Mock private AccessState accessState;
-    @Mock private Intent intent;
-    @Mock private Bundle extras;
-    @Mock private Wallet wallet;
-    @Mock private NotificationTokenManager notificationTokenManager;
-    @Mock private EnvironmentConfig environmentConfig;
+    @Mock
+    private LauncherView launcherActivity;
+    @Mock
+    private PersistentPrefs prefsUtil;
+    @Mock
+    private AppUtil appUtil;
+    @Mock
+    private PayloadDataManager payloadDataManager;
+    @Mock
+    private DeepLinkPersistence deepLinkPersistence;
+    @Mock
+    private SettingsDataManager settingsDataManager;
+    @Mock
+    private AccessState accessState;
+    @Mock
+    private Intent intent;
+    @Mock
+    private Bundle extras;
+    @Mock
+    private Wallet wallet;
+    @Mock
+    private NotificationTokenManager notificationTokenManager;
+    @Mock
+    private EnvironmentConfig environmentConfig;
+    @Mock
+    private SimpleBuyConfiguration simpleBuyConfiguration;
 
     @Before
     public void setUp() {
@@ -70,9 +87,11 @@ public class LauncherPresenterTest {
                 accessState,
                 settingsDataManager,
                 notificationTokenManager,
-                environmentConfig
+                environmentConfig,
+                simpleBuyConfiguration
         );
         subject.initView(launcherActivity);
+        Mockito.when(simpleBuyConfiguration.isEnabled()).thenReturn(Single.just(false));
     }
 
     /**
@@ -98,6 +117,7 @@ public class LauncherPresenterTest {
         Settings mockSettings = mock(Settings.class);
         when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
         when(mockSettings.isEmailVerified()).thenReturn(true);
+        when(mockSettings.getCurrency()).thenReturn("USD");
         // Act
         subject.onViewReady();
         // Assert
@@ -160,6 +180,7 @@ public class LauncherPresenterTest {
         Settings mockSettings = mock(Settings.class);
         when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
         when(mockSettings.isEmailVerified()).thenReturn(true);
+        when(mockSettings.getCurrency()).thenReturn("USD");
         // Act
         subject.onViewReady();
         // Assert

@@ -27,6 +27,8 @@ import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrate
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
+import piuk.blockchain.android.simplebuy.SimpleBuyConfiguration
+import piuk.blockchain.android.simplebuy.SimpleBuyConfigurationImpl
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.thepit.PitLinkingImpl
@@ -772,6 +774,10 @@ val applicationModule = applicationContext {
             )
         }
 
+        factory {
+            SimpleBuyConfigurationImpl()
+        }.bind(SimpleBuyConfiguration::class)
+
         factory { TransactionHelper(get(), get()) }
 
         factory {
@@ -899,7 +905,8 @@ val applicationModule = applicationContext {
                 accessState = get(),
                 settingsDataManager = get(),
                 notificationTokenManager = get(),
-                envSettings = get()
+                envSettings = get(),
+                simpleBuyConfiguration = get()
             )
         }
     }

@@ -384,7 +384,7 @@
     <string name="unarchive">Unarchive</string>
     <string name="archive_are_you_sure">Are you sure you want to archive this item?</string>
     <string name="unarchive_are_you_sure">Are you sure you want to unarchive this item?</string>
-<!--    <string name="send_to_same_address_warning">Can\'t send to the same address.</string>-->
+    <!--    <string name="send_to_same_address_warning">Can\'t send to the same address.</string>-->
     <string name="make_default">Make default</string>
     <string name="privx_required">Private Key Needed</string>
     <string name="watch_only_spend_instructions">This action requires the private key for the
@@ -1701,4 +1701,13 @@
         <item>@string/xlm_memo_return</item>
     </string-array>
 
+    <!--Simple buy-->
+    <string name="simple_buy_intro_title">Welcome to Blockchain</string>
+    <string name="simple_buy_dont_own_crypto">Don\'t own crypto?</string>
+    <string name="simple_buy_instructions_to_buy">We can help you buy in a just a few simple steps. Documents required....</string>
+    <string name="simple_buy_intro_main_button_action">I want to buy crypto</string>
+    <string name="simple_buy_deposit_my_crypto">Deposit my crypto</string>
+    <string name="simple_buy_skip_text">Looking for a new wallet to store your crypto?</string>
+    <string name="simple_buy_skip_action">Skip, I have crypto</string>
+    <string name="simple_buy_verify_email_instruction">We sent an email to %1$s with a verification link. Didn’t get it? Check your spam folder.</string>
 </resources>

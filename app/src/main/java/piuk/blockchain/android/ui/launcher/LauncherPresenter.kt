@@ -7,7 +7,9 @@ import com.blockchain.notifications.NotificationTokenManager
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.Settings
 import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.R
+import piuk.blockchain.android.simplebuy.SimpleBuyConfiguration
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -25,7 +27,8 @@ class LauncherPresenter(
     private val accessState: AccessState,
     private val settingsDataManager: SettingsDataManager,
     private val notificationTokenManager: NotificationTokenManager,
-    private val envSettings: EnvironmentConfig
+    private val envSettings: EnvironmentConfig,
+    private val simpleBuyConfiguration: SimpleBuyConfiguration
 ) : BasePresenter<LauncherView>() {
 
     override fun onViewReady() {
@@ -99,13 +102,19 @@ class LauncherPresenter(
         compositeDisposable += settingsDataManager.initSettings(
             payloadDataManager.wallet!!.guid,
             payloadDataManager.wallet!!.sharedKey
-        )
+        ).zipWith(simpleBuyConfiguration.isEnabled().onErrorReturn { false }.toObservable())
             .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }
-            .subscribe({ settings ->
-                // TODO: Check AppUtil.INTENT_EXTRA_IS_AFTER_WALLET_CREATION and continue navigation
-                startMainActivity()
+            .subscribe({ (settings, simpleBuyEnable) ->
                 setCurrencyUnits(settings)
+                if (simpleBuyEnable &&
+                    view?.getPageIntent()?.getBooleanExtra(AppUtil.INTENT_EXTRA_IS_AFTER_WALLET_CREATION,
+                        false) == true
+                ) {
+                    startSimpleBuy()
+                } else {
+                    startMainActivity()
+                }
             }, {
                 view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
                 view.onRequestPin()
@@ -114,6 +123,10 @@ class LauncherPresenter(
 
     private fun startMainActivity() {
         view.onStartMainActivity(deepLinkPersistence.popUriFromSharedPrefs())
+    }
+
+    private fun startSimpleBuy() {
+        view.startSimpleBuy()
     }
 
     private fun setCurrencyUnits(settings: Settings) {
