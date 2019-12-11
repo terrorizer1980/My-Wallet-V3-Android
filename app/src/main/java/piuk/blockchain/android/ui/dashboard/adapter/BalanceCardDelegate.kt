@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_dashboard_balance_card.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
-import piuk.blockchain.android.ui.dashboard.BalanceModel
+import piuk.blockchain.android.ui.dashboard.BalanceState
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import com.github.mikephil.charting.data.PieData
 import android.graphics.Color
@@ -23,7 +23,7 @@ import piuk.blockchain.android.ui.dashboard.setDeltaColour
 class BalanceCardDelegate<in T> : AdapterDelegate<T> {
 
     override fun isForViewType(items: List<T>, position: Int): Boolean =
-        items[position] is BalanceModel
+        items[position] is BalanceState
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
         BalanceCardViewHolder(parent.inflate(R.layout.item_dashboard_balance_card))
@@ -33,14 +33,14 @@ class BalanceCardDelegate<in T> : AdapterDelegate<T> {
         position: Int,
         holder: RecyclerView.ViewHolder,
         payloads: List<*>
-    ) = (holder as BalanceCardViewHolder).bind(items[position] as BalanceModel)
+    ) = (holder as BalanceCardViewHolder).bind(items[position] as BalanceState)
 }
 
 private class BalanceCardViewHolder internal constructor(
     itemView: View
 ) : RecyclerView.ViewHolder(itemView) {
 
-    internal fun bind(state: BalanceModel) {
+    internal fun bind(state: BalanceState) {
         configurePieChart()
 
         if (state.isLoading) {
@@ -60,7 +60,7 @@ private class BalanceCardViewHolder internal constructor(
     }
 
     @SuppressLint("SetTextI18n")
-    private fun renderLoaded(state: BalanceModel) {
+    private fun renderLoaded(state: BalanceState) {
 
         with(itemView) {
             total_balance.text = state.fiatBalance?.toStringWithSymbol() ?: ""
@@ -99,7 +99,7 @@ private class BalanceCardViewHolder internal constructor(
         }
     }
 
-    private fun populatePieChart(state: BalanceModel) {
+    private fun populatePieChart(state: BalanceState) {
         with(itemView) {
             val entries = ArrayList<PieEntry>().apply {
                 CryptoCurrency.activeCurrencies().forEach {

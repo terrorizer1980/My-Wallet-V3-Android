@@ -463,12 +463,17 @@ class PinEntryPresenter(
         accessState.logout()
     }
 
-    @SuppressLint("CheckResult")
     fun fetchInfoMessage() {
         compositeDisposable += mobileNoticeRemoteConfig.mobileNoticeDialog()
             .subscribeBy(
-                onError = { Timber.e(it) },
-                onSuccess = { view.showMobileNotice(it) })
+                onSuccess = { view.showMobileNotice(it) },
+                onError = {
+                    if (it is NoSuchElementException)
+                        Timber.d("No mobile notice found")
+                    else
+                        Timber.e(it)
+                }
+            )
     }
 
     @SuppressLint("CheckResult")

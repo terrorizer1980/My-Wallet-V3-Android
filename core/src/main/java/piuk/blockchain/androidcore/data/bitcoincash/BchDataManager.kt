@@ -306,7 +306,9 @@ class BchDataManager(
             .filterNot { it.isWatchOnly || it.isArchived }
             .map { it.address }
             .toSet()
+
         val xpubs = getActiveXpubs().toSet()
+
         return rxPinning.call {
             bchDataStore.bchWallet!!.updateAllBalances(xpubs, legacyAddresses)
         }.applySchedulers()

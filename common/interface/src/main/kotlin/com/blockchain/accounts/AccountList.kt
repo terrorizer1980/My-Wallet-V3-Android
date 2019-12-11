@@ -1,23 +1,18 @@
 package com.blockchain.accounts
 
 import info.blockchain.balance.AccountReference
+import info.blockchain.balance.AccountReferenceList
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Single
 
 interface AccountList {
+    @Deprecated("Use defaultAccount() instead")
     fun defaultAccountReference(): AccountReference
-}
-
-interface AllAccountList {
-    operator fun get(cryptoCurrency: CryptoCurrency): AccountList
-}
-
-interface AsyncAccountList {
-
-    fun accounts(): Single<List<AccountReference>>
+    fun defaultAccount(): Single<AccountReference>
+    fun accounts(): Single<AccountReferenceList>
 }
 
 interface AsyncAllAccountList {
-
-    fun allAccounts(): Single<List<AccountReference>>
+    fun allAccounts(): Single<AccountReferenceList>
+    operator fun get(cryptoCurrency: CryptoCurrency): Single<AccountList>
 }

@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange
 
 import androidx.lifecycle.ViewModel
-import com.blockchain.accounts.AllAccountList
+import com.blockchain.accounts.AsyncAllAccountList
 import com.blockchain.datamanagers.MaximumSpendableCalculator
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees
 import com.blockchain.swap.common.exchange.mvi.ExchangeDialog
@@ -12,7 +12,6 @@ import com.blockchain.swap.common.exchange.mvi.ExchangeRateIntent
 import com.blockchain.swap.common.exchange.mvi.FiatExchangeRateIntent
 import com.blockchain.swap.nabu.service.Fix
 import com.blockchain.swap.common.exchange.mvi.IsUserEligiableForFreeEthIntent
-import com.blockchain.swap.common.exchange.mvi.LockQuoteIntent
 import com.blockchain.swap.nabu.service.Quote
 import com.blockchain.swap.common.exchange.mvi.SetEthTransactionInFlight
 import com.blockchain.swap.common.exchange.mvi.SetFixIntent
@@ -37,6 +36,7 @@ import info.blockchain.balance.ExchangeRate
 import info.blockchain.balance.FiatValue
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.BehaviorSubject
@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 class ExchangeModel(
     quoteServiceFactory: QuoteServiceFactory,
-    private val allAccountList: AllAccountList,
+    private val allAccountList: AsyncAllAccountList,
     private val tradeLimitService: TradeLimitService,
     private val currentTier: CurrentTier,
     private val ethEligibility: EthEligibility,
@@ -100,20 +100,29 @@ class ExchangeModel(
 
     private fun initDialog(quoteService: QuoteService) {
         val fiatCurrency = currencyPrefs.selectedFiatCurrency
-        newDialog(
-            fiatCurrency,
-            quoteService,
-            ExchangeDialog(
-                Observable.merge(
-                    inputEventSink,
-                    quoteService.quotes.map(Quote::toIntent)
-                ),
-                initial(
+
+        compositeDisposable += Singles.zip(
+            allAccountList[preselectedFromCryptoCurrency].flatMap { it.defaultAccount() },
+            allAccountList[preselectedToCryptoCurrency].flatMap { it.defaultAccount() }
+        ).subscribeBy(
+            onSuccess = { (fromAccount, toAccount) ->
+                newDialog(
                     fiatCurrency,
-                    allAccountList[preselectedFromCryptoCurrency].defaultAccountReference(),
-                    allAccountList[preselectedToCryptoCurrency].defaultAccountReference()
+                    quoteService,
+                    ExchangeDialog(
+                        Observable.merge(
+                            inputEventSink,
+                            quoteService.quotes.map(Quote::toIntent)
+                        ),
+                        initial(
+                            fiatCurrency,
+                            fromAccount,
+                            toAccount
+                        )
+                    )
                 )
-            )
+            },
+            onError = { }
         )
     }
 
@@ -202,6 +211,7 @@ class ExchangeModel(
             .subscribeBy {
                 newViewModel(it)
             }
+
         dialogDisposable += exchangeViewStates
             .subscribeBy {
                 quoteService.updateQuoteRequest(it.toExchangeQuoteRequest(it.fromFiat.currencyCode))
@@ -209,11 +219,16 @@ class ExchangeModel(
                 updateMaxSpendable(it.fromAccount)
             }
 
-        val currency = exchangeViewStates.map { it.fromCrypto.currency }.distinctUntilChanged()
+        val currency =
+            exchangeViewStates.map {
+                it.fromCrypto.currency
+            }.distinctUntilChanged()
 
-        dialogDisposable += currency.withLatestFrom(exchangeViewStates.map {
-            it.fromCrypto to it.fromAccount
-        }).flatMapSingle { (_, cryptoAccountPair) ->
+        dialogDisposable += currency.withLatestFrom(
+            exchangeViewStates.map {
+                it.fromCrypto to it.fromAccount
+            }
+        ).flatMapSingle { (_, cryptoAccountPair) ->
             transactionExecutor.hasEnoughEthFeesForTheTransaction(cryptoAccountPair.first, cryptoAccountPair.second)
         }.subscribeBy {
             inputEventSink.onNext(EnoughFeesLimit(it))
@@ -242,14 +257,6 @@ class ExchangeModel(
 
     private fun newViewModel(exchangeViewModel: ExchangeViewState) {
         exchangeViewModelsSubject.onNext(exchangeViewModel)
-    }
-
-    fun lockQuote() {
-        inputEventSink.onNext(LockQuoteIntent(true))
-    }
-
-    fun unlockQuote() {
-        inputEventSink.onNext(LockQuoteIntent(false))
     }
 
     fun fixAsFiat() {
