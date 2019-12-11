@@ -69,11 +69,12 @@ class AppUtil(
         )
     }
 
-    fun restartAppWithVerifiedPin(launcherActivity: Class<*>) {
+    fun restartAppWithVerifiedPin(launcherActivity: Class<*>, isAfterWalletCreation: Boolean = false) {
         context.startActivity(
             Intent(context, launcherActivity).apply {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                putExtra("verified", true)
+                putExtra(INTENT_EXTRA_VERIFIED, true)
+                putExtra(INTENT_EXTRA_IS_AFTER_WALLET_CREATION, isAfterWalletCreation)
             }
         )
         accessState.logIn()
@@ -82,5 +83,8 @@ class AppUtil(
     companion object {
         private const val REGEX_UUID =
             "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+
+        const val INTENT_EXTRA_VERIFIED = "verified"
+        const val INTENT_EXTRA_IS_AFTER_WALLET_CREATION = "is_after_wallet_creation"
     }
 }

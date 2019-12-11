@@ -54,8 +54,8 @@ class LauncherPresenter(
             prefs.setValue(PersistentPrefs.KEY_METADATA_URI, intentData)
         }
 
-        if (extras != null && extras.containsKey(INTENT_EXTRA_VERIFIED)) {
-            isPinValidated = extras.getBoolean(INTENT_EXTRA_VERIFIED)
+        if (extras != null && extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)) {
+            isPinValidated = extras.getBoolean(AppUtil.INTENT_EXTRA_VERIFIED)
         }
 
         if (extras?.containsKey("IS_AUTOMATION_TESTING") == true) {
@@ -103,6 +103,7 @@ class LauncherPresenter(
             .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }
             .subscribe({ settings ->
+                // TODO: Check AppUtil.INTENT_EXTRA_IS_AFTER_WALLET_CREATION and continue navigation
                 startMainActivity()
                 setCurrencyUnits(settings)
             }, {
@@ -120,7 +121,6 @@ class LauncherPresenter(
     }
 
     companion object {
-        const val INTENT_EXTRA_VERIFIED = "verified"
         const val INTENT_AUTOMATION_TEST = "IS_AUTOMATION_TESTING"
     }
 }
