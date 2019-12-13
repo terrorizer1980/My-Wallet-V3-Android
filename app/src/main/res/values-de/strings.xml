@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">In Zwischenablage kopiert</string>
   <string name="options_id">Wallet-ID</string>
   <string name="preferences_about_title">Über uns</string>
-  <string name="ask_you_sure_unpair">Sind Sie sicher, dass Sie die Geräteverbindung trennen möchten?</string>
-  <string name="select_currency">Währung wählen</string>
+    <string name="select_currency">Währung wählen</string>
   <string name="options_currency">Landeswährung</string>
   <string name="options_units">Bitcoin-Einheit</string>
   <string name="options_tos">Nutzungsbedingungen</string>
@@ -136,9 +135,7 @@ Alle Rechte vorbehalten.</string>
   <string name="imported_addresses">Importierte Adressen</string>
   <string name="remote_save_ok">Remote-Speicherung OK</string>
   <string name="remote_save_ko">Remote-Speicherung fehlgeschlagen</string>
-  <string name="unpair_wallet">Wallet-Kombination trennen</string>
-  <string name="unpair">KOMBINATION TRENNEN</string>
-  <string name="change_pin_code">PIN ändern</string>
+    <string name="change_pin_code">PIN ändern</string>
   <string name="enter_current_pin">Bitte aktuelle PIN eingeben.</string>
   <string name="addresses_bitcoin">Bitcoin-Adresse</string>
   <string name="addresses_bitcoin_cash">Bitcoin-Cash-Adressen</string>

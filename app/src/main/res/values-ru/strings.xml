@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
   <string name="options_id">ID кошелька</string>
   <string name="preferences_about_title">О системе</string>
-  <string name="ask_you_sure_unpair">Вы уверены, что хотите отменить сопряжение устройства?</string>
-  <string name="select_currency">Выбор валюты</string>
+    <string name="select_currency">Выбор валюты</string>
   <string name="options_currency">Местная валюта</string>
   <string name="options_units">Единица Bitcoin</string>
   <string name="options_tos">Условия предоставления услуг</string>
@@ -136,9 +135,7 @@
   <string name="imported_addresses">Импортированные адреса</string>
   <string name="remote_save_ok">Удаленное сохранение выполнено</string>
   <string name="remote_save_ko">Сбой удаленного сохранения</string>
-  <string name="unpair_wallet">Отменить сопряжение кошелька</string>
-  <string name="unpair">ОТМЕНИТЬ СОПРЯЖЕНИЕ</string>
-  <string name="change_pin_code">Изменить PIN</string>
+    <string name="change_pin_code">Изменить PIN</string>
   <string name="enter_current_pin">Пожалуйста, введите текущий PIN-код.</string>
   <string name="addresses_bitcoin">Bitcoin адреса</string>
   <string name="addresses_bitcoin_cash">Адреса Bitcoin Cash</string>

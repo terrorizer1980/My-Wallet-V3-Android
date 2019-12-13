@@ -49,7 +49,6 @@
     <string name="copied_to_clipboard">Se ha copiado en el portapapeles</string>
   <string name="options_id">Identificador del monedero:</string>
   <string name="preferences_about_title">Nuestra empresa</string>
-  <string name="ask_you_sure_unpair">¿Estas seguro de que deseas desconectar tu dispositivo?</string>
   <string name="select_currency">Selecciona la moneda</string>
   <string name="options_currency">Moneda local</string>
   <string name="options_units">Unidad de Bitcoin</string>
@@ -136,8 +135,6 @@ Todos los derechos reservados.</string>
   <string name="imported_addresses">Direcciones importadas</string>
   <string name="remote_save_ok">Guardado de forma remota OK</string>
   <string name="remote_save_ko">Se ha producido un error al guardar de forma remota</string>
-  <string name="unpair_wallet">Desconectar monedero</string>
-  <string name="unpair">DESCONECTAR</string>
   <string name="change_pin_code">Cambiar PIN</string>
   <string name="enter_current_pin">Por favor introduce el PIN actual.</string>
   <string name="addresses_bitcoin">Direcciones de Bitcoin</string>

@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Disalin ke papan klip</string>
   <string name="options_id">ID Dompet</string>
   <string name="preferences_about_title">Tentang Kami</string>
-  <string name="ask_you_sure_unpair">Apakah Anda yakin ingin melepas perangkat Anda?</string>
-  <string name="select_currency">Pilih Mata Uang</string>
+    <string name="select_currency">Pilih Mata Uang</string>
   <string name="options_currency">Mata Uang Lokal</string>
   <string name="options_units">Satuan Bitcoin</string>
   <string name="options_tos">Ketentuan Layanan</string>
@@ -136,9 +135,7 @@ Semua hak dilindungi.</string>
   <string name="imported_addresses">Alamat yang Diimpor</string>
   <string name="remote_save_ok">Penyimpanan jarak jauh OK</string>
   <string name="remote_save_ko">Penyimpanan jarak jauh gagal</string>
-  <string name="unpair_wallet">Lepaskan Dompet</string>
-  <string name="unpair">LEPASKAN</string>
-  <string name="change_pin_code">Ubah PIN</string>
+    <string name="change_pin_code">Ubah PIN</string>
   <string name="enter_current_pin">Harap masukkan PIN terbaru.</string>
   <string name="addresses_bitcoin">Alamat Bitcoin </string>
   <string name="addresses_bitcoin_cash">Alamat Bitcoin Cash</string>

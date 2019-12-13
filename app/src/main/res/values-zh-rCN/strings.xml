@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">已复制到剪贴板</string>
   <string name="options_id">钱包ID</string>
   <string name="preferences_about_title">关于我们</string>
-  <string name="ask_you_sure_unpair">你确定想要解除设备配对？</string>
-  <string name="select_currency">选择货币种类</string>
+    <string name="select_currency">选择货币种类</string>
   <string name="options_currency">本地货币</string>
   <string name="options_units">比特币单位</string>
   <string name="options_tos">服务条款</string>
@@ -136,9 +135,7 @@
   <string name="imported_addresses">导入的地址</string>
   <string name="remote_save_ok">保存成功</string>
   <string name="remote_save_ko">保存失败</string>
-  <string name="unpair_wallet">解除钱包配对</string>
-  <string name="unpair">解除配对</string>
-  <string name="change_pin_code">更改PIN</string>
+    <string name="change_pin_code">更改PIN</string>
   <string name="enter_current_pin">请输入当前PIN.</string>
   <string name="addresses_bitcoin">地址</string>
   <string name="addresses_bitcoin_cash">Bitcoin Cash 地址</string>

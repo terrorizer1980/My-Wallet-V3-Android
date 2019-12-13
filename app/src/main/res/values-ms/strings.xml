@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Salin ke papan Keratan</string>
   <string name="options_id">ID Wallet</string>
   <string name="preferences_about_title">Tentang kita</string>
-  <string name="ask_you_sure_unpair">Adakah anda pasti mahu menyahpasang peranti anda?</string>
-  <string name="select_currency">Pilih mata wang</string>
+    <string name="select_currency">Pilih mata wang</string>
   <string name="options_currency">Mata wang tempatan</string>
   <string name="options_units">Unit Bitcoin</string>
   <string name="options_tos">Syarat-syarat Perkhidmatan</string>
@@ -136,9 +135,7 @@
   <string name="imported_addresses">Alamat yang diimport</string>
   <string name="remote_save_ok">Berjaya disimpan</string>
   <string name="remote_save_ko">Simpan tidak berjaya</string>
-  <string name="unpair_wallet">Buka Wallet</string>
-  <string name="unpair">UNPAIR</string>
-  <string name="change_pin_code">Tukar PIN</string>
+    <string name="change_pin_code">Tukar PIN</string>
   <string name="enter_current_pin">Sila masukkan PIN semasa.</string>
   <string name="addresses_bitcoin">Alamat Bitcoin</string>
   <string name="addresses_bitcoin_cash">Alamat Bitcoin Cash</string>

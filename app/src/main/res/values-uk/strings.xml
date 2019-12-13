@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Скопійовано в буфер обміну</string>
   <string name="options_id">ID гаманця</string>
   <string name="preferences_about_title">Про нас</string>
-  <string name="ask_you_sure_unpair">Впевнені, що хочете розпарувати свій пристрій?</string>
-  <string name="select_currency">Виберіть країну</string>
+    <string name="select_currency">Виберіть країну</string>
   <string name="options_currency">Місцева валюта</string>
   <string name="options_units">Bitcoin Unit</string>
   <string name="options_tos">Умови надання послуг</string>
@@ -136,9 +135,7 @@
   <string name="imported_addresses">Імпортовані адреси</string>
   <string name="remote_save_ok">Віддалене збереження OK</string>
   <string name="remote_save_ko">Збій віддаленого збереження</string>
-  <string name="unpair_wallet">Скасувати утворення пари гаманця</string>
-  <string name="unpair">СКАСУВАТИ ПАРУВАННЯ</string>
-  <string name="change_pin_code">Змінити PIN</string>
+    <string name="change_pin_code">Змінити PIN</string>
   <string name="enter_current_pin">Будь ласка, введіть дійсний PIN-код.</string>
   <string name="addresses_bitcoin">Bitcoin адреси</string>
   <string name="addresses_bitcoin_cash">Бітикіновські готівкові адреси</string>

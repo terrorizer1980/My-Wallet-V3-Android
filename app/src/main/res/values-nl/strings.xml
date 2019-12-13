@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Gekopieerd naar het klembord</string>
   <string name="options_id">Portemonnee-ID</string>
   <string name="preferences_about_title">Over ons</string>
-  <string name="ask_you_sure_unpair">Weet u zeker dat u uw apparaat wilt ontkoppelen?</string>
-  <string name="select_currency">Kies een valuta</string>
+    <string name="select_currency">Kies een valuta</string>
   <string name="options_currency">Plaatselijke valuta</string>
   <string name="options_units">Bitcoin-eenheid</string>
   <string name="options_tos">Servicevoorwaarden</string>
@@ -136,9 +135,7 @@ Alle rechten voorbehouden.</string>
   <string name="imported_addresses">Geïmporteerde adressen</string>
   <string name="remote_save_ok">Opslaan op afstand OK</string>
   <string name="remote_save_ko">Opslaan op afstand is mislukt</string>
-  <string name="unpair_wallet">Portemonnee ontkoppelen</string>
-  <string name="unpair">ONTKOPPELEN</string>
-  <string name="change_pin_code">Pincode wijzigen</string>
+    <string name="change_pin_code">Pincode wijzigen</string>
   <string name="enter_current_pin">Voer de huidige pincode in.</string>
   <string name="addresses_bitcoin">Bitcoin-adressen</string>
   <string name="addresses_bitcoin_cash">Bitcoin-contante adressen</string>

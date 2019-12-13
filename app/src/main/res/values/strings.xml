@@ -25,7 +25,7 @@
     <string name="item_debug_homebrew" translatable="false">Debug Homebrew</string>
     <string name="toolbar_cmd_home">Home</string>
     <string name="toolbar_cmd_send">Send</string>
-    <string name="toolbar_cmd_receive">Request</string>
+    <string name="toolbar_cmd_receive_crypto">Receive</string>
 
     <string name="toolbar_cmd_activity">Activity</string>
     <string name="toolbar_cmd_swap">Swap</string>
@@ -53,7 +53,10 @@
     <string name="options_id">Wallet ID</string>
 
     <string name="preferences_about_title">About Us</string>
-    <string name="ask_you_sure_unpair">Are you sure you want to unpair your device?</string>
+
+    <string name="logout_wallet">Log Out</string>
+    <string name="ask_you_sure_logout">Are you sure you want to log out from this wallet?</string>
+    <string name="btn_logout">Logout</string>
 
     <string name="select_currency">Select Currency</string>
     <string name="options_currency">Local Currency</string>
@@ -219,9 +222,6 @@
     <string name="remote_save_ok">Successfully saved</string>
     <string name="remote_save_ko">Save unsuccessful</string>
 
-    <string name="unpair_wallet">Unpair Wallet</string>
-    <string name="unpair">Unpair</string>
-
     <string name="change_pin_code">Change PIN</string>
     <string name="enter_current_pin">Please enter current PIN.</string>
     <string name="addresses_bitcoin">Bitcoin Addresses</string>
@@ -261,7 +261,7 @@
     <string name="received_bitcoin_cash">Received Bitcoin Cash</string>
 
     <string name="verification_failed">Verification Failed</string>
-    <string name="request">Request</string>
+
     <string name="send">Send</string>
     <string name="send_payment">Send Payment</string>
     <string name="share">Share Receive Address</string>
@@ -717,7 +717,7 @@
     <string name="swipe_receive_no_addresses">No more addresses can be loaded right now. Log in to
         the app to load more.
     </string>
-    <string name="swipe_receive_request">Request %1$s</string>
+    <string name="swipe_to_receive_request">Receive %1$s</string>
     <string name="swipe_receive_left_arrow">Swipe to Receive Left Arrow</string>
     <string name="swipe_receive_right_arrow">Swipe to Receive Right Arrow</string>
     <string name="onboarding_fingerprint_title">Fingerprint Login</string>
