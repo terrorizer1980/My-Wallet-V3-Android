@@ -7,4 +7,5 @@ interface SimpleBuyScreen {
 
 interface SimpleBuyNavigator {
     fun exitSimpleBuyFlow()
+    fun goToBuyCryptoScreen()
 }

@@ -1709,5 +1709,8 @@
     <string name="simple_buy_deposit_my_crypto">Deposit my crypto</string>
     <string name="simple_buy_skip_text">Looking for a new wallet to store your crypto?</string>
     <string name="simple_buy_skip_action">Skip, I have crypto</string>
+    <string name="simple_buy_what_you_want_to_buy">What would you like to buy?</string>
+    <string name="simple_buy_enter_amount">Enter amount</string>
+    <string name="simple_buy_buy_crypto_title">Buy Crypto</string>
     <string name="simple_buy_verify_email_instruction">We sent an email to %1$s with a verification link. Didn’t get it? Check your spam folder.</string>
 </resources>

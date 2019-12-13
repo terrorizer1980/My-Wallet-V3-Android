@@ -33,6 +33,7 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
         activity?.setupToolbar(R.string.simple_buy_intro_title)
 
         skip_simple_buy.setOnClickListener { navigator().exitSimpleBuyFlow() }
+        buy_crypto_now.setOnClickListener { navigator().goToBuyCryptoScreen() }
     }
 
     override fun onResume() {
@@ -56,5 +57,5 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
     override fun navigator(): SimpleBuyNavigator =
         (activity as? SimpleBuyNavigator) ?: throw IllegalStateException("Parent must implement SimpleBuyNavigator")
 
-    override fun onBackPressed(): Boolean = false
+    override fun onBackPressed(): Boolean = true
 }

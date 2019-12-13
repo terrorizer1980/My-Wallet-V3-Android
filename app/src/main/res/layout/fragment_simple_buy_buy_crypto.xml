@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/what_you_want_To_buy"
+        style="@style/Text.Semibold.16"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/standard_margin"
+        android:text="@string/simple_buy_what_you_want_to_buy"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/crypto_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/what_you_want_To_buy"
+        app:srcCompat="@drawable/vector_bitcoin_colored" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/crypto_text"
+        style="@style/Text.Semibold.16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:textColor="@color/grey_600"
+        app:layout_constraintBottom_toBottomOf="@+id/crypto_icon"
+        app:layout_constraintStart_toEndOf="@+id/crypto_icon"
+        app:layout_constraintTop_toTopOf="@+id/crypto_icon"
+        tools:text="Bitcoin" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/crypto_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/crypto_text"
+        app:srcCompat="@drawable/ic_arrow_down" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="24dp"
+        android:background="@color/grey_000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/crypto_icon" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/Text.Semibold.16"
+        android:layout_width="wrap_content"
+        android:id="@+id/fiat_currency_symbol"
+        android:layout_height="wrap_content"
+        android:text="€"
+        android:textColor="@color/grey_600"
+        app:layout_constraintBottom_toBottomOf="@+id/input_layout_amount"
+        app:layout_constraintEnd_toStartOf="@+id/input_layout_amount"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/input_layout_amount"
+        app:layout_constraintVertical_bias="0.65" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_layout_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="40dp"
+        android:textColorHint="@color/grey_400"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/separator">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/input_amount"
+            style="@style/Text.Semibold.16"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/simple_buy_enter_amount"
+            android:inputType="numberDecimal" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        style="@style/CtaButton.Blue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:text="@string/btn_continue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
