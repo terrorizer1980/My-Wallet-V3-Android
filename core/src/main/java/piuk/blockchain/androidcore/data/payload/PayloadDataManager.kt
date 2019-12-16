@@ -562,8 +562,8 @@ class PayloadDataManager(
      * @return An [Observable] object wrapping a boolean value, representing successfully
      * loaded nodes
      */
-    fun loadNodes(): Observable<Boolean> = rxPinning.call<Boolean> { payloadService.loadNodes() }
-        .applySchedulers()
+    fun loadNodes(): Observable<Boolean> =
+        rxPinning.call<Boolean> { payloadService.loadNodes() }.subscribeOn(Schedulers.io())
 
     /**
      * Generates the metadata and shared metadata nodes if necessary.

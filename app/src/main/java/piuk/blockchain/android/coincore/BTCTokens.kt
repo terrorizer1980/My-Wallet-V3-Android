@@ -14,14 +14,16 @@ import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 
 class BTCTokens(
     private val payloadDataManager: PayloadDataManager,
     private val exchangeRates: ExchangeRateDataManager,
     private val payloadManager: PayloadManager,
     private val historicRates: ChartsDataManager,
-    private val currencyPrefs: CurrencyPrefs
-) : BitcoinLikeTokens() {
+    private val currencyPrefs: CurrencyPrefs,
+    rxBus: RxBus
+) : BitcoinLikeTokens(rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BTC

@@ -15,7 +15,6 @@ import timber.log.Timber
 interface AnnouncementHost {
     val disposables: CompositeDisposable
 
-    fun clearAllAnnouncements()
     fun showAnnouncementCard(card: AnnouncementCard)
     fun dismissAnnouncementCard()
 
@@ -52,7 +51,7 @@ class AnnouncementList(
     private val dismissRecorder: DismissRecorder
 ) {
     fun checkLatest(host: AnnouncementHost, disposables: CompositeDisposable) {
-        host.clearAllAnnouncements()
+        host.dismissAnnouncementCard()
 
         disposables += showNextAnnouncement(host)
             .subscribeBy(onError = Timber::e)

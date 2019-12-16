@@ -17,17 +17,44 @@ import timber.log.Timber
 class DashboardInteractor(
     private val tokens: AssetTokenLookup
 ) {
-
+    // We have a problem here, in that pax init depends on ETH init
+    // Ultimately, we want to init metadata straight after decrypting (or creating) the wallet
+    // but we can't move that somewhere sensible yet, because 2nd password. When we remove that -
+    // which is on the radar - then we can clean up the entire app init sequence.
+    // But for now, we'll catch any pax init failure here, unless ETH has initialised OK. And when we
+    // get a valid ETH balance, will try for a PX balance. Yeah, this is a nasty hack TODO: Fix this
     fun refreshBalances(model: DashboardModel, balanceFilter: BalanceFilter): Disposable {
-
         val cd = CompositeDisposable()
-        CryptoCurrency.activeCurrencies().forEach {
-            cd += tokens[it].totalBalance(balanceFilter)
+        CryptoCurrency.activeCurrencies()
+            .filter { it != CryptoCurrency.PAX }
+            .forEach {
+                cd += tokens[it].totalBalance(balanceFilter)
+                    .doOnSuccess { value ->
+                        if (value.currency == CryptoCurrency.ETHER) {
+                            cd += tokens[CryptoCurrency.PAX].totalBalance(balanceFilter)
+                                .subscribeBy(
+                                    onSuccess = { balance ->
+                                        Timber.d("*****> Got balance for PAX")
+                                        model.process(BalanceUpdate(CryptoCurrency.PAX, balance))
+                                    },
+                                    onError = { e ->
+                                        Timber.e("Failed getting balance for PAX: $e")
+                                        model.process(BalanceUpdateError(CryptoCurrency.PAX))
+                                    }
+                                )
+                        }
+                    }
                     .subscribeBy(
-                        onSuccess = { balance -> model.process(BalanceUpdate(it, balance)) },
-                        onError = { e -> Timber.e("Failed getting balance for $it: $e") }
+                        onSuccess = { balance ->
+                            Timber.d("*****> Got balance for $it")
+                            model.process(BalanceUpdate(it, balance))
+                        },
+                        onError = { e ->
+                            Timber.e("Failed getting balance for $it: $e")
+                            model.process(BalanceUpdateError(it))
+                        }
                     )
-        }
+            }
         return cd
     }
 
@@ -59,8 +86,8 @@ class DashboardInteractor(
     companion object {
         private const val ONE_DAY = 24 * 60 * 60L
         private val FLATLINE_CHART = listOf(
-                PriceDatum(price = 1.0, timestamp = 0),
-                PriceDatum(price = 1.0, timestamp = System.currentTimeMillis() / 1000)
-            )
+            PriceDatum(price = 1.0, timestamp = 0),
+            PriceDatum(price = 1.0, timestamp = System.currentTimeMillis() / 1000)
+        )
     }
 }

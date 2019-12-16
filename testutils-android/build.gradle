@@ -39,7 +39,6 @@ dependencies {
 
     // Injection
     api Libraries.koinTest
-    api Libraries.dagger
 
     // Unit Test dependencies
     api Libraries.junit

@@ -1,14 +1,17 @@
 package piuk.blockchain.android.coincore
 
+import androidx.annotation.CallSuper
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Completable
 import io.reactivex.Single
+import piuk.blockchain.androidcore.data.access.AuthEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.lang.IllegalArgumentException
 import java.math.BigInteger
 
-abstract class BitcoinLikeTokens : AssetTokens {
+abstract class BitcoinLikeTokens(rxBus: RxBus) : AssetTokensBase(rxBus) {
 
     private var lastBalanceRefresh: Long = 0
 
@@ -27,6 +30,11 @@ abstract class BitcoinLikeTokens : AssetTokens {
     }
 
     protected abstract fun doUpdateBalances(): Completable
+
+    @CallSuper
+    override fun onLogoutSignal(event: AuthEvent) {
+        lastBalanceRefresh = 0
+    }
 
     companion object {
         private const val REFRESH_INTERVAL = 60 * 1000

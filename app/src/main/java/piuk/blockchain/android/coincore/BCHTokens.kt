@@ -1,5 +1,6 @@
 package piuk.blockchain.android.coincore
 
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
@@ -8,18 +9,26 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
 import io.reactivex.Single
+import piuk.blockchain.android.R
+import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.rxjava.RxBus
+import timber.log.Timber
 
 class BCHTokens(
     private val bchDataManager: BchDataManager,
     private val exchangeRates: ExchangeRateDataManager,
     private val historicRates: ChartsDataManager,
-    private val currencyPrefs: CurrencyPrefs
-) : BitcoinLikeTokens() {
+    private val currencyPrefs: CurrencyPrefs,
+    private val stringUtils: StringUtils,
+    private val crashLogger: CrashLogger,
+    rxBus: RxBus
+) : BitcoinLikeTokens(rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BCH
@@ -29,17 +38,21 @@ class BCHTokens(
     }
 
     override fun totalBalance(filter: BalanceFilter): Single<CryptoValue> =
-        updater()
+        walletInitialiser()
+            .andThen(updater())
             .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
 
     override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = accountReference(account)
 
-        return updater()
+        return walletInitialiser()
+            .andThen(updater())
             .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }
     }
 
-    override fun doUpdateBalances(): Completable = bchDataManager.updateAllBalances()
+    override fun doUpdateBalances(): Completable =
+        bchDataManager.updateAllBalances()
+            .doOnComplete { Timber.d("Got btc balance") }
 
     override fun exchangeRate(): Single<FiatValue> =
         exchangeRates.fetchLastPrice(CryptoCurrency.BCH, currencyPrefs.selectedFiatCurrency)
@@ -49,4 +62,24 @@ class BCHTokens(
 
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
         historicRates.getHistoricPriceSeries(CryptoCurrency.BCH, currencyPrefs.selectedFiatCurrency, period)
+
+    private var isWalletUninitialised = true
+
+    private fun walletInitialiser() =
+        if (isWalletUninitialised) {
+            bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
+                .doOnError { throwable ->
+                    crashLogger.logException(throwable, "Failed to load bch wallet")
+                }.doOnComplete {
+                    isWalletUninitialised = false
+                }
+        } else {
+            Completable.complete()
+        }
+
+    override fun onLogoutSignal(event: AuthEvent) {
+        isWalletUninitialised = true
+        bchDataManager.clearBchAccountDetails()
+        super.onLogoutSignal(event)
+    }
 }
