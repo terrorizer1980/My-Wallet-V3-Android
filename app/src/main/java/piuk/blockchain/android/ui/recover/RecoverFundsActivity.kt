@@ -24,7 +24,7 @@ internal class RecoverFundsActivity :
     private var progressDialog: MaterialProgressDialog? = null
 
     private val recoveryPhrase: String
-        get() = field_passphrase.editText?.text.toString().toLowerCase(Locale.US).trim()
+        get() = field_passphrase?.text.toString().toLowerCase(Locale.US).trim()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +36,7 @@ internal class RecoverFundsActivity :
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         button_continue.setOnClickListener { presenter.onContinueClicked(recoveryPhrase) }
-        field_passphrase.editText?.setOnEditorActionListener { _, i, _ ->
+        field_passphrase?.setOnEditorActionListener { _, i, _ ->
             if (i == EditorInfo.IME_ACTION_GO) {
                 presenter.onContinueClicked(recoveryPhrase)
             }
