@@ -35,7 +35,7 @@ public class RxPinning {
         RxLambdas.ObservableFunction<T> tokenFunction = new RxLambdas.ObservableFunction<T>() {
             @Override
             public Observable<T> apply(Void empty) {
-                return function.apply();
+            return function.apply();
             }
         };
 

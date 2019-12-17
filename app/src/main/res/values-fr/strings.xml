@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Copié dans le presse-papiers</string>
   <string name="options_id">Identifiant du portefeuille</string>
   <string name="preferences_about_title">Qui sommes-nous</string>
-  <string name="ask_you_sure_unpair">Êtes-vous sûr de vouloir désactiver le jumelage de votre appareil ?</string>
-  <string name="select_currency">Sélectionner une devise</string>
+    <string name="select_currency">Sélectionner une devise</string>
   <string name="options_currency">Monnaie locale</string>
   <string name="options_units">Unité de Bitcoin</string>
   <string name="options_tos">Conditions d\'utilisation</string>
@@ -136,9 +135,7 @@ Tous droits réservés.</string>
   <string name="imported_addresses">Adresses importées</string>
   <string name="remote_save_ok">Sauvegarde à distance OK</string>
   <string name="remote_save_ko">La sauvegarde à distance a échoué</string>
-  <string name="unpair_wallet">Désactiver le jumelage du portefeuille</string>
-  <string name="unpair">DÉSACTIVER LE JUMELAGE</string>
-  <string name="change_pin_code">Modifier le code PIN</string>
+    <string name="change_pin_code">Modifier le code PIN</string>
   <string name="enter_current_pin">Veuillez entrer votre code PIN actuel.</string>
   <string name="addresses_bitcoin">Adresses Bitcoin</string>
   <string name="addresses_bitcoin_cash">Adresses Bitcoin Cash</string>

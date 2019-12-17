@@ -118,7 +118,8 @@ data class AssetState(
     val cryptoBalance: CryptoValue? = null,
     val price: FiatValue? = null,
     val price24h: FiatValue? = null,
-    val priceTrend: List<Float> = emptyList()
+    val priceTrend: List<Float> = emptyList(),
+    val hasBalanceError: Boolean = false
 ) : DashboardItem {
     val fiatBalance: FiatValue? by unsafeLazy {
         price?.let { cryptoBalance?.toFiat(it) ?: FiatValue.zero(it.currencyCode) }
@@ -156,6 +157,7 @@ class DashboardModel(
             }
             is RefreshPrices -> interactor.refreshPrices(this, intent.cryptoCurrency)
             is PriceUpdate -> interactor.refreshPriceHistory(this, intent.cryptoCurrency)
+            is BalanceUpdateError,
             is PriceHistoryUpdate,
             is ClearAnnouncement,
             is ShowAnnouncement,

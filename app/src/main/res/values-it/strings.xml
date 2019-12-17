@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Copiato negli appunti</string>
   <string name="options_id">ID del portafoglio</string>
   <string name="preferences_about_title">Notizie su di noi</string>
-  <string name="ask_you_sure_unpair">Sei sicuro di voler annullare l\'associazione del tuo dispositivo?</string>
-  <string name="select_currency">Seleziona Valuta</string>
+    <string name="select_currency">Seleziona Valuta</string>
   <string name="options_currency">Valuta locale</string>
   <string name="options_units">Unità bitcoin</string>
   <string name="options_tos">Termini di servizio</string>
@@ -136,9 +135,7 @@ Tutti i diritti riservati.</string>
   <string name="imported_addresses">Indirizzi importati</string>
   <string name="remote_save_ok">Salvataggio in remoto OK</string>
   <string name="remote_save_ko">Salvataggio in remoto non riuscito</string>
-  <string name="unpair_wallet">Elimina l\'associazione del Portafoglio</string>
-  <string name="unpair">ELIMINA L\'ASSOCIAZIONE</string>
-  <string name="change_pin_code">Cambia il PIN</string>
+    <string name="change_pin_code">Cambia il PIN</string>
   <string name="enter_current_pin">Inserisci il PIN attuale.</string>
   <string name="addresses_bitcoin">Indirizzi Bitcoin</string>
   <string name="addresses_bitcoin_cash">Indirizzi Cash di Bitcoin</string>

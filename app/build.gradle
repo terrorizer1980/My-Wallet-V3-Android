@@ -240,10 +240,7 @@ dependencies {
     implementation project(':veriff')
 
     implementation Libraries.multidex
-    // Utils
 
-    // Dagger
-    kapt Libraries.daggerKapt
     implementation Libraries.koin
     implementation Libraries.koinAndroid
     implementation Libraries.koinAndroidArchitecture
@@ -263,8 +260,6 @@ dependencies {
     api Libraries.appCompat
     implementation Libraries.navigationControllerCore
     implementation Libraries.navigationControllerFragments
-
-//    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 
     api Libraries.lifecycleViewModel
     api Libraries.lifecycleExtensions

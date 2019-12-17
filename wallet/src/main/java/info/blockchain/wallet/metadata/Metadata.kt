@@ -58,8 +58,7 @@ class Metadata(
         if (exe.isSuccessful) {
             val body = exe.body()!!
 
-            val encryptedPayloadBytes =
-                Base64.decode(body.payload.toByteArray(charset("utf-8")))
+            val encryptedPayloadBytes = Base64.decode(body.payload.toByteArray(charset("utf-8")))
 
             magicHash = if (body.prevMagicHash != null) {
                 val prevMagicBytes = Hex.decode(body.prevMagicHash)
@@ -135,10 +134,11 @@ class Metadata(
         val exe = response.execute()
 
         return if (exe.isSuccessful) {
+            val body = exe.body()!!
             if (isEncrypted) {
-                Optional.of(AESUtil.decryptWithKey(encryptionKey, exe.body()!!.payload))
+                Optional.of(AESUtil.decryptWithKey(encryptionKey, body.payload))
             } else {
-                Optional.of(String(Base64.decode(exe.body()!!.payload)))
+                Optional.of(String(Base64.decode(body.payload)))
             }
         } else {
             if (exe.code() == 404) {

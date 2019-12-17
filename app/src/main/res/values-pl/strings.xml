@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Skopiowano do schowka</string>
   <string name="options_id">Identyfikator portfela</string>
   <string name="preferences_about_title">O nas</string>
-  <string name="ask_you_sure_unpair">Czy na pewno chcesz odparować swoje urządzenie?</string>
-  <string name="select_currency">Wybierz walutę</string>
+    <string name="select_currency">Wybierz walutę</string>
   <string name="options_currency">Lokalna waluta</string>
   <string name="options_units">Jednostka bitcoin</string>
   <string name="options_tos">Warunki korzystania</string>
@@ -136,9 +135,7 @@ Wszelkie prawa zastrzeżone.</string>
   <string name="imported_addresses">Adresy zaimportowane</string>
   <string name="remote_save_ok">Zdalne zapisywanie udane</string>
   <string name="remote_save_ko">Zdalne zapisywanie nieudane</string>
-  <string name="unpair_wallet">Odparuj Portfel</string>
-  <string name="unpair">ODPARUJ</string>
-  <string name="change_pin_code">Zmień PIN</string>
+    <string name="change_pin_code">Zmień PIN</string>
   <string name="enter_current_pin">Proszę podać aktualny PIN</string>
   <string name="addresses_bitcoin">Adresy Bitcoin</string>
   <string name="addresses_bitcoin_cash">Adresy kasowe bitcoinów</string>

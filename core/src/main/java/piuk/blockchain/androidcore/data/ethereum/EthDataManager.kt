@@ -372,10 +372,11 @@ class EthDataManager(
                 Pair(ethWallet, needsSave)
             }
 
-    fun save(): Completable = metadataManager.saveToMetadata(
-        ethDataStore.ethWallet!!.toJson(),
-        EthereumWallet.METADATA_TYPE_EXTERNAL
-    )
+    fun save(): Completable =
+        metadataManager.saveToMetadata(
+            ethDataStore.ethWallet!!.toJson(),
+            EthereumWallet.METADATA_TYPE_EXTERNAL
+        )
 
     fun getErc20TokenData(currency: CryptoCurrency): Erc20TokenData {
         when (currency) {

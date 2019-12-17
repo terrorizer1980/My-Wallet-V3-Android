@@ -48,7 +48,7 @@ class SwipeToReceivePresenterTest {
         whenever(swipeToReceiveHelper.getBitcoinAccountName()).thenReturn("Bitcoin account")
         whenever(
             stringUtils.getFormattedString(
-                R.string.swipe_receive_request,
+                R.string.swipe_to_receive_request,
                 CryptoCurrency.BTC.unit
             )
         ).thenReturn("BTC")
@@ -71,7 +71,7 @@ class SwipeToReceivePresenterTest {
             .thenReturn(Single.just(""))
         whenever(
             stringUtils.getFormattedString(
-                R.string.swipe_receive_request,
+                R.string.swipe_to_receive_request,
                 CryptoCurrency.BTC.unit
             )
         ).thenReturn("BTC")
@@ -93,14 +93,10 @@ class SwipeToReceivePresenterTest {
         whenever(swipeToReceiveHelper.getBitcoinAccountName()).thenReturn("Account")
         whenever(swipeToReceiveHelper.getNextAvailableBitcoinAddressSingle())
             .thenReturn(Single.just("addr0"))
-        whenever(
-            stringUtils.getFormattedString(
-                R.string.swipe_receive_request,
-                CryptoCurrency.BTC.unit
-            )
-        ).thenReturn("BTC")
-        whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt()))
-            .thenReturn(Observable.just(bitmap))
+        whenever(stringUtils.getFormattedString(R.string.swipe_to_receive_request, CryptoCurrency.BTC.unit))
+            .thenReturn("BTC")
+        whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt())).thenReturn(Observable.just(bitmap))
+
         // Act
         subject.onViewReady()
         // Assert
@@ -124,7 +120,7 @@ class SwipeToReceivePresenterTest {
         whenever(swipeToReceiveHelper.getEthReceiveAddress()).thenReturn(address)
         whenever(swipeToReceiveHelper.getEthAccountName()).thenReturn("Account")
         whenever(swipeToReceiveHelper.getEthReceiveAddressSingle()).thenReturn(Single.just(address))
-        whenever(stringUtils.getFormattedString(R.string.swipe_receive_request, CryptoCurrency.ETHER.unit))
+        whenever(stringUtils.getFormattedString(R.string.swipe_to_receive_request, CryptoCurrency.ETHER.unit))
             .thenReturn("ETH")
         whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt())).thenReturn(Observable.just(bitmap))
 
@@ -152,7 +148,7 @@ class SwipeToReceivePresenterTest {
         whenever(swipeToReceiveHelper.getBitcoinCashReceiveAddresses()).thenReturn(addresses)
         whenever(swipeToReceiveHelper.getBitcoinCashAccountName()).thenReturn("Account")
         whenever(swipeToReceiveHelper.getNextAvailableBitcoinCashAddressSingle()).thenReturn(Single.just("addr0"))
-        whenever(stringUtils.getFormattedString(R.string.swipe_receive_request, CryptoCurrency.BCH.unit))
+        whenever(stringUtils.getFormattedString(R.string.swipe_to_receive_request, CryptoCurrency.BCH.unit))
             .thenReturn("BCH")
         whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt())).thenReturn(Observable.just(bitmap))
 
@@ -178,18 +174,15 @@ class SwipeToReceivePresenterTest {
         val bitmap: Bitmap = mock()
         whenever(swipeToReceiveHelper.getXlmReceiveAddress()).thenReturn(uri)
         whenever(swipeToReceiveHelper.getXlmAccountName()).thenReturn("Account")
-        whenever(swipeToReceiveHelper.getXlmReceiveAddressSingle())
-            .thenReturn(Single.just(uri))
-        whenever(
-            stringUtils.getFormattedString(
-                R.string.swipe_receive_request,
-                CryptoCurrency.XLM.unit
-            )
-        ).thenReturn("XLM")
+        whenever(swipeToReceiveHelper.getXlmReceiveAddressSingle()).thenReturn(Single.just(uri))
+        whenever(stringUtils.getFormattedString(R.string.swipe_to_receive_request, CryptoCurrency.XLM.unit))
+            .thenReturn("XLM")
         whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt()))
             .thenReturn(Observable.just(bitmap))
+
         // Act
         subject.currencyPosition = 3
+
         // Assert
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)

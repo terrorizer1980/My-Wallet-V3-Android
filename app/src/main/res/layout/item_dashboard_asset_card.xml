@@ -80,6 +80,7 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <View
+            android:id="@+id/separator"
             android:layout_width="1dp"
             android:layout_height="0dp"
             android:background="@color/grey_000"
@@ -132,6 +133,21 @@
             app:height_weight="0.8"
             app:use_gradient="true"
             tools:text="24hrs" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/error_msg"
+            style="@style/Text.Error"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/currency"
+            app:layout_constraintTop_toBottomOf="@id/currency"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Could not load BTC at this time"
+            android:gravity="center_vertical"
+            android:drawableStart="@drawable/ic_asset_error"
+            android:drawablePadding="8dp"
+            android:padding="10dp"
+            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

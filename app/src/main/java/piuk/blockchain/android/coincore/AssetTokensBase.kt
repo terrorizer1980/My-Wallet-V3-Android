@@ -7,9 +7,13 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Single
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 
 enum class BalanceFilter {
     Total,
@@ -48,10 +52,21 @@ interface AssetTokens {
 //    fun execute(pending: PendingTransaction)
 }
 
+abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
+
+    val logoutSignal = rxBus.register(AuthEvent.UNPAIR::class.java)
+        .observeOn(Schedulers.computation())
+        .subscribeBy(onNext = ::onLogoutSignal)
+
+    protected abstract fun onLogoutSignal(event: AuthEvent)
+}
+
 fun ExchangeRateDataManager.fetchLastPrice(
     cryptoCurrency: CryptoCurrency,
     currencyName: String
 ): Single<FiatValue> =
     updateTickers()
-        .andThen(Single.just(getLastPrice(cryptoCurrency, currencyName)))
+        .andThen(Single.defer {
+            Single.just(getLastPrice(cryptoCurrency, currencyName))
+        })
         .map { FiatValue.fromMajor(currencyName, it.toBigDecimal()) }

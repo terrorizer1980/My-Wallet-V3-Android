@@ -19,7 +19,8 @@ val coincoreModule = applicationContext {
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
-                payloadDataManager = get()
+                payloadDataManager = get(),
+                rxBus = get()
             )
         }
 
@@ -28,7 +29,10 @@ val coincoreModule = applicationContext {
                 bchDataManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
-                currencyPrefs = get()
+                currencyPrefs = get(),
+                rxBus = get(),
+                crashLogger = get(),
+                stringUtils = get()
             )
         }
 
@@ -46,7 +50,10 @@ val coincoreModule = applicationContext {
                 ethDataManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
-                currencyPrefs = get()
+                currencyPrefs = get(),
+                rxBus = get(),
+                crashLogger = get(),
+                stringUtils = get()
             )
         }
 

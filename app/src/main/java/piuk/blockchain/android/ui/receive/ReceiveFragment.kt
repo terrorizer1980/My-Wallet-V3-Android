@@ -162,7 +162,7 @@ class ReceiveFragment : HomeScreenMvpFragment<ReceiveView, ReceivePresenter>(),
         val supportActionBar = (activity as AppCompatActivity).supportActionBar
         if (supportActionBar != null) {
             (activity as ToolBarActivity).setupToolbar(
-                supportActionBar, R.string.request
+                supportActionBar, R.string.receive
             )
         } else {
             finishPage()

@@ -103,7 +103,7 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
     }
 
     override fun displayCoinType(coinName: String) {
-        val requestString = context?.resources?.getString(R.string.swipe_receive_request, coinName) ?: ""
+        val requestString = context?.resources?.getString(R.string.swipe_to_receive_request, coinName) ?: ""
 
         textview_request_currency.text = requestString
         textview_request_currency.contentDescription = requestString

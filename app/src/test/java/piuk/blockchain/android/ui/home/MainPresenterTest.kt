@@ -20,13 +20,11 @@ import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.wallet.payload.PayloadManagerWiper
 import io.reactivex.Single
 import org.amshove.kluent.`it returns`
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.util.StringUtils
@@ -35,16 +33,10 @@ import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.erc20.Erc20Account
-import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.data.rxjava.RxBus
-import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.android.util.AppUtil
 
@@ -57,20 +49,13 @@ class MainPresenterTest {
     private val prefs: PersistentPrefs = mock()
     private val appUtil: AppUtil = mock()
     private val accessState: AccessState = mock()
-    private val payloadManagerWiper: PayloadManagerWiper = mock()
     private val payloadDataManager: PayloadDataManager = mock()
+    private val metadataLoader: MetadataLoader = mock()
     private val buyDataManager: BuyDataManager = mock()
-    private val dynamicFeeCache: DynamicFeeCache = mock()
     private val exchangeRateFactory: ExchangeRateDataManager = mock()
-    private val rxBus: RxBus = mock()
-    private val feeDataManager: FeeDataManager = mock()
-    private val ethDataManager: EthDataManager = mock()
-    private val paxAccount: Erc20Account = mock()
-    private val bchDataManager: BchDataManager = mock()
     private val currencyState: CurrencyState = mock()
     private val metadataManager: MetadataManager = mock()
     private val stringUtils: StringUtils = mock()
-    private val shapeShiftDataManager: ShapeShiftDataManager = mock()
     private val environmentSettings: EnvironmentConfig = mock()
     private val coinifyDataManager: CoinifyDataManager = mock()
     private val exchangeService: ExchangeService = mock()
@@ -112,37 +97,30 @@ class MainPresenterTest {
     @Before
     fun setUp() {
         subject = MainPresenter(
-            prefs,
-            appUtil,
-            accessState,
-            payloadManagerWiper,
-            payloadDataManager,
-            buyDataManager,
-            dynamicFeeCache,
-            exchangeRateFactory,
-            rxBus,
-            feeDataManager,
-            ethDataManager,
-            bchDataManager,
-            currencyState,
-            metadataManager,
-            stringUtils,
-            shapeShiftDataManager,
-            environmentSettings,
-            coinifyDataManager,
-            exchangeService,
-            kycStatusHelper,
-            lockboxDataManager,
-            deepLinkProcessor,
-            sunriverCampaignRegistration,
-            xlmDataManager,
-            paxAccount,
-            featureFlag,
-            abTesting,
-            pitLinking,
-            nabuToken,
-            nabuDatamanager,
-            crashLogger
+            prefs = prefs,
+            appUtil = appUtil,
+            accessState = accessState,
+            metadataLoader = metadataLoader,
+            payloadDataManager = payloadDataManager,
+            buyDataManager = buyDataManager,
+            exchangeRateFactory = exchangeRateFactory,
+            currencyState = currencyState,
+            metadataManager = metadataManager,
+            environmentSettings = environmentSettings,
+            coinifyDataManager = coinifyDataManager,
+            exchangeService = exchangeService,
+            kycStatusHelper = kycStatusHelper,
+            lockboxDataManager = lockboxDataManager,
+            deepLinkProcessor = deepLinkProcessor,
+            sunriverCampaignRegistration = sunriverCampaignRegistration,
+            xlmDataManager = xlmDataManager,
+            pitFeatureFlag = featureFlag,
+            pitABTestingExperiment = abTesting,
+            pitLinking = pitLinking,
+            nabuToken = nabuToken,
+            nabuDataManager = nabuDatamanager,
+            crashLogger = crashLogger,
+            stringUtils = stringUtils
         )
 
         subject.attachView(view)

@@ -6,6 +6,7 @@ import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.answers.Answers
 import io.fabric.sdk.android.Fabric
 import piuk.blockchain.androidcoreui.BuildConfig
+import timber.log.Timber
 
 @Suppress("ConstantConditionIf")
 internal class CrashLoggerImpl(override val isDebugBuild: Boolean) : CrashLogger {
@@ -47,10 +48,11 @@ internal class CrashLoggerImpl(override val isDebugBuild: Boolean) : CrashLogger
         }
     }
 
-    override fun logException(throwable: Throwable) {
+    override fun logException(throwable: Throwable, logMsg: String) {
         if (BuildConfig.USE_CRASHLYTICS) {
             Crashlytics.logException(throwable)
         }
+        Timber.e(throwable, logMsg)
     }
 
     companion object {

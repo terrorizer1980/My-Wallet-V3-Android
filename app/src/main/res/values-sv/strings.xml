@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Kopieras till Urklipp</string>
   <string name="options_id">Plånbok-ID</string>
   <string name="preferences_about_title">Om oss</string>
-  <string name="ask_you_sure_unpair">Är du säker på att du vill avaktivera din enhet?</string>
-  <string name="select_currency">Välj valuta</string>
+    <string name="select_currency">Välj valuta</string>
   <string name="options_currency">Lokal valuta</string>
   <string name="options_units">Bitcoin enhet</string>
   <string name="options_tos">Villkor för tjänsten</string>
@@ -136,9 +135,7 @@
   <string name="imported_addresses">Importerade adresser</string>
   <string name="remote_save_ok">Sparade framgångsrikt</string>
   <string name="remote_save_ko">Spara misslyckad</string>
-  <string name="unpair_wallet">Unpair Wallet</string>
-  <string name="unpair">Ta bort parkoppling</string>
-  <string name="change_pin_code">Ändra PIN-kod</string>
+    <string name="change_pin_code">Ändra PIN-kod</string>
   <string name="enter_current_pin">Vänligen ange nuvarande PIN-kod.</string>
   <string name="addresses_bitcoin">Bitcoin Adresser</string>
   <string name="addresses_bitcoin_cash">Bitcoin Kontantadresser</string>
