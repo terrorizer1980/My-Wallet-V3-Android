@@ -107,7 +107,11 @@ private class AssetCardViewHolder(
 
     private fun renderError(state: AssetState) {
         showError()
+
         with(itemView) {
+            cardLayout.isEnabled = false
+            setOnClickListener { }
+
             val text = resources.getString(R.string.dashboard_asset_error, state.currency.symbol)
             error_msg.text = text
         }

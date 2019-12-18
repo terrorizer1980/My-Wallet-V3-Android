@@ -44,6 +44,12 @@ class DashboardInteractor(
                                 )
                         }
                     }
+                    .doOnError { _ ->
+                        if (it == CryptoCurrency.ETHER) {
+                            // If we can't get ETH, then we can't get PAX... so...
+                            model.process(BalanceUpdateError(CryptoCurrency.PAX))
+                        }
+                    }
                     .subscribeBy(
                         onSuccess = { balance ->
                             Timber.d("*****> Got balance for $it")
