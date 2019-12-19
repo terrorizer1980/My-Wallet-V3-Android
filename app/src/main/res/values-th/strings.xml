@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">คัดลอกไปยังคลิปบอร์ดแล้ว</string>
   <string name="options_id">ID กระเป๋าเงิน</string>
   <string name="preferences_about_title">เกี่ยวกับเรา</string>
-  <string name="ask_you_sure_unpair">คุณแน่ใจหรือไม่ที่จะยกเลิกการจับคู่อุปกรณ์ของคุณ?</string>
-  <string name="select_currency">เลือกสกุลเงิน</string>
+    <string name="select_currency">เลือกสกุลเงิน</string>
   <string name="options_currency">สกุลเงินในประเทศ</string>
   <string name="options_units">หน่วย Bitcoin</string>
   <string name="options_tos">ข้อตกลงการให้บริการ</string>
@@ -136,9 +135,7 @@
   <string name="imported_addresses">ที่อยู่ที่นำเข้า</string>
   <string name="remote_save_ok">การบันทึกระยะไกล ผ่าน</string>
   <string name="remote_save_ko">การบันทึกระยะไกล ล้มเหลว</string>
-  <string name="unpair_wallet">เลิกจับคู่กระเป๋าเงิน</string>
-  <string name="unpair">เลิกจับคู่</string>
-  <string name="change_pin_code">เปลี่ยน PIN</string>
+    <string name="change_pin_code">เปลี่ยน PIN</string>
   <string name="enter_current_pin">โปรดกรอก PIN ปัจจุบัน</string>
   <string name="addresses_bitcoin">ที่อยู่ Bitcoin </string>
   <string name="addresses_bitcoin_cash">ที่อยู่เงินสดของ Bitcoin</string>

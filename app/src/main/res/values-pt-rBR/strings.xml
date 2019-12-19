@@ -24,8 +24,6 @@
     <string name="options_id">ID de Carteira</string>
     <string name="preferences_about_title">Sobre Nós</string>
 
-    <string name="ask_you_sure_unpair">Tem certeza de que deseja cancelar desparear seu dispositivo?</string>
-
     <string name="select_currency">Selecionar moeda</string>
     <string name="options_currency">Moeda local</string>
 
@@ -116,9 +114,6 @@
 
     <string name="remote_save_ok">Salvamento remoto OK.</string>
     <string name="remote_save_ko">Erro no salvamento remoto.</string>
-
-    <string name="unpair_wallet">Desparear Carteira</string>
-    <string name="unpair">DESPAREAR</string>
 
     <string name="ok_cap">OK</string>
     <string name="change_pin_code">Alterar PIN</string>

@@ -6,6 +6,7 @@ import info.blockchain.balance.FiatValue
 import piuk.blockchain.android.ui.base.mvi.MviIntent
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.androidcore.data.charts.PriceSeries
+import java.math.BigInteger
 
 sealed class DashboardIntent : MviIntent<DashboardState>
 
@@ -24,7 +25,22 @@ class BalanceUpdate(
         require(cryptoCurrency == newBalance.currency) { throw IllegalStateException("CryptoCurrency mismatch") }
 
         val oldAsset = oldState[cryptoCurrency]
-        val newAsset = oldAsset.copy(cryptoBalance = newBalance)
+        val newAsset = oldAsset.copy(cryptoBalance = newBalance, hasBalanceError = false)
+        val newAssets = oldState.assets.copy(patchAsset = newAsset)
+
+        return oldState.copy(assets = newAssets)
+    }
+}
+
+class BalanceUpdateError(
+    val cryptoCurrency: CryptoCurrency
+) : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState {
+        val oldAsset = oldState[cryptoCurrency]
+        val newAsset = oldAsset.copy(
+            cryptoBalance = CryptoValue(cryptoCurrency, BigInteger.ZERO),
+            hasBalanceError = true
+        )
         val newAssets = oldState.assets.copy(patchAsset = newAsset)
 
         return oldState.copy(assets = newAssets)

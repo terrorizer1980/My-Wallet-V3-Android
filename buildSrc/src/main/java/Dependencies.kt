@@ -6,8 +6,8 @@ object Versions {
     const val minSdk = 21
     const val targetSdk = 28
     const val compileSdk = 28
-    const val versionCode = 494
-    const val versionName = "6.30.0"
+    const val versionCode = 496
+    const val versionName = "6.30.1"
     const val buildTools = "28.0.3"
 
     // Build tools and languages
@@ -44,13 +44,12 @@ object Versions {
     const val supportTesting = "1.0.2"
 
     // Networking, RxJava
-    const val retrofit = "2.6.1"
+    const val retrofit = "2.7.0"
     const val okHttp = "4.0.1"
     const val mockWebServer = "v0.1.0"
     const val moshi = "1.8.0"
     const val gson = "2.8.5"
-    const val jacksonCore = "2.9.9"
-    const val dagger = "2.24"
+    const val jacksonCore = "2.10.0"
     const val koin = "0.9.3"
     const val rxJava = "2.2.11"
     const val rxKotlin = "2.4.0"
@@ -62,7 +61,7 @@ object Versions {
 
     // Utils, Ethereum
     const val web3j = "3.3.1-android"
-    const val spongycastle = "1.53.0.0"
+    const val spongycastle = "1.54.0.0"
     const val jjwt = "0.9.0"
     const val lambdaWorks = "1.0.0"
     const val libPhoneNumber = "8.9.10"
@@ -170,8 +169,6 @@ object Libraries {
     const val moshiKotlin = "com.squareup.moshi:moshi-kotlin:${Versions.moshi}"
     const val jacksonCore = "com.fasterxml.jackson.core:jackson-core:${Versions.jacksonCore}"
     const val gson = "com.google.code.gson:gson:${Versions.gson}"
-    const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
-    const val daggerKapt = "com.google.dagger:dagger-compiler:${Versions.dagger}"
     const val koin = "org.koin:koin-core:${Versions.koin}"
     const val koinAndroid = "org.koin:koin-android:${Versions.koin}"
     const val koinAndroidArchitecture = "org.koin:koin-android-architecture:${Versions.koin}"

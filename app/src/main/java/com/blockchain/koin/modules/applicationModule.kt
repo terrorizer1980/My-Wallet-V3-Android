@@ -68,6 +68,7 @@ import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsViewModel
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
 import piuk.blockchain.android.ui.home.MainPresenter
+import piuk.blockchain.android.ui.home.MetadataLoader
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.launcher.LauncherPresenter
 import piuk.blockchain.android.ui.onboarding.OnboardingPresenter
@@ -222,33 +223,42 @@ val applicationModule = applicationContext {
             )
         }
 
+        bean {
+            MetadataLoader(
+                metadataManager = get(),
+                payloadManagerWiper = get(),
+                paxAccount = get(),
+                buyDataManager = get(),
+                shapeShiftDataManager = get(),
+                dynamicFeeCache = get(),
+                feeDataManager = get(),
+                accessState = get(),
+                appUtil = get(),
+                rxBus = get(),
+                crashLogger = get()
+            )
+        }
+
         factory {
             MainPresenter(
                 prefs = get(),
                 appUtil = get(),
                 accessState = get(),
-                payloadManagerWiper = get(),
+                metadataLoader = get(),
                 payloadDataManager = get(),
                 coinifyDataManager = get(),
                 buyDataManager = get(),
-                dynamicFeeCache = get(),
                 exchangeService = get(),
                 stringUtils = get(),
                 exchangeRateFactory = get(),
-                rxBus = get(),
-                feeDataManager = get(),
-                ethDataManager = get(),
-                bchDataManager = get(),
-                currencyState = get(),
                 metadataManager = get(),
-                shapeShiftDataManager = get(),
+                currencyState = get(),
                 environmentSettings = get(),
                 kycStatusHelper = get(),
                 lockboxDataManager = get(),
                 deepLinkProcessor = get(),
                 sunriverCampaignRegistration = get(),
                 xlmDataManager = get(),
-                paxAccount = get(),
                 pitFeatureFlag = get("ff_pit_linking"),
                 pitABTestingExperiment = get(),
                 pitLinking = get(),

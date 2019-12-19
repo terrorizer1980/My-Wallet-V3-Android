@@ -22,8 +22,6 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.exceptions.HDWalletException
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
-import info.blockchain.wallet.payload.PayloadManagerWiper
-import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
@@ -31,14 +29,12 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerifiedLinkState
 import piuk.blockchain.android.deeplink.LinkState
 import piuk.blockchain.android.kyc.KycLinkState
 import piuk.blockchain.android.sunriver.CampaignLinkState
 import piuk.blockchain.android.thepit.PitLinking
-import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
@@ -46,16 +42,10 @@ import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.erc20.Erc20Account
-import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.data.rxjava.RxBus
-import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
@@ -100,19 +90,12 @@ class MainPresenter internal constructor(
     private val prefs: PersistentPrefs,
     private val appUtil: AppUtil,
     private val accessState: AccessState,
-    private val payloadManagerWiper: PayloadManagerWiper,
+    private val metadataLoader: MetadataLoader,
     private val payloadDataManager: PayloadDataManager,
     private val buyDataManager: BuyDataManager,
-    private val dynamicFeeCache: DynamicFeeCache,
     private val exchangeRateFactory: ExchangeRateDataManager,
-    private val rxBus: RxBus,
-    private val feeDataManager: FeeDataManager,
-    private val ethDataManager: EthDataManager,
-    private val bchDataManager: BchDataManager,
     private val currencyState: CurrencyState,
     private val metadataManager: MetadataManager,
-    private val stringUtils: StringUtils,
-    private val shapeShiftDataManager: ShapeShiftDataManager,
     private val environmentSettings: EnvironmentConfig,
     private val coinifyDataManager: CoinifyDataManager,
     private val exchangeService: ExchangeService,
@@ -121,13 +104,13 @@ class MainPresenter internal constructor(
     private val deepLinkProcessor: DeepLinkProcessor,
     private val sunriverCampaignRegistration: SunriverCampaignRegistration,
     private val xlmDataManager: XlmDataManager,
-    private val paxAccount: Erc20Account,
     private val pitFeatureFlag: FeatureFlag,
     private val pitABTestingExperiment: ABTestExperiment,
     private val pitLinking: PitLinking,
     private val nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
-    private val crashLogger: CrashLogger
+    private val crashLogger: CrashLogger,
+    private val stringUtils: StringUtils
 ) : MvpPresenter<MainView>() {
 
     override val alwaysDisableScreenshots: Boolean = false
@@ -213,12 +196,7 @@ class MainPresenter internal constructor(
     }
 
     internal fun initMetadataElements() {
-        compositeDisposable += metadataManager
-            .attemptMetadataSetup()
-            .andThen(ethCompletable())
-            .andThen(shapeShiftCompletable())
-            .andThen(bchCompletable())
-            .andThen(feesCompletable())
+        compositeDisposable += metadataLoader.loader()
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
                 view?.showProgressDialog(R.string.please_wait)
@@ -237,8 +215,6 @@ class MainPresenter internal constructor(
                     checkKycStatus()
                     setDebugExchangeVisibility()
                     initBuyService()
-
-                    rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
 
                     checkForPendingLinks()
                 },
@@ -367,77 +343,14 @@ class MainPresenter internal constructor(
                 )
     }
 
-    private fun bchCompletable(): Completable {
-        return bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
-            .doOnError { throwable ->
-                crashLogger.logException(throwable)
-                // TODO: 21/02/2018 Reload or disable?
-                Timber.e(throwable, "Failed to load bch wallet")
-            }
-    }
-
-    private fun ethCompletable(): Completable {
-        return ethDataManager.initEthereumWallet(
-            stringUtils.getString(R.string.eth_default_account_label),
-            stringUtils.getString(R.string.pax_default_account_label)
-        ).doOnError { throwable ->
-            crashLogger.logException(throwable)
-            // TODO: 21/02/2018 Reload or disable?
-            Timber.e(throwable, "Failed to load eth wallet")
-        }
-    }
-
-    private fun shapeShiftCompletable(): Completable {
-        return shapeShiftDataManager.initShapeshiftTradeData()
-            .onErrorComplete()
-            .doOnError { throwable ->
-                crashLogger.logException(throwable)
-                // TODO: 21/02/2018 Reload or disable?
-                Timber.e(throwable, "Failed to load shape shift trades")
-            }
-    }
-
     private fun logException(throwable: Throwable) {
         crashLogger.logException(throwable)
         view?.showMetadataNodeFailure()
     }
 
-    /**
-     * All of these calls are allowed to fail here, we're just caching them in advance because we
-     * can.
-     */
-    private fun feesCompletable(): Completable =
-        feeDataManager.btcFeeOptions
-            .doOnNext { dynamicFeeCache.btcFeeOptions = it }
-            .ignoreElements()
-            .onErrorComplete()
-            .andThen(feeDataManager.ethFeeOptions
-                .doOnNext { dynamicFeeCache.ethFeeOptions = it }
-                .ignoreElements()
-                .onErrorComplete()
-            )
-            .andThen(feeDataManager.bchFeeOptions
-                .doOnNext { dynamicFeeCache.bchFeeOptions = it }
-                .ignoreElements()
-                .onErrorComplete()
-            )
-            .subscribeOn(Schedulers.io())
-
-    private fun exchangeRateCompletable(): Completable {
-        return exchangeRateFactory.updateTickers().applySchedulers()
-    }
-
     internal fun unPair() {
         view?.clearAllDynamicShortcuts()
-        payloadManagerWiper.wipe()
-        accessState.logout()
-        accessState.unpairWallet()
-        appUtil.restartApp(LauncherActivity::class.java)
-        accessState.clearPin()
-        buyDataManager.wipe()
-        ethDataManager.clearEthAccountDetails()
-        paxAccount.clear()
-        bchDataManager.clearBchAccountDetails()
+        metadataLoader.unload()
     }
 
     internal fun updateTicker() {
@@ -488,10 +401,13 @@ class MainPresenter internal constructor(
             view?.showToast(R.string.invalid_password, ToastCustom.TYPE_ERROR)
             view?.showSecondPasswordDialog()
         } else {
-            compositeDisposable += metadataManager.decryptAndSetupMetadata(environmentSettings.bitcoinNetworkParameters,
-                secondPassword)
-                .subscribeBy(onError = { it.printStackTrace() },
-                    onComplete = { appUtil.restartApp(LauncherActivity::class.java) })
+            compositeDisposable += metadataManager.decryptAndSetupMetadata(
+                environmentSettings.bitcoinNetworkParameters,
+                secondPassword
+            ).subscribeBy(
+                onError = { it.printStackTrace() },
+                onComplete = { appUtil.restartApp(LauncherActivity::class.java) }
+            )
         }
     }
 

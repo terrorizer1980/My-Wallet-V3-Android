@@ -444,9 +444,9 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     private fun showLogoutDialog() {
         AlertDialog.Builder(this, R.style.AlertDialogStyle)
-            .setTitle(R.string.unpair_wallet)
-            .setMessage(R.string.ask_you_sure_unpair)
-            .setPositiveButton(R.string.unpair) { _, _ ->
+            .setTitle(R.string.logout_wallet)
+            .setMessage(R.string.ask_you_sure_logout)
+            .setPositiveButton(R.string.btn_logout) { _, _ ->
                 analytics.logEvent(AnalyticsEvents.Logout)
                 presenter.unPair()
             }
@@ -828,7 +828,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                 R.drawable.ic_vector_toolbar_send,
                 R.color.white
             ), AHBottomNavigationItem(
-                R.string.toolbar_cmd_receive,
+                R.string.toolbar_cmd_receive_crypto,
                 R.drawable.ic_vector_toolbar_receive,
                 R.color.white
             ))

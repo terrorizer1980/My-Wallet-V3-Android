@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Panoya kopyalandı</string>
   <string name="options_id">Cüzdan Kimliği</string>
   <string name="preferences_about_title">Hakkımızda</string>
-  <string name="ask_you_sure_unpair">Cihazınızın eşleştirilmesini kaldırmak istediğinizden emin misiniz?</string>
-  <string name="select_currency">Para Birimi Seç</string>
+    <string name="select_currency">Para Birimi Seç</string>
   <string name="options_currency">Yerel Para Birimi</string>
   <string name="options_units">Bitcoin Birimi</string>
   <string name="options_tos">Hizmet Şartları</string>
@@ -136,9 +135,7 @@ Tüm hakları saklıdır.</string>
   <string name="imported_addresses">Alınan Adresler</string>
   <string name="remote_save_ok">Uzaktan TAMAM\'ı kaydet</string>
   <string name="remote_save_ko">Uzaktan kayıt başarısız</string>
-  <string name="unpair_wallet">Cüzdanı Eşleştirme</string>
-  <string name="unpair">EŞLEŞTİRME</string>
-  <string name="change_pin_code">PIN Değiştir</string>
+    <string name="change_pin_code">PIN Değiştir</string>
   <string name="enter_current_pin">Lütfen mevcut PIN girin.</string>
   <string name="addresses_bitcoin">Bitcoin Adresleri</string>
   <string name="addresses_bitcoin_cash">Bitcoin Nakit Adresleri</string>

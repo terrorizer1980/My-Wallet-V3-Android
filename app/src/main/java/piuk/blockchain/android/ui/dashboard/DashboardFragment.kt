@@ -38,6 +38,8 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 
 class EmptyDashboardItem : DashboardItem
 
+private typealias RefreshFn = () -> Unit
+
 class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent, DashboardState>(),
     AssetDetailSheet.Host,
     PromoBottomSheet.Host {
@@ -115,28 +117,33 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     private fun updateDisplayList(newState: DashboardState) {
         with(displayList) {
 
-            var isModified = false
-            isModified = isModified || handleUpdatedAssetState(IDX_CARD_BTC, newState.assets[CryptoCurrency.BTC])
-            isModified = isModified || handleUpdatedAssetState(IDX_CARD_ETH, newState.assets[CryptoCurrency.ETHER])
-            isModified = isModified || handleUpdatedAssetState(IDX_CARD_BCH, newState.assets[CryptoCurrency.BCH])
-            isModified = isModified || handleUpdatedAssetState(IDX_CARD_XLM, newState.assets[CryptoCurrency.XLM])
-            isModified = isModified || handleUpdatedAssetState(IDX_CARD_PAX, newState.assets[CryptoCurrency.PAX])
+            val modList = mutableListOf<RefreshFn?>()
 
-            if (isModified) {
+            modList.add(handleUpdatedAssetState(IDX_CARD_BTC, newState.assets[CryptoCurrency.BTC]))
+            modList.add(handleUpdatedAssetState(IDX_CARD_ETH, newState.assets[CryptoCurrency.ETHER]))
+            modList.add(handleUpdatedAssetState(IDX_CARD_BCH, newState.assets[CryptoCurrency.BCH]))
+            modList.add(handleUpdatedAssetState(IDX_CARD_XLM, newState.assets[CryptoCurrency.XLM]))
+            modList.add(handleUpdatedAssetState(IDX_CARD_PAX, newState.assets[CryptoCurrency.PAX]))
+
+            modList.removeAll { it == null }
+
+            if (modList.isNotEmpty()) {
                 set(IDX_CARD_BALANCE, newState)
-                theAdapter.notifyItemChanged(IDX_CARD_BALANCE)
+                modList.add { theAdapter.notifyItemChanged(IDX_CARD_BALANCE) }
             }
+
+            modList.forEach { it?.invoke() }
         }
     }
 
-    private fun handleUpdatedAssetState(index: Int, newState: AssetState): Boolean =
+    private fun handleUpdatedAssetState(index: Int, newState: AssetState): RefreshFn? {
         if (displayList[index] != newState) {
             displayList[index] = newState
-            theAdapter.notifyItemChanged(index)
-            true
+            return { theAdapter.notifyItemChanged(index) }
         } else {
-            false
+            return null
         }
+    }
 
     private fun showAssetSheet(sheetFor: CryptoCurrency?) {
         if (sheetFor != null) {
@@ -248,10 +255,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     private val announcementHost = object : AnnouncementHost {
         override val disposables: CompositeDisposable
             get() = compositeDisposable
-
-        override fun clearAllAnnouncements() { // TODO: Do we actually need this?
-            model.process(ClearAnnouncement)
-        }
 
         override fun showAnnouncementCard(card: AnnouncementCard) {
             model.process(ShowAnnouncement(card))

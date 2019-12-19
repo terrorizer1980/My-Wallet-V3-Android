@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">クリップボードにコピーしました</string>
   <string name="options_id">財布ID</string>
   <string name="preferences_about_title">当社について</string>
-  <string name="ask_you_sure_unpair">本当にお使いのデバイスのペアリングを解除しますか？</string>
-  <string name="select_currency">通過を選択</string>
+    <string name="select_currency">通過を選択</string>
   <string name="options_currency">地域通貨</string>
   <string name="options_units">ビットコイン単位</string>
   <string name="options_tos">サービス規約</string>
@@ -136,9 +135,7 @@
   <string name="imported_addresses">インポートされたアドレス</string>
   <string name="remote_save_ok">リモート保存OK</string>
   <string name="remote_save_ko">リモート保存に失敗</string>
-  <string name="unpair_wallet">財布のペアリングを解除</string>
-  <string name="unpair">ペアリングを解除</string>
-  <string name="change_pin_code">PINを変更</string>
+    <string name="change_pin_code">PINを変更</string>
   <string name="enter_current_pin">現在のPINを入力してください。</string>
   <string name="addresses_bitcoin">ビットコインアドレス</string>
   <string name="addresses_bitcoin_cash">Bitcoinキャッシュアドレス</string>

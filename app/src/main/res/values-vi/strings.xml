@@ -48,8 +48,7 @@
     <string name="copied_to_clipboard">Đã sao chép vào clipboard</string>
   <string name="options_id">ID Ví</string>
   <string name="preferences_about_title">Về chúng tôi</string>
-  <string name="ask_you_sure_unpair">Bạn có chắc muốn bỏ kết nối thiết bị của bạn?</string>
-  <string name="select_currency">Chọn ngoại tệ</string>
+    <string name="select_currency">Chọn ngoại tệ</string>
   <string name="options_currency">Nội tệ</string>
   <string name="options_units">Đơn vị Bitcoin</string>
   <string name="options_tos">Điều khoản Dịch vụ</string>
@@ -135,9 +134,7 @@ Bảo lưu mọi quyền.</string>
   <string name="imported_addresses">Các địa chỉ đã nhập</string>
   <string name="remote_save_ok">Lưu điều khiển từ xa thành công</string>
   <string name="remote_save_ko">Lưu điều khiển từ xa thất bại</string>
-  <string name="unpair_wallet">Bỏ kết nối Ví</string>
-  <string name="unpair">BỎ KẾT NỐI</string>
-  <string name="change_pin_code">Thay đổi mã PIN</string>
+    <string name="change_pin_code">Thay đổi mã PIN</string>
   <string name="enter_current_pin">Vui lòng nhập mã PIN hiện tại.</string>
   <string name="addresses_bitcoin">Địa chỉ Bitcoin</string>
   <string name="addresses_bitcoin_cash">Địa chỉ Bitcoin Cash</string>

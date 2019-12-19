@@ -19,4 +19,6 @@ class AssetTokenLookup(
             CryptoCurrency.PAX -> paxTokens
             CryptoCurrency.STX -> stxTokens
         }
+
+    fun init() { /* TODO: When second password is removed, init the coin metadata here */ }
 }

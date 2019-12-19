@@ -10,6 +10,7 @@ import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.payload.BalanceManagerBch
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Completable
+import io.reactivex.schedulers.Schedulers
 import org.bitcoinj.core.ECKey
 import org.bitcoinj.core.NetworkParameters
 import org.bitcoinj.params.BitcoinCashTestNet3Params
@@ -79,7 +80,7 @@ open class BitcoinCashWallet : DeterministicWallet {
         } else {
             Completable.fromCallable {
                 balanceManager.updateAllBalances(allAccountsAndAddresses, legacyAddressList, emptySet())
-            }
+            }.subscribeOn(Schedulers.io())
         }
 
     fun getAddressBalance(address: String): BigInteger =

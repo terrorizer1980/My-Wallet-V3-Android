@@ -49,7 +49,6 @@
   <string name="copied_to_clipboard">Zkopírováno do schránky</string>
   <string name="options_id">ID peněženky</string>
   <string name="preferences_about_title">O nás</string>
-  <string name="ask_you_sure_unpair">Opravdu chcete zrušit spárování svého zařízení?</string>
   <string name="select_currency">Vybrat měnu</string>
   <string name="options_currency">Místní měna</string>
   <string name="options_units">Jednotka bitcoinu</string>
@@ -136,8 +135,6 @@ Všechna práva vyhrazena.</string>
   <string name="imported_addresses">Importované adresy</string>
   <string name="remote_save_ok">Vzdálené uložení OK</string>
   <string name="remote_save_ko">Vzdálené uložení se nezdařilo</string>
-  <string name="unpair_wallet">Zrušit spárování peněženky</string>
-  <string name="unpair">ZRUŠIT SPÁROVÁNÍ</string>
   <string name="change_pin_code">Změnit PIN</string>
   <string name="enter_current_pin">Zadejte prosím aktuální PIN.</string>
   <string name="addresses_bitcoin">Adresy bitcoinu</string>

@@ -7,7 +7,6 @@ import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
 import com.blockchain.notifications.NotificationTokenManager;
 import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.notifications.analytics.AnalyticsEvents;
-import com.blockchain.notifications.analytics.KYCAnalyticsEvents;
 import com.blockchain.notifications.analytics.SettingsAnalyticsEvents;
 import com.blockchain.remoteconfig.FeatureFlag;
 import com.blockchain.swap.nabu.models.nabu.NabuApiException;
@@ -264,8 +263,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         }
     }
 
-    private boolean isStringValid(String string) {
-        return string != null && !string.isEmpty() && string.length() < 256;
+    private boolean isInvalidString(String string) {
+        return string == null || string.isEmpty() || string.length() >= 256;
     }
 
     /**
@@ -358,7 +357,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * @param email The email address to be saved
      */
     void updateEmail(String email) {
-        if (!isStringValid(email)) {
+        if (isInvalidString(email)) {
             getView().setEmailSummary(stringUtils.getString(R.string.not_specified));
         } else {
             getCompositeDisposable().add(
@@ -378,7 +377,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
      * @param sms The phone number to be saved
      */
     void updateSms(String sms) {
-        if (!isStringValid(sms)) {
+        if (isInvalidString(sms)) {
             getView().setSmsSummary(stringUtils.getString(R.string.not_specified));
         } else {
             getCompositeDisposable().add(
@@ -416,11 +415,9 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                         .subscribe(
                                 () -> {
                                     getView().showDialogSmsVerified();
-                                    /*  analytics.logEvent(KYCAnalyticsEvents.PhoneVerificationSuccess.INSTANCE);*/
                                 },
                                 throwable -> {
                                     getView().showWarningDialog(R.string.verify_sms_failed);
-                                    /*  analytics.logEvent(KYCAnalyticsEvents.PhoneVerificationFailure.INSTANCE);*/
                                 }));
     }
 

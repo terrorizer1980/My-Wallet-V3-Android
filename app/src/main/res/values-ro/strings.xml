@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">Copiat în clipboard</string>
   <string name="options_id">ID de portofel</string>
   <string name="preferences_about_title">Despre noi</string>
-  <string name="ask_you_sure_unpair">Sigur doriți să dezarhivați dispozitivul?</string>
-  <string name="select_currency">Selectați moneda</string>
+    <string name="select_currency">Selectați moneda</string>
   <string name="options_currency">Moneda locală</string>
   <string name="options_units">Bitcoin unitate</string>
   <string name="options_tos">Termeni și condiții</string>
@@ -136,9 +135,7 @@
   <string name="imported_addresses">Adrese importate</string>
   <string name="remote_save_ok">Salvat cu succes</string>
   <string name="remote_save_ko">Salvați fără succes</string>
-  <string name="unpair_wallet">Dezactivați Wallet</string>
-  <string name="unpair">anularea împerecherii</string>
-  <string name="change_pin_code">Schimbare PIN</string>
+    <string name="change_pin_code">Schimbare PIN</string>
   <string name="enter_current_pin">Introduceți codul PIN actual.</string>
   <string name="addresses_bitcoin">Adrese Bitcoin</string>
   <string name="addresses_bitcoin_cash">Bitcoin Cash Adrese</string>

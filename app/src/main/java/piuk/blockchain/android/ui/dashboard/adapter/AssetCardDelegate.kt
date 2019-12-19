@@ -8,7 +8,6 @@ import piuk.blockchain.android.util.currencyName
 import piuk.blockchain.android.util.setCoinIcon
 import com.blockchain.preferences.CurrencyPrefs
 import kotlinx.android.synthetic.main.item_dashboard_asset_card.view.*
-import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
 import piuk.blockchain.android.ui.dashboard.AssetState
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -16,6 +15,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import com.robinhood.spark.SparkAdapter
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.item_dashboard_asset_card.view.cardLayout
+import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.dashboard.asDeltaPercent
 import piuk.blockchain.android.ui.dashboard.format
 import piuk.blockchain.android.ui.dashboard.showLoading
@@ -57,10 +57,10 @@ private class AssetCardViewHolder(
             currency.setText(state.currency.currencyName())
         }
 
-        if (state.isLoading) {
-            renderLoading()
-        } else {
-            renderLoaded(state, fiatSymbol, onCardClicked)
+        when {
+            state.hasBalanceError -> renderError(state)
+            state.isLoading -> renderLoading()
+            else -> renderLoaded(state, fiatSymbol, onCardClicked)
         }
     }
 
@@ -68,6 +68,8 @@ private class AssetCardViewHolder(
         with(itemView) {
             cardLayout.isEnabled = false
             setOnClickListener { }
+
+            showContent()
 
             fiat_balance.showLoading()
             crypto_balance.showLoading()
@@ -82,6 +84,8 @@ private class AssetCardViewHolder(
         with(itemView) {
             cardLayout.isEnabled = true
             setOnClickListener { onCardClicked(state.currency) }
+
+            showContent()
 
             fiat_balance.text = state.fiatBalance.format(fiatSymbol)
             crypto_balance.text = state.cryptoBalance.format(state.currency)
@@ -98,6 +102,46 @@ private class AssetCardViewHolder(
             } else {
                 sparkview.gone()
             }
+        }
+    }
+
+    private fun renderError(state: AssetState) {
+        showError()
+
+        with(itemView) {
+            cardLayout.isEnabled = false
+            setOnClickListener { }
+
+            val text = resources.getString(R.string.dashboard_asset_error, state.currency.symbol)
+            error_msg.text = text
+        }
+    }
+
+    private fun showContent() {
+        with(itemView) {
+            fiat_balance.visible()
+            crypto_balance.visible()
+            sparkview.visible()
+            separator.visible()
+            price.visible()
+            price_delta.visible()
+            price_delta_interval.visible()
+
+            error_msg.invisible()
+        }
+    }
+
+    private fun showError() {
+        with(itemView) {
+            fiat_balance.invisible()
+            crypto_balance.invisible()
+            sparkview.invisible()
+            separator.invisible()
+            price.invisible()
+            price_delta.invisible()
+            price_delta_interval.invisible()
+
+            error_msg.visible()
         }
     }
 }

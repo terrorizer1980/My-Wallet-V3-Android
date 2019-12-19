@@ -49,8 +49,7 @@
     <string name="copied_to_clipboard">클립보드에 복사 됨</string>
   <string name="options_id">지갑 아이디</string>
   <string name="preferences_about_title">우리 정보</string>
-  <string name="ask_you_sure_unpair">귀하 장치 페어링 해제를 원하는 것이 확실합니까?</string>
-  <string name="select_currency">통화 선택</string>
+    <string name="select_currency">통화 선택</string>
   <string name="options_currency">현지 통화</string>
   <string name="options_units">비트코인 유닛</string>
   <string name="options_tos">서비스 조건</string>
@@ -136,9 +135,7 @@
   <string name="imported_addresses">가져온 주소들</string>
   <string name="remote_save_ok">원격 저장 성공</string>
   <string name="remote_save_ko">원격 저장 실패</string>
-  <string name="unpair_wallet">지갑 페어링 해제</string>
-  <string name="unpair">페어링 해제</string>
-  <string name="change_pin_code">비밀 번호 변경</string>
+    <string name="change_pin_code">비밀 번호 변경</string>
   <string name="enter_current_pin">현재 비밀 번호를 입력하세요</string>
   <string name="addresses_bitcoin">비트코인 주소</string>
   <string name="addresses_bitcoin_cash">Bitcoin 현금 주소</string>

@@ -311,7 +311,7 @@ class BchDataManager(
 
         return rxPinning.call {
             bchDataStore.bchWallet!!.updateAllBalances(xpubs, legacyAddresses)
-        }.applySchedulers()
+        }
     }
 
     fun getAddressBalance(address: String): BigInteger =

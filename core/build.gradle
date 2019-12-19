@@ -42,15 +42,15 @@ dependencies {
     api project(':sunriver')
     api project(':common:network')
     api project(':common:interface')
+
     // Networking
     api(Libraries.retrofit) { exclude module: 'okhttp' }
     api Libraries.retrofitJacksonConverter
     api Libraries.retrofitRxMoshiConverter
     api Libraries.retrofitRxJavaAdapter
     api Libraries.okHttpInterceptor
-    // Dagger
-    api Libraries.dagger
     api Libraries.koin
+
     // RxJava
     api Libraries.rxJava
     api Libraries.rxKotlin

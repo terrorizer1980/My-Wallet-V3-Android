@@ -315,11 +315,13 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     private fun onContentLoaded() {
         setShowRefreshing(false)
         no_transaction_include.gone()
+        recyclerview.adapter = txFeedAdapter
     }
 
     private fun onContentLoading() {
         textview_balance.text = ""
         setShowRefreshing(true)
+        recyclerview.adapter = null
     }
 
     // Called back by presenter.onGetBitcoinClicked() if buy/sell is not available

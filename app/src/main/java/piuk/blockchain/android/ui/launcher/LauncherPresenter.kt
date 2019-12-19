@@ -6,6 +6,8 @@ import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.Settings
+import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
+import io.reactivex.Observable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.R
@@ -18,6 +20,8 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.util.AppUtil
+import java.util.Locale
+import java.util.Currency
 
 class LauncherPresenter(
     private val appUtil: AppUtil,
@@ -57,8 +61,8 @@ class LauncherPresenter(
             prefs.setValue(PersistentPrefs.KEY_METADATA_URI, intentData)
         }
 
-        if (extras != null && extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)) {
-            isPinValidated = extras.getBoolean(AppUtil.INTENT_EXTRA_VERIFIED)
+        if (extras != null && extras.containsKey(INTENT_EXTRA_VERIFIED)) {
+            isPinValidated = extras.getBoolean(INTENT_EXTRA_VERIFIED)
         }
 
         if (extras?.containsKey("IS_AUTOMATION_TESTING") == true) {
@@ -102,19 +106,26 @@ class LauncherPresenter(
         compositeDisposable += settingsDataManager.initSettings(
             payloadDataManager.wallet!!.guid,
             payloadDataManager.wallet!!.sharedKey
-        ).zipWith(simpleBuyConfiguration.isEnabled().onErrorReturn { false }.toObservable())
+        ).flatMap { settings ->
+            if (!accessState.isNewlyCreated ||
+                !UNIT_FIAT.contains(Currency.getInstance(Locale.getDefault()).currencyCode)
+            ) {
+                Observable.just(settings)
+            } else {
+                settingsDataManager.updateFiatUnit(fiatUnitForFreshAccount())
+            }
+        }.zipWith(simpleBuyConfiguration.isEnabled().onErrorReturn { false }.toObservable())
             .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }
-            .subscribe({ (settings, simpleBuyEnable) ->
+            .subscribe({ (settings, simpleBuyEnabled) ->
                 setCurrencyUnits(settings)
-                if (simpleBuyEnable &&
+                if (simpleBuyEnabled &&
                     view?.getPageIntent()?.getBooleanExtra(AppUtil.INTENT_EXTRA_IS_AFTER_WALLET_CREATION,
                         false) == true
                 ) {
                     startSimpleBuy()
-                } else {
+                } else
                     startMainActivity()
-                }
             }, {
                 view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
                 view.onRequestPin()
@@ -129,11 +140,16 @@ class LauncherPresenter(
         view.startSimpleBuy()
     }
 
+    private fun fiatUnitForFreshAccount() =
+        if (UNIT_FIAT.contains(Currency.getInstance(Locale.getDefault()).currencyCode))
+            Currency.getInstance(Locale.getDefault()).currencyCode else "USD"
+
     private fun setCurrencyUnits(settings: Settings) {
         prefs.selectedFiatCurrency = settings.currency
     }
 
     companion object {
+        const val INTENT_EXTRA_VERIFIED = "verified"
         const val INTENT_AUTOMATION_TEST = "IS_AUTOMATION_TESTING"
     }
 }
