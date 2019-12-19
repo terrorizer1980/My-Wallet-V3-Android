@@ -29,6 +29,9 @@ import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.simplebuy.SimpleBuyConfiguration
 import piuk.blockchain.android.simplebuy.SimpleBuyConfigurationImpl
+import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
+import piuk.blockchain.android.simplebuy.SimpleBuyModel
+import piuk.blockchain.android.simplebuy.SimpleBuyState
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.thepit.PitLinkingImpl
@@ -740,6 +743,22 @@ val applicationModule = applicationContext {
         factory {
             DashboardInteractor(
                 tokens = get()
+            )
+        }
+
+        factory {
+            SimpleBuyInteractor(
+                tokens = get(),
+                tierService = get(),
+                metadataManager = get()
+            )
+        }
+
+        factory {
+            SimpleBuyModel(
+                interactor = get(),
+                scheduler = AndroidSchedulers.mainThread(),
+                state = SimpleBuyState()
             )
         }
 

@@ -1712,4 +1712,5 @@
     <string name="simple_buy_enter_amount">Enter amount</string>
     <string name="simple_buy_buy_crypto_title">Buy Crypto</string>
     <string name="simple_buy_verify_email_instruction">We sent an email to %1$s with a verification link. Didn’t get it? Check your spam folder.</string>
+    <string name="simple_buy_error_fetching_price">Error fetching latest price.</string>
 </resources>

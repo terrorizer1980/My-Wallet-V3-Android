@@ -28,11 +28,12 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/crypto_text"
         style="@style/Text.Semibold.16"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
         android:textColor="@color/grey_600"
         app:layout_constraintBottom_toBottomOf="@+id/crypto_icon"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/crypto_icon"
         app:layout_constraintTop_toTopOf="@+id/crypto_icon"
         tools:text="Bitcoin" />
@@ -60,9 +61,9 @@
         app:layout_constraintTop_toBottomOf="@+id/crypto_icon" />
 
     <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/fiat_currency_symbol"
         style="@style/Text.Semibold.16"
         android:layout_width="wrap_content"
-        android:id="@+id/fiat_currency_symbol"
         android:layout_height="wrap_content"
         android:text="€"
         android:textColor="@color/grey_600"
@@ -92,11 +93,35 @@
             android:hint="@string/simple_buy_enter_amount"
             android:inputType="numberDecimal" />
 
+
     </com.google.android.material.textfield.TextInputLayout>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/prices_loading"
+        android:layout_marginStart="45dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_amount" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="8dp"
+        android:id="@+id/exchange_price"
+        android:textColor="@color/grey_600"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_amount"
+        tools:text="1 BTC = €8,758.39" />
 
     <androidx.appcompat.widget.AppCompatButton
         style="@style/CtaButton.Blue"
         android:layout_width="match_parent"
+        android:id="@+id/btn_continue"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
         android:text="@string/btn_continue"

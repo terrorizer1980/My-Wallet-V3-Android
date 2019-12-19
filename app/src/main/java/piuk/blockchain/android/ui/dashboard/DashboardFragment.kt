@@ -157,7 +157,8 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         when (promoSheet) {
             PromoSheet.PROMO_STX_CAMPAIGN_INTO -> showBottomSheet(CampaignBlockstackIntroSheet())
             PromoSheet.PROMO_STX_CAMPAIGN_COMPLETE -> showBottomSheet(CampaignBlockstackCompleteSheet())
-            null -> { /* no-op */ }
+            null -> { /* no-op */
+            }
         }.exhaustive
     }
 
