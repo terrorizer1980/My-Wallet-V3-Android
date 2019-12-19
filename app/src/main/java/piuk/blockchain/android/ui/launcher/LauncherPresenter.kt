@@ -6,6 +6,8 @@ import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.Settings
+import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
+import io.reactivex.Observable
 import io.reactivex.rxkotlin.plusAssign
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.access.AccessState
@@ -16,6 +18,8 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.util.AppUtil
+import java.util.Locale
+import java.util.Currency
 
 class LauncherPresenter(
     private val appUtil: AppUtil,
@@ -99,7 +103,15 @@ class LauncherPresenter(
         compositeDisposable += settingsDataManager.initSettings(
             payloadDataManager.wallet!!.guid,
             payloadDataManager.wallet!!.sharedKey
-        )
+        ).flatMap { settings ->
+            if (!accessState.isNewlyCreated ||
+                !UNIT_FIAT.contains(Currency.getInstance(Locale.getDefault()).currencyCode)
+            ) {
+                Observable.just(settings)
+            } else {
+                settingsDataManager.updateFiatUnit(fiatUnitForFreshAccount())
+            }
+        }
             .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }
             .subscribe({ settings ->
@@ -114,6 +126,10 @@ class LauncherPresenter(
     private fun startMainActivity() {
         view.onStartMainActivity(deepLinkPersistence.popUriFromSharedPrefs())
     }
+
+    private fun fiatUnitForFreshAccount() =
+        if (UNIT_FIAT.contains(Currency.getInstance(Locale.getDefault()).currencyCode))
+            Currency.getInstance(Locale.getDefault()).currencyCode else "USD"
 
     private fun setCurrencyUnits(settings: Settings) {
         prefs.selectedFiatCurrency = settings.currency
