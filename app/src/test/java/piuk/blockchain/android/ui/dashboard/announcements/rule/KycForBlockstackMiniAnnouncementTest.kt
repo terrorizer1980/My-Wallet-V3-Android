@@ -29,7 +29,7 @@ class KycForBlockstackMiniAnnouncementTest {
     }
 
     @Test
-    fun `Dont show when  Gold kyc process hasn't been completed but standard announcement hasn't been dismissed`() {
+    fun `Dont show when Gold kyc process hasn't been completed but standard announcement hasn't been dismissed`() {
         whenever(kycForBlockstackAnnouncement.isDismissed()).thenReturn(false)
         whenever(queries.isGoldComplete()).thenReturn(Single.just(false))
 
@@ -41,7 +41,7 @@ class KycForBlockstackMiniAnnouncementTest {
     }
 
     @Test
-    fun `Dont show when  Gold kyc process hasn been completed and standard announcement hasn't been dismissed`() {
+    fun `Dont show when Gold kyc process hasn't been completed and standard announcement hasn't been dismissed`() {
         whenever(kycForBlockstackAnnouncement.isDismissed()).thenReturn(false)
         whenever(queries.isGoldComplete()).thenReturn(Single.just(true))
 

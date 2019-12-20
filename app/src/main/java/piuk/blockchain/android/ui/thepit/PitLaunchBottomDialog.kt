@@ -6,7 +6,7 @@ import com.blockchain.ui.urllinks.URL_THE_PIT_LAUNCH_SUPPORT
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.launchUrlInBrowser
-import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.android.ui.customviews.ErrorBottomDialog
 
 class PitLaunchBottomDialog : ErrorBottomDialog() {
     override val layout: Int

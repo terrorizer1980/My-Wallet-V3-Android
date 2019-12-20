@@ -20,7 +20,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import org.spongycastle.crypto.InvalidCipherTextException
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.rxjava.RxUtil
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.DialogButtonCallback
@@ -476,15 +475,15 @@ class PinEntryPresenter(
             )
     }
 
-    @SuppressLint("CheckResult")
     fun checkForceUpgradeStatus(versionName: String) {
-        walletOptionsDataManager.checkForceUpgrade(versionName)
-            .compose(RxUtil.addObservableToCompositeDisposable(this))
-            .subscribe(
-                { updateType ->
+        compositeDisposable += walletOptionsDataManager.checkForceUpgrade(versionName)
+            .subscribeBy(
+                onNext = { updateType ->
                     if (updateType !== UpdateType.NONE)
                         view.appNeedsUpgrade(updateType === UpdateType.FORCE)
-                }) { Timber.e(it) }
+                },
+                onError = { Timber.e(it) }
+            )
     }
 
     companion object {

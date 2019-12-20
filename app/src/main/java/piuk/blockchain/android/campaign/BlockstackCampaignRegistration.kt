@@ -19,7 +19,7 @@ class BlockstackCampaignRegistration(
     private fun defaultAccount(): Single<AccountReference> = stx.defaultAccount()
 
     override fun registerCampaign(): Completable =
-        registerCampaign(CampaignData(BlockstackCampaign, false))
+        registerCampaign(CampaignData(blockstackCampaignName, false))
 
     override fun registerCampaign(campaignData: CampaignData): Completable =
         defaultAccount().flatMapCompletable { stxAccount ->
@@ -44,14 +44,10 @@ class BlockstackCampaignRegistration(
         ).subscribeOn(Schedulers.io())
 
     override fun userIsInCampaign(): Single<Boolean> =
-        getCampaignList().map { it.contains(BlockstackCampaign) }
+        getCampaignList().map { it.contains(blockstackCampaignName) }
 
     private fun getCampaignList(): Single<List<String>> =
         nabuToken.fetchNabuToken().flatMap {
             nabuDataManager.getCampaignList(it)
         }.onErrorReturn { emptyList() }
-
-    companion object {
-        private const val BlockstackCampaign = "BLOCKSTACK"
-    }
 }

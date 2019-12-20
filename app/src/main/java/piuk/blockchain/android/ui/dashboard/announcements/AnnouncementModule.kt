@@ -11,6 +11,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForBlockstackM
 import piuk.blockchain.android.ui.dashboard.announcements.rule.IntroTourAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForAirdropsAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForBlockstackAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.StxCompleteAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycIncompleteAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycMoreInfoAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycResubmissionAnnouncement
@@ -187,6 +188,13 @@ val dashboardAnnouncementsModule = applicationContext {
 
         factory("kyc_blockstack_announcement") {
             KycForBlockstackAnnouncement(
+                dismissRecorder = get(),
+                queries = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            StxCompleteAnnouncement(
                 dismissRecorder = get(),
                 queries = get()
             )

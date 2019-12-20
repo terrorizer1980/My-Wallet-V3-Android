@@ -5,9 +5,11 @@ import com.blockchain.swap.nabu.models.nabu.Scope
 import com.blockchain.swap.nabu.models.nabu.goldTierComplete
 import com.blockchain.swap.nabu.models.nabu.kycVerified
 import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.models.nabu.UserCampaignState
 import com.blockchain.swap.nabu.service.TierService
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
+import piuk.blockchain.android.campaign.blockstackCampaignName
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 
 class AnnouncementQueries(
@@ -57,5 +59,11 @@ class AnnouncementQueries(
             .flatMap { token -> nabu.getUser(token) }
             .map { it.isStxAirdropRegistered }
             .onErrorReturn { false }
+    }
+
+    fun hasReceivedStxAirdrop(): Single<Boolean> {
+        return nabuToken.fetchNabuToken()
+            .flatMap { token -> nabu.getAirdropCampaignStatus(token) }
+            .map { it[blockstackCampaignName]?.userCampaignState == UserCampaignState.RewardReceived }
     }
 }

@@ -1,4 +1,4 @@
-package com.blockchain.ui.dialog
+package piuk.blockchain.android.ui.customviews
 
 import android.os.Bundle
 import android.os.Parcelable
@@ -19,7 +19,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.error_bottom_dialog.*
 import org.koin.android.ext.android.inject
-import piuk.blockchain.androidcoreui.R
+import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 

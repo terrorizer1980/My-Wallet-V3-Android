@@ -102,11 +102,3 @@ fun Fragment.getResolvedColor(@ColorRes color: Int): Int =
  */
 fun Context.getResolvedDrawable(@DrawableRes drawable: Int): Drawable? =
     ContextCompat.getDrawable(this, drawable)
-
-/**
- * Returns a nullable Drawable associated with a particular resource ID.
- *
- * @param drawable The Res ID of the Drawable.
- */
-fun Fragment.getResolvedDrawable(@DrawableRes drawable: Int): Drawable? =
-    ContextCompat.getDrawable(requireContext(), drawable)

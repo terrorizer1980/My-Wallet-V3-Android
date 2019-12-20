@@ -30,6 +30,8 @@ interface AnnouncementHost {
     fun startIntroTourGuide()
     fun startTransferCrypto()
     fun startBlockstackIntro()
+
+    fun startStxReceivedDetail()
 }
 
 abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {

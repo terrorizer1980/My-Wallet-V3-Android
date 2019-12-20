@@ -16,8 +16,6 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
 
-private const val SunRiverCampaign = "SUNRIVER"
-
 class SunriverCampaignRegistration(
     private val featureFlag: FeatureFlag,
     private val nabuDataManager: NabuDataManager,
@@ -53,7 +51,7 @@ class SunriverCampaignRegistration(
         }
 
     override fun registerCampaign(): Completable =
-        registerCampaign(CampaignData(SunRiverCampaign, false))
+        registerCampaign(CampaignData(sunriverCampaignName, false))
 
     override fun registerCampaign(campaignData: CampaignData): Completable =
         defaultAccount().flatMapCompletable { xlmAccount ->
@@ -78,7 +76,7 @@ class SunriverCampaignRegistration(
         ).subscribeOn(Schedulers.io())
 
     override fun userIsInCampaign(): Single<Boolean> =
-        getCampaignList().map { it.contains(SunRiverCampaign) }
+        getCampaignList().map { it.contains(sunriverCampaignName) }
 
     private fun getCampaignList(): Single<List<String>> =
         nabuToken.fetchNabuToken().flatMap {

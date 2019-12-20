@@ -19,6 +19,7 @@ import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
+import piuk.blockchain.android.ui.campaign.BlockstackAirdropCompleteSheet
 import piuk.blockchain.android.ui.campaign.CampaignBlockstackCompleteSheet
 import piuk.blockchain.android.ui.campaign.CampaignBlockstackIntroSheet
 import piuk.blockchain.android.ui.campaign.PromoBottomSheet
@@ -157,6 +158,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         when (promoSheet) {
             PromoSheet.PROMO_STX_CAMPAIGN_INTO -> showBottomSheet(CampaignBlockstackIntroSheet())
             PromoSheet.PROMO_STX_CAMPAIGN_COMPLETE -> showBottomSheet(CampaignBlockstackCompleteSheet())
+            PromoSheet.PROMO_STX_AIRDROP_COMPLETE -> showBottomSheet(BlockstackAirdropCompleteSheet())
             null -> { /* no-op */ }
         }.exhaustive
     }
@@ -253,6 +255,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     }
 
     private val announcementHost = object : AnnouncementHost {
+
         override val disposables: CompositeDisposable
             get() = compositeDisposable
 
@@ -285,6 +288,8 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         override fun startTransferCrypto() = navigator().launchTransfer()
 
         override fun startBlockstackIntro() = model.process(ShowPromoSheet(PromoSheet.PROMO_STX_CAMPAIGN_INTO))
+
+        override fun startStxReceivedDetail() = model.process(ShowPromoSheet(PromoSheet.PROMO_STX_AIRDROP_COMPLETE))
     }
 
     // AssetDetailSheet.Host
