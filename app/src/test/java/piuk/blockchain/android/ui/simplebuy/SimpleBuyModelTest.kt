@@ -73,10 +73,11 @@ class SimpleBuyModelTest {
 
     @Test
     fun `interactor fetched limits should be applied to state`() {
-        whenever(interactor.fetchBuyLimits()).thenReturn(Single.just(SimpleBuyIntent.BuyLimits(FiatValue.zero("USD"),
-            FiatValue.fromMinor("USD", 23400))))
+        whenever(interactor.fetchBuyLimits("USD"))
+            .thenReturn(Single.just(SimpleBuyIntent.BuyLimits(FiatValue.zero("USD"),
+                FiatValue.fromMinor("USD", 23400))))
         val testObserver = model.state.test()
-        model.process(SimpleBuyIntent.FetchBuyLimits)
+        model.process(SimpleBuyIntent.FetchBuyLimits("USD"))
 
         testObserver.assertValueAt(0, SimpleBuyState())
         testObserver.assertValueAt(1, SimpleBuyState(FiatValue.zero("USD"), FiatValue.fromMinor("USD", 23400)))

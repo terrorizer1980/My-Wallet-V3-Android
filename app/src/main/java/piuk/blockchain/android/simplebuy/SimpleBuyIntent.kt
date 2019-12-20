@@ -21,11 +21,13 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
     }
 
     data class BuyLimits(private val min: FiatValue, private val max: FiatValue) : SimpleBuyIntent() {
-        override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState.copy(minAmount = min, maxAmount = max)
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState {
+            return oldState.copy(minAmount = min, maxAmount = max)
+        }
     }
 
-    object FetchBuyLimits : SimpleBuyIntent() {
-        override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState
+    data class FetchBuyLimits(val currency: String) : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState.copy(currency = currency)
     }
 
     object PriceLoading : SimpleBuyIntent() {

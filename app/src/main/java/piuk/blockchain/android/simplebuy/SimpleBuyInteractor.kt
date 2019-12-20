@@ -5,13 +5,16 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiatWithCurrency
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import java.math.BigDecimal
 
 class SimpleBuyInteractor(
     private val tokens: AssetTokenLookup,
     private val tierService: TierService,
-    private val metadataManager: MetadataManager
+    private val metadataManager: MetadataManager,
+    private val exchangeRateFactory: ExchangeRateDataManager
 ) {
 
     fun updateExchangePriceForCurrency(cryptoCurrency: CryptoCurrency): Single<SimpleBuyIntent.PriceUpdate> =
@@ -19,11 +22,19 @@ class SimpleBuyInteractor(
             SimpleBuyIntent.PriceUpdate(fiatValue)
         }
 
-    fun fetchBuyLimits(): Single<SimpleBuyIntent.BuyLimits> =
-        metadataManager.attemptMetadataSetup().andThen(
-            tierService.tiers().map {
-                val highestTierLimits = it.tiers.sortedBy { it.index }.last().limits
-                SimpleBuyIntent.BuyLimits(FiatValue.fromMajor(highestTierLimits.currency, 1.toBigDecimal()),
-                    highestTierLimits.dailyFiat ?: FiatValue.fromMajor(highestTierLimits.currency, BigDecimal.ZERO))
+    fun fetchBuyLimits(targetCurrency: String): Single<SimpleBuyIntent.BuyLimits> =
+        metadataManager.attemptMetadataSetup()
+                // we have to ensure that exchange rates are loaded before we retrieve the exchange rates locally
+            .andThen(tokens[CryptoCurrency.BTC].exchangeRate().ignoreElement())
+            .andThen(tierService.tiers().map {
+                val highestTierLimits = it.tiers.maxBy { tier -> tier.index }!!.limits
+
+                val minValue = FiatValue.fromMajor(highestTierLimits.currency,
+                    1.toBigDecimal()).toFiatWithCurrency(exchangeRateFactory, targetCurrency)
+
+                val maxValue = (highestTierLimits.dailyFiat ?: FiatValue.fromMajor(highestTierLimits.currency,
+                    BigDecimal.ZERO)).toFiatWithCurrency(exchangeRateFactory, targetCurrency)
+
+                SimpleBuyIntent.BuyLimits(minValue, maxValue)
             })
 }

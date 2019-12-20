@@ -750,7 +750,8 @@ val applicationModule = applicationContext {
             SimpleBuyInteractor(
                 tokens = get(),
                 tierService = get(),
-                metadataManager = get()
+                metadataManager = get(),
+                exchangeRateFactory = get()
             )
         }
 

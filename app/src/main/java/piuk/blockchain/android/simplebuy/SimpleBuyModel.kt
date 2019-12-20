@@ -20,9 +20,9 @@ class SimpleBuyModel(state: SimpleBuyState, scheduler: Scheduler, private val in
                     }
 
                 )
-            is SimpleBuyIntent.FetchBuyLimits -> interactor.fetchBuyLimits().subscribeBy(
+            is SimpleBuyIntent.FetchBuyLimits -> interactor.fetchBuyLimits(intent.currency).subscribeBy(
                 onSuccess = { process(it) },
-                onError = { }
+                onError = { /*handle case when limits weren't received*/ }
             )
 
             is SimpleBuyIntent.BuyLimits -> null

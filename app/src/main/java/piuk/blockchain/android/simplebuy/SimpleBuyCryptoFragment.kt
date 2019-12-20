@@ -46,7 +46,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         super.onViewCreated(view, savedInstanceState)
         activity.setupToolbar(R.string.simple_buy_buy_crypto_title)
         model.process(SimpleBuyIntent.NewCryptoCurrencySelected(CryptoCurrency.BTC))
-        model.process(SimpleBuyIntent.FetchBuyLimits)
+        model.process(SimpleBuyIntent.FetchBuyLimits(currencyPrefs.selectedFiatCurrency))
 
         crypto_text.setOnClickListener {
             showBottomSheet(CryptoCurrencyChooserBottomSheet())
