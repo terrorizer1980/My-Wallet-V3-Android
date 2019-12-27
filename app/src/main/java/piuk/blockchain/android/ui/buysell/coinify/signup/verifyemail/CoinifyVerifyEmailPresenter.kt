@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.buysell.coinify.signup.verifyemail
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -185,7 +185,7 @@ class CoinifyVerifyEmailPresenter(
             .flatMapCompletable {
                 metadataManager.saveToMetadata(
                     it.toSerialisedString(),
-                    ExchangeService.METADATA_TYPE_EXCHANGE
+                    MetadataManager.METADATA_TYPE_EXCHANGE
                 )
             }
             .toSingle { traderResponse }

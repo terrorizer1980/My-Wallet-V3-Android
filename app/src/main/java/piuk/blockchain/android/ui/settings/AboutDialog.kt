@@ -6,16 +6,14 @@ import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatDialogFragment
+import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
+import androidx.appcompat.app.AppCompatDialogFragment
 import kotlinx.android.synthetic.main.activity_about.*
-
 import java.util.Calendar
-
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcoreui.utils.extensions.gone

@@ -4,13 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.auth.LandingActivity
-import piuk.blockchain.android.ui.auth.PasswordRequiredActivity
+import piuk.blockchain.android.ui.start.PasswordRequiredActivity
 import piuk.blockchain.android.ui.auth.PinEntryActivity
 import piuk.blockchain.android.ui.home.MainActivity
+import piuk.blockchain.android.ui.start.LandingActivity
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.utils.extensions.toast
@@ -18,7 +18,6 @@ import timber.log.Timber
 
 class LauncherActivity : BaseMvpActivity<LauncherView, LauncherPresenter>(), LauncherView {
 
-    @Suppress("MemberVisibilityCanBePrivate")
     private val launcherPresenter: LauncherPresenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,9 +35,7 @@ class LauncherActivity : BaseMvpActivity<LauncherView, LauncherPresenter>(), Lau
 
     override fun getPageIntent(): Intent = intent
 
-    override fun onNoGuid() {
-        startSingleActivity(LandingActivity::class.java, null)
-    }
+    override fun onNoGuid() = LandingActivity.start(this)
 
     override fun onRequestPin() {
         startSingleActivity(PinEntryActivity::class.java, null)

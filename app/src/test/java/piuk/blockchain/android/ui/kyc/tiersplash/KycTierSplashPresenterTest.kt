@@ -2,13 +2,13 @@ package piuk.blockchain.android.ui.kyc.tiersplash
 
 import androidx.navigation.NavDirections
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.kyc.models.nabu.KycTierState
-import com.blockchain.kyc.models.nabu.LimitsJson
-import com.blockchain.kyc.models.nabu.TierJson
-import com.blockchain.kyc.models.nabu.TiersJson
-import com.blockchain.kyc.services.nabu.TierService
-import com.blockchain.kyc.services.nabu.TierUpdater
+import com.blockchain.swap.nabu.models.nabu.KycTierState
+import com.blockchain.swap.nabu.models.nabu.LimitsJson
+import com.blockchain.swap.nabu.models.nabu.TierJson
+import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.remoteconfig.FeatureFlag
+import com.blockchain.swap.nabu.service.TierService
+import com.blockchain.swap.nabu.service.TierUpdater
 import com.blockchain.testutils.usd
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
@@ -195,9 +195,9 @@ fun tiers(tier1: Pair<KycTierState, FiatValue>, tier2: Pair<KycTierState, FiatVa
         )
     )
 
-private fun email(): NavDirections = KycNavXmlDirections.ActionStartEmailVerification()
-private fun mobile(): NavDirections = KycNavXmlDirections.ActionStartMobileVerification("DE")
-private fun veriff(): NavDirections = KycNavXmlDirections.ActionStartVeriff("DE")
+private fun email(): NavDirections = KycNavXmlDirections.actionStartEmailVerification()
+private fun mobile(): NavDirections = KycNavXmlDirections.actionStartMobileVerification("DE")
+private fun veriff(): NavDirections = KycNavXmlDirections.actionStartVeriff("DE")
 
 private fun givenRedirect(email: NavDirections): KycNavigator =
     mock {

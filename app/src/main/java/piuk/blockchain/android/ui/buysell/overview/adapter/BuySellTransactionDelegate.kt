@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.buysell.overview.adapter
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.item_balance.view.*
+import kotlinx.android.synthetic.main.item_transaction.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
 import piuk.blockchain.android.ui.buysell.overview.models.BuySellDisplayable
@@ -25,7 +25,7 @@ internal class BuySellTransactionDelegate(
         items[position] is BuySellTransaction
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        BuySellTransactionViewHolder(parent.inflate(R.layout.item_balance))
+        BuySellTransactionViewHolder(parent.inflate(R.layout.item_transaction))
 
     override fun onBindViewHolder(
         items: List<BuySellDisplayable>,

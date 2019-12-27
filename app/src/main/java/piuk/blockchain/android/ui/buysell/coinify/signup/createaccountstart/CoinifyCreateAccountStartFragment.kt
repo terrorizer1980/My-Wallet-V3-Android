@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.buysell.coinify.signup.createaccountstart
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +27,7 @@ class CoinifyCreateAccountStartFragment : Fragment() {
         buysellWelcomeButton.setOnClickListener { signUpListener?.requestStartSelectCountry() }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is CoinifyFlowListener) {
             signUpListener = context

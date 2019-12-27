@@ -1,10 +1,10 @@
 package piuk.blockchain.android.ui.buysell.confirmation.sell
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import com.blockchain.ui.password.SecondPasswordHandler
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.disposables.CompositeDisposable
@@ -111,7 +111,7 @@ class CoinifySellConfirmationActivity :
             .setTitle(R.string.app_name)
             .setMessage(R.string.buy_sell_confirmation_order_expired)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                setResult(Activity.RESULT_CANCELED)
+                setResult(AppCompatActivity.RESULT_CANCELED)
                 finish()
             }
             .setCancelable(false)
@@ -128,7 +128,7 @@ class CoinifySellConfirmationActivity :
 
     override fun showTransactionComplete() {
         CoinifyPaymentCompleteActivity.start(this, PaymentState.SUCCESS)
-        setResult(Activity.RESULT_OK)
+        setResult(AppCompatActivity.RESULT_OK)
         finish()
     }
 
@@ -150,7 +150,7 @@ class CoinifySellConfirmationActivity :
     }
 
     override fun onSupportNavigateUp(): Boolean = consume {
-        setResult(Activity.RESULT_CANCELED)
+        setResult(AppCompatActivity.RESULT_CANCELED)
         finish()
     }
 
@@ -168,7 +168,7 @@ class CoinifySellConfirmationActivity :
         const val REQUEST_CODE_CONFIRM_MAKE_SELL_PAYMENT = 807
 
         fun start(
-            activity: Activity,
+            activity: AppCompatActivity,
             displayModel: SellConfirmationDisplayModel,
             bankAccountId: Int
         ) {

@@ -1,21 +1,23 @@
 package piuk.blockchain.android.ui.kyc.address
 
-import android.app.Activity.RESULT_CANCELED
-import android.app.Activity.RESULT_OK
+import androidx.appcompat.app.AppCompatActivity.RESULT_CANCELED
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import android.content.Intent
 import android.location.Geocoder
 import android.os.Bundle
-import android.support.design.widget.TextInputLayout
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.SearchView
+import com.google.android.material.textfield.TextInputLayout
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.extensions.nextAfterOrNull
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.address.models.AddressDialog
 import piuk.blockchain.android.ui.kyc.address.models.AddressIntent
 import piuk.blockchain.android.ui.kyc.address.models.AddressModel
@@ -27,6 +29,7 @@ import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import piuk.blockchain.android.ui.kyc.profile.models.ProfileModel
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
@@ -75,11 +78,12 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
     KycHomeAddressView {
 
     private val presenter: KycHomeAddressPresenter by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
     private var progressDialog: MaterialProgressDialog? = null
     override val profileModel: ProfileModel by unsafeLazy {
-        KycHomeAddressFragmentArgs.fromBundle(arguments).profileModel
+        KycHomeAddressFragmentArgs.fromBundle(arguments ?: Bundle()).profileModel
     }
     private val initialState by unsafeLazy {
         AddressModel(
@@ -119,23 +123,23 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
 
     override fun continueToMobileVerification(countryCode: String) {
         closeKeyboard()
-        navigate(KycNavXmlDirections.ActionStartMobileVerification(countryCode))
+        navigate(KycNavXmlDirections.actionStartMobileVerification(countryCode))
     }
 
     @Suppress("ConstantConditionIf")
     override fun continueToOnfidoSplash(countryCode: String) {
         closeKeyboard()
-        navigate(KycNavXmlDirections.ActionStartVeriff(countryCode))
+        navigate(KycNavXmlDirections.actionStartVeriff(countryCode))
     }
 
     override fun tier1Complete() {
         closeKeyboard()
-        navigate(KycHomeAddressFragmentDirections.ActionTier1Complete())
+        navigate(KycHomeAddressFragmentDirections.actionTier1Complete())
     }
 
     override fun continueToTier2MoreInfoNeeded(countryCode: String) {
         closeKeyboard()
-        navigate(KycNavXmlDirections.ActionStartTier2NeedMoreInfo(countryCode))
+        navigate(KycNavXmlDirections.actionStartTier2NeedMoreInfo(countryCode))
     }
 
     override fun restoreUiState(
@@ -234,7 +238,10 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
                 buttonNext
                     .throttledClicks()
                     .subscribeBy(
-                        onNext = { presenter.onContinueClicked(progressListener.campaignType) },
+                        onNext = {
+                            presenter.onContinueClicked(progressListener.campaignType)
+                            analytics.logEvent(KYCAnalyticsEvents.AddressChanged)
+                        },
                         onError = { Timber.e(it) }
                     )
 
@@ -385,7 +392,9 @@ class KycHomeAddressFragment : BaseMvpFragment<KycHomeAddressView, KycHomeAddres
     }
 
     private fun closeKeyboard() {
-        ViewUtils.hideKeyboard(requireActivity())
+        (requireActivity() as? AppCompatActivity)?.let {
+            ViewUtils.hideKeyboard(it)
+        }
     }
 
     override fun createPresenter(): KycHomeAddressPresenter = presenter

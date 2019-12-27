@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.account.adapter
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -57,6 +57,7 @@ class CreateWalletDelegate<in T>(
                 itemView.setOnClickListener(null)
                 plus.gone()
             }
+            itemView.contentDescription = header.text
         }
     }
 }

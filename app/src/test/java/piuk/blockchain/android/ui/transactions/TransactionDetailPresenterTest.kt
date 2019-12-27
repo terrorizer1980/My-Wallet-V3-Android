@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.transactions
 
-import android.content.Intent
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.data.TransactionHash
 import com.blockchain.sunriver.XlmDataManager
@@ -30,9 +29,6 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
-import piuk.blockchain.android.data.datamanagers.models.XlmDisplayable
-import piuk.blockchain.android.ui.balance.BalanceFragment.Companion.KEY_TRANSACTION_HASH
-import piuk.blockchain.android.ui.balance.BalanceFragment.Companion.KEY_TRANSACTION_LIST_POSITION
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
@@ -47,7 +43,6 @@ import piuk.blockchain.androidcore.data.transactions.models.EthDisplayable
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.math.BigInteger
-import java.util.Arrays
 import java.util.HashMap
 import java.util.Locale
 
@@ -65,6 +60,10 @@ class TransactionDetailPresenterTest {
     private val bchDataManager: BchDataManager = mock()
     private val environmentSettings: EnvironmentConfig = mock()
     private val xlmDataManager: XlmDataManager = mock()
+
+    private val displayable1: BtcDisplayable = mock()
+    private val displayable2: BtcDisplayable = mock()
+    private val displayable3: BtcDisplayable = mock()
 
     @get:Rule
     val rxSchedulers = rxInit {
@@ -93,54 +92,20 @@ class TransactionDetailPresenterTest {
     }
 
     @Test
-    fun onViewReadyNoIntent() {
-        // Arrange
-        whenever(view.getPageIntent()).thenReturn(null)
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(view).getPageIntent()
-        verify(view).pageFinish()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun onViewReadyNoKey() {
-        // Arrange
-        val mockIntent: Intent = mock()
-        whenever(mockIntent.hasExtra(KEY_TRANSACTION_LIST_POSITION)).thenReturn(false)
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(view).getPageIntent()
-        verify(view).pageFinish()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
     fun onViewReadyKeyOutOfBounds() {
         // Arrange
-        val mockIntent: Intent = mock()
-        whenever(mockIntent.hasExtra(KEY_TRANSACTION_LIST_POSITION)).thenReturn(true)
-        whenever(mockIntent.getIntExtra(KEY_TRANSACTION_LIST_POSITION, -1)).thenReturn(-1)
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(view).getPageIntent()
-        verify(view).pageFinish()
-        verifyNoMoreInteractions(view)
-    }
+        whenever(view.positionDetailLookup()).thenReturn(4)
+        whenever(view.txHashDetailLookup()).thenReturn(null)
 
-    @Test
-    fun onViewReadyNullIntent() {
-        // Arrange
-        whenever(view.getPageIntent()).thenReturn(null)
+        whenever(transactionListDataManager.getTransactionList())
+            .thenReturn(listOf<Displayable>(displayable1, displayable2, displayable3))
+
         // Act
         subject.onViewReady()
+
         // Assert
-        verify(view).getPageIntent()
+        verify(view).positionDetailLookup()
+        verify(view).txHashDetailLookup()
         verify(view).pageFinish()
         verifyNoMoreInteractions(view)
     }
@@ -148,13 +113,15 @@ class TransactionDetailPresenterTest {
     @Test
     fun onViewReadyIntentPositionInvalid() {
         // Arrange
-        val mockIntent: Intent = mock()
-        whenever(mockIntent.getIntExtra(KEY_TRANSACTION_LIST_POSITION, -1)).thenReturn(-1)
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
+        whenever(view.positionDetailLookup()).thenReturn(0)
+        whenever(view.txHashDetailLookup()).thenReturn(null)
+
         // Act
         subject.onViewReady()
+
         // Assert
-        verify(view).getPageIntent()
+        verify(view).positionDetailLookup()
+        verify(view).txHashDetailLookup()
         verify(view).pageFinish()
         verifyNoMoreInteractions(view)
     }
@@ -162,16 +129,18 @@ class TransactionDetailPresenterTest {
     @Test
     fun onViewReadyIntentHashNotFound() {
         // Arrange
-        val mockIntent: Intent = mock()
         val txHash = "TX_HASH"
-        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn(txHash)
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
-        whenever(transactionListDataManager.getTxFromHash(txHash))
-            .thenReturn(Single.error(Throwable()))
+        whenever(view.positionDetailLookup()).thenReturn(0)
+        whenever(view.txHashDetailLookup()).thenReturn(txHash)
+
+        whenever(transactionListDataManager.getTxFromHash(txHash)).thenReturn(Single.error(Throwable()))
+
         // Act
         subject.onViewReady()
+
         // Assert
-        verify(view).getPageIntent()
+        verify(view).positionDetailLookup()
+        verify(view).txHashDetailLookup()
         verify(view).pageFinish()
         verifyNoMoreInteractions(view)
     }
@@ -179,30 +148,28 @@ class TransactionDetailPresenterTest {
     @Test
     fun onViewReadyTransactionFoundInList() {
         // Arrange
-        val displayableToFind: BtcDisplayable = mock()
-        whenever(displayableToFind.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(displayableToFind.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
-        whenever(displayableToFind.hash).thenReturn("txMoved_hash")
-        whenever(displayableToFind.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayableToFind.fee).thenReturn(Observable.just(BigInteger.valueOf(10000L)))
+        whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
+        whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
+        whenever(displayable1.hash).thenReturn("txMoved_hash")
+        whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
+        whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(10000L)))
 
-        val displayable2: BtcDisplayable = mock()
         whenever(displayable2.hash).thenReturn("")
-
-        val displayable3: BtcDisplayable = mock()
         whenever(displayable3.hash).thenReturn("")
 
-        val mockIntent: Intent = mock()
+        whenever(view.positionDetailLookup()).thenReturn(0)
+        whenever(view.txHashDetailLookup()).thenReturn(null)
+
         val mockPayload: Wallet = mock()
-        whenever(mockIntent.hasExtra(KEY_TRANSACTION_LIST_POSITION)).thenReturn(true)
-        whenever(mockIntent.getIntExtra(KEY_TRANSACTION_LIST_POSITION, -1)).thenReturn(0)
         whenever(mockPayload.txNotes).thenReturn(HashMap())
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
+
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
         whenever(transactionListDataManager.getTransactionList())
-            .thenReturn(Arrays.asList<Displayable>(displayableToFind, displayable2, displayable3))
+            .thenReturn(listOf<Displayable>(displayable1, displayable2, displayable3))
+
         whenever(stringUtils.getString(R.string.transaction_detail_pending))
             .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
+
         val inputs = HashMap<String, BigInteger>()
         val outputs = HashMap<String, BigInteger>()
         inputs["addr1"] = BigInteger.valueOf(1000L)
@@ -211,14 +178,18 @@ class TransactionDetailPresenterTest {
         whenever(transactionHelper.filterNonChangeAddresses(any())).thenReturn(pair)
         whenever(payloadDataManager.addressToLabel("addr1")).thenReturn("account1")
         whenever(payloadDataManager.addressToLabel("addr2")).thenReturn("account2")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_transferred))
             .thenReturn("Value when moved: ")
+
         // Act
         subject.onViewReady()
+
         // Assert
-        verify(view).getPageIntent()
+        verify(view).positionDetailLookup()
+        verify(view).txHashDetailLookup()
+
         verify(view).setStatus(
             CryptoCurrency.BTC,
             "Pending (0/3 Confirmations)",
@@ -242,24 +213,23 @@ class TransactionDetailPresenterTest {
     @Test
     fun onViewReadyTransactionFoundViaHash() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
-        whenever(displayable.hash).thenReturn("txMoved_hash")
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(1L)))
-        val mockIntent: Intent = mock()
+        whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
+        whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
+        whenever(displayable1.hash).thenReturn("txMoved_hash")
+        whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
+        whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(1L)))
+
+        whenever(view.positionDetailLookup()).thenReturn(-1)
+        whenever(view.txHashDetailLookup()).thenReturn("txMoved_hash")
+
         val mockPayload: Wallet = mock()
-        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
-        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("txMoved_hash")
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
         whenever(mockPayload.txNotes).thenReturn(HashMap())
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
         whenever(transactionListDataManager.getTxFromHash("txMoved_hash"))
-            .thenReturn(Single.just(displayable))
+            .thenReturn(Single.just(displayable1))
         whenever(stringUtils.getString(R.string.transaction_detail_pending))
             .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
+
         val inputs = HashMap<String, BigInteger>()
         val outputs = HashMap<String, BigInteger>()
         inputs["addr1"] = BigInteger.valueOf(1000L)
@@ -268,14 +238,17 @@ class TransactionDetailPresenterTest {
         whenever(transactionHelper.filterNonChangeAddresses(any())).thenReturn(pair)
         whenever(payloadDataManager.addressToLabel("addr1")).thenReturn("account1")
         whenever(payloadDataManager.addressToLabel("addr2")).thenReturn("account2")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_transferred))
             .thenReturn("Value when moved: ")
+
         // Act
         subject.onViewReady()
+
         // Assert
-        verify(view).getPageIntent()
+        verify(view).positionDetailLookup()
+        verify(view).txHashDetailLookup()
         verify(view).setStatus(
             CryptoCurrency.BTC,
             "Pending (0/3 Confirmations)",
@@ -299,42 +272,45 @@ class TransactionDetailPresenterTest {
     @Test
     fun onViewReadyTransactionFoundViaHashEthereum() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(3000000000L)))
+        whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
+        whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.SENT)
+        whenever(displayable1.hash).thenReturn("hash")
+        whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
+        whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(3000000000L)))
         val maps = HashMap<String, BigInteger>()
         maps[""] = BigInteger.TEN
-        whenever(displayable.inputsMap).thenReturn(maps)
-        whenever(displayable.outputsMap).thenReturn(maps)
-        val mockIntent: Intent = mock()
-        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
-        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("hash")
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
-        whenever(transactionListDataManager.getTxFromHash("hash"))
-            .thenReturn(Single.just(displayable))
+        whenever(displayable1.inputsMap).thenReturn(maps)
+        whenever(displayable1.outputsMap).thenReturn(maps)
+
+        whenever(view.positionDetailLookup()).thenReturn(-1)
+        whenever(view.txHashDetailLookup()).thenReturn("hash")
+
+        whenever(transactionListDataManager.getTxFromHash("hash")).thenReturn(Single.just(displayable1))
         whenever(stringUtils.getString(R.string.transaction_detail_pending))
             .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
         whenever(stringUtils.getString(R.string.eth_default_account_label))
             .thenReturn("My Ethereum Wallet")
+
         val inputs = HashMap<String, BigInteger>()
         val outputs = HashMap<String, BigInteger>()
         inputs["addr1"] = BigInteger.valueOf(1000L)
         outputs["addr2"] = BigInteger.valueOf(2000L)
         val pair = Pair.of(inputs, outputs)
         whenever(transactionHelper.filterNonChangeAddresses(any())).thenReturn(pair)
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")
         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
         whenever(ethDataManager.getTransactionNotes("hash")).thenReturn("note")
+
         // Act
         subject.onViewReady()
+
         // Assert
-        verify(view).getPageIntent()
+        verify(view).positionDetailLookup()
+        verify(view).txHashDetailLookup()
+
         verify(view).setStatus(CryptoCurrency.ETHER, "Pending (0/12 Confirmations)", "hash")
         verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
         verify(view).setTransactionColour(R.color.product_red_sent_50)
@@ -354,22 +330,21 @@ class TransactionDetailPresenterTest {
     @Test
     fun `onViewReady transaction found via hash xlm`() {
         // Arrange
-        val displayable: XlmDisplayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.XLM)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(396684365L)))
+        whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.XLM)
+        whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.SENT)
+        whenever(displayable1.hash).thenReturn("hash")
+        whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
+        whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(396684365L)))
         val maps = HashMap<String, BigInteger>()
         maps[""] = BigInteger.TEN
-        whenever(displayable.inputsMap).thenReturn(maps)
-        whenever(displayable.outputsMap).thenReturn(maps)
-        val mockIntent: Intent = mock()
-        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
-        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("hash")
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
+        whenever(displayable1.inputsMap).thenReturn(maps)
+        whenever(displayable1.outputsMap).thenReturn(maps)
+
+        whenever(view.positionDetailLookup()).thenReturn(-1)
+        whenever(view.txHashDetailLookup()).thenReturn("hash")
+
         whenever(transactionListDataManager.getTxFromHash("hash"))
-            .thenReturn(Single.just(displayable))
+            .thenReturn(Single.just(displayable1))
         whenever(stringUtils.getString(R.string.transaction_detail_pending))
             .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
         whenever(stringUtils.getString(R.string.xlm_default_account_label))
@@ -378,12 +353,15 @@ class TransactionDetailPresenterTest {
             .thenReturn("Value when sent: ")
         whenever(xlmDataManager.defaultAccount())
             .thenReturn(Single.just(AccountReference.Xlm("My Lumens Wallet", "Account ID")))
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
+
         // Act
         subject.onViewReady()
+
         // Assert
-        verify(view).getPageIntent()
+        verify(view).positionDetailLookup()
+        verify(view).txHashDetailLookup()
         verify(view).setStatus(CryptoCurrency.XLM, "Pending (0/1 Confirmations)", "hash")
         verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
         verify(view).setTransactionColour(R.color.product_red_sent_50)
@@ -404,22 +382,21 @@ class TransactionDetailPresenterTest {
     @Test
     fun `onViewReady transaction found via hash pax`() {
         // Arrange
-        val displayable: Erc20Displayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
+        whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
+        whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.SENT)
+        whenever(displayable1.hash).thenReturn("hash")
+        whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
+        whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
         val maps = HashMap<String, BigInteger>()
         maps[""] = BigInteger.TEN
-        whenever(displayable.inputsMap).thenReturn(maps)
-        whenever(displayable.outputsMap).thenReturn(maps)
-        val mockIntent: Intent = mock()
-        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
-        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("hash")
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
+        whenever(displayable1.inputsMap).thenReturn(maps)
+        whenever(displayable1.outputsMap).thenReturn(maps)
+
+        whenever(view.positionDetailLookup()).thenReturn(-1)
+        whenever(view.txHashDetailLookup()).thenReturn("hash")
+
         whenever(transactionListDataManager.getTxFromHash("hash"))
-            .thenReturn(Single.just(displayable))
+            .thenReturn(Single.just(displayable1))
         whenever(stringUtils.getString(R.string.transaction_detail_pending))
             .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
         whenever(stringUtils.getString(R.string.pax_default_account_label))
@@ -427,14 +404,15 @@ class TransactionDetailPresenterTest {
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")
         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
 
         // Act
         subject.onViewReady()
         // Assert
-        verify(view).getPageIntent()
+        verify(view).positionDetailLookup()
+        verify(view).txHashDetailLookup()
         verify(view).setStatus(CryptoCurrency.PAX, "Pending (0/12 Confirmations)", "hash")
         verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
         verify(view).setTransactionColour(R.color.product_red_sent_50)
@@ -458,14 +436,14 @@ class TransactionDetailPresenterTest {
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(any())).thenReturn("Value when sent: ")
         // Act
         val observer = subject.getTransactionValueString("USD", displayable).test()
 
         // Assert
-        verify(exchangeRateFactory).getHistoricPrice(any(), any(), any())
+        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
         assertEquals("Value when sent: $1,000.00", observer.values()[0])
         observer.onComplete()
         observer.assertNoErrors()
@@ -478,13 +456,13 @@ class TransactionDetailPresenterTest {
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(any())).thenReturn("Value when received: ")
         // Act
         val observer = subject.getTransactionValueString("USD", displayable).test()
         // Assert
-        verify(exchangeRateFactory).getHistoricPrice(any(), any(), any())
+        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
         assertEquals("Value when received: $1,000.00", observer.values()[0])
         observer.onComplete()
         observer.assertNoErrors()
@@ -497,13 +475,13 @@ class TransactionDetailPresenterTest {
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(any())).thenReturn("Value when received: ")
         // Act
         val observer = subject.getTransactionValueString("USD", displayable).test()
         // Assert
-        verify(exchangeRateFactory).getHistoricPrice(any(), any(), any())
+        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
         assertEquals("Value when received: $1,000.00", observer.values()[0])
         observer.onComplete()
         observer.assertNoErrors()
@@ -516,14 +494,14 @@ class TransactionDetailPresenterTest {
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(stringUtils.getString(any())).thenReturn("Value when transferred: ")
         whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         // Act
         val observer = subject.getTransactionValueString("USD", displayable).test()
         // Assert
-        verify(exchangeRateFactory).getHistoricPrice(any(), any(), any())
+        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
         assertEquals("Value when transferred: $1,000.00", observer.values()[0])
         observer.onComplete()
         observer.assertNoErrors()
@@ -820,10 +798,10 @@ class TransactionDetailPresenterTest {
         maps[""] = BigInteger.TEN
         whenever(displayable.inputsMap).thenReturn(maps)
         whenever(displayable.outputsMap).thenReturn(maps)
-        val mockIntent: Intent = mock()
-        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
-        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("hash")
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
+
+        whenever(view.positionDetailLookup()).thenReturn(-1)
+        whenever(view.txHashDetailLookup()).thenReturn("hash")
+
         whenever(transactionListDataManager.getTxFromHash("hash"))
             .thenReturn(Single.just(displayable))
         whenever(stringUtils.getString(R.string.transaction_detail_pending))
@@ -833,7 +811,7 @@ class TransactionDetailPresenterTest {
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")
         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
 
@@ -858,10 +836,10 @@ class TransactionDetailPresenterTest {
         maps[""] = BigInteger.TEN
         whenever(displayable.inputsMap).thenReturn(maps)
         whenever(displayable.outputsMap).thenReturn(maps)
-        val mockIntent: Intent = mock()
-        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
-        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("hash")
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
+
+        whenever(view.positionDetailLookup()).thenReturn(-1)
+        whenever(view.txHashDetailLookup()).thenReturn("hash")
+
         whenever(transactionListDataManager.getTxFromHash("hash"))
             .thenReturn(Single.just(displayable))
         whenever(stringUtils.getString(R.string.transaction_detail_pending))
@@ -871,7 +849,7 @@ class TransactionDetailPresenterTest {
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")
         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
 
@@ -895,10 +873,10 @@ class TransactionDetailPresenterTest {
         maps[""] = BigInteger.TEN
         whenever(displayable.inputsMap).thenReturn(maps)
         whenever(displayable.outputsMap).thenReturn(maps)
-        val mockIntent: Intent = mock()
-        whenever(mockIntent.hasExtra(KEY_TRANSACTION_HASH)).thenReturn(true)
-        whenever(mockIntent.getStringExtra(KEY_TRANSACTION_HASH)).thenReturn("hash")
-        whenever(view.getPageIntent()).thenReturn(mockIntent)
+
+        whenever(view.positionDetailLookup()).thenReturn(-1)
+        whenever(view.txHashDetailLookup()).thenReturn("hash")
+
         whenever(transactionListDataManager.getTxFromHash("hash"))
             .thenReturn(Single.just(displayable))
         whenever(stringUtils.getString(R.string.transaction_detail_pending))
@@ -908,7 +886,7 @@ class TransactionDetailPresenterTest {
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")
         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(any(), any(), any()))
+        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
             .thenReturn(Single.just(1000.usd()))
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
 

@@ -1,26 +1,18 @@
 package piuk.blockchain.android.ui.settings
 
-import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ShortcutManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.support.annotation.StringRes
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AlertDialog.Builder
-import android.support.v7.preference.Preference
-import android.support.v7.preference.PreferenceCategory
-import android.support.v7.preference.PreferenceFragmentCompat
-import android.support.v7.preference.SwitchPreferenceCompat
-import android.support.v7.widget.AppCompatEditText
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AlertDialog.Builder
 import android.text.Editable
 import android.text.Html
 import android.text.SpannableString
@@ -32,22 +24,19 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
-
-import com.blockchain.kyc.models.nabu.Kyc2TierState
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.crashlytics.android.answers.ContentViewEvent
 import com.mukesh.countrypicker.fragments.CountryPicker
-
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.util.FormatsUtil
 import info.blockchain.wallet.util.PasswordUtil
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.auth.PinEntryActivity
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.fingerprint.FingerprintDialog
 import piuk.blockchain.android.ui.fingerprint.FingerprintStage
 import piuk.blockchain.android.util.RootUtil
@@ -57,10 +46,17 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.logging.Logging
-
-import android.app.Activity.RESULT_OK
+import androidx.appcompat.app.AppCompatActivity.RESULT_OK
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.preference.Preference
+import androidx.preference.PreferenceCategory
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
+import com.blockchain.notifications.analytics.SettingsAnalyticsEvents
 import com.blockchain.ui.urllinks.URL_PRIVACY_POLICY
 import com.blockchain.ui.urllinks.URL_TOS_POLICY
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R.string.success
 import piuk.blockchain.android.ui.auth.KEY_VALIDATING_PIN_FOR_RESULT
@@ -69,70 +65,67 @@ import piuk.blockchain.android.ui.settings.preferences.KycStatusPreference
 import piuk.blockchain.android.ui.settings.preferences.ThePitStatusPreference
 import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.thepit.PitPermissionsActivity
+
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 
 class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     // Profile
     private val kycStatusPref by lazy {
-        findPreference("identity_verification") as KycStatusPreference
+        findPreference<KycStatusPreference>("identity_verification")
     }
     private val guidPref by lazy {
-        findPreference("guid")
+        findPreference<Preference>("guid")
     }
     private val emailPref by lazy {
-        findPreference("email")
+        findPreference<Preference>("email")
     }
     private val smsPref by lazy {
-        findPreference("mobile")
+        findPreference<Preference>("mobile")
     }
     private val thePit by lazy {
-        findPreference("the_pit") as ThePitStatusPreference
+        findPreference<ThePitStatusPreference>("the_pit")
     }
 
     // Preferences
     private val fiatPref by lazy {
-        findPreference("fiat")
+        findPreference<Preference>("fiat")
     }
     private val emailNotificationPref by lazy {
-        findPreference("email_notifications") as SwitchPreferenceCompat
+        findPreference<Preference>("email_notifications") as SwitchPreferenceCompat
     }
     private val pushNotificationPref by lazy {
-        findPreference("push_notifications") as SwitchPreferenceCompat
+        findPreference<Preference>("push_notifications") as SwitchPreferenceCompat
     }
     // Security
     private val fingerprintPref by lazy {
-        findPreference("fingerprint") as SwitchPreferenceCompat
+        findPreference<Preference>("fingerprint") as SwitchPreferenceCompat
     }
     private val twoStepVerificationPref by lazy {
-        findPreference("2fa") as SwitchPreferenceCompat
+        findPreference<SwitchPreferenceCompat>("2fa")
     }
     private val torPref by lazy {
-        findPreference("tor") as SwitchPreferenceCompat
+        findPreference<SwitchPreferenceCompat>("tor")
     }
     private val launcherShortcutPrefs by lazy {
-        findPreference("receive_shortcuts_enabled") as SwitchPreferenceCompat
+        findPreference<SwitchPreferenceCompat>("receive_shortcuts_enabled")
     }
     private val swipeToReceivePrefs by lazy {
-        findPreference("swipe_to_receive_enabled") as SwitchPreferenceCompat
+        findPreference<SwitchPreferenceCompat>("swipe_to_receive_enabled")
     }
     private val screenshotPref by lazy {
-        findPreference("screenshots_enabled") as SwitchPreferenceCompat
+        findPreference<SwitchPreferenceCompat>("screenshots_enabled")
     }
 
     private val settingsPresenter: SettingsPresenter by inject()
     private val analytics: Analytics by inject()
+    private val rxBus: RxBus by inject()
 
     private var pwStrength = 0
     private var progressDialog: MaterialProgressDialog? = null
-
-    private var receiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == BalanceFragment.ACTION_INTENT) {
-                settingsPresenter.onViewReady()
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,32 +141,60 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     override fun setUpUi() {
         // Profile
-        kycStatusPref.onClick { settingsPresenter.onKycStatusClicked() }
-        kycStatusPref.isVisible = false
+        kycStatusPref.onClick {
+            settingsPresenter.onKycStatusClicked()
+            analytics.logEvent(SettingsAnalyticsEvents.SwapLimitChecked)
+        }
+        kycStatusPref?.isVisible = false
 
-        guidPref.onClick { showDialogGuid() }
-        emailPref.onClick { onUpdateEmailClicked() }
-        smsPref.onClick { showDialogMobile() }
+        guidPref.onClick {
+            showDialogGuid()
+            analytics.logEvent(SettingsAnalyticsEvents.WappetIdCopyClicked)
+        }
+        emailPref.onClick {
+            onUpdateEmailClicked()
+            analytics.logEvent(SettingsAnalyticsEvents.EmailClicked)
+        }
+        smsPref.onClick {
+            showDialogMobile()
+            analytics.logEvent(SettingsAnalyticsEvents.PhoneClicked)
+        }
 
         thePit.onClick { settingsPresenter.onThePitClicked() }
 
         // Preferences
         fiatPref.onClick { showDialogFiatUnits() }
-        emailNotificationPref.onClick { showDialogEmailNotifications() }
+        emailNotificationPref.onClick {
+            showDialogEmailNotifications()
+            analytics.logEvent(SettingsAnalyticsEvents.EmailNotificationClicked)
+        }
         pushNotificationPref.onClick { showDialogPushNotifications() }
 
         // Security
-        fingerprintPref.onClick { onFingerprintClicked() }
-        findPreference("pin").onClick { showDialogChangePin() }
-        twoStepVerificationPref.onClick { showDialogTwoFA() }
-        findPreference("change_pw").onClick { showDialogChangePasswordWarning() }
+        fingerprintPref.onClick {
+            onFingerprintClicked()
+            analytics.logEvent(SettingsAnalyticsEvents.BiometryAuthSwitch)
+        }
+        findPreference<Preference>("pin").onClick {
+            showDialogChangePin()
+            analytics.logEvent(SettingsAnalyticsEvents.ChangePinClicked)
+        }
+        twoStepVerificationPref.onClick {
+            showDialogTwoFA()
+            analytics.logEvent(SettingsAnalyticsEvents.TwoFactorAuthClicked)
+        }
 
-        torPref.setOnPreferenceChangeListener { _, newValue ->
+        findPreference<Preference>("change_pw").onClick {
+            showDialogChangePasswordWarning()
+            analytics.logEvent(SettingsAnalyticsEvents.ChangePassClicked)
+        }
+
+        torPref?.setOnPreferenceChangeListener { _, newValue ->
             settingsPresenter.updateTor(newValue as Boolean)
             true
         }
 
-        screenshotPref.setOnPreferenceChangeListener { _, newValue ->
+        screenshotPref?.setOnPreferenceChangeListener { _, newValue ->
             settingsPresenter.updatePreferences(
                 PersistentPrefs.KEY_SCREENSHOTS_ENABLED,
                 newValue as Boolean
@@ -181,7 +202,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
             true
         }
 
-        launcherShortcutPrefs.setOnPreferenceChangeListener { _, newValue ->
+        launcherShortcutPrefs?.setOnPreferenceChangeListener { _, newValue ->
             if (!(newValue as Boolean) && AndroidUtils.is25orHigher()) {
                 activity!!.getSystemService(
                     ShortcutManager::class.java
@@ -190,11 +211,11 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
             true
         }
 
-        swipeToReceivePrefs.setOnPreferenceChangeListener { _, newValue ->
+        swipeToReceivePrefs?.setOnPreferenceChangeListener { _, newValue ->
             if (!(newValue as Boolean)) {
                 settingsPresenter.clearSwipeToReceiveData()
             } else {
-                AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
+                Builder(activity!!, R.style.AlertDialogStyle)
                     .setTitle(R.string.swipe_receive_hint)
                     .setMessage(R.string.swipe_receive_address_info)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
@@ -203,21 +224,22 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                     .setCancelable(false)
                     .show()
             }
+            analytics.logEvent(SettingsAnalyticsEvents.SwipeToReceiveSwitch)
             true
         }
 
         // App
-        findPreference("about").apply {
+        findPreference<Preference>("about")?.apply {
             summary = "v" + BuildConfig.VERSION_NAME
             onClick { onAboutClicked() }
         }
 
-        findPreference("tos").onClick { onTosClicked() }
-        findPreference("privacy").onClick { onPrivacyClicked() }
+        findPreference<Preference>("tos").onClick { onTosClicked() }
+        findPreference<Preference>("privacy").onClick { onPrivacyClicked() }
 
-        val disableRootWarningPref = findPreference(PersistentPrefs.KEY_ROOT_WARNING_DISABLED)
+        val disableRootWarningPref = findPreference<Preference>(PersistentPrefs.KEY_ROOT_WARNING_DISABLED)
         if (disableRootWarningPref != null && !RootUtil().isDeviceRooted) {
-            val appCategory = findPreference("app") as PreferenceCategory
+            val appCategory = findPreference<Preference>("app") as PreferenceCategory
             appCategory.removePreference(disableRootWarningPref)
         }
 
@@ -242,7 +264,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun isPitEnabled(enabled: Boolean) {
-        thePit.isVisible = enabled
+        thePit?.isVisible = enabled
     }
 
     override fun hideProgressDialog() {
@@ -255,7 +277,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun showWarningDialog(@StringRes message: Int) {
-        AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
+        Builder(activity!!, R.style.AlertDialogStyle)
             .setTitle(R.string.app_name)
             .setMessage(message)
             .setCancelable(true)
@@ -265,14 +287,23 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
             .show()
     }
 
+    private val compositeDisposable = CompositeDisposable()
+
+    private val event by unsafeLazy {
+        rxBus.register(ActionEvent::class.java)
+    }
+
     override fun onResume() {
         super.onResume()
-        val filter = IntentFilter(BalanceFragment.ACTION_INTENT)
-        LocalBroadcastManager.getInstance(activity!!).registerReceiver(receiver, filter)
+
+        compositeDisposable += event.subscribe {
+            settingsPresenter.onViewReady()
+        }
     }
 
     override fun onPause() {
-        LocalBroadcastManager.getInstance(activity!!).unregisterReceiver(receiver)
+        rxBus.unregister(ActionEvent::class.java, event)
+        compositeDisposable.clear()
         super.onPause()
     }
 
@@ -282,24 +313,24 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun setKycState(kycState: Kyc2TierState) {
-        kycStatusPref.setValue(kycState)
-        kycStatusPref.isVisible = kycState != Kyc2TierState.Hidden
+        kycStatusPref?.setValue(kycState)
+        kycStatusPref?.isVisible = kycState != Kyc2TierState.Hidden
     }
 
     override fun setGuidSummary(summary: String) {
-        guidPref.summary = summary
+        guidPref?.summary = summary
     }
 
     override fun setEmailSummary(summary: String) {
-        emailPref.summary = summary
+        emailPref?.summary = summary
     }
 
     override fun setSmsSummary(summary: String) {
-        smsPref.summary = summary
+        smsPref?.summary = summary
     }
 
     override fun setFiatSummary(summary: String) {
-        fiatPref.summary = summary
+        fiatPref?.summary = summary
     }
 
     override fun setEmailNotificationsVisibility(visible: Boolean) {
@@ -319,23 +350,23 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun setTwoFaPreference(enabled: Boolean) {
-        twoStepVerificationPref.isChecked = enabled
+        twoStepVerificationPref?.isChecked = enabled
     }
 
     override fun setTorBlocked(blocked: Boolean) {
-        torPref.isChecked = blocked
+        torPref?.isChecked = blocked
     }
 
     override fun setPitLinkingState(isLinked: Boolean) {
-        thePit.setValue(isLinked)
+        thePit?.setValue(isLinked)
     }
 
     override fun setScreenshotsEnabled(enabled: Boolean) {
-        screenshotPref.isChecked = enabled
+        screenshotPref?.isChecked = enabled
     }
 
     override fun setLauncherShortcutVisibility(visible: Boolean) {
-        launcherShortcutPrefs.isVisible = visible
+        launcherShortcutPrefs?.isVisible = visible
     }
 
     private fun onFingerprintClicked() {
@@ -343,7 +374,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun showDisableFingerprintDialog() {
-        AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
+        Builder(activity!!, R.style.AlertDialogStyle)
             .setTitle(R.string.app_name)
             .setMessage(R.string.fingerprint_disable_message)
             .setCancelable(true)
@@ -360,7 +391,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     override fun showNoFingerprintsAddedDialog() {
         updateFingerprintPreferenceStatus()
-        AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
+        Builder(activity!!, R.style.AlertDialogStyle)
             .setTitle(R.string.app_name)
             .setMessage(R.string.fingerprint_no_fingerprints_added)
             .setCancelable(true)
@@ -407,6 +438,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         val intent = Intent(activity, PinEntryActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
+        analytics.logEvent(SettingsAnalyticsEvents.PinChanged)
     }
 
     override fun launchThePitLandingActivity() {
@@ -439,7 +471,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         val handler = Handler()
         handler.postDelayed({
             if (activity != null) {
-                AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
+                Builder(activity!!, R.style.AlertDialogStyle)
                     .setTitle(R.string.verify)
                     .setMessage(R.string.verify_email_notice)
                     .setCancelable(true)
@@ -451,7 +483,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     private fun showDialogMobile() {
         if (settingsPresenter.authType != Settings.AUTH_TYPE_OFF) {
-            AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
+            Builder(activity!!, R.style.AlertDialogStyle)
                 .setTitle(R.string.warning)
                 .setMessage(R.string.disable_2fa_first)
                 .setPositiveButton(android.R.string.ok, null)
@@ -531,6 +563,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                 val clip = ClipData.newPlainText("guid", guidPref!!.summary)
                 clipboard.primaryClip = clip
                 showCustomToast(R.string.copied_to_clipboard)
+                analytics.logEvent(SettingsAnalyticsEvents.WappetIdCopyCopied)
             }
             .setNegativeButton(R.string.no, null)
             .show()
@@ -762,8 +795,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         if (settingsPresenter.authType == Settings.AUTH_TYPE_GOOGLE_AUTHENTICATOR ||
             settingsPresenter.authType == Settings.AUTH_TYPE_YUBI_KEY
         ) {
-            twoStepVerificationPref.isChecked = true
-            AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
+            twoStepVerificationPref?.isChecked = true
+            Builder(activity!!, R.style.AlertDialogStyle)
                 .setTitle(R.string.warning)
                 .setCancelable(false)
                 .setMessage(R.string.disable_online_only)
@@ -771,7 +804,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                 .create()
                 .show()
         } else if (!settingsPresenter.isSmsVerified) {
-            twoStepVerificationPref.isChecked = false
+            twoStepVerificationPref?.isChecked = false
             showDialogMobile()
         } else {
             val message = Html.fromHtml(getString(R.string.two_fa_description, URL_LOGIN))
@@ -783,7 +816,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                 .setCancelable(false)
                 .setMessage(spannable)
                 .setNeutralButton(android.R.string.cancel) { _, _ ->
-                    twoStepVerificationPref.isChecked =
+                    twoStepVerificationPref?.isChecked =
                         settingsPresenter.authType != Settings.AUTH_TYPE_OFF
                 }
 
@@ -849,7 +882,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun launchKycFlow() {
-        KycNavHostActivity.start(requireContext(), CampaignType.Swap)
+        KycNavHostActivity.start(requireContext(), CampaignType.Swap, true)
         requireActivity().finish()
     }
 
@@ -874,8 +907,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 }
 
-fun Preference.onClick(onClick: () -> Unit) {
-    this.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+fun Preference?.onClick(onClick: () -> Unit) {
+    this?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         onClick()
         true
     }

@@ -53,87 +53,6 @@ class ExchangeDialog(intents: Observable<ExchangeIntent>, initial: ExchangeViewM
         }
 }
 
-private fun ExchangeViewState.setIsPowerPaxTagged(intent: IsUserEligiableForFreeEthIntent): ExchangeViewState {
-    return copy(isPowerPaxTagged = intent.isEligiable)
-}
-
-private fun ExchangeViewState.clearQuote() =
-    copy(
-        latestQuote = null,
-        fromFiat = if (fix != Fix.BASE_FIAT) fromFiat.toZero() else fromFiat,
-        toFiat = if (fix != Fix.COUNTER_FIAT) toFiat.toZero() else toFiat,
-        fromCrypto = if (fix != Fix.BASE_CRYPTO) fromCrypto.toZero() else fromCrypto,
-        toCrypto = if (fix != Fix.COUNTER_CRYPTO) toCrypto.toZero() else toCrypto
-    )
-
-private fun ExchangeViewState.setSpendable(cryptoValue: CryptoValue): ExchangeViewState {
-    if (cryptoValue.currency != fromAccount.cryptoCurrency) {
-        return this
-    }
-    return copy(maxSpendable = cryptoValue)
-}
-
-private fun ExchangeViewState.setFiatRate(c2fRate: ExchangeRate.CryptoToFiat): ExchangeViewState {
-    if (c2fRate.to != fromFiat.currencyCode || c2fRate.from != fromAccount.cryptoCurrency) {
-        return this
-    }
-    return copy(c2fRate = c2fRate)
-}
-
-private fun ExchangeViewState.setExchangeFiatRates(exchangePrices: List<ExchangeRate.CryptoToFiat>): ExchangeViewState {
-    return copy(exchangePrices = exchangePrices)
-}
-
-private fun ExchangeViewState.setHasEthEnoughFees(intent: EnoughFeesLimit): ExchangeViewState {
-    return copy(hasEnoughEthFees = intent.hasEnoughForFess)
-}
-
-private fun ExchangeViewState.setHasEthInFlight(intent: SetEthTransactionInFlight): ExchangeViewState {
-    return copy(hasEthTransactionPending = intent.ethInFlight)
-}
-
-private fun ExchangeViewState.applyMaxSpendable(cryptoValue: CryptoValue?): ExchangeViewState {
-    return cryptoValue?.let {
-        copy(
-            fix = Fix.BASE_CRYPTO,
-            fromCrypto = cryptoValue
-        )
-    } ?: this
-}
-
-private fun ExchangeViewState.applyLimit(tradeLimit: Money?) =
-    when (tradeLimit) {
-        null -> this
-        is FiatValue -> tradeLimit.let {
-            copy(
-                fix = Fix.BASE_FIAT,
-                fromFiat = it
-            )
-        }
-        is CryptoValue -> tradeLimit.let {
-            copy(
-                fix = Fix.BASE_CRYPTO,
-                fromCrypto = it
-            )
-        }
-        else -> this
-    }
-
-private fun ExchangeViewState.mapTradeLimits(intent: SetTradeLimits): ExchangeViewState {
-    if (intent.min.currencyCode != fromFiat.currencyCode) return this
-    return copy(
-        minTradeLimit = intent.min,
-        maxTradeLimit = intent.max
-    )
-}
-
-private fun ExchangeViewState.mapTierLimits(intent: SetTierLimit): ExchangeViewState {
-    if (intent.availableOnTier.currencyCode != fromFiat.currencyCode) return this
-    return copy(
-        maxTierLimit = intent.availableOnTier
-    )
-}
-
 internal fun ExchangeViewModel.toInternalState(): ExchangeViewState {
     return ExchangeViewState(
         fromAccount = fromAccount,
@@ -145,65 +64,6 @@ internal fun ExchangeViewModel.toInternalState(): ExchangeViewState {
         toFiat = to.fiatValue,
         toCrypto = to.cryptoValue,
         latestQuote = latestQuote
-    )
-}
-
-private fun ExchangeViewState.mapLock(intent: LockQuoteIntent): ExchangeViewState {
-    return copy(quoteLocked = intent.lockQuote)
-}
-
-private fun ExchangeViewState.resetToZero(): ExchangeViewState {
-    return copy(
-        fromFiat = fromFiat.toZero(),
-        toFiat = toFiat.toZero(),
-        fromCrypto = CryptoValue.zero(fromAccount.cryptoCurrency),
-        toCrypto = CryptoValue.zero(toAccount.cryptoCurrency),
-        upToDate = false
-    )
-}
-
-private fun ExchangeViewState.mapSetFix(intent: SetFixIntent): ExchangeViewState {
-    return copy(fix = intent.fix)
-}
-
-fun ExchangeViewState.toViewModel(): ExchangeViewModel {
-    return ExchangeViewModel(
-        fromAccount = fromAccount,
-        toAccount = toAccount,
-        from = Value(
-            cryptoValue = fromCrypto,
-            fiatValue = fromFiat,
-            cryptoMode = mode(
-                fix,
-                Fix.BASE_CRYPTO,
-                fromCrypto,
-                upToDate
-            ),
-            fiatMode = mode(
-                fix,
-                Fix.BASE_FIAT,
-                fromFiat,
-                upToDate
-            )
-        ),
-        to = Value(
-            cryptoValue = toCrypto,
-            fiatValue = toFiat,
-            cryptoMode = mode(
-                fix,
-                Fix.COUNTER_CRYPTO,
-                toCrypto,
-                upToDate
-            ),
-            fiatMode = mode(
-                fix,
-                Fix.COUNTER_FIAT,
-                toFiat,
-                upToDate
-            )
-        ),
-        latestQuote = latestQuote,
-        isValid = isValid()
     )
 }
 
@@ -305,8 +165,7 @@ data class ExchangeViewState(
     }
 
     private fun quoteMatchesFixAndValue(latestQuote: Quote) =
-        latestQuote.fix == fix &&
-                latestQuote.fixValue == fixedMoneyValue
+        latestQuote.fix == fix && latestQuote.fixValue == fixedMoneyValue
 
     private fun enoughFundsIfKnown(latestQuote: Quote): Boolean {
         if (maxSpendable == null) return true
@@ -319,46 +178,124 @@ data class ExchangeViewState(
     }
 }
 
-private fun Quote.isEtheriumTransaction(): Boolean {
-    return when (from.cryptoValue.currency) {
-        CryptoCurrency.PAX, CryptoCurrency.ETHER -> true
-        else -> false
-    }
+private fun ExchangeViewState.mapTradeLimits(intent: SetTradeLimits): ExchangeViewState {
+    if (intent.min.currencyCode != fromFiat.currencyCode) return this
+    return copy(
+        minTradeLimit = intent.min,
+        maxTradeLimit = intent.max
+    )
+}
+
+private fun ExchangeViewState.mapTierLimits(intent: SetTierLimit): ExchangeViewState {
+    if (intent.availableOnTier.currencyCode != fromFiat.currencyCode) return this
+    return copy(
+        maxTierLimit = intent.availableOnTier
+    )
+}
+
+private fun ExchangeViewState.mapLock(intent: LockQuoteIntent): ExchangeViewState {
+    return copy(quoteLocked = intent.lockQuote)
+}
+
+private fun ExchangeViewState.resetToZero(): ExchangeViewState {
+    return copy(
+        fromFiat = fromFiat.toZero(),
+        toFiat = toFiat.toZero(),
+        fromCrypto = CryptoValue.zero(fromAccount.cryptoCurrency),
+        toCrypto = CryptoValue.zero(toAccount.cryptoCurrency),
+        upToDate = false
+    )
+}
+
+private fun ExchangeViewState.mapSetFix(intent: SetFixIntent): ExchangeViewState {
+    return copy(fix = intent.fix)
+}
+
+fun ExchangeViewState.toViewModel(): ExchangeViewModel {
+    return ExchangeViewModel(
+        fromAccount = fromAccount,
+        toAccount = toAccount,
+        from = Value(
+            cryptoValue = fromCrypto,
+            fiatValue = fromFiat,
+            cryptoMode = mode(fix, Fix.BASE_CRYPTO, fromCrypto, upToDate),
+            fiatMode = mode(fix, Fix.BASE_FIAT, fromFiat, upToDate)
+        ),
+        to = Value(
+            cryptoValue = toCrypto,
+            fiatValue = toFiat,
+            cryptoMode = mode(fix, Fix.COUNTER_CRYPTO, toCrypto, upToDate),
+            fiatMode = mode(fix, Fix.COUNTER_FIAT, toFiat, upToDate)
+        ),
+        latestQuote = latestQuote,
+        isValid = isValid()
+    )
 }
 
 private fun ExchangeViewState.map(intent: SimpleFieldUpdateIntent): ExchangeViewState {
     return when (fix) {
-        Fix.BASE_FIAT -> copy(
-            fromFiat = FiatValue.fromMajor(fromFiat.currencyCode, intent.userValue),
-            upToDate = false
-        )
+        Fix.BASE_FIAT -> copy(fromFiat = FiatValue.fromMajor(fromFiat.currencyCode, intent.userValue), upToDate = false)
         Fix.BASE_CRYPTO -> copy(fromCrypto = fromCrypto.currency.withMajorValue(intent.userValue), upToDate = false)
-        Fix.COUNTER_FIAT -> copy(
-            toFiat = FiatValue.fromMajor(toFiat.currencyCode, intent.userValue),
-            upToDate = false
-        )
+        Fix.COUNTER_FIAT -> copy(toFiat = FiatValue.fromMajor(toFiat.currencyCode, intent.userValue), upToDate = false)
         Fix.COUNTER_CRYPTO -> copy(toCrypto = toCrypto.currency.withMajorValue(intent.userValue), upToDate = false)
     }.copy(decimalCursor = intent.decimalCursor)
 }
 
 private fun ExchangeViewState.toggleFiatCrypto() = copy(fix = fix.toggleFiatCrypto())
 
-private fun Fix.toggleFiatCrypto() =
-    when (this) {
-        Fix.BASE_FIAT -> Fix.BASE_CRYPTO
-        Fix.BASE_CRYPTO -> Fix.BASE_FIAT
-        Fix.COUNTER_FIAT -> Fix.COUNTER_CRYPTO
-        Fix.COUNTER_CRYPTO -> Fix.COUNTER_FIAT
-    }
-
 private fun ExchangeViewState.toggleFromTo() = copy(fix = fix.toggleFromTo())
 
-private fun Fix.toggleFromTo() =
-    when (this) {
-        Fix.BASE_FIAT -> Fix.COUNTER_FIAT
-        Fix.BASE_CRYPTO -> Fix.COUNTER_CRYPTO
-        Fix.COUNTER_FIAT -> Fix.BASE_FIAT
-        Fix.COUNTER_CRYPTO -> Fix.BASE_CRYPTO
+private fun ExchangeViewState.setIsPowerPaxTagged(intent: IsUserEligiableForFreeEthIntent): ExchangeViewState {
+    return copy(isPowerPaxTagged = intent.isEligiable)
+}
+
+private fun ExchangeViewState.clearQuote() =
+    copy(
+        latestQuote = null,
+        fromFiat = if (fix != Fix.BASE_FIAT) fromFiat.toZero() else fromFiat,
+        toFiat = if (fix != Fix.COUNTER_FIAT) toFiat.toZero() else toFiat,
+        fromCrypto = if (fix != Fix.BASE_CRYPTO) fromCrypto.toZero() else fromCrypto,
+        toCrypto = if (fix != Fix.COUNTER_CRYPTO) toCrypto.toZero() else toCrypto
+    )
+
+private fun ExchangeViewState.setSpendable(cryptoValue: CryptoValue): ExchangeViewState {
+    if (cryptoValue.currency != fromAccount.cryptoCurrency) {
+        return this
+    }
+    return copy(maxSpendable = cryptoValue)
+}
+
+private fun ExchangeViewState.setFiatRate(c2fRate: ExchangeRate.CryptoToFiat): ExchangeViewState {
+    if (c2fRate.to != fromFiat.currencyCode || c2fRate.from != fromAccount.cryptoCurrency) {
+        return this
+    }
+    return copy(c2fRate = c2fRate)
+}
+
+private fun ExchangeViewState.setExchangeFiatRates(exchangePrices: List<ExchangeRate.CryptoToFiat>): ExchangeViewState {
+    return copy(exchangePrices = exchangePrices)
+}
+
+private fun ExchangeViewState.setHasEthEnoughFees(intent: EnoughFeesLimit): ExchangeViewState {
+    return copy(hasEnoughEthFees = intent.hasEnoughForFess)
+}
+
+private fun ExchangeViewState.setHasEthInFlight(intent: SetEthTransactionInFlight): ExchangeViewState {
+    return copy(hasEthTransactionPending = intent.ethInFlight)
+}
+
+private fun ExchangeViewState.applyMaxSpendable(cryptoValue: CryptoValue?): ExchangeViewState {
+    return cryptoValue?.let {
+        copy(fix = Fix.BASE_CRYPTO, fromCrypto = cryptoValue)
+    } ?: this
+}
+
+private fun ExchangeViewState.applyLimit(tradeLimit: Money?) =
+    when (tradeLimit) {
+        null -> this
+        is FiatValue -> copy(fix = Fix.BASE_FIAT, fromFiat = tradeLimit)
+        is CryptoValue -> copy(fix = Fix.BASE_CRYPTO, fromCrypto = tradeLimit)
+        else -> this
     }
 
 private fun ExchangeViewState.mapNewFromAccount(intent: ChangeCryptoFromAccount) =
@@ -390,9 +327,7 @@ private fun ExchangeViewState.mapSwap() =
 private fun ExchangeViewState.changeAccounts(
     newFrom: AccountReference,
     newTo: AccountReference
-) =
-    copy(fromAccount = newFrom, toAccount = newTo)
-        .resetToZeroKeepingUserFiat()
+) = copy(fromAccount = newFrom, toAccount = newTo).resetToZeroKeepingUserFiat()
 
 private fun ExchangeViewState.resetToZeroKeepingUserFiat(): ExchangeViewState =
     resetToZero()
@@ -424,23 +359,40 @@ private fun ExchangeViewState.mapQuote(intent: QuoteIntent) =
         this
     }
 
-private fun calculateFiatValue(quote: Quote, cryptoCurrency: CryptoCurrency, fiatCode: String, fromCrypto: CryptoValue):
-        FiatValue = ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, quote.baseToFiatRate)
-    .applyRate(fromCrypto) ?: FiatValue.zero(fiatCode)
-
 private fun ExchangeViewState.fromCurrencyMatch(intent: QuoteIntent) =
     currencyMatch(intent.quote.from, fromCrypto, fromFiat)
 
 private fun ExchangeViewState.toCurrencyMatch(intent: QuoteIntent) =
     currencyMatch(intent.quote.to, toCrypto, toFiat)
 
+private fun Quote.isEtheriumTransaction(): Boolean {
+    return when (from.cryptoValue.currency) {
+        CryptoCurrency.PAX, CryptoCurrency.ETHER -> true
+        else -> false
+    }
+}
+
+private fun Fix.toggleFiatCrypto() =
+    when (this) {
+        Fix.BASE_FIAT -> Fix.BASE_CRYPTO
+        Fix.BASE_CRYPTO -> Fix.BASE_FIAT
+        Fix.COUNTER_FIAT -> Fix.COUNTER_CRYPTO
+        Fix.COUNTER_CRYPTO -> Fix.COUNTER_FIAT
+    }
+
+private fun Fix.toggleFromTo() =
+    when (this) {
+        Fix.BASE_FIAT -> Fix.COUNTER_FIAT
+        Fix.BASE_CRYPTO -> Fix.COUNTER_CRYPTO
+        Fix.COUNTER_FIAT -> Fix.BASE_FIAT
+        Fix.COUNTER_CRYPTO -> Fix.BASE_CRYPTO
+    }
+
 private fun currencyMatch(
     quote: Quote.Value,
     vmValue: CryptoValue,
     vmFiatValue: FiatValue
-) =
-    quote.fiatValue.currencyCode == vmFiatValue.currencyCode &&
-            quote.cryptoValue.currency == vmValue.currency
+) = quote.fiatValue.currencyCode == vmFiatValue.currencyCode && quote.cryptoValue.currency == vmValue.currency
 
 private fun mode(
     fieldEntered: Fix,
@@ -454,3 +406,7 @@ private fun mode(
         else -> Value.Mode.OutOfDate
     }
 }
+
+private fun calculateFiatValue(quote: Quote, cryptoCurrency: CryptoCurrency, fiatCode: String, fromCrypto: CryptoValue):
+    FiatValue = ExchangeRate.CryptoToFiat(cryptoCurrency, fiatCode, quote.baseToFiatRate)
+    .applyRate(fromCrypto) ?: FiatValue.zero(fiatCode)

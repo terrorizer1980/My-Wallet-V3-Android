@@ -3,22 +3,22 @@ package piuk.blockchain.androidcore.utils
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.NotificationPrefs
 import com.blockchain.preferences.OnBoardingPrefs
+import com.blockchain.preferences.SecurityPrefs
 import com.blockchain.preferences.ThePitLinkingPrefs
 import com.blockchain.preferences.WalletStatus
 
 interface PersistentPrefs :
     CurrencyPrefs,
-    ThePitLinkingPrefs,
+    NotificationPrefs,
     OnBoardingPrefs,
-    WalletStatus,
-    NotificationPrefs {
+    SecurityPrefs,
+    ThePitLinkingPrefs,
+    WalletStatus {
 
     val isLoggedOut: Boolean
 
     val deviceId: String // Pre-IDV device identifier
     var devicePreIDVCheckFailed: Boolean // Pre-IDV check has failed! Don't show 'gold' announce cards etc
-
-    var disableRootedWarning: Boolean
 
     fun getValue(name: String): String?
     fun getValue(name: String, defaultValue: String): String

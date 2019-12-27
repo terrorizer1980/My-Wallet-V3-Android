@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.buysell.payment.bank.addaddress
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.view.inputmethod.EditorInfo
 import com.blockchain.ui.dialog.CountryDialog
 import io.reactivex.Single
@@ -134,7 +134,7 @@ class AddAddressActivity : BaseMvpActivity<AddAddressView, AddAddressPresenter>(
     }
 
     override fun onSupportNavigateUp(): Boolean = consume {
-        setResult(Activity.RESULT_CANCELED)
+        setResult(AppCompatActivity.RESULT_CANCELED)
         finish()
     }
 
@@ -157,7 +157,7 @@ class AddAddressActivity : BaseMvpActivity<AddAddressView, AddAddressPresenter>(
             "piuk.blockchain.android.ui.buysell.payment.bank.addaddress.EXTRA_DISPLAY_MODEL"
 
         fun start(
-            activity: Activity,
+            activity: AppCompatActivity,
             iban: String,
             bic: String,
             displayModel: SellConfirmationDisplayModel

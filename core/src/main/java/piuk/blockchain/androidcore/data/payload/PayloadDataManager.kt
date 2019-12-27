@@ -88,10 +88,10 @@ class PayloadDataManager(
 
     val isBackedUp: Boolean
         get() = (
-            payloadManager.payload != null &&
-                payloadManager.payload!!.hdWallets != null &&
-                payloadManager.payload!!.hdWallets[0].isMnemonicVerified
-            )
+                payloadManager.payload != null &&
+                        payloadManager.payload!!.hdWallets != null &&
+                        payloadManager.payload!!.hdWallets[0].isMnemonicVerified
+                )
 
     val mnemonic: List<String>
         get() = payloadManager.payload!!.hdWallets[0].mnemonic
@@ -562,8 +562,8 @@ class PayloadDataManager(
      * @return An [Observable] object wrapping a boolean value, representing successfully
      * loaded nodes
      */
-    fun loadNodes(): Observable<Boolean> = rxPinning.call<Boolean> { payloadService.loadNodes() }
-        .applySchedulers()
+    fun loadNodes(): Observable<Boolean> =
+        rxPinning.call<Boolean> { payloadService.loadNodes() }.subscribeOn(Schedulers.io())
 
     /**
      * Generates the metadata and shared metadata nodes if necessary.

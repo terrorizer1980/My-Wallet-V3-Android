@@ -2,12 +2,14 @@ package piuk.blockchain.android.ui.confirm
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v4.content.ContextCompat
+import androidx.fragment.app.DialogFragment
+import androidx.core.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SendAnalytics
 import kotlinx.android.synthetic.main.dialog_confirm_transaction.*
 
 import org.apache.commons.lang3.NotImplementedException
@@ -24,6 +26,7 @@ class ConfirmPaymentDialog : BaseDialogFragment<ConfirmPaymentView, ConfirmPayme
     ConfirmPaymentView {
 
     private val confirmPaymentPresenter: ConfirmPaymentPresenter by inject()
+    private val analytics: Analytics by inject()
 
     private var listener: OnConfirmDialogInteractionListener? = null
 
@@ -44,19 +47,17 @@ class ConfirmPaymentDialog : BaseDialogFragment<ConfirmPaymentView, ConfirmPayme
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val window = dialog.window
-        if (window != null) {
-            val params = window.attributes
-            params.width = WindowManager.LayoutParams.MATCH_PARENT
-            params.height = WindowManager.LayoutParams.MATCH_PARENT
-            window.attributes = params
-        }
+        val window = dialog?.window ?: return
+        val params = window.attributes
+        params.width = WindowManager.LayoutParams.MATCH_PARENT
+        params.height = WindowManager.LayoutParams.MATCH_PARENT
+        window.attributes = params
 
-        dialog.setCancelable(true)
-        dialog.window!!.decorView.systemUiVisibility =
+        dialog?.setCancelable(true)
+        dialog?.window!!.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
-        dialog.window!!.statusBarColor =
+        dialog?.window!!.statusBarColor =
             ContextCompat.getColor(activity!!, R.color.primary_navy_dark)
     }
 
@@ -65,7 +66,10 @@ class ConfirmPaymentDialog : BaseDialogFragment<ConfirmPaymentView, ConfirmPayme
 
         toolbar.setNavigationOnClickListener { dismiss() }
         button_change_fee.setOnClickListener { listener?.onChangeFeeClicked() }
-        button_send.setOnClickListener { listener?.onSendClicked() }
+        button_send.setOnClickListener {
+            listener?.onSendClicked()
+            analytics.logEvent(SendAnalytics.SummarySendClick(paymentDetails?.cryptoUnit ?: ""))
+        }
 
         if (!arguments!!.getBoolean(SHOW_FEE_CHOICE, true)) {
             button_change_fee.gone()
@@ -154,7 +158,7 @@ class ConfirmPaymentDialog : BaseDialogFragment<ConfirmPaymentView, ConfirmPayme
 
     override fun getMvpView(): ConfirmPaymentView = this
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
 
         listener = context as? OnConfirmDialogInteractionListener

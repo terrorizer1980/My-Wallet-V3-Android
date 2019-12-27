@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/content_view"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-       <android.support.constraint.ConstraintLayout
+       <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -151,15 +151,12 @@
 
             <Button
                 android:id="@+id/btn_next"
+                style="@style/CtaButton.Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="32dp"
-                android:layout_marginLeft="32dp"
-                android:layout_marginRight="32dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/kyc_veriff_splash_continue"
-                android:theme="@style/LightBlueButtonTheme"
                 android:contentDescription="@string/kyc_veriff_splash_continue"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -168,8 +165,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/text_view_veriff_splash_enable_camera_body"
                 app:layout_constraintVertical_bias="1.0" />
 
-        </android.support.constraint.ConstraintLayout>
-    </android.support.v4.widget.NestedScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <View
         android:id="@+id/loading_view"
@@ -239,13 +236,11 @@
 
         <Button
             android:id="@+id/btn_goto_swap"
-            android:theme="@style/ButtonLightBlueTheme"
+            style="@style/CtaButton.Blue"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:layout_alignParentBottom="true"
-            android:textAllCaps="false"
             android:text="@string/kyc_gold_unavailable_goto_swap"/>
     </RelativeLayout>
 

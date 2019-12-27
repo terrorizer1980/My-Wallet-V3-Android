@@ -4,8 +4,8 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import android.view.animation.DecelerateInterpolator
 import kotlinx.android.synthetic.main.activity_coinify_signup.*
 import kotlinx.android.synthetic.main.include_buysell_signup_progress.*

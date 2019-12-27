@@ -1,6 +1,6 @@
 package piuk.blockchain.androidcore.data.bitcoincash
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.wallet.DefaultLabels
 import com.google.common.base.Optional
 import info.blockchain.api.blockexplorer.BlockExplorer
@@ -306,9 +306,12 @@ class BchDataManager(
             .filterNot { it.isWatchOnly || it.isArchived }
             .map { it.address }
             .toSet()
+
         val xpubs = getActiveXpubs().toSet()
-        return rxPinning.call { bchDataStore.bchWallet!!.updateAllBalances(xpubs, legacyAddresses) }
-            .applySchedulers()
+
+        return rxPinning.call {
+            bchDataStore.bchWallet!!.updateAllBalances(xpubs, legacyAddresses)
+        }
     }
 
     fun getAddressBalance(address: String): BigInteger =

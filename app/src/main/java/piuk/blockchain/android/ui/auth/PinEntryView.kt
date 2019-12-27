@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.auth
 
 import android.content.Intent
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import android.widget.ImageView
 import java.util.Locale
 import piuk.blockchain.androidcoreui.ui.base.View

@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.Typeface
 import android.os.Handler
 import android.os.HandlerThread
-import android.support.v4.provider.FontRequest
-import android.support.v4.provider.FontsContractCompat
+import androidx.core.provider.FontRequest
+import androidx.core.provider.FontsContractCompat
 import piuk.blockchain.androidcoreui.R
 import timber.log.Timber
 

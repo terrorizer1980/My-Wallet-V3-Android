@@ -4,16 +4,16 @@ import android.annotation.TargetApi
 import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
-import android.support.annotation.StringRes
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatDialogFragment
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import androidx.appcompat.app.AppCompatDialogFragment
 import kotlinx.android.synthetic.main.dialog_fingerprint.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
@@ -44,7 +44,7 @@ class FingerprintDialog : BaseDialogFragment<FingerprintView, FingerprintPresent
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        dialog.apply {
+        dialog?.apply {
             setTitle(getString(R.string.fingerprint_login_title))
             setCancelable(false)
             setCanceledOnTouchOutside(false)

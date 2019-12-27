@@ -1,9 +1,6 @@
 package com.blockchain.koin
 
 import android.app.Application
-import com.blockchain.injection.kycCoinifyModule
-import com.blockchain.injection.kycModule
-import com.blockchain.injection.kycNabuModule
 import com.blockchain.koin.modules.apiInterceptorsModule
 import com.blockchain.koin.modules.appBuySellModule
 import com.blockchain.koin.modules.appProperties
@@ -27,9 +24,12 @@ import org.koin.android.ext.android.startKoin
 import org.koin.log.Logger
 import org.koin.standalone.StandAloneContext
 import piuk.blockchain.android.BuildConfig
+import piuk.blockchain.android.campaign.campaignModule
+import piuk.blockchain.android.coincore.coincoreModule
 import piuk.blockchain.android.ui.dashboard.announcements.dashboardAnnouncementsModule
 import piuk.blockchain.android.ui.kyc.koin.kycUiModule
 import piuk.blockchain.android.ui.kyc.koin.kycUiNabuModule
+import piuk.blockchain.android.ui.start.startupUiModule
 import timber.log.Timber
 
 object KoinStarter {
@@ -48,15 +48,16 @@ object KoinStarter {
                 appBuySellModule,
                 applicationModule,
                 buySellModule,
+                campaignModule,
+                coincoreModule,
                 coreModule,
                 coreUiModule,
                 dashboardAnnouncementsModule,
                 environmentModule,
                 featureFlagsModule,
-                kycCoinifyModule,
-                kycModule,
+                coinifyModule,
+                authenticationModule,
                 kycUiModule,
-                kycNabuModule,
                 kycUiNabuModule,
                 localShapeShift,
                 lockboxModule,
@@ -67,6 +68,7 @@ object KoinStarter {
                 notificationModule,
                 serviceModule,
                 shapeShiftModule,
+                startupUiModule,
                 sunriverModule,
                 swapModule,
                 walletModule,

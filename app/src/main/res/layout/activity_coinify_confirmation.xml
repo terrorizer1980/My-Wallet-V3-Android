@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -197,7 +197,7 @@
 
             <Button
                 android:id="@+id/button_confirm"
-                style="@style/ButtonStyle"
+                style="@style/CtaButton.Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
@@ -205,7 +205,6 @@
                 android:layout_marginRight="32dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/confirm"
-                android:theme="@style/ButtonLightBlueTheme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -214,7 +213,7 @@
 
             <Button
                 android:id="@+id/button_card"
-                style="@style/ButtonStyle"
+                style="@style/CtaButton.Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -223,7 +222,6 @@
                 android:layout_marginBottom="16dp"
                 android:text="@string/buy_sell_confirmation_card"
                 android:textSize="@dimen/buy_sell_payment_button_text_size"
-                android:theme="@style/ButtonBlueTheme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/button_bank"
                 app:layout_constraintHorizontal_chainStyle="spread"
@@ -232,7 +230,7 @@
 
             <Button
                 android:id="@+id/button_bank"
-                style="@style/ButtonStyle"
+                style="@style/CtaButton.Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/buy_sell_payment_button_margin"
@@ -241,12 +239,11 @@
                 android:layout_marginBottom="16dp"
                 android:text="@string/buy_sell_confirmation_bank"
                 android:textSize="@dimen/buy_sell_payment_button_text_size"
-                android:theme="@style/ButtonBlueTheme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/button_card"
                 tools:visibility="gone" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </LinearLayout>

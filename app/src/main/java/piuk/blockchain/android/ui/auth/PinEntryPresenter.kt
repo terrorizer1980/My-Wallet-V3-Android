@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.auth
 
 import android.annotation.SuppressLint
-import android.support.annotation.StringRes
-import android.support.annotation.UiThread
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.StringRes
+import androidx.annotation.UiThread
+import androidx.annotation.VisibleForTesting
 import android.view.View
 import com.blockchain.logging.CrashLogger
 import com.crashlytics.android.answers.LoginEvent
@@ -35,7 +35,7 @@ import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.annotations.Thunk
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import timber.log.Timber
 import java.net.SocketTimeoutException
@@ -280,7 +280,7 @@ class PinEntryPresenter(
             is InvalidCipherTextException -> {
                 // Password changed on web, needs re-pairing
                 view.showToast(R.string.password_changed_explanation, ToastCustom.TYPE_ERROR)
-                crashLogger.log("password changed elsewhere. Pin is reset")
+                crashLogger.logEvent("password changed elsewhere. Pin is reset")
                 accessState.clearPin()
                 appUtil.clearCredentialsAndRestart(LauncherActivity::class.java)
             }
@@ -311,7 +311,7 @@ class PinEntryPresenter(
         view.showToast(R.string.pin_4_strikes_password_accepted, ToastCustom.TYPE_OK)
         prefs.removeValue(PersistentPrefs.KEY_PIN_FAILS)
         prefs.removeValue(PersistentPrefs.KEY_PIN_IDENTIFIER)
-        crashLogger.log("new password. pin reset")
+        crashLogger.logEvent("new password. pin reset")
         accessState.clearPin()
         view.restartPageAndClearTop()
     }
@@ -463,12 +463,17 @@ class PinEntryPresenter(
         accessState.logout()
     }
 
-    @SuppressLint("CheckResult")
     fun fetchInfoMessage() {
         compositeDisposable += mobileNoticeRemoteConfig.mobileNoticeDialog()
-            .subscribeBy(onError = { Timber.e(it) }, onSuccess = {
-                view.showMobileNotice(it)
-            })
+            .subscribeBy(
+                onSuccess = { view.showMobileNotice(it) },
+                onError = {
+                    if (it is NoSuchElementException)
+                        Timber.d("No mobile notice found")
+                    else
+                        Timber.e(it)
+                }
+            )
     }
 
     @SuppressLint("CheckResult")

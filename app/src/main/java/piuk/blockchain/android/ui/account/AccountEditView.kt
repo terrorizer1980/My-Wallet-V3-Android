@@ -2,7 +2,8 @@ package piuk.blockchain.android.ui.account
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
+import piuk.blockchain.androidcore.data.events.ActionEvent
 
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -47,7 +48,7 @@ interface AccountEditView : View {
 
     fun dismissProgressDialog()
 
-    fun sendBroadcast(key: String, data: String)
+    fun sendBroadcast(event: ActionEvent)
 
     fun updateAppShortcuts()
 

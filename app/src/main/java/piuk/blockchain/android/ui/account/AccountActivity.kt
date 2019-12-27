@@ -2,37 +2,34 @@ package piuk.blockchain.android.ui.account
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Rect
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatEditText
-import android.support.v7.widget.LinearLayoutManager
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.text.InputFilter
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.CheckBox
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.ui.dialog.MaterialProgressDialog
 import com.blockchain.ui.password.SecondPasswordHandler
 import com.google.zxing.BarcodeFormat
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.single.BasePermissionListener
 import com.karumi.dexter.listener.single.CompositePermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.payload.data.LegacyAddress
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.activity_accounts.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.get
@@ -43,14 +40,15 @@ import piuk.blockchain.android.ui.account.AccountPresenter.Companion.KEY_WARN_TR
 import piuk.blockchain.android.ui.account.adapter.AccountAdapter
 import piuk.blockchain.android.ui.account.adapter.AccountHeadersListener
 import piuk.blockchain.android.ui.backup.transfer.ConfirmFundsTransferDialogFragment
-import piuk.blockchain.android.ui.balance.BalanceFragment
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.ui.zxing.Intents
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
-import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
+import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.getTextString
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -59,23 +57,14 @@ import timber.log.Timber
 import java.util.EnumSet
 import java.util.Locale
 
-class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), AccountView,
+class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(),
+    AccountView,
     AccountHeadersListener {
-
-    @Suppress("MemberVisibilityCanBePrivate")
-    private val accountPresenter: AccountPresenter by inject()
 
     override val locale: Locale = Locale.getDefault()
 
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (BalanceFragment.ACTION_INTENT == intent.action) {
-                onViewReady()
-                // Check if we need to hide/show the transfer funds icon in the Toolbar
-                presenter.checkTransferableLegacyFunds(false, false)
-            }
-        }
-    }
+    private val analytics: Analytics by inject()
+    private val rxBus: RxBus by inject()
 
     private var transferFundsMenuItem: MenuItem? = null
     private val accountsAdapter: AccountAdapter by unsafeLazy {
@@ -90,9 +79,11 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         setupToolbar(toolbar_general, R.string.drawer_addresses)
         get<Analytics>().logEvent(AnalyticsEvents.AccountsAndAddresses)
 
+        val displaySet = presenter.getDisplayableCurrencies()
+
         with(currency_header) {
             CryptoCurrency.values().forEach {
-                if (!shouldShow(it)) hide(it)
+                if (it !in displaySet) hide(it)
             }
             setCurrentlySelectedCurrency(presenter.cryptoCurrency)
             setSelectionListener { presenter.cryptoCurrency = it }
@@ -107,21 +98,12 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         onViewReady()
     }
 
-    private fun shouldShow(cryptoCurrency: CryptoCurrency) =
-        when (cryptoCurrency) {
-            CryptoCurrency.BTC -> true
-            CryptoCurrency.BCH -> true
-            CryptoCurrency.ETHER -> false
-            CryptoCurrency.XLM -> false
-            CryptoCurrency.PAX -> false
-        }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_account, menu)
         transferFundsMenuItem = menu.findItem(R.id.action_transfer_funds)
         // Auto popup
-        presenter.checkTransferableLegacyFunds(true, true)
+        presenter.checkTransferableLegacyFunds(isAutoPopup = true, showWarningDialog = true)
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -131,7 +113,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         R.id.action_transfer_funds -> consume {
             showProgressDialog(R.string.please_wait)
             // Not auto popup
-            presenter.checkTransferableLegacyFunds(false, true)
+            presenter.checkTransferableLegacyFunds(isAutoPopup = false, showWarningDialog = true)
         }
         else -> super.onOptionsItemSelected(item)
     }
@@ -186,11 +168,9 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             .withButton(android.R.string.ok) { importAddress() }
             .build()
 
-        val grantedPermissionListener = object : BasePermissionListener() {
-            override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-                onScanButtonClicked()
-            }
-        }
+        val grantedPermissionListener = CameraPermissionListener(analytics, {
+            onScanButtonClicked()
+        })
 
         val compositePermissionListener =
             CompositePermissionListener(deniedPermissionListener, grantedPermissionListener)
@@ -253,12 +233,12 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         }
 
         AlertDialog.Builder(this, R.style.AlertDialogStyle)
-            .setTitle(R.string.label)
-            .setMessage(R.string.assign_display_name)
+            .setTitle(R.string.create_a_new_wallet)
+            .setMessage(R.string.create_a_new_wallet_helper_text)
             .setView(ViewUtils.getAlertDialogPaddedView(this, editText))
             .setCancelable(false)
-            .setPositiveButton(R.string.save_name) { _, _ ->
-                if (!editText.getTextString().trim { it <= ' ' }.isEmpty()) {
+            .setPositiveButton(R.string.create_now) { _, _ ->
+                if (editText.getTextString().trim { it <= ' ' }.isNotEmpty()) {
                     addAccount(editText.getTextString().trim { it <= ' ' })
                 } else {
                     toast(R.string.label_cant_be_empty, ToastCustom.TYPE_ERROR)
@@ -276,20 +256,34 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         accountsAdapter.items = displayAccounts
     }
 
+    private val event by unsafeLazy {
+        rxBus.register(ActionEvent::class.java)
+    }
+
+    private val compositeDisposable = CompositeDisposable()
+
     override fun onResume() {
         super.onResume()
-        val filter = IntentFilter(BalanceFragment.ACTION_INTENT)
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter)
+
+        compositeDisposable += event.subscribe {
+            onViewReady()
+            // Check if we need to hide/show the transfer funds icon in the Toolbar
+            presenter.checkTransferableLegacyFunds(
+                isAutoPopup = false,
+                showWarningDialog = false
+            )
+        }
         onViewReady()
     }
 
     override fun onPause() {
         super.onPause()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
+        rxBus.unregister(ActionEvent::class.java, event)
+        compositeDisposable.clear()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK &&
+        if (resultCode == AppCompatActivity.RESULT_OK &&
             requestCode == IMPORT_PRIVATE_REQUEST_CODE &&
             data != null && data.getStringExtra(CaptureActivity.SCAN_RESULT) != null
         ) {
@@ -297,9 +291,11 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             val strResult = data.getStringExtra(CaptureActivity.SCAN_RESULT)
             presenter.onAddressScanned(strResult)
             setResult(resultCode)
-        } else if (resultCode == Activity.RESULT_OK && requestCode == EDIT_ACTIVITY_REQUEST_CODE) {
+        } else if (resultCode == AppCompatActivity.RESULT_OK && requestCode == EDIT_ACTIVITY_REQUEST_CODE) {
             onViewReady()
             setResult(resultCode)
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
@@ -346,7 +342,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
             .setCancelable(false)
             .setPositiveButton(R.string.save_name) { _, _ ->
                 val label = editText.getTextString()
-                if (!label.trim { it <= ' ' }.isEmpty()) {
+                if (label.trim { it <= ' ' }.isNotEmpty()) {
                     address.label = label
                 }
 
@@ -358,10 +354,6 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
 
     override fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
         toast(message, toastType)
-    }
-
-    override fun broadcastIntent(intent: Intent) {
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
     private fun remoteSaveNewAddress(legacy: LegacyAddress) {
@@ -441,7 +433,7 @@ class AccountActivity : BaseMvpActivity<AccountView, AccountPresenter>(), Accoun
         dismissProgressDialog()
     }
 
-    override fun createPresenter() = accountPresenter
+    override fun createPresenter() = get<AccountPresenter>()
 
     override fun getView() = this
 

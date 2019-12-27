@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -20,7 +20,7 @@
         android:focusable="true"
         android:focusableInTouchMode="true">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/buysell_constraint_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -139,7 +139,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:src="@drawable/ic_arrow_drop_down_grey600_24dp"
+                app:srcCompat="@drawable/ic_arrow_drop_down_grey600_24dp"
                 android:tint="@color/primary_grey_medium"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/text_view_account_to_from_description"
@@ -270,7 +270,7 @@
 
             <Button
                 android:id="@+id/button_review_order"
-                style="@style/ButtonStyle"
+                style="@style/CtaButton.Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="32dp"
@@ -279,14 +279,13 @@
                 android:layout_marginBottom="32dp"
                 android:enabled="false"
                 android:text="@string/buy_sell_review_transaction"
-                android:theme="@style/ButtonLightBlueTheme"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_view_limits"
                 app:layout_constraintVertical_bias="1.0" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 
@@ -299,4 +298,4 @@
 
     <include layout="@layout/no_sell_available_layout" />
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

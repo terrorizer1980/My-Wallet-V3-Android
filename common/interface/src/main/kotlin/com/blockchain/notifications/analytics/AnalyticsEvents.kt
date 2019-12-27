@@ -29,6 +29,7 @@ enum class AnalyticsEvents(
     KycWelcome("kyc_welcome"),
     KycResubmission("kyc_resubmission"),
     KycSunriverStart("kyc_sunriver_start"),
+    KycBlockstackStart("kyc_blockstack_start"),
     KycMoreInfo("kyc_more_info"),
     KycTiers("kyc_tiers"),
     Lockbox("lockbox"),
@@ -51,7 +52,13 @@ enum class AnalyticsEvents(
     BitpayUrlDeeplink("bitpay_url_deeplink"),
     WalletCreation("wallet_creation"),
     WalletManualLogin("wallet_manual_login"),
-    WalletAutoPairing("wallet_auto_pairing")
+    PITDEEPLINK("pit_deeplink"),
+    WalletAutoPairing("wallet_auto_pairing"),
+    ChangeFiatCurrency("currency"),
+    OpenAssetsSelector("asset_selector_open"),
+    CloseAssetsSelector("asset_selector_open"),
+    CameraSystemPermissionApproved("permission_sys_camera_approve"),
+    CameraSystemPermissionDeclined("permission_sys_camera_decline")
 }
 
 fun kycTierStart(tier: Int): AnalyticsEvent = object : AnalyticsEvent {

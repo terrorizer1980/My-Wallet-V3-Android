@@ -2,13 +2,13 @@ package piuk.blockchain.android.ui.kyc.address
 
 import com.blockchain.android.testutils.rxInit
 import piuk.blockchain.android.ui.getBlankNabuUser
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.Address
-import com.blockchain.kyc.models.nabu.NabuCountryResponse
-import com.blockchain.kyc.models.nabu.Scope
-import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.models.nabu.Address
+import com.blockchain.swap.nabu.models.nabu.NabuCountryResponse
+import com.blockchain.swap.nabu.models.nabu.Scope
 import piuk.blockchain.android.ui.validOfflineToken
 import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.service.NabuCoinifyAccountCreator
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
@@ -26,7 +26,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.ui.kyc.address.models.AddressModel
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.androidcore.data.settings.PhoneVerificationQuery
 
 class KycHomeAddressPresenterTest {

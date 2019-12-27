@@ -108,7 +108,7 @@ class ShapeShiftDataManagerTest {
         verify(shapeShiftDataStore, atLeastOnce()).tradeData
         verify(metadataManager).saveToMetadata(
             tradeData.toJson(),
-            ShapeShiftTrades.METADATA_TYPE_EXTERNAL
+            MetadataManager.METADATA_TYPE_SHAPE_SHIFT_EXTERNAL
         )
         verifyNoMoreInteractions(shapeShiftDataStore)
     }

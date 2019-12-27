@@ -96,6 +96,7 @@ internal class TransactionExecutorViaDataManagers(
             ).logAnalyticsError(analytics).map { it.hash!! }
             CryptoCurrency.PAX ->
                 sendPaxTransaction(fees as EthereumFees, destination, amount)
+            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         }
 
     private fun sendPaxTransaction(
@@ -147,6 +148,7 @@ internal class TransactionExecutorViaDataManagers(
             is AccountReference.Ethereum -> getMaxEther(fees as EthereumFees, feeType)
             is AccountReference.Xlm -> defaultAccountDataManager.getMaxSpendableAfterFees(feeType)
             is AccountReference.Pax -> getMaxSpendablePax()
+            is AccountReference.Stx -> TODO("STUB: STX NOT IMPLEMENTED")
         }
 
     override fun getFeeForTransaction(
@@ -169,6 +171,7 @@ internal class TransactionExecutorViaDataManagers(
                 }
             }
             is AccountReference.Xlm -> (fees as XlmFees).feeForType(feeType).just()
+            is AccountReference.Stx -> TODO("STUB: STX NOT IMPLEMENTED")
         }
 
     override fun getChangeAddress(
@@ -236,7 +239,8 @@ internal class TransactionExecutorViaDataManagers(
             .singleOrError()
 
     private fun getMaxSpendablePax(): Single<CryptoValue> =
-        erc20Account.getBalance().map { CryptoValue.usdPaxFromMinor(it) }
+        erc20Account.getBalance()
+            .map { CryptoValue.usdPaxFromMinor(it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { CryptoValue.ZeroPax }
 
@@ -279,7 +283,12 @@ internal class TransactionExecutorViaDataManagers(
         diagnostics: SwapDiagnostics?
     ): Single<String> = getSpendableCoins(account.xpub, amount, feePerKb)
         .flatMap { spendable ->
-            diagnostics?.accountBalance = CryptoValue(amount.currency, spendable.spendableOutputs.sum())
+            diagnostics?.apply {
+                log("sendBTC-style Tx")
+                logBalance(CryptoValue(amount.currency, spendable.spendableOutputs.sum()))
+                logAbsoluteFee(spendable.absoluteFee)
+                logSwapAmount(amount)
+            }
             getSigningKeys(account, spendable)
                 .flatMap { signingKeys ->
                     changeAddress
@@ -357,6 +366,7 @@ internal class TransactionExecutorViaDataManagers(
             CryptoCurrency.ETHER -> throw IllegalArgumentException("Ether does not have unspent outputs")
             CryptoCurrency.XLM -> throw IllegalArgumentException("Xlm does not have unspent outputs")
             CryptoCurrency.PAX -> throw IllegalArgumentException("PAX does not have unspent outputs")
+            CryptoCurrency.STX -> throw IllegalArgumentException("STX not supported by this method")
         }.subscribeOn(Schedulers.io())
             .singleOrError()
 
@@ -387,6 +397,7 @@ internal class TransactionExecutorViaDataManagers(
         CryptoCurrency.ETHER -> throw IllegalArgumentException("Ether not supported by this method")
         CryptoCurrency.XLM -> throw IllegalArgumentException("XLM not supported by this method")
         CryptoCurrency.PAX -> throw IllegalArgumentException("PAX not supported by this method")
+        CryptoCurrency.STX -> throw IllegalArgumentException("STX not supported by this method")
     }.subscribeOn(Schedulers.io())
         .singleOrError()
 

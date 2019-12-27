@@ -9,35 +9,29 @@
 
     <Button
         android:id="@+id/btn_history"
+        style="@style/CtaButton.Blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:padding="16dp"
-        android:theme="@style/LightBlueButtonTheme"
-        android:textAllCaps="false"
         android:contentDescription="@string/swap_info_order_history"
         android:text="@string/swap_info_order_history" />
 
     <Button
         android:id="@+id/btn_limits"
+        style="@style/CtaButton.Blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:padding="16dp"
-        android:theme="@style/LightBlueButtonTheme"
-        android:textAllCaps="false"
         android:contentDescription="@string/swap_info_swap_limits"
         android:text="@string/swap_info_swap_limits" />
 
     <Button
         android:id="@+id/btn_support"
+        style="@style/CtaButton.Blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:padding="16dp"
-        android:theme="@style/LightBlueButtonTheme"
-        android:textAllCaps="false"
         android:contentDescription="@string/swap_info_contact_support"
         android:text="@string/swap_info_contact_support" />
 

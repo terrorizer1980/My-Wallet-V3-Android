@@ -3,21 +3,18 @@
 package com.blockchain.koin
 
 import com.blockchain.CrashLoggerImpl
+import com.blockchain.SwapDiagnosticsImpl
 import com.blockchain.logging.CrashLogger
 import com.blockchain.logging.EventLogger
+import com.blockchain.logging.SwapDiagnostics
 import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.remoteconfig.RemoteConfig
 import com.blockchain.remoteconfig.RemoteConfiguration
-import com.blockchain.transactions.ResourceSendFundsResultLocalizer
-import com.blockchain.transactions.SendFundsResultLocalizer
 import com.blockchain.ui.chooser.AccountChooserPresenter
 import com.crashlytics.android.answers.Answers
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import org.koin.dsl.module.applicationContext
-import piuk.blockchain.android.ui.dashboard.AsyncDashboardDataCalculator
-import piuk.blockchain.android.ui.dashboard.BalanceUpdater
-import piuk.blockchain.android.ui.dashboard.DashboardData
 import piuk.blockchain.androidcoreui.BuildConfig
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import piuk.blockchain.androidcoreui.utils.logging.AnswersEventLogger
@@ -25,16 +22,6 @@ import piuk.blockchain.androidcoreui.utils.logging.AnswersEventLogger
 val coreUiModule = applicationContext {
 
     context("Payload") {
-
-        factory { BalanceUpdater(get(), get()) }
-
-        factory {
-            AsyncDashboardDataCalculator(
-                get(),
-                get(),
-                get("all")
-            ) as DashboardData
-        }
 
         factory {
             AccountChooserPresenter(get(), get())
@@ -54,8 +41,6 @@ val coreUiModule = applicationContext {
         .bind(RemoteConfig::class)
         .bind(ABTestExperiment::class)
 
-    factory { ResourceSendFundsResultLocalizer(get()) as SendFundsResultLocalizer }
-
     factory { Answers.getInstance() }
 
     factory { AnswersEventLogger(get()) as EventLogger }
@@ -67,4 +52,8 @@ val coreUiModule = applicationContext {
     bean {
         CrashLoggerImpl(BuildConfig.DEBUG)
     }.bind(CrashLogger::class)
+
+    bean {
+        SwapDiagnosticsImpl(crashLogger = get())
+    }.bind(SwapDiagnostics::class)
 }

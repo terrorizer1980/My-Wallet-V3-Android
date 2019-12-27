@@ -3,15 +3,15 @@
 package piuk.blockchain.androidcoreui.utils.extensions
 
 import android.annotation.SuppressLint
-import android.support.animation.DynamicAnimation
-import android.support.animation.SpringAnimation
-import android.support.animation.SpringForce
-import android.support.annotation.LayoutRes
+import androidx.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import piuk.blockchain.androidcoreui.utils.helperfunctions.CustomFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
 import timber.log.Timber

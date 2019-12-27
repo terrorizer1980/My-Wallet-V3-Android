@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.kyc.veriffsplash
 
-import com.blockchain.kyc.models.nabu.SupportedDocuments
+import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
 import com.blockchain.veriff.VeriffApplicantAndToken
 import io.reactivex.Observable
 import piuk.blockchain.androidcoreui.ui.base.UiState

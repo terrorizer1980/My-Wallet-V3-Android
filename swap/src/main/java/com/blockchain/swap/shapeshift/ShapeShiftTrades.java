@@ -17,8 +17,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ShapeShiftTrades {
 
-    public static final int METADATA_TYPE_EXTERNAL = 6;
-
     @JsonProperty("trades")
     private List<Trade> trades;
     @JsonProperty("USAState")

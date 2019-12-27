@@ -6,13 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.NavDirections
 import com.blockchain.activities.StartOnboarding
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.hyperlinks.renderTermsLinks
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import com.blockchain.swap.nabu.StartBuySell
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.notifications.analytics.logEvent
 import com.blockchain.ui.extensions.throttledClicks
 import com.blockchain.ui.urllinks.URL_COINIFY_POLICY
@@ -44,6 +46,8 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
 
     private val onBoardingStarter: StartOnboarding by inject()
 
+    private val analytics: Analytics by inject()
+
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
 
     private var progressDialog: MaterialProgressDialog? = null
@@ -64,12 +68,14 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
                 CampaignType.Swap -> AnalyticsEvents.KycWelcome
                 CampaignType.Sunriver -> AnalyticsEvents.KycSunriverStart
                 CampaignType.Resubmission -> AnalyticsEvents.KycResubmission
+                CampaignType.Blockstack -> AnalyticsEvents.KycBlockstackStart
             }
         )
 
         val title = when (progressListener.campaignType) {
             CampaignType.BuySell,
             CampaignType.Sunriver,
+            CampaignType.Blockstack,
             CampaignType.Resubmission -> R.string.buy_sell_splash_title
             CampaignType.Swap -> R.string.kyc_splash_title
         }
@@ -94,7 +100,10 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
         disposable += buttonContinue
             .throttledClicks()
             .subscribeBy(
-                onNext = { presenter.onCTATapped(progressListener.campaignType) },
+                onNext = {
+                    analytics.logEvent(KYCAnalyticsEvents.VerifyIdentityStart)
+                    presenter.onCTATapped(progressListener.campaignType)
+                },
                 onError = { Timber.e(it) }
             )
     }
@@ -113,14 +122,14 @@ class KycSplashFragment : BaseFragment<KycSplashView, KycSplashPresenter>(), Kyc
     }
 
     override fun displayLoading(isLoading: Boolean) {
-        if (isLoading) {
-            progressDialog = MaterialProgressDialog(requireContext()).apply {
+        progressDialog = if (isLoading) {
+            MaterialProgressDialog(requireContext()).apply {
                 setMessage(R.string.buy_sell_please_wait)
                 show()
             }
         } else {
             progressDialog?.apply { dismiss() }
-            progressDialog = null
+            null
         }
     }
 

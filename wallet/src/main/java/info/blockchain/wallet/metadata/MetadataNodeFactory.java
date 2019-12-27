@@ -9,6 +9,7 @@ import org.bitcoinj.core.ECKey;
 import org.bitcoinj.crypto.DeterministicKey;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 /**
@@ -67,8 +68,8 @@ public class MetadataNodeFactory {
 
     public boolean saveMetadataHdNodes(DeterministicKey masterKey) throws Exception {
         //Derive nodes
-        DeterministicKey md = MetadataUtil.deriveMetadataNode(masterKey);
-        DeterministicKey smd = MetadataUtil.deriveSharedMetadataNode(masterKey);
+        DeterministicKey md = MetadataUtil.INSTANCE.deriveMetadataNode(masterKey);
+        DeterministicKey smd = MetadataUtil.INSTANCE.deriveSharedMetadataNode(masterKey);
 
         //Save nodes hex on 2nd pw metadata
         RemoteMetadataNodes remoteMetadataNodes = new RemoteMetadataNodes();
@@ -82,7 +83,7 @@ public class MetadataNodeFactory {
     private Metadata deriveSecondPasswordNodeLegacy(String guid, String sharedkey, String password) throws Exception {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         String text = guid + sharedkey;
-        md.update(text.getBytes("UTF-8"));
+        md.update(text.getBytes(StandardCharsets.UTF_8));
         byte[] entropy = md.digest();
         BigInteger bi = new BigInteger(1, entropy);
 
@@ -90,12 +91,8 @@ public class MetadataNodeFactory {
 
         byte[] enc = AESUtil.stringToKey(password + sharedkey, 5000);
 
-        Metadata metadata = new Metadata();
-        metadata.setEncrypted(true);
-        metadata.setAddress(key.toAddress(PersistentUrls.getInstance().getBitcoinParams()).toString());
-        metadata.setNode(key);
-        metadata.setEncryptionKey(enc);
-        metadata.setType(-1);
+        final String address = key.toAddress(PersistentUrls.getInstance().getBitcoinParams()).toString();
+        Metadata metadata = new Metadata(address, key, enc, true, -1);  // TODO -1? WTF
         metadata.fetchMagic();
 
         return metadata;
@@ -105,24 +102,20 @@ public class MetadataNodeFactory {
 
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         String input = guid + sharedkey + password;
-        md.update(input.getBytes("UTF-8"));
+        md.update(input.getBytes(StandardCharsets.UTF_8));
         byte[] entropy = md.digest();
         BigInteger bi = new BigInteger(1, entropy);
 
         ECKey key = ECKey.fromPrivate(bi);
 
-        Metadata metadata = new Metadata();
-        metadata.setEncrypted(true);
-        metadata.setAddress(key.toAddress(PersistentUrls.getInstance().getBitcoinParams()).toString());
-        metadata.setNode(key);
-        metadata.setEncryptionKey(key.getPrivKeyBytes());
-        metadata.setType(-1);
+        final String address = key.toAddress(PersistentUrls.getInstance().getBitcoinParams()).toString();
+        Metadata metadata = new Metadata(address, key, key.getPrivKeyBytes(), true, -1);
         metadata.fetchMagic();
 
         return metadata;
     }
 
-    public boolean isLegacySecondPwNodeAvailable() {
+    boolean isLegacySecondPwNodeAvailable() {
         try {
             return  secondPwNodeLegacy.getMetadata() != null;
         } catch (Exception e) {
@@ -133,9 +126,7 @@ public class MetadataNodeFactory {
     private void deleteMetadataFromNode(Metadata node) {
         try {
             String nodesJson = node.getMetadata();
-            if (nodesJson == null) {
-                //no record
-            } else {
+            if (nodesJson != null) {
                 RemoteMetadataNodes remoteMetadataNodes = RemoteMetadataNodes.fromJson(nodesJson);
                 node.deleteMetadata(remoteMetadataNodes.toJson());
             }

@@ -1,11 +1,11 @@
 package piuk.blockchain.android.ui.buysell.payment.bank.accountoverview
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.buysell.confirmation.sell.CoinifySellConfirmationActivity
@@ -132,7 +132,7 @@ class BankAccountSelectionActivity :
             "piuk.blockchain.android.ui.buysell.payment.bank.accountoverview.EXTRA_DISPLAY_MODEL"
 
         fun startForResult(
-            activity: Activity,
+            activity: AppCompatActivity,
             displayModel: SellConfirmationDisplayModel,
             requestCode: Int
         ) {

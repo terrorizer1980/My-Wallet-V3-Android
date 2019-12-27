@@ -31,9 +31,10 @@ class RemoteConfiguration(private val remoteConfig: FirebaseRemoteConfig) :
             .doOnError { Timber.e(it, "Failed to load Firebase Remote Config") }
             .map { remoteConfig }
 
-    override fun getRawJson(key: String): Single<String> = configuration.map {
-        it.getString(key)
-    }
+    override fun getRawJson(key: String): Single<String> =
+        configuration.map {
+            it.getString(key)
+        }
 
     override fun getIfFeatureEnabled(key: String): Single<Boolean> =
         configuration.map { it.getBoolean(key) }

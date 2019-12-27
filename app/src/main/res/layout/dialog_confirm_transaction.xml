@@ -9,7 +9,7 @@
         android:background="@color/white"
         android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -54,12 +54,12 @@
                     android:visibility="gone"
                     tools:visibility="visible">
 
-                    <android.support.v7.widget.GridLayout
+                    <androidx.gridlayout.widget.GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="14dp"
-                        android:layout_marginRight="14dp"
                         android:layout_marginTop="16dp"
+                        android:layout_marginRight="14dp"
                         app:alignmentMode="alignBounds"
                         app:columnCount="2"
                         app:columnOrderPreserved="false"
@@ -138,15 +138,15 @@
                             app:layout_gravity="fill_horizontal"
                             tools:text="0.0003685 BTC ($0.23)" />
 
-                    </android.support.v7.widget.GridLayout>
+                    </androidx.gridlayout.widget.GridLayout>
 
                     <TextView
                         android:id="@+id/button_change_fee"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp"
                         android:background="?attr/selectableItemBackground"
                         android:padding="8dp"
                         android:text="@string/confirm_payment_change_fee"
@@ -211,10 +211,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="8dp"
                         android:background="@color/secondary_yellow_medium"
                         android:orientation="vertical"
                         android:padding="8dp"
@@ -244,15 +244,14 @@
 
                     <Button
                         android:id="@+id/button_send"
-                        style="@style/ButtonStyle"
+                        style="@style/CtaButton.Blue"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
                         android:layout_marginLeft="32dp"
-                        android:layout_marginRight="32dp"
                         android:layout_marginTop="16dp"
-                        android:text="@string/SEND"
-                        android:theme="@style/ButtonLightBlueTheme" />
+                        android:layout_marginRight="32dp"
+                        android:layout_marginBottom="16dp"
+                        android:text="@string/SEND" />
 
                 </LinearLayout>
             </FrameLayout>

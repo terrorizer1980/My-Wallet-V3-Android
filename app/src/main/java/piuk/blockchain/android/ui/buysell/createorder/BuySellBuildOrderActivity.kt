@@ -1,17 +1,13 @@
 package piuk.blockchain.android.ui.buysell.createorder
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.constraint.ConstraintSet
-import android.support.design.widget.CoordinatorLayout
-import android.support.transition.AutoTransition
-import android.support.transition.TransitionManager
-import android.support.v7.app.AlertDialog
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -21,6 +17,10 @@ import android.view.animation.AlphaAnimation
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.blockchain.ui.chooser.AccountChooserActivity
 import com.blockchain.ui.chooser.AccountMode
 import com.blockchain.ui.urllinks.URL_SUPPORTED_COUNTRIES
@@ -188,15 +188,15 @@ class BuySellBuildOrderActivity :
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_CHOOSE_ACCOUNT && resultCode == Activity.RESULT_OK) {
+        if (requestCode == REQUEST_CODE_CHOOSE_ACCOUNT && resultCode == AppCompatActivity.RESULT_OK) {
             handleRequestResult(data!!)
         } else if (requestCode == CoinifyBuyConfirmationActivity.REQUEST_CODE_CONFIRM_BUY_ORDER &&
-            resultCode == Activity.RESULT_OK
+            resultCode == AppCompatActivity.RESULT_OK
         ) {
             // If CoinifyBuyConfirmationActivity finishes with no issues, clear this page too
             finish()
         } else if (requestCode == CoinifyBuyConfirmationActivity.REQUEST_CODE_CONFIRM_BUY_ORDER &&
-            resultCode == Activity.RESULT_CANCELED
+            resultCode == AppCompatActivity.RESULT_CANCELED
         ) {
             if (data != null) {
                 val cardLimit =
@@ -208,7 +208,7 @@ class BuySellBuildOrderActivity :
             }
         } else if (requestCode == REQUEST_CODE_CONFIRM_MAKE_SELL_PAYMENT) {
             // If CoinifySellConfirmationActivity finishes with no issues, clear this page too
-            if (resultCode == Activity.RESULT_OK) finish()
+            if (resultCode == AppCompatActivity.RESULT_OK) finish()
         } else super.onActivityResult(requestCode, resultCode, data)
     }
 

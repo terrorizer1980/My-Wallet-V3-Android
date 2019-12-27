@@ -29,8 +29,7 @@ class ChangeCryptoFromAccount(val from: AccountReference) : ExchangeIntent()
 
 class ChangeCryptoToAccount(val to: AccountReference) : ExchangeIntent()
 
-fun Quote.toIntent(): ExchangeIntent =
-    QuoteIntent(this)
+fun Quote.toIntent(): ExchangeIntent = QuoteIntent(this)
 
 class SetTradeLimits(val min: FiatValue, val max: FiatValue) : ExchangeIntent()
 
@@ -46,7 +45,7 @@ class ApplyMinimumLimit : ExchangeIntent()
 
 class EnoughFeesLimit(val hasEnoughForFess: Boolean) : ExchangeIntent()
 
-class ApplyMaximumLimit : ExchangeIntent()
+object ApplyMaximumLimit : ExchangeIntent()
 
 class FiatExchangeRateIntent(val c2fRate: ExchangeRate.CryptoToFiat) : ExchangeIntent()
 

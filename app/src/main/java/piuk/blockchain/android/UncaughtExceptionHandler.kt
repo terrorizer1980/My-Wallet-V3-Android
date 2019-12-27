@@ -2,7 +2,7 @@ package piuk.blockchain.android
 
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.androidcore.BuildConfig
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import timber.log.Timber
 
 class UncaughtExceptionHandler private constructor(val appUtil: AppUtil) : Thread.UncaughtExceptionHandler {

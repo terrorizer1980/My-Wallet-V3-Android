@@ -39,9 +39,9 @@ dependencies {
 
     // Injection
     api Libraries.koinTest
-    api Libraries.dagger
 
     // Unit Test dependencies
     api Libraries.junit
     api Libraries.kluent
+    implementation 'com.android.support:appcompat-v7'
 }

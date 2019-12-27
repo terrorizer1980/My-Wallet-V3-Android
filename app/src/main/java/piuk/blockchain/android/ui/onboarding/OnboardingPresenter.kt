@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.onboarding
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 

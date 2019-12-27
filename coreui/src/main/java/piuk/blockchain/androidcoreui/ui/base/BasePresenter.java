@@ -1,10 +1,11 @@
 package piuk.blockchain.androidcoreui.ui.base;
 
-import android.support.annotation.CallSuper;
+import androidx.annotation.CallSuper;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import io.reactivex.disposables.CompositeDisposable;
 
+@Deprecated // "Use the kotlin-friendly MvpActivity, MvpPresenter, MvpView instead"
 public abstract class BasePresenter<VIEW extends View> implements Presenter<VIEW> {
 
     private CompositeDisposable compositeDisposable;

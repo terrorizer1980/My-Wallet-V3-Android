@@ -41,7 +41,7 @@ fun given(initial: ExchangeViewModel) =
 class Given(val initial: ExchangeViewModel)
 
 fun initial(fiatCode: String, pair: Pair<CryptoCurrency, CryptoCurrency> = CryptoCurrency.BTC to CryptoCurrency.ETHER) =
-    com.blockchain.swap.common.exchange.mvi.initial(
+    initial(
         fiatCode,
         fakeAccountReference(pair.first),
         fakeAccountReference(pair.second)

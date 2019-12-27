@@ -2,7 +2,7 @@ package piuk.blockchain.android.ui.swap.homebrew.exchange.confirmation
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.datamanagers.TransactionExecutorWithoutFees
-import com.blockchain.logging.CrashLogger
+import com.blockchain.logging.SwapDiagnostics
 import com.blockchain.swap.common.exchange.mvi.ExchangeViewState
 import com.blockchain.swap.nabu.service.Fix
 import com.blockchain.swap.nabu.service.Quote
@@ -51,7 +51,7 @@ class ExchangeConfirmationPresenterTest {
     private val payloadDecrypt: PayloadDecrypt = mock()
     private val analytics: Analytics = mock()
     private val view: ExchangeConfirmationView = mock()
-    private val crashLogger: CrashLogger = mock()
+    private val diagnostics: SwapDiagnostics = mock()
 
     @get:Rule
     val rxSchedulers = rxInit {
@@ -71,7 +71,7 @@ class ExchangeConfirmationPresenterTest {
             },
             Locale.ENGLISH,
             analytics,
-            crashLogger
+            diagnostics
         )
         subject.initView(view)
 

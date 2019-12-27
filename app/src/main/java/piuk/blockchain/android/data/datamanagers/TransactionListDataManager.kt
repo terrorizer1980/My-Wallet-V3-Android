@@ -1,21 +1,12 @@
 package piuk.blockchain.android.data.datamanagers
 
-import com.blockchain.balance.AsyncBalanceReporter
-import com.blockchain.balance.TotalBalance
 import com.blockchain.sunriver.XlmDataManager
-import com.blockchain.sunriver.balance.adapters.toAsyncBalanceReporter
-import info.blockchain.balance.AccountKey
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.payload.PayloadManager
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Observables
-import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.android.data.balance.adapters.toAsync
-import piuk.blockchain.android.data.balance.adapters.toAsyncBalanceReporter
-import piuk.blockchain.android.data.balance.adapters.toBalanceReporter
 import piuk.blockchain.android.data.datamanagers.models.XlmDisplayable
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
@@ -40,8 +31,7 @@ class TransactionListDataManager(
     private val paxAccount: Erc20Account,
     private val transactionListStore: TransactionListStore,
     private val currencyState: CurrencyState
-) : TotalBalance {
-
+) {
     fun fetchTransactions(
         itemAccount: ItemAccount,
         limit: Int,
@@ -54,6 +44,7 @@ class TransactionListDataManager(
             CryptoCurrency.BCH -> fetchBchTransactions(itemAccount, limit, offset)
             CryptoCurrency.XLM -> fetchXlmTransactions()
             CryptoCurrency.PAX -> getPaxTransactions().onErrorReturn { emptyList() }
+            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         }
 
         return observable.doOnNext { insertTransactionList(it.toMutableList()) }
@@ -139,34 +130,6 @@ class TransactionListDataManager(
         ItemAccount.TYPE.ALL_LEGACY -> payloadManager.importedAddressesBalance.toLong()
         ItemAccount.TYPE.SINGLE_ACCOUNT -> payloadManager.getAddressBalance(itemAccount.address).toLong()
     }
-
-    override fun totalBalance(cryptoCurrency: CryptoCurrency) =
-        Singles.zip(
-            asyncBalance(AccountKey.EntireWallet(cryptoCurrency)),
-            asyncBalance(AccountKey.WatchOnly(cryptoCurrency))
-        ).map { (spendable, watchonly) ->
-            TotalBalance.Balance(
-                spendable = spendable,
-                coldStorage = CryptoValue.zero(cryptoCurrency),
-                watchOnly = watchonly
-            )
-        }
-
-    /**
-     * Get total BTC balance from [AccountKey].
-     *
-     * @param accountKey [AccountKey]
-     * @return A value as a [CryptoValue] that matches the [CryptoCurrency] and specifications of the [accountKey].
-     */
-    private fun asyncBalance(accountKey: AccountKey): Single<CryptoValue> =
-        accountKey.currency.toBalanceReporterAsync().let {
-            when (accountKey) {
-                is AccountKey.EntireWallet -> it.entireBalance()
-                is AccountKey.WatchOnly -> it.watchOnlyBalance()
-                is AccountKey.OnlyImported -> it.importedAddressBalance()
-                is AccountKey.SingleAddress -> it.addressBalance(accountKey.address)
-            }
-        }
 
     /**
      * Get total BCH balance from [ItemAccount].
@@ -315,15 +278,5 @@ class TransactionListDataManager(
         return flatMapIterable { list ->
             list.map { func(it) }
         }.toList().toObservable()
-    }
-
-    private fun CryptoCurrency.toBalanceReporterAsync(): AsyncBalanceReporter {
-        return when (this) {
-            CryptoCurrency.BTC -> payloadManager.toBalanceReporter().toAsync()
-            CryptoCurrency.BCH -> bchDataManager.toBalanceReporter().toAsync()
-            CryptoCurrency.ETHER -> ethDataManager.toAsyncBalanceReporter()
-            CryptoCurrency.XLM -> xlmDataManager.toAsyncBalanceReporter()
-            CryptoCurrency.PAX -> paxAccount.toAsyncBalanceReporter()
-        }
     }
 }

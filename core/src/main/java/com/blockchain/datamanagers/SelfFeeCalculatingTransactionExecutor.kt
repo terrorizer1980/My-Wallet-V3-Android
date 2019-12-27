@@ -54,6 +54,7 @@ internal class SelfFeeCalculatingTransactionExecutor(
     ): Single<String> {
         return feeDataManager.getFeeOptions(amount.currency)
             .flatMap { fees ->
+                diagnostics?.log("executing Transaction.")
                 transactionExecutor.executeTransaction(
                     amount,
                     destination,

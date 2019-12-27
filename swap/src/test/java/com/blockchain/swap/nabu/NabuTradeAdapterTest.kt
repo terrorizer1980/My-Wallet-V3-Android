@@ -1,8 +1,8 @@
 package com.blockchain.swap.nabu
 
 import com.blockchain.morph.CoinPair
-import com.blockchain.swap.nabu.api.NabuTransaction
-import com.blockchain.swap.nabu.api.TransactionState
+import com.blockchain.swap.nabu.api.nabu.NabuTransaction
+import com.blockchain.swap.nabu.api.trade.TransactionState
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.ether

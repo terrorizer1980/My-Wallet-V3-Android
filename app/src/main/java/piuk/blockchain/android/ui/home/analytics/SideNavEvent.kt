@@ -9,7 +9,7 @@ data class SideNavEvent(private val menuItemId: Int) : AnalyticsEvent {
 
     override val params: Map<String, String> = emptyMap()
 
-    val analyticsKey: String = when (menuItemId) {
+    private val analyticsKey: String = when (menuItemId) {
         R.id.nav_lockbox -> "lockbox"
         R.id.nav_backup -> "backup"
         R.id.nav_exchange_homebrew_debug -> "swap_debug"
@@ -21,5 +21,12 @@ data class SideNavEvent(private val menuItemId: Int) : AnalyticsEvent {
         R.id.nav_support -> "support"
         R.id.nav_logout -> "logout"
         else -> "unknown"
+    }
+
+    companion object SideMenuOpenEvent : AnalyticsEvent {
+        override val event: String
+            get() = "side_nav_shown"
+
+        override val params: Map<String, String> = emptyMap()
     }
 }

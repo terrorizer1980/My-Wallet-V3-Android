@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.buysell.overview.models
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import piuk.blockchain.androidbuysell.models.coinify.TradeState
 import java.util.Date
 

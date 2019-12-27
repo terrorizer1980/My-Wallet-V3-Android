@@ -8,5 +8,7 @@ enum class Coin {
     @SerializedName("btc")
     BTC,
     @SerializedName("bch")
-    BCH
+    BCH,
+    @SerializedName("none")
+    None
 }

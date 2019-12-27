@@ -23,7 +23,7 @@ val morphUiModule = applicationContext {
                 stringUtils = get(),
                 locale = get(),
                 analytics = get(),
-                crashLogger = get()
+                diagnostics = get()
             )
         }
 

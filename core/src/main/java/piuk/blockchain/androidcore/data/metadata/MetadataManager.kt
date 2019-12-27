@@ -11,7 +11,6 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
 import piuk.blockchain.androidcore.utils.MetadataUtils
-import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 
 /**
  * Manages metadata nodes/keys derived from a user's wallet credentials.
@@ -47,27 +46,34 @@ class MetadataManager(
 
     fun fetchMetadata(metadataType: Int): Observable<Optional<String>> =
         rxPinning.call<Optional<String>> {
-            payloadDataManager.getMetadataNodeFactory().map { nodeFactory ->
-                metadataUtils.getMetadataNode(nodeFactory.metadataNode, metadataType)
-                    .metadataOptional
-            }
-        }.subscribeOn(Schedulers.io())
+            payloadDataManager.getMetadataNodeFactory()
+                .map { nodeFactory ->
+                    metadataUtils.getMetadataNode(nodeFactory.metadataNode, metadataType)
+                        .metadataOptional
+                }
+            }.subscribeOn(Schedulers.io())
 
-    fun saveToMetadata(data: String, metadataType: Int): Completable = rxPinning.call {
-        payloadDataManager.getMetadataNodeFactory().flatMapCompletable {
-            Completable.fromCallable {
-                metadataUtils.getMetadataNode(it.metadataNode, metadataType).putMetadata(data)
-            }
-        }.applySchedulers()
-    }
+    fun saveToMetadata(data: String, metadataType: Int): Completable =
+        rxPinning.call {
+            payloadDataManager.getMetadataNodeFactory()
+                .flatMapCompletable {
+                    Completable.fromCallable {
+                        metadataUtils.getMetadataNode(it.metadataNode, metadataType).putMetadata(data)
+                    }
+                }.subscribeOn(Schedulers.io())
+        }
 
-    fun saveToMetadata(saveable: Saveable): Completable = rxPinning.call {
-        payloadDataManager.getMetadataNodeFactory().flatMapCompletable {
-            Completable.fromCallable {
-                metadataUtils.getMetadataNode(it.metadataNode, saveable.getMetadataType())
-                    .putMetadata(saveable.toJson())
-            }
-        }.applySchedulers()
+    fun saveToMetadata(saveable: Saveable): Completable =
+        rxPinning.call {
+            payloadDataManager.getMetadataNodeFactory()
+                .flatMapCompletable {
+                    Completable.fromCallable {
+                        metadataUtils.getMetadataNode(
+                            it.metadataNode,
+                            saveable.getMetadataType()
+                        ).putMetadata(saveable.toJson())
+                }
+            }.subscribeOn(Schedulers.io())
     }
 
     /**
@@ -95,5 +101,10 @@ class MetadataManager(
                     payloadDataManager.getMetadataNodeFactory()
                 }
             }.flatMapCompletable { Completable.complete() }
-    }.applySchedulers()
+    }.subscribeOn(Schedulers.io())
+
+    companion object {
+        const val METADATA_TYPE_EXCHANGE = 3
+        const val METADATA_TYPE_SHAPE_SHIFT_EXTERNAL = 6
+    }
 }

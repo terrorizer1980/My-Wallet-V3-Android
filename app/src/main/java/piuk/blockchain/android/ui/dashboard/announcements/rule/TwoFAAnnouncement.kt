@@ -1,15 +1,15 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.WalletStatus
 import info.blockchain.wallet.api.data.Settings
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
+import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 
 class TwoFAAnnouncement(
@@ -32,7 +32,7 @@ class TwoFAAnnouncement(
 
     override fun show(host: AnnouncementHost) {
         host.showAnnouncementCard(
-            card = AnnouncementCard(
+            card = StandardAnnouncementCard(
                 name = name,
                 dismissRule = DismissRule.CardPeriodic,
                 dismissEntry = dismissEntry,
@@ -41,10 +41,10 @@ class TwoFAAnnouncement(
                 ctaText = R.string.two_fa_card_cta,
                 iconImage = R.drawable.ic_announce_two_step,
                 dismissFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                 },
                 ctaFunction = {
-                    host.dismissAnnouncementCard(dismissEntry.prefsKey)
+                    host.dismissAnnouncementCard()
                     host.startSetup2Fa()
                 }
             )

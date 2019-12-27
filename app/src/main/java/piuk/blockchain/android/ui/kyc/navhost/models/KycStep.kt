@@ -21,5 +21,15 @@ enum class KycStep(val relativeValue: Int) {
     MobileVerifiedPage(10),
     VerificationCodeEntered(10),
     VeriffSplashPage(5),
-    CompletePage(30)
+    CompletePage(30);
+
+    val progressStep: Int
+        get() {
+            var step = 0
+            for (i in values().indices)
+                if (values()[i].relativeValue < this.relativeValue) {
+                    step++
+                }
+            return step
+        }
 }

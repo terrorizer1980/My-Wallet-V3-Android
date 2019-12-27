@@ -1,12 +1,12 @@
 package piuk.blockchain.android.ui.kyc.splash
 
 import piuk.blockchain.android.ui.kyc.BaseKycPresenter
-import com.blockchain.kyc.models.nabu.Kyc2TierState
-import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.reentry.KycNavigator
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.service.NabuCoinifyAccountCreator
 import info.blockchain.wallet.exceptions.ApiException
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

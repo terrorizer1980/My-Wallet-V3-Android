@@ -34,21 +34,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingBottom="10dp"
             android:paddingLeft="48dp"
-            android:paddingRight="48dp"
             android:paddingTop="16dp"
+            android:paddingRight="48dp"
+            android:paddingBottom="10dp"
             android:text="@string/upgrade_page_1"
             android:textColor="@color/primary_navy_medium"
             android:textSize="12sp" />
 
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
-
-        </android.support.v4.view.ViewPager>
+            android:layout_weight="1" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -60,16 +58,15 @@
 
         <Button
             android:id="@+id/btn_upgrade_complete"
-            style="@style/ButtonStyle"
+            style="@style/CtaButton.Blue"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="32dp"
             android:layout_marginLeft="32dp"
             android:layout_marginRight="32dp"
+            android:layout_marginBottom="32dp"
             android:gravity="center"
-            android:text="@string/CONTINUE"
-            android:theme="@style/ButtonLightBlueTheme"
+            android:text="@string/btn_continue"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -79,9 +76,9 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:orientation="vertical"
-            android:paddingBottom="32dp"
             android:paddingLeft="32dp"
-            android:paddingRight="32dp">
+            android:paddingRight="32dp"
+            android:paddingBottom="32dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -89,8 +86,8 @@
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:paddingBottom="16dp"
-                android:paddingTop="16dp">
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp">
 
                 <TextView
                     android:id="@+id/pageBox0"
@@ -117,13 +114,12 @@
 
             <Button
                 android:id="@+id/upgrade_btn"
-                style="@style/ButtonStyle"
+                style="@style/CtaButton.Blue"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
-                android:text="@string/UPGRADE_YOUR_WALLET"
-                android:theme="@style/ButtonLightBlueTheme" />
+                android:text="@string/UPGRADE_YOUR_WALLET" />
 
         </LinearLayout>
 

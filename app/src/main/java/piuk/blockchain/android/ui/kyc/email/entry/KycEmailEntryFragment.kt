@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import piuk.blockchain.android.ui.kyc.extensions.skipFirstUnless
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
@@ -36,6 +38,7 @@ class KycEmailEntryFragment : BaseFragment<KycEmailEntryView, KycEmailEntryPrese
     KycEmailEntryView {
 
     private val presenter: KycEmailEntryPresenter by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
     private val emailObservable
@@ -49,7 +52,9 @@ class KycEmailEntryFragment : BaseFragment<KycEmailEntryView, KycEmailEntryPrese
         get() = Observables.combineLatest(
             emailObservable.cache(),
             buttonNext.throttledClicks()
-        )
+        ).doOnNext {
+            analytics.logEvent(KYCAnalyticsEvents.EmailUpdateButtonClicked)
+        }
 
     private var progressDialog: MaterialProgressDialog? = null
 
@@ -98,7 +103,7 @@ class KycEmailEntryFragment : BaseFragment<KycEmailEntryView, KycEmailEntryPrese
     }
 
     override fun continueSignUp(email: String) {
-        navigate(KycEmailEntryFragmentDirections.ActionValidateEmail(email))
+        navigate(KycEmailEntryFragmentDirections.actionValidateEmail(email))
     }
 
     override fun showProgressDialog() {

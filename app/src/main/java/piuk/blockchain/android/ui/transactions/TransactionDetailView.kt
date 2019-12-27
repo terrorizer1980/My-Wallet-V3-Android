@@ -1,8 +1,7 @@
 package piuk.blockchain.android.ui.transactions
 
-import android.content.Intent
-import android.support.annotation.ColorRes
-import android.support.annotation.StringRes
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import piuk.blockchain.androidcoreui.ui.base.View
@@ -10,7 +9,9 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 interface TransactionDetailView : View {
 
-    fun getPageIntent(): Intent?
+    fun txHashDetailLookup(): String?
+
+    fun positionDetailLookup(): Int
 
     fun pageFinish()
 

@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.extensions.skipFirstUnless
 import com.blockchain.notifications.analytics.logEvent
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
@@ -14,6 +16,7 @@ import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import piuk.blockchain.android.ui.kyc.profile.models.ProfileModel
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.ui.extensions.throttledClicks
 import com.jakewharton.rxbinding2.widget.afterTextChangeEvents
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
@@ -46,13 +49,18 @@ import kotlinx.android.synthetic.main.fragment_kyc_profile.input_layout_kyc_date
 class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), KycProfileView {
 
     private val presenter: KycProfilePresenter by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
     override val firstName: String
         get() = editTextFirstName.getTextString()
     override val lastName: String
         get() = editTextLastName.getTextString()
-    override val countryCode: String by lazy { KycProfileFragmentArgs.fromBundle(arguments).countryCode }
+    override val countryCode: String by lazy {
+        KycProfileFragmentArgs.fromBundle(
+            arguments ?: Bundle()
+        ).countryCode
+    }
     override var dateOfBirth: Calendar? = null
     private var progressDialog: MaterialProgressDialog? = null
 
@@ -94,7 +102,12 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
             buttonNext
                 .throttledClicks()
                 .subscribeBy(
-                    onNext = { presenter.onContinueClicked(progressListener.campaignType) },
+                    onNext = {
+                        presenter.onContinueClicked(progressListener.campaignType)
+                        analytics.logEvent(KYCAnalyticsEvents.PersonalDetailsSet("${editTextFirstName.text}," +
+                                "${editTextLastName.text}," +
+                                "${editTextDob.text}"))
+                    },
                     onError = { Timber.e(it) }
                 )
 
@@ -109,7 +122,7 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
 
     override fun continueSignUp(profileModel: ProfileModel) {
         navigate(
-            KycProfileFragmentDirections.ActionKycProfileFragmentToKycHomeAddressFragment(
+            KycProfileFragmentDirections.actionKycProfileFragmentToKycHomeAddressFragment(
                 profileModel
             )
         )
@@ -160,7 +173,9 @@ class KycProfileFragment : BaseFragment<KycProfileView, KycProfilePresenter>(), 
             .doOnNext { updateProgress(it, kycStep) }
 
     private fun onDateOfBirthClicked() {
-        ViewUtils.hideKeyboard(requireActivity())
+        (requireActivity() as? AppCompatActivity)?.let {
+            ViewUtils.hideKeyboard(it)
+        }
 
         val calendar = Calendar.getInstance().apply { add(Calendar.YEAR, -18) }
         DatePickerDialog.newInstance(

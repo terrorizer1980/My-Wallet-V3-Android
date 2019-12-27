@@ -34,7 +34,7 @@ public class PriceApiTest extends BaseIntegTest {
         long oneYearAgo = cal.getTimeInMillis() / 1000;
         // Act
         final TestObserver<List<PriceDatum>> testObserver =
-                subject.getHistoricPriceSeries("eth", "gbp", oneYearAgo, Scale.ONE_DAY).test();
+                subject.getHistoricPriceSeries("eth", "gbp", oneYearAgo, TimeInterval.ONE_DAY.getIntervalSeconds()).test();
         // Assert
         testObserver.assertComplete();
         testObserver.assertNoErrors();

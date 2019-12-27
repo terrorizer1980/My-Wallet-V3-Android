@@ -5,11 +5,7 @@ import android.content.Context
 import android.graphics.Outline
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.support.annotation.DrawableRes
-import android.support.graphics.drawable.VectorDrawableCompat
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.content.res.AppCompatResources
-import android.support.v7.view.ContextThemeWrapper
+import androidx.annotation.DrawableRes
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -19,9 +15,17 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.blockchain.balance.coinIconWhite
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import piuk.blockchain.android.util.coinIconWhite
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.view_expanding_currency_header.view.*
+import org.koin.standalone.KoinComponent
+import org.koin.standalone.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -32,9 +36,11 @@ import piuk.blockchain.androidcoreui.utils.extensions.visible
 class ExpandableCurrencyHeader @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : RelativeLayout(context, attrs) {
+) : RelativeLayout(context, attrs), KoinComponent {
 
     private lateinit var selectionListener: (CryptoCurrency) -> Unit
+
+    private val analytics: Analytics by inject()
 
     private var expanded = false
     private var firstOpen = true
@@ -46,7 +52,7 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
         VectorDrawableCompat.create(
             resources,
             R.drawable.vector_expand_more,
-            ContextThemeWrapper(context, piuk.blockchain.kyc.R.style.AppTheme).theme
+            ContextThemeWrapper(context, R.style.AppTheme).theme
         )?.run {
             DrawableCompat.wrap(this)
         }
@@ -55,13 +61,14 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
     init {
         // Inflate layout
         LayoutInflater.from(getContext()).inflate(R.layout.view_expanding_currency_header, this, true)
-        CryptoCurrency.values().forEach { currency ->
-            textView(currency).apply {
-                // Add compound drawables manually to avoid inflation errors on <21
-                setRightDrawable(currency.coinIconWhite())
-                setOnClickListener { closeLayout(currency) }
+        CryptoCurrency.values().filter { !it.hasFeature(CryptoCurrency.STUB_ASSET) }
+            .forEach { currency ->
+                textView(currency)?.apply {
+                    // Add compound drawables manually to avoid inflation errors on <21
+                    setRightDrawable(currency.coinIconWhite())
+                    setOnClickListener { closeLayout(currency) }
+                }
             }
-        }
         textview_selected_currency.apply {
             // Hide selector on first load
             invisible()
@@ -117,16 +124,17 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
     fun getCurrentlySelectedCurrency() = selectedCurrency
 
     fun hide(cryptoCurrency: CryptoCurrency) {
-        textView(cryptoCurrency).gone()
+        textView(cryptoCurrency)?.gone()
     }
 
-    private fun textView(cryptoCurrency: CryptoCurrency): TextView =
+    private fun textView(cryptoCurrency: CryptoCurrency): TextView? =
         when (cryptoCurrency) {
             CryptoCurrency.BTC -> textview_bitcoin
             CryptoCurrency.ETHER -> textview_ethereum
             CryptoCurrency.BCH -> textview_bitcoin_cash
             CryptoCurrency.XLM -> textview_lumens
             CryptoCurrency.PAX -> textview_pax
+            CryptoCurrency.STX -> null
         }
 
     fun isOpen() = expanded
@@ -166,6 +174,8 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
             onAnimationEnd {
                 expanded = !expanded
                 if (expanded) linear_layout_coin_selection.visible()
+                if (expanded) analytics.logEvent(AnalyticsEvents.OpenAssetsSelector) else
+                    analytics.logEvent(AnalyticsEvents.CloseAssetsSelector)
             }
         }
 

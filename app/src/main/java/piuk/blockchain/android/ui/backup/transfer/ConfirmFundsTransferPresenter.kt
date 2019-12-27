@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.backup.transfer
 
 import android.annotation.SuppressLint
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import info.blockchain.wallet.payload.data.LegacyAddress
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
@@ -11,6 +11,9 @@ import piuk.blockchain.android.ui.send.PendingTransaction
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
+import piuk.blockchain.androidcore.data.events.PayloadSyncedEvent
+import piuk.blockchain.androidcore.data.events.PaymentFailedEvent
+import piuk.blockchain.androidcore.data.events.PaymentSentEvent
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -57,10 +60,12 @@ class ConfirmFundsTransferPresenter(
                     archiveAll()
                 } else {
                     view.dismissDialog()
+                    view.sendBroadcast(PaymentSentEvent())
                 }
             }, {
                 view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
                 view.dismissDialog()
+                view.sendBroadcast(PaymentFailedEvent())
             })
     }
 
@@ -121,6 +126,7 @@ class ConfirmFundsTransferPresenter(
             .doOnTerminate {
                 view.hideProgressDialog()
                 view.dismissDialog()
+                view.sendBroadcast(PayloadSyncedEvent())
             }
             .subscribe(
                 { view.showToast(R.string.transfer_archive, ToastCustom.TYPE_OK) },

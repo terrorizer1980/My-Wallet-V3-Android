@@ -26,9 +26,9 @@ import retrofit2.Retrofit;
 
 public final class MetadataTest {
 
-    boolean isEncrypted = false;
+    private boolean isEncrypted = false;
 
-    MockInterceptor mockInterceptor;
+    private MockInterceptor mockInterceptor;
 
     @Before
     public void setup() {
@@ -103,13 +103,13 @@ public final class MetadataTest {
         mockInterceptor.setResponseString("{\"message\":\"Not Found\"}");
         mockInterceptor.setResponseCode(404);
 
-        DeterministicKey metaDataHDNode = MetadataUtil.deriveMetadataNode(getWallet().getMasterKey());
+        DeterministicKey metaDataHDNode = MetadataUtil.INSTANCE.deriveMetadataNode(getWallet().getMasterKey());
 
         Metadata metadata = new Metadata.Builder(metaDataHDNode, 2)
                 .setEncrypted(isEncrypted)
                 .build();
 
-        Assert.assertTrue(metadata.getAddress().equals(address));
+        Assert.assertEquals(metadata.getAddress(), address);
     }
 
     @Test
@@ -118,7 +118,7 @@ public final class MetadataTest {
         mockInterceptor.setResponseString("{\"message\":\"Not Found\"}");
         mockInterceptor.setResponseCode(404);//New metadata response
 
-        DeterministicKey metaDataHDNode = MetadataUtil.deriveMetadataNode(getWallet().getMasterKey());
+        DeterministicKey metaDataHDNode = MetadataUtil.INSTANCE.deriveMetadataNode(getWallet().getMasterKey());
 
         Metadata metadata = new Metadata.Builder(metaDataHDNode, 2)
                 .setEncrypted(isEncrypted)
@@ -133,7 +133,7 @@ public final class MetadataTest {
         mockInterceptor.setResponseCode(200);
         String result1 = metadata.getMetadata();
 
-        Assert.assertTrue(msg.equals(result1));
+        Assert.assertEquals(msg, result1);
 
         mockInterceptor.setResponseString("{\"version\":1,\"payload\":\"UmFnZSByYWdlIHNvbWUgbW9yZQ==\",\"signature\":\"H7zIO7fzkb8t+zdbiEzlKt/8InFjH5N2ja+SaJPcAuheP3soAJwxVrnzG0tDQpxyJKSgYn/9il6XsLW3rmm3a+g=\",\"prev_magic_hash\":\"73d03136dfdadf66b4048f938ad8acf6084134a84ac6f542e0144b29999a6836\",\"type_id\":1}");
         mockInterceptor.setResponseCode(200);
@@ -143,7 +143,7 @@ public final class MetadataTest {
         mockInterceptor.setResponseString("{\"payload\":\"UmFnZSByYWdlIHNvbWUgbW9yZQ==\",\"version\":1,\"type_id\":1,\"signature\":\"H7zIO7fzkb8t+zdbiEzlKt/8InFjH5N2ja+SaJPcAuheP3soAJwxVrnzG0tDQpxyJKSgYn/9il6XsLW3rmm3a+g=\",\"prev_magic_hash\":\"73d03136dfdadf66b4048f938ad8acf6084134a84ac6f542e0144b29999a6836\",\"created_at\":1480592845000,\"updated_at\":1480592845000,\"address\":\"1ErzrzB1FE1YyQ7LADMzye9J3Q8QeR1mja\"}");
         mockInterceptor.setResponseCode(200);
         String result2 = metadata.getMetadata();
-        Assert.assertTrue(msg.equals(result2));
+        Assert.assertEquals(msg, result2);
 
         mockInterceptor.setResponseString("{\"status\": \"success\"}");
         mockInterceptor.setResponseCode(200);

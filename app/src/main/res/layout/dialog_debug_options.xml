@@ -30,11 +30,9 @@
         android:text="Randomise Device Id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        style="@style/CtaButton.Blue"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="8dp"
-        android:theme="@style/LightBlueButtonTheme"/>
+        android:layout_marginBottom="8dp" />
 
     <TextView
         android:layout_width="match_parent"
@@ -48,14 +46,12 @@
 
     <Button
         android:id="@+id/btn_reset_wallet"
+        style="@style/CtaButton.Blue"
         android:text="Reset Wallet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="8dp"
-        android:theme="@style/LightBlueButtonTheme"/>
+        android:layout_marginBottom="8dp"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -69,14 +65,12 @@
 
     <Button
         android:id="@+id/btn_reset_announce"
+        style="@style/CtaButton.Blue"
         android:text="Reset Announcements"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="8dp"
-        android:theme="@style/LightBlueButtonTheme"/>
+        android:layout_marginBottom="8dp"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -90,35 +84,31 @@
 
     <Button
         android:id="@+id/btn_reset_prefs"
+        style="@style/CtaButton.Blue"
         android:text="Reset Preferences"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="8dp"
-        android:theme="@style/LightBlueButtonTheme"/>
-
-    <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="2dp"
-            android:gravity="center"
-            android:text="Persist a pit to wallet link ID for pit linking testing"/>
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="2dp"
+        android:gravity="center"
+        android:text="Persist a pit to wallet link ID for pit linking testing"/>
 
     <Button
-            android:id="@+id/btn_store_linkId"
-            android:text="StoreLinkId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="8dp"
-            android:theme="@style/LightBlueButtonTheme"/>
+        android:id="@+id/btn_store_linkId"
+        style="@style/CtaButton.Blue"
+        android:text="StoreLinkId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"/>
 
     <TextView
             android:layout_width="match_parent"

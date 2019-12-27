@@ -6,7 +6,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.support.v4.content.LocalBroadcastManager
 import com.blockchain.notifications.NotificationsUtil
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -16,6 +15,9 @@ import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrate
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.util.lifecycle.AppState
 import piuk.blockchain.android.util.lifecycle.LifecycleInterestedComponent
+import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 class CoinsWebSocketService : Service(), MessagesSocketHandler {
 
@@ -24,6 +26,7 @@ class CoinsWebSocketService : Service(), MessagesSocketHandler {
     private val notificationManager: NotificationManager by inject()
     private val coinsWebSocketStrategy: CoinsWebSocketStrategy by inject()
     private val lifecycleInterestedComponent: LifecycleInterestedComponent by inject()
+    private val rxBus: RxBus by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -36,6 +39,14 @@ class CoinsWebSocketService : Service(), MessagesSocketHandler {
                 coinsWebSocketStrategy.close()
             }
         }
+    }
+
+    override fun showToast(message: Int) {
+        ToastCustom.makeText(
+            this,
+            getString(message),
+            ToastCustom.LENGTH_SHORT,
+            ToastCustom.TYPE_GENERAL)
     }
 
     override fun onBind(intent: Intent?): IBinder? = binder
@@ -57,8 +68,8 @@ class CoinsWebSocketService : Service(), MessagesSocketHandler {
             1000)
     }
 
-    override fun sendBroadcast(intent: String) {
-        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(Intent(intent))
+    override fun sendBroadcast(event: ActionEvent) {
+        rxBus.emitEvent(ActionEvent::class.java, event)
     }
 
     override fun onDestroy() {

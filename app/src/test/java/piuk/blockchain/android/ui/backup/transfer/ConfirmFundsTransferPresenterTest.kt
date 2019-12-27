@@ -7,6 +7,7 @@ import info.blockchain.wallet.payload.data.LegacyAddress
 import info.blockchain.wallet.payload.data.Wallet
 import io.reactivex.Completable
 import io.reactivex.Observable
+import org.amshove.kluent.any
 import org.apache.commons.lang3.tuple.Triple
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -30,6 +31,9 @@ import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.PendingTransaction
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
+import piuk.blockchain.androidcore.data.events.PayloadSyncedEvent
+import piuk.blockchain.androidcore.data.events.PaymentFailedEvent
+import piuk.blockchain.androidcore.data.events.PaymentSentEvent
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.math.BigDecimal
@@ -162,6 +166,7 @@ class ConfirmFundsTransferPresenterTest {
         verify(view).showToast(R.string.transfer_confirmed, ToastCustom.TYPE_OK)
         verify(view).showToast(R.string.transfer_archive, ToastCustom.TYPE_OK)
         verify(view).dismissDialog()
+        verify(view).sendBroadcast(any<PayloadSyncedEvent>())
         verifyNoMoreInteractions(view)
     }
 
@@ -180,6 +185,7 @@ class ConfirmFundsTransferPresenterTest {
         verify(view).showProgressDialog()
         verify(view).hideProgressDialog()
         verify(view).showToast(R.string.transfer_confirmed, ToastCustom.TYPE_OK)
+        verify(view).sendBroadcast(any<PaymentSentEvent>())
         verify(view).dismissDialog()
         verifyNoMoreInteractions(view)
     }
@@ -200,6 +206,7 @@ class ConfirmFundsTransferPresenterTest {
         verify(view).hideProgressDialog()
         verify(view).showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
         verify(view).dismissDialog()
+        verify(view).sendBroadcast(any<PaymentFailedEvent>())
         verifyNoMoreInteractions(view)
     }
 
@@ -240,6 +247,7 @@ class ConfirmFundsTransferPresenterTest {
         verify(view).hideProgressDialog()
         verify(view).showToast(R.string.transfer_archive, ToastCustom.TYPE_OK)
         verify(view).dismissDialog()
+        verify(view).sendBroadcast(any<PayloadSyncedEvent>())
         verifyNoMoreInteractions(view)
     }
 
@@ -258,6 +266,7 @@ class ConfirmFundsTransferPresenterTest {
         verify(view).hideProgressDialog()
         verify(view).showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
         verify(view).dismissDialog()
+        verify(view).sendBroadcast(any<PayloadSyncedEvent>())
         verifyNoMoreInteractions(view)
     }
 }

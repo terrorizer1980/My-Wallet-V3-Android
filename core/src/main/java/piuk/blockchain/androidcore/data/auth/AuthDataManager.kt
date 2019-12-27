@@ -1,6 +1,6 @@
 package piuk.blockchain.androidcore.data.auth
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
 import info.blockchain.wallet.api.data.WalletOptions
 import info.blockchain.wallet.crypto.AESUtil
@@ -162,7 +162,7 @@ class AuthDataManager(
             return Observable.error(IllegalArgumentException("Invalid PIN"))
         } else {
             accessState.setPin(passedPin)
-            crashLogger.log("validatePin. pin set. validity: ${passedPin.isValidPin()}")
+            crashLogger.logEvent("validatePin. pin set. validity: ${passedPin.isValidPin()}")
         }
 
         return authService.validateAccess(key, passedPin)
@@ -197,7 +197,7 @@ class AuthDataManager(
             return Completable.error(IllegalArgumentException("Invalid PIN"))
         } else {
             accessState.setPin(passedPin)
-            crashLogger.log("createPin. pin set. validity: ${passedPin.isValidPin()}")
+            crashLogger.logEvent("createPin. pin set. validity: ${passedPin.isValidPin()}")
         }
 
         prngHelper.applyPRNGFixes()

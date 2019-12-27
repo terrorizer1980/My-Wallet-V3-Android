@@ -1,6 +1,6 @@
 package piuk.blockchain.androidbuysell.models;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by justin on 5/9/17.

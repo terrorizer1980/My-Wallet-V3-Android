@@ -1,9 +1,9 @@
 package piuk.blockchain.android.ui.buysell.payment.complete
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.view.MotionEvent
 import nl.dionsegijn.konfetti.models.Shape
 import nl.dionsegijn.konfetti.models.Size
@@ -169,7 +169,7 @@ class CoinifyPaymentCompleteActivity : BaseAuthActivity() {
             "piuk.blockchain.android.ui.buysell.payment.card.EXTRA_REDIRECT_URL"
 
         fun start(
-            activity: Activity,
+            activity: AppCompatActivity,
             paymentState: PaymentState
         ) {
             Intent(activity, CoinifyPaymentCompleteActivity::class.java).apply {

@@ -1,10 +1,11 @@
 package piuk.blockchain.android.ui.settings;
 
-import com.blockchain.kyc.models.nabu.Kyc2TierState;
-import com.blockchain.kyc.models.nabu.NabuApiException;
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.remoteconfig.FeatureFlag;
+import com.blockchain.swap.nabu.models.nabu.Kyc2TierState;
+import com.blockchain.swap.nabu.models.nabu.NabuApiException;
 
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.PayloadManager;
@@ -14,13 +15,11 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import piuk.blockchain.android.R;
 import piuk.blockchain.android.testutils.RxTest;
 import piuk.blockchain.android.thepit.PitLinking;
@@ -95,6 +94,8 @@ public class SettingsPresenterTest extends RxTest {
     private PitLinkingState pitLinkState;
     @Mock
     private FeatureFlag featureFlag;
+    @Mock
+    private Analytics analytics;
 
     @Before
     public void setUp() {
@@ -115,6 +116,7 @@ public class SettingsPresenterTest extends RxTest {
                 currencyFormatManager,
                 kycStatusHelper,
                 pitLinking,
+                analytics,
                 featureFlag);
         subject.initView(activity);
     }

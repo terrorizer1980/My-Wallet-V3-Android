@@ -17,7 +17,6 @@
 package piuk.blockchain.android.ui.zxing;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +24,8 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.util.Log;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import piuk.blockchain.android.ui.zxing.common.executor.AsyncTaskExecInterface;
 import piuk.blockchain.android.ui.zxing.common.executor.AsyncTaskExecManager;
@@ -38,12 +39,12 @@ final class InactivityTimer {
 
   private static final long INACTIVITY_DELAY_MS = 5 * 60 * 1000L;
 
-  private final Activity activity;
+  private final AppCompatActivity activity;
   private final AsyncTaskExecInterface taskExec;
   private final BroadcastReceiver powerStatusReceiver;
   private InactivityAsyncTask inactivityTask;
 
-  InactivityTimer(Activity activity) {
+  InactivityTimer(AppCompatActivity activity) {
     this.activity = activity;
     taskExec = new AsyncTaskExecManager().build();
     powerStatusReceiver = new PowerStatusReceiver();

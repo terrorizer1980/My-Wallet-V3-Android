@@ -2,10 +2,10 @@ package piuk.blockchain.android
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.arch.lifecycle.ProcessLifecycleOwner
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockchain.koin.KoinStarter
 import com.blockchain.logging.CrashLogger
 import com.google.android.gms.common.ConnectionResult
@@ -21,22 +21,30 @@ import org.bitcoinj.core.NetworkParameters
 import piuk.blockchain.android.data.connectivity.ConnectivityManager
 import com.blockchain.ui.CurrentContextAccess
 import com.facebook.stetho.Stetho
+import io.reactivex.Completable
+import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.campaign.BlockstackCampaignRegistration
+import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
 import piuk.blockchain.android.ui.auth.LogoutActivity
+import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
+import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity
+import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.lifecycle.AppLifecycleListener
 import piuk.blockchain.android.util.lifecycle.LifecycleInterestedComponent
+import piuk.blockchain.android.util.start
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.connectivity.ConnectionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.annotations.Thunk
+import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 import piuk.blockchain.androidcoreui.BuildConfig
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.AppLaunchEvent
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import retrofit2.Retrofit
@@ -52,8 +60,10 @@ open class BlockchainApplication : Application(), FrameworkInterface {
     private val rxBus: RxBus by inject()
     private val currentContextAccess: CurrentContextAccess by inject()
     private val appUtils: AppUtil by inject()
+    private val osUtil: OSUtil by inject()
     private val crashLogger: CrashLogger by inject()
 
+    private val stxRegistration: BlockstackCampaignRegistration by inject()
     private val lifecycleListener: AppLifecycleListener by lazy {
         AppLifecycleListener(lifeCycleInterestedComponent)
     }
@@ -106,7 +116,7 @@ open class BlockchainApplication : Application(), FrameworkInterface {
                 }
             })
 
-        ConnectivityManager.getInstance().registerNetworkListener(this)
+        ConnectivityManager.getInstance().registerNetworkListener(this, rxBus)
 
         checkSecurityProviderAndPatchIfNeeded()
 
@@ -117,13 +127,6 @@ open class BlockchainApplication : Application(), FrameworkInterface {
         // Report Google Play Services availability
         Logging.logCustom(AppLaunchEvent(isGooglePlayServicesAvailable(this)))
 
-        // Set screen shots to enabled in staging builds, to simplify automation and QA processes
-        val prefs: PersistentPrefs = get()
-        prefs.setValue(
-            PersistentPrefs.KEY_SCREENSHOTS_ENABLED,
-            environmentSettings.shouldShowDebugMenu()
-        )
-
         initRxBus()
     }
 
@@ -131,12 +134,30 @@ open class BlockchainApplication : Application(), FrameworkInterface {
     private fun initRxBus() {
         rxBus.register(ConnectionEvent::class.java)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { connectionEvent ->
-                SSLVerifyActivity.start(
-                    applicationContext,
-                    connectionEvent
-                )
-            }
+            .subscribeBy(onNext = ::onBusConnectionEvent)
+
+        rxBus.register(MetadataEvent::class.java)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(onNext = ::onBusMetadataEvent)
+    }
+
+    private fun onBusConnectionEvent(event: ConnectionEvent) {
+        SSLVerifyActivity.start(applicationContext, event)
+    }
+
+    private fun onBusMetadataEvent(event: MetadataEvent) {
+        val queries: AnnouncementQueries = get()
+        queries.isEligibleForStxSignup()
+            .flatMapCompletable { if (it) stxRegistration.registerCampaign() else Completable.complete() }
+            .emptySubscribe()
+
+        startCoinsWebService()
+    }
+
+    private fun startCoinsWebService() {
+        if (ApplicationLifeCycle.getInstance().isForeground) {
+            CoinsWebSocketService::class.java.start(this, osUtil)
+        }
     }
 
     private fun initLifecycleListener() {

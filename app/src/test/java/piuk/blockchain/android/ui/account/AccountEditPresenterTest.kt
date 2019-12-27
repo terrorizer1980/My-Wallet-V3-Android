@@ -95,6 +95,7 @@ class AccountEditPresenterTest {
             swipeToReceiveHelper,
             dynamicFeeCache,
             environmentSettings,
+            mock(),
             currencyFormatManager,
             coinSelectionRemoteConfig
         )
@@ -853,7 +854,7 @@ class AccountEditPresenterTest {
         subject.importUnmatchedPrivateKey(ecKey)
         // Assert
         verify(view).setActivityResult(anyInt())
-        verify(view).sendBroadcast(anyString(), anyString())
+        verify(view).sendBroadcast(any())
         verify(view).privateKeyImportMismatch()
     }
 

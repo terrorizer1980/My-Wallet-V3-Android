@@ -1,7 +1,6 @@
 package piuk.blockchain.android.ui.account
 
-import android.content.Intent
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import info.blockchain.wallet.payload.data.LegacyAddress
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -20,8 +19,6 @@ interface AccountView : View {
     fun dismissProgressDialog()
 
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
-
-    fun broadcastIntent(intent: Intent)
 
     fun showWatchOnlyWarningDialog(address: String)
 

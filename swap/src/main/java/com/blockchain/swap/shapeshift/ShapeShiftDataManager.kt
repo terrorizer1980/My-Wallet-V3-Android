@@ -206,7 +206,7 @@ class ShapeShiftDataManager(
     @WebRequest
     @Throws(Exception::class)
     private fun fetchOrCreateShapeShiftTradeData(): Observable<Pair<ShapeShiftTrades, Boolean>> =
-        metadataManager.fetchMetadata(ShapeShiftTrades.METADATA_TYPE_EXTERNAL)
+        metadataManager.fetchMetadata(MetadataManager.METADATA_TYPE_SHAPE_SHIFT_EXTERNAL)
             .map { optional ->
 
                 val json = optional.orNull()
@@ -226,7 +226,7 @@ class ShapeShiftDataManager(
             return rxPinning.call {
                 metadataManager.saveToMetadata(
                     shapeShiftDataStore.tradeData!!.toJson(),
-                    ShapeShiftTrades.METADATA_TYPE_EXTERNAL
+                    MetadataManager.METADATA_TYPE_SHAPE_SHIFT_EXTERNAL
                 )
             }.applySchedulers()
         }

@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.kyc.mobile.validation
 
+import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.swap.nabu.NabuUserSync
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -10,7 +11,8 @@ import timber.log.Timber
 
 class KycMobileValidationPresenter(
     private val nabuUserSync: NabuUserSync,
-    private val phoneNumberUpdater: PhoneNumberUpdater
+    private val phoneNumberUpdater: PhoneNumberUpdater,
+    private val analytics: Analytics
 ) : BasePresenter<KycMobileValidationView>() {
 
     override fun onViewReady() {
@@ -32,7 +34,9 @@ class KycMobileValidationPresenter(
                             Timber.e(it)
                             view.displayErrorDialog(R.string.kyc_phone_number_validation_error_incorrect)
                         }
-                        .doOnComplete { view.continueSignUp() }
+                        .doOnComplete {
+                            view.continueSignUp()
+                        }
                 }
                 .retry()
                 .doOnError(Timber::e)
@@ -51,7 +55,9 @@ class KycMobileValidationPresenter(
                             Timber.e(it)
                             view.displayErrorDialog(R.string.kyc_phone_number_error_resending)
                         }
-                        .doOnComplete { view.theCodeWasResent() }
+                        .doOnComplete {
+                            view.theCodeWasResent()
+                        }
                 }
                 .retry()
                 .doOnError(Timber::e)

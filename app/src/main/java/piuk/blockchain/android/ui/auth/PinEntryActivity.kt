@@ -1,21 +1,20 @@
 package piuk.blockchain.android.ui.auth
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.content.Intent
-import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.view.ViewPager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
 import android.view.MotionEvent
 import android.view.Window
+import androidx.databinding.DataBindingUtil
+import androidx.viewpager.widget.ViewPager
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
-import piuk.blockchain.android.data.websocket.WebSocketService
 import piuk.blockchain.android.databinding.ActivityPinEntryBinding
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveFragment
 import piuk.blockchain.android.util.OSUtil
@@ -123,7 +122,7 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
 
     private fun finishWithResultCanceled() {
         val intent = Intent()
-        setResult(Activity.RESULT_CANCELED, intent)
+        setResult(AppCompatActivity.RESULT_CANCELED, intent)
         finish()
     }
 
@@ -139,7 +138,6 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
 
     private fun startWebSocketService() {
         CoinsWebSocketService::class.java.start(this, osUtil)
-        WebSocketService::class.java.start(this, osUtil)
     }
 
     private class SwipeToReceiveFragmentPagerAdapter internal constructor(
@@ -148,11 +146,10 @@ class PinEntryActivity : BaseAuthActivity(), PinEntryFragment.OnPinEntryFragment
         private val swipeToReceiveFragment: Fragment
     ) : FragmentPagerAdapter(fm) {
 
-        override fun getItem(position: Int): Fragment? {
+        override fun getItem(position: Int): Fragment {
             return when (position) {
                 0 -> pinEntryFragment
-                1 -> swipeToReceiveFragment
-                else -> null
+                else -> swipeToReceiveFragment
             }
         }
 

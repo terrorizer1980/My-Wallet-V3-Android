@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.kyc.countryselection.models
 
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import piuk.blockchain.android.ui.kyc.countryselection.util.CountryDisplayModel
 
 sealed class CountrySelectionState {

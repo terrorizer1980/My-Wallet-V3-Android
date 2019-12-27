@@ -49,12 +49,12 @@ class EthDataManager(
     private val rxPinning = RxPinning(rxBus)
 
     /**
-     * Clears the currently stored ETH account and [EthAddressResponse] from memory.
+     * Clears the currently stored ETH account from memory.
      */
     fun clearEthAccountDetails() = ethDataStore.clearData()
 
     /**
-     * Returns an [EthAddressResponse] object for a given ETH address as an [Observable]. An
+     * Returns an [CombinedEthModel] object for a given ETH address as an [Observable]. An
      * [CombinedEthModel] contains a list of transactions associated with the account, as well
      * as a final balance. Calling this function also caches the [CombinedEthModel].
      *
@@ -83,9 +83,17 @@ class EthDataManager(
             .onErrorReturn { BigInteger.ZERO }
             .subscribeOn(Schedulers.io())
 
-    fun getErc20Address(currency: CryptoCurrency): Observable<Erc20AddressResponse> =
-        ethAccountApi.getErc20Address(ethDataStore.ethWallet!!.account.address,
-            getErc20TokenData(currency).contractAddress).applySchedulers()
+    fun getErc20Address(currency: CryptoCurrency): Observable<Erc20AddressResponse> {
+        // If the metadata is not yet loaded, ethDataStore.ethWallet will be null.
+        // So defer() this call, so that the exception occurs after-subscription, rather than
+        // when constructing the Rx chain, so it will can be handled by onError() etc
+        return Observable.defer {
+            ethAccountApi.getErc20Address(
+                ethDataStore.ethWallet!!.account.address,
+                getErc20TokenData(currency).contractAddress
+            )
+        }.subscribeOn(Schedulers.io())
+    }
 
     fun fetchEthAddressCompletable(): Completable = Completable.fromObservable(fetchEthAddress())
 
@@ -116,7 +124,7 @@ class EthDataManager(
     fun getEthTransactions(): Observable<EthTransaction> {
         ethDataStore.ethAddressResponse?.let {
             return Observable.just(it)
-                .flatMapIterable { it.getTransactions() }
+                .flatMapIterable { i -> i.getTransactions() }
                 .applySchedulers()
         }
 
@@ -364,10 +372,11 @@ class EthDataManager(
                 Pair(ethWallet, needsSave)
             }
 
-    fun save(): Completable = metadataManager.saveToMetadata(
-        ethDataStore.ethWallet!!.toJson(),
-        EthereumWallet.METADATA_TYPE_EXTERNAL
-    )
+    fun save(): Completable =
+        metadataManager.saveToMetadata(
+            ethDataStore.ethWallet!!.toJson(),
+            EthereumWallet.METADATA_TYPE_EXTERNAL
+        )
 
     fun getErc20TokenData(currency: CryptoCurrency): Erc20TokenData {
         when (currency) {

@@ -84,7 +84,7 @@ class ReceivePresenterTest {
             currencyState,
             fiatExchangeRates
         )
-        subject.initView(activity)
+        subject.attachView(activity)
     }
 
     @get:Rule

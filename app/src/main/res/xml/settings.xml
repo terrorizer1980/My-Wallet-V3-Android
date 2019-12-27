@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <piuk.blockchain.android.ui.settings.preferences.CustomPreferenceCategory
         android:key="profile"
+        app:iconSpaceReserved="false"
         android:title="@string/profile">
         <piuk.blockchain.android.ui.settings.preferences.KycStatusPreference
             android:key="identity_verification"
+            app:iconSpaceReserved="false"
             android:title="@string/kyc_settings_swap_limit" />
         <piuk.blockchain.android.ui.settings.preferences.CustomPreference
             android:key="guid"
+            app:iconSpaceReserved="false"
             android:title="@string/options_id" />
         <piuk.blockchain.android.ui.settings.preferences.CustomPreference
             android:key="email"
+            app:iconSpaceReserved="false"
             android:title="@string/email" />
         <piuk.blockchain.android.ui.settings.preferences.CustomPreference
             android:key="mobile"
+            app:iconSpaceReserved="false"
             android:title="@string/mobile" />
         <piuk.blockchain.android.ui.settings.preferences.ThePitStatusPreference
             android:key="the_pit"
+            app:iconSpaceReserved="false"
             android:title="The PIT" />
     </piuk.blockchain.android.ui.settings.preferences.CustomPreferenceCategory>
 
@@ -26,44 +33,55 @@
         android:title="@string/preferences">
         <piuk.blockchain.android.ui.settings.preferences.CustomPreference
             android:key="fiat"
+            app:iconSpaceReserved="false"
             android:title="@string/options_currency" />
         <piuk.blockchain.android.ui.settings.preferences.CustomSwitchPreference
             android:key="email_notifications"
+            app:iconSpaceReserved="false"
             android:title="@string/email_notifications" />
         <piuk.blockchain.android.ui.settings.preferences.CustomSwitchPreference
             android:key="push_notifications"
+            app:iconSpaceReserved="false"
             android:title="@string/push_notifications" />
     </piuk.blockchain.android.ui.settings.preferences.CustomPreferenceCategory>
 
     <piuk.blockchain.android.ui.settings.preferences.CustomPreferenceCategory
         android:key="security"
+        app:iconSpaceReserved="false"
         android:title="@string/security">
         <piuk.blockchain.android.ui.settings.preferences.CustomPreference
             android:key="pin"
+            app:iconSpaceReserved="false"
             android:title="@string/change_pin_code" />
         <piuk.blockchain.android.ui.settings.preferences.CustomPreference
             android:key="change_pw"
+            app:iconSpaceReserved="false"
             android:title="@string/change_password" />
         <piuk.blockchain.android.ui.settings.preferences.CustomSwitchPreference
             android:key="fingerprint"
+            app:iconSpaceReserved="false"
             android:title="@string/enable_fingerprint" />
         <piuk.blockchain.android.ui.settings.preferences.CustomSwitchPreference
             android:key="2fa"
+            app:iconSpaceReserved="false"
             android:summary="@string/two_fa_summary"
             android:title="@string/two_fa" />
         <piuk.blockchain.android.ui.settings.preferences.CustomSwitchPreference
             android:defaultValue="false"
+            app:iconSpaceReserved="false"
             android:key="screenshots_enabled"
-            android:summary="@string/enable_screenshots_summary"
             android:persistent="true"
+            android:summary="@string/enable_screenshots_summary"
             android:title="@string/enable_screenshots" />
         <piuk.blockchain.android.ui.settings.preferences.CustomSwitchPreference
             android:key="tor"
+            app:iconSpaceReserved="false"
             android:summary="@string/tor_summary"
             android:title="@string/tor_requests" />
         <piuk.blockchain.android.ui.settings.preferences.CustomSwitchPreference
             android:defaultValue="true"
             android:key="receive_shortcuts_enabled"
+            app:iconSpaceReserved="false"
             android:persistent="true"
             android:summary="@string/shortcut_settings_summary"
             android:title="@string/shortcut_settings_enable" />
@@ -71,25 +89,31 @@
             android:defaultValue="true"
             android:key="swipe_to_receive_enabled"
             android:persistent="true"
+            app:iconSpaceReserved="false"
             android:summary="@string/swipe_receive_preference_summary"
             android:title="@string/swipe_receive_hint" />
     </piuk.blockchain.android.ui.settings.preferences.CustomPreferenceCategory>
 
     <piuk.blockchain.android.ui.settings.preferences.CustomPreferenceCategory
         android:key="app"
+        app:iconSpaceReserved="false"
         android:title="@string/app">
         <piuk.blockchain.android.ui.settings.preferences.CustomPreference
             android:key="about"
+            app:iconSpaceReserved="false"
             android:title="@string/preferences_about_title" />
         <piuk.blockchain.android.ui.settings.preferences.CustomPreference
             android:key="tos"
+            app:iconSpaceReserved="false"
             android:title="@string/options_tos" />
         <piuk.blockchain.android.ui.settings.preferences.CustomPreference
             android:key="privacy"
+            app:iconSpaceReserved="false"
             android:title="@string/options_privacy" />
         <piuk.blockchain.android.ui.settings.preferences.CustomCheckBoxPreference
             android:key="disable_root_warning"
+            app:iconSpaceReserved="false"
             android:title="@string/disable_root_warning" />
     </piuk.blockchain.android.ui.settings.preferences.CustomPreferenceCategory>
 
-</android.support.v7.preference.PreferenceScreen>
+</PreferenceScreen>

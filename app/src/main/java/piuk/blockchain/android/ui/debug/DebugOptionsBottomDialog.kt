@@ -2,8 +2,8 @@ package piuk.blockchain.android.ui.debug
 
 import android.app.LauncherActivity
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialogFragment
-import android.support.v4.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.fragment.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +18,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.util.AppRate
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcoreui.utils.AppUtil
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 
 class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
@@ -75,7 +75,7 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
 
         AppRate.reset(context)
 
-        crashLogger.log("debug clear prefs. Pin reset")
+        crashLogger.logEvent("debug clear prefs. Pin reset")
         loginState.clearPin()
 
         context?.toast("Prefs Reset")

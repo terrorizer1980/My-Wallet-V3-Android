@@ -219,9 +219,7 @@ public class Settings {
         return loggingLevel;
     }
 
-    public String getGuid() {
-        return guid;
-    }
+    public String getGuid() { return guid != null ? guid : ""; }
 
     @JsonIgnore
     public static Settings fromJson(String json) throws IOException {

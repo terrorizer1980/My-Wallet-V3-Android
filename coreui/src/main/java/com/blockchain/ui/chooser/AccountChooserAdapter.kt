@@ -1,13 +1,14 @@
 package com.blockchain.ui.chooser
 
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.blockchain.serialization.JsonSerializableAccount
+import kotlinx.android.synthetic.main.item_accounts_row.view.*
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
+import piuk.blockchain.androidcoreui.utils.extensions.inflate
 
 class AccountChooserAdapter(
     private val items: List<AccountChooserItem>,
@@ -23,16 +24,15 @@ class AccountChooserAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         when (ViewType.values().first { it.ordinal == viewType }) {
             ViewType.VIEW_TYPE_HEADER -> {
-                val header =
-                    LayoutInflater.from(parent.context).inflate(R.layout.item_accounts_row_header, parent, false)
+                val header = parent.inflate(R.layout.item_accounts_row_header)
                 HeaderViewHolder(header)
             }
             ViewType.VIEW_TYPE_ACCOUNT -> {
-                val account = LayoutInflater.from(parent.context).inflate(R.layout.item_accounts_row, parent, false)
+                val account = parent.inflate(R.layout.item_accounts_row)
                 AccountViewHolder(account)
             }
             ViewType.VIEW_TYPE_LEGACY -> {
-                val account = LayoutInflater.from(parent.context).inflate(R.layout.item_accounts_row, parent, false)
+                val account = parent.inflate(R.layout.item_accounts_row)
                 AddressViewHolder(account)
             }
         }
@@ -64,6 +64,7 @@ class AccountChooserAdapter(
                 holder.itemView.setOnClickListener(clickListener(item.accountObject))
             }
         }
+        holder.itemView.contentDescription = item.label
     }
 
     override fun getItemCount() = items.size
@@ -78,7 +79,7 @@ class AccountChooserAdapter(
 
 private class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    internal var header: TextView = itemView.findViewById(R.id.header_name)
+    internal val header: TextView = itemView.findViewById(R.id.header_name)
 
     init {
         itemView.findViewById<View>(R.id.imageview_plus).visibility = View.GONE
@@ -86,20 +87,20 @@ private class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
 }
 
 private class AccountViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    internal var label: TextView = itemView.findViewById(R.id.my_account_row_label)
-    internal var balance: TextView = itemView.findViewById(R.id.my_account_row_amount)
+    internal val label: TextView = itemView.findViewById(R.id.my_account_row_label)
+    internal val balance: TextView = itemView.findViewById(R.id.my_account_row_amount)
 
     init {
-        itemView.findViewById<View>(R.id.my_account_row_tag).visibility = View.GONE
-        itemView.findViewById<View>(R.id.my_account_row_address).visibility = View.GONE
+        itemView.my_account_row_tag.visibility = View.GONE
+        itemView.my_account_row_address.visibility = View.GONE
     }
 }
 
 private class AddressViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    internal var label: TextView = itemView.findViewById(R.id.my_account_row_label)
-    internal var tag: TextView = itemView.findViewById(R.id.my_account_row_tag)
-    internal var balance: TextView = itemView.findViewById(R.id.my_account_row_amount)
-    internal var address: TextView = itemView.findViewById(R.id.my_account_row_address)
+    internal val label: TextView = itemView.findViewById(R.id.my_account_row_label)
+    internal val tag: TextView = itemView.findViewById(R.id.my_account_row_tag)
+    internal val balance: TextView = itemView.findViewById(R.id.my_account_row_amount)
+    internal val address: TextView = itemView.findViewById(R.id.my_account_row_address)
 }
 
 private enum class ViewType {

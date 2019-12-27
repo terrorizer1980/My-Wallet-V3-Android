@@ -19,6 +19,7 @@ import piuk.blockchain.androidbuysell.models.coinify.CoinifyTradeRequest
 import piuk.blockchain.androidbuysell.models.coinify.exceptions.CoinifyApiException
 import piuk.blockchain.androidbuysell.services.ExchangeService
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
+import info.blockchain.balance.FiatValue
 import piuk.blockchain.androidcore.data.currency.CurrencyFormatUtil
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -170,7 +171,7 @@ class CoinifyBuyConfirmationPresenter(
         .flatMapCompletable {
             metadataManager.saveToMetadata(
                 it.toSerialisedString(),
-                ExchangeService.METADATA_TYPE_EXCHANGE
+                MetadataManager.METADATA_TYPE_EXCHANGE
             )
         }
         .toSingle { trade }
@@ -220,9 +221,10 @@ class CoinifyBuyConfirmationPresenter(
     private fun getAwaitingFundsModel(it: CoinifyTrade): AwaitingFundsModel {
         val (referenceText, account, bank, holder, _, _) = (it.transferIn.details as BankDetails)
         val formattedAmount = currencyFormatUtil.formatFiatWithSymbol(
-            it.transferIn.sendAmount,
-            it.transferIn.currency,
-            view.locale
+            FiatValue.fromMajor(
+                it.transferIn.currency,
+                it.transferIn.sendAmount.toBigDecimal()
+            ), view.locale
         )
 
         return AwaitingFundsModel(

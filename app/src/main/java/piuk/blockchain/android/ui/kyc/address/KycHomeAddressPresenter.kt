@@ -1,12 +1,12 @@
 package piuk.blockchain.android.ui.kyc.address
 
 import piuk.blockchain.android.ui.kyc.BaseKycPresenter
-import com.blockchain.kyc.datamanagers.nabu.NabuDataManager
-import com.blockchain.kyc.models.nabu.Scope
-import com.blockchain.kyc.services.nabu.NabuCoinifyAccountCreator
+import com.blockchain.swap.nabu.models.nabu.Scope
 import piuk.blockchain.android.ui.kyc.address.models.AddressModel
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.service.NabuCoinifyAccountCreator
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single

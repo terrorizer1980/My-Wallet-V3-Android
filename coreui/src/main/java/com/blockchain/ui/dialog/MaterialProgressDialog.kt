@@ -5,8 +5,8 @@ import android.content.DialogInterface
 import android.content.res.TypedArray
 import android.graphics.PorterDuff
 import android.os.Build
-import android.support.annotation.StringRes
-import android.support.v7.app.AlertDialog
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import android.view.View
 import kotlinx.android.synthetic.main.progress_dialog_compat.view.*
 

@@ -73,10 +73,10 @@
             android:name=".ui.auth.PinEntryActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".ui.auth.LandingActivity"
+            android:name=".ui.start.LandingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".ui.start.LoginActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -96,7 +96,7 @@
             android:name=".ui.upgrade.UpgradeWalletActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
-            android:name=".ui.login.ManualPairingActivity"
+            android:name=".ui.start.ManualPairingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".ui.auth.LogoutActivity"
@@ -104,7 +104,7 @@
             android:noHistory="true"
             android:theme="@style/NoDisplay" />
         <activity
-            android:name=".ui.auth.PasswordRequiredActivity"
+            android:name=".ui.start.PasswordRequiredActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".ui.recover.RecoverFundsActivity"
@@ -123,10 +123,6 @@
         <activity
             android:name=".ui.pairingcode.PairingCodeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
-        <activity
-            android:name=".ui.charts.ChartsActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:theme="@style/AppTheme.ChartsWindow" />
         <activity
             android:name=".ui.ssl.SSLVerifyActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
@@ -205,7 +201,6 @@
         <service
             android:name=".data.coinswebsocket.service.CoinsWebSocketService"
             android:stopWithTask="true" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_notification" />
@@ -224,7 +219,7 @@
             android:resource="@array/preloaded_fonts" />
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">

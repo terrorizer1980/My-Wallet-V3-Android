@@ -1,11 +1,12 @@
 package piuk.blockchain.android.ui.kyc.countryselection
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockchain.notifications.analytics.Analytics
 import piuk.blockchain.android.ui.kyc.countryselection.adapter.CountryCodeAdapter
 import piuk.blockchain.android.ui.kyc.countryselection.models.CountrySelectionState
 import piuk.blockchain.android.ui.kyc.countryselection.util.CountryDisplayModel
@@ -15,6 +16,7 @@ import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import piuk.blockchain.android.ui.kyc.search.filterCountries
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.jakewharton.rxbinding2.support.v7.widget.queryTextChanges
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -42,6 +44,7 @@ internal class KycCountrySelectionFragment :
     }
 
     private val presenter: KycCountrySelectionPresenter by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val countryCodeAdapter = CountryCodeAdapter {
         presenter.onRegionSelected(it, progressListener.campaignType)
@@ -102,8 +105,9 @@ internal class KycCountrySelectionFragment :
     }
 
     override fun continueFlow(countryCode: String) {
+        analytics.logEvent(KYCAnalyticsEvents.CountrySelected)
         navigate(
-            KycCountrySelectionFragmentDirections.ActionKycCountrySelectionFragmentToKycProfileFragment(
+            KycCountrySelectionFragmentDirections.actionKycCountrySelectionFragmentToKycProfileFragment(
                 countryCode
             )
         )
@@ -111,7 +115,7 @@ internal class KycCountrySelectionFragment :
 
     override fun invalidCountry(displayModel: CountryDisplayModel) {
         navigate(
-            KycCountrySelectionFragmentDirections.ActionKycCountrySelectionFragmentToKycInvalidCountryFragment(
+            KycCountrySelectionFragmentDirections.actionKycCountrySelectionFragmentToKycInvalidCountryFragment(
                 displayModel
             )
         )

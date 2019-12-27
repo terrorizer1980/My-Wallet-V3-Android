@@ -3,14 +3,16 @@ package piuk.blockchain.android.ui.swap.homebrew.exchange.history
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import piuk.blockchain.android.ui.swap.homebrew.exchange.detail.HomebrewTradeDetailActivity
 import piuk.blockchain.android.ui.swap.homebrew.exchange.history.adapter.TradeHistoryAdapter
 import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import org.koin.android.ext.android.get
 import kotlinx.android.synthetic.main.activity_homebrew_trade_history.*
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
@@ -25,6 +27,7 @@ class TradeHistoryActivity :
     override val locale: Locale = Locale.getDefault()
 
     private val tradeHistoryAdapter = TradeHistoryAdapter(this::tradeClicked)
+    private val analytics: Analytics by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +74,7 @@ class TradeHistoryActivity :
 
     private fun tradeClicked(trade: Trade) {
         HomebrewTradeDetailActivity.start(this, trade)
+        analytics.logEvent(SwapAnalyticsEvents.SwapHistoryOrderClick)
     }
 
     override fun onSupportNavigateUp(): Boolean = consume { finish() }

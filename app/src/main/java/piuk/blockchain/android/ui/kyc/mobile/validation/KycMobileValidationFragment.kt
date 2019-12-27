@@ -1,13 +1,15 @@
 package piuk.blockchain.android.ui.kyc.mobile.validation
 
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import piuk.blockchain.android.ui.kyc.extensions.skipFirstUnless
 import piuk.blockchain.android.ui.kyc.hyperlinks.insertSingleLink
 import piuk.blockchain.android.ui.kyc.mobile.entry.models.PhoneVerificationModel
@@ -43,10 +45,14 @@ class KycMobileValidationFragment :
     KycMobileValidationView {
 
     private val presenter: KycMobileValidationPresenter by inject()
+    private val analytics: Analytics by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
     private var progressDialog: MaterialProgressDialog? = null
-    private val args by unsafeLazy { KycMobileValidationFragmentArgs.fromBundle(arguments) }
+    private val args by unsafeLazy {
+        KycMobileValidationFragmentArgs.fromBundle(
+            arguments ?: Bundle())
+    }
     private val displayModel by unsafeLazy { args.mobileNumber }
     private val countryCode by unsafeLazy { args.countryCode }
     private val verificationCodeObservable by unsafeLazy {
@@ -75,7 +81,9 @@ class KycMobileValidationFragment :
         Observables.combineLatest(
             verificationCodeObservable.cache(),
             buttonNext.throttledClicks()
-        )
+        ).doOnNext {
+            analytics.logEvent(KYCAnalyticsEvents.PhoneNumberUpdateButtonClicked)
+        }
     }
 
     override fun onCreateView(
@@ -132,7 +140,7 @@ class KycMobileValidationFragment :
         findNavController(this).apply {
             // Remove phone entry and validation pages from back stack as it would be confusing for the user
             popBackStack(R.id.kycPhoneNumberFragment, true)
-            navigate(KycNavXmlDirections.ActionStartVeriff(countryCode))
+            navigate(KycNavXmlDirections.actionStartVeriff(countryCode))
         }
     }
 

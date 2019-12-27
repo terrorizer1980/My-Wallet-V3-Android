@@ -43,9 +43,9 @@ public class ContactsIntegTest extends BaseIntegTest{
     @Test
     public void testMetadataIntegration() throws Exception {
 
-        DeterministicKey sharedMetaDataHDNode = MetadataUtil
+        DeterministicKey sharedMetaDataHDNode = MetadataUtil.INSTANCE
             .deriveSharedMetadataNode(getWallet().getMasterKey());
-        DeterministicKey metaDataHDNode = MetadataUtil
+        DeterministicKey metaDataHDNode = MetadataUtil.INSTANCE
             .deriveMetadataNode(getWallet().getMasterKey());
 
         Contacts contacts = new Contacts(metaDataHDNode, sharedMetaDataHDNode);
@@ -97,16 +97,16 @@ public class ContactsIntegTest extends BaseIntegTest{
         Create wallets
          */
         HDWallet a_wallet = HDWalletFactory.createWallet(PersistentUrls.getInstance().getBitcoinParams(), Language.US, 12, "", 1);
-        DeterministicKey sharedMetaDataHDNode = MetadataUtil
+        DeterministicKey sharedMetaDataHDNode = MetadataUtil.INSTANCE
             .deriveSharedMetadataNode(a_wallet.getMasterKey());
-        DeterministicKey metaDataHDNode = MetadataUtil.deriveMetadataNode(a_wallet.getMasterKey());
+        DeterministicKey metaDataHDNode = MetadataUtil.INSTANCE.deriveMetadataNode(a_wallet.getMasterKey());
         Contacts a_contacts = new Contacts(metaDataHDNode, sharedMetaDataHDNode);
         a_contacts.publishXpub();
         a_contacts.fetch();
 
         HDWallet b_wallet = HDWalletFactory.createWallet(PersistentUrls.getInstance().getBitcoinParams(), Language.US,12, "", 1);
-        sharedMetaDataHDNode = MetadataUtil.deriveSharedMetadataNode(b_wallet.getMasterKey());
-        metaDataHDNode = MetadataUtil.deriveMetadataNode(b_wallet.getMasterKey());
+        sharedMetaDataHDNode = MetadataUtil.INSTANCE.deriveSharedMetadataNode(b_wallet.getMasterKey());
+        metaDataHDNode = MetadataUtil.INSTANCE.deriveMetadataNode(b_wallet.getMasterKey());
         Contacts b_contacts = new Contacts(metaDataHDNode, sharedMetaDataHDNode);
         b_contacts.publishXpub();
         b_contacts.fetch();

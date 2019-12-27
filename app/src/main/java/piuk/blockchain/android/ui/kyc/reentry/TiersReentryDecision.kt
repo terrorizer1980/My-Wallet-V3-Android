@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.kyc.reentry
 
-import com.blockchain.kyc.models.nabu.NabuUser
+import com.blockchain.swap.nabu.models.nabu.NabuUser
 
 class TiersReentryDecision : ReentryDecision {
 
@@ -29,6 +29,6 @@ class TiersReentryDecision : ReentryDecision {
             return ReentryPoint.MobileEntry
         }
 
-        return ReentryPoint.Onfido
+        return ReentryPoint.Veriff
     }
 }

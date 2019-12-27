@@ -1,9 +1,9 @@
 package piuk.blockchain.androidcoreui.ui.base;
 
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatDialogFragment;
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.crashlytics.android.answers.ContentViewEvent;
 

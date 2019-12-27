@@ -27,7 +27,7 @@ public class MetadataIntegTest extends BaseIntegTest {
         /*
         Magic hash need to be computed correctly otherwise consecutive PUT will fail
          */
-        DeterministicKey metaDataHDNode = MetadataUtil
+        DeterministicKey metaDataHDNode = MetadataUtil.INSTANCE
             .deriveMetadataNode(getWallet().getMasterKey());
 
         Metadata metadata = new Metadata.Builder(metaDataHDNode, 2)

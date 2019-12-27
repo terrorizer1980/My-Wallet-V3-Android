@@ -13,6 +13,7 @@ import piuk.blockchain.androidbuysell.models.CoinifyData
 import piuk.blockchain.androidbuysell.models.ExchangeData
 import piuk.blockchain.androidbuysell.models.TradeData
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
+import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.websockets.WebSocketReceiveEvent
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
@@ -35,6 +36,7 @@ class ExchangeService(
             .flatMap { it.coinify?.let { coinifyData -> Maybe.just(coinifyData) } ?: Maybe.empty() }
 
     private var metadataSubject: ReplaySubject<Metadata> = ReplaySubject.create(1)
+
     private var didStartLoad: Boolean = false
 
     fun getWebViewLoginDetails(): Observable<WebViewLoginDetails> = Observable.zip(
@@ -64,6 +66,7 @@ class ExchangeService(
             didStartLoad = true
         }
         return metadataSubject
+            .doOnError { Timber.e(it) }
     }
 
     private fun getPendingTradeAddresses(): Observable<String> = getExchangeData()
@@ -95,7 +98,8 @@ class ExchangeService(
         }
         .distinct()
 
-    fun getExchangeMetaData(): Observable<ExchangeData> = getExchangeData()
+    fun getExchangeMetaData(): Observable<ExchangeData> =
+        getExchangeData()
         .flatMap { metadata ->
             Observable.fromCallable {
                 val exchangeData = metadata.metadata
@@ -148,11 +152,6 @@ class ExchangeService(
 
     private fun getMetadata(metadataHDNode: DeterministicKey): Observable<Metadata> =
         Observable.fromCallable {
-            Metadata.Builder(metadataHDNode, METADATA_TYPE_EXCHANGE).build()
+            Metadata.Builder(metadataHDNode, MetadataManager.METADATA_TYPE_EXCHANGE).build()
         }.applySchedulers()
-
-    companion object {
-
-        const val METADATA_TYPE_EXCHANGE = 3
-    }
 }

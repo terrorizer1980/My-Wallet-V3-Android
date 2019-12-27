@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -30,7 +30,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_view_address_title" />
 
-        <android.support.v7.widget.SearchView
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view_kyc_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
             app:queryHint="@string/kyc_address_search_hint" />
 
         <!-- Address -->
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_kyc_address_first_line"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,17 +56,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_view_kyc_address">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_text_kyc_address_first_line"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 android:inputType="textPostalAddress|textCapWords" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Apt Name or Number -->
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_kyc_address_apt_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,17 +78,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_first_line">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_text_kyc_address_apt_name"
                 android:layout_width="match_parent"
                 android:imeOptions="actionNext"
                 android:layout_height="wrap_content"
                 android:inputType="textPostalAddress|textCapWords" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- City -->
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_kyc_address_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -100,17 +100,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_apt_name">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_text_kyc_address_city"
                 android:layout_width="match_parent"
                 android:imeOptions="actionNext"
                 android:layout_height="wrap_content"
                 android:inputType="textPostalAddress|textCapWords" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- State/County -->
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_kyc_address_state"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -122,17 +122,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_city">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_text_kyc_address_state"
                 android:layout_width="match_parent"
                 android:imeOptions="actionNext"
                 android:layout_height="wrap_content"
                 android:inputType="textPostalAddress|textCapWords" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Zip Code/Postcode -->
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_kyc_address_zip_code"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -144,17 +144,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_state">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_text_kyc_address_zip_code"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
                 android:inputType="textPostalAddress|textCapWords" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Country -->
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout_kyc_address_country"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -166,14 +166,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_zip_code">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_text_kyc_address_country"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="false"
                 android:focusable="false" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/text_view_kyc_terms_and_conditions"
@@ -193,16 +193,14 @@
 
         <Button
             android:id="@+id/button_kyc_address_next"
+            style="@style/CtaButton.Blue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="32dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
             android:layout_marginTop="32dp"
             android:enabled="false"
             android:text="@string/kyc_profile_submit"
-            android:theme="@style/LightBlueButtonTheme"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -210,5 +208,5 @@
             app:layout_constraintTop_toBottomOf="@+id/input_layout_kyc_address_country"
             app:layout_constraintVertical_bias="1.0" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

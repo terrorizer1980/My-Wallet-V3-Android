@@ -1,7 +1,7 @@
 package piuk.blockchain.android.ui.dashboard.announcements
 
-import android.support.annotation.VisibleForTesting
-import piuk.blockchain.android.ui.kyc.navhost.models.CampaignType
+import androidx.annotation.VisibleForTesting
+import piuk.blockchain.android.campaign.CampaignType
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -15,13 +15,12 @@ import timber.log.Timber
 interface AnnouncementHost {
     val disposables: CompositeDisposable
 
-    fun clearAllAnnouncements()
     fun showAnnouncementCard(card: AnnouncementCard)
-    fun dismissAnnouncementCard(prefsKey: String)
+    fun dismissAnnouncementCard()
 
     // Actions
     fun startKyc(campaignType: CampaignType)
-    fun startSwapOrKyc(swapTarget: CryptoCurrency? = null)
+    fun startSwap(swapTarget: CryptoCurrency = CryptoCurrency.ETHER)
     fun startBuySell()
     fun startPitLinking()
     fun startFundsBackup()
@@ -30,6 +29,7 @@ interface AnnouncementHost {
     fun startEnableFingerprintLogin()
     fun startIntroTourGuide()
     fun startTransferCrypto()
+    fun startBlockstackIntro()
 }
 
 abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {
@@ -41,6 +41,7 @@ abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {
 
     abstract fun shouldShow(): Single<Boolean>
     abstract fun show(host: AnnouncementHost)
+    fun isDismissed(): Boolean = dismissEntry.isDismissed
 }
 
 class AnnouncementList(
@@ -50,7 +51,7 @@ class AnnouncementList(
     private val dismissRecorder: DismissRecorder
 ) {
     fun checkLatest(host: AnnouncementHost, disposables: CompositeDisposable) {
-        host.clearAllAnnouncements()
+        host.dismissAnnouncementCard()
 
         disposables += showNextAnnouncement(host)
             .subscribeBy(onError = Timber::e)
@@ -73,7 +74,7 @@ class AnnouncementList(
             .doOnSuccess { dismissRecorder.setPeriod(it.interval) }
             .map { buildAnnouncementList(it.order) }
             .flattenAsObservable { it }
-            .flatMap { a ->
+            .concatMap { a ->
                 Observable.defer {
                     a.shouldShow()
                         .filter { it }

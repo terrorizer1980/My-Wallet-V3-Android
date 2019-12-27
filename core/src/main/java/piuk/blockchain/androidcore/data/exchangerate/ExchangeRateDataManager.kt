@@ -37,6 +37,11 @@ class ExchangeRateDataManager(
             .map { FiatValue.fromMajor(fiat, it * value.toBigDecimal()) }
             .subscribeOn(Schedulers.io())
 
+    fun getHistoricPrice(currency: CryptoCurrency, fiat: String, timeInSeconds: Long): Single<FiatValue> =
+        exchangeRateDataStore.getHistoricPrice(currency, fiat, timeInSeconds)
+            .map { FiatValue.fromMajor(fiat, it) }
+            .subscribeOn(Schedulers.io())
+
     fun getCurrencyLabels() = exchangeRateDataStore.getCurrencyLabels()
 
     @Deprecated("Use CryptoValue.toFiat")

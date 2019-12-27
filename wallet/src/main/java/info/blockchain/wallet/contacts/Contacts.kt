@@ -33,7 +33,7 @@ class Contacts constructor(
     sharedMetaDataHDNode: DeterministicKey
 ) {
 
-    private val metadata: Metadata = Metadata.Builder(metaDataHDNode, METADATA_TYPE_EXTERNAL).build()
+    private val metadata: Metadata = Metadata.Builder(metaDataHDNode, Metadata.METADATA_TYPE_EXTERNAL_CONTACTS).build()
     private val sharedMetadata: SharedMetadata = SharedMetadata.Builder(sharedMetaDataHDNode).build()
     private var contactList: HashMap<String, Contact> = HashMap()
     private val mapper = ObjectMapper()
@@ -164,11 +164,12 @@ class Contacts constructor(
         log.info("Publishing mdid-xpub pair")
         val details = PublicContactDetails(sharedMetadata.xpub)
 
-        Metadata().apply {
-            setEncrypted(false)
-            address = sharedMetadata.address
-            node = sharedMetadata.node
-            setType(METADATA_TYPE_EXTERNAL)
+        Metadata(
+            address = sharedMetadata.address,
+            node = sharedMetadata.node,
+            isEncrypted = false,
+            type = Metadata.METADATA_TYPE_EXTERNAL_CONTACTS
+        ).apply {
             fetchMagic()
             putMetadata(details.toJson())
         }
@@ -619,11 +620,6 @@ class Contacts constructor(
         private const val TYPE_PAYMENT_BROADCASTED = 2
         private const val TYPE_DECLINE_REQUEST = 3
         private const val TYPE_CANCEL_REQUEST = 4
-
-        /**
-         * Metadata node type
-         */
-        private const val METADATA_TYPE_EXTERNAL = 4
 
         private val log = LoggerFactory.getLogger(Contacts::class.java)
     }

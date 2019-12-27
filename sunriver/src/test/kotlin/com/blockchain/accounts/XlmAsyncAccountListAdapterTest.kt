@@ -1,5 +1,6 @@
 package com.blockchain.accounts
 
+import com.blockchain.sunriver.XlmDataManager
 import com.nhaarman.mockito_kotlin.mock
 import info.blockchain.balance.AccountReference
 import io.reactivex.Maybe
@@ -12,17 +13,28 @@ class XlmAsyncAccountListAdapterTest {
     @Test
     fun `XlmAsyncAccountListAdapter account list`() {
         val accountReference = AccountReference.Xlm("Xlm Account", "GABC")
-        (XlmAsyncAccountListAdapter(mock {
+
+        val xlmDataMan: XlmDataManager = mock {
             on { maybeDefaultAccount() } `it returns` Maybe.just(accountReference)
-        }) as AsyncAccountList)
-            .accounts().test().values().single() `should equal` listOf(accountReference)
+        }
+
+        XlmAsyncAccountListAdapter(xlmDataMan)
+            .accounts()
+            .test()
+            .values()
+            .single() `should equal` listOf(accountReference)
     }
 
     @Test
     fun `XlmAsyncAccountListAdapter account list - empty`() {
-        (XlmAsyncAccountListAdapter(mock {
+        val xlmDataMan: XlmDataManager = mock {
             on { maybeDefaultAccount() } `it returns` Maybe.empty()
-        }) as AsyncAccountList)
-            .accounts().test().values().single() `should equal` emptyList()
+        }
+
+        XlmAsyncAccountListAdapter(xlmDataMan)
+            .accounts()
+                .test()
+                .values()
+                .single() `should equal` emptyList()
     }
 }
