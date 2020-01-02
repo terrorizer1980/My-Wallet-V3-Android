@@ -5,5 +5,6 @@ enum class CampaignType {
     Swap,
     Sunriver,
     Resubmission,
-    Blockstack
+    Blockstack,
+    SimpleBuy
 }

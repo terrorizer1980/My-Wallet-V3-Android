@@ -59,4 +59,8 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         }
         return false
     }
+
+    companion object {
+        const val KYC_STARTED = 6788
+    }
 }
