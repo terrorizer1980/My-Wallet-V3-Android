@@ -106,6 +106,7 @@ class CoinifyOverviewPresenter(
             .map { mapTradeToDisplayObject(it) }
             .toList()
             .doOnError { Timber.e(it) }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { renderTrades(it) },
                 onError = {
