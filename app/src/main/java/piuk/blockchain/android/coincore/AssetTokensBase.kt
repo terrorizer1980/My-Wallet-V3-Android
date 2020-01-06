@@ -69,4 +69,4 @@ fun ExchangeRateDataManager.fetchLastPrice(
         .andThen(Single.defer {
             Single.just(getLastPrice(cryptoCurrency, currencyName))
         })
-        .map { FiatValue.fromMajor(currencyName, it.toBigDecimal()) }
+        .map { FiatValue.fromMajor(currencyName, it.toBigDecimal(), false) }
