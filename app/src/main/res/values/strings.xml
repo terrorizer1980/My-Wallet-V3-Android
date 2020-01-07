@@ -1104,15 +1104,21 @@
     <string name="campaign_stx_complete_body">Once your verification is confirmed, you\'ll automatically secure a spot in the Airdrop for Stacks.</string>
     <string name="campaign_stx_complete_cta_button">Share</string>
 
-    <!-- Blockstacks Airdrop Complete bottom sheet -->
-    <string name="stx_received_sheet_heading">Airdrop</string>
-    <string name="stx_received_sheet_title">Blockstack (STX)</string>
-    <string name="stx_received_sheet_body">Own your digital identity and data with hundreds of decentralized apps built with Blockstack.</string>
-    <string name="stx_received_sheet_status_label">Status</string>
-    <string name="stx_received_sheet_status_value">Received</string>
-    <string name="stx_received_sheet_date_label">Date</string>
-    <string name="stx_received_sheet_amount_label">Amount</string>
-    <string name="stx_received_sheet_close_btn">Close</string>
+    <!-- Airdrop Status bottom sheet -->
+    <string name="airdrop_received_sheet_heading">Airdrop</string>
+    <string name="airdrop_received_sheet_status_label">Status</string>
+    <string name="airdrop_received_sheet_date_label">Date</string>
+    <string name="airdrop_received_sheet_amount_label">Amount</string>
+    <string name="airdrop_received_sheet_close_btn">Close</string>
+
+    <string name="airdrop_status_received">Received</string>
+    <string name="airdrop_status_expired">Expired</string>
+    <string name="airdrop_status_pending">Pending</string>
+    <string name="airdrop_status_unknown">-</string>
+
+    <string name="airdrop_sheet_stx_title" translatable="false">Blockstack (STX)</string>
+    <string name="airdrop_sheet_stx_body">Own your digital identity and data with hundreds of decentralized apps built with Blockstack.</string>
+    <string name="airdrop_sheet_xlm_title" translatable="false">Stellar (XLM)</string>
 
     <!-- buy/Sell -->
     <!-- Account created Success -->

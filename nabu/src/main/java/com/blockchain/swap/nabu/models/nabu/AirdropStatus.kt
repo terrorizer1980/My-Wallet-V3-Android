@@ -18,9 +18,10 @@ data class AirdropStatusList(
 
 data class AirdropStatus(
     val campaignName: String,
-    val campaignEndDate: Date?,
+    val campaignEndDate: Date?, // NOT USED!
     val campaignState: CampaignState,
-    val userCampaignState: UserCampaignState,
+    @field:Json(name = "userCampaignState")
+    val userState: UserCampaignState,
     val attributes: CampaignAttributes,
     val updatedAt: Date,
     @field:Json(name = "userCampaignTransactionResponseList")
@@ -60,6 +61,7 @@ sealed class UserCampaignState {
     object TaskFinished : UserCampaignState()
     object RewardSend : UserCampaignState()
     object RewardReceived : UserCampaignState()
+    object Failed : UserCampaignState()
 }
 
 sealed class CampaignTransactionState {
@@ -95,6 +97,7 @@ class UserCampaignStateMoshiAdapter {
             TASK_FINISHED -> UserCampaignState.TaskFinished
             REWARD_SEND -> UserCampaignState.RewardSend
             REWARD_RECEIVED -> UserCampaignState.RewardReceived
+            FAILED -> UserCampaignState.Failed
             else -> throw JsonDataException("Unknown UserCampaignState: $input")
         }
 
@@ -106,6 +109,7 @@ class UserCampaignStateMoshiAdapter {
             UserCampaignState.TaskFinished -> TASK_FINISHED
             UserCampaignState.RewardSend -> REWARD_SEND
             UserCampaignState.RewardReceived -> REWARD_RECEIVED
+            UserCampaignState.Failed -> FAILED
         }
 
     companion object {
@@ -114,6 +118,7 @@ class UserCampaignStateMoshiAdapter {
         private const val TASK_FINISHED = "TASK_FINISHED"
         private const val REWARD_SEND = "REWARD_SEND"
         private const val REWARD_RECEIVED = "REWARD_RECEIVED"
+        private const val FAILED = "FAILED"
     }
 }
 

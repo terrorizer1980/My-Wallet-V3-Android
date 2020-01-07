@@ -64,6 +64,6 @@ class AnnouncementQueries(
     fun hasReceivedStxAirdrop(): Single<Boolean> {
         return nabuToken.fetchNabuToken()
             .flatMap { token -> nabu.getAirdropCampaignStatus(token) }
-            .map { it[blockstackCampaignName]?.userCampaignState == UserCampaignState.RewardReceived }
+            .map { it[blockstackCampaignName]?.userState == UserCampaignState.RewardReceived }
     }
 }
