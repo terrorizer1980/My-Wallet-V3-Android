@@ -7,7 +7,7 @@ import info.blockchain.wallet.BlockchainFramework
 import info.blockchain.wallet.api.PersistentUrls
 import info.blockchain.wallet.crypto.AESUtil
 import info.blockchain.wallet.exceptions.MetadataException
-import info.blockchain.wallet.metadata.data.MetadataRequest
+import info.blockchain.wallet.metadata.data.MetadataBody
 import info.blockchain.wallet.util.FormatsUtil
 import info.blockchain.wallet.util.MetadataUtil
 
@@ -95,7 +95,7 @@ class Metadata(
 
         val sig = node.signMessage(String(Base64.encode(message)))
 
-        val body = MetadataRequest().apply {
+        val body = MetadataBody().apply {
             version = METADATA_VERSION
             payload = String(Base64.encode(encryptedPayloadBytes))
             signature = sig
