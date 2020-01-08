@@ -23,7 +23,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.dialog_airdrop_status.view.*
-import kotlinx.android.synthetic.main.dialog_stx_campaign_complete.view.cta_button
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.blockstackCampaignName

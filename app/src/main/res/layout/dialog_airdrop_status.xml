@@ -203,7 +203,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="154dp"
         android:layout_marginBottom="24dp"
-        android:contentDescription="@string/campaign_stx_complete_cta_button"
+        android:contentDescription="@string/airdrop_received_sheet_close_btn"
         android:text="@string/airdrop_received_sheet_close_btn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

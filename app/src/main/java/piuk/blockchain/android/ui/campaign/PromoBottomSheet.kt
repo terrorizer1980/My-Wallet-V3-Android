@@ -7,7 +7,6 @@ abstract class PromoBottomSheet : SlidingModalBottomDialog() {
 
     interface Host {
         fun onSheetClosed()
-        fun onStartKycForStx()
     }
 
     protected val host: Host by lazy {

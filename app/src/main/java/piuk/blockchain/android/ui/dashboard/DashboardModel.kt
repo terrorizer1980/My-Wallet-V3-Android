@@ -61,8 +61,6 @@ interface BalanceState : DashboardItem {
 }
 
 enum class PromoSheet {
-    PROMO_STX_CAMPAIGN_INTO,
-    PROMO_STX_CAMPAIGN_COMPLETE,
     PROMO_STX_AIRDROP_COMPLETE
 }
 

@@ -7,10 +7,8 @@ import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BackupPhraseAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BitpayAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BuyBitcoinAnnouncement
-import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForBlockstackMiniAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.IntroTourAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForAirdropsAnnouncement
-import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForBlockstackAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.StxCompleteAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycIncompleteAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycMoreInfoAnnouncement
@@ -172,22 +170,7 @@ val dashboardAnnouncementsModule = applicationContext {
         }.bind(AnnouncementRule::class)
 
         factory {
-            KycForBlockstackMiniAnnouncement(
-                dismissRecorder = get(),
-                queries = get(),
-                kycForBlockstackAnnouncement = get("kyc_blockstack_announcement")
-            )
-        }.bind(AnnouncementRule::class)
-
-        factory {
             RegisteredForAirdropMiniAnnouncement(
-                dismissRecorder = get(),
-                queries = get()
-            )
-        }.bind(AnnouncementRule::class)
-
-        factory("kyc_blockstack_announcement") {
-            KycForBlockstackAnnouncement(
                 dismissRecorder = get(),
                 queries = get()
             )

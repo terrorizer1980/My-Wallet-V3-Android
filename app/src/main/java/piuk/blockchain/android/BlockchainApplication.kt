@@ -21,14 +21,11 @@ import org.bitcoinj.core.NetworkParameters
 import piuk.blockchain.android.data.connectivity.ConnectivityManager
 import com.blockchain.ui.CurrentContextAccess
 import com.facebook.stetho.Stetho
-import io.reactivex.Completable
 import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
-import piuk.blockchain.android.campaign.BlockstackCampaignRegistration
 import piuk.blockchain.android.data.coinswebsocket.service.CoinsWebSocketService
 import piuk.blockchain.android.ui.auth.LogoutActivity
-import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.android.ui.ssl.SSLVerifyActivity
 import piuk.blockchain.android.util.OSUtil
@@ -40,8 +37,6 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.connectivity.ConnectionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.PrngFixer
-import piuk.blockchain.androidcore.utils.annotations.Thunk
-import piuk.blockchain.androidcore.utils.extensions.emptySubscribe
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 import piuk.blockchain.androidcoreui.BuildConfig
 import piuk.blockchain.android.util.AppUtil
@@ -63,7 +58,6 @@ open class BlockchainApplication : Application(), FrameworkInterface {
     private val osUtil: OSUtil by inject()
     private val crashLogger: CrashLogger by inject()
 
-    private val stxRegistration: BlockstackCampaignRegistration by inject()
     private val lifecycleListener: AppLifecycleListener by lazy {
         AppLifecycleListener(lifeCycleInterestedComponent)
     }
@@ -146,11 +140,6 @@ open class BlockchainApplication : Application(), FrameworkInterface {
     }
 
     private fun onBusMetadataEvent(event: MetadataEvent) {
-        val queries: AnnouncementQueries = get()
-        queries.isEligibleForStxSignup()
-            .flatMapCompletable { if (it) stxRegistration.registerCampaign() else Completable.complete() }
-            .emptySubscribe()
-
         startCoinsWebService()
     }
 
@@ -233,7 +222,6 @@ open class BlockchainApplication : Application(), FrameworkInterface {
      *
      * @param errorCode Recoverable error code
      */
-    @Thunk
     internal fun showError(errorCode: Int) {
         // TODO: 05/08/2016 Decide if we should alert users here or not
         Timber.e(
@@ -246,7 +234,6 @@ open class BlockchainApplication : Application(), FrameworkInterface {
      * This is reached if the provider cannot be updated for some reason. App should consider all
      * HTTP communication to be vulnerable, and take appropriate action.
      */
-    @Thunk
     internal fun onProviderInstallerNotAvailable() {
         // TODO: 05/08/2016 Decide if we should take action here or not
         Timber.wtf("Security Provider Installer not available")

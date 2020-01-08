@@ -20,8 +20,6 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.campaign.AirdropStatusSheet
-import piuk.blockchain.android.ui.campaign.CampaignBlockstackCompleteSheet
-import piuk.blockchain.android.ui.campaign.CampaignBlockstackIntroSheet
 import piuk.blockchain.android.ui.campaign.PromoBottomSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -33,7 +31,6 @@ import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
 import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailSheet
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.models.MetadataEvent
-import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 
@@ -156,8 +153,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
     private fun showPromoSheet(promoSheet: PromoSheet?) {
         when (promoSheet) {
-            PromoSheet.PROMO_STX_CAMPAIGN_INTO -> showBottomSheet(CampaignBlockstackIntroSheet())
-            PromoSheet.PROMO_STX_CAMPAIGN_COMPLETE -> showBottomSheet(CampaignBlockstackCompleteSheet())
             PromoSheet.PROMO_STX_AIRDROP_COMPLETE -> showBottomSheet(AirdropStatusSheet())
             null -> { /* no-op */ }
         }.exhaustive
@@ -245,8 +240,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         when (requestCode) {
             MainActivity.SETTINGS_EDIT,
             MainActivity.ACCOUNT_EDIT -> model.process(RefreshAllIntent)
-            KYC_FOR_STX -> if (resultCode == KycNavHostActivity.RESULT_KYC_STX_COMPLETE)
-                model.process(ShowPromoSheet(PromoSheet.PROMO_STX_CAMPAIGN_COMPLETE))
         }
     }
 
@@ -287,8 +280,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
         override fun startTransferCrypto() = navigator().launchTransfer()
 
-        override fun startBlockstackIntro() = model.process(ShowPromoSheet(PromoSheet.PROMO_STX_CAMPAIGN_INTO))
-
         override fun startStxReceivedDetail() = model.process(ShowPromoSheet(PromoSheet.PROMO_STX_AIRDROP_COMPLETE))
     }
 
@@ -304,10 +295,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     override fun gotoSwapWithCurrencies(fromCryptoCurrency: CryptoCurrency, toCryptoCurrency: CryptoCurrency) =
         navigator().launchSwapOrKyc(fromCryptoCurrency = fromCryptoCurrency, targetCurrency = toCryptoCurrency)
 
-    // PromoSheet.Host
-    override fun onStartKycForStx() =
-        KycNavHostActivity.startForResult(this@DashboardFragment, CampaignType.Blockstack, KYC_FOR_STX)
-
     companion object {
         fun newInstance() = DashboardFragment()
 
@@ -318,8 +305,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         private const val IDX_CARD_BCH = 4
         private const val IDX_CARD_XLM = 5
         private const val IDX_CARD_PAX = 6
-
-        internal const val KYC_FOR_STX = 9267
     }
 }
 

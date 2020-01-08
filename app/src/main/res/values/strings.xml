@@ -1094,16 +1094,6 @@
     <string name="coinify_account_created_success">Success!\n Account Created</string>
     <string name="buy_sell_launcher_error">Error fetching buy/sell data</string>
 
-    <!-- Blockstack campaign -->
-    <string name="campaign_stx_intro_title">Unlock Access to Airdrops </string>
-    <string name="campaign_stx_intro_body">Our next airdrop with Blockstack is launching soon! Get free Stacks (STX) by upgrading your profile to Gold Level.</string>
-    <string name="campaign_stx_intro_small_print">*For regulatory reasons, USA, Canada and Japan nationals can\'t participate in the airdrop. <annotation link="stx_airdrop_learn_more">Learn more</annotation></string>
-    <string name="campaign_stx_intro_cta_button">Complete my profile</string>
-
-    <string name="campaign_stx_complete_title">Application complete</string>
-    <string name="campaign_stx_complete_body">Once your verification is confirmed, you\'ll automatically secure a spot in the Airdrop for Stacks.</string>
-    <string name="campaign_stx_complete_cta_button">Share</string>
-
     <!-- Airdrop Status bottom sheet -->
     <string name="airdrop_received_sheet_heading">Airdrop</string>
     <string name="airdrop_received_sheet_status_label">Status</string>
@@ -1563,19 +1553,12 @@
     <string name="tiers_splash_header_text">Trading your crypto doesn\'t mean trading away control</string>
     <string name="announcing_swap">Swap by Blockchain enables you to trade crypto with best prices, and quick settlement, all while maintaining full control of your funds.</string>
 
-    <!-- Blockstack airdrop announcement -->
-    <string name="stacks_airdrop_card_title">Our Latest Airdrop is Here.</string>
-    <string name="stacks_airdrop_card_description">Upgrade your profile to Gold to access the Airdrop and get free Stacks (STX) from Blockstack.</string>
-    <string name="stacks_airdrop_card_button">Get Free Crypto</string>
-
     <!-- Blockstack airdrop complete announcement -->
     <string name="stacks_airdrop_complete_card_title">Your Airdrop has landed</string>
     <string name="stacks_airdrop_complete_card_description">Your stacks are now in your wallet. We’ll let you know as soon as these are available to be used.</string>
     <string name="stacks_airdrop_complete_card_button">View Details</string>
 
     <!-- Blockstack mini-announcement -->
-    <string name="stacks_airdrop_mini_card_title">Our Latest Airdrop is Here</string>
-    <string name="stacks_airdrop_mini_card_body">Upgrade to get free crypto</string>
     <string name="stacks_airdrop_registered_mini_card_title">A Reward for Being Gold Level</string>
     <string name="stacks_airdrop_registered_mini_card_body">We\'re airdropping you free crypto in 2020</string>
 
