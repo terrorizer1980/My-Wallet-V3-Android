@@ -3,6 +3,7 @@ package com.blockchain.swap.nabu.service
 import com.blockchain.swap.nabu.api.nabu.Nabu
 import com.blockchain.swap.nabu.extensions.wrapErrorMessage
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
+import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.ApplicantIdRequest
 import com.blockchain.swap.nabu.models.nabu.NabuBasicUser
 import com.blockchain.swap.nabu.models.nabu.NabuCountryResponse
@@ -65,6 +66,12 @@ class NabuService(retrofit: Retrofit) {
     internal fun getUser(
         sessionToken: NabuSessionTokenResponse
     ): Single<NabuUser> = service.getUser(
+        sessionToken.authHeader
+    ).wrapErrorMessage()
+
+    internal fun getAirdropCampaignStatus(
+        sessionToken: NabuSessionTokenResponse
+    ): Single<AirdropStatusList> = service.getAirdropCampaignStatus(
         sessionToken.authHeader
     ).wrapErrorMessage()
 

@@ -77,7 +77,7 @@ import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
 import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.android.ui.customviews.ErrorBottomDialog
 import com.google.android.material.snackbar.Snackbar
 import piuk.blockchain.android.ui.home.HomeScreenMvpFragment
 import piuk.blockchain.androidcore.data.events.ActionEvent

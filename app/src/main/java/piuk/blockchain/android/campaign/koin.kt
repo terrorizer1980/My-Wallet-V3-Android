@@ -15,13 +15,5 @@ val campaignModule = applicationContext {
                 xlmDataManager = get()
             )
         }
-
-        factory {
-            BlockstackCampaignRegistration(
-                nabuDataManager = get(),
-                nabuToken = get(),
-                stx = get()
-            )
-        }
     }
 }

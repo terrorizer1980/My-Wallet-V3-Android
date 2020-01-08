@@ -8,21 +8,21 @@ import org.junit.Test
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementQueries
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 
-class KycForBlockstackAnnouncementTest {
+class StxCompleteAnnouncementTest {
 
     private val dismissRecorder: DismissRecorder = mock()
     private val dismissEntry: DismissRecorder.DismissEntry = mock()
     private val queries: AnnouncementQueries = mock()
 
-    private lateinit var subject: KycForBlockstackAnnouncement
+    private lateinit var subject: StxCompleteAnnouncement
 
     @Before
     fun setUp() {
-        whenever(dismissRecorder[KycForBlockstackAnnouncement.DISMISS_KEY]).thenReturn(dismissEntry)
-        whenever(dismissEntry.prefsKey).thenReturn(KycForBlockstackAnnouncement.DISMISS_KEY)
+        whenever(dismissRecorder[StxCompleteAnnouncement.DISMISS_KEY]).thenReturn(dismissEntry)
+        whenever(dismissEntry.prefsKey).thenReturn(StxCompleteAnnouncement.DISMISS_KEY)
 
         subject =
-            KycForBlockstackAnnouncement(
+            StxCompleteAnnouncement(
                 dismissRecorder = dismissRecorder,
                 queries = queries
             )
@@ -40,9 +40,9 @@ class KycForBlockstackAnnouncementTest {
     }
 
     @Test
-    fun `should show, when not already shown, and the Gold kyc process hasn't been completed`() {
+    fun `should show, when not already shown, and the blockstack airdrop has been completed`() {
         whenever(dismissEntry.isDismissed).thenReturn(false)
-        whenever(queries.isGoldComplete()).thenReturn(Single.just(false))
+        whenever(queries.hasReceivedStxAirdrop()).thenReturn(Single.just(true))
 
         subject.shouldShow()
             .test()
@@ -52,25 +52,13 @@ class KycForBlockstackAnnouncementTest {
     }
 
     @Test
-    fun `should not show, when not already shown, and the Gold kyc process has been completed`() {
+    fun `should not show, when not already shown, and the blockstack airdrop has not been completed`() {
         whenever(dismissEntry.isDismissed).thenReturn(false)
-        whenever(queries.isGoldComplete()).thenReturn(Single.just(false))
+        whenever(queries.hasReceivedStxAirdrop()).thenReturn(Single.just(true))
 
         subject.shouldShow()
             .test()
             .assertValue { it }
-            .assertValueCount(1)
-            .assertComplete()
-    }
-
-    @Test
-    fun `should not show on error`() {
-        whenever(dismissEntry.isDismissed).thenReturn(false)
-        whenever(queries.isGoldComplete()).thenReturn(Single.error(Throwable()))
-
-        subject.shouldShow()
-            .test()
-            .assertValue { !it }
             .assertValueCount(1)
             .assertComplete()
     }

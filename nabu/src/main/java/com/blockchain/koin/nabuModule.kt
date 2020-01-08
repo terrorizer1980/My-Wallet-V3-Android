@@ -21,8 +21,12 @@ import com.blockchain.swap.nabu.datamanagers.UniqueAnalyticsNabuUserReporter
 import com.blockchain.swap.nabu.datamanagers.UniqueAnalyticsWalletReporter
 import com.blockchain.swap.nabu.datamanagers.WalletReporter
 import com.blockchain.swap.nabu.metadata.MetadataRepositoryNabuTokenAdapter
+import com.blockchain.swap.nabu.models.nabu.CampaignStateMoshiAdapter
+import com.blockchain.swap.nabu.models.nabu.CampaignTransactionStateMoshiAdapter
+import com.blockchain.swap.nabu.models.nabu.IsoDateMoshiAdapter
 import com.blockchain.swap.nabu.models.nabu.KycStateAdapter
 import com.blockchain.swap.nabu.models.nabu.KycTierStateAdapter
+import com.blockchain.swap.nabu.models.nabu.UserCampaignStateMoshiAdapter
 import com.blockchain.swap.nabu.models.nabu.UserStateAdapter
 import com.blockchain.swap.nabu.service.NabuCoinifyAccountCreator
 import com.blockchain.swap.nabu.service.NabuCoinifyAccountService
@@ -138,6 +142,10 @@ val nabuModule = applicationContext {
             .add(KycStateAdapter())
             .add(KycTierStateAdapter())
             .add(UserStateAdapter())
+            .add(IsoDateMoshiAdapter())
+            .add(UserCampaignStateMoshiAdapter())
+            .add(CampaignStateMoshiAdapter())
+            .add(CampaignTransactionStateMoshiAdapter())
     }
 }
 

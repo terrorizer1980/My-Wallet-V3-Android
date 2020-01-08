@@ -5,7 +5,6 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import androidx.preference.PreferenceCategory
 import piuk.blockchain.android.R
-import piuk.blockchain.androidcoreui.utils.extensions.applyFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.CustomFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
 

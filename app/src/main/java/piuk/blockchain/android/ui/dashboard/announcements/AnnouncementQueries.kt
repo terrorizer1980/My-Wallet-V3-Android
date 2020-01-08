@@ -5,9 +5,11 @@ import com.blockchain.swap.nabu.models.nabu.Scope
 import com.blockchain.swap.nabu.models.nabu.goldTierComplete
 import com.blockchain.swap.nabu.models.nabu.kycVerified
 import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.models.nabu.UserCampaignState
 import com.blockchain.swap.nabu.service.TierService
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
+import piuk.blockchain.android.campaign.blockstackCampaignName
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 
 class AnnouncementQueries(
@@ -45,17 +47,16 @@ class AnnouncementQueries(
     fun isTier1Or2Verified(): Single<Boolean> =
         tierService.tiers().map { it.combinedState in kycVerified }
 
-    fun isEligibleForStxSignup(): Single<Boolean> {
-        return nabuToken.fetchNabuToken()
-            .flatMap { token -> nabu.getUser(token) }
-            .map { it.currentTier == 2 && !it.isStxAirdropRegistered }
-            .onErrorReturn { false }
-    }
-
     fun isRegistedForStxAirdrop(): Single<Boolean> {
         return nabuToken.fetchNabuToken()
             .flatMap { token -> nabu.getUser(token) }
             .map { it.isStxAirdropRegistered }
             .onErrorReturn { false }
+    }
+
+    fun hasReceivedStxAirdrop(): Single<Boolean> {
+        return nabuToken.fetchNabuToken()
+            .flatMap { token -> nabu.getAirdropCampaignStatus(token) }
+            .map { it[blockstackCampaignName]?.userState == UserCampaignState.RewardReceived }
     }
 }

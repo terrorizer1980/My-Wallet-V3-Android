@@ -17,7 +17,7 @@
     <string name="bitcoin">Bitcoin</string>
     <string name="ether">Ether</string>
 
-    <string name="ethereum" translatable="false">Ethereum</string>
+    <string name="ethereum" translatable="false">Ether</string>
     <string name="bitcoin_cash" translatable="false">Bitcoin Cash</string>
     <string name="lumens" translatable="false">Stellar</string>
     <string name="usd_pax" translatable="false">USD PAX</string>

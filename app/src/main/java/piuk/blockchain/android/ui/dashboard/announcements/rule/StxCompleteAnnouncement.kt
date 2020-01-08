@@ -10,7 +10,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
 import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
 
-internal class KycForBlockstackAnnouncement(
+internal class StxCompleteAnnouncement(
     dismissRecorder: DismissRecorder,
     private val queries: AnnouncementQueries
 ) : AnnouncementRule(dismissRecorder) {
@@ -22,35 +22,34 @@ internal class KycForBlockstackAnnouncement(
             return Single.just(false)
         }
 
-        return queries.isGoldComplete().map { !it }.onErrorReturn { false }
+        return queries.hasReceivedStxAirdrop()
     }
 
     override fun show(host: AnnouncementHost) {
 
         val card = StandardAnnouncementCard(
             name = name,
-            titleText = R.string.stacks_airdrop_card_title,
-            bodyText = R.string.stacks_airdrop_card_description,
-            ctaText = R.string.stacks_airdrop_card_button,
-            iconImage = R.drawable.ic_airdrop_parachute_green,
-            background = R.drawable.blockstack_announcement_card_background,
+            titleText = R.string.stacks_airdrop_complete_card_title,
+            bodyText = R.string.stacks_airdrop_complete_card_description,
+            ctaText = R.string.stacks_airdrop_complete_card_button,
+            iconImage = R.drawable.ic_logo_stx,
             dismissFunction = {
                 host.dismissAnnouncementCard()
             },
             ctaFunction = {
                 host.dismissAnnouncementCard()
-                host.startBlockstackIntro()
+                host.startStxReceivedDetail()
             },
             dismissEntry = dismissEntry,
-            dismissRule = DismissRule.CardPeriodic
+            dismissRule = DismissRule.CardOneTime
         )
         host.showAnnouncementCard(card)
     }
 
-    override val name = "kyc_stx_airdrop"
+    override val name = "stx_airdrop_complete"
 
     companion object {
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        const val DISMISS_KEY = "KYC_STX_AIRDROP_DISMISSED"
+        const val DISMISS_KEY = "STX_AIRDROP_COMPLETE_DISMISSED"
     }
 }

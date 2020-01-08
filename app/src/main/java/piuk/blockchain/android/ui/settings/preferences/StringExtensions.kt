@@ -1,9 +1,8 @@
-package piuk.blockchain.androidcoreui.utils.extensions
+package piuk.blockchain.android.ui.settings.preferences
 
 import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import piuk.blockchain.androidcoreui.utils.CustomTypefaceSpan
 
 /**
  * Contains Extension Functions related to [String] and [CharSequence] classes.
