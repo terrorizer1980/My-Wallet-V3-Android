@@ -26,8 +26,19 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
         }
     }
 
+    data class UpdatedPredefinedAmounts(private val amounts: List<FiatValue>) : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState {
+            return oldState.copy(predefinedAmounts = amounts)
+        }
+    }
+
     data class FetchBuyLimits(val currency: String) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState.copy(currency = currency)
+    }
+
+    data class FetchPredefinedAmounts(val currency: String) : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState.copy(currency = currency, predefinedAmounts = emptyList())
     }
 
     object PriceLoading : SimpleBuyIntent() {

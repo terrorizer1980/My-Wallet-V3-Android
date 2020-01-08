@@ -24,7 +24,12 @@ class SimpleBuyModel(state: SimpleBuyState, scheduler: Scheduler, private val in
                 onSuccess = { process(it) },
                 onError = { /*handle case when limits weren't received*/ }
             )
+            is SimpleBuyIntent.FetchPredefinedAmounts -> interactor.fetchPredefinedAmounts(intent.currency).subscribeBy(
+                onSuccess = { process(it) },
+                onError = { /*do nothing, show no amounts*/ }
+            )
 
+            is SimpleBuyIntent.UpdatedPredefinedAmounts -> null
             is SimpleBuyIntent.BuyLimits -> null
             is SimpleBuyIntent.PriceLoading -> null
             is SimpleBuyIntent.PriceUpdate -> null

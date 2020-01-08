@@ -4,13 +4,15 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.compareTo
 import piuk.blockchain.android.ui.base.mvi.MviState
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.util.regex.Pattern
 
 data class SimpleBuyState(
     val minAmount: FiatValue? = null,
     val maxAmount: FiatValue? = null,
-    private val enteredAmount: String = "",
+    val enteredAmount: String = "",
     private val currency: String = "USD",
+    val predefinedAmounts: List<FiatValue> = emptyList(),
     val selectedCryptoCurrency: CryptoCurrency? = null,
     val exchangePriceState: ExchangePriceState? = null
 ) : MviState {
@@ -33,6 +35,18 @@ data class SimpleBuyState(
                 it <= maxAmount && it >= minAmount
             } else false
         } ?: false
+
+    val error: InputError? by unsafeLazy {
+        enteredFiat?.let {
+            if (maxAmount != null && minAmount != null && enteredFiat != null) {
+                when {
+                    it > maxAmount -> InputError.ABOVE_MAX
+                    it < minAmount -> InputError.BELOW_MIN
+                    else -> null
+                }
+            } else null
+        }
+    }
 }
 
 data class ExchangePriceState(
@@ -40,3 +54,7 @@ data class ExchangePriceState(
     val isLoading: Boolean = false,
     val hasError: Boolean = false
 )
+
+enum class InputError {
+    BELOW_MIN, ABOVE_MAX
+}

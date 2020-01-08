@@ -24,7 +24,7 @@ class SimpleBuyInteractor(
 
     fun fetchBuyLimits(targetCurrency: String): Single<SimpleBuyIntent.BuyLimits> =
         metadataManager.attemptMetadataSetup()
-                // we have to ensure that exchange rates are loaded before we retrieve the exchange rates locally
+            // we have to ensure that exchange rates are loaded before we retrieve the exchange rates locally
             .andThen(tokens[CryptoCurrency.BTC].exchangeRate().ignoreElement())
             .andThen(tierService.tiers().map {
                 val highestTierLimits = it.tiers.maxBy { tier -> tier.index }!!.limits
@@ -37,4 +37,14 @@ class SimpleBuyInteractor(
 
                 SimpleBuyIntent.BuyLimits(minValue, maxValue)
             })
+
+    fun fetchPredefinedAmounts(targetCurrency: String): Single<SimpleBuyIntent.UpdatedPredefinedAmounts> =
+        Single.just(SimpleBuyIntent.UpdatedPredefinedAmounts(listOf(
+            FiatValue.fromMajor(targetCurrency, 100.toBigDecimal()),
+            FiatValue.fromMajor(targetCurrency, 20.toBigDecimal()),
+            FiatValue.fromMajor(targetCurrency, 10.toBigDecimal()),
+            FiatValue.fromMajor(targetCurrency, 50.toBigDecimal())
+        ).sortedBy {
+            it.valueMinor
+        }))
 }
