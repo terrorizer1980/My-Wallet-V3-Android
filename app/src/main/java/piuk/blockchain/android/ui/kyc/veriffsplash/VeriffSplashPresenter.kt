@@ -12,6 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
@@ -34,7 +35,15 @@ class VeriffSplashPresenter(
 
         compositeDisposable +=
             view.nextClick
-                .subscribe { view.continueToVeriff(applicantToken!!) }
+                .subscribe {
+                    @Suppress("ConstantConditionIf")
+                    // In some DEBUG builds - but ONLY in DEBUG builds - it can be useful to skip the veriff kyc steps:
+                    if (BuildConfig.DEBUG && BuildConfig.SKIP_VERIFF_KYC) {
+                        view.continueToCompletion()
+                    } else {
+                        view.continueToVeriff(applicantToken!!)
+                    }
+                }
 
         compositeDisposable +=
             view.swapClick
