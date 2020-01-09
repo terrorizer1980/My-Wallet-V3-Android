@@ -47,4 +47,10 @@ class SimpleBuyInteractor(
         ).sortedBy {
             it.valueMinor
         }))
+
+    fun cancelOrder(): Single<SimpleBuyIntent.OrderCanceled> =
+        Single.just(SimpleBuyIntent.OrderCanceled)
+
+    fun confirmOrder(): Single<SimpleBuyIntent.OrderConfirmed> =
+        Single.just(SimpleBuyIntent.OrderConfirmed)
 }

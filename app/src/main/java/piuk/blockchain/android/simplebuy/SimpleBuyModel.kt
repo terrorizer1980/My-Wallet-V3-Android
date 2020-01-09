@@ -28,12 +28,21 @@ class SimpleBuyModel(state: SimpleBuyState, scheduler: Scheduler, private val in
                 onSuccess = { process(it) },
                 onError = { /*do nothing, show no amounts*/ }
             )
-
+            is SimpleBuyIntent.CancelOrder -> interactor.cancelOrder().subscribeBy(
+                onSuccess = { process(it) },
+                onError = { /*do nothing, show no amounts*/ }
+            )
+            is SimpleBuyIntent.ConfirmOrder -> interactor.confirmOrder().subscribeBy(
+                onSuccess = { process(it) },
+                onError = { /*do nothing, show no amounts*/ }
+            )
             is SimpleBuyIntent.UpdatedPredefinedAmounts -> null
             is SimpleBuyIntent.BuyLimits -> null
             is SimpleBuyIntent.PriceLoading -> null
             is SimpleBuyIntent.PriceUpdate -> null
             is SimpleBuyIntent.PriceError -> null
             is SimpleBuyIntent.EnteredAmount -> null
+            is SimpleBuyIntent.OrderConfirmed -> null
+            is SimpleBuyIntent.OrderCanceled -> null
         }
 }

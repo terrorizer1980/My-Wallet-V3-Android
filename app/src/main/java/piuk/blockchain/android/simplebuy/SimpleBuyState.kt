@@ -14,14 +14,16 @@ data class SimpleBuyState(
     private val currency: String = "USD",
     val predefinedAmounts: List<FiatValue> = emptyList(),
     val selectedCryptoCurrency: CryptoCurrency? = null,
+    val orderState: OrderState = OrderState.UNITIALISED,
     val exchangePriceState: ExchangePriceState? = null
 ) : MviState {
 
     private val pattern = Pattern.compile("-?\\d+(\\.\\d+)?")
 
-    private val enteredFiat: FiatValue?
-        get() = if (enteredAmount.isEmpty() || pattern.matcher(enteredAmount).matches().not()) null else
+    val enteredFiat: FiatValue? by unsafeLazy {
+        if (enteredAmount.isEmpty() || pattern.matcher(enteredAmount).matches().not()) null else
             FiatValue.fromMajor(currency, enteredAmount.toBigDecimal())
+    }
 
     fun maxDecimalDigitsForAmount(): Int =
         maxAmount?.userDecimalPlaces ?: 0
@@ -54,6 +56,10 @@ data class ExchangePriceState(
     val isLoading: Boolean = false,
     val hasError: Boolean = false
 )
+
+enum class OrderState {
+    UNITIALISED, INITIALISED, CANCELLED, CONFIRMED
+}
 
 enum class InputError {
     BELOW_MIN, ABOVE_MAX

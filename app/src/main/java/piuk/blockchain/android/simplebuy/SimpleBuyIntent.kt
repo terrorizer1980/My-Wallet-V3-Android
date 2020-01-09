@@ -41,6 +41,26 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
             oldState.copy(currency = currency, predefinedAmounts = emptyList())
     }
 
+    object CancelOrder : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState
+    }
+
+    object ConfirmOrder : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState
+    }
+
+    object OrderCanceled : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            SimpleBuyState(orderState = OrderState.CANCELLED)
+    }
+
+    object OrderConfirmed : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState.copy(orderState = OrderState.CONFIRMED)
+    }
+
     object PriceLoading : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(exchangePriceState = ExchangePriceState(isLoading = true))

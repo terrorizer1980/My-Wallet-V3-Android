@@ -11,6 +11,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.simplebuy.ExchangePriceState
+import piuk.blockchain.android.simplebuy.OrderState
 import piuk.blockchain.android.simplebuy.SimpleBuyIntent
 import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
 import piuk.blockchain.android.simplebuy.SimpleBuyModel
@@ -81,5 +82,27 @@ class SimpleBuyModelTest {
 
         testObserver.assertValueAt(0, SimpleBuyState())
         testObserver.assertValueAt(1, SimpleBuyState(FiatValue.zero("USD"), FiatValue.fromMinor("USD", 23400)))
+    }
+
+    @Test
+    fun `cancel order should make the order to cancel if interactor doesnt return an error`() {
+        whenever(interactor.cancelOrder())
+            .thenReturn(Single.just(SimpleBuyIntent.OrderCanceled))
+        val testObserver = model.state.test()
+        model.process(SimpleBuyIntent.CancelOrder)
+
+        testObserver.assertValueAt(0, SimpleBuyState())
+        testObserver.assertValueAt(1, SimpleBuyState(orderState = OrderState.CANCELLED))
+    }
+
+    @Test
+    fun `confirm order should make the order to confirm if interactor doesnt return an error`() {
+        whenever(interactor.confirmOrder())
+            .thenReturn(Single.just(SimpleBuyIntent.OrderConfirmed))
+        val testObserver = model.state.test()
+        model.process(SimpleBuyIntent.ConfirmOrder)
+
+        testObserver.assertValueAt(0, SimpleBuyState())
+        testObserver.assertValueAt(1, SimpleBuyState(orderState = OrderState.CONFIRMED))
     }
 }

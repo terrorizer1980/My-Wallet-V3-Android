@@ -33,7 +33,14 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
     override fun goToBuyCryptoScreen() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.content_frame, SimpleBuyCryptoFragment(), SimpleBuyCryptoFragment::class.simpleName)
-            .addToBackStack(SimpleBuyIntroFragment::class.simpleName)
+            .addToBackStack(SimpleBuyCryptoFragment::class.simpleName)
+            .commitAllowingStateLoss()
+    }
+
+    override fun goToCheckOutScreen() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.content_frame, SimpleBuyCheckoutFragment(), SimpleBuyCheckoutFragment::class.simpleName)
+            .addToBackStack(SimpleBuyCheckoutFragment::class.simpleName)
             .commitAllowingStateLoss()
     }
 

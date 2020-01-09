@@ -755,7 +755,7 @@ val applicationModule = applicationContext {
             )
         }
 
-        factory {
+        bean {
             SimpleBuyModel(
                 interactor = get(),
                 scheduler = AndroidSchedulers.mainThread(),

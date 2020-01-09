@@ -12,11 +12,9 @@ import info.blockchain.balance.FiatValue
 import kotlinx.android.synthetic.main.fragment_simple_buy_buy_crypto.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.android.ui.dashboard.format
-import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.android.util.drawableResFilled
 import piuk.blockchain.androidcoreui.utils.DecimalDigitsInputFilter
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -68,7 +66,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         })
 
         btn_continue.setOnClickListener {
-            KycNavHostActivity.startForResult(requireActivity(), CampaignType.SimpleBuy, SimpleBuyActivity.KYC_STARTED)
+            navigator().goToCheckOutScreen()
         }
     }
 
