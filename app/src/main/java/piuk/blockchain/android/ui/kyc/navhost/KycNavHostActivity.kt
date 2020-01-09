@@ -42,7 +42,7 @@ internal class KycStarterBuySell : StartKycForBuySell {
 
 internal class KycStarter : StartKyc {
     override fun startKycActivity(context: Any) {
-        KycNavHostActivity.start(context as Context, CampaignType.Swap)
+        KycNavHostActivity.start(context as Context, CampaignType.Swap, true)
     }
 }
 
@@ -212,8 +212,8 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
         }
 
         @JvmStatic
-        fun start(context: Context, campaignType: CampaignType, isFromSettingsLimits: Boolean) {
-            intentArgs(context, campaignType, isFromSettingsLimits)
+        fun start(context: Context, campaignType: CampaignType, showLimits: Boolean) {
+            intentArgs(context, campaignType, showLimits)
                 .run { context.startActivity(this) }
         }
 
