@@ -41,7 +41,7 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.ethereum.exceptions.TransactionInProgressException
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.android.ui.customviews.ErrorBottomDialog
 import retrofit2.HttpException
 import timber.log.Timber
 import java.util.Locale

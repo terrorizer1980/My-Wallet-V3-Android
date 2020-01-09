@@ -1,6 +1,6 @@
 package piuk.blockchain.android.ui.swap.homebrew.exchange.model
 
-import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.android.ui.customviews.ErrorBottomDialog
 
 data class SwapErrorDialogContent(
     val content: ErrorBottomDialog.Content,

@@ -58,7 +58,7 @@ class HideAssetDetailsTest {
                 CryptoCurrency.XLM to initialXlmState
             ),
             showAssetSheetFor = null,
-            showPromoSheet = PromoSheet.PROMO_STX_CAMPAIGN_INTO,
+            showPromoSheet = PromoSheet.PROMO_STX_AIRDROP_COMPLETE,
             announcement = testAnnouncementCard_1
         )
 

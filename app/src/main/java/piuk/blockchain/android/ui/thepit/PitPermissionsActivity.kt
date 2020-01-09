@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.blockchain.notifications.analytics.Analytics
-import com.blockchain.ui.dialog.ErrorBottomDialog
+import piuk.blockchain.android.ui.customviews.ErrorBottomDialog
 import com.blockchain.ui.extensions.throttledClicks
 import com.blockchain.ui.urllinks.URL_THE_PIT_LANDING_LEARN_MORE
 import io.reactivex.disposables.CompositeDisposable

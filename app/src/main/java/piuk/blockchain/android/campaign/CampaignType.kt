@@ -8,3 +8,7 @@ enum class CampaignType {
     Blockstack,
     SimpleBuy
 }
+
+const val blockstackCampaignName = "BLOCKSTACK"
+const val sunriverCampaignName = "SUNRIVER"
+

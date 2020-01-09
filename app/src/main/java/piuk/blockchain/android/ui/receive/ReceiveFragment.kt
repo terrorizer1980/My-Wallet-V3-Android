@@ -154,7 +154,8 @@ class ReceiveFragment : HomeScreenMvpFragment<ReceiveView, ReceivePresenter>(),
                 CryptoCurrency.BCH -> presenter.onSelectBchDefault()
                 CryptoCurrency.XLM -> presenter.onXlmSelected()
                 CryptoCurrency.PAX -> presenter.onPaxSelected()
-            }
+                CryptoCurrency.STX -> TODO("STUB Asset. Not implemented")
+            }.exhaustive
         }
     }
 

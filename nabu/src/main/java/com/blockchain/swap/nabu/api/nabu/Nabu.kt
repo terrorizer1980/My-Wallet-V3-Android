@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.api.nabu
 
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
+import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.ApplicantIdRequest
 import com.blockchain.swap.nabu.models.nabu.NabuBasicUser
 import com.blockchain.swap.nabu.models.nabu.NabuCountryResponse
@@ -59,6 +60,11 @@ internal interface Nabu {
     fun getUser(
         @Header("authorization") authorization: String
     ): Single<NabuUser>
+
+    @GET(NABU_AIRDROP_CENTRE)
+    fun getAirdropCampaignStatus(
+        @Header("authorization") authorization: String
+    ): Single<AirdropStatusList>
 
     @PUT(NABU_UPDATE_WALLET_INFO)
     fun updateWalletInformation(

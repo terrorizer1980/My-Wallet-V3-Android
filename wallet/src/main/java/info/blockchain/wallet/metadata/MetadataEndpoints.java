@@ -4,7 +4,7 @@ import info.blockchain.wallet.metadata.data.Auth;
 import info.blockchain.wallet.metadata.data.Invitation;
 import info.blockchain.wallet.metadata.data.Message;
 import info.blockchain.wallet.metadata.data.MessageProcessRequest;
-import info.blockchain.wallet.metadata.data.MetadataRequest;
+import info.blockchain.wallet.metadata.data.MetadataBody;
 import info.blockchain.wallet.metadata.data.MetadataResponse;
 import info.blockchain.wallet.metadata.data.Trusted;
 import java.util.HashMap;
@@ -93,7 +93,7 @@ public interface MetadataEndpoints {
     ///////////////////////////////////////////////////////////////////////////
 
     @PUT(MetadataUrls.METADATA + "/{addr}")
-    Call<Void> putMetadata(@Path("addr") String address, @Body MetadataRequest body);
+    Call<Void> putMetadata(@Path("addr") String address, @Body MetadataBody body);
 
     @GET(MetadataUrls.METADATA + "/{addr}")
     Call<MetadataResponse> getMetadata(@Path("addr") String address);

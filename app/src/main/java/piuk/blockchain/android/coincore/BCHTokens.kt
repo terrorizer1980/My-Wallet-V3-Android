@@ -39,14 +39,14 @@ class BCHTokens(
 
     override fun totalBalance(filter: BalanceFilter): Single<CryptoValue> =
         walletInitialiser()
-            .andThen(updater())
+            .andThen(Completable.defer { updater() })
             .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
 
     override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = accountReference(account)
 
         return walletInitialiser()
-            .andThen(updater())
+            .andThen(Completable.defer { updater() })
             .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }
     }
 

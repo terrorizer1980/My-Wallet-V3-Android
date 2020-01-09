@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.datamanagers
 
 import androidx.annotation.VisibleForTesting
+import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.NabuApiException
 import com.blockchain.swap.nabu.models.nabu.NabuCountryResponse
 import com.blockchain.swap.nabu.models.nabu.NabuErrorStatusCodes
@@ -41,6 +42,10 @@ interface NabuDataManager {
     fun getUser(
         offlineTokenResponse: NabuOfflineTokenResponse
     ): Single<NabuUser>
+
+    fun getAirdropCampaignStatus(
+        offlineTokenResponse: NabuOfflineTokenResponse
+    ): Single<AirdropStatusList>
 
     fun getCountriesList(scope: Scope): Single<List<NabuCountryResponse>>
 
@@ -196,6 +201,13 @@ internal class NabuDataManagerImpl(
             userReporter.reportUserId(offlineTokenResponse.userId)
             userReporter.reportUser(it)
             walletReporter.reportWalletGuid(guid)
+        }
+
+    override fun getAirdropCampaignStatus(
+        offlineTokenResponse: NabuOfflineTokenResponse
+    ): Single<AirdropStatusList> =
+        authenticate(offlineTokenResponse) {
+            nabuService.getAirdropCampaignStatus(it)
         }
 
     override fun updateUserWalletInfo(
