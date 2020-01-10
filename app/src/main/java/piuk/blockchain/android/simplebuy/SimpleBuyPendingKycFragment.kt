@@ -8,8 +8,8 @@ import kotlinx.android.synthetic.main.fragment_simple_buy_kyc_pending.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.mvi.MviFragment
-import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
+import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
 
 class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(), SimpleBuyScreen {
 
@@ -30,8 +30,11 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
     }
 
     override fun render(newState: SimpleBuyState) {
-        kyc_progress.goneIf(newState.kycVerificationState != KycState.PENDING)
-        kyc_failed_icon.goneIf(newState.kycVerificationState == KycState.PENDING)
+        kyc_progress.visibleIf { newState.kycVerificationState == KycState.PENDING }
+        kyc_failed_icon.visibleIf {
+            newState.kycVerificationState == KycState.FAILED ||
+                    newState.kycVerificationState == KycState.UNDECIDED
+        }
         verif_text.text = when (newState.kycVerificationState) {
             KycState.PENDING -> resources.getString(R.string.kyc_verifying_info)
             KycState.FAILED -> resources.getString(R.string.kyc_manual_review_required)
@@ -41,12 +44,23 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
         kyc_pending_title.text = when (newState.kycVerificationState) {
             KycState.PENDING -> resources.getString(R.string.kyc_pending_title)
             KycState.FAILED -> resources.getString(R.string.kyc_manual_review_required)
+            KycState.UNDECIDED -> resources.getString(R.string.kyc_undecided_text)
             else -> ""
         }
-        continue_to_wallet.goneIf(newState.kycVerificationState != KycState.FAILED)
+        continue_to_wallet.visibleIf {
+            newState.kycVerificationState == KycState.FAILED ||
+                    newState.kycVerificationState == KycState.UNDECIDED
+        }
+
         if (newState.kycVerificationState == KycState.VERIFIED) {
             navigator().goToCheckOutScreen()
         }
+
+        kyc_failed_icon.setImageResource(
+            if (newState.kycVerificationState == KycState.FAILED)
+                R.drawable.ic_kyc_failed_warning
+            else R.drawable.ic_kyc_pending
+        )
     }
 
     override fun navigator(): SimpleBuyNavigator =

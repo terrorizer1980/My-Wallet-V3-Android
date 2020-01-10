@@ -1,7 +1,6 @@
 package piuk.blockchain.android.simplebuy
 
 import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
-import com.blockchain.swap.nabu.models.nabu.kycVerified
 import com.blockchain.swap.nabu.service.TierService
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
@@ -61,22 +60,21 @@ class SimpleBuyInteractor(
 
     fun pollForKycState(): Single<SimpleBuyIntent.KycStateUpdated> =
         tierService.tiers().map {
-            if (it.combinedState in kycVerified)
-                SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED)
-            if (it.combinedState.isRejectedOrInReview())
-                SimpleBuyIntent.KycStateUpdated(KycState.FAILED)
-            else
-                SimpleBuyIntent.KycStateUpdated(KycState.PENDING)
+            when {
+                it.combinedState == Kyc2TierState.Tier2Approved ->
+                    return@map SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED)
+                it.combinedState.isRejectedOrInReview() -> return@map SimpleBuyIntent.KycStateUpdated(KycState.FAILED)
+                else -> return@map SimpleBuyIntent.KycStateUpdated(KycState.PENDING)
+            }
         }.onErrorReturn {
             SimpleBuyIntent.KycStateUpdated(KycState.PENDING)
         }
             .repeatWhen { it.delay(5, TimeUnit.SECONDS).zipWith(Flowable.range(0, 6)) }
-            .takeWhile { it.kycState == KycState.PENDING }
-            .last(SimpleBuyIntent.KycStateUpdated(KycState.PENDING)).map {
-                if (it.kycState != KycState.PENDING) {
-                    return@map it
+            .takeUntil { it.kycState != KycState.PENDING }.last(SimpleBuyIntent.KycStateUpdated(KycState.PENDING)).map {
+                if (it.kycState == KycState.PENDING) {
+                    return@map SimpleBuyIntent.KycStateUpdated(KycState.UNDECIDED)
                 } else {
-                    return@map SimpleBuyIntent.KycStateUpdated(KycState.FAILED)
+                    return@map it
                 }
             }
 

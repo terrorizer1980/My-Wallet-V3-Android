@@ -63,7 +63,7 @@ enum class OrderState {
 }
 
 enum class KycState {
-    PENDING, FAILED, VERIFIED
+    PENDING, FAILED, UNDECIDED, VERIFIED
 }
 
 enum class InputError {

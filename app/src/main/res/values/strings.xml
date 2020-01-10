@@ -1735,5 +1735,6 @@
     <string name="kyc_verifying_info">Verifying your information</string>
     <string name="kyc_verifying_time_info">Usually takes less than 15-30 seconds</string>
     <string name="kyc_manual_review_required">Manual Review Required</string>
+    <string name="kyc_undecided_text">Copy for undecided state</string>
     <string name="continue_to_wallet">Continue to wallet</string>
 </resources>
