@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.fragment_kyc_complete.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.simplebuy.SimpleBuyActivity
 import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostActivity
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -64,6 +65,10 @@ class ApplicationCompleteFragment : Fragment() {
                                     requireContext(),
                                     get<CurrencyPrefs>().selectedFiatCurrency
                                 )
+                            }
+                            CampaignType.SimpleBuy -> {
+                                activity?.setResult(SimpleBuyActivity.RESULT_KYC_SIMPLE_BUY_COMPLETE)
+                                activity?.finish()
                             }
                             else -> navigate(ApplicationCompleteFragmentDirections.actionTier2Complete())
                         }

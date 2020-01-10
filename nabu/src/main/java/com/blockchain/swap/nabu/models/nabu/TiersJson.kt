@@ -62,7 +62,7 @@ enum class Kyc2TierState {
     Tier1Failed,
     Tier2InReview,
     Tier2Approved,
-    Tier2Failed
+    Tier2Failed;
 }
 
 val goldTierComplete = listOf(

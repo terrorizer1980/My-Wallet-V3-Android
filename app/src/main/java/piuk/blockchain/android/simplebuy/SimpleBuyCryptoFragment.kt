@@ -66,7 +66,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         })
 
         btn_continue.setOnClickListener {
-            navigator().goToCheckOutScreen()
+            navigator().startKyc()
         }
     }
 

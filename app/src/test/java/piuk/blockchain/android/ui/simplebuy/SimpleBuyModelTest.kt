@@ -11,6 +11,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.simplebuy.ExchangePriceState
+import piuk.blockchain.android.simplebuy.KycState
 import piuk.blockchain.android.simplebuy.OrderState
 import piuk.blockchain.android.simplebuy.SimpleBuyIntent
 import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
@@ -104,5 +105,16 @@ class SimpleBuyModelTest {
 
         testObserver.assertValueAt(0, SimpleBuyState())
         testObserver.assertValueAt(1, SimpleBuyState(orderState = OrderState.CONFIRMED))
+    }
+
+    @Test
+    fun `update kyc state shall make interactor poll for kyc state and update the state accordingly`() {
+        whenever(interactor.pollForKycState())
+            .thenReturn(Single.just(SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED)))
+        val testObserver = model.state.test()
+        model.process(SimpleBuyIntent.FetchKycState)
+
+        testObserver.assertValueAt(0, SimpleBuyState())
+        testObserver.assertValueAt(1, SimpleBuyState(kycVerificationState = KycState.VERIFIED))
     }
 }

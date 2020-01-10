@@ -11,4 +11,3 @@ enum class CampaignType {
 
 const val blockstackCampaignName = "BLOCKSTACK"
 const val sunriverCampaignName = "SUNRIVER"
-

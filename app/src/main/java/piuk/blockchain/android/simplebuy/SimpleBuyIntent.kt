@@ -51,6 +51,16 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
             oldState
     }
 
+    object FetchKycState : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState.copy(kycVerificationState = KycState.PENDING)
+    }
+
+    class KycStateUpdated(val kycState: KycState) : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState.copy(kycVerificationState = kycState)
+    }
+
     object OrderCanceled : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             SimpleBuyState(orderState = OrderState.CANCELLED)

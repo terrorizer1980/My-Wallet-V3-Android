@@ -9,4 +9,6 @@ interface SimpleBuyNavigator {
     fun exitSimpleBuyFlow()
     fun goToBuyCryptoScreen()
     fun goToCheckOutScreen()
+    fun goToKycVerificationScreen()
+    fun startKyc()
 }

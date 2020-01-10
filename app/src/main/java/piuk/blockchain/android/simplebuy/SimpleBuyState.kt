@@ -15,6 +15,7 @@ data class SimpleBuyState(
     val predefinedAmounts: List<FiatValue> = emptyList(),
     val selectedCryptoCurrency: CryptoCurrency? = null,
     val orderState: OrderState = OrderState.UNITIALISED,
+    val kycVerificationState: KycState = KycState.PENDING,
     val exchangePriceState: ExchangePriceState? = null
 ) : MviState {
 
@@ -59,6 +60,10 @@ data class ExchangePriceState(
 
 enum class OrderState {
     UNITIALISED, INITIALISED, CANCELLED, CONFIRMED
+}
+
+enum class KycState {
+    PENDING, FAILED, VERIFIED
 }
 
 enum class InputError {
