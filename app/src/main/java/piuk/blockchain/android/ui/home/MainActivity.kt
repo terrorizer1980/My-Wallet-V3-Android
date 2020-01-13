@@ -660,11 +660,11 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         val frameLayout = ViewUtils.getAlertDialogPaddedView(this, editText)
 
         AlertDialog.Builder(this, R.style.AlertDialogStyle)
-            .setTitle(R.string.eth_now_supporting)
+            .setTitle(R.string.second_password_dlg_title)
             .setMessage(R.string.eth_second_password_prompt)
             .setView(frameLayout)
             .setCancelable(false)
-            .setPositiveButton(android.R.string.ok) { dialog, which ->
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 ViewUtils.hideKeyboard(this)
                 presenter.decryptAndSetupMetadata(editText.text.toString())
             }

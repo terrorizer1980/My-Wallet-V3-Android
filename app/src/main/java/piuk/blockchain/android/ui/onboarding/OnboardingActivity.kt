@@ -87,7 +87,11 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
                 override fun onAuthenticated(data: String?) {
                     dialog.dismissAllowingStateLoss()
                     presenter?.setFingerprintUnlockEnabled(true)
-                    showEmailPrompt()
+                    if (showEmail) {
+                        showEmailPrompt()
+                    } else {
+                        finish()
+                    }
                 }
 
                 override fun onCanceled() {
@@ -106,7 +110,7 @@ internal class OnboardingActivity : BaseMvpActivity<OnboardingView, OnboardingPr
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.fingerprint_no_fingerprints_added)
                 .setCancelable(true)
-                .setPositiveButton(R.string.yes) { dialog, which ->
+                .setPositiveButton(R.string.yes) { _, _ ->
                     startActivityForResult(
                         Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS),
                         0
