@@ -32,6 +32,12 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
         }
     }
 
+    data class BankAccountUpdated(private val account: BankAccount) : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState {
+            return oldState.copy(bankAccount = account)
+        }
+    }
+
     data class FetchBuyLimits(val currency: String) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState.copy(currency = currency)
     }
@@ -49,6 +55,11 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
     object ConfirmOrder : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState
+    }
+
+    object FetchBankAccount : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState // add loading state here
     }
 
     object FetchKycState : SimpleBuyIntent() {

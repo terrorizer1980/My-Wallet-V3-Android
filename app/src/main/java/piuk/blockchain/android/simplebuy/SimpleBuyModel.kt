@@ -36,7 +36,10 @@ class SimpleBuyModel(state: SimpleBuyState, scheduler: Scheduler, private val in
                 onSuccess = { process(it) },
                 onError = { /*do nothing, show no amounts*/ }
             )
-
+            is SimpleBuyIntent.FetchBankAccount -> interactor.fetchBankAccount().subscribeBy(
+                onSuccess = { process(it) },
+                onError = { /*do nothing, show no amounts*/ }
+            )
             is SimpleBuyIntent.FetchKycState -> interactor.pollForKycState().subscribeBy(
                 onSuccess = { process(it) },
                 onError = { /*never fails. will return SimpleBuyIntent.KycStateUpdated(KycState.FAILED)*/ }
@@ -44,6 +47,7 @@ class SimpleBuyModel(state: SimpleBuyState, scheduler: Scheduler, private val in
             is SimpleBuyIntent.KycStateUpdated -> null
 
             is SimpleBuyIntent.UpdatedPredefinedAmounts -> null
+            is SimpleBuyIntent.BankAccountUpdated -> null
             is SimpleBuyIntent.BuyLimits -> null
             is SimpleBuyIntent.PriceLoading -> null
             is SimpleBuyIntent.PriceUpdate -> null

@@ -16,6 +16,7 @@ data class SimpleBuyState(
     val selectedCryptoCurrency: CryptoCurrency? = null,
     val orderState: OrderState = OrderState.UNITIALISED,
     val kycVerificationState: KycState = KycState.PENDING,
+    val bankAccount: BankAccount? = null,
     val exchangePriceState: ExchangePriceState? = null
 ) : MviState {
 
@@ -69,3 +70,7 @@ enum class KycState {
 enum class InputError {
     BELOW_MIN, ABOVE_MAX
 }
+
+data class BankAccount(val details: List<BankDetail>)
+
+data class BankDetail(val title: String, val value: String, val isCopyable: Boolean = false)

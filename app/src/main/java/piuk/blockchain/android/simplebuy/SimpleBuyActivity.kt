@@ -43,7 +43,6 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         supportFragmentManager.beginTransaction()
             .replace(R.id.content_frame, SimpleBuyCheckoutFragment(), SimpleBuyCheckoutFragment::class.simpleName)
             .addToBackStack(SimpleBuyCheckoutFragment::class.simpleName)
-
             .commitAllowingStateLoss()
     }
 
@@ -51,6 +50,13 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         supportFragmentManager.beginTransaction()
             .replace(R.id.content_frame, SimpleBuyPendingKycFragment(), SimpleBuyPendingKycFragment::class.simpleName)
             .addToBackStack(SimpleBuyPendingKycFragment::class.simpleName)
+            .commitAllowingStateLoss()
+    }
+
+    override fun goToBankDetailsScreen() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.content_frame, SimpleBuyBankDetailsFragment(), SimpleBuyBankDetailsFragment::class.simpleName)
+            .addToBackStack(SimpleBuyBankDetailsFragment::class.simpleName)
             .commitAllowingStateLoss()
     }
 

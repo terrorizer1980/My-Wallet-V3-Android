@@ -58,6 +58,16 @@ class SimpleBuyInteractor(
     fun confirmOrder(): Single<SimpleBuyIntent.OrderConfirmed> =
         Single.just(SimpleBuyIntent.OrderConfirmed)
 
+    fun fetchBankAccount(): Single<SimpleBuyIntent.BankAccountUpdated> =
+        Single.just(SimpleBuyIntent.BankAccountUpdated(BankAccount(
+            listOf(
+                BankDetail("Bank Name", "LHV"),
+                BankDetail("Bank ID", "DE81 1234 5678 9101 1234 33", true),
+                BankDetail("Bank Code (SWIFT/BIC", "DEKTDE7GSSS", true),
+                BankDetail("Recipient", "Fred Wilson")
+            )
+        )))
+
     fun pollForKycState(): Single<SimpleBuyIntent.KycStateUpdated> =
         tierService.tiers().map {
             when {

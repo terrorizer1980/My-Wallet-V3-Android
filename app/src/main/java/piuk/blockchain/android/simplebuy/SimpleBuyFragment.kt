@@ -10,5 +10,6 @@ interface SimpleBuyNavigator {
     fun goToBuyCryptoScreen()
     fun goToCheckOutScreen()
     fun goToKycVerificationScreen()
+    fun goToBankDetailsScreen()
     fun startKyc()
 }

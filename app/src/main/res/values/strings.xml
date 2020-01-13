@@ -1737,4 +1737,7 @@
     <string name="kyc_manual_review_required">Manual Review Required</string>
     <string name="kyc_undecided_text">Copy for undecided state</string>
     <string name="continue_to_wallet">Continue to wallet</string>
+    <string name="securely_transfer">Securely transfer %1$s from your bank account to Blockchain. Depending on the transfer method and availability of funds, this may take up to 1 business day.</string>
+    <string name="amount_to_send">Amount to send</string>
+    <string name="recepient_name_must_match">Your Recipient name above must match the account holder\'s name on your bank account for your transfer to be successful. Your transfer could be rejected if there is not a match.</string>
 </resources>

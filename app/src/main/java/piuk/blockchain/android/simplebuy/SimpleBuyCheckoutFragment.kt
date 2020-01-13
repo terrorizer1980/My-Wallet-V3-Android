@@ -41,7 +41,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         when (newState.orderState) {
             OrderState.CANCELLED -> navigator().exitSimpleBuyFlow()
             OrderState.CONFIRMED -> {
-                /*MOVE TO NEXT SCREEN*/
+                navigator().goToBankDetailsScreen()
             }
             else -> {
             }
