@@ -24,9 +24,9 @@
 
         <item
             android:id="@+id/nav_the_pit"
-            android:icon="@drawable/ic_nav_the_pit"
-            app:contentDescription="@string/item_the_pit"
-            android:title="@string/item_the_pit"/>
+            android:icon="@drawable/ic_nav_the_exchange"
+            app:contentDescription="@string/item_the_exchange"
+            android:title="@string/item_the_exchange"/>
 
         <item
             android:id="@+id/nav_lockbox"

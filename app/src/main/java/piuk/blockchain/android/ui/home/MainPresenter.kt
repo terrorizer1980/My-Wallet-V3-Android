@@ -13,7 +13,6 @@ import piuk.blockchain.android.campaign.SunriverCampaignRegistration
 import piuk.blockchain.android.campaign.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
-import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
@@ -36,7 +35,6 @@ import piuk.blockchain.android.kyc.KycLinkState
 import piuk.blockchain.android.sunriver.CampaignLinkState
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.launcher.LauncherActivity
-import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.services.ExchangeService
@@ -71,7 +69,6 @@ interface MainView : MvpView, HomeNavigator {
     fun showMetadataNodeFailure()
     fun setBuySellEnabled(enabled: Boolean, useWebView: Boolean)
     fun setPitEnabled(enabled: Boolean)
-    fun setPitItemTitle(title: String)
     fun showTradeCompleteMsg(txHash: String)
     fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails)
     fun showSecondPasswordDialog()
@@ -105,12 +102,10 @@ class MainPresenter internal constructor(
     private val sunriverCampaignRegistration: SunriverCampaignRegistration,
     private val xlmDataManager: XlmDataManager,
     private val pitFeatureFlag: FeatureFlag,
-    private val pitABTestingExperiment: ABTestExperiment,
     private val pitLinking: PitLinking,
     private val nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
-    private val crashLogger: CrashLogger,
-    private val stringUtils: StringUtils
+    private val crashLogger: CrashLogger
 ) : MvpPresenter<MainView>() {
 
     override val alwaysDisableScreenshots: Boolean = false
@@ -134,22 +129,10 @@ class MainPresenter internal constructor(
             doPushNotifications()
 
             checkPitAvailability()
-
-            setPitTitle()
         }
     }
 
     override fun onViewDetached() {}
-
-    private fun setPitTitle() {
-        compositeDisposable += pitABTestingExperiment.getABVariant(ABTestExperiment.AB_THE_PIT_SIDE_NAV_VARIANT).map {
-            when (it) {
-                "B" -> return@map stringUtils.getString(R.string.crypto_exchange)
-                "C" -> return@map stringUtils.getString(R.string.crypto_trading)
-                else -> return@map stringUtils.getString(R.string.the_pit_exchange_title)
-            }
-        }.subscribeBy { view?.setPitItemTitle(it) }
-    }
 
     private fun checkPitAvailability() {
         compositeDisposable += pitFeatureFlag.enabled.subscribeBy { view?.setPitEnabled(it) }

@@ -19,16 +19,16 @@
     <string name="item_buy_sell">Buy &amp; Sell</string>
     <string name="item_backup">Backup funds</string>
     <string name="item_lockbox">Lockbox</string>
+    <string name="item_the_exchange">Exchange</string>
+    <string name="item_debug_homebrew" translatable="false">Debug Homebrew</string>
 
     <!-- toolbar -->
-    <string name="item_the_pit">The PIT</string>
-    <string name="item_debug_homebrew" translatable="false">Debug Homebrew</string>
     <string name="toolbar_cmd_home">Home</string>
     <string name="toolbar_cmd_send">Send</string>
     <string name="toolbar_cmd_receive_crypto">Receive</string>
-
     <string name="toolbar_cmd_activity">Activity</string>
     <string name="toolbar_cmd_swap">Swap</string>
+
     <string name="cancel">Cancel</string>
     <string name="btn_ok">OK</string>
     <string name="yes">Yes</string>
@@ -465,6 +465,7 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="sms">SMS</string>
+    <string name="setting_the_exchange">Exchange</string>
 
     <string name="disable_2fa_first">Please disable 2-step Verification via SMS in the security
         settings first.
@@ -988,53 +989,51 @@
     <string name="swap_info_swap_limits">Swap Limits</string>
     <string name="swap_info_order_history">Order History</string>
 
-    <string name="pit_announcement_title">Introducing The PIT</string>
-    <string name="pit_announcement_body_variant_a">Trade crypto &amp; fiat on The PIT, Blockchain’s new lighting fast exchange.</string>
-    <string name="pit_announcement_body_variant_b">Link your Wallet and trade crypto &amp; fiat on The PIT, Blockchain’s new lighting fast exchange.</string>
+    <string name="the_exchange_announcement_title">Introducing the Exchange</string>
+    <string name="the_exchange_announcement_body">It\'s time to Level Up to a better crypto exchange. Buy, sell, and trade more digital assets in the Blockchain.com Exchange.</string>
+    <string name="the_exchange_announcement_cta_text">Checkout the Exchange</string>
 
     <!-- The Pit linking -->
-    <string name="pit_announcement_cta_text">Get Started</string>
-    <string name="pit_slogan_kyc_promo">There’s a new way to trade. Link your Wallet for instant access.</string>
+    <string name="the_exchange_slogan_kyc_promo">There’s a new way to trade. Link your Wallet for instant access.</string>
 
-    <string name="pit_thunder_kyc_promo">Trade\nLightning Fast</string>
-    <string name="pit_built_kyc_promo">Built by\nBlockchain</string>
+    <string name="the_exchange_thunder_kyc_promo">Trade\nLightning Fast</string>
+    <string name="the_exchange_built_kyc_promo">Built by\nBlockchain.com</string>
 
-    <string name="pit_dollar_kyc_promo">Access More\nCryptos</string>
-    <string name="pit_bill_kyc_promo">Deposit &amp; Withdraw\nEuros/Dollars</string>
-    <string name="pit_permission_app_can">The PIT will be able to:</string>
-    <string name="pit_permission_app_cant">Will Not:</string>
-    <string name="pit_permission_subtitle">Will not be able to:</string>
-    <string name="pit_permission_1">Sync addresses with your Wallet so you can securely sweep crypto between accounts</string>
-    <string name="pit_permission_2">Share your Gold or Silver Level status for unlimited trading</string>
-    <string name="pit_permission_3">Add your linked banks</string>
-    <string name="pit_permission_4">Access the crypto in your wallet, access your keys, or view your password.</string>
-    <string name="pit_connect_now">Connect Now</string>
+    <string name="the_exchange_dollar_kyc_promo">Access More\nCryptos</string>
+    <string name="the_exchange_bill_kyc_promo">Deposit &amp; Withdraw\nEuros/Dollars</string>
+    <string name="the_exchange_permission_app_can">Our Exchange will be able to:</string>
+    <string name="the_exchange_permission_app_cant">Will Not:</string>
+    <string name="the_exchange_permission_subtitle">Will not be able to:</string>
+    <string name="the_exchange_permission_1">Sync addresses with your Wallet so you can securely sweep crypto between accounts</string>
+    <string name="the_exchange_permission_2">Share your Gold or Silver Level status for unlimited trading</string>
+    <string name="the_exchange_permission_3">Add your linked banks</string>
+    <string name="the_exchange_permission_4">Access the crypto in your wallet, access your keys, or view your password.</string>
+    <string name="the_exchange_connect_now">Connect Now</string>
 
-    <string name="the_pit_title">The PIT</string>
-    <string name="the_pit_exchange_title">The PIT Exchange</string>
+    <string name="the_exchange_title">Exchange</string>
     <string name="crypto_exchange">Crypto Exchange</string>
     <string name="crypto_trading">Crypto Trading</string>
 
-    <string name="pit_setting_connect">Connect</string>
-    <string name="pit_setting_connected">Connected</string>
-    <string name="launch_the_pit">Launch The PIT</string>
-    <string name="pit_contact_support">Contact Support</string>
-    <string name="pit_loading_dialog_title">Taking You To The PIT</string>
-    <string name="pit_loading_dialog_description">A new window should open within 10 seconds.</string>
-    <string name="pit_verify_email_title">Verify Your Email</string>
-    <string name="pit_verify_email_description">We just sent you a verification email. Your email address needs to be verified before you can connect to The PIT.</string>
-    <string name="pit_open_email_app">Open Email App</string>
-    <string name="pit_no_two_fa_available">Please enable 2FA on your PIT account to complete deposit</string>
-    <string name="pit_did_not_get_email">Didn\'t get the email?</string>
-    <string name="pit_send_again">Send again</string>
+    <string name="the_exchange_setting_connect">Connect</string>
+    <string name="the_exchange_setting_connected">Connected</string>
+    <string name="launch_the_exchange">Launch the Exchange</string>
+    <string name="the_exchange_contact_support">Contact Support</string>
+    <string name="the_exchange_loading_dialog_title">Taking You To the Exchange</string>
+    <string name="the_exchange_loading_dialog_description">A new window should open within 10 seconds.</string>
+    <string name="the_exchange_verify_email_title">Verify Your Email</string>
+    <string name="the_exchange_verify_email_description">We just sent you a verification email. Your email address needs to be verified before you can connect to the Exchange.</string>
+    <string name="the_exchange_open_email_app">Open Email App</string>
+    <string name="the_exchange_no_two_fa_available">Please enable 2FA on your PIT account to complete deposit</string>
+    <string name="the_exchange_did_not_get_email">Didn\'t get the email?</string>
+    <string name="the_exchange_send_again">Send again</string>
     <string name="mail_resent_succeed">Email sent. Check your inbox to continue.</string>
     <string name="mail_resent_failed">Something went wrong. Please tap Send Again.</string>
-    <string name="pit_email_verified_description">You\'re all set to connect your Blockchain Wallet to The PIT.</string>
-    <string name="pit_email_verified_title">Email Verified.</string>
-    <string name="pit_connection_error_title">Connection Error</string>
-    <string name="pit_connection_error_description">We could not connect your Wallet to The PIT. Please go back to The PIT and try again.</string>
-    <string name="pit_connection_success_title">Success!</string>
-    <string name="pit_connection_success_description">You have connected your Blockchain Wallet to The PIT. Go back and finish signing up!</string>
+    <string name="the_exchange_email_verified_description">You\'re all set to connect your Blockchain Wallet to the Exchange.</string>
+    <string name="the_exchange_email_verified_title">Email Verified.</string>
+    <string name="the_exchange_connection_error_title">Connection Error</string>
+    <string name="the_exchange_connection_error_description">We could not connect your Wallet to the Exchange. Please go back to the Exchange and try again.</string>
+    <string name="the_exchange_connection_success_title">Success!</string>
+    <string name="the_exchange_connection_success_description">You have connected your Blockchain Wallet to the Exchange. Go back and finish signing up!</string>
 
     <!-- Swap intro -->
     <string name="swap_intro_title">Swap</string>
@@ -1287,7 +1286,6 @@
 
     <!-- Account creation completed -->
     <string name="buy_sell_verification_status_title">Verification status</string>
-    <!--<string name="buy_sell_verify_your_identity">Verify your identity</string>-->
     <string name="buy_sell_invalid_country_title">Buying &amp; Selling Bitcoin is not yet available in your country</string>
     <string name="buy_sell_invalid_country_message">We will be rolling out more countries soon.</string>
 
@@ -1658,7 +1656,7 @@
 
     <string name="not_enough_funds_with_currency">Not enough %1$s</string>
 
-    <!-- XLM Minbalance explaination dlg -->
+    <!-- XLM Min balance explanation dlg -->
     <string name="minimum_balance_body">Stellar requires that all Stellar accounts hold a minimum balance of lumens, or XLM.
         This means you cannot send a balance out of your Stellar Wallet that would leave your Stellar Wallet with less than the minimum balance.
         This also means that in order to send XLM to a new Stellar account, you must send enough XLM to meet the minimum balance requirement.

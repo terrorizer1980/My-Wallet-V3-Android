@@ -1,7 +1,6 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
 import com.blockchain.notifications.analytics.Analytics
-import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.remoteconfig.FeatureFlag
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Single
@@ -17,7 +16,6 @@ class PitAnnouncementTest {
     private val pitLinking: PitLinking = mock()
     private val featureFlag: FeatureFlag = mock()
     private val analytics: Analytics = mock()
-    private val abTestExperiment: ABTestExperiment = mock()
 
     private lateinit var subject: PitAnnouncement
 
@@ -31,8 +29,7 @@ class PitAnnouncementTest {
             pitLink = pitLinking,
             dismissRecorder = dismissRecorder,
             featureFlag = featureFlag,
-            analytics = analytics,
-            abTestExperiment = abTestExperiment
+            analytics = analytics
         )
     }
 

@@ -115,12 +115,10 @@ class MainPresenterTest {
             sunriverCampaignRegistration = sunriverCampaignRegistration,
             xlmDataManager = xlmDataManager,
             pitFeatureFlag = featureFlag,
-            pitABTestingExperiment = abTesting,
             pitLinking = pitLinking,
             nabuToken = nabuToken,
             nabuDataManager = nabuDatamanager,
-            crashLogger = crashLogger,
-            stringUtils = stringUtils
+            crashLogger = crashLogger
         )
 
         subject.attachView(view)

@@ -6,11 +6,9 @@ import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.preferences.ThePitLinkingPrefs
-import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
@@ -18,7 +16,6 @@ import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Completable
 import io.reactivex.Single
 import junit.framework.Assert.assertEquals
-import org.amshove.kluent.`it returns`
 import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Rule
@@ -44,9 +41,6 @@ class PitPermissionsPresenterTest {
     private val nabuToken: NabuToken = mock()
     private val pitLinking: PitLinking = mock()
     private val prefs: ThePitLinkingPrefs = mock()
-    private val abTestExpriment: ABTestExperiment = mock {
-        on { getABVariant(any()) } `it returns` Single.just("")
-    }
     private val view = mock<PitPermissionsView>()
 
     private val nabuUser: NabuUser = mock()
@@ -61,8 +55,7 @@ class PitPermissionsPresenterTest {
             nabuToken,
             pitLinking,
             prefs,
-            mock(),
-            abTestExpriment
+            mock()
         ).also {
             it.initView(view)
             it.onViewReady()
@@ -121,7 +114,8 @@ class PitPermissionsPresenterTest {
 
         argumentCaptor<String>().apply {
             verify(view).onLinkSuccess(capture())
-            assertEquals(FORMATTED_LINK_PLUS, firstValue)
+            val s = firstValue
+            assertEquals(FORMATTED_LINK_PLUS, s)
         }
         verify(view).hideLoading()
 
@@ -266,10 +260,11 @@ class PitPermissionsPresenterTest {
         private const val EMAIL_ADDRESS_PLUS = "test+test@test.com"
         private const val FORMATTED_LINK =
             BuildConfig.PIT_LINKING_URL + LINK_ID + "?email=test%40test.com&utm_source=" +
-                    "android_wallet&utm_medium=wallet_linking&utm_campaign=side_nav_pit&utm_campaign_2=variant_a"
+                    "android_wallet&utm_medium=wallet_linking"
         private const val FORMATTED_LINK_PLUS =
             BuildConfig.PIT_LINKING_URL + LINK_ID + "?email=test%2Btest%40test.com&utm_source=" +
-                    "android_wallet&utm_medium=wallet_linking&utm_campaign=side_nav_pit&utm_campaign_2=variant_a"
+                    "android_wallet&utm_medium=wallet_linking"
+
         private const val LINK_ERROR = "That went well"
     }
 }

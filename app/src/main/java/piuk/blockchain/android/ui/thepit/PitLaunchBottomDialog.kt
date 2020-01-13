@@ -26,11 +26,11 @@ class PitLaunchBottomDialog : ErrorBottomDialog() {
         fun launch(activity: FragmentActivity) {
             newInstance(
                 Content(
-                    activity.getString(R.string.the_pit_title),
+                    activity.getString(R.string.the_exchange_title),
                     "",
-                    R.string.launch_the_pit,
-                    R.string.pit_contact_support,
-                    R.drawable.vector_pit_logo
+                    R.string.launch_the_exchange,
+                    R.string.the_exchange_contact_support,
+                    R.drawable.ic_the_exchange_colour
                 )
             ).apply {
                 onCtaClick = { activity.launchUrlInBrowser(BuildConfig.PIT_LAUNCHING_URL) }

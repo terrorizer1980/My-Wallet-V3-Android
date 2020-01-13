@@ -247,7 +247,6 @@ val applicationModule = applicationContext {
                 coinifyDataManager = get(),
                 buyDataManager = get(),
                 exchangeService = get(),
-                stringUtils = get(),
                 exchangeRateFactory = get(),
                 metadataManager = get(),
                 currencyState = get(),
@@ -258,7 +257,6 @@ val applicationModule = applicationContext {
                 sunriverCampaignRegistration = get(),
                 xlmDataManager = get(),
                 pitFeatureFlag = get("ff_pit_linking"),
-                pitABTestingExperiment = get(),
                 pitLinking = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
@@ -854,8 +852,7 @@ val applicationModule = applicationContext {
                 nabuToken = get(),
                 pitLinking = get(),
                 analytics = get(),
-                prefs = get(),
-                abTestExperiment = get()
+                prefs = get()
             )
         }
 

@@ -407,10 +407,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         PitLaunchBottomDialog.launch(this)
     }
 
-    override fun setPitItemTitle(title: String) {
-        menu.findItem(R.id.nav_the_pit).title = title
-    }
-
     override fun setPitEnabled(enabled: Boolean) {
         setPitVisible(enabled)
     }
