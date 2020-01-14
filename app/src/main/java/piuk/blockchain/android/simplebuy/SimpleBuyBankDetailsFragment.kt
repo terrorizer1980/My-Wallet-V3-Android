@@ -38,13 +38,13 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
                 )
             }
             bank_details_container.addView(CopyableTextFormItem(getString(R.string.amount_to_send),
-                newState.enteredFiat?.toStringWithSymbol() ?: "",
+                newState.order.amount?.toStringWithSymbol() ?: "",
                 false,
                 requireContext())
             )
         }
         secure_transfer.text = getString(R.string.securely_transfer,
-            newState.enteredFiat?.currencyCode ?: "")
+            newState.order.amount?.currencyCode ?: "")
     }
 
     override fun navigator(): SimpleBuyNavigator =

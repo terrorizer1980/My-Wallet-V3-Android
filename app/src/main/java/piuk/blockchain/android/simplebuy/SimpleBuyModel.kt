@@ -1,12 +1,21 @@
 package piuk.blockchain.android.simplebuy
 
+import com.blockchain.preferences.SimpleBuyPrefs
+import com.google.gson.Gson
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.ui.base.mvi.MviModel
 
-class SimpleBuyModel(state: SimpleBuyState, scheduler: Scheduler, private val interactor: SimpleBuyInteractor) :
-    MviModel<SimpleBuyState, SimpleBuyIntent>(state, scheduler) {
+class SimpleBuyModel(
+    private val prefs: SimpleBuyPrefs,
+    initialState: SimpleBuyState,
+    scheduler: Scheduler,
+    private val gson: Gson,
+    private val interactor: SimpleBuyInteractor
+) : MviModel<SimpleBuyState, SimpleBuyIntent>(
+    gson.fromJson(prefs.simpleBuyState(), SimpleBuyState::class.java) ?: initialState,
+    scheduler) {
 
     override fun performAction(intent: SimpleBuyIntent): Disposable? =
         when (intent) {
@@ -18,7 +27,6 @@ class SimpleBuyModel(state: SimpleBuyState, scheduler: Scheduler, private val in
                     onError = {
                         process(SimpleBuyIntent.PriceError)
                     }
-
                 )
             is SimpleBuyIntent.FetchBuyLimits -> interactor.fetchBuyLimits(intent.currency).subscribeBy(
                 onSuccess = { process(it) },
@@ -45,7 +53,6 @@ class SimpleBuyModel(state: SimpleBuyState, scheduler: Scheduler, private val in
                 onError = { /*never fails. will return SimpleBuyIntent.KycStateUpdated(KycState.FAILED)*/ }
             )
             is SimpleBuyIntent.KycStateUpdated -> null
-
             is SimpleBuyIntent.UpdatedPredefinedAmounts -> null
             is SimpleBuyIntent.BankAccountUpdated -> null
             is SimpleBuyIntent.BuyLimits -> null
@@ -56,4 +63,8 @@ class SimpleBuyModel(state: SimpleBuyState, scheduler: Scheduler, private val in
             is SimpleBuyIntent.OrderConfirmed -> null
             is SimpleBuyIntent.OrderCanceled -> null
         }
+
+    override fun onStateUpdate(s: SimpleBuyState) {
+        prefs.updateSimpleBuyState(gson.toJson(s))
+    }
 }

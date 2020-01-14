@@ -49,7 +49,6 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity.setupToolbar(R.string.simple_buy_buy_crypto_title)
-        model.process(SimpleBuyIntent.NewCryptoCurrencySelected(CryptoCurrency.BTC))
         model.process(SimpleBuyIntent.FetchBuyLimits(currencyPrefs.selectedFiatCurrency))
         model.process(SimpleBuyIntent.FetchPredefinedAmounts(currencyPrefs.selectedFiatCurrency))
 
@@ -80,10 +79,11 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         newState.exchangePriceState?.let {
             renderExchangePrice(newState.selectedCryptoCurrency ?: return@let, it)
         }
-        newState.selectedCryptoCurrency?.let {
+        newState.selectedCryptoCurrency.let {
             crypto_icon.setImageResource(it.drawableResFilled())
             crypto_text.text = it.unit
         }
+
         if (newState.maxAmount != null && newState.minAmount != null) {
             input_amount.filters =
                 arrayOf(DecimalDigitsInputFilter(newState.maxIntegerDigitsForAmount(),
@@ -104,7 +104,8 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
             predefined_amount_4.gone()
         }
 
-        btn_continue.isEnabled = newState.isAmountValid()
+        btn_continue.isEnabled = newState.isAmountValid
+
         error_icon.goneIf(newState.error == null)
         input_layout_amount.error = if (newState.error != null) " " else null
         newState.error?.let {

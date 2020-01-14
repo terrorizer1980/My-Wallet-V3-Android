@@ -5,6 +5,7 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.balance.compareTo
 import piuk.blockchain.android.ui.base.mvi.MviState
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import java.util.Date
 import java.util.regex.Pattern
 
 data class SimpleBuyState(
@@ -13,16 +14,28 @@ data class SimpleBuyState(
     val enteredAmount: String = "",
     private val currency: String = "USD",
     val predefinedAmounts: List<FiatValue> = emptyList(),
-    val selectedCryptoCurrency: CryptoCurrency? = null,
-    val orderState: OrderState = OrderState.UNITIALISED,
+    val selectedCryptoCurrency: CryptoCurrency = CryptoCurrency.BTC,
+    private val orderState: OrderState = OrderState.UNITIALISED,
+    private val expirationDate: Date? = null,
     val kycVerificationState: KycState = KycState.PENDING,
     val bankAccount: BankAccount? = null,
     val exchangePriceState: ExchangePriceState? = null
 ) : MviState {
 
+    @delegate:Transient
+    val order: SimpleBuyOrder by unsafeLazy {
+        SimpleBuyOrder(
+            orderState,
+            amount,
+            expirationDate
+        )
+    }
+
+    @Transient
     private val pattern = Pattern.compile("-?\\d+(\\.\\d+)?")
 
-    val enteredFiat: FiatValue? by unsafeLazy {
+    @delegate:Transient
+    private val amount: FiatValue? by unsafeLazy {
         if (enteredAmount.isEmpty() || pattern.matcher(enteredAmount).matches().not()) null else
             FiatValue.fromMajor(currency, enteredAmount.toBigDecimal())
     }
@@ -33,16 +46,19 @@ data class SimpleBuyState(
     fun maxIntegerDigitsForAmount(): Int =
         maxAmount?.toStringParts()?.major?.length ?: 0
 
-    fun isAmountValid(): Boolean =
-        enteredFiat?.let {
-            if (maxAmount != null && minAmount != null && enteredFiat != null) {
+    @delegate:Transient
+    val isAmountValid: Boolean by unsafeLazy {
+        order.amount?.let {
+            if (maxAmount != null && minAmount != null) {
                 it <= maxAmount && it >= minAmount
             } else false
         } ?: false
+    }
 
+    @delegate:Transient
     val error: InputError? by unsafeLazy {
-        enteredFiat?.let {
-            if (maxAmount != null && minAmount != null && enteredFiat != null) {
+        order.amount?.let {
+            if (maxAmount != null && minAmount != null) {
                 when {
                     it > maxAmount -> InputError.ABOVE_MAX
                     it < minAmount -> InputError.BELOW_MIN
@@ -70,6 +86,12 @@ enum class KycState {
 enum class InputError {
     BELOW_MIN, ABOVE_MAX
 }
+
+data class SimpleBuyOrder(
+    val orderState: OrderState = OrderState.UNITIALISED,
+    val amount: FiatValue? = null,
+    val expirationDate: Date? = null
+)
 
 data class BankAccount(val details: List<BankDetail>)
 

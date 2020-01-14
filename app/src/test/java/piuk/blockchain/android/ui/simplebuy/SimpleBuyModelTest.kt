@@ -1,12 +1,15 @@
 package piuk.blockchain.android.ui.simplebuy
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.preferences.SimpleBuyPrefs
+import com.google.gson.Gson
+import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import org.amshove.kluent.mock
+import org.amshove.kluent.`it returns`
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -22,7 +25,12 @@ import java.math.BigDecimal
 class SimpleBuyModelTest {
 
     private lateinit var model: SimpleBuyModel
+    private val defaultState = SimpleBuyState()
+    private val gson = Gson()
     private val interactor: SimpleBuyInteractor = mock()
+    private val prefs: SimpleBuyPrefs = mock {
+        on { simpleBuyState() } `it returns` gson.toJson(defaultState)
+    }
 
     @get:Rule
     val rx = rxInit {
@@ -32,7 +40,14 @@ class SimpleBuyModelTest {
 
     @Before
     fun setUp() {
-        model = SimpleBuyModel(SimpleBuyState(), Schedulers.io(), interactor)
+        model =
+            SimpleBuyModel(
+                prefs = prefs,
+                initialState = defaultState,
+                gson = gson,
+                scheduler = Schedulers.io(),
+                interactor = interactor
+            )
     }
 
     @Test
@@ -44,13 +59,12 @@ class SimpleBuyModelTest {
         val testObserver = model.state.test()
         model.process(SimpleBuyIntent.NewCryptoCurrencySelected(CryptoCurrency.BTC))
 
-        testObserver.assertValueCount(4)
-        testObserver.assertValueAt(0, SimpleBuyState())
-        testObserver.assertValueAt(1, SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC))
-        testObserver.assertValueAt(2,
+        testObserver.assertValueCount(3)
+        testObserver.assertValueAt(0, SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC))
+        testObserver.assertValueAt(1,
             SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC,
                 exchangePriceState = ExchangePriceState(isLoading = true)))
-        testObserver.assertValueAt(3,
+        testObserver.assertValueAt(2,
             SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC,
                 exchangePriceState = ExchangePriceState(price = FiatValue.fromMajor("USD", BigDecimal.ZERO))))
     }
@@ -62,13 +76,12 @@ class SimpleBuyModelTest {
         val testObserver = model.state.test()
         model.process(SimpleBuyIntent.NewCryptoCurrencySelected(CryptoCurrency.BTC))
 
-        testObserver.assertValueCount(4)
-        testObserver.assertValueAt(0, SimpleBuyState())
-        testObserver.assertValueAt(1, SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC))
-        testObserver.assertValueAt(2,
+        testObserver.assertValueCount(3)
+        testObserver.assertValueAt(0, SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC))
+        testObserver.assertValueAt(1,
             SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC,
                 exchangePriceState = ExchangePriceState(isLoading = true)))
-        testObserver.assertValueAt(3,
+        testObserver.assertValueAt(2,
             SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC,
                 exchangePriceState = ExchangePriceState(hasError = true)))
     }

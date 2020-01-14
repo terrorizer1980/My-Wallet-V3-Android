@@ -109,6 +109,7 @@
         android:text="€"
         android:textColor="@color/grey_400"
         android:textSize="24sp"
+        app:layout_constraintVertical_bias="0.6"
         app:layout_constraintBottom_toBottomOf="@+id/input_layout_amount"
         app:layout_constraintEnd_toStartOf="@+id/input_layout_amount"
         app:layout_constraintStart_toStartOf="parent"

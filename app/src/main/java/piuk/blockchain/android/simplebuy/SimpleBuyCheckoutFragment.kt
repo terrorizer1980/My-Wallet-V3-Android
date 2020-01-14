@@ -36,9 +36,9 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     override fun onBackPressed(): Boolean = true
 
     override fun render(newState: SimpleBuyState) {
-        total_cost.text = newState.enteredFiat?.formatOrSymbolForZero()
+        total_cost.text = newState.order.amount?.formatOrSymbolForZero()
         button_buy.text = resources.getString(R.string.buy_crypto, newState.selectedCryptoCurrency?.symbol)
-        when (newState.orderState) {
+        when (newState.order.orderState) {
             OrderState.CANCELLED -> navigator().exitSimpleBuyFlow()
             OrderState.CONFIRMED -> {
                 navigator().goToBankDetailsScreen()

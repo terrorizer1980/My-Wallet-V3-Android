@@ -755,11 +755,13 @@ val applicationModule = applicationContext {
             )
         }
 
-        bean {
+        factory {
             SimpleBuyModel(
                 interactor = get(),
                 scheduler = AndroidSchedulers.mainThread(),
-                state = SimpleBuyState()
+                initialState = SimpleBuyState(),
+                prefs = get(),
+                gson = get()
             )
         }
 

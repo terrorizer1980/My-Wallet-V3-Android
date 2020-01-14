@@ -7,7 +7,8 @@ import piuk.blockchain.android.ui.base.mvi.MviIntent
 sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
     class NewCryptoCurrencySelected(val currency: CryptoCurrency) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(selectedCryptoCurrency = currency, enteredAmount = "")
+            if (oldState.selectedCryptoCurrency == currency) oldState else
+                oldState.copy(selectedCryptoCurrency = currency, enteredAmount = "")
     }
 
     class PriceUpdate(private val fiatValue: FiatValue) : SimpleBuyIntent() {
