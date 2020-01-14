@@ -93,7 +93,7 @@ class ExchangeConfirmationFragment :
             setCancelable(false)
         }
 
-        activityListener.setToolbarTitle(R.string.confirm_exchange)
+        activityListener.setToolbarTitle(R.string.confirm_swap)
         onViewReady()
     }
 

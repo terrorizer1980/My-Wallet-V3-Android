@@ -47,8 +47,7 @@ val kycUiModule = applicationContext {
             KycTierSplashPresenter(
                 tierUpdater = get(),
                 tierService = get(),
-                kycNavigator = get(),
-                sunriverLargeBacklogFlag = get("ff_sunriver_has_large_backlog")
+                kycNavigator = get()
             )
         }
 

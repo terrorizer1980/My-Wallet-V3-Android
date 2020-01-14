@@ -518,7 +518,7 @@ class BitcoinSendStrategy(
                 it is NabuApiException && it.getErrorCode() == NabuErrorCodes.Bad2fa
             ) { view?.show2FANotAvailableError() }
         }) {
-            pitAccount = PitAccount(stringUtils.getFormattedString(R.string.pit_default_account_label,
+            pitAccount = PitAccount(stringUtils.getFormattedString(R.string.exchange_default_account_label,
                 CryptoCurrency.BTC.symbol), it.address)
             view?.updateReceivingHintAndAccountDropDowns(
                 CryptoCurrency.BTC,

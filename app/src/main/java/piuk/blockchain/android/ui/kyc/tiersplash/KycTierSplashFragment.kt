@@ -88,11 +88,11 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
 
     private val disposable = CompositeDisposable()
 
-    override fun renderTiersList(tiers: TiersJson, hasLargeSunriverBacklog: Boolean) {
+    override fun renderTiersList(tiers: TiersJson) {
         // Logic is now limited to 2 tiers, future refactor to traverse tiersList
-        renderTier1(tiers.tiers[1], hasLargeSunriverBacklog)
+        renderTier1(tiers.tiers[1])
 
-        renderTier2(tiers.tiers[2], hasLargeSunriverBacklog)
+        renderTier2(tiers.tiers[2])
 
         reportState(tiers.tiers[1].state, tiers.tiers[2].state)
     }
@@ -109,7 +109,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         }
     }
 
-    private fun renderTier(tier: TierJson, layoutElements: TierLayoutElements, hasLargeSunriverBacklog: Boolean) {
+    private fun renderTier(tier: TierJson, layoutElements: TierLayoutElements) {
         when (tier.state) {
             KycTierState.Rejected -> {
                 layoutElements.icon.setImageDrawable(R.drawable.vector_tier_locked)
@@ -133,9 +133,6 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
                 text_header_tiers_line2.text = getString(R.string.tier_x_in_review, getLevelForTier(tier))
                 button_learn_more.gone()
                 text_contact_support.gone()
-                if (hasLargeSunriverBacklog) {
-                    textViewEligible.text = getString(R.string.gold_level_under_review_sunriver_large_backlog)
-                }
             }
             KycTierState.Verified -> {
                 layoutElements.icon.setImageDrawable(R.drawable.vector_tier_verified)
@@ -158,7 +155,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         layoutElements.textPeriodicLimit.text = getString(getLimitString(tier))
     }
 
-    private fun renderTier1(tier: TierJson, hasLargeSunriverBacklog: Boolean) {
+    private fun renderTier1(tier: TierJson) {
         val layoutElements = TierLayoutElements(
             cardTier = card_tier_1,
             icon = icon_tier1_state,
@@ -169,10 +166,10 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             textTierRequires = text_tier1_requires
         )
 
-        renderTier(tier, layoutElements, hasLargeSunriverBacklog)
+        renderTier(tier, layoutElements)
     }
 
-    private fun renderTier2(tier: TierJson, hasLargeSunriverBacklog: Boolean) {
+    private fun renderTier2(tier: TierJson) {
         val layoutElements = TierLayoutElements(
             cardTier = card_tier_2,
             icon = icon_tier2_state,
@@ -183,7 +180,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             textTierRequires = text_tier2_requires
         )
 
-        renderTier(tier, layoutElements, hasLargeSunriverBacklog)
+        renderTier(tier, layoutElements)
     }
 
     private fun getLevelForTier(tier: TierJson): String =

@@ -1412,7 +1412,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
     }
 
     override fun show2FANotAvailableError() {
-        toast(R.string.the_exchange_no_two_fa_available, ToastCustom.TYPE_ERROR)
+        toast(R.string.the_exchange_two_fa_unavailable, ToastCustom.TYPE_ERROR)
     }
 
     override fun fillOrClearAddress() {
