@@ -8,7 +8,6 @@ import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import piuk.blockchain.android.campaign.SunriverCampaignRegistration
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
-import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.remoteconfig.FeatureFlag
@@ -27,7 +26,6 @@ import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.thepit.PitLinking
-import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.services.ExchangeService
@@ -55,7 +53,6 @@ class MainPresenterTest {
     private val exchangeRateFactory: ExchangeRateDataManager = mock()
     private val currencyState: CurrencyState = mock()
     private val metadataManager: MetadataManager = mock()
-    private val stringUtils: StringUtils = mock()
     private val environmentSettings: EnvironmentConfig = mock()
     private val coinifyDataManager: CoinifyDataManager = mock()
     private val exchangeService: ExchangeService = mock()
@@ -68,7 +65,6 @@ class MainPresenterTest {
     private val featureFlag: FeatureFlag = mock()
     private val crashLogger: CrashLogger = mock()
     private val nabuDatamanager: NabuDataManager = mock()
-    private val abTesting: ABTestExperiment = mock()
 
     private val nabuToken: NabuToken = mock {
         on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse(
@@ -138,7 +134,7 @@ class MainPresenterTest {
         // Assert
         verify(view, never()).launchSwap(any(), any(), any())
         verify(view, never()).launchSwapIntro()
-        verify(view).launchKyc(CampaignType.Swap)
+        verify(view).launchPendingVerificationScreen(CampaignType.Swap)
     }
 
     @Test

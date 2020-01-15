@@ -66,6 +66,7 @@ import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.android.ui.home.analytics.SideNavEvent
+import piuk.blockchain.android.ui.kyc.status.KycStatusActivity
 import piuk.blockchain.android.ui.onboarding.OnboardingActivity
 import piuk.blockchain.android.ui.tour.BuySellTourFragment
 import piuk.blockchain.android.ui.tour.IntroTourAnalyticsEvent
@@ -766,6 +767,10 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
         val swapIntroFragment = SwapIntroFragment.newInstance()
         replaceContentFragment(swapIntroFragment)
+    }
+
+    override fun launchPendingVerificationScreen(campaignType: CampaignType) {
+        KycStatusActivity.start(this, campaignType)
     }
 
     override fun shouldIgnoreDeepLinking() =

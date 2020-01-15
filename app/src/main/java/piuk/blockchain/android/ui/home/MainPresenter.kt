@@ -78,6 +78,7 @@ interface MainView : MvpView, HomeNavigator {
     fun displayLockboxMenu(lockboxAvailable: Boolean)
     fun showTestnetWarning()
     fun launchSwapIntro()
+    fun launchPendingVerificationScreen(campaignType: CampaignType)
     fun refreshDashboard()
     fun shouldIgnoreDeepLinking(): Boolean
     fun displayDialog(@StringRes title: Int, @StringRes message: Int)
@@ -428,7 +429,7 @@ class MainPresenter internal constructor(
                         nabuUser.kycState == KycState.UnderReview ||
                         prefs.swapIntroCompleted
                     )
-                        view?.launchKyc(CampaignType.Swap)
+                        view?.launchPendingVerificationScreen(CampaignType.Swap)
                     else
                         view?.launchSwapIntro()
                 }
