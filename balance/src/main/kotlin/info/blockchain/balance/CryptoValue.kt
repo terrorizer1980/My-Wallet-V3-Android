@@ -39,6 +39,7 @@ data class CryptoValue(
         val ZeroBtc = bitcoinFromSatoshis(0L)
         val ZeroBch = bitcoinCashFromSatoshis(0L)
         val ZeroEth = CryptoValue(CryptoCurrency.ETHER, BigInteger.ZERO)
+        val ZeroStx = CryptoValue(CryptoCurrency.STX, BigInteger.ZERO)
         val ZeroXlm = CryptoValue(CryptoCurrency.XLM, BigInteger.ZERO)
         val ZeroPax = CryptoValue(CryptoCurrency.PAX, BigInteger.ZERO)
 
