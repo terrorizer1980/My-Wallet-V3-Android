@@ -59,9 +59,8 @@ enum class CryptoCurrency(
     STX(
         symbol = "STX",
         unit = "Stacks",
-        // TODO: These are all stub values, until we implement the token fully
-        dp = 18,
-        userDp = 8,
+        dp = 7,
+        userDp = 7,
         requiredConfirmations = 12,
         featureFlags =
             CryptoCurrency.STUB_ASSET

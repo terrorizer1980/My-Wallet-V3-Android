@@ -44,6 +44,7 @@ class CryptoCurrencyFormatter(locale: Locale) {
     private val xlmFormat = createCryptoDecimalFormat(locale, CryptoCurrency.XLM.dp)
     private val paxShortFormat = createCryptoDecimalFormat(locale, CryptoCurrency.PAX.userDp)
     private val paxFormat = createCryptoDecimalFormat(locale, CryptoCurrency.PAX.dp)
+    private val stxFormat = createCryptoDecimalFormat(locale, CryptoCurrency.STX.dp)
 
     fun format(
         cryptoValue: CryptoValue,
@@ -72,7 +73,7 @@ class CryptoCurrencyFormatter(locale: Locale) {
             FormatPrecision.Short -> paxShortFormat
             FormatPrecision.Full -> paxFormat
         }
-        CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        CryptoCurrency.STX -> stxFormat
     }
 
     private fun DecimalFormat.formatWithUnit(value: BigDecimal, symbol: String) =
