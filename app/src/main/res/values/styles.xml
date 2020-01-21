@@ -327,7 +327,7 @@
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_marginTop">16dp</item>
-        <item name="background">@color/primary_grey_light</item>
+        <item name="android:background">@color/primary_grey_light</item>
     </style>
 
     <style name="BuySellAwaitingTransferTitle">
