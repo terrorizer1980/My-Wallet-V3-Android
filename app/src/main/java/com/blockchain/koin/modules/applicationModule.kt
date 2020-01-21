@@ -158,7 +158,14 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            BuyDataManager(get(), get(), get(), get(), get())
+            BuyDataManager(
+                settingsDataManager = get(),
+                authDataManager = get(),
+                payloadDataManager = get(),
+                buyConditions = get(),
+                exchangeService = get(),
+                coinifyFeatureFlag = get("ff_coinify")
+            )
         }
 
         factory {
