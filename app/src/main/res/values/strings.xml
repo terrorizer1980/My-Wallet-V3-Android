@@ -1740,4 +1740,5 @@
     <string name="securely_transfer">Securely transfer %1$s from your bank account to Blockchain. Depending on the transfer method and availability of funds, this may take up to 1 business day.</string>
     <string name="amount_to_send">Amount to send</string>
     <string name="recepient_name_must_match">Your Recipient name above must match the account holder\'s name on your bank account for your transfer to be successful. Your transfer could be rejected if there is not a match.</string>
+    <string name="cancel_order">Cancel order</string>
 </resources>

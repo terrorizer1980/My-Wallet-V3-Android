@@ -7,8 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/small_margin">
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/secure_transfer"
@@ -38,11 +37,26 @@
             android:layout_margin="@dimen/standard_margin"
             android:text="@string/recepient_name_must_match" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/confirm"
-            style="@style/CtaButton.Blue"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/confirm" />
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/small_margin">
+
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/CtaButton.White"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/cancel_order"
+                android:textColor="@color/red_600" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/CtaButton.Blue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/confirm" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
