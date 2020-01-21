@@ -384,7 +384,7 @@
     <string name="unarchive">Unarchive</string>
     <string name="archive_are_you_sure">Are you sure you want to archive this item?</string>
     <string name="unarchive_are_you_sure">Are you sure you want to unarchive this item?</string>
-<!--    <string name="send_to_same_address_warning">Can\'t send to the same address.</string>-->
+    <!--    <string name="send_to_same_address_warning">Can\'t send to the same address.</string>-->
     <string name="make_default">Make default</string>
     <string name="privx_required">Private Key Needed</string>
     <string name="watch_only_spend_instructions">This action requires the private key for the
@@ -1107,6 +1107,8 @@
 
     <string name="airdrop_sheet_stx_title" translatable="false">Blockstack (STX)</string>
     <string name="airdrop_sheet_stx_body">Own your digital identity and data with hundreds of decentralized apps built with Blockstack.</string>
+    <string name="airdrop_sheet_stx_where_are_my_stacks_title">Where are my stacks?</string>
+    <string name="airdrop_sheet_stx_where_are_my_stacks">Stacks (STX) are stored in your Blockchain Wallet.Please note the balance is currently non-transferable.</string>
     <string name="airdrop_sheet_xlm_title" translatable="false">Stellar (XLM)</string>
 
     <!-- buy/Sell -->

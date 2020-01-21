@@ -2,6 +2,8 @@ package piuk.blockchain.android.ui.campaign
 
 import android.annotation.SuppressLint
 import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.view.View
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -15,6 +17,7 @@ import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.CampaignState
 import com.blockchain.swap.nabu.models.nabu.CampaignTransactionState
 import com.blockchain.swap.nabu.models.nabu.UserCampaignState
+import com.blockchain.ui.urllinks.STX_STACKS_LEARN_MORE
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -22,12 +25,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import kotlinx.android.synthetic.main.dialog_airdrop_status.*
 import kotlinx.android.synthetic.main.dialog_airdrop_status.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.blockstackCampaignName
 import piuk.blockchain.android.campaign.sunriverCampaignName
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
+import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
 import java.lang.IllegalStateException
 import java.text.DateFormat
 import java.util.Date
@@ -44,6 +49,9 @@ class AirdropStatusSheet : PromoBottomSheet() {
 
     override fun initControls(view: View) {
         view.cta_button.setOnClickListener { onCtaClick() }
+        view.learn_more.setOnClickListener {
+            context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(STX_STACKS_LEARN_MORE)))
+        }
 
         disposables += nabuToken.fetchNabuToken()
             .flatMap { token -> nabu.getAirdropCampaignStatus(token) }
@@ -64,6 +72,10 @@ class AirdropStatusSheet : PromoBottomSheet() {
         view.title.setText(R.string.airdrop_sheet_stx_title)
         view.body.setText(R.string.airdrop_sheet_stx_body)
         view.icon_crypto.setImageResource(R.drawable.ic_logo_stx)
+
+        view.learn_more.visibleIf(stxDrop.airdropStatus() == AirdropUserState.RECEIVED)
+        view.where_are_my_stacks.visibleIf(stxDrop.airdropStatus() == AirdropUserState.RECEIVED)
+        view.where_are_my_stacks_title.visibleIf(stxDrop.airdropStatus() == AirdropUserState.RECEIVED)
 
         renderStatus(view, stxDrop)
         renderDate(view, stxDrop)
