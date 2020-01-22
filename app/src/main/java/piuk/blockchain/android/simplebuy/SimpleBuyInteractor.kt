@@ -40,10 +40,10 @@ class SimpleBuyInteractor(
 
     fun fetchPredefinedAmounts(targetCurrency: String): Single<SimpleBuyIntent.UpdatedPredefinedAmounts> =
         Single.just(SimpleBuyIntent.UpdatedPredefinedAmounts(listOf(
-            FiatValue.fromMajor(targetCurrency, 100.toBigDecimal()),
-            FiatValue.fromMajor(targetCurrency, 20.toBigDecimal()),
-            FiatValue.fromMajor(targetCurrency, 10.toBigDecimal()),
-            FiatValue.fromMajor(targetCurrency, 50.toBigDecimal())
+            FiatValue.fromMajor(targetCurrency, 100000.toBigDecimal()),
+            FiatValue.fromMajor(targetCurrency, 5000.toBigDecimal()),
+            FiatValue.fromMajor(targetCurrency, 1000.toBigDecimal()),
+            FiatValue.fromMajor(targetCurrency, 500.toBigDecimal())
         ).sortedBy {
             it.valueMinor
         }))
