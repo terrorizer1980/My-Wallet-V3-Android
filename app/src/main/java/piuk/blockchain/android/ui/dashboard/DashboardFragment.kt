@@ -19,7 +19,8 @@ import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
-import piuk.blockchain.android.ui.campaign.AirdropStatusSheet
+import piuk.blockchain.android.campaign.blockstackCampaignName
+import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet
 import piuk.blockchain.android.ui.campaign.PromoBottomSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -153,7 +154,9 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
     private fun showPromoSheet(promoSheet: PromoSheet?) {
         when (promoSheet) {
-            PromoSheet.PROMO_STX_AIRDROP_COMPLETE -> showBottomSheet(AirdropStatusSheet())
+            PromoSheet.PROMO_STX_AIRDROP_COMPLETE -> showBottomSheet(
+                AirdropStatusSheet.newInstance(blockstackCampaignName)
+            )
             null -> { /* no-op */ }
         }.exhaustive
     }

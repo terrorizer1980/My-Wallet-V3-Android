@@ -28,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/airdrop_title"
-        app:srcCompat="@drawable/ic_logo_stx" />
+        tools:srcCompat="@drawable/ic_logo_stx" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/title"
@@ -82,8 +82,6 @@
         app:layout_constraintTop_toBottomOf="@+id/divider_body"
         app:layout_constraintVertical_bias="1" />
 
-    <!--        android:background="@drawable/bkgd_status_received"-->
-    <!--        android:textColor="@color/green_600"-->
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/status_value"
         style="@style/Text.Standard.14"
@@ -191,40 +189,42 @@
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginEnd="@dimen/standard_margin"
         android:layout_marginBottom="@dimen/small_margin"
-        app:layout_constraintBottom_toTopOf="@id/where_are_my_stacks_title"
+        app:layout_constraintBottom_toTopOf="@id/support_heading"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/where_are_my_stacks_title"
+        android:id="@+id/support_heading"
         style="@style/Text.Bold.Centered"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="@dimen/small_margin"
         android:layout_marginEnd="@dimen/standard_margin"
-        android:text="@string/airdrop_sheet_stx_where_are_my_stacks_title"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@id/where_are_my_stacks"
+        android:visibility="gone"
+        tools:text="Support"
+        app:layout_constraintBottom_toTopOf="@id/support_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/where_are_my_stacks"
+        android:id="@+id/support_message"
         style="@style/Text.Standard.Centered.12"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="@dimen/small_margin"
         android:layout_marginEnd="@dimen/standard_margin"
-        android:text="@string/airdrop_sheet_stx_where_are_my_stacks"
-        app:layout_constraintBottom_toTopOf="@id/learn_more"
+        android:visibility="gone"
+        tools:text="Support message"
+        app:layout_constraintBottom_toTopOf="@id/support_link"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/learn_more"
-        android="@style/Text.Light.12"
+        android:id="@+id/support_link"
+        style="@style/Text.Light.12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"
@@ -232,6 +232,7 @@
         android:textColor="@color/blue_600"
         android:layout_marginBottom="@dimen/small_margin"
         android:text="@string/learn_more"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cta_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

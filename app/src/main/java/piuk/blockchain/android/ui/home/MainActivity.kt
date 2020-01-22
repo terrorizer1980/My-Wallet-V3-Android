@@ -64,6 +64,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.ui.airdrops.AirdropCentreActivity
 import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.android.ui.home.analytics.SideNavEvent
 import piuk.blockchain.android.ui.kyc.status.KycStatusActivity
@@ -388,8 +389,9 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         when (menuItem.itemId) {
             R.id.nav_lockbox -> LockboxLandingActivity.start(this)
             R.id.nav_backup -> launchBackupFunds()
-            R.id.nav_exchange_homebrew_debug -> HomebrewNavHostActivity.start(this, presenter.defaultCurrency)
-            R.id.nav_the_pit -> presenter.onThePitMenuClicked()
+            R.id.nav_debug_swap -> HomebrewNavHostActivity.start(this, presenter.defaultCurrency)
+            R.id.nav_the_exchange -> presenter.onThePitMenuClicked()
+            R.id.nav_airdrops -> AirdropCentreActivity.start(this)
             R.id.nav_addresses -> startActivityForResult(Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
             R.id.nav_buy -> presenter.routeToBuySell()
             R.id.login_web_wallet -> PairingCodeActivity.start(this)
@@ -599,7 +601,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     private fun setPitVisible(visible: Boolean) {
         val menu = menu
-        menu.findItem(R.id.nav_the_pit).isVisible = visible
+        menu.findItem(R.id.nav_the_exchange).isVisible = visible
     }
 
     override fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails) {
@@ -686,7 +688,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     override fun showHomebrewDebugMenu() {
-        menu.findItem(R.id.nav_exchange_homebrew_debug).isVisible = true
+        menu.findItem(R.id.nav_debug_swap).isVisible = true
     }
 
     fun setOnTouchOutsideViewListener(

@@ -81,8 +81,6 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
     override val layoutResource: Int
         get() = R.layout.dialog_dashboared_asset_details
 
-    private lateinit var dialogView: View
-
     override fun initControls(view: View) {
         with(view) {
             asset_name.text = getString(cryptoCurrency.currencyName())
@@ -168,8 +166,6 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
                     }
                     updatePriceChange(view.price_change, data)
                 }
-
-            dialogView = view
         }
     }
 
