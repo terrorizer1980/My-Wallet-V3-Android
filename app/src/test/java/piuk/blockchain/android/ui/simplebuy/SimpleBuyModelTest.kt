@@ -2,25 +2,25 @@ package piuk.blockchain.android.ui.simplebuy
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.SimpleBuyPrefs
+import com.blockchain.swap.nabu.models.simplebuy.BuyLimits
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.FiatValue
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.amshove.kluent.`it returns`
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import piuk.blockchain.android.simplebuy.ExchangePriceState
 import piuk.blockchain.android.simplebuy.KycState
 import piuk.blockchain.android.simplebuy.OrderState
 import piuk.blockchain.android.simplebuy.SimpleBuyIntent
 import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
 import piuk.blockchain.android.simplebuy.SimpleBuyModel
 import piuk.blockchain.android.simplebuy.SimpleBuyState
-import java.math.BigDecimal
 
 class SimpleBuyModelTest {
 
@@ -51,51 +51,24 @@ class SimpleBuyModelTest {
     }
 
     @Test
-    fun `when currency changes, price state is updating normally`() {
-
-        whenever(interactor.updateExchangePriceForCurrency(CryptoCurrency.BTC))
-            .thenReturn(Single.just(SimpleBuyIntent.PriceUpdate(
-                FiatValue.fromMajor("USD", BigDecimal.ZERO))))
-        val testObserver = model.state.test()
-        model.process(SimpleBuyIntent.NewCryptoCurrencySelected(CryptoCurrency.BTC))
-
-        testObserver.assertValueCount(3)
-        testObserver.assertValueAt(0, SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC))
-        testObserver.assertValueAt(1,
-            SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC,
-                exchangePriceState = ExchangePriceState(isLoading = true)))
-        testObserver.assertValueAt(2,
-            SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC,
-                exchangePriceState = ExchangePriceState(price = FiatValue.fromMajor("USD", BigDecimal.ZERO))))
-    }
-
-    @Test
-    fun `when currency changes, price state has error when exchange rate fails`() {
-
-        whenever(interactor.updateExchangePriceForCurrency(CryptoCurrency.BTC)).thenReturn(Single.error(Throwable("")))
-        val testObserver = model.state.test()
-        model.process(SimpleBuyIntent.NewCryptoCurrencySelected(CryptoCurrency.BTC))
-
-        testObserver.assertValueCount(3)
-        testObserver.assertValueAt(0, SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC))
-        testObserver.assertValueAt(1,
-            SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC,
-                exchangePriceState = ExchangePriceState(isLoading = true)))
-        testObserver.assertValueAt(2,
-            SimpleBuyState(selectedCryptoCurrency = CryptoCurrency.BTC,
-                exchangePriceState = ExchangePriceState(hasError = true)))
-    }
-
-    @Test
-    fun `interactor fetched limits should be applied to state`() {
-        whenever(interactor.fetchBuyLimits("USD"))
-            .thenReturn(Single.just(SimpleBuyIntent.BuyLimits(FiatValue.zero("USD"),
-                FiatValue.fromMinor("USD", 23400))))
+    fun `interactor fetched limits and pairs should be applied to state`() {
+        whenever(interactor.fetchBuyLimitsAndSupportedCryptoCurrencies("USD"))
+            .thenReturn(Single.just(SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies(
+                SimpleBuyPairs(listOf(
+                    SimpleBuyPair(pair = "BTC-USD", buyLimits = BuyLimits(100, 5024558)),
+                    SimpleBuyPair(pair = "BTC-EUR", buyLimits = BuyLimits(1006, 10000)),
+                    SimpleBuyPair(pair = "ETH-EUR", buyLimits = BuyLimits(1005, 10000)),
+                    SimpleBuyPair(pair = "BCH-EUR", buyLimits = BuyLimits(1001, 10000))
+                )))))
         val testObserver = model.state.test()
         model.process(SimpleBuyIntent.FetchBuyLimits("USD"))
 
         testObserver.assertValueAt(0, SimpleBuyState())
-        testObserver.assertValueAt(1, SimpleBuyState(FiatValue.zero("USD"), FiatValue.fromMinor("USD", 23400)))
+        testObserver.assertValueAt(1, SimpleBuyState(supportedPairsAndLimits = listOf(
+            SimpleBuyPair("BTC-USD", BuyLimits(min = 100, max = 5024558))),
+            currency = "USD",
+            selectedCryptoCurrency = CryptoCurrency.BTC
+        ))
     }
 
     @Test

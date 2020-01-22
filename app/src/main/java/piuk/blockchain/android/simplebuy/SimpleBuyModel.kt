@@ -19,19 +19,11 @@ class SimpleBuyModel(
 
     override fun performAction(intent: SimpleBuyIntent): Disposable? =
         when (intent) {
-            is SimpleBuyIntent.NewCryptoCurrencySelected ->
-                interactor.updateExchangePriceForCurrency(intent.currency).doOnSubscribe {
-                    process(SimpleBuyIntent.PriceLoading)
-                }.subscribeBy(
+            is SimpleBuyIntent.FetchBuyLimits -> interactor.fetchBuyLimitsAndSupportedCryptoCurrencies(intent.currency)
+                .subscribeBy(
                     onSuccess = { process(it) },
-                    onError = {
-                        process(SimpleBuyIntent.PriceError)
-                    }
+                    onError = { /*handle case when limits weren't received*/ }
                 )
-            is SimpleBuyIntent.FetchBuyLimits -> interactor.fetchBuyLimits(intent.currency).subscribeBy(
-                onSuccess = { process(it) },
-                onError = { /*handle case when limits weren't received*/ }
-            )
             is SimpleBuyIntent.FetchPredefinedAmounts -> interactor.fetchPredefinedAmounts(intent.currency).subscribeBy(
                 onSuccess = { process(it) },
                 onError = { /*do nothing, show no amounts*/ }
@@ -55,10 +47,8 @@ class SimpleBuyModel(
             is SimpleBuyIntent.KycStateUpdated -> null
             is SimpleBuyIntent.UpdatedPredefinedAmounts -> null
             is SimpleBuyIntent.BankAccountUpdated -> null
-            is SimpleBuyIntent.BuyLimits -> null
-            is SimpleBuyIntent.PriceLoading -> null
-            is SimpleBuyIntent.PriceUpdate -> null
-            is SimpleBuyIntent.PriceError -> null
+            is SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies -> null
+            is SimpleBuyIntent.NewCryptoCurrencySelected -> null
             is SimpleBuyIntent.EnteredAmount -> null
             is SimpleBuyIntent.OrderConfirmed -> null
             is SimpleBuyIntent.OrderCanceled -> null

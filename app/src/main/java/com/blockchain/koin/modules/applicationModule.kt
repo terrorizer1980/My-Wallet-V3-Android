@@ -757,7 +757,9 @@ val applicationModule = applicationContext {
                 tokens = get(),
                 tierService = get(),
                 metadataManager = get(),
-                exchangeRateFactory = get()
+                exchangeRateFactory = get(),
+                nabu = get(),
+                nabuDataManager = get()
             )
         }
 

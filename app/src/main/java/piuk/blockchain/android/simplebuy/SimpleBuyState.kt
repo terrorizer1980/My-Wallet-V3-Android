@@ -1,5 +1,6 @@
 package piuk.blockchain.android.simplebuy
 
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.compareTo
@@ -8,18 +9,21 @@ import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.util.Date
 import java.util.regex.Pattern
 
+/**
+ * This is an object that gets serialized with Gson so any properties that we don't
+ * want to get serialized should be tagged as @Transient
+ *
+ */
 data class SimpleBuyState(
-    val minAmount: FiatValue? = null,
-    val maxAmount: FiatValue? = null,
+    val supportedPairsAndLimits: List<SimpleBuyPair>? = null,
     val enteredAmount: String = "",
-    private val currency: String = "USD",
+    val currency: String = "USD",
     val predefinedAmounts: List<FiatValue> = emptyList(),
-    val selectedCryptoCurrency: CryptoCurrency = CryptoCurrency.BTC,
+    val selectedCryptoCurrency: CryptoCurrency? = null,
     private val orderState: OrderState = OrderState.UNITIALISED,
     private val expirationDate: Date? = null,
     val kycVerificationState: KycState = KycState.PENDING,
-    val bankAccount: BankAccount? = null,
-    val exchangePriceState: ExchangePriceState? = null
+    val bankAccount: BankAccount? = null
 ) : MviState {
 
     @delegate:Transient
@@ -35,9 +39,27 @@ data class SimpleBuyState(
     private val pattern = Pattern.compile("-?\\d+(\\.\\d+)?")
 
     @delegate:Transient
+    val availableCryptoCurrencies: List<CryptoCurrency> by unsafeLazy {
+        supportedPairsAndLimits?.filter { it.fiatCurrency == currency }?.map { it.cryptoCurrency }?.distinct()
+            ?: emptyList()
+    }
+
+    @delegate:Transient
     private val amount: FiatValue? by unsafeLazy {
         if (enteredAmount.isEmpty() || pattern.matcher(enteredAmount).matches().not()) null else
             FiatValue.fromMajor(currency, enteredAmount.toBigDecimal())
+    }
+
+    @delegate:Transient
+    val maxAmount: FiatValue? by unsafeLazy {
+        supportedPairsAndLimits?.find { it.cryptoCurrency == selectedCryptoCurrency && it.fiatCurrency == currency }
+            ?.buyLimits?.maxLimit(currency)
+    }
+
+    @delegate:Transient
+    val minAmount: FiatValue? by unsafeLazy {
+        supportedPairsAndLimits?.find { it.cryptoCurrency == selectedCryptoCurrency && it.fiatCurrency == currency }
+            ?.buyLimits?.minLimit(currency)
     }
 
     fun maxDecimalDigitsForAmount(): Int =
@@ -50,7 +72,7 @@ data class SimpleBuyState(
     val isAmountValid: Boolean by unsafeLazy {
         order.amount?.let {
             if (maxAmount != null && minAmount != null) {
-                it <= maxAmount && it >= minAmount
+                it <= maxAmount!! && it >= minAmount!!
             } else false
         } ?: false
     }
@@ -60,20 +82,14 @@ data class SimpleBuyState(
         order.amount?.let {
             if (maxAmount != null && minAmount != null) {
                 when {
-                    it > maxAmount -> InputError.ABOVE_MAX
-                    it < minAmount -> InputError.BELOW_MIN
+                    it > maxAmount!! -> InputError.ABOVE_MAX
+                    it < minAmount!! -> InputError.BELOW_MIN
                     else -> null
                 }
             } else null
         }
     }
 }
-
-data class ExchangePriceState(
-    val price: FiatValue? = null,
-    val isLoading: Boolean = false,
-    val hasError: Boolean = false
-)
 
 enum class OrderState {
     UNITIALISED, INITIALISED, CANCELLED, CONFIRMED

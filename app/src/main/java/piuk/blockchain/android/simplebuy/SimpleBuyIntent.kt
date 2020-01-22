@@ -1,5 +1,6 @@
 package piuk.blockchain.android.simplebuy
 
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import piuk.blockchain.android.ui.base.mvi.MviIntent
@@ -11,19 +12,19 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
                 oldState.copy(selectedCryptoCurrency = currency, enteredAmount = "")
     }
 
-    class PriceUpdate(private val fiatValue: FiatValue) : SimpleBuyIntent() {
-        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(exchangePriceState = ExchangePriceState(price = fiatValue))
-    }
-
     class EnteredAmount(private val amount: String) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(enteredAmount = amount)
     }
 
-    data class BuyLimits(private val min: FiatValue, private val max: FiatValue) : SimpleBuyIntent() {
+    data class UpdatedBuyLimitsAndSupportedCryptoCurrencies(val simpleBuyPairs: SimpleBuyPairs) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState {
-            return oldState.copy(minAmount = min, maxAmount = max)
+            return oldState.copy(
+                supportedPairsAndLimits = simpleBuyPairs.pairs.filter { it.fiatCurrency == oldState.currency },
+                selectedCryptoCurrency = oldState.selectedCryptoCurrency ?: simpleBuyPairs.pairs.firstOrNull() {
+                    it.fiatCurrency == oldState.currency
+                }?.cryptoCurrency
+            )
         }
     }
 
@@ -81,15 +82,5 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
     object OrderConfirmed : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(orderState = OrderState.CONFIRMED)
-    }
-
-    object PriceLoading : SimpleBuyIntent() {
-        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(exchangePriceState = ExchangePriceState(isLoading = true))
-    }
-
-    object PriceError : SimpleBuyIntent() {
-        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(exchangePriceState = ExchangePriceState(hasError = true))
     }
 }

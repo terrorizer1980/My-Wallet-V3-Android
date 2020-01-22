@@ -5,6 +5,7 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
@@ -14,13 +15,13 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
-import piuk.blockchain.android.ui.dashboard.format
 import piuk.blockchain.android.util.drawableResFilled
 import piuk.blockchain.androidcoreui.utils.DecimalDigitsInputFilter
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
+import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
 import java.util.Locale
 import java.util.Currency
@@ -52,10 +53,6 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         model.process(SimpleBuyIntent.FetchBuyLimits(currencyPrefs.selectedFiatCurrency))
         model.process(SimpleBuyIntent.FetchPredefinedAmounts(currencyPrefs.selectedFiatCurrency))
 
-        crypto_text.setOnClickListener {
-            showBottomSheet(CryptoCurrencyChooserBottomSheet())
-        }
-
         fiat_currency_symbol.text = fiatSymbol
 
         input_amount.addTextChangedListener(object : AfterTextChangedWatcher() {
@@ -76,23 +73,23 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     }
 
     override fun render(newState: SimpleBuyState) {
-        newState.exchangePriceState?.let {
-            renderExchangePrice(newState.selectedCryptoCurrency ?: return@let, it)
-        }
-        newState.selectedCryptoCurrency.let {
+        newState.selectedCryptoCurrency?.let {
             crypto_icon.setImageResource(it.drawableResFilled())
             crypto_text.text = it.unit
         }
-
+        arrow.visibleIf { newState.availableCryptoCurrencies.size > 1 }
         if (newState.maxAmount != null && newState.minAmount != null) {
             input_amount.filters =
                 arrayOf(DecimalDigitsInputFilter(newState.maxIntegerDigitsForAmount(),
                     newState.maxDecimalDigitsForAmount()))
             up_to_amount.visible()
-            up_to_amount.text = getString(R.string.simple_buy_up_to_amount, newState.maxAmount.formatOrSymbolForZero())
+            up_to_amount.text =
+                getString(R.string.simple_buy_up_to_amount, newState.maxAmount!!.formatOrSymbolForZero())
         }
 
-        newState.predefinedAmounts.takeIf { it.isNotEmpty() }?.let { values ->
+        newState.predefinedAmounts.takeIf {
+            it.isNotEmpty() && newState.selectedCryptoCurrency != null
+        }?.let { values ->
             predefined_amount_1.asPredefinedAmountText(values[0])
             predefined_amount_2.asPredefinedAmountText(values[1])
             predefined_amount_3.asPredefinedAmountText(values[2])
@@ -105,9 +102,10 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         }
 
         btn_continue.isEnabled = newState.isAmountValid
-
+        input_amount.isEnabled = newState.selectedCryptoCurrency != null
         error_icon.goneIf(newState.error == null)
         input_layout_amount.error = if (newState.error != null) " " else null
+
         newState.error?.let {
             handleError(it, newState)
         } ?: kotlin.run {
@@ -117,6 +115,27 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         if (input_amount.text.toString() != newState.enteredAmount) {
             input_amount.setText(newState.enteredAmount)
         }
+
+        crypto_text.takeIf { newState.availableCryptoCurrencies.size > 1 }?.setOnClickListener {
+            showBottomSheet(CryptoCurrencyChooserBottomSheet
+                .newInstance(newState.availableCryptoCurrencies))
+        }
+
+        if (newState.supportedPairsAndLimits?.isEmpty() == true) {
+            renderNoCurrenciesAvailableState()
+        }
+    }
+
+    private fun renderNoCurrenciesAvailableState() {
+        val dialog = AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
+            .setTitle(R.string.simple_buy_no_currencies_available_title)
+            .setMessage(R.string.simple_buy_no_currencies_available)
+            .setCancelable(false)
+            .setPositiveButton(R.string.continue_to_wallet) { _, _ ->
+                navigator().exitSimpleBuyFlow()
+            }.create()
+
+        showAlert(dialog)
     }
 
     private fun handleError(error: InputError, state: SimpleBuyState) {
@@ -139,19 +158,6 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
                 }
                 up_to_amount.text = resources.getString(R.string.too_low)
             }
-        }
-    }
-
-    private fun renderExchangePrice(currency: CryptoCurrency, exchangePriceState: ExchangePriceState) {
-        prices_loading.goneIf(!exchangePriceState.isLoading)
-        exchange_price.goneIf(exchangePriceState.isLoading)
-        exchange_price.text = exchangePriceState.price?.let {
-            "1 ${currency.symbol} =  ${it.format(fiatSymbol)}"
-        }
-
-        if (exchangePriceState.hasError) {
-            // todo Discuss with design what text exactly should be here and colors?
-            exchange_price.text = resources.getString(R.string.simple_buy_buy_crypto_title)
         }
     }
 

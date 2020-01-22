@@ -1,5 +1,6 @@
 package piuk.blockchain.android.simplebuy
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +14,14 @@ import kotlinx.android.synthetic.main.simple_buy_ctypto_currency_chooser.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.util.drawableResFilled
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import java.io.Serializable
 
 class CryptoCurrencyChooserBottomSheet : SlidingModalBottomDialog() {
+
+    private val cryptoCurrencies: List<CryptoCurrency> by unsafeLazy {
+        arguments?.getSerializable(SUPPORTED_CURRENCIES_KEY) as? List<CryptoCurrency> ?: emptyList()
+    }
 
     override val layoutResource: Int
         get() = R.layout.simple_buy_ctypto_currency_chooser
@@ -22,7 +29,7 @@ class CryptoCurrencyChooserBottomSheet : SlidingModalBottomDialog() {
     override fun initControls(view: View) {
         view.recycler.adapter =
             BottomSheetCryptoCurrenciesAdapter(
-                CryptoCurrency.activeCurrencies()
+                cryptoCurrencies
                     .map {
                         BottomSheetAdapterItem(it) {
                             (parentFragment as? CurrencyChangeListener)?.onCurrencyChanged(it)
@@ -30,6 +37,17 @@ class CryptoCurrencyChooserBottomSheet : SlidingModalBottomDialog() {
                         }
                     })
         view.recycler.layoutManager = LinearLayoutManager(context)
+    }
+
+    companion object {
+        private const val SUPPORTED_CURRENCIES_KEY = "supported_currencies_key"
+        fun newInstance(cryptoCurrencies: List<CryptoCurrency>): CryptoCurrencyChooserBottomSheet {
+            val bundle = Bundle()
+            bundle.putSerializable(SUPPORTED_CURRENCIES_KEY, cryptoCurrencies as Serializable)
+            return CryptoCurrencyChooserBottomSheet().apply {
+                arguments = bundle
+            }
+        }
     }
 }
 

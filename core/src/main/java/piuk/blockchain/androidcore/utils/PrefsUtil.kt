@@ -99,6 +99,10 @@ class PrefsUtil(
         setValue(KEY_SIMPLE_BUY_STATE, simpleBuyState)
     }
 
+    override fun clearState() {
+        removeValue(KEY_SIMPLE_BUY_STATE)
+    }
+
     // From Onboarding
     override var swapIntroCompleted: Boolean
         get() = getValue(KEY_SWAP_INTRO_COMPLETED, false)

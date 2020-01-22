@@ -23,7 +23,7 @@
         android:layout_margin="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/what_you_want_To_buy"
-        app:srcCompat="@drawable/vector_bitcoin_colored" />
+        tools:srcCompat="@drawable/vector_bitcoin_colored" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/crypto_text"
@@ -208,28 +208,6 @@
         app:layout_constraintStart_toEndOf="@+id/predefined_amount_3"
         app:layout_constraintTop_toBottomOf="@+id/input_layout_amount"
         tools:text="$4" />
-
-    <ProgressBar
-        android:id="@+id/prices_loading"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="45dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/predefined_amount_1" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/exchange_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/grey_600"
-        android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/predefined_amount_1"
-        tools:text="1 BTC = €8,758.39" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_continue"

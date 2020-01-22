@@ -20,3 +20,4 @@ internal const val NABU_CONNECT_WALLET_TO_PIT = "users/link-account/create/start
 internal const val NABU_CONNECT_PIT_TO_WALLET = "users/link-account/existing"
 internal const val NABU_SEND_WALLET_ADDRESSES_TO_PIT = "users/deposit/addresses"
 internal const val NABU_FETCH_PIT_ADDRESS_FOR_WALLET = "payments/accounts/linked"
+internal const val NABU_SIMPLE_BUY_PAIRS = "simple-buy/pairs"
