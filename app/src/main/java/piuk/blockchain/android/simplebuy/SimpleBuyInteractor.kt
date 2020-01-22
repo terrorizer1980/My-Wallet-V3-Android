@@ -1,46 +1,42 @@
 package piuk.blockchain.android.simplebuy
 
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
+import com.blockchain.swap.nabu.models.simplebuy.BuyLimits
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.blockchain.swap.nabu.service.TierService
-import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.exchangerate.toFiatWithCurrency
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
-import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
 class SimpleBuyInteractor(
     private val tokens: AssetTokenLookup,
+    private val nabu: NabuToken,
     private val tierService: TierService,
     private val metadataManager: MetadataManager,
-    private val exchangeRateFactory: ExchangeRateDataManager
+    private val exchangeRateFactory: ExchangeRateDataManager,
+    private val nabuDataManager: NabuDataManager
 ) {
 
-    fun updateExchangePriceForCurrency(cryptoCurrency: CryptoCurrency): Single<SimpleBuyIntent.PriceUpdate> =
-        tokens[cryptoCurrency].exchangeRate().map { fiatValue ->
-            SimpleBuyIntent.PriceUpdate(fiatValue)
-        }
-
-    fun fetchBuyLimits(targetCurrency: String): Single<SimpleBuyIntent.BuyLimits> =
-        metadataManager.attemptMetadataSetup()
-            // we have to ensure that exchange rates are loaded before we retrieve the exchange rates locally
-            .andThen(tokens[CryptoCurrency.BTC].exchangeRate().ignoreElement())
-            .andThen(tierService.tiers().map {
-                val highestTierLimits = it.tiers.maxBy { tier -> tier.index }!!.limits
-
-                val minValue = FiatValue.fromMajor(highestTierLimits.currency,
-                    1.toBigDecimal()).toFiatWithCurrency(exchangeRateFactory, targetCurrency)
-
-                val maxValue = (highestTierLimits.dailyFiat ?: FiatValue.fromMajor(highestTierLimits.currency,
-                    BigDecimal.ZERO)).toFiatWithCurrency(exchangeRateFactory, targetCurrency)
-
-                SimpleBuyIntent.BuyLimits(minValue, maxValue)
-            })
+    fun fetchBuyLimitsAndSupportedCryptoCurrencies(targetCurrency: String):
+            Single<SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies> = nabu.fetchNabuToken().flatMap {
+        nabuDataManager.getSupportedCurrencies(it)
+    }.map {
+        SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies(
+            SimpleBuyPairs(listOf(
+                SimpleBuyPair(pair = "BTC-USD", buyLimits = BuyLimits(100, 5024558)),
+                SimpleBuyPair(pair = "BTC-EUR", buyLimits = BuyLimits(1006, 10000)),
+                SimpleBuyPair(pair = "ETH-EUR", buyLimits = BuyLimits(1005, 10000)),
+                SimpleBuyPair(pair = "BCH-EUR", buyLimits = BuyLimits(1001, 10000))
+            )))
+    }
 
     fun fetchPredefinedAmounts(targetCurrency: String): Single<SimpleBuyIntent.UpdatedPredefinedAmounts> =
         Single.just(SimpleBuyIntent.UpdatedPredefinedAmounts(listOf(

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.blockchain.preferences.SimpleBuyPrefs
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.fragment_simple_buy_intro.*
@@ -19,6 +20,7 @@ import java.lang.IllegalStateException
 class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
 
     private val walletSettings: SettingsDataManager by inject()
+    private val simpleBuyPrefs: SimpleBuyPrefs by inject()
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -33,7 +35,10 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
         activity?.setupToolbar(R.string.simple_buy_intro_title)
 
         skip_simple_buy.setOnClickListener { navigator().exitSimpleBuyFlow() }
-        buy_crypto_now.setOnClickListener { navigator().goToBuyCryptoScreen() }
+        buy_crypto_now.setOnClickListener {
+            simpleBuyPrefs.clearState()
+            navigator().goToBuyCryptoScreen()
+        }
     }
 
     override fun onResume() {
