@@ -38,11 +38,11 @@ fun View?.gone() {
 }
 
 /**
- * Sets the visibility of a [View] to [View.VISIBLE] epending on a value
+ * Sets the visibility of a [View] to [View.VISIBLE] depending on a value
  */
 fun View?.visibleIf(value: Boolean) {
     if (this != null) {
-        visibility = if (value) View.VISIBLE else visibility
+        visibility = if (value) View.VISIBLE else View.GONE
     }
 }
 

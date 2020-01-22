@@ -369,7 +369,7 @@ class XlmSendStrategy(
                 val components = it.address.split(":")
                 pitAccount = PitAccount(
                     label = stringUtils.getFormattedString(
-                        R.string.pit_default_account_label,
+                        R.string.exchange_default_account_label,
                         CryptoCurrency.XLM.symbol
                     ),
                     address = components[0],

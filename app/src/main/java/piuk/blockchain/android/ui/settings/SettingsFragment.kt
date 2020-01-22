@@ -12,7 +12,6 @@ import android.os.Handler
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AlertDialog.Builder
 import android.text.Editable
 import android.text.Html
 import android.text.SpannableString
@@ -215,7 +214,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
             if (!(newValue as Boolean)) {
                 settingsPresenter.clearSwipeToReceiveData()
             } else {
-                Builder(activity!!, R.style.AlertDialogStyle)
+                AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
                     .setTitle(R.string.swipe_receive_hint)
                     .setMessage(R.string.swipe_receive_address_info)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
@@ -277,7 +276,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun showWarningDialog(@StringRes message: Int) {
-        Builder(activity!!, R.style.AlertDialogStyle)
+        AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
             .setTitle(R.string.app_name)
             .setMessage(message)
             .setCancelable(true)
@@ -374,7 +373,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
     }
 
     override fun showDisableFingerprintDialog() {
-        Builder(activity!!, R.style.AlertDialogStyle)
+        AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
             .setTitle(R.string.app_name)
             .setMessage(R.string.fingerprint_disable_message)
             .setCancelable(true)
@@ -391,7 +390,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     override fun showNoFingerprintsAddedDialog() {
         updateFingerprintPreferenceStatus()
-        Builder(activity!!, R.style.AlertDialogStyle)
+        AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
             .setTitle(R.string.app_name)
             .setMessage(R.string.fingerprint_no_fingerprints_added)
             .setCancelable(true)
@@ -471,7 +470,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
         val handler = Handler()
         handler.postDelayed({
             if (activity != null) {
-                Builder(activity!!, R.style.AlertDialogStyle)
+                AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
                     .setTitle(R.string.verify)
                     .setMessage(R.string.verify_email_notice)
                     .setCancelable(true)
@@ -483,7 +482,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
     private fun showDialogMobile() {
         if (settingsPresenter.authType != Settings.AUTH_TYPE_OFF) {
-            Builder(activity!!, R.style.AlertDialogStyle)
+            AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
                 .setTitle(R.string.warning)
                 .setMessage(R.string.disable_2fa_first)
                 .setPositiveButton(android.R.string.ok, null)
@@ -580,7 +579,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
             }
         }
 
-        Builder(activity!!, R.style.AlertDialogStyle)
+        AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
             .setTitle(R.string.select_currency)
             .setSingleChoiceItems(currencies, selected) { dialog, which ->
                 val fiatUnit = currencies[which].substring(currencies[which].length - 3)
@@ -796,7 +795,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
             settingsPresenter.authType == Settings.AUTH_TYPE_YUBI_KEY
         ) {
             twoStepVerificationPref?.isChecked = true
-            Builder(activity!!, R.style.AlertDialogStyle)
+            AlertDialog.Builder(activity!!, R.style.AlertDialogStyle)
                 .setTitle(R.string.warning)
                 .setCancelable(false)
                 .setMessage(R.string.disable_online_only)

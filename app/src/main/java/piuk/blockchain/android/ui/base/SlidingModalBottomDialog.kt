@@ -10,6 +10,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 
 abstract class SlidingModalBottomDialog : BottomSheetDialogFragment() {
 
+    protected lateinit var dialogView: View
+
     final override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dlg = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
 
@@ -33,6 +35,8 @@ abstract class SlidingModalBottomDialog : BottomSheetDialogFragment() {
         })
 
         initControls(view)
+
+        dialogView = view
 
         dlg.setOnShowListener {
             bottomSheetBehavior.skipCollapsed = true

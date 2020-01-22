@@ -413,7 +413,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
         if (pitAddressState == PitAddressFieldState.CLEARED)
             return
         pitAddressState = PitAddressFieldState.CLEARED
-        pitAddress.setImageResource(R.drawable.vector_pit_send_address)
+        pitAddress.setImageResource(R.drawable.ic_the_exchange_colour)
         presenter.onPitAddressCleared()
         toContainer.toAddressEditTextView.isEnabled = true
     }
@@ -1412,7 +1412,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
     }
 
     override fun show2FANotAvailableError() {
-        toast(R.string.pit_no_two_fa_available, ToastCustom.TYPE_ERROR)
+        toast(R.string.the_exchange_two_fa_unavailable, ToastCustom.TYPE_ERROR)
     }
 
     override fun fillOrClearAddress() {
@@ -1423,7 +1423,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
             toContainer.toAddressEditTextView.isEnabled = false
         } else {
             pitAddressState = PitAddressFieldState.CLEARED
-            pitAddress.setImageResource(R.drawable.vector_pit_send_address)
+            pitAddress.setImageResource(R.drawable.ic_the_exchange_colour)
             presenter.onPitAddressCleared()
             toContainer.toAddressEditTextView.isEnabled = true
         }

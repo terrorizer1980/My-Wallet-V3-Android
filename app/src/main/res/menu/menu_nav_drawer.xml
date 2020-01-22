@@ -23,10 +23,16 @@
             android:title="@string/drawer_addresses" />
 
         <item
-            android:id="@+id/nav_the_pit"
-            android:icon="@drawable/ic_nav_the_pit"
-            app:contentDescription="@string/item_the_pit"
-            android:title="@string/item_the_pit"/>
+            android:id="@+id/nav_the_exchange"
+            android:icon="@drawable/ic_nav_the_exchange"
+            app:contentDescription="@string/item_the_exchange"
+            android:title="@string/item_the_exchange"/>
+
+        <item
+            android:id="@+id/nav_airdrops"
+            android:icon="@drawable/ic_nav_airdrops"
+            app:contentDescription="@string/item_airdrops"
+            android:title="@string/item_airdrops"/>
 
         <item
             android:id="@+id/nav_lockbox"
@@ -63,8 +69,8 @@
             android:title="@string/logout" />
 
         <item
-            android:id="@+id/nav_exchange_homebrew_debug"
-            android:icon="@drawable/vector_exchange"
+            android:id="@+id/nav_debug_swap"
+            android:icon="@drawable/ic_nav_debug_swap"
             android:title="@string/item_debug_homebrew"
             android:visible="false" />
 

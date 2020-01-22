@@ -34,6 +34,7 @@ import piuk.blockchain.android.thepit.ThePitDeepLinkParser
 import piuk.blockchain.android.ui.account.AccountEditPresenter
 import piuk.blockchain.android.ui.account.AccountPresenter
 import piuk.blockchain.android.ui.account.SecondPasswordHandlerDialog
+import piuk.blockchain.android.ui.airdrops.AirdropCentrePresenter
 import piuk.blockchain.android.ui.auth.FirebaseMobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.MobileNoticeRemoteConfig
 import piuk.blockchain.android.ui.auth.PinEntryPresenter
@@ -158,7 +159,14 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            BuyDataManager(get(), get(), get(), get(), get())
+            BuyDataManager(
+                settingsDataManager = get(),
+                authDataManager = get(),
+                payloadDataManager = get(),
+                buyConditions = get(),
+                exchangeService = get(),
+                coinifyFeatureFlag = get("ff_coinify")
+            )
         }
 
         factory {
@@ -247,7 +255,6 @@ val applicationModule = applicationContext {
                 coinifyDataManager = get(),
                 buyDataManager = get(),
                 exchangeService = get(),
-                stringUtils = get(),
                 exchangeRateFactory = get(),
                 metadataManager = get(),
                 currencyState = get(),
@@ -258,7 +265,6 @@ val applicationModule = applicationContext {
                 sunriverCampaignRegistration = get(),
                 xlmDataManager = get(),
                 pitFeatureFlag = get("ff_pit_linking"),
-                pitABTestingExperiment = get(),
                 pitLinking = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
@@ -854,8 +860,7 @@ val applicationModule = applicationContext {
                 nabuToken = get(),
                 pitLinking = get(),
                 analytics = get(),
-                prefs = get(),
-                abTestExperiment = get()
+                prefs = get()
             )
         }
 
@@ -910,6 +915,14 @@ val applicationModule = applicationContext {
                 settingsDataManager = get(),
                 notificationTokenManager = get(),
                 envSettings = get()
+            )
+        }
+
+        factory {
+            AirdropCentrePresenter(
+                nabuToken = get(),
+                nabu = get(),
+                crashLogger = get()
             )
         }
     }

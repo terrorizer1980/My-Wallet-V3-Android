@@ -8,15 +8,19 @@ import android.view.ViewGroup
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.models.nabu.kycVerified
+import com.blockchain.swap.nabu.service.TierService
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
 import piuk.blockchain.android.ui.kyc.navigate
 import piuk.blockchain.android.ui.kyc.status.KycStatusActivity
 import com.blockchain.ui.extensions.throttledClicks
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.zipWith
 import kotlinx.android.synthetic.main.fragment_kyc_complete.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -31,6 +35,7 @@ class ApplicationCompleteFragment : Fragment() {
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
     private val analytics: Analytics by inject()
+    private val tierService: TierService by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,9 +55,12 @@ class ApplicationCompleteFragment : Fragment() {
 
         compositeDisposable +=
             button_done
-                .throttledClicks()
+                .throttledClicks().zipWith(
+                    if (progressListener.campaignType == CampaignType.Swap) tierService.tiers().toObservable()
+                        .map { it.combinedState in kycVerified }.onErrorReturn { false }
+                    else Observable.just(false))
                 .subscribeBy(
-                    onNext = {
+                    onNext = { (_, isTier1OrTier2Verified) ->
                         when (progressListener.campaignType) {
                             CampaignType.BuySell -> {
                                 activity?.finish()
@@ -60,10 +68,14 @@ class ApplicationCompleteFragment : Fragment() {
                             }
                             CampaignType.Swap -> {
                                 activity?.finish()
-                                HomebrewNavHostActivity.start(
-                                    requireContext(),
-                                    get<CurrencyPrefs>().selectedFiatCurrency
-                                )
+                                if (isTier1OrTier2Verified) {
+                                    HomebrewNavHostActivity.start(
+                                        requireContext(),
+                                        get<CurrencyPrefs>().selectedFiatCurrency
+                                    )
+                                } else {
+                                    KycStatusActivity.start(requireContext(), CampaignType.Swap)
+                                }
                             }
                             else -> navigate(ApplicationCompleteFragmentDirections.actionTier2Complete())
                         }
