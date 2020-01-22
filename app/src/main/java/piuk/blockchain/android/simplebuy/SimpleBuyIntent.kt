@@ -19,41 +19,18 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
 
     data class UpdatedBuyLimitsAndSupportedCryptoCurrencies(val simpleBuyPairs: SimpleBuyPairs) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState {
-            val supportedPairsAndLimits = simpleBuyPairs.pairs.filter { it.fiatCurrency == oldState.currency }
-            val selectedCryptoCurrency = oldState.selectedCryptoCurrency ?: simpleBuyPairs.pairs.firstOrNull {
-                it.fiatCurrency == oldState.currency
-            }?.cryptoCurrency
-
-            val minValueForSelectedPair = supportedPairsAndLimits.firstOrNull { pairs ->
-                pairs.fiatCurrency == oldState.currency &&
-                        pairs.cryptoCurrency == selectedCryptoCurrency
-            }?.buyLimits?.minLimit(oldState.currency)?.valueMinor
-
-            val maxValueForSelectedPair = supportedPairsAndLimits.firstOrNull { pairs ->
-                pairs.fiatCurrency == oldState.currency &&
-                        pairs.cryptoCurrency == selectedCryptoCurrency
-            }?.buyLimits?.maxLimit(oldState.currency)?.valueMinor
-
             return oldState.copy(
-                supportedPairsAndLimits = supportedPairsAndLimits,
-                selectedCryptoCurrency = selectedCryptoCurrency,
-                predefinedAmounts = oldState.predefinedAmounts.filter {
-                    it.valueMinor >= (minValueForSelectedPair ?: 0) && it.valueMinor <= (maxValueForSelectedPair ?: 0)
-                }
+                supportedPairsAndLimits = simpleBuyPairs.pairs.filter { it.fiatCurrency == oldState.currency },
+                selectedCryptoCurrency = oldState.selectedCryptoCurrency ?: simpleBuyPairs.pairs.firstOrNull() {
+                    it.fiatCurrency == oldState.currency
+                }?.cryptoCurrency
             )
         }
     }
 
     data class UpdatedPredefinedAmounts(private val amounts: List<FiatValue>) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState {
-            return if (oldState.supportedPairsAndLimits == null) {
-                oldState.copy(predefinedAmounts = amounts)
-            } else {
-                oldState.copy(predefinedAmounts = amounts.filter {
-                    it.valueMinor >= oldState.minAmount?.valueMinor ?: 0 &&
-                            it.valueMinor <= oldState.maxAmount?.valueMinor ?: 0
-                })
-            }
+            return oldState.copy(predefinedAmounts = amounts)
         }
     }
 
