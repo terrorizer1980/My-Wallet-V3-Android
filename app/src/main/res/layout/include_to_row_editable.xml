@@ -48,7 +48,7 @@
         app:layout_constraintStart_toEndOf="@+id/toAddressEditTextView"
         app:layout_constraintTop_toTopOf="@+id/toAddressEditTextView"
         app:layout_goneMarginEnd="8dp"
-        app:srcCompat="@drawable/vector_pit_send_address" />
+        app:srcCompat="@drawable/ic_the_exchange_colour" />
 
     <ImageView
         android:id="@+id/toArrow"

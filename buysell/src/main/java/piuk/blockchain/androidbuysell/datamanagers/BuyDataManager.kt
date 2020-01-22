@@ -2,6 +2,7 @@ package piuk.blockchain.androidbuysell.datamanagers
 
 import android.annotation.SuppressLint
 import androidx.annotation.VisibleForTesting
+import com.blockchain.remoteconfig.FeatureFlag
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.Observables
 import org.bitcoinj.core.Sha256Hash
@@ -18,6 +19,7 @@ class BuyDataManager(
     private val authDataManager: AuthDataManager,
     private val payloadDataManager: PayloadDataManager,
     private val buyConditions: BuyConditions,
+    private val coinifyFeatureFlag: FeatureFlag,
     private val exchangeService: ExchangeService
 ) {
     val canBuy: Observable<Boolean>
@@ -48,9 +50,11 @@ class BuyDataManager(
      * @return An [Observable] wrapping a boolean value
      */
     val isCoinifyAllowed: Observable<Boolean>
-        get() = Observables.zip(isInCoinifyCountry, buyConditions.exchangeDataSource
-        ) { coinifyCountry, exchangeData ->
-            coinifyCountry || (exchangeData.coinify?.user != 0)
+        get() = Observables.zip(isInCoinifyCountry,
+            buyConditions.exchangeDataSource,
+            coinifyFeatureFlag.enabled.toObservable()
+        ) { coinifyCountry, exchangeData, coinifyEnabled ->
+            coinifyEnabled && (coinifyCountry || (exchangeData.coinify?.user != 0))
         }
 
     /**

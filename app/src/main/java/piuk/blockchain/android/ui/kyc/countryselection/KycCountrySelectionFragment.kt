@@ -32,9 +32,7 @@ import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import java.util.concurrent.TimeUnit
-import kotlinx.android.synthetic.main.fragment_kyc_country_selection.recycler_view_country_selection as recyclerView
-import kotlinx.android.synthetic.main.fragment_kyc_country_selection.search_view_kyc as searchView
-import kotlinx.android.synthetic.main.fragment_kyc_country_selection.text_view_country_selection_message as messageView
+import kotlinx.android.synthetic.main.fragment_kyc_country_selection.*
 
 internal class KycCountrySelectionFragment :
     BaseFragment<KycCountrySelectionView, KycCountrySelectionPresenter>(), KycCountrySelectionView {
@@ -62,23 +60,27 @@ internal class KycCountrySelectionFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView.apply {
+        country_selection.apply {
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
             adapter = countryCodeAdapter
         }
-        val texts = when (regionType) {
+
+        when (regionType) {
             RegionType.Country -> {
                 logEvent(AnalyticsEvents.KycCountry)
-                R.string.kyc_country_selection_title to R.string.kyc_country_selection_message
+                progressListener.setHostTitle(R.string.kyc_country_selection_title)
+                message.setText(R.string.kyc_country_selection_message)
+                search_view.queryHint = getString(R.string.kyc_country_selection_search_hint)
             }
             RegionType.State -> {
                 logEvent(AnalyticsEvents.KycStates)
-                R.string.kyc_country_selection_state_title to R.string.kyc_country_selection_message_state
+                progressListener.setHostTitle(R.string.kyc_country_selection_state_title)
+                message.setText(R.string.kyc_country_selection_message_state)
+                search_view.queryHint = getString(R.string.kyc_state_selection_search_hint)
             }
         }
-        progressListener.setHostTitle(texts.first)
-        messageView.setText(texts.second)
+
         progressListener.incrementProgress(KycStep.CountrySelection)
 
         onViewReady()
@@ -89,13 +91,13 @@ internal class KycCountrySelectionFragment :
 
         compositeDisposable += countryList
             .filterCountries(
-                searchView.queryTextChanges().skipInitialValue()
+                search_view.queryTextChanges().skipInitialValue()
                     .debounce(100, TimeUnit.MILLISECONDS)
             )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 countryCodeAdapter.items = it
-                recyclerView.scrollToPosition(0)
+                country_selection.scrollToPosition(0)
             }
     }
 

@@ -14,6 +14,9 @@ data class AirdropStatusList(
     operator fun get(campaignName: String): AirdropStatus? {
         return userCampaignsInfoResponseList.firstOrNull { it.campaignName == campaignName }
     }
+
+    val airdropList
+        get() = userCampaignsInfoResponseList
 }
 
 data class AirdropStatus(

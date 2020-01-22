@@ -10,5 +10,5 @@ interface KycTierSplashView : piuk.blockchain.androidcoreui.ui.base.View {
 
     fun showErrorToast(@StringRes message: Int)
 
-    fun renderTiersList(tiers: TiersJson, hasLargeSunriverBacklog: Boolean)
+    fun renderTiersList(tiers: TiersJson)
 }
