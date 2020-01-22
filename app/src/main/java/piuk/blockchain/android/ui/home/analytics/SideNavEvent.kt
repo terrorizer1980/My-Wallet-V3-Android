@@ -12,8 +12,9 @@ data class SideNavEvent(private val menuItemId: Int) : AnalyticsEvent {
     private val analyticsKey: String = when (menuItemId) {
         R.id.nav_lockbox -> "lockbox"
         R.id.nav_backup -> "backup"
-        R.id.nav_exchange_homebrew_debug -> "swap_debug"
-        R.id.nav_the_pit -> "pit"
+        R.id.nav_debug_swap -> "swap_debug"
+        R.id.nav_the_exchange -> "pit"
+        R.id.nav_airdrops -> "airdrops"
         R.id.nav_addresses -> "accounts_and_addresses"
         R.id.nav_buy -> "buy_bitcoin"
         R.id.login_web_wallet -> "web_login"

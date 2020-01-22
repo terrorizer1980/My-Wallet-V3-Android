@@ -18,8 +18,8 @@ class ThePitStatusPreference @JvmOverloads constructor(
     override fun doUpdateValue(value: Boolean, view: TextView) {
         view.apply {
             text = when (value) {
-                false -> context.getString(R.string.pit_setting_connect)
-                true -> context.getString(R.string.pit_setting_connected)
+                false -> context.getString(R.string.the_exchange_setting_connect)
+                true -> context.getString(R.string.the_exchange_setting_connected)
             }
 
             val background = when (value) {

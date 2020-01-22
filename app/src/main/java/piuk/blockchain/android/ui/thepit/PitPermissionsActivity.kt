@@ -36,23 +36,25 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pit_kyc_promo_layout)
 
-        setupToolbar(toolbar_general, R.string.the_pit_title)
+        setupToolbar(toolbar_general, R.string.the_exchange_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         connect_now.setOnClickListener {
             doLinkClickHandler()
         }
 
-        compositeDisposable += learn_more.throttledClicks().flatMapSingle {
-            presenter.learnMoreUrl()
-        }.subscribeBy { (sideCampaign, announcementCampaign) ->
-            analytics.logEvent(PitAnalyticsEvent.LearnMoreEvent)
-            launchUrlInBrowser(URL_THE_PIT_LANDING_LEARN_MORE +
-                    "/?utm_source=android_wallet" +
-                    "&utm_medium=wallet_linking" +
-                    "&utm_campaign=$sideCampaign" +
-                    "&utm_campaign_2=$announcementCampaign")
-        }
+        compositeDisposable += learn_more.throttledClicks()
+            .subscribeBy(
+                onNext = {
+                    analytics.logEvent(PitAnalyticsEvent.LearnMoreEvent)
+                    launchUrlInBrowser(
+                        URL_THE_PIT_LANDING_LEARN_MORE +
+                            "/?utm_source=android_wallet" +
+                            "&utm_medium=wallet_linking"
+                    )
+                }
+            )
+
         onViewReady()
     }
 
@@ -74,8 +76,8 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         PitStateBottomDialog.newInstance(
             PitStateBottomDialog.StateContent(
                 ErrorBottomDialog.Content(
-                    getString(R.string.pit_connection_error_title),
-                    getString(R.string.pit_connection_error_description),
+                    getString(R.string.the_exchange_connection_error_title),
+                    getString(R.string.the_exchange_connection_error_description),
                     R.string.try_again,
                     0,
                     R.drawable.vector_pit_request_failure), false
@@ -93,8 +95,8 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         PitStateBottomDialog.newInstance(
             PitStateBottomDialog.StateContent(
                 ErrorBottomDialog.Content(
-                    getString(R.string.pit_connection_success_title),
-                    getString(R.string.pit_connection_success_description),
+                    getString(R.string.the_exchange_connection_success_title),
+                    getString(R.string.the_exchange_connection_success_description),
                     R.string.btn_close,
                     0,
                     R.drawable.vector_pit_request_ok), false
@@ -112,8 +114,8 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
             loadingDialog = PitStateBottomDialog.newInstance(
                 PitStateBottomDialog.StateContent(
                     ErrorBottomDialog.Content(
-                        getString(R.string.pit_loading_dialog_title),
-                        getString(R.string.pit_loading_dialog_description),
+                        getString(R.string.the_exchange_loading_dialog_title),
+                        getString(R.string.the_exchange_loading_dialog_description),
                         0,
                         0,
                         0
@@ -141,9 +143,9 @@ class PitPermissionsActivity : PitPermissionsView, BaseMvpActivity<PitPermission
         val emailVerifiedBottomDialog =
             PitEmailVerifiedBottomDialog.newInstance(
                 ErrorBottomDialog.Content(
-                    getString(R.string.pit_email_verified_title),
-                    getString(R.string.pit_email_verified_description),
-                    R.string.pit_connect_now,
+                    getString(R.string.the_exchange_email_verified_title),
+                    getString(R.string.the_exchange_email_verified_description),
+                    R.string.the_exchange_connect_now,
                     0,
                     R.drawable.vector_email_verified
                 )

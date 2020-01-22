@@ -33,7 +33,7 @@ fun CryptoCurrency.drawableResFilled(): Int =
         CryptoCurrency.BCH -> R.drawable.vector_bitcoin_cash_colored
         CryptoCurrency.XLM -> R.drawable.vector_xlm_colored
         CryptoCurrency.PAX -> R.drawable.vector_pax_colored
-        CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        CryptoCurrency.STX -> R.drawable.ic_logo_stx
     }
 
 @DrawableRes

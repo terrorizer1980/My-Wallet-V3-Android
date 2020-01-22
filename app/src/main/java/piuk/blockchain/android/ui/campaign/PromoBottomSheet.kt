@@ -11,7 +11,8 @@ abstract class PromoBottomSheet : SlidingModalBottomDialog() {
 
     protected val host: Host by lazy {
         parentFragment as? Host
-            ?: throw IllegalStateException("Host fragment is not a PromoBottomSheet.Host")
+            ?: activity as? Host
+            ?: throw IllegalStateException("Host is not a PromoBottomSheet.Host")
     }
 
     override fun onSheetHidden() {
