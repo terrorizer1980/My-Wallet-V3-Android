@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.FiatValue
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.amshove.kluent.`it returns`
@@ -102,5 +103,44 @@ class SimpleBuyModelTest {
 
         testObserver.assertValueAt(0, SimpleBuyState())
         testObserver.assertValueAt(1, SimpleBuyState(kycVerificationState = KycState.VERIFIED))
+    }
+
+    @Test
+    fun `predefined shoulb be filtered properly based on the buy limits`() {
+        whenever(interactor.fetchBuyLimitsAndSupportedCryptoCurrencies("USD"))
+            .thenReturn(Single.just(SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies(
+                SimpleBuyPairs(listOf(
+                    SimpleBuyPair(pair = "BTC-USD", buyLimits = BuyLimits(100, 3000)),
+                    SimpleBuyPair(pair = "BTC-EUR", buyLimits = BuyLimits(1006, 10000)),
+                    SimpleBuyPair(pair = "ETH-EUR", buyLimits = BuyLimits(1005, 10000)),
+                    SimpleBuyPair(pair = "BCH-EUR", buyLimits = BuyLimits(1001, 10000))
+                )))))
+
+        whenever(interactor.fetchPredefinedAmounts("USD"))
+            .thenReturn(Single.just(SimpleBuyIntent.UpdatedPredefinedAmounts(listOf(
+                FiatValue.fromMinor("USD", 100000),
+                FiatValue.fromMinor("USD", 5000),
+                FiatValue.fromMinor("USD", 1000),
+                FiatValue.fromMinor("USD", 500)))))
+
+        val testObserver = model.state.test()
+        model.process(SimpleBuyIntent.FetchPredefinedAmounts("USD"))
+        model.process(SimpleBuyIntent.FetchBuyLimits("USD"))
+
+        testObserver.assertValueAt(0, SimpleBuyState())
+        testObserver.assertValueAt(1, SimpleBuyState(predefinedAmounts = listOf(
+            FiatValue.fromMinor("USD", 100000),
+            FiatValue.fromMinor("USD", 5000),
+            FiatValue.fromMinor("USD", 1000),
+            FiatValue.fromMinor("USD", 500))))
+
+        testObserver.assertValueAt(2, SimpleBuyState(
+            supportedPairsAndLimits = listOf(
+                SimpleBuyPair(pair = "BTC-USD", buyLimits = BuyLimits(100, 3000))
+            ),
+            selectedCryptoCurrency = CryptoCurrency.BTC,
+            predefinedAmounts = listOf(
+                FiatValue.fromMinor("USD", 1000),
+                FiatValue.fromMinor("USD", 500))))
     }
 }

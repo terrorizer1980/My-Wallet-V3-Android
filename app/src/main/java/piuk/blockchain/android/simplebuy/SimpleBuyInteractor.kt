@@ -4,7 +4,6 @@ import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import com.blockchain.swap.nabu.service.TierService
-import info.blockchain.balance.FiatValue
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
@@ -29,14 +28,13 @@ class SimpleBuyInteractor(
             .map { SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies(it) }
 
     fun fetchPredefinedAmounts(targetCurrency: String): Single<SimpleBuyIntent.UpdatedPredefinedAmounts> =
-        Single.just(SimpleBuyIntent.UpdatedPredefinedAmounts(listOf(
-            FiatValue.fromMajor(targetCurrency, 100.toBigDecimal()),
-            FiatValue.fromMajor(targetCurrency, 20.toBigDecimal()),
-            FiatValue.fromMajor(targetCurrency, 10.toBigDecimal()),
-            FiatValue.fromMajor(targetCurrency, 50.toBigDecimal())
-        ).sortedBy {
-            it.valueMinor
-        }))
+        nabu.fetchNabuToken()
+            .flatMap { custodialWalletManager.getPredefinedAmounts(targetCurrency) }
+            .map {
+                SimpleBuyIntent.UpdatedPredefinedAmounts(it.sortedBy { value ->
+                    value.valueMinor
+                })
+            }
 
     fun cancelOrder(): Single<SimpleBuyIntent.OrderCanceled> =
         Single.just(SimpleBuyIntent.OrderCanceled)

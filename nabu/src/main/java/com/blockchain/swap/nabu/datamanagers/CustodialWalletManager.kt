@@ -6,6 +6,7 @@ import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
+import info.blockchain.balance.FiatValue
 import io.reactivex.Single
 
 // inject an instance of this to provide simple buy and custodial balance/transfer services.
@@ -23,6 +24,10 @@ interface CustodialWalletManager {
         offlineToken: NabuOfflineTokenResponse,
         crypto: CryptoCurrency
     ): Single<CryptoValue>
+
+    fun getPredefinedAmounts(
+        currency: String
+    ): Single<List<FiatValue>>
 }
 
 // Provide mock data for development and testing etc
@@ -54,4 +59,11 @@ internal class MockCustodialWalletManager : CustodialWalletManager {
             CryptoCurrency.PAX -> Single.just(CryptoValue.ZeroPax)
             CryptoCurrency.STX -> Single.just(CryptoValue.ZeroStx)
         }
+
+    override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
+        Single.just(listOf(
+            FiatValue.fromMinor(currency, 100000),
+            FiatValue.fromMinor(currency, 5000),
+            FiatValue.fromMinor(currency, 1000),
+            FiatValue.fromMinor(currency, 500)))
 }

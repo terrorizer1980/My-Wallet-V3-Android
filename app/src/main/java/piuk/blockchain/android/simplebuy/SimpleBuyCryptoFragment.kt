@@ -90,10 +90,10 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         newState.predefinedAmounts.takeIf {
             it.isNotEmpty() && newState.selectedCryptoCurrency != null
         }?.let { values ->
-            predefined_amount_1.asPredefinedAmountText(values[0])
-            predefined_amount_2.asPredefinedAmountText(values[1])
-            predefined_amount_3.asPredefinedAmountText(values[2])
-            predefined_amount_4.asPredefinedAmountText(values[3])
+            predefined_amount_1.asPredefinedAmountText(values.getOrNull(0))
+            predefined_amount_2.asPredefinedAmountText(values.getOrNull(1))
+            predefined_amount_3.asPredefinedAmountText(values.getOrNull(2))
+            predefined_amount_4.asPredefinedAmountText(values.getOrNull(3))
         } ?: kotlin.run {
             predefined_amount_1.gone()
             predefined_amount_2.gone()
@@ -164,10 +164,12 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     private fun FiatValue.asInputAmount(): String =
         this.toStringWithoutSymbol().replace(",", "")
 
-    private fun AppCompatTextView.asPredefinedAmountText(amount: FiatValue) {
-        text = amount.formatOrSymbolForZero().removeSuffix(".00")
-        visible()
-        setOnClickListener { input_amount.setText(amount.toStringWithoutSymbol()) }
+    private fun AppCompatTextView.asPredefinedAmountText(amount: FiatValue?) {
+        amount?.let { amount ->
+            text = amount.formatOrSymbolForZero().removeSuffix(".00")
+            visible()
+            setOnClickListener { input_amount.setText(amount.toStringWithoutSymbol().replace(",", "")) }
+        } ?: this.gone()
     }
 }
 
