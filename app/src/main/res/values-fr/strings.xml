@@ -367,7 +367,7 @@ Pour utiliser d\'autres méthodes d\'authentification, veuillez vous connecter �
   <string name="share_instructions">Toucher pour copier cette adresse. Partagez-la avec l\'expéditeur par e-mail ou SMS.</string>
   <string name="common_pin_dialog_title">Avertissement</string>
   <string name="common_pin_dialog_message">Le code PIN que vous avez sélectionné est extrêmement courant et pourrait être facilement deviné au bout de 3 tentatives par une personne qui a accès à votre téléphone. Voulez-vous quand même utiliser ce code PIN ?</string>
-  <string name="common_pin_dialog_try_again">[%key:try_again%]</string>
+  <string name="common_pin_dialog_try_again">Réessayer</string>
   <string name="common_pin_dialog_continue">Continuer</string>
   <string name="logged_out_enter_password">Vous vous êtes déconnecté ou bien il s\'est produit une erreur lors du décodage de votre portefeuille. Pour vous connecter, saisissez votre mot de passe ci-dessous. </string>
   <string name="logged_out_forget_wallet">Si vous souhaitez oublier ce portefeuille et recommencer, appuyez sur \'Oublier le portefeuille\'.</string>

@@ -44,4 +44,4 @@ const val URL_SUPPORTED_COUNTRIES =
     "https://support.blockchain.com/hc/en-us/articles/360000804146-What-countries-are-supported-for-buying-selling-"
 
 const val STX_STACKS_LEARN_MORE =
-    "https://support.blockchain.com/hc/en-us/articles/360000804146-What-countries-are-supported-for-buying-selling-"
+    "https://support.blockchain.com/hc/en-us/articles/360038745191"
