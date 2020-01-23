@@ -1,5 +1,6 @@
 package com.blockchain.swap.nabu.datamanagers
 
+import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.models.simplebuy.BuyLimits
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
@@ -21,7 +22,6 @@ interface CustodialWalletManager {
     ): Single<SimpleBuyPairs>
 
     fun getBalanceForAsset(
-        offlineToken: NabuOfflineTokenResponse,
         crypto: CryptoCurrency
     ): Single<CryptoValue>
 
@@ -31,7 +31,9 @@ interface CustodialWalletManager {
 }
 
 // Provide mock data for development and testing etc
-internal class MockCustodialWalletManager : CustodialWalletManager {
+internal class MockCustodialWalletManager(
+    private val nabuToken: NabuToken
+) : CustodialWalletManager {
 
     override fun getSupportedBuyCurrencies(
         offlineToken: NabuOfflineTokenResponse
@@ -48,17 +50,19 @@ internal class MockCustodialWalletManager : CustodialWalletManager {
         )
 
     override fun getBalanceForAsset(
-        offlineToken: NabuOfflineTokenResponse,
         crypto: CryptoCurrency
     ): Single<CryptoValue> =
-        when (crypto) {
-            CryptoCurrency.BTC -> Single.just(CryptoValue.ZeroBtc)
-            CryptoCurrency.ETHER -> Single.just(CryptoValue.ZeroEth)
-            CryptoCurrency.BCH -> Single.just(CryptoValue.ZeroBch)
-            CryptoCurrency.XLM -> Single.just(CryptoValue.ZeroXlm)
-            CryptoCurrency.PAX -> Single.just(CryptoValue.ZeroPax)
-            CryptoCurrency.STX -> Single.just(CryptoValue.ZeroStx)
-        }
+        nabuToken.fetchNabuToken()
+            .flatMap {
+                when (crypto) {
+                    CryptoCurrency.BTC -> Single.just(CryptoValue.ZeroBtc)
+                    CryptoCurrency.ETHER -> Single.just(CryptoValue.ZeroEth)
+                    CryptoCurrency.BCH -> Single.just(CryptoValue.ZeroBch)
+                    CryptoCurrency.XLM -> Single.just(CryptoValue.ZeroXlm)
+                    CryptoCurrency.PAX -> Single.just(CryptoValue.ZeroPax)
+                    CryptoCurrency.STX -> Single.just(CryptoValue.ZeroStx)
+                }
+            }
 
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
         Single.just(listOf(

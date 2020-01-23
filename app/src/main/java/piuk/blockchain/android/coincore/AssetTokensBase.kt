@@ -7,6 +7,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Single
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -15,17 +16,22 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 
-enum class BalanceFilter {
+enum class AssetFilter {
     Total,
     Wallet,
 //    ColdStorage,
 //    Lockbox,
     Custodial
-//
-//    fun entireBalance(): Single<CryptoValue>
-//    fun watchOnlyBalance(): Single<CryptoValue>
-//    fun importedAddressBalance(): Single<CryptoValue>
 }
+
+enum class AssetAction {
+    ViewActivity,
+    Send,
+    Receive,
+    Swap
+}
+
+typealias AvailableActions = Set<AssetAction>
 
 typealias TransactionList = List<Transaction>
 
@@ -37,7 +43,7 @@ interface AssetTokens {
     fun defaultAccount(): Single<AccountReference>
 //    fun accounts(): Single<AccountsList>
 
-    fun totalBalance(filter: BalanceFilter = BalanceFilter.Total): Single<CryptoValue>
+    fun totalBalance(filter: AssetFilter = AssetFilter.Total): Single<CryptoValue>
     fun balance(account: AccountReference): Single<CryptoValue>
 
     fun exchangeRate(): Single<FiatValue>
@@ -51,6 +57,8 @@ interface AssetTokens {
 //    fun computeFees(priority: FeePriority, pending: PendingTransaction): Single<PendingTransaction>
 //    fun validate(pending: PendingTransaction): Boolean
 //    fun execute(pending: PendingTransaction)
+
+    fun actions(filter: AssetFilter): AvailableActions
 }
 
 abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
@@ -59,7 +67,39 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
         .observeOn(Schedulers.computation())
         .subscribeBy(onNext = ::onLogoutSignal)
 
-    protected abstract fun onLogoutSignal(event: AuthEvent)
+    protected open fun onLogoutSignal(event: AuthEvent) { }
+
+    final override fun totalBalance(filter: AssetFilter): Single<CryptoValue> =
+        when (filter) {
+            AssetFilter.Wallet -> noncustodialBalance()
+            AssetFilter.Custodial -> custodialBalance()
+            AssetFilter.Total -> Singles.zip(
+                noncustodialBalance(),
+                custodialBalance()
+            ) { noncustodial, custodial -> noncustodial + custodial }
+        }
+
+    protected abstract fun custodialBalance(): Single<CryptoValue>
+    protected abstract fun noncustodialBalance(): Single<CryptoValue>
+
+    protected open val noncustodialActions = setOf(
+        AssetAction.ViewActivity,
+        AssetAction.Send,
+        AssetAction.Receive,
+        AssetAction.Swap
+    )
+
+    protected open val custodialActions = setOf(
+        AssetAction.ViewActivity,
+        AssetAction.Send
+    )
+
+    override fun actions(filter: AssetFilter): AvailableActions =
+        when (filter) {
+            AssetFilter.Total -> custodialActions.intersect(noncustodialActions)
+            AssetFilter.Custodial -> custodialActions
+            AssetFilter.Wallet -> noncustodialActions
+        }
 }
 
 fun ExchangeRateDataManager.fetchLastPrice(

@@ -72,8 +72,10 @@ val nabuModule = applicationContext {
             ) as NabuDataManager
         }
 
-        factory {
-            MockCustodialWalletManager()
+        factory("dev_mock") {
+            MockCustodialWalletManager(
+                nabuToken = get()
+            )
         }.bind(CustodialWalletManager::class)
 
         factory("unique_user_analytics") {

@@ -10,7 +10,7 @@ import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.coincore.AssetTokenLookup
-import piuk.blockchain.android.coincore.BalanceFilter
+import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import timber.log.Timber
 
@@ -23,7 +23,7 @@ class DashboardInteractor(
     // which is on the radar - then we can clean up the entire app init sequence.
     // But for now, we'll catch any pax init failure here, unless ETH has initialised OK. And when we
     // get a valid ETH balance, will try for a PX balance. Yeah, this is a nasty hack TODO: Fix this
-    fun refreshBalances(model: DashboardModel, balanceFilter: BalanceFilter): Disposable {
+    fun refreshBalances(model: DashboardModel, balanceFilter: AssetFilter): Disposable {
         val cd = CompositeDisposable()
         CryptoCurrency.activeCurrencies()
             .filter { it != CryptoCurrency.PAX }

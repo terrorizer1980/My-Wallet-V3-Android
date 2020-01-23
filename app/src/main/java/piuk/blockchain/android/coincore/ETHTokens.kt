@@ -2,6 +2,7 @@ package piuk.blockchain.android.coincore
 
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -27,6 +28,7 @@ class ETHTokens(
     private val currencyPrefs: CurrencyPrefs,
     private val stringUtils: StringUtils,
     private val crashLogger: CrashLogger,
+    private val custodialWalletManager: CustodialWalletManager,
     rxBus: RxBus
 ) : AssetTokensBase(rxBus) {
 
@@ -37,7 +39,10 @@ class ETHTokens(
         TODO("not implemented")
     }
 
-    override fun totalBalance(filter: BalanceFilter): Single<CryptoValue> =
+    override fun custodialBalance(): Single<CryptoValue> =
+        custodialWalletManager.getBalanceForAsset(CryptoCurrency.ETHER)
+
+    override fun noncustodialBalance(): Single<CryptoValue> =
         etheriumWalletInitialiser()
             .andThen(ethDataManager.fetchEthAddress())
             .singleOrError()

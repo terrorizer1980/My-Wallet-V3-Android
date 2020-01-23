@@ -9,7 +9,7 @@ import info.blockchain.balance.sum
 import info.blockchain.balance.toFiat
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
-import piuk.blockchain.android.coincore.BalanceFilter
+import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.ui.base.mvi.MviModel
 import piuk.blockchain.android.ui.base.mvi.MviState
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
@@ -148,7 +148,7 @@ class DashboardModel(
 
         return when (intent) {
             is RefreshAllIntent -> {
-                interactor.refreshBalances(this, BalanceFilter.Total)
+                interactor.refreshBalances(this, AssetFilter.Total)
             }
             is BalanceUpdate -> {
                 process(RefreshPrices(intent.cryptoCurrency))

@@ -1,6 +1,7 @@
 package piuk.blockchain.android.coincore
 
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -22,6 +23,7 @@ class BTCTokens(
     private val payloadManager: PayloadManager,
     private val historicRates: ChartsDataManager,
     private val currencyPrefs: CurrencyPrefs,
+    private val custodialWalletManager: CustodialWalletManager,
     rxBus: RxBus
 ) : BitcoinLikeTokens(rxBus) {
 
@@ -32,7 +34,10 @@ class BTCTokens(
         TODO("not implemented")
     }
 
-    override fun totalBalance(filter: BalanceFilter): Single<CryptoValue> =
+    override fun custodialBalance(): Single<CryptoValue> =
+        custodialWalletManager.getBalanceForAsset(CryptoCurrency.BTC)
+
+    override fun noncustodialBalance(): Single<CryptoValue> =
         updater().toCryptoSingle(CryptoCurrency.BTC) { payloadManager.walletBalance }
 
     override fun balance(account: AccountReference): Single<CryptoValue> {

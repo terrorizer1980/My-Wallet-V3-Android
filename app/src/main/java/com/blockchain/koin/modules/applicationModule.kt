@@ -759,7 +759,7 @@ val applicationModule = applicationContext {
                 metadataManager = get(),
                 exchangeRateFactory = get(),
                 nabu = get(),
-                custodialWalletManager = get()
+                custodialWalletManager = get("dev_mock")
             )
         }
 
