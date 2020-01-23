@@ -759,7 +759,7 @@ val applicationModule = applicationContext {
                 metadataManager = get(),
                 exchangeRateFactory = get(),
                 nabu = get(),
-                nabuDataManager = get()
+                custodialWalletManager = get()
             )
         }
 

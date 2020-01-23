@@ -1,11 +1,8 @@
 package piuk.blockchain.android.simplebuy
 
 import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
-import com.blockchain.swap.nabu.models.simplebuy.BuyLimits
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.blockchain.swap.nabu.service.TierService
 import info.blockchain.balance.FiatValue
 import io.reactivex.Flowable
@@ -22,21 +19,14 @@ class SimpleBuyInteractor(
     private val tierService: TierService,
     private val metadataManager: MetadataManager,
     private val exchangeRateFactory: ExchangeRateDataManager,
-    private val nabuDataManager: NabuDataManager
+    private val custodialWalletManager: CustodialWalletManager
 ) {
 
     fun fetchBuyLimitsAndSupportedCryptoCurrencies(targetCurrency: String):
-            Single<SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies> = nabu.fetchNabuToken().flatMap {
-        nabuDataManager.getSupportedCurrencies(it)
-    }.map {
-        SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies(
-            SimpleBuyPairs(listOf(
-                SimpleBuyPair(pair = "BTC-USD", buyLimits = BuyLimits(100, 5024558)),
-                SimpleBuyPair(pair = "BTC-EUR", buyLimits = BuyLimits(1006, 10000)),
-                SimpleBuyPair(pair = "ETH-EUR", buyLimits = BuyLimits(1005, 10000)),
-                SimpleBuyPair(pair = "BCH-EUR", buyLimits = BuyLimits(1001, 10000))
-            )))
-    }
+            Single<SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies> =
+        nabu.fetchNabuToken()
+            .flatMap { custodialWalletManager.getSupportedBuyCurrencies(it) }
+            .map { SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies(it) }
 
     fun fetchPredefinedAmounts(targetCurrency: String): Single<SimpleBuyIntent.UpdatedPredefinedAmounts> =
         Single.just(SimpleBuyIntent.UpdatedPredefinedAmounts(listOf(

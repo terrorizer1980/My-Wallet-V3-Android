@@ -10,6 +10,8 @@ import com.blockchain.swap.nabu.api.trade.TransactionStateAdapter
 import com.blockchain.swap.nabu.datamanagers.AnalyticsNabuUserReporterImpl
 import com.blockchain.swap.nabu.datamanagers.AnalyticsWalletReporter
 import com.blockchain.swap.nabu.datamanagers.CreateNabuTokenAdapter
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.swap.nabu.datamanagers.MockCustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.NabuAuthenticator
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.datamanagers.NabuDataManagerImpl
@@ -69,6 +71,10 @@ val nabuModule = applicationContext {
                 userReporter = get("unique_user_analytics")
             ) as NabuDataManager
         }
+
+        factory {
+            MockCustodialWalletManager()
+        }.bind(CustodialWalletManager::class)
 
         factory("unique_user_analytics") {
             UniqueAnalyticsNabuUserReporter(

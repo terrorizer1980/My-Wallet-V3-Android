@@ -18,8 +18,9 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 enum class BalanceFilter {
     Total,
     Wallet,
-    ColdStorage,
-//    Lockbox
+//    ColdStorage,
+//    Lockbox,
+    Custodial
 //
 //    fun entireBalance(): Single<CryptoValue>
 //    fun watchOnlyBalance(): Single<CryptoValue>

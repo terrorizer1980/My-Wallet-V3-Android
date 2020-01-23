@@ -12,7 +12,6 @@ import com.blockchain.swap.nabu.models.nabu.Scope
 import com.blockchain.swap.nabu.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.swap.nabu.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuSessionTokenResponse
 import com.blockchain.swap.nabu.service.NabuService
@@ -98,8 +97,6 @@ interface NabuDataManager {
 
     fun getAuthToken(jwt: String): Single<NabuOfflineTokenResponse>
 
-    fun getSupportedCurrencies(fflineTokenResponse: NabuOfflineTokenResponse): Single<SimpleBuyPairsResp>
-
     fun <T> authenticate(
         offlineToken: NabuOfflineTokenResponse,
         singleFunction: (NabuSessionTokenResponse) -> Single<T>
@@ -164,12 +161,6 @@ internal class NabuDataManagerImpl(
 
     override fun getAuthToken(jwt: String): Single<NabuOfflineTokenResponse> =
         nabuService.getAuthToken(jwt)
-
-    override fun getSupportedCurrencies(offlineTokenResponse: NabuOfflineTokenResponse): Single<SimpleBuyPairsResp> {
-        return authenticate(offlineTokenResponse) {
-            nabuService.getSupportCurrencies(it)
-        }
-    }
 
     @VisibleForTesting
     internal fun getSessionToken(
