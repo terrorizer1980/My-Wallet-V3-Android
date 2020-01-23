@@ -1111,6 +1111,9 @@
     <string name="airdrop_sheet_stx_where_are_my_stacks">Stacks (STX) are stored in your Blockchain Wallet. Please note the balance is currently non-transferable.</string>
     <string name="airdrop_sheet_xlm_title" translatable="false">Stellar (XLM)</string>
 
+    <string name="airdrop_status_date_active">Drops on %1s</string>
+    <string name="airdrop_status_date_inactive">Ended on %1s</string>
+
     <!-- buy/Sell -->
     <!-- Account created Success -->
     <string name="buy_sell_buy">Buy</string>
