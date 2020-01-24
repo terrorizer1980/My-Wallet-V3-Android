@@ -11,6 +11,8 @@ import com.blockchain.swap.nabu.datamanagers.AnalyticsNabuUserReporterImpl
 import com.blockchain.swap.nabu.datamanagers.AnalyticsWalletReporter
 import com.blockchain.swap.nabu.datamanagers.CreateNabuTokenAdapter
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManagerImpl
+import com.blockchain.swap.nabu.datamanagers.LiveCustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.MockCustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.NabuAuthenticator
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
@@ -78,9 +80,14 @@ val nabuModule = applicationContext {
             ) as NabuDataManager
         }
 
-        factory("dev_mock") {
-            MockCustodialWalletManager(
-                nabuToken = get()
+        factory {
+            CustodialWalletManagerImpl(
+                mockCustodialWalletManager = MockCustodialWalletManager(nabuToken = get()),
+                liveCustodialWalletManager = LiveCustodialWalletManager(
+                    nabuToken = get(),
+                    nabuService = get(),
+                    nabuDataManager = get()
+                )
             )
         }.bind(CustodialWalletManager::class)
 

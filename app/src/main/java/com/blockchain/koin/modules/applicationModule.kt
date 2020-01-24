@@ -754,13 +754,10 @@ val applicationModule = applicationContext {
 
         factory {
             SimpleBuyInteractor(
-                tokens = get(),
-                tierService = get(),
-                metadataManager = get(),
-                exchangeRateFactory = get(),
                 nabu = get(),
-                appUtil = get(),
-                custodialWalletManager = get("dev_mock")
+                tierService = get(),
+                custodialWalletManager = get(),
+                appUtil = get()
             )
         }
 

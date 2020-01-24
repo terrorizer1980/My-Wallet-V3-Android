@@ -11,7 +11,7 @@ val coincoreModule = applicationContext {
                 rxBus = get(),
                 payloadManager = get(),
                 currencyPrefs = get(),
-                custodialWalletManager = get("dev_mock")
+                custodialWalletManager = get()
             )
         }
 

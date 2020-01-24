@@ -17,3 +17,7 @@ data class BuyLimits(private val min: Long, private val max: Long) {
 }
 
 data class SimpleBuyPairsResp(val pairs: List<String>)
+
+data class BankAccount(val details: List<BankDetail>)
+
+data class BankDetail(val title: String, val value: String, val isCopyable: Boolean = false)

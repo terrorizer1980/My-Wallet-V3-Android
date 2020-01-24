@@ -3,6 +3,7 @@ package piuk.blockchain.android.simplebuy
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
+import com.blockchain.swap.nabu.models.simplebuy.BankDetail
 import info.blockchain.balance.FiatValue
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.CopyableTextFormItem

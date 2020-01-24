@@ -8,32 +8,25 @@ import com.blockchain.ui.trackLoading
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
-import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.util.AppUtil
-import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import java.util.concurrent.TimeUnit
 
 class SimpleBuyInteractor(
-    private val tokens: AssetTokenLookup,
-    private val nabu: NabuToken,
     private val tierService: TierService,
-    private val metadataManager: MetadataManager,
-    private val exchangeRateFactory: ExchangeRateDataManager,
     private val custodialWalletManager: CustodialWalletManager,
+    private val nabu: NabuToken,
     private val appUtil: AppUtil
 ) {
 
     fun fetchBuyLimitsAndSupportedCryptoCurrencies(targetCurrency: String):
             Single<SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies> =
         nabu.fetchNabuToken()
-            .flatMap { custodialWalletManager.getSupportedBuyCurrencies(it) }
+            .flatMap { custodialWalletManager.getBuyLimitsAndSupportedCryptoCurrencies(it, targetCurrency) }
             .map { SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies(it) }
             .trackLoading(appUtil.activityIndicator)
 
     fun fetchPredefinedAmounts(targetCurrency: String): Single<SimpleBuyIntent.UpdatedPredefinedAmounts> =
-        nabu.fetchNabuToken()
-            .flatMap { custodialWalletManager.getPredefinedAmounts(targetCurrency) }
+        custodialWalletManager.getPredefinedAmounts(targetCurrency)
             .map {
                 SimpleBuyIntent.UpdatedPredefinedAmounts(it.sortedBy { value ->
                     value.valueMinor
@@ -48,14 +41,9 @@ class SimpleBuyInteractor(
         Single.just(SimpleBuyIntent.OrderConfirmed)
 
     fun fetchBankAccount(): Single<SimpleBuyIntent.BankAccountUpdated> =
-        Single.just(SimpleBuyIntent.BankAccountUpdated(BankAccount(
-            listOf(
-                BankDetail("Bank Name", "LHV"),
-                BankDetail("Bank ID", "DE81 1234 5678 9101 1234 33", true),
-                BankDetail("Bank Code (SWIFT/BIC", "DEKTDE7GSSS", true),
-                BankDetail("Recipient", "Fred Wilson")
-            )
-        )))
+        custodialWalletManager.getBankAccount().map {
+            SimpleBuyIntent.BankAccountUpdated(it)
+        }
 
     fun pollForKycState(): Single<SimpleBuyIntent.KycStateUpdated> =
         tierService.tiers().map {

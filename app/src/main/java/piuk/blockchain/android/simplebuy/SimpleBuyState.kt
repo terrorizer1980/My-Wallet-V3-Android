@@ -1,5 +1,6 @@
 package piuk.blockchain.android.simplebuy
 
+import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
@@ -108,7 +109,3 @@ data class SimpleBuyOrder(
     val amount: FiatValue? = null,
     val expirationDate: Date? = null
 )
-
-data class BankAccount(val details: List<BankDetail>)
-
-data class BankDetail(val title: String, val value: String, val isCopyable: Boolean = false)
