@@ -56,7 +56,13 @@ val nabuModule = applicationContext {
         factory { NabuMarketsService(get(), get()) }
             .bind(TradeLimitService::class)
 
-        factory { MetadataRepositoryNabuTokenAdapter(get(), get()) as NabuToken }
+        factory {
+            MetadataRepositoryNabuTokenAdapter(
+                metadataRepository = get(),
+                createNabuToken = get(),
+                metadataManager = get()
+            )
+        }.bind(NabuToken::class)
 
         factory {
             NabuDataManagerImpl(

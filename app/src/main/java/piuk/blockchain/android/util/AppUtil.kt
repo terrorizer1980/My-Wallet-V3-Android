@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Camera
+import com.blockchain.ui.ActivityIndicator
 import info.blockchain.wallet.payload.PayloadManagerWiper
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -49,6 +50,8 @@ class AppUtil(
 
             return false
         }
+
+    var activityIndicator: ActivityIndicator? = null
 
     fun clearCredentials() {
         payloadManager.wipe()

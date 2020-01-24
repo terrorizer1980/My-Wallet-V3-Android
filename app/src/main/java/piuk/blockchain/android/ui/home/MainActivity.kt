@@ -77,7 +77,6 @@ import piuk.blockchain.android.ui.tour.SwapTourFragment
 import piuk.blockchain.android.ui.transactions.TransactionsFragment
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
-import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import timber.log.Timber
@@ -97,7 +96,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     private var handlingResult = false
 
-    private val appUtil: AppUtil by inject()
     private var activityResultAction: () -> Unit = {}
 
     private var progressDlg: MaterialProgressDialog? = null

@@ -4,10 +4,12 @@ import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import com.blockchain.swap.nabu.service.TierService
+import com.blockchain.ui.trackLoading
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import java.util.concurrent.TimeUnit
@@ -18,7 +20,8 @@ class SimpleBuyInteractor(
     private val tierService: TierService,
     private val metadataManager: MetadataManager,
     private val exchangeRateFactory: ExchangeRateDataManager,
-    private val custodialWalletManager: CustodialWalletManager
+    private val custodialWalletManager: CustodialWalletManager,
+    private val appUtil: AppUtil
 ) {
 
     fun fetchBuyLimitsAndSupportedCryptoCurrencies(targetCurrency: String):
@@ -26,6 +29,7 @@ class SimpleBuyInteractor(
         nabu.fetchNabuToken()
             .flatMap { custodialWalletManager.getSupportedBuyCurrencies(it) }
             .map { SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies(it) }
+            .trackLoading(appUtil.activityIndicator)
 
     fun fetchPredefinedAmounts(targetCurrency: String): Single<SimpleBuyIntent.UpdatedPredefinedAmounts> =
         nabu.fetchNabuToken()
@@ -35,6 +39,7 @@ class SimpleBuyInteractor(
                     value.valueMinor
                 })
             }
+            .trackLoading(appUtil.activityIndicator)
 
     fun cancelOrder(): Single<SimpleBuyIntent.OrderCanceled> =
         Single.just(SimpleBuyIntent.OrderCanceled)

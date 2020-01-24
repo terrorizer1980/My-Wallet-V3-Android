@@ -2,13 +2,17 @@ package piuk.blockchain.android.simplebuy
 
 import android.content.Intent
 import android.os.Bundle
+import kotlinx.android.synthetic.main.activity_simple_buy.*
 import kotlinx.android.synthetic.main.toolbar_general.*
+import kotlinx.android.synthetic.main.toolbar_general.toolbar_general
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.base.BlockchainActivity
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
+import piuk.blockchain.androidcoreui.utils.extensions.gone
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 
 class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
     override val alwaysDisableScreenshots: Boolean
@@ -83,6 +87,14 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
 
     override fun onSupportNavigateUp(): Boolean = consume {
         onBackPressed()
+    }
+
+    override fun showLoading() {
+        progress.visible()
+    }
+
+    override fun hideLoading() {
+        progress.gone()
     }
 
     private fun pop(): Boolean {
