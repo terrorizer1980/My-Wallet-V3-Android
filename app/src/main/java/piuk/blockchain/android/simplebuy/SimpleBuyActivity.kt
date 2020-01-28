@@ -17,8 +17,7 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
     override val alwaysDisableScreenshots: Boolean
         get() = false
 
-    override val enableLogoutTimer: Boolean
-        get() = false
+    override val enableLogoutTimer: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,8 +106,6 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         }
         return false
     }
-
-    override val enableLogoutTimer: Boolean = false
 
     companion object {
         const val KYC_STARTED = 6788
