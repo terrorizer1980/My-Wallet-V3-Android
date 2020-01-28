@@ -11,7 +11,8 @@ import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 
-class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(), SimpleBuyScreen {
+class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(), SimpleBuyScreen,
+    CancelOrderConfirmationListener {
 
     override val model: SimpleBuyModel by inject()
 
@@ -26,9 +27,6 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         button_buy.setOnClickListener {
             model.process(SimpleBuyIntent.ConfirmOrder)
         }
-        button_cancel.setOnClickListener {
-            model.process(SimpleBuyIntent.CancelOrder)
-        }
         activity.setupToolbar(R.string.checkout)
     }
 
@@ -40,6 +38,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     override fun render(newState: SimpleBuyState) {
         total_cost.text = newState.order.amount?.formatOrSymbolForZero()
         button_buy.text = resources.getString(R.string.buy_crypto, newState.selectedCryptoCurrency?.symbol)
+        button_cancel.setOnClickListener {
+            showBottomSheet(SimpleBuyCancelOrderBottomSheet.newInstance(newState.selectedCryptoCurrency
+                ?: return@setOnClickListener))
+        }
+
         when (newState.order.orderState) {
             OrderState.CANCELLED -> navigator().exitSimpleBuyFlow()
             OrderState.CONFIRMED -> {
@@ -49,4 +52,12 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
             }
         }
     }
+
+    override fun onOrderCancelationConfirmed() {
+        model.process(SimpleBuyIntent.CancelOrder)
+    }
+}
+
+interface CancelOrderConfirmationListener {
+    fun onOrderCancelationConfirmed()
 }

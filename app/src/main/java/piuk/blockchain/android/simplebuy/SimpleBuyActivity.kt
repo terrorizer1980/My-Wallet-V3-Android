@@ -3,7 +3,6 @@ package piuk.blockchain.android.simplebuy
 import android.content.Intent
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_simple_buy.*
-import kotlinx.android.synthetic.main.toolbar_general.*
 import kotlinx.android.synthetic.main.toolbar_general.toolbar_general
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType

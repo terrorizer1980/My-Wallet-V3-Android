@@ -1744,5 +1744,7 @@
     <string name="simple_buy_no_currencies_available_title">No currencies available</string>
     <string name="simple_buy_no_currencies_available">Unfortunately, currently there are no currencies that you can trade :( </string>
     <string name="cancel_order">Cancel order</string>
-
+    <string name="are_ypu_sure">Are you sure?</string>
+    <string name="go_back">Go Back</string>
+    <string name="cancel_token_instruction">This will remove your %1$s Buy order.</string>
 </resources>
