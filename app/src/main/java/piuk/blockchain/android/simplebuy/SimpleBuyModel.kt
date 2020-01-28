@@ -17,7 +17,7 @@ class SimpleBuyModel(
     gson.fromJson(prefs.simpleBuyState(), SimpleBuyState::class.java) ?: initialState,
     scheduler) {
 
-    override fun performAction(intent: SimpleBuyIntent): Disposable? =
+    override fun performAction(previousState: SimpleBuyState, intent: SimpleBuyIntent): Disposable? =
         when (intent) {
             is SimpleBuyIntent.FetchBuyLimits -> interactor.fetchBuyLimitsAndSupportedCryptoCurrencies(intent.currency)
                 .subscribeBy(

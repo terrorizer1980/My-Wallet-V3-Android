@@ -143,7 +143,7 @@ class DashboardModel(
     private val interactor: DashboardInteractor
 ) : MviModel<DashboardState, DashboardIntent>(initialState, mainScheduler) {
 
-    override fun performAction(intent: DashboardIntent): Disposable? {
+    override fun performAction(previousState: DashboardState, intent: DashboardIntent): Disposable? {
         Timber.d("***> performAction: ${intent.javaClass.simpleName}")
 
         return when (intent) {
@@ -166,5 +166,7 @@ class DashboardModel(
         }
     }
 
-    override fun onScanLoopError(t: Throwable) { Timber.e("***> Scan loop failed: $t") }
+    override fun onScanLoopError(t: Throwable) {
+        Timber.e("***> Scan loop failed: $t")
+    }
 }

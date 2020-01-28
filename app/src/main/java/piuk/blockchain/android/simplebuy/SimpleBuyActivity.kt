@@ -17,6 +17,9 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
     override val alwaysDisableScreenshots: Boolean
         get() = false
 
+    override val enableLogoutTimer: Boolean
+        get() = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_simple_buy)

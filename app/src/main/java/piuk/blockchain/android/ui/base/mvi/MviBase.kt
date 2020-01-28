@@ -38,7 +38,7 @@ abstract class MviModel<S : MviState, I : MviIntent<S>>(
                 .scan(initialState) { previousState, intent ->
                     Timber.d("***> Model: ProcessIntent: ${intent.javaClass.simpleName}")
 
-                    performAction(intent)?.let { disposables += it }
+                    performAction(previousState, intent)?.let { disposables += it }
                     intent.reduce(previousState)
                 }.subscribeBy(
                     onNext = { newState ->
@@ -54,5 +54,5 @@ abstract class MviModel<S : MviState, I : MviIntent<S>>(
     protected open fun onScanLoopError(t: Throwable) {}
     protected open fun onStateUpdate(s: S) {}
 
-    protected abstract fun performAction(intent: I): Disposable?
+    protected abstract fun performAction(previousState: S, intent: I): Disposable?
 }
