@@ -95,7 +95,7 @@ interface NabuDataManager {
 
     fun getCampaignList(offlineTokenResponse: NabuOfflineTokenResponse): Single<List<String>>
 
-    fun getAuthToken(jwt: String): Single<NabuOfflineTokenResponse>
+    fun getAuthToken(jwt: String, currency: String? = null, action: String? = null): Single<NabuOfflineTokenResponse>
 
     fun <T> authenticate(
         offlineToken: NabuOfflineTokenResponse,
@@ -159,8 +159,8 @@ internal class NabuDataManagerImpl(
             }
         }
 
-    override fun getAuthToken(jwt: String): Single<NabuOfflineTokenResponse> =
-        nabuService.getAuthToken(jwt)
+    override fun getAuthToken(jwt: String, currency: String?, action: String?): Single<NabuOfflineTokenResponse> =
+        nabuService.getAuthToken(jwt, currency, action)
 
     @VisibleForTesting
     internal fun getSessionToken(

@@ -19,6 +19,7 @@ import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.swap.nabu.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.swap.nabu.models.nabu.VeriffToken
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -37,7 +38,9 @@ internal interface Nabu {
 
     @POST(NABU_INITIAL_AUTH)
     fun getAuthToken(
-        @Body jwt: NabuOfflineTokenRequest
+        @Body jwt: NabuOfflineTokenRequest,
+        @Query("fiatCurrency") currency: String? = null,
+        @Query("action") action: String? = null
     ): Single<NabuOfflineTokenResponse>
 
     @POST(NABU_SESSION_TOKEN)
@@ -176,4 +179,9 @@ internal interface Nabu {
     fun getSupportedSimpleBuyPairs(
         @Header("authorization") authorization: String
     ): Single<SimpleBuyPairs>
+
+    @GET(NABU_SIMPLE_BUY_ELIGIBILITY)
+    fun isEligibleForSimpleBuy(
+        @Query("fiatCurrency") currency: String
+    ): Single<SimpleBuyEligibility>
 }

@@ -108,6 +108,8 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         return false
     }
 
+    override val enableLogoutTimer: Boolean = false
+
     companion object {
         const val KYC_STARTED = 6788
         const val RESULT_KYC_SIMPLE_BUY_COMPLETE = 7854

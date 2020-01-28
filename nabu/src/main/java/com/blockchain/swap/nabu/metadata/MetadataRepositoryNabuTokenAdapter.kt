@@ -18,8 +18,8 @@ internal class MetadataRepositoryNabuTokenAdapter(
     private val metadataManager: MetadataManager
 ) : NabuToken {
 
-    private val createMetaData = Maybe.defer {
-        createNabuToken.createNabuOfflineToken()
+    private fun createMetaData(currency: String?, action: String?) = Maybe.defer {
+        createNabuToken.createNabuOfflineToken(currency, action)
             .map {
                 it.mapToMetadata()
             }
@@ -42,12 +42,13 @@ internal class MetadataRepositoryNabuTokenAdapter(
     }.maybeCache()
         .onErrorReturn { NabuCredentialsMetadata.invalid() }
         .filter { it.isValid() }
-        .switchIfEmpty(createMetaData)
-        .map { metadata ->
-            if (!metadata.isValid()) throw MetadataNotFoundException("Nabu Token is empty")
-            metadata.mapFromMetadata()
-        }
-        .toSingle()
 
-    override fun fetchNabuToken(): Single<NabuOfflineTokenResponse> = defer
+    override fun fetchNabuToken(currency: String?, action: String?): Single<NabuOfflineTokenResponse> {
+        return defer.switchIfEmpty(createMetaData(currency, action))
+            .map { metadata ->
+                if (!metadata.isValid()) throw MetadataNotFoundException("Nabu Token is empty")
+                metadata.mapFromMetadata()
+            }
+            .toSingle()
+    }
 }

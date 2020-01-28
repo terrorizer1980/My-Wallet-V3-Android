@@ -942,7 +942,8 @@ val applicationModule = applicationContext {
                 settingsDataManager = get(),
                 notificationTokenManager = get(),
                 envSettings = get(),
-                simpleBuyConfiguration = get()
+                simpleBuyConfiguration = get(),
+                custodialWalletManager = get()
             )
         }
 

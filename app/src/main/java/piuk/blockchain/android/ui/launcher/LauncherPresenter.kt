@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.R
 import piuk.blockchain.android.simplebuy.SimpleBuyConfiguration
 import piuk.blockchain.androidcore.data.access.AccessState
@@ -32,7 +32,8 @@ class LauncherPresenter(
     private val settingsDataManager: SettingsDataManager,
     private val notificationTokenManager: NotificationTokenManager,
     private val envSettings: EnvironmentConfig,
-    private val simpleBuyConfiguration: SimpleBuyConfiguration
+    private val simpleBuyConfiguration: SimpleBuyConfiguration,
+    private val custodialWalletManager: CustodialWalletManager
 ) : BasePresenter<LauncherView>() {
 
     override fun onViewReady() {
@@ -114,7 +115,13 @@ class LauncherPresenter(
             } else {
                 settingsDataManager.updateFiatUnit(fiatUnitForFreshAccount())
             }
-        }.zipWith(simpleBuyConfiguration.isEnabled().onErrorReturn { false }.toObservable())
+        }.flatMap { settings ->
+            custodialWalletManager.isEligibleForSimpleBuy(settings.currency).toObservable()
+                .map { simpleBuyEligible ->
+                    settings to simpleBuyEligible.eligible
+                    // && accessState.isNewlyCreated  commented out for the time being to make testing easier
+                }
+        }
             .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }
             .subscribe({ (settings, simpleBuyEnabled) ->

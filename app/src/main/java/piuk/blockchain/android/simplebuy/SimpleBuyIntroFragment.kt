@@ -5,13 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.SimpleBuyPrefs
+import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.ui.trackLoading
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_simple_buy_intro.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.setupToolbar
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -20,6 +25,9 @@ import java.lang.IllegalStateException
 class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
 
     private val walletSettings: SettingsDataManager by inject()
+    private val nabuToken: NabuToken by inject()
+    private val appUtil: AppUtil by inject()
+    private val currencyPrefs: CurrencyPrefs by inject()
     private val simpleBuyPrefs: SimpleBuyPrefs by inject()
 
     private val compositeDisposable = CompositeDisposable()
@@ -36,8 +44,11 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
 
         skip_simple_buy.setOnClickListener { navigator().exitSimpleBuyFlow() }
         buy_crypto_now.setOnClickListener {
-            simpleBuyPrefs.clearState()
-            navigator().goToBuyCryptoScreen()
+            nabuToken.fetchNabuToken(currency = currencyPrefs.selectedFiatCurrency, action = "simplebuy")
+                .trackLoading(appUtil.activityIndicator).subscribeBy {
+                    simpleBuyPrefs.clearState()
+                    navigator().goToBuyCryptoScreen()
+                }
         }
     }
 

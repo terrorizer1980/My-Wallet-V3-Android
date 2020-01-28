@@ -18,6 +18,7 @@ import com.blockchain.swap.nabu.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.swap.nabu.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -32,9 +33,11 @@ class NabuService(retrofit: Retrofit) {
     private val service: Nabu = retrofit.create(Nabu::class.java)
 
     internal fun getAuthToken(
-        jwt: String
+        jwt: String,
+        currency: String? = null,
+        action: String? = null
     ): Single<NabuOfflineTokenResponse> = service.getAuthToken(
-        NabuOfflineTokenRequest(jwt)
+        jwt = NabuOfflineTokenRequest(jwt), currency = currency, action = action
     ).wrapErrorMessage()
 
     internal fun getSessionToken(
@@ -211,6 +214,12 @@ class NabuService(retrofit: Retrofit) {
         sessionToken: NabuSessionTokenResponse
     ): Single<SimpleBuyPairs> = service.getSupportedSimpleBuyPairs(
         sessionToken.authHeader
+    ).wrapErrorMessage()
+
+    internal fun isEligibleForSimpleBuy(
+        currency: String
+    ): Single<SimpleBuyEligibility> = service.isEligibleForSimpleBuy(
+        currency
     ).wrapErrorMessage()
 
     companion object {

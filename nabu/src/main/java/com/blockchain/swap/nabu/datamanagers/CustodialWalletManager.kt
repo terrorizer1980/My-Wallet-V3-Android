@@ -4,6 +4,7 @@ import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.BankDetail
 import com.blockchain.swap.nabu.models.simplebuy.BuyLimits
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -34,6 +35,10 @@ interface CustodialWalletManager {
     fun getPredefinedAmounts(
         currency: String
     ): Single<List<FiatValue>>
+
+    fun isEligibleForSimpleBuy(
+        currency: String
+    ): Single<SimpleBuyEligibility>
 }
 
 // Provide mock data for development and testing etc
@@ -80,6 +85,9 @@ class MockCustodialWalletManager(
         )
     )
 
+    override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
+        Single.just(SimpleBuyEligibility(true))
+
     override fun getBalanceForAsset(
         crypto: CryptoCurrency
     ): Single<CryptoValue> =
@@ -123,4 +131,7 @@ class LiveCustodialWalletManager(
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> {
         TODO("not implemented")
     }
+
+    override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
+        nabuService.isEligibleForSimpleBuy(currency).onErrorReturn { SimpleBuyEligibility(false) }
 }
