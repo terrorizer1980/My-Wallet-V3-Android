@@ -90,7 +90,6 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
     )
 
     protected open val custodialActions = setOf(
-        AssetAction.ViewActivity,
         AssetAction.Send
     )
 

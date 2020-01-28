@@ -29,11 +29,11 @@ class PAXTokens(
         TODO("not implemented")
     }
 
-    override fun custodialBalance(): Single<CryptoValue> =
+    override fun noncustodialBalance(): Single<CryptoValue> =
         erc20Account.getBalance()
             .map { CryptoValue.usdPaxFromMinor(it) }
 
-    override fun noncustodialBalance(): Single<CryptoValue> =
+    override fun custodialBalance(): Single<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.PAX)
 
     override fun balance(account: AccountReference): Single<CryptoValue> {

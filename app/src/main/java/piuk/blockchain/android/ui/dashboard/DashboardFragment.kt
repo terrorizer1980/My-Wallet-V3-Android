@@ -20,6 +20,7 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.blockstackCampaignName
+import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet
 import piuk.blockchain.android.ui.campaign.PromoBottomSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
@@ -34,6 +35,7 @@ import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import java.lang.IllegalStateException
 
 class EmptyDashboardItem : DashboardItem
 
@@ -287,16 +289,40 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     }
 
     // AssetDetailSheet.Host
-    override fun gotoSendFor(cryptoCurrency: CryptoCurrency) = navigator().gotoSendFor(cryptoCurrency)
-
-    override fun goToReceiveFor(cryptoCurrency: CryptoCurrency) = navigator().gotoReceiveFor(cryptoCurrency)
-
     override fun onSheetClosed() = model.process(ClearBottomSheet)
 
-    override fun goToBuy() = navigator().launchBuySell()
+    override fun gotoSendFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter) {
+        when (filter) {
+            AssetFilter.Total -> throw IllegalStateException("The Send.Total action is invalid")
+            AssetFilter.Wallet -> navigator().gotoSendFor(cryptoCurrency)
+            AssetFilter.Custodial -> { /* TODO: Hook up the custodial send, when we have designs */ }
+        }.exhaustive
+    }
 
-    override fun gotoSwapWithCurrencies(fromCryptoCurrency: CryptoCurrency, toCryptoCurrency: CryptoCurrency) =
-        navigator().launchSwapOrKyc(fromCryptoCurrency = fromCryptoCurrency, targetCurrency = toCryptoCurrency)
+    override fun goToReceiveFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter) =
+        when (filter) {
+            AssetFilter.Total -> throw IllegalStateException("The Receive.Total action is invalid")
+            AssetFilter.Wallet -> navigator().gotoReceiveFor(cryptoCurrency)
+            AssetFilter.Custodial -> throw IllegalStateException("The Receive.Custodial action is invalid")
+        }.exhaustive
+
+    override fun gotoActivityFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter) {
+        when (filter) {
+            AssetFilter.Total -> { /* TODO: Hook up the everything activity view, when we have designs */ }
+            AssetFilter.Wallet -> navigator().gotoTransactionsFor(cryptoCurrency)
+            AssetFilter.Custodial -> { /* TODO: Hook up the custodial activity, when we have designs */ }
+        }.exhaustive
+    }
+
+    override fun gotoSwap(fromCryptoCurrency: CryptoCurrency, filter: AssetFilter) =
+        when (filter) {
+            AssetFilter.Total -> throw IllegalStateException("The Swap.Total action is invalid")
+            AssetFilter.Wallet -> navigator().launchSwapOrKyc(
+                fromCryptoCurrency = fromCryptoCurrency,
+                targetCurrency = fromCryptoCurrency.defaultSwapTo
+            )
+            AssetFilter.Custodial -> throw IllegalStateException("The Swap.Custodial action is invalid")
+        }.exhaustive
 
     companion object {
         fun newInstance() = DashboardFragment()

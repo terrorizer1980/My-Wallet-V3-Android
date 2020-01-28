@@ -144,3 +144,26 @@ fun View.createSpringAnimation(
         this.dampingRatio = dampingRatio
     }
 }
+
+/**
+ * Debounced onClickListener
+ *
+ * Filter out fast double taps
+ */
+private class DebouncingOnClickListener(private val onClickListener: (View?) -> Unit) : View.OnClickListener {
+    private var lastClick = 0L
+    override fun onClick(v: View?) {
+        val now = System.currentTimeMillis()
+        if (now > lastClick + DEBOUNCE_TIMEOUT) {
+            lastClick = now
+            onClickListener(v)
+        }
+    }
+
+    companion object {
+        private const val DEBOUNCE_TIMEOUT = 500L
+    }
+}
+
+fun View.setOnClickListenerDebounced(onClickListener: (View?) -> Unit) =
+    this.setOnClickListener(DebouncingOnClickListener(onClickListener = onClickListener))

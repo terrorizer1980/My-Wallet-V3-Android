@@ -17,6 +17,7 @@ import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.android.ui.campaign.PromoBottomSheet
 import piuk.blockchain.android.util.setCoinIcon
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
+import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
 import java.text.DateFormat
 import kotlin.math.max
 import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet as AirdropStatusSheet
@@ -91,18 +92,8 @@ class StatusViewHolder(itemView: View) : AirdropViewHolder<ListItem.AirdropItem>
             currency.text = item.airdrop.currency.symbol
             val formatted = DateFormat.getDateInstance(DateFormat.SHORT).format(item.airdrop.date)
             date.text = formatted
-            setOnClickListener {
-                val now = System.currentTimeMillis()
-                if (now > lastClick + DEBOUNCE_TIMEOUT) {
-                    lastClick = now
-                    onClick(item.airdrop.name)
-                }
-            }
+            setOnClickListenerDebounced { onClick(item.airdrop.name) }
         }
-    }
-
-    companion object {
-        private const val DEBOUNCE_TIMEOUT = 500L
     }
 }
 

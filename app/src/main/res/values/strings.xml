@@ -28,6 +28,7 @@
     <string name="toolbar_cmd_send">Send</string>
     <string name="toolbar_cmd_receive_crypto">Receive</string>
     <string name="toolbar_cmd_activity">Activity</string>
+    <string name="toolbar_cmd_view_activity">View Activity</string>
     <string name="toolbar_cmd_swap">Swap</string>
 
     <string name="cancel">Cancel</string>
@@ -807,7 +808,6 @@
 
     <!-- DASHBOARD -->
     <string name="dashboard_title">Dashboard</string>
-    <string name="current_price">Current price</string>
 
     <string name="dashboard_time_span_last_day">Last day</string>
     <string name="dashboard_time_span_last_month">Last month</string>
@@ -820,9 +820,13 @@
     <string name="kyc_more_info_cta">Update Now</string>
 
     <string name="metadata_load_failure">Error loading full wallet functionality. Service might temporarily be unavailable.</string>
-    <string name="dashboard_balance_for_asset">Your %1$s Balance</string>
+    <string name="dashboard_price_for_asset">Current %1$s Price</string>
     <string name="dashboard_buy_for_asset">Buy %1$s</string>
     <string name="dashboard_asset_error">Could not load %1$s at this time</string>
+
+    <string name="dashboard_asset_balance_total">Total Balance</string>
+    <string name="dashboard_asset_balance_wallet">Wallet Balance</string>
+    <string name="dashboard_asset_balance_custodial">Custody Balance</string>
 
     <string name="more">More</string>
 

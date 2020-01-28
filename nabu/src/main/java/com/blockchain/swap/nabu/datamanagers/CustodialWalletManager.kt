@@ -60,32 +60,40 @@ class MockCustodialWalletManager(
         )
 
     override fun getBankAccount(): Single<BankAccount> =
-        Single.just(BankAccount(
-            listOf(
-                BankDetail("Bank Name", "LHV"),
-                BankDetail("Bank ID", "DE81 1234 5678 9101 1234 33", true),
-                BankDetail("Bank Code (SWIFT/BIC", "DEKTDE7GSSS", true),
-                BankDetail("Recipient", "Fred Wilson")
+        Single.just(
+            BankAccount(
+                listOf(
+                    BankDetail("Bank Name", "LHV"),
+                    BankDetail("Bank ID", "DE81 1234 5678 9101 1234 33", true),
+                    BankDetail("Bank Code (SWIFT/BIC", "DEKTDE7GSSS", true),
+                    BankDetail("Recipient", "Fred Wilson")
+                )
             )
-        ))
+        )
 
-    override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> = Single.just(listOf(
-        FiatValue.fromMinor(currency, 100000),
-        FiatValue.fromMinor(currency, 5000),
-        FiatValue.fromMinor(currency, 1000),
-        FiatValue.fromMinor(currency, 500)))
+    override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> = Single.just(
+        listOf(
+            FiatValue.fromMinor(currency, 100000),
+            FiatValue.fromMinor(currency, 5000),
+            FiatValue.fromMinor(currency, 1000),
+            FiatValue.fromMinor(currency, 500)
+        )
+    )
 
     override fun getBalanceForAsset(
         crypto: CryptoCurrency
     ): Single<CryptoValue> =
-        when (crypto) {
-            CryptoCurrency.BTC -> Single.just(CryptoValue.ZeroBtc)
-            CryptoCurrency.ETHER -> Single.just(CryptoValue.ZeroEth)
-            CryptoCurrency.BCH -> Single.just(CryptoValue.ZeroBch)
-            CryptoCurrency.XLM -> Single.just(CryptoValue.ZeroXlm)
-            CryptoCurrency.PAX -> Single.just(CryptoValue.ZeroPax)
-            CryptoCurrency.STX -> Single.just(CryptoValue.ZeroStx)
-        }
+        nabuToken.fetchNabuToken()
+            .flatMap {
+                when (crypto) {
+                    CryptoCurrency.BTC -> Single.just(CryptoValue.bitcoinFromSatoshis(726800000))
+                    CryptoCurrency.ETHER -> Single.just(CryptoValue.ZeroEth)
+                    CryptoCurrency.BCH -> Single.just(CryptoValue.ZeroBch)
+                    CryptoCurrency.XLM -> Single.just(CryptoValue.ZeroXlm)
+                    CryptoCurrency.PAX -> Single.just(CryptoValue.usdPaxFromMajor(2785.toBigDecimal()))
+                    CryptoCurrency.STX -> Single.just(CryptoValue.ZeroStx)
+                }
+            }
 }
 
 class LiveCustodialWalletManager(
