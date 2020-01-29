@@ -62,7 +62,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         })
 
         btn_continue.setOnClickListener {
-            navigator().startKyc()
+            model.process(SimpleBuyIntent.BuyButtonClicked)
         }
     }
 
@@ -124,6 +124,13 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         if (newState.supportedPairsAndLimits?.isEmpty() == true) {
             renderNoCurrenciesAvailableState()
         }
+        if (newState.confirmationActionRequested) {
+            if (newState.kycVerificationState != KycState.VERIFIED) {
+                navigator().startKyc()
+            } else {
+                navigator().goToCheckOutScreen()
+            }
+        }
     }
 
     private fun renderNoCurrenciesAvailableState() {
@@ -170,6 +177,11 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
             visible()
             setOnClickListener { input_amount.setText(amount.toStringWithoutSymbol().replace(",", "")) }
         } ?: this.gone()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        model.process(SimpleBuyIntent.ConfirmationHandled)
     }
 }
 

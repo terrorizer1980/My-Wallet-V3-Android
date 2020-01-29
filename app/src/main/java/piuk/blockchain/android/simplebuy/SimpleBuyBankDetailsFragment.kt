@@ -23,7 +23,7 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         model.process(SimpleBuyIntent.FetchBankAccount)
-        activity.setupToolbar(R.string.transfer)
+        activity.setupToolbar(R.string.transfer, false)
     }
 
     override fun render(newState: SimpleBuyState) {
@@ -33,6 +33,10 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
             secure_transfer.text = getString(R.string.securely_transfer,
                 newState.order.amount?.currencyCode ?: "")
         }
+    }
+
+    override fun backPressedHandled(): Boolean {
+        return true
     }
 
     override fun navigator(): SimpleBuyNavigator =

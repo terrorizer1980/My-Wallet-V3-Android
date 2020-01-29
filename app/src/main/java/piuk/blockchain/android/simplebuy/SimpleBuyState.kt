@@ -24,7 +24,9 @@ data class SimpleBuyState(
     private val orderState: OrderState = OrderState.UNITIALISED,
     private val expirationDate: Date? = null,
     val kycVerificationState: KycState = KycState.PENDING,
-    val bankAccount: BankAccount? = null
+    val bankAccount: BankAccount? = null,
+    // we use this flag to avoid navigating back and forth, reset after navigating
+    @Transient val confirmationActionRequested: Boolean = false
 ) : MviState {
 
     @delegate:Transient

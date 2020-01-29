@@ -91,7 +91,9 @@ class SimpleBuyModelTest {
         model.process(SimpleBuyIntent.ConfirmOrder)
 
         testObserver.assertValueAt(0, SimpleBuyState())
-        testObserver.assertValueAt(1, SimpleBuyState(orderState = OrderState.CONFIRMED))
+        testObserver.assertValueAt(1, SimpleBuyState(confirmationActionRequested = true))
+        testObserver.assertValueAt(2,
+            SimpleBuyState(confirmationActionRequested = true, orderState = OrderState.CONFIRMED))
     }
 
     @Test

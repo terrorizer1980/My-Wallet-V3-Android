@@ -89,12 +89,18 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
     override fun onBackPressed() {
         val fragments = supportFragmentManager.fragments
         for (fragment in fragments) {
-            if (fragment is SimpleBuyScreen && fragment.onBackPressed() && pop()) {
+            if (fragment is SimpleBuyScreen && backActionShouldBeHandledByFragment(fragment)) {
                 return
             }
         }
         super.onBackPressed()
     }
+
+    private fun backActionShouldBeHandledByFragment(simpleBuyScreen: SimpleBuyScreen): Boolean =
+        simpleBuyScreen.onBackPressed() && handleByScreenOrPop(simpleBuyScreen)
+
+    private fun handleByScreenOrPop(simpleBuyScreen: SimpleBuyScreen): Boolean =
+        simpleBuyScreen.backPressedHandled() || pop()
 
     override fun onSupportNavigateUp(): Boolean = consume {
         onBackPressed()

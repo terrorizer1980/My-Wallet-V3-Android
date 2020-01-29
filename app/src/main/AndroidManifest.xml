@@ -203,7 +203,7 @@
         <activity
             android:name="piuk.blockchain.android.simplebuy.SimpleBuyActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan|adjustResize" />
 
         <service
             android:name=".data.coinswebsocket.service.CoinsWebSocketService"

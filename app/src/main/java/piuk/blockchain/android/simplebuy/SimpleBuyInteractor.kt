@@ -65,6 +65,13 @@ class SimpleBuyInteractor(
                 }
             }
 
+    fun checkTierLevel(): Single<SimpleBuyIntent.KycStateUpdated> = tierService.tiers().map {
+        when (it.combinedState) {
+            Kyc2TierState.Tier2Approved -> SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED)
+            else -> SimpleBuyIntent.KycStateUpdated(KycState.PENDING)
+        }
+    }.onErrorReturn { SimpleBuyIntent.KycStateUpdated(KycState.PENDING) }
+
     private fun Kyc2TierState.isRejectedOrInReview(): Boolean =
         this == Kyc2TierState.Tier1Failed ||
                 this == Kyc2TierState.Tier1InReview ||
