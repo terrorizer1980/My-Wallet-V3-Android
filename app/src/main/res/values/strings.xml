@@ -17,9 +17,11 @@
     <string name="all_accounts">All Wallets</string>
     <string name="please_wait">Please wait</string>
     <string name="item_buy_sell">Buy &amp; Sell</string>
+    <string name="item_buy">Buy</string>
     <string name="item_backup">Backup funds</string>
     <string name="item_lockbox">Lockbox</string>
     <string name="item_the_exchange">Exchange</string>
+    <string name="item_simple_buy">Simple buy</string>
     <string name="item_airdrops">Airdrops</string>
     <string name="item_debug_homebrew" translatable="false">Debug Homebrew</string>
 

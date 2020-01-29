@@ -69,6 +69,7 @@ interface MainView : MvpView, HomeNavigator {
     fun showMetadataNodeFailure()
     fun setBuySellEnabled(enabled: Boolean, useWebView: Boolean)
     fun setPitEnabled(enabled: Boolean)
+    fun setSimpleBuyEnabled(enabled: Boolean)
     fun showTradeCompleteMsg(txHash: String)
     fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails)
     fun showSecondPasswordDialog()
@@ -115,6 +116,10 @@ class MainPresenter internal constructor(
     internal val defaultCurrency: String
         get() = prefs.selectedFiatCurrency
 
+    private val nabuUser = nabuToken.fetchNabuToken().flatMap {
+        nabuDataManager.getUser(it)
+    }
+
     override fun onViewAttached() {
         if (!accessState.isLoggedIn) {
             // This should never happen, but handle the scenario anyway by starting the launcher
@@ -130,7 +135,21 @@ class MainPresenter internal constructor(
             doPushNotifications()
 
             checkPitAvailability()
+
+            checkSimpleBuyAvailability()
         }
+    }
+
+    private fun checkSimpleBuyAvailability() {
+        compositeDisposable += nabuUser.observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { view?.setSimpleBuyEnabled(false) }.subscribeBy(onSuccess = {
+                view?.setSimpleBuyEnabled(it.isSimpleBuyTagged)
+                if (it.isSimpleBuyTagged) {
+                    view?.setBuySellEnabled(enabled = false, useWebView = false)
+                }
+            }, onError = {
+                view?.setSimpleBuyEnabled(false)
+            })
     }
 
     override fun onViewDetached() {}
@@ -350,9 +369,10 @@ class MainPresenter internal constructor(
     private fun initBuyService() {
         compositeDisposable +=
             Observables.zip(buyDataManager.canBuy,
+                nabuUser.toObservable(),
                 buyDataManager.isCoinifyAllowed).subscribe(
-                { (isEnabled, isCoinifyAllowed) ->
-                    view?.setBuySellEnabled(isEnabled, isCoinifyAllowed)
+                { (isEnabled, nabuUser, isCoinifyAllowed) ->
+                    view?.setBuySellEnabled(isEnabled && !nabuUser.isSimpleBuyTagged, isCoinifyAllowed)
                     if (isEnabled && !isCoinifyAllowed) {
                         compositeDisposable += buyDataManager.watchPendingTrades()
                             .applySchedulers()
@@ -360,7 +380,7 @@ class MainPresenter internal constructor(
 
                         compositeDisposable += buyDataManager.webViewLoginDetails
                             .subscribe({ view?.setWebViewLoginDetails(it) }, { it.printStackTrace() })
-                    } else if (isEnabled && isCoinifyAllowed) {
+                    } else if (isEnabled && isCoinifyAllowed && !nabuUser.isSimpleBuyTagged) {
                         notifyCompletedCoinifyTrades()
                     }
                 }, { throwable ->
@@ -413,9 +433,6 @@ class MainPresenter internal constructor(
     }
 
     internal fun startSwapOrKyc(toCurrency: CryptoCurrency?, fromCurrency: CryptoCurrency?) {
-        val nabuUser = nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.getUser(it)
-        }
         compositeDisposable += nabuUser
             .subscribeBy(onError = { it.printStackTrace() }, onSuccess = { nabuUser ->
                 if (nabuUser.tiers?.current ?: 0 > 0) {

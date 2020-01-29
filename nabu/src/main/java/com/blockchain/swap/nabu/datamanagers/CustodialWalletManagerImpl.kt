@@ -20,7 +20,7 @@ class CustodialWalletManagerImpl(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
         currency: String
     ): Single<SimpleBuyPairs> =
-        mockCustodialWalletManager.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, currency)
+        liveCustodialWalletManager.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, currency)
 
     override fun getBankAccount(): Single<BankAccount> = mockCustodialWalletManager.getBankAccount()
 

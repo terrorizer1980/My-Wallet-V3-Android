@@ -1,5 +1,6 @@
 package piuk.blockchain.android.simplebuy
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_simple_buy.*
@@ -10,6 +11,7 @@ import piuk.blockchain.android.ui.base.BlockchainActivity
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 
@@ -18,6 +20,10 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         get() = false
 
     override val enableLogoutTimer: Boolean = false
+
+    private val startedFromDashboard: Boolean by unsafeLazy {
+        intent.getBooleanExtra(STARTED_FORM_DASHBOARD_KEY, false)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +37,14 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
     }
 
     override fun exitSimpleBuyFlow() {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (!startedFromDashboard) {
+            val intent = Intent(this, MainActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+        } else {
+            finish()
         }
-        startActivity(intent)
     }
 
     override fun goToBuyCryptoScreen() {
@@ -110,5 +120,11 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
     companion object {
         const val KYC_STARTED = 6788
         const val RESULT_KYC_SIMPLE_BUY_COMPLETE = 7854
+        private const val STARTED_FORM_DASHBOARD_KEY = "started_from_dashboard_key"
+
+        fun newInstance(context: Context, launchFromDashboard: Boolean) =
+            Intent(context, SimpleBuyActivity::class.java).apply {
+                putExtra(STARTED_FORM_DASHBOARD_KEY, launchFromDashboard)
+            }
     }
 }

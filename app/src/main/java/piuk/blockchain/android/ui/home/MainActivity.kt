@@ -64,6 +64,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.simplebuy.SimpleBuyActivity
 import piuk.blockchain.android.ui.airdrops.AirdropCentreActivity
 import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.android.ui.home.analytics.SideNavEvent
@@ -389,6 +390,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             R.id.nav_backup -> launchBackupFunds()
             R.id.nav_debug_swap -> HomebrewNavHostActivity.start(this, presenter.defaultCurrency)
             R.id.nav_the_exchange -> presenter.onThePitMenuClicked()
+            R.id.nav_simple_buy -> startSimpleBuy()
             R.id.nav_airdrops -> AirdropCentreActivity.start(this)
             R.id.nav_addresses -> startActivityForResult(Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
             R.id.nav_buy -> presenter.routeToBuySell()
@@ -398,6 +400,10 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             R.id.nav_logout -> showLogoutDialog()
         }
         drawer_layout.closeDrawers()
+    }
+
+    private fun startSimpleBuy() {
+        startActivity(SimpleBuyActivity.newInstance(this, true))
     }
 
     override fun launchThePitLinking(linkId: String) {
@@ -410,6 +416,11 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     override fun setPitEnabled(enabled: Boolean) {
         setPitVisible(enabled)
+    }
+
+    override fun setSimpleBuyEnabled(enabled: Boolean) {
+        val menu = menu
+        menu.findItem(R.id.nav_simple_buy).isVisible = enabled
     }
 
     override fun launchBackupFunds() {
