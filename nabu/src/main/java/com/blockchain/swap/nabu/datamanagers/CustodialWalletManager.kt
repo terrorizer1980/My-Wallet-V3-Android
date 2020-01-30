@@ -54,12 +54,15 @@ class MockCustodialWalletManager(
             SimpleBuyPairs(
                 listOf(
                     SimpleBuyPair(pair = "BTC-USD", buyLimits = BuyLimits(100, 5024558)),
-                    SimpleBuyPair(pair = "ETH-USD", buyLimits = BuyLimits(100, 1224558)),
-                    SimpleBuyPair(pair = "BCH-USD", buyLimits = BuyLimits(100, 3024558)),
-                    SimpleBuyPair(pair = "PAX-USD", buyLimits = BuyLimits(100, 7024558)),
+                    SimpleBuyPair(pair = "ETH-USD", buyLimits = BuyLimits(100, 5024558)),
+                    SimpleBuyPair(pair = "BCH-USD", buyLimits = BuyLimits(100, 5024558)),
+                    SimpleBuyPair(pair = "XLM-USD", buyLimits = BuyLimits(100, 5024558)),
                     SimpleBuyPair(pair = "BTC-EUR", buyLimits = BuyLimits(1006, 10000)),
                     SimpleBuyPair(pair = "ETH-EUR", buyLimits = BuyLimits(1005, 10000)),
-                    SimpleBuyPair(pair = "BCH-EUR", buyLimits = BuyLimits(1001, 10000))
+                    SimpleBuyPair(pair = "BCH-EUR", buyLimits = BuyLimits(1001, 10000)),
+                    SimpleBuyPair(pair = "BTC-GBP", buyLimits = BuyLimits(1006, 10000)),
+                    SimpleBuyPair(pair = "ETH-GBP", buyLimits = BuyLimits(1005, 10000)),
+                    SimpleBuyPair(pair = "BCH-GBP", buyLimits = BuyLimits(1001, 10000))
                 )
             )
         )

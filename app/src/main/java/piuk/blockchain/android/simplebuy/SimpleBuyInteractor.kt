@@ -23,7 +23,6 @@ class SimpleBuyInteractor(
         nabu.fetchNabuToken()
             .flatMap { custodialWalletManager.getBuyLimitsAndSupportedCryptoCurrencies(it, targetCurrency) }
             .map { SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies(it) }
-            .trackLoading(appUtil.activityIndicator)
 
     fun fetchPredefinedAmounts(targetCurrency: String): Single<SimpleBuyIntent.UpdatedPredefinedAmounts> =
         custodialWalletManager.getPredefinedAmounts(targetCurrency)
