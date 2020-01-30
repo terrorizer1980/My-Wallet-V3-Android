@@ -22,6 +22,7 @@ import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.blockstackCampaignName
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet
+import piuk.blockchain.android.ui.campaign.CustodyWalletIntroSheet
 import piuk.blockchain.android.ui.campaign.PromoBottomSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -159,6 +160,9 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
             PromoSheet.PROMO_STX_AIRDROP_COMPLETE -> showBottomSheet(
                 AirdropStatusSheet.newInstance(blockstackCampaignName)
             )
+            PromoSheet.PROMO_CUSTODY_INTRO -> showBottomSheet(
+                CustodyWalletIntroSheet.newInstance()
+            )
             null -> { /* no-op */ }
         }.exhaustive
     }
@@ -289,7 +293,9 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     }
 
     // AssetDetailSheet.Host
-    override fun onSheetClosed() = model.process(ClearBottomSheet)
+    override fun onSheetClosed() {
+        model.process(ClearBottomSheet)
+    }
 
     override fun gotoSendFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter) {
         when (filter) {

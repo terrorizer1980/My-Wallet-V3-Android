@@ -45,6 +45,10 @@ class PrefsUtil(
         get() = getValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, false)
         set(completed) = setValue(PersistentPrefs.KEY_ONBOARDING_COMPLETE, completed)
 
+    override var isCustodialIntroSeen: Boolean
+        get() = getValue(KEY_CUSTODIAL_INTRO_SEEN, false)
+        set(seen) = setValue(KEY_CUSTODIAL_INTRO_SEEN, seen)
+
     override val isLoggedOut: Boolean
         get() = getValue(KEY_LOGGED_OUT, true)
 
@@ -249,6 +253,7 @@ class PrefsUtil(
         private const val KEY_SWAP_INTRO_COMPLETED = "key_swap_intro_completed"
         private const val KEY_INTRO_TOUR_COMPLETED = "key_intro_tour_complete"
         private const val KEY_INTRO_TOUR_CURRENT_STAGE = "key_intro_tour_current_stage"
+        private const val KEY_CUSTODIAL_INTRO_SEEN = "key_custodial_balance_intro_seen"
 
         private const val BACKUP_DATE_KEY = "BACKUP_DATE_KEY"
         private const val SWAP_DATE_KEY = "SWAP_DATE_KEY"

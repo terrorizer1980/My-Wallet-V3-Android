@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.dashboard
 
 import androidx.annotation.VisibleForTesting
+import com.blockchain.preferences.DashboardPrefs
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -56,12 +57,13 @@ interface BalanceState : DashboardItem {
     val isLoading: Boolean
     val fiatBalance: FiatValue?
     val delta: Pair<FiatValue, Double>?
-
     operator fun get(currency: CryptoCurrency): AssetState
+    fun shouldShowCustodialIntro(currency: CryptoCurrency): Boolean
 }
 
 enum class PromoSheet {
-    PROMO_STX_AIRDROP_COMPLETE
+    PROMO_STX_AIRDROP_COMPLETE,
+    PROMO_CUSTODY_INTRO
 }
 
 data class DashboardState(
@@ -74,8 +76,9 @@ data class DashboardState(
     ),
     val showAssetSheetFor: CryptoCurrency? = null,
     val showPromoSheet: PromoSheet? = null,
-    val announcement: AnnouncementCard? = null
-
+    val announcement: AnnouncementCard? = null,
+    val pendingAssetSheetFor: CryptoCurrency? = null,
+    val custodyIntroSeen: Boolean = false
 ) : MviState, BalanceState {
 
     // If ALL the assets are refreshing, then report true. Else false
@@ -110,6 +113,9 @@ data class DashboardState(
 
     override operator fun get(currency: CryptoCurrency): AssetState =
         assets[currency]
+
+    override fun shouldShowCustodialIntro(currency: CryptoCurrency): Boolean =
+        !custodyIntroSeen && get(currency).hasCustodialBalance
 }
 
 data class AssetState(
@@ -118,7 +124,8 @@ data class AssetState(
     val price: FiatValue? = null,
     val price24h: FiatValue? = null,
     val priceTrend: List<Float> = emptyList(),
-    val hasBalanceError: Boolean = false
+    val hasBalanceError: Boolean = false,
+    val hasCustodialBalance: Boolean = false
 ) : DashboardItem {
     val fiatBalance: FiatValue? by unsafeLazy {
         price?.let { cryptoBalance?.toFiat(it) ?: FiatValue.zero(it.currencyCode) }
@@ -140,9 +147,12 @@ data class AssetState(
 class DashboardModel(
     initialState: DashboardState,
     mainScheduler: Scheduler,
-    private val interactor: DashboardInteractor
-) : MviModel<DashboardState, DashboardIntent>(initialState, mainScheduler) {
-
+    private val interactor: DashboardInteractor,
+    private val persistence: DashboardPrefs
+) : MviModel<DashboardState, DashboardIntent>(
+    initialState.copy(custodyIntroSeen = persistence.isCustodialIntroSeen),
+    mainScheduler
+) {
     override fun performAction(previousState: DashboardState, intent: DashboardIntent): Disposable? {
         Timber.d("***> performAction: ${intent.javaClass.simpleName}")
 
@@ -151,6 +161,11 @@ class DashboardModel(
                 interactor.refreshBalances(this, AssetFilter.Total)
             }
             is BalanceUpdate -> {
+                process(CheckForCustodialBalanceIntent(intent.cryptoCurrency))
+                null
+            }
+            is CheckForCustodialBalanceIntent -> interactor.checkForCustodialBalance(this, intent.cryptoCurrency)
+            is UpdateHasCustodialBalanceIntent -> {
                 process(RefreshPrices(intent.cryptoCurrency))
                 null
             }
@@ -168,5 +183,22 @@ class DashboardModel(
 
     override fun onScanLoopError(t: Throwable) {
         Timber.e("***> Scan loop failed: $t")
+    }
+
+    override fun onStateUpdate(s: DashboardState) {
+        persistence.isCustodialIntroSeen = s.custodyIntroSeen
+    }
+
+    override fun distinctIntentFilter(previousIntent: DashboardIntent, nextIntent: DashboardIntent): Boolean {
+        return when (previousIntent) {
+            // Allow consecutive ClearBottomSheet intents
+            is ClearBottomSheet -> {
+                if (nextIntent is ClearBottomSheet)
+                    false
+                else
+                    super.distinctIntentFilter(previousIntent, nextIntent)
+            }
+            else -> super.distinctIntentFilter(previousIntent, nextIntent)
+        }
     }
 }

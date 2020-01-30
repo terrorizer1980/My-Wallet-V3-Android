@@ -89,6 +89,14 @@ class DashboardInteractor(
             onError = { Timber.e(it) }
         )
 
+    fun checkForCustodialBalance(model: DashboardModel, crypto: CryptoCurrency): Disposable? {
+        return tokens[crypto].totalBalance(AssetFilter.Custodial)
+            .subscribeBy(
+                onSuccess = { model.process(UpdateHasCustodialBalanceIntent(crypto, !it.isZero)) },
+                onError = { Timber.e(it) }
+            )
+    }
+
     companion object {
         private const val ONE_DAY = 24 * 60 * 60L
         private val FLATLINE_CHART = listOf(

@@ -1117,6 +1117,11 @@
     <string name="airdrop_sheet_stx_where_are_my_stacks">Stacks (STX) are stored in your Blockchain Wallet. Please note the balance is currently non-transferable.</string>
     <string name="airdrop_sheet_xlm_title" translatable="false">Stellar (XLM)</string>
 
+    <!-- custody wallet intro sheet -->
+    <string name="custody_intro_title">Your Custody Wallet.</string>
+    <string name="custody_intro_body_1">When you buy bitcoin from your Blockchain.com Wallet, your bitcoin will be kept on your Custody Balance. You can keep it safely in there or transfer your funds to your Wallet.</string>
+    <string name="custody_intro_body_2">If you want to swap or send these funds you need to transfer them to your bitcoin Wallet.</string>
+
     <!-- buy/Sell -->
     <!-- Account created Success -->
     <string name="buy_sell_buy">Buy</string>

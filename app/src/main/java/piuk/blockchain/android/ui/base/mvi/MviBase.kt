@@ -33,14 +33,16 @@ abstract class MviModel<S : MviState, I : MviIntent<S>>(
 
     init {
         disposables +=
-            intents.distinctUntilChanged()
+            intents.distinctUntilChanged(::distinctIntentFilter)
                 .observeOn(Schedulers.computation())
                 .scan(initialState) { previousState, intent ->
                     Timber.d("***> Model: ProcessIntent: ${intent.javaClass.simpleName}")
 
                     performAction(previousState, intent)?.let { disposables += it }
                     intent.reduce(previousState)
-                }.subscribeBy(
+                }
+                .subscribeOn(Schedulers.computation())
+                .subscribeBy(
                     onNext = { newState ->
                         _state.accept(newState)
                     },
@@ -50,6 +52,10 @@ abstract class MviModel<S : MviState, I : MviIntent<S>>(
 
     fun process(intent: I) = intents.onNext(intent)
     fun destroy() = disposables.clear()
+
+    protected open fun distinctIntentFilter(previousIntent: I, nextIntent: I): Boolean {
+        return previousIntent == nextIntent
+    }
 
     protected open fun onScanLoopError(t: Throwable) {}
     protected open fun onStateUpdate(s: S) {}

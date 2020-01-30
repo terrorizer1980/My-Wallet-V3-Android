@@ -47,6 +47,33 @@ class BalanceUpdateError(
     }
 }
 
+class CheckForCustodialBalanceIntent(
+    val cryptoCurrency: CryptoCurrency
+) : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState {
+        val oldAsset = oldState[cryptoCurrency]
+        val newAsset = oldAsset.copy(
+            hasCustodialBalance = false
+        )
+        val newAssets = oldState.assets.copy(patchAsset = newAsset)
+        return oldState.copy(assets = newAssets)
+    }
+}
+
+class UpdateHasCustodialBalanceIntent(
+    val cryptoCurrency: CryptoCurrency,
+    private val hasCustodial: Boolean
+) : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState {
+        val oldAsset = oldState[cryptoCurrency]
+        val newAsset = oldAsset.copy(
+            hasCustodialBalance = hasCustodial
+        )
+        val newAssets = oldState.assets.copy(patchAsset = newAsset)
+        return oldState.copy(assets = newAssets)
+    }
+}
+
 class RefreshPrices(
     val cryptoCurrency: CryptoCurrency
 ) : DashboardIntent() {
@@ -113,21 +140,44 @@ object ClearAnnouncement : DashboardIntent() {
 class ShowAssetDetails(
     private val cryptoCurrency: CryptoCurrency
 ) : DashboardIntent() {
-    override fun reduce(oldState: DashboardState): DashboardState {
-        return oldState.copy(showAssetSheetFor = cryptoCurrency, showPromoSheet = null)
-    }
+    override fun reduce(oldState: DashboardState): DashboardState =
+        when {
+            oldState.showAssetSheetFor != null -> oldState
+            oldState.shouldShowCustodialIntro(cryptoCurrency) ->
+                oldState.copy(
+                    showPromoSheet = PromoSheet.PROMO_CUSTODY_INTRO,
+                    pendingAssetSheetFor = cryptoCurrency,
+                    showAssetSheetFor = null,
+                    custodyIntroSeen = true
+                )
+            else -> oldState.copy(
+                showAssetSheetFor = cryptoCurrency,
+                pendingAssetSheetFor = null,
+                showPromoSheet = null
+            )
+        }
 }
 
 class ShowPromoSheet(
     private val promoSheet: PromoSheet
 ) : DashboardIntent() {
-    override fun reduce(oldState: DashboardState): DashboardState {
-        return oldState.copy(showPromoSheet = promoSheet, showAssetSheetFor = null)
-    }
+    override fun reduce(oldState: DashboardState): DashboardState =
+        // Custody sheet isn't displayed via this intent, so filter it out
+        if (promoSheet == PromoSheet.PROMO_CUSTODY_INTRO) {
+            oldState
+        } else {
+            oldState.copy(
+                showPromoSheet = promoSheet,
+                showAssetSheetFor = null
+            )
+        }
 }
 
 object ClearBottomSheet : DashboardIntent() {
-    override fun reduce(oldState: DashboardState): DashboardState {
-        return oldState.copy(showPromoSheet = null, showAssetSheetFor = null)
-    }
+    override fun reduce(oldState: DashboardState): DashboardState =
+        oldState.copy(
+            showPromoSheet = null,
+            showAssetSheetFor = oldState.pendingAssetSheetFor,
+            pendingAssetSheetFor = null
+        )
 }
