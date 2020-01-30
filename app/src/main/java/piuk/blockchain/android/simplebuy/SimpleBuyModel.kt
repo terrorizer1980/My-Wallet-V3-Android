@@ -52,6 +52,8 @@ class SimpleBuyModel(
             is SimpleBuyIntent.UpdatedPredefinedAmounts -> null
             is SimpleBuyIntent.ConfirmationHandled -> null
             is SimpleBuyIntent.BankAccountUpdated -> null
+            is SimpleBuyIntent.KycCompleted -> null
+            is SimpleBuyIntent.KycStareted -> null
             is SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies -> null
             is SimpleBuyIntent.NewCryptoCurrencySelected -> null
             is SimpleBuyIntent.EnteredAmount -> null

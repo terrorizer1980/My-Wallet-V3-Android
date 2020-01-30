@@ -16,6 +16,7 @@ import java.util.regex.Pattern
  *
  */
 data class SimpleBuyState(
+    val id: String? = null,
     val supportedPairsAndLimits: List<SimpleBuyPair>? = null,
     val enteredAmount: String = "",
     val currency: String = "USD",
@@ -23,6 +24,7 @@ data class SimpleBuyState(
     val selectedCryptoCurrency: CryptoCurrency? = null,
     private val orderState: OrderState = OrderState.UNITIALISED,
     private val expirationDate: Date? = null,
+    val kycStartedButNotCompleted: Boolean = false,
     val kycVerificationState: KycState = KycState.PENDING,
     val bankAccount: BankAccount? = null,
     // we use this flag to avoid navigating back and forth, reset after navigating

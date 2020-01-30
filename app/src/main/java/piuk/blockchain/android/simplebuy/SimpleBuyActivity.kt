@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_simple_buy.*
 import kotlinx.android.synthetic.main.toolbar_general.toolbar_general
+import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.ui.base.BlockchainActivity
@@ -20,6 +21,7 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         get() = false
 
     override val enableLogoutTimer: Boolean = false
+    private val simpleBuyModel: SimpleBuyModel by inject()
 
     private val startedFromDashboard: Boolean by unsafeLazy {
         intent.getBooleanExtra(STARTED_FORM_DASHBOARD_KEY, false)
@@ -82,6 +84,7 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == KYC_STARTED && resultCode == RESULT_KYC_SIMPLE_BUY_COMPLETE) {
+            simpleBuyModel.process(SimpleBuyIntent.KycCompleted)
             goToKycVerificationScreen()
         }
     }

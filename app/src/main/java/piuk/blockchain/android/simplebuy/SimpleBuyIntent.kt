@@ -20,7 +20,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
 
     object BuyButtonClicked : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(confirmationActionRequested = true)
+            oldState.copy(confirmationActionRequested = true, orderState = OrderState.INITIALISED)
     }
 
     data class UpdatedBuyLimitsAndSupportedCryptoCurrencies(val simpleBuyPairs: SimpleBuyPairs) : SimpleBuyIntent() {
@@ -89,6 +89,16 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
     object ConfirmationHandled : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(confirmationActionRequested = false)
+    }
+
+    object KycStareted : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState.copy(kycStartedButNotCompleted = true)
+    }
+
+    object KycCompleted : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState.copy(kycStartedButNotCompleted = false)
     }
 
     object FetchKycState : SimpleBuyIntent() {
