@@ -91,7 +91,7 @@ object Versions {
     const val sparkline = "1.2.0"
 
     // Third Party SDKs
-    const val veriff = "2.6.1"
+    const val veriff = "2.8.0"
     const val probity = "1.0.0"
 
     // Logging
