@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="8dp"
+        android:id="@+id/kyc_pending_subtitle"
         android:text="@string/kyc_pending_subtitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/kyc_pending_title" />
@@ -70,10 +71,13 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/verif_time"
         style="@style/Text.Light.14"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="8dp"
-        android:text="@string/kyc_verifying_time_info"
+        android:layout_marginEnd="@dimen/standard_margin"
+        android:gravity="center"
+        tools:text="@string/kyc_verifying_manual_review_required_info"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/verif_text" />

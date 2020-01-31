@@ -1745,8 +1745,10 @@
     <string name="kyc_manual_review_title">KYC Done - Manual Review</string>
     <string name="kyc_pending_subtitle">User goes through the GOLD KYC flow</string>
     <string name="kyc_verifying_info">Verifying your information</string>
-    <string name="kyc_verifying_time_info">Usually takes less than 15–30 seconds</string>
+    <string name="kyc_verifying_time_info">Usually takes less than a minute.</string>
+    <string name="kyc_verifying_manual_review_required_info">You’ve successfully submitted your application. A Blockchain Support Member will review your information.</string>
     <string name="kyc_manual_review_required">Manual Review Required</string>
+    <string name="kyc_pending_review">Pending Review</string>
     <string name="kyc_undecided_text">Copy for undecided state</string>
     <string name="continue_to_wallet">Continue to wallet</string>
     <string name="securely_transfer">Securely transfer %1$s from your bank account to Blockchain. Depending on the transfer method and availability of funds, this may take up to 1 business day.</string>

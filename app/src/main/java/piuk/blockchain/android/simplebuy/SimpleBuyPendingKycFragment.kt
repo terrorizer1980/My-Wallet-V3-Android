@@ -35,18 +35,26 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
             newState.kycVerificationState == KycState.FAILED ||
                     newState.kycVerificationState == KycState.UNDECIDED
         }
-        verif_text.text = when (newState.kycVerificationState) {
-            KycState.PENDING -> resources.getString(R.string.kyc_verifying_info)
-            KycState.FAILED -> resources.getString(R.string.kyc_manual_review_required)
+
+        kyc_pending_subtitle.text = when (newState.kycVerificationState) {
+            KycState.PENDING -> resources.getString(R.string.kyc_pending_subtitle)
             else -> ""
         }
 
-        kyc_pending_title.text = when (newState.kycVerificationState) {
-            KycState.PENDING -> resources.getString(R.string.kyc_pending_title)
+        verif_text.text = when (newState.kycVerificationState) {
+            KycState.PENDING -> resources.getString(R.string.kyc_verifying_info)
             KycState.FAILED -> resources.getString(R.string.kyc_manual_review_required)
-            KycState.UNDECIDED -> resources.getString(R.string.kyc_undecided_text)
+            KycState.UNDECIDED -> resources.getString(R.string.kyc_pending_review)
             else -> ""
         }
+
+        verif_time.text = when (newState.kycVerificationState) {
+            KycState.PENDING -> resources.getString(R.string.kyc_verifying_time_info)
+            KycState.FAILED,
+            KycState.UNDECIDED -> resources.getString(R.string.kyc_verifying_manual_review_required_info)
+            else -> ""
+        }
+
         continue_to_wallet.visibleIf {
             newState.kycVerificationState == KycState.FAILED ||
                     newState.kycVerificationState == KycState.UNDECIDED
