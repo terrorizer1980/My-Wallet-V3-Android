@@ -126,6 +126,8 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         }
         if (newState.confirmationActionRequested) {
             if (newState.kycVerificationState != KycState.VERIFIED) {
+                model.process(SimpleBuyIntent.ConfirmationHandled)
+                model.process(SimpleBuyIntent.KycStareted)
                 navigator().startKyc()
             } else {
                 navigator().goToCheckOutScreen()
