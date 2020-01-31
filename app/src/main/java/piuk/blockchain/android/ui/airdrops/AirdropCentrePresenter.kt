@@ -104,7 +104,6 @@ class AirdropCentrePresenter(
         if (item.campaignState == CampaignState.Ended) {
             when (item.userState) {
                 UserCampaignState.RewardReceived -> AirdropState.RECEIVED
-                UserCampaignState.TaskFinished -> AirdropState.PENDING
                 else -> AirdropState.EXPIRED
             }
         } else {
