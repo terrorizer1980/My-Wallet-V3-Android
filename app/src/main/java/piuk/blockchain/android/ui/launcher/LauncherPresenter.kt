@@ -9,6 +9,7 @@ import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.rxkotlin.plusAssign
 import piuk.blockchain.android.R
 import piuk.blockchain.android.simplebuy.SimpleBuyConfiguration
@@ -115,12 +116,16 @@ class LauncherPresenter(
             } else {
                 settingsDataManager.updateFiatUnit(fiatUnitForFreshAccount())
             }
-        }.flatMap { settings ->
-            custodialWalletManager.isEligibleForSimpleBuy(settings.currency).toObservable()
-                .map { simpleBuyEligible ->
-                    settings to simpleBuyEligible.eligible
-                    // && accessState.isNewlyCreated  commented out for the time being to make testing easier
-                }
+        }.flatMapSingle { settings ->
+            if (settings.isSimpleBuyAllowed().not()) {
+                Single.just(settings to false)
+            } else {
+                custodialWalletManager.isEligibleForSimpleBuy(settings.currency)
+                    .map { simpleBuyEligible ->
+                        settings to simpleBuyEligible.eligible
+                        // && accessState.isNewlyCreated  commented out for the time being to make testing easier
+                    }
+            }
         }
             .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }
@@ -154,6 +159,9 @@ class LauncherPresenter(
     private fun setCurrencyUnits(settings: Settings) {
         prefs.selectedFiatCurrency = settings.currency
     }
+
+    private fun Settings.isSimpleBuyAllowed(): Boolean =
+        listOf("EUR", "GBP").contains(currency)
 
     companion object {
         const val INTENT_EXTRA_VERIFIED = "verified"
