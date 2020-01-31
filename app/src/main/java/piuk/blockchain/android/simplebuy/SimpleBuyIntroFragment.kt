@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.ui.trackLoading
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -44,11 +43,10 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
 
         skip_simple_buy.setOnClickListener { navigator().exitSimpleBuyFlow() }
         buy_crypto_now.setOnClickListener {
-            nabuToken.fetchNabuToken(currency = currencyPrefs.selectedFiatCurrency, action = "simplebuy")
-                .trackLoading(appUtil.activityIndicator).subscribeBy {
-                    simpleBuyPrefs.clearState()
-                    navigator().goToBuyCryptoScreen()
-                }
+            nabuToken.fetchNabuToken(currency = currencyPrefs.selectedFiatCurrency, action = "simplebuy").subscribeBy {
+                simpleBuyPrefs.clearState()
+                navigator().goToBuyCryptoScreen()
+            }
         }
     }
 
