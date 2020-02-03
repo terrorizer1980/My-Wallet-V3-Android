@@ -25,7 +25,7 @@ class BankDetailsContainer @JvmOverloads constructor(
                         LayoutParams.WRAP_CONTENT)
                 )
             }
-            addView(CopyableTextFormItem(context.getString(R.string.amount_to_send),
+            addView(CopyableTextFormItem(context.getString(R.string.simple_buy_amount_to_send),
                 amount.toStringWithSymbol(),
                 false,
                 context)

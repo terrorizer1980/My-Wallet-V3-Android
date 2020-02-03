@@ -10,6 +10,16 @@
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/title"
+            style="@style/Text.Standard.20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginTop="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            tools:text="Pending [crypto] Buy" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/secure_transfer"
             style="@style/Text.Light.14"
             android:layout_width="match_parent"
@@ -17,7 +27,7 @@
             android:layout_marginStart="@dimen/standard_margin"
             android:layout_marginTop="@dimen/small_margin"
             android:layout_marginEnd="@dimen/standard_margin"
-            tools:text="@string/securely_transfer" />
+            tools:text="@string/simple_buy_securely_transfer" />
 
         <piuk.blockchain.android.simplebuy.BankDetailsContainer
             android:id="@+id/bank_details_container"
@@ -35,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/standard_margin"
-            android:text="@string/recepient_name_must_match" />
+            android:text="@string/recipient_name_must_match" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,6 +54,7 @@
             android:paddingBottom="@dimen/small_margin">
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cta_button_cancel"
                 style="@style/CtaButton.White"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -52,6 +63,7 @@
                 android:textColor="@color/red_600" />
 
             <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cta_button_ok"
                 style="@style/CtaButton.Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

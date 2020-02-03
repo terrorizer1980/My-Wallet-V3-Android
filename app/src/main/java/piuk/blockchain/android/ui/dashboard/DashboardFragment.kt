@@ -22,8 +22,6 @@ import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.blockstackCampaignName
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet
-import piuk.blockchain.android.ui.campaign.CustodyWalletIntroSheet
-import piuk.blockchain.android.ui.campaign.PromoBottomSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -32,6 +30,9 @@ import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
 import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailSheet
+import piuk.blockchain.android.ui.dashboard.sheets.DashboardBottomSheet
+import piuk.blockchain.android.ui.dashboard.sheets.CustodyWalletIntroSheet
+import piuk.blockchain.android.ui.dashboard.sheets.BankDetailsBottomSheet
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.androidcore.data.events.ActionEvent
@@ -44,7 +45,7 @@ private typealias RefreshFn = () -> Unit
 
 class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent, DashboardState>(),
     AssetDetailSheet.Host,
-    PromoBottomSheet.Host {
+    DashboardBottomSheet.Host {
 
     override val model: DashboardModel by inject()
 
@@ -90,8 +91,8 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         if (this.state?.showAssetSheetFor != newState.showAssetSheetFor) {
             showAssetSheet(newState.showAssetSheetFor)
         } else {
-            if (this.state?.showPromoSheet != newState.showPromoSheet) {
-                showPromoSheet(newState.showPromoSheet)
+            if (this.state?.showDashboardSheet != newState.showDashboardSheet) {
+                showPromoSheet(newState.showDashboardSheet)
             }
         }
 
@@ -155,14 +156,18 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         }
     }
 
-    private fun showPromoSheet(promoSheet: PromoSheet?) {
+    private fun showPromoSheet(promoSheet: DashboardSheet?) {
         when (promoSheet) {
-            PromoSheet.PROMO_STX_AIRDROP_COMPLETE -> showBottomSheet(
+            DashboardSheet.STX_AIRDROP_COMPLETE -> showBottomSheet(
                 AirdropStatusSheet.newInstance(blockstackCampaignName)
             )
-            PromoSheet.PROMO_CUSTODY_INTRO -> showBottomSheet(
+            DashboardSheet.CUSTODY_INTRO -> showBottomSheet(
                 CustodyWalletIntroSheet.newInstance()
             )
+            DashboardSheet.SIMPLE_BUY_PAYMENT -> showBottomSheet(
+                BankDetailsBottomSheet.newInstance()
+            )
+            DashboardSheet.BACKUP_BEFORE_SEND -> TODO("Not implemented")
             null -> { /* no-op */ }
         }.exhaustive
     }
@@ -289,7 +294,15 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
         override fun startTransferCrypto() = navigator().launchTransfer()
 
-        override fun startStxReceivedDetail() = model.process(ShowPromoSheet(PromoSheet.PROMO_STX_AIRDROP_COMPLETE))
+        override fun startStxReceivedDetail() =
+            model.process(ShowDashboardSheet(DashboardSheet.STX_AIRDROP_COMPLETE))
+
+        override fun startSimpleBuyPaymentDetail() =
+            model.process((ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_PAYMENT)))
+
+        override fun finishSimpleBuySignup() {
+            navigator().resumeSimpleBuyKyc()
+        }
     }
 
     // AssetDetailSheet.Host

@@ -9,7 +9,20 @@ import com.blockchain.swap.nabu.service.NabuService
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
+import io.reactivex.Completable
 import io.reactivex.Single
+
+// We've no idea what these returned API objects are going to look like, but I need something to mock and develop
+// against, so I'll guess...
+enum class OrderStatus {
+    UNKNOWN_ORDER, // The server has never heard of this trade
+    AWAITING_FUNDS, // Waiting for a bank transfer etc
+    PENDING, // Funds received, but crypto not yet released (don't know if we'll need this?)
+    COMPLETE, // All done
+    EXPIRED // Timeout
+}
+
+data class BuyOrderStatus(val status: OrderStatus)
 
 // inject an instance of this to provide simple buy and custodial balance/transfer services.
 // In the short-term, use aa instance which provides mock data - for development and testing.
@@ -36,6 +49,10 @@ interface CustodialWalletManager {
     fun isEligibleForSimpleBuy(
         currency: String
     ): Single<SimpleBuyEligibility>
+
+    fun getBuyOrderStatus(orderId: String): Single<BuyOrderStatus>
+
+    fun deleteBuyOrder(orderId: String): Completable
 }
 
 // Provide mock data for development and testing etc
@@ -102,6 +119,18 @@ class MockCustodialWalletManager(
                     CryptoCurrency.STX -> Single.just(CryptoValue.ZeroStx)
                 }
             }
+
+    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderStatus> {
+        return Single.just(
+            BuyOrderStatus(
+                status = OrderStatus.AWAITING_FUNDS
+            )
+        )
+    }
+
+    override fun deleteBuyOrder(orderId: String): Completable {
+        return Completable.complete()
+    }
 }
 
 class LiveCustodialWalletManager(
@@ -141,6 +170,14 @@ class LiveCustodialWalletManager(
 
     override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
         nabuService.isEligibleForSimpleBuy(currency).onErrorReturn { SimpleBuyEligibility(false) }
+
+    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderStatus> {
+        TODO("not implemented")
+    }
+
+    override fun deleteBuyOrder(orderId: String): Completable {
+        TODO("not implemented")
+    }
 }
 
 data class SimpleBuyPairs(val pairs: List<SimpleBuyPair>)
@@ -155,3 +192,4 @@ data class BuyLimits(private val min: Long, private val max: Long) {
     fun minLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, min)
     fun maxLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, max)
 }
+

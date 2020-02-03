@@ -21,7 +21,6 @@ import androidx.fragment.app.Fragment
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.blockchain.annotations.ButWhy
-import com.blockchain.annotations.CommonCode
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.lockbox.ui.LockboxLandingActivity
@@ -58,7 +57,6 @@ import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
-import com.blockchain.ui.dialog.MaterialProgressDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -99,7 +97,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     private var activityResultAction: () -> Unit = {}
 
-    private var progressDlg: MaterialProgressDialog? = null
     private var backPressed: Long = 0
 
     private var webViewLoginDetails: WebViewLoginDetails? = null
@@ -390,7 +387,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             R.id.nav_backup -> launchBackupFunds()
             R.id.nav_debug_swap -> HomebrewNavHostActivity.start(this, presenter.defaultCurrency)
             R.id.nav_the_exchange -> presenter.onThePitMenuClicked()
-            R.id.nav_simple_buy -> startSimpleBuy()
+            R.id.nav_simple_buy -> launchSimpleBuy()
             R.id.nav_airdrops -> AirdropCentreActivity.start(this)
             R.id.nav_addresses -> startActivityForResult(Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
             R.id.nav_buy -> presenter.routeToBuySell()
@@ -402,8 +399,13 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         drawer_layout.closeDrawers()
     }
 
-    private fun startSimpleBuy() {
-        startActivity(SimpleBuyActivity.newInstance(this, true))
+    private fun launchSimpleBuy() {
+        startActivity(
+            SimpleBuyActivity.newInstance(
+                context = this,
+                launchFromDashboard = true
+            )
+        )
     }
 
     override fun launchThePitLinking(linkId: String) {
@@ -532,6 +534,14 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         startSingleActivity(LauncherActivity::class.java)
     }
 
+    override fun showProgressDialog(message: Int) {
+        super.showProgressDialog(message, null)
+    }
+
+    override fun hideProgressDialog() {
+        super.dismissProgressDialog()
+    }
+
     override fun launchKyc(campaignType: CampaignType) {
         KycNavHostActivity.startForResult(this, campaignType, KYC_STARTED)
     }
@@ -551,30 +561,25 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         presenter.startSwapOrKyc(toCurrency = targetCurrency, fromCurrency = fromCryptoCurrency)
     }
 
-    @ButWhy("What does this really do? Who calls it?")
-    override fun refreshDashboard() {
-//        replaceContentFragment(DashboardFragment.newInstance())
-    }
-
-    @CommonCode("Move to base")
-    override fun showProgressDialog(@StringRes message: Int) {
-        hideProgressDialog()
-        if (!isFinishing) {
-            progressDlg = MaterialProgressDialog(this).apply {
-                setCancelable(false)
-                setMessage(message)
-                show()
-            }
-        }
-    }
-
-    @CommonCode("Move to base")
-    override fun hideProgressDialog() {
-        if (!isFinishing && progressDlg != null) {
-            progressDlg!!.dismiss()
-            progressDlg = null
-        }
-    }
+//    @CommonCode("Move to base")
+//    override fun showProgressDialog(@StringRes message: Int) {
+//        hideProgressDialog()
+//        if (!isFinishing) {
+//            progressDlg = MaterialProgressDialog(this).apply {
+//                setCancelable(false)
+//                setMessage(message)
+//                show()
+//            }
+//        }
+//    }
+//
+//    @CommonCode("Move to base")
+//    override fun hideProgressDialog() {
+//        if (!isFinishing && progressDlg != null) {
+//            progressDlg!!.dismiss()
+//            progressDlg = null
+//        }
+//    }
 
     override fun onHandleInput(strUri: String) {
         handlePredefinedInput(strUri, true)
@@ -758,6 +763,15 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     override fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency) {
         presenter.setCryptoCurrency(cryptoCurrency)
         bottom_navigation.currentItem = ITEM_ACTIVITY
+    }
+
+    override fun resumeSimpleBuyKyc() {
+        startActivity(
+            SimpleBuyActivity.newInstance(
+                context = this,
+                launchKycResume = true
+            )
+        )
     }
 
     override fun startBalanceFragment() {

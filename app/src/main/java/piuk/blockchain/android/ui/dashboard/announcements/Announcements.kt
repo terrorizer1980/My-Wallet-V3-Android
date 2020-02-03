@@ -31,6 +31,8 @@ interface AnnouncementHost {
     fun startTransferCrypto()
 
     fun startStxReceivedDetail()
+    fun startSimpleBuyPaymentDetail()
+    fun finishSimpleBuySignup()
 }
 
 abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {

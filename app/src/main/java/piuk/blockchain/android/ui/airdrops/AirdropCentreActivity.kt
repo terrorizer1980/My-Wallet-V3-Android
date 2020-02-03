@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.MvpActivity
-import piuk.blockchain.android.ui.campaign.PromoBottomSheet
+import piuk.blockchain.android.ui.dashboard.sheets.DashboardBottomSheet
 import piuk.blockchain.android.util.setCoinIcon
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
@@ -24,7 +24,7 @@ import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet as AirdropStatusSh
 
 class AirdropCentreActivity : MvpActivity<AirdropCentreView, AirdropCentrePresenter>(),
     AirdropCentreView,
-    PromoBottomSheet.Host {
+    DashboardBottomSheet.Host {
 
     override val presenter: AirdropCentrePresenter by inject()
     override val view: AirdropCentreView = this

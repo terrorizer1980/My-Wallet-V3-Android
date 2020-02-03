@@ -1,9 +1,9 @@
-package piuk.blockchain.android.ui.campaign
+package piuk.blockchain.android.ui.dashboard.sheets
 
 import android.content.DialogInterface
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 
-abstract class PromoBottomSheet : SlidingModalBottomDialog() {
+abstract class DashboardBottomSheet : SlidingModalBottomDialog() {
 
     interface Host {
         fun onSheetClosed()

@@ -1086,6 +1086,16 @@
     <string name="recovery_card_body">You control your crypto. Write down your recovery phrase to restore all your funds in case you lose your password.</string>
     <string name="recovery_card_cta">Backup Phrase</string>
 
+    <!-- Simple buy finish signup -->
+    <string name="simple_buy_finish_signup_card_title">Finish Signing Up. Buy Crypto.</string>
+    <string name="simple_buy_finish_signup_card_body">You’re almost done signing up for your Blockchain.com Wallet. Once you finish and get approved, start buying crypto.</string>
+    <string name="simple_buy_finish_signup_card_cta">Continue</string>
+
+    <!-- Simple buy pending buy -->
+    <string name="simple_buy_pending_buy_card_title">Pending Crypto Purchase</string>
+    <string name="simple_buy_pending_buy_card_body">Once we receive your bank transfer, your crypto purchase order will be completed.</string>
+    <string name="simple_buy_pending_buy_card_cta">View Bank Transfer Details</string>
+
     <!-- Enrole fingerprints announcement -->
     <string name="register_fingerprint_card_title">Fingerprint Log in</string>
     <string name="register_fingerprint_card_body">Enable fingerprint to quickly log into your wallet instead of using your PIN.</string>
@@ -1751,9 +1761,10 @@
     <string name="kyc_pending_review">Pending Review</string>
     <string name="kyc_undecided_text">Copy for undecided state</string>
     <string name="continue_to_wallet">Continue to wallet</string>
-    <string name="securely_transfer">Securely transfer %1$s from your bank account to Blockchain. Depending on the transfer method and availability of funds, this may take up to 1 business day.</string>
-    <string name="amount_to_send">Amount to send</string>
-    <string name="recepient_name_must_match">Your Recipient name above must match the account holder\'s name on your bank account for your transfer to be successful. Your transfer could be rejected if there is not a match.</string>
+    <string name="simple_buy_securely_transfer">Securely transfer %1$s from your bank account to Blockchain. Depending on the transfer method and availability of funds, this may take up to 1 business day.</string>
+    <string name="simple_buy_amount_to_send">Amount to send</string>
+    <string name="simple_buy_pending_buy_sheet_title">Pending %1s Buy</string>
+    <string name="recipient_name_must_match">Your Recipient name above must match the account holder\'s name on your bank account for your transfer to be successful. Your transfer could be rejected if there is not a match.</string>
     <string name="simple_buy_no_currencies_available_title">No currencies available</string>
     <string name="simple_buy_no_currencies_available">Unfortunately, currently there are no currencies that you can trade :( </string>
     <string name="cancel_order">Cancel order</string>

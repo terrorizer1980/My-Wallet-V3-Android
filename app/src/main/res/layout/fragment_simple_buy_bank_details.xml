@@ -18,7 +18,7 @@
             android:layout_marginStart="@dimen/standard_margin"
             android:layout_marginTop="@dimen/small_margin"
             android:layout_marginEnd="@dimen/standard_margin"
-            tools:text="@string/securely_transfer" />
+            tools:text="@string/simple_buy_securely_transfer" />
 
         <piuk.blockchain.android.simplebuy.BankDetailsContainer
             android:id="@+id/bank_details_container"
@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/standard_margin"
-            android:text="@string/recepient_name_must_match" />
+            android:text="@string/recipient_name_must_match" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/confirm"

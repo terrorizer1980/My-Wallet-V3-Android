@@ -33,6 +33,7 @@ import piuk.blockchain.android.simplebuy.SimpleBuyFlowNavigator
 import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
 import piuk.blockchain.android.simplebuy.SimpleBuyModel
 import piuk.blockchain.android.simplebuy.SimpleBuyState
+import piuk.blockchain.android.simplebuy.SimpleBuyUtils
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.thepit.PitLinkingImpl
@@ -777,6 +778,10 @@ val applicationModule = applicationContext {
                 simpleBuyModel = get(),
                 tierService = get()
             )
+        }
+
+        factory {
+            SimpleBuyUtils(gson = get())
         }
 
         factory {
