@@ -2,7 +2,6 @@ package com.blockchain.swap.nabu.datamanagers
 
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -20,7 +19,7 @@ class CustodialWalletManagerImpl(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
         currency: String
     ): Single<SimpleBuyPairs> =
-        mockCustodialWalletManager.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, currency)
+        liveCustodialWalletManager.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, currency)
 
     override fun getBankAccount(): Single<BankAccount> = mockCustodialWalletManager.getBankAccount()
 

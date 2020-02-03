@@ -1,7 +1,7 @@
 package piuk.blockchain.android.simplebuy
 
+import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.compareTo

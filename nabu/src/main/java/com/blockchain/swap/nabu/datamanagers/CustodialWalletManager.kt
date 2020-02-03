@@ -3,10 +3,7 @@ package com.blockchain.swap.nabu.datamanagers
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.BankDetail
-import com.blockchain.swap.nabu.models.simplebuy.BuyLimits
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.service.NabuService
 import info.blockchain.balance.CryptoCurrency
@@ -125,6 +122,13 @@ class LiveCustodialWalletManager(
             nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
                 nabuService.getSupportCurrencies(nabuSessionTokenResp)
             }
+        }.map {
+            SimpleBuyPairs(it.pairs.map { responsePair ->
+                SimpleBuyPair(
+                    responsePair.pair,
+                    BuyLimits(responsePair.buyMin, responsePair.buyMax)
+                )
+            })
         }
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Single<CryptoValue> {
@@ -137,4 +141,17 @@ class LiveCustodialWalletManager(
 
     override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
         nabuService.isEligibleForSimpleBuy(currency).onErrorReturn { SimpleBuyEligibility(false) }
+}
+
+data class SimpleBuyPairs(val pairs: List<SimpleBuyPair>)
+
+data class SimpleBuyPair(private val pair: String, val buyLimits: BuyLimits) {
+    val cryptoCurrency: CryptoCurrency
+        get() = CryptoCurrency.values().first { it.symbol == pair.split("-")[0] }
+    val fiatCurrency: String = pair.split("-")[1]
+}
+
+data class BuyLimits(private val min: Long, private val max: Long) {
+    fun minLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, min)
+    fun maxLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, max)
 }
