@@ -164,9 +164,16 @@ class LiveCustodialWalletManager(
         TODO("not implemented")
     }
 
-    override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> {
-        TODO("not implemented")
-    }
+    override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
+        nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
+                nabuService.getPredefinedAmounts(nabuSessionTokenResp, currency)
+            }.map { response ->
+                response.amounts[currency]?.map { value ->
+                    FiatValue.fromMinor(currency, value)
+                } ?: emptyList()
+            }
+        }
 
     override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
         nabuService.isEligibleForSimpleBuy(currency).onErrorReturn { SimpleBuyEligibility(false) }

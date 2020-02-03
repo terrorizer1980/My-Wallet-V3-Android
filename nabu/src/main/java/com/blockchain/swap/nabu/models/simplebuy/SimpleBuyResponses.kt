@@ -2,6 +2,8 @@ package com.blockchain.swap.nabu.models.simplebuy
 
 data class SimpleBuyPairsResp(val pairs: List<SimpleBuyPairResp>)
 
+data class SimpleBuyPredefinedAmountsResponse(val amounts: Map<String, List<Long>>)
+
 data class SimpleBuyPairResp(val pair: String, val buyMin: Long, val buyMax: Long)
 
 data class BankAccount(val details: List<BankDetail>)

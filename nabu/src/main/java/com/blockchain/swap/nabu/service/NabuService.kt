@@ -20,6 +20,7 @@ import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPredefinedAmountsResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuSessionTokenResponse
@@ -214,6 +215,14 @@ class NabuService(retrofit: Retrofit) {
         sessionToken: NabuSessionTokenResponse
     ): Single<SimpleBuyPairsResp> = service.getSupportedSimpleBuyPairs(
         sessionToken.authHeader
+    ).wrapErrorMessage()
+
+    internal fun getPredefinedAmounts(
+        sessionToken: NabuSessionTokenResponse,
+        currency: String
+    ): Single<SimpleBuyPredefinedAmountsResponse> = service.getPredefinedAmounts(
+        sessionToken.authHeader,
+        currency
     ).wrapErrorMessage()
 
     internal fun isEligibleForSimpleBuy(

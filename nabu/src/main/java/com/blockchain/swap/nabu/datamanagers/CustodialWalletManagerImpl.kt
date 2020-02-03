@@ -26,7 +26,7 @@ class CustodialWalletManagerImpl(
     override fun getBankAccount(): Single<BankAccount> = mockCustodialWalletManager.getBankAccount()
 
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
-        mockCustodialWalletManager.getPredefinedAmounts(currency)
+        liveCustodialWalletManager.getPredefinedAmounts(currency)
 
     override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
         liveCustodialWalletManager.isEligibleForSimpleBuy(currency)
