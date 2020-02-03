@@ -3,9 +3,9 @@ package piuk.blockchain.android.ui.simplebuy
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.swap.nabu.datamanagers.OrderState
-import com.blockchain.swap.nabu.models.simplebuy.BuyLimits
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
+import com.blockchain.swap.nabu.datamanagers.BuyLimits
+import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
+import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.anyOrNull
 import com.nhaarman.mockito_kotlin.mock

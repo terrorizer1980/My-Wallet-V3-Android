@@ -3,11 +3,8 @@ package com.blockchain.swap.nabu.datamanagers
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.BankDetail
-import com.blockchain.swap.nabu.models.simplebuy.BuyLimits
 import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.service.NabuService
 import info.blockchain.balance.CryptoCurrency
@@ -195,6 +192,13 @@ class LiveCustodialWalletManager(
             nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
                 nabuService.getSupportCurrencies(nabuSessionTokenResp)
             }
+        }.map {
+            SimpleBuyPairs(it.pairs.map { responsePair ->
+                SimpleBuyPair(
+                    responsePair.pair,
+                    BuyLimits(responsePair.buyMin, responsePair.buyMax)
+                )
+            })
         }
 
     private fun OrderStateResponse.toLocalState(): OrderState =
@@ -212,9 +216,16 @@ class LiveCustodialWalletManager(
         TODO("not implemented")
     }
 
-    override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> {
-        TODO("not implemented")
-    }
+    override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
+        nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
+                nabuService.getPredefinedAmounts(nabuSessionTokenResp, currency)
+            }.map { response ->
+                response.amounts[currency]?.map { value ->
+                    FiatValue.fromMinor(currency, value)
+                } ?: emptyList()
+            }
+        }
 
     override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
         nabuService.isEligibleForSimpleBuy(currency).onErrorReturn { SimpleBuyEligibility(false) }
@@ -252,3 +263,16 @@ data class CustodialWalletOrder(
 data class OrderInput(private val symbol: String, private val amount: String)
 
 data class OrderOutput(private val symbol: String)
+
+data class SimpleBuyPairs(val pairs: List<SimpleBuyPair>)
+
+data class SimpleBuyPair(private val pair: String, val buyLimits: BuyLimits) {
+    val cryptoCurrency: CryptoCurrency
+        get() = CryptoCurrency.values().first { it.symbol == pair.split("-")[0] }
+    val fiatCurrency: String = pair.split("-")[1]
+}
+
+data class BuyLimits(private val min: Long, private val max: Long) {
+    fun minLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, min)
+    fun maxLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, max)
+}

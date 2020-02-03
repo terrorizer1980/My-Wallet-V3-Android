@@ -1,8 +1,8 @@
 package piuk.blockchain.android.simplebuy
 
 import com.blockchain.swap.nabu.datamanagers.OrderState
+import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import piuk.blockchain.android.ui.base.mvi.MviIntent
