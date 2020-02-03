@@ -23,6 +23,7 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         model.process(SimpleBuyIntent.FetchBankAccount)
+        model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.BANK_DETAILS))
         activity.setupToolbar(R.string.transfer, false)
     }
 

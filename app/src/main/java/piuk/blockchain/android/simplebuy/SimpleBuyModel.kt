@@ -49,6 +49,8 @@ class SimpleBuyModel(
                 onError = { /*never fails. will return SimpleBuyIntent.KycStateUpdated(KycState.FAILED)*/ }
             )
             is SimpleBuyIntent.KycStateUpdated -> null
+            is SimpleBuyIntent.FlowCurrentScreen -> null
+            is SimpleBuyIntent.ClearState -> null
             is SimpleBuyIntent.UpdatedPredefinedAmounts -> null
             is SimpleBuyIntent.ConfirmationHandled -> null
             is SimpleBuyIntent.BankAccountUpdated -> null

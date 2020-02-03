@@ -29,6 +29,7 @@ import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.simplebuy.SimpleBuyConfiguration
 import piuk.blockchain.android.simplebuy.SimpleBuyConfigurationImpl
+import piuk.blockchain.android.simplebuy.SimpleBuyFlowNavigator
 import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
 import piuk.blockchain.android.simplebuy.SimpleBuyModel
 import piuk.blockchain.android.simplebuy.SimpleBuyState
@@ -768,6 +769,13 @@ val applicationModule = applicationContext {
                 initialState = SimpleBuyState(),
                 prefs = get(),
                 gson = get()
+            )
+        }
+
+        factory {
+            SimpleBuyFlowNavigator(
+                simpleBuyModel = get(),
+                tierService = get()
             )
         }
 

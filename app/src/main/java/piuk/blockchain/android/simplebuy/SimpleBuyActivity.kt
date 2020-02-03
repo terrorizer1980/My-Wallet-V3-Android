@@ -3,6 +3,9 @@ package piuk.blockchain.android.simplebuy
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_simple_buy.*
 import kotlinx.android.synthetic.main.toolbar_general.toolbar_general
 import org.koin.android.ext.android.inject
@@ -22,6 +25,8 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
 
     override val enableLogoutTimer: Boolean = false
     private val simpleBuyModel: SimpleBuyModel by inject()
+    private val compositeDisposable = CompositeDisposable()
+    private val simpleBuyFlowNavigator: SimpleBuyFlowNavigator by inject()
 
     private val startedFromDashboard: Boolean by unsafeLazy {
         intent.getBooleanExtra(STARTED_FORM_DASHBOARD_KEY, false)
@@ -31,11 +36,23 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_simple_buy)
         setSupportActionBar(toolbar_general)
-        if (savedInstanceState == null)
-            supportFragmentManager.beginTransaction()
-                .add(R.id.content_frame,
-                    SimpleBuyIntroFragment())
-                .commitAllowingStateLoss()
+        if (savedInstanceState == null) {
+            compositeDisposable += simpleBuyFlowNavigator.navigateTo().subscribeBy {
+                when (it) {
+                    FlowScreen.INTRO -> launchIntro()
+                    FlowScreen.ENTER_AMOUNT -> goToBuyCryptoScreen(false)
+                    FlowScreen.KYC -> startKyc()
+                    FlowScreen.KYC_VERIFICATION -> goToKycVerificationScreen(false)
+                    FlowScreen.CHECKOUT -> goToCheckOutScreen(false)
+                    FlowScreen.BANK_DETAILS -> goToBankDetailsScreen(false)
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.clear()
     }
 
     override fun exitSimpleBuyFlow() {
@@ -49,36 +66,59 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         }
     }
 
-    override fun goToBuyCryptoScreen() {
+    override fun goToBuyCryptoScreen(addToBackStack: Boolean) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.content_frame, SimpleBuyCryptoFragment(), SimpleBuyCryptoFragment::class.simpleName)
-            .addToBackStack(SimpleBuyCryptoFragment::class.simpleName)
+            .apply {
+                if (addToBackStack) {
+                    addToBackStack(SimpleBuyCryptoFragment::class.simpleName)
+                }
+            }
             .commitAllowingStateLoss()
     }
 
-    override fun goToCheckOutScreen() {
+    override fun goToCheckOutScreen(addToBackStack: Boolean) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.content_frame, SimpleBuyCheckoutFragment(), SimpleBuyCheckoutFragment::class.simpleName)
-            .addToBackStack(SimpleBuyCheckoutFragment::class.simpleName)
+            .apply {
+                if (addToBackStack) {
+                    addToBackStack(SimpleBuyCheckoutFragment::class.simpleName)
+                }
+            }
             .commitAllowingStateLoss()
     }
 
-    override fun goToKycVerificationScreen() {
+    override fun goToKycVerificationScreen(addToBackStack: Boolean) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.content_frame, SimpleBuyPendingKycFragment(), SimpleBuyPendingKycFragment::class.simpleName)
-            .addToBackStack(SimpleBuyPendingKycFragment::class.simpleName)
+            .apply {
+                if (addToBackStack) {
+                    addToBackStack(SimpleBuyPendingKycFragment::class.simpleName)
+                }
+            }
             .commitAllowingStateLoss()
     }
 
-    override fun goToBankDetailsScreen() {
+    override fun goToBankDetailsScreen(addToBackStack: Boolean) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.content_frame, SimpleBuyBankDetailsFragment(), SimpleBuyBankDetailsFragment::class.simpleName)
-            .addToBackStack(SimpleBuyBankDetailsFragment::class.simpleName)
+            .apply {
+                if (addToBackStack) {
+                    addToBackStack(SimpleBuyBankDetailsFragment::class.simpleName)
+                }
+            }
             .commitAllowingStateLoss()
     }
 
     override fun startKyc() {
         KycNavHostActivity.startForResult(this, CampaignType.SimpleBuy, KYC_STARTED)
+    }
+
+    override fun launchIntro() {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.content_frame,
+                SimpleBuyIntroFragment())
+            .commitAllowingStateLoss()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

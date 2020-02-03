@@ -66,6 +66,10 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState.copy(currency = currency)
     }
 
+    data class FlowCurrentScreen(val flowScreen: FlowScreen) : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState.copy(currentScreen = flowScreen)
+    }
+
     data class FetchPredefinedAmounts(val currency: String) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(currency = currency, predefinedAmounts = emptyList())
@@ -74,6 +78,11 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
     object CancelOrder : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState
+    }
+
+    object ClearState : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            SimpleBuyState()
     }
 
     object ConfirmOrder : SimpleBuyIntent() {
@@ -93,7 +102,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
 
     object KycStareted : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(kycStartedButNotCompleted = true)
+            oldState.copy(kycStartedButNotCompleted = true, currentScreen = FlowScreen.KYC)
     }
 
     object KycCompleted : SimpleBuyIntent() {

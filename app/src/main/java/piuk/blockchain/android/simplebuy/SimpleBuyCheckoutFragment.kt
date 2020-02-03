@@ -27,6 +27,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         button_buy.setOnClickListener {
             model.process(SimpleBuyIntent.ConfirmOrder)
         }
+        model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.CHECKOUT))
         activity.setupToolbar(R.string.checkout)
     }
 
@@ -44,7 +45,10 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         }
 
         when (newState.order.orderState) {
-            OrderState.CANCELLED -> navigator().exitSimpleBuyFlow()
+            OrderState.CANCELLED -> {
+                model.process(SimpleBuyIntent.ClearState)
+                navigator().exitSimpleBuyFlow()
+            }
             OrderState.CONFIRMED -> {
                 if (newState.confirmationActionRequested)
                     navigator().goToBankDetailsScreen()

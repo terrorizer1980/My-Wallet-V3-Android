@@ -51,6 +51,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         super.onViewCreated(view, savedInstanceState)
         activity.setupToolbar(R.string.simple_buy_buy_crypto_title)
         model.process(SimpleBuyIntent.FetchBuyLimits(currencyPrefs.selectedFiatCurrency))
+        model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.ENTER_AMOUNT))
         model.process(SimpleBuyIntent.FetchPredefinedAmounts(currencyPrefs.selectedFiatCurrency))
 
         fiat_currency_symbol.text = fiatSymbol

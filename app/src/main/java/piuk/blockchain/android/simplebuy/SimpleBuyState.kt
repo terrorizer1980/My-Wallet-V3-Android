@@ -27,6 +27,7 @@ data class SimpleBuyState(
     val kycStartedButNotCompleted: Boolean = false,
     val kycVerificationState: KycState = KycState.PENDING,
     val bankAccount: BankAccount? = null,
+    val currentScreen: FlowScreen = FlowScreen.INTRO,
     // we use this flag to avoid navigating back and forth, reset after navigating
     @Transient val confirmationActionRequested: Boolean = false
 ) : MviState {
@@ -102,6 +103,10 @@ enum class OrderState {
 
 enum class KycState {
     PENDING, FAILED, UNDECIDED, VERIFIED
+}
+
+enum class FlowScreen {
+    INTRO, ENTER_AMOUNT, KYC, KYC_VERIFICATION, CHECKOUT, BANK_DETAILS
 }
 
 enum class InputError {

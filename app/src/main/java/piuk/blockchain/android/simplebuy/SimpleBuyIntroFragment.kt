@@ -40,7 +40,6 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.setupToolbar(R.string.simple_buy_intro_title)
-
         skip_simple_buy.setOnClickListener { navigator().exitSimpleBuyFlow() }
         buy_crypto_now.setOnClickListener {
             nabuToken.fetchNabuToken(currency = currencyPrefs.selectedFiatCurrency, action = "simplebuy").subscribeBy {
