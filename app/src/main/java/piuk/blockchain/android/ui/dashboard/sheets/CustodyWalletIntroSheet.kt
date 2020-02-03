@@ -1,10 +1,10 @@
-package piuk.blockchain.android.ui.campaign
+package piuk.blockchain.android.ui.dashboard.sheets
 
 import android.view.View
 import kotlinx.android.synthetic.main.dialog_custodial_intro.view.*
 import piuk.blockchain.android.R
 
-class CustodyWalletIntroSheet : PromoBottomSheet() {
+class CustodyWalletIntroSheet : DashboardBottomSheet() {
 
     override val layoutResource: Int = R.layout.dialog_custodial_intro
 

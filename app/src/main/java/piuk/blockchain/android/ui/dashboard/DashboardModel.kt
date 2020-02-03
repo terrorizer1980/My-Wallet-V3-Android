@@ -61,9 +61,11 @@ interface BalanceState : DashboardItem {
     fun shouldShowCustodialIntro(currency: CryptoCurrency): Boolean
 }
 
-enum class PromoSheet {
-    PROMO_STX_AIRDROP_COMPLETE,
-    PROMO_CUSTODY_INTRO
+enum class DashboardSheet {
+    STX_AIRDROP_COMPLETE,
+    CUSTODY_INTRO,
+    SIMPLE_BUY_PAYMENT,
+    BACKUP_BEFORE_SEND
 }
 
 data class DashboardState(
@@ -75,7 +77,7 @@ data class DashboardState(
         CryptoCurrency.PAX to AssetState(CryptoCurrency.PAX)
     ),
     val showAssetSheetFor: CryptoCurrency? = null,
-    val showPromoSheet: PromoSheet? = null,
+    val showDashboardSheet: DashboardSheet? = null,
     val announcement: AnnouncementCard? = null,
     val pendingAssetSheetFor: CryptoCurrency? = null,
     val custodyIntroSeen: Boolean = false
@@ -176,7 +178,7 @@ class DashboardModel(
             is ClearAnnouncement,
             is ShowAnnouncement,
             is ShowAssetDetails,
-            is ShowPromoSheet,
+            is ShowDashboardSheet,
             is ClearBottomSheet -> null
         }
     }

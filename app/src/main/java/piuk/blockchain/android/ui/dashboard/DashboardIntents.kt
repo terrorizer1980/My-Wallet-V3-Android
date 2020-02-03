@@ -145,7 +145,7 @@ class ShowAssetDetails(
             oldState.showAssetSheetFor != null -> oldState
             oldState.shouldShowCustodialIntro(cryptoCurrency) ->
                 oldState.copy(
-                    showPromoSheet = PromoSheet.PROMO_CUSTODY_INTRO,
+                    showDashboardSheet = DashboardSheet.CUSTODY_INTRO,
                     pendingAssetSheetFor = cryptoCurrency,
                     showAssetSheetFor = null,
                     custodyIntroSeen = true
@@ -153,21 +153,21 @@ class ShowAssetDetails(
             else -> oldState.copy(
                 showAssetSheetFor = cryptoCurrency,
                 pendingAssetSheetFor = null,
-                showPromoSheet = null
+                showDashboardSheet = null
             )
         }
 }
 
-class ShowPromoSheet(
-    private val promoSheet: PromoSheet
+class ShowDashboardSheet(
+    private val dashboardSheet: DashboardSheet
 ) : DashboardIntent() {
     override fun reduce(oldState: DashboardState): DashboardState =
         // Custody sheet isn't displayed via this intent, so filter it out
-        if (promoSheet == PromoSheet.PROMO_CUSTODY_INTRO) {
+        if (dashboardSheet == DashboardSheet.CUSTODY_INTRO) {
             oldState
         } else {
             oldState.copy(
-                showPromoSheet = promoSheet,
+                showDashboardSheet = dashboardSheet,
                 showAssetSheetFor = null
             )
         }
@@ -176,7 +176,7 @@ class ShowPromoSheet(
 object ClearBottomSheet : DashboardIntent() {
     override fun reduce(oldState: DashboardState): DashboardState =
         oldState.copy(
-            showPromoSheet = null,
+            showDashboardSheet = null,
             showAssetSheetFor = oldState.pendingAssetSheetFor,
             pendingAssetSheetFor = null
         )

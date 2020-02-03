@@ -29,7 +29,11 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
     private val simpleBuyFlowNavigator: SimpleBuyFlowNavigator by inject()
 
     private val startedFromDashboard: Boolean by unsafeLazy {
-        intent.getBooleanExtra(STARTED_FORM_DASHBOARD_KEY, false)
+        intent.getBooleanExtra(STARTED_FROM_DASHBOARD_KEY, false)
+    }
+
+    private val startedFromKycResume: Boolean by unsafeLazy {
+        intent.getBooleanExtra(STARTED_FROM_KYC_RESUME, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -169,11 +173,14 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
     companion object {
         const val KYC_STARTED = 6788
         const val RESULT_KYC_SIMPLE_BUY_COMPLETE = 7854
-        private const val STARTED_FORM_DASHBOARD_KEY = "started_from_dashboard_key"
 
-        fun newInstance(context: Context, launchFromDashboard: Boolean) =
+        private const val STARTED_FROM_DASHBOARD_KEY = "started_from_dashboard_key"
+        private const val STARTED_FROM_KYC_RESUME = "started_from_kyc_resume_key"
+
+        fun newInstance(context: Context, launchFromDashboard: Boolean = false, launchKycResume: Boolean = false) =
             Intent(context, SimpleBuyActivity::class.java).apply {
-                putExtra(STARTED_FORM_DASHBOARD_KEY, launchFromDashboard)
+                putExtra(STARTED_FROM_DASHBOARD_KEY, launchFromDashboard)
+                putExtra(STARTED_FROM_KYC_RESUME, launchKycResume)
             }
     }
 }

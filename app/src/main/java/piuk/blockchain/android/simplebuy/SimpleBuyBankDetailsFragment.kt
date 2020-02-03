@@ -31,7 +31,7 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
         if (newState.bankAccount != null && newState.order.amount != null) {
             bank_details_container.initWithBankDetailsAndAmount(newState.bankAccount.details,
                 newState.order.amount!!)
-            secure_transfer.text = getString(R.string.securely_transfer,
+            secure_transfer.text = getString(R.string.simple_buy_securely_transfer,
                 newState.order.amount?.currencyCode ?: "")
         }
     }

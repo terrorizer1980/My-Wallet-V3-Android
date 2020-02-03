@@ -80,7 +80,6 @@ interface MainView : MvpView, HomeNavigator {
     fun showTestnetWarning()
     fun launchSwapIntro()
     fun launchPendingVerificationScreen(campaignType: CampaignType)
-    fun refreshDashboard()
     fun shouldIgnoreDeepLinking(): Boolean
     fun displayDialog(@StringRes title: Int, @StringRes message: Int)
 }
@@ -318,8 +317,6 @@ class MainPresenter internal constructor(
                     prefs.setValue(SunriverCardType.JoinWaitList.javaClass.simpleName, true)
                     if (status != KycState.Verified) {
                         view?.launchKyc(CampaignType.Sunriver)
-                    } else {
-                        view?.refreshDashboard()
                     }
                 }, { throwable ->
                     Timber.e(throwable)
