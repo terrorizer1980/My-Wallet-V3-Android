@@ -1,10 +1,12 @@
 package piuk.blockchain.android.simplebuy
 
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import piuk.blockchain.android.ui.base.mvi.MviIntent
+import java.util.Date
 
 sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
     class NewCryptoCurrencySelected(val currency: CryptoCurrency) : SimpleBuyIntent() {
@@ -122,11 +124,12 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
 
     object OrderCanceled : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            SimpleBuyState(orderState = OrderState.CANCELLED)
+            SimpleBuyState(orderState = OrderState.CANCELED)
     }
 
-    object OrderConfirmed : SimpleBuyIntent() {
+    class OrderCreated(private val id: String, private val expirationDate: Date, private val orderState: OrderState) :
+        SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(orderState = OrderState.CONFIRMED)
+            oldState.copy(orderState = orderState, expirationDate = expirationDate, id = id)
     }
 }

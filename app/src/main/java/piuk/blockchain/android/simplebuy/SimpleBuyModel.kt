@@ -32,7 +32,10 @@ class SimpleBuyModel(
                 onSuccess = { process(it) },
                 onError = { /*do nothing, show no amounts*/ }
             )
-            is SimpleBuyIntent.ConfirmOrder -> interactor.confirmOrder().subscribeBy(
+            is SimpleBuyIntent.ConfirmOrder -> interactor.createOrder(
+                previousState.selectedCryptoCurrency,
+                previousState.order.amount
+            ).subscribeBy(
                 onSuccess = { process(it) },
                 onError = { /*do nothing, show no amounts*/ }
             )
@@ -59,7 +62,7 @@ class SimpleBuyModel(
             is SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies -> null
             is SimpleBuyIntent.NewCryptoCurrencySelected -> null
             is SimpleBuyIntent.EnteredAmount -> null
-            is SimpleBuyIntent.OrderConfirmed -> null
+            is SimpleBuyIntent.OrderCreated -> null
             is SimpleBuyIntent.OrderCanceled -> null
         }
 

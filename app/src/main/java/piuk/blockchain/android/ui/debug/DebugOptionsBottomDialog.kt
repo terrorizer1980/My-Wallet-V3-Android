@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.logging.CrashLogger
+import com.blockchain.preferences.SimpleBuyPrefs
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.dialog_debug_options.*
 import org.koin.android.ext.android.get
@@ -28,6 +29,7 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
     private val appUtil: AppUtil by inject()
     private val loginState: AccessState by inject()
     private val crashLogger: CrashLogger by inject()
+    private val simpleBuyPrefs: SimpleBuyPrefs by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,10 +44,14 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
         btn_reset_wallet.setOnClickListener { onResetWallet() }
         btn_reset_announce.setOnClickListener { onResetAnnounce() }
         btn_reset_prefs.setOnClickListener { onResetPrefs() }
-
+        clear_simple_buy_state.setOnClickListener { clearSimpleBuyState() }
         btn_store_linkId.setOnClickListener { prefs.pitToWalletLinkId = "11111111-2222-3333-4444-55556666677" }
 
         firebase_token.text = prefs.firebaseToken
+    }
+
+    private fun clearSimpleBuyState() {
+        simpleBuyPrefs.clearState()
     }
 
     private fun onRndDeviceId() {

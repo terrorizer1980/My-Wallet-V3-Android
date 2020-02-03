@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import kotlinx.android.synthetic.main.fragment_simple_buy_checkout.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
@@ -45,11 +46,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         }
 
         when (newState.order.orderState) {
-            OrderState.CANCELLED -> {
+            OrderState.CANCELED -> {
                 model.process(SimpleBuyIntent.ClearState)
                 navigator().exitSimpleBuyFlow()
             }
-            OrderState.CONFIRMED -> {
+            OrderState.PENDING_DEPOSIT -> {
                 if (newState.confirmationActionRequested)
                     navigator().goToBankDetailsScreen()
             }

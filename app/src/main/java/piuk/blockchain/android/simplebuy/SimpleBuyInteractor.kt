@@ -5,10 +5,13 @@ import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import com.blockchain.swap.nabu.service.TierService
 import com.blockchain.ui.trackLoading
+import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.FiatValue
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.util.AppUtil
+import java.lang.IllegalStateException
 import java.util.concurrent.TimeUnit
 
 class SimpleBuyInteractor(
@@ -37,8 +40,14 @@ class SimpleBuyInteractor(
     fun cancelOrder(): Single<SimpleBuyIntent.OrderCanceled> =
         Single.just(SimpleBuyIntent.OrderCanceled)
 
-    fun confirmOrder(): Single<SimpleBuyIntent.OrderConfirmed> =
-        Single.just(SimpleBuyIntent.OrderConfirmed)
+    fun createOrder(cryptoCurrency: CryptoCurrency?, amount: FiatValue?): Single<SimpleBuyIntent.OrderCreated> =
+        custodialWalletManager.createOrder(
+            cryptoCurrency = cryptoCurrency ?: throw IllegalStateException("Missing Cryptocurrency "),
+            action = "BUY",
+            amount = amount ?: throw IllegalStateException("Missing amount ")
+        ).map {
+            SimpleBuyIntent.OrderCreated(id = it.id, expirationDate = it.expiresAt, orderState = it.state)
+        }.trackLoading(appUtil.activityIndicator)
 
     fun fetchBankAccount(): Single<SimpleBuyIntent.BankAccountUpdated> =
         custodialWalletManager.getBankAccount().map {

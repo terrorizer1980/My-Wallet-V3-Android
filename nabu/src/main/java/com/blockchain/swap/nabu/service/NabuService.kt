@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.service
 
 import com.blockchain.swap.nabu.api.nabu.Nabu
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletOrder
 import com.blockchain.swap.nabu.extensions.wrapErrorMessage
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
@@ -220,6 +221,13 @@ class NabuService(retrofit: Retrofit) {
         currency: String
     ): Single<SimpleBuyEligibility> = service.isEligibleForSimpleBuy(
         currency
+    ).wrapErrorMessage()
+
+    internal fun createOrder(
+        sessionToken: NabuSessionTokenResponse,
+        order: CustodialWalletOrder
+    ) = service.createOrder(
+        sessionToken.authHeader, order
     ).wrapErrorMessage()
 
     companion object {

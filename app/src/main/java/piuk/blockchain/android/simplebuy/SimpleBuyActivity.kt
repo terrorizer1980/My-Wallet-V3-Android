@@ -43,7 +43,9 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         if (savedInstanceState == null) {
             compositeDisposable += simpleBuyFlowNavigator.navigateTo().subscribeBy {
                 when (it) {
-                    FlowScreen.INTRO -> launchIntro()
+                    FlowScreen.INTRO -> {
+                        if (startedFromDashboard) goToBuyCryptoScreen(false) else launchIntro()
+                    }
                     FlowScreen.ENTER_AMOUNT -> goToBuyCryptoScreen(false)
                     FlowScreen.KYC -> startKyc()
                     FlowScreen.KYC_VERIFICATION -> goToKycVerificationScreen(false)

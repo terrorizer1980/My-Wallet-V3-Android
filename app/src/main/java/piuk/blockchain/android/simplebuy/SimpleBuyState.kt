@@ -1,5 +1,6 @@
 package piuk.blockchain.android.simplebuy
 
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
 import info.blockchain.balance.CryptoCurrency
@@ -95,10 +96,6 @@ data class SimpleBuyState(
             } else null
         }
     }
-}
-
-enum class OrderState {
-    UNITIALISED, INITIALISED, CANCELLED, CONFIRMED
 }
 
 enum class KycState {

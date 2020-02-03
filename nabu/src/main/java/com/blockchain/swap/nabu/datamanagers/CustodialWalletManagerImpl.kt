@@ -26,6 +26,17 @@ class CustodialWalletManagerImpl(
 
     override fun getBankAccount(): Single<BankAccount> = mockCustodialWalletManager.getBankAccount()
 
+    override fun createOrder(
+        cryptoCurrency: CryptoCurrency,
+        amount: FiatValue,
+        action: String
+    ): Single<OrderCreation> =
+        liveCustodialWalletManager.createOrder(
+            cryptoCurrency,
+            amount,
+            action
+        )
+
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
         mockCustodialWalletManager.getPredefinedAmounts(currency)
 

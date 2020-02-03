@@ -9,6 +9,7 @@ import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.BuyOrderStatus
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.OrderStatus
 import com.blockchain.swap.nabu.service.TierService
 import com.nhaarman.mockito_kotlin.any
@@ -19,7 +20,6 @@ import io.reactivex.Single
 import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Test
-import piuk.blockchain.android.simplebuy.OrderState
 import piuk.blockchain.android.simplebuy.SimpleBuyOrder
 import piuk.blockchain.android.simplebuy.SimpleBuyState
 import piuk.blockchain.android.simplebuy.SimpleBuyUtils
@@ -194,7 +194,7 @@ class AnnouncementQueriesTest {
 
         whenever(state.id).thenReturn(BUY_ORDER_ID)
         whenever(state.order).thenReturn(order)
-        whenever(order.orderState).thenReturn(OrderState.CONFIRMED)
+        whenever(order.orderState).thenReturn(OrderState.FINISHED)
         whenever(sbUtils.inflateSimpleBuyState(simpleBuyPrefs)).thenReturn(state)
 
         val remoteOrder: BuyOrderStatus = mock()
@@ -215,7 +215,7 @@ class AnnouncementQueriesTest {
 
         whenever(state.id).thenReturn(BUY_ORDER_ID)
         whenever(state.order).thenReturn(order)
-        whenever(order.orderState).thenReturn(OrderState.CONFIRMED)
+        whenever(order.orderState).thenReturn(OrderState.FINISHED)
         whenever(sbUtils.inflateSimpleBuyState(simpleBuyPrefs)).thenReturn(state)
 
         val remoteOrder: BuyOrderStatus = mock()
@@ -238,7 +238,7 @@ class AnnouncementQueriesTest {
 
         whenever(state.id).thenReturn(BUY_ORDER_ID)
         whenever(state.order).thenReturn(order)
-        whenever(order.orderState).thenReturn(OrderState.CONFIRMED)
+        whenever(order.orderState).thenReturn(OrderState.FINISHED)
         whenever(sbUtils.inflateSimpleBuyState(simpleBuyPrefs)).thenReturn(state)
 
         val remoteOrder: BuyOrderStatus = mock()

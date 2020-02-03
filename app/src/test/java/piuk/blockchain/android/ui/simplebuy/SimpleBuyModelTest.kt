@@ -2,10 +2,12 @@ package piuk.blockchain.android.ui.simplebuy
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.SimpleBuyPrefs
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.models.simplebuy.BuyLimits
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.google.gson.Gson
+import com.nhaarman.mockito_kotlin.anyOrNull
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
@@ -17,11 +19,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.simplebuy.KycState
-import piuk.blockchain.android.simplebuy.OrderState
 import piuk.blockchain.android.simplebuy.SimpleBuyIntent
 import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
 import piuk.blockchain.android.simplebuy.SimpleBuyModel
 import piuk.blockchain.android.simplebuy.SimpleBuyState
+import java.util.Date
 
 class SimpleBuyModelTest {
 
@@ -80,20 +82,24 @@ class SimpleBuyModelTest {
         model.process(SimpleBuyIntent.CancelOrder)
 
         testObserver.assertValueAt(0, SimpleBuyState())
-        testObserver.assertValueAt(1, SimpleBuyState(orderState = OrderState.CANCELLED))
+        testObserver.assertValueAt(1, SimpleBuyState(orderState = OrderState.CANCELED))
     }
 
     @Test
     fun `confirm order should make the order to confirm if interactor doesnt return an error`() {
-        whenever(interactor.confirmOrder())
-            .thenReturn(Single.just(SimpleBuyIntent.OrderConfirmed))
+        val date = Date()
+        whenever(interactor.createOrder(anyOrNull(), anyOrNull()))
+            .thenReturn(Single.just(SimpleBuyIntent.OrderCreated("testId", date, OrderState.PENDING_DEPOSIT)))
         val testObserver = model.state.test()
         model.process(SimpleBuyIntent.ConfirmOrder)
 
         testObserver.assertValueAt(0, SimpleBuyState())
         testObserver.assertValueAt(1, SimpleBuyState(confirmationActionRequested = true))
         testObserver.assertValueAt(2,
-            SimpleBuyState(confirmationActionRequested = true, orderState = OrderState.CONFIRMED))
+            SimpleBuyState(confirmationActionRequested = true,
+                orderState = OrderState.PENDING_DEPOSIT,
+                id = "testId",
+                expirationDate = date))
     }
 
     @Test

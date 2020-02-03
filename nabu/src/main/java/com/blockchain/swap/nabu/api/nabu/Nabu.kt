@@ -1,5 +1,6 @@
 package com.blockchain.swap.nabu.api.nabu
 
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.ApplicantIdRequest
@@ -19,6 +20,7 @@ import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.swap.nabu.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.swap.nabu.models.nabu.VeriffToken
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
+import com.blockchain.swap.nabu.models.simplebuy.OrderCreationResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
@@ -184,4 +186,10 @@ internal interface Nabu {
     fun isEligibleForSimpleBuy(
         @Query("fiatCurrency") currency: String
     ): Single<SimpleBuyEligibility>
+
+    @POST(NABU_SIMPLE_BUY_CREATE_ORDER)
+    fun createOrder(
+        @Header("authorization") authorization: String,
+        @Body order: CustodialWalletOrder
+    ): Single<OrderCreationResponse>
 }

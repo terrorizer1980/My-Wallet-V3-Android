@@ -7,13 +7,13 @@ import com.blockchain.swap.nabu.models.nabu.goldTierComplete
 import com.blockchain.swap.nabu.models.nabu.kycVerified
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.OrderStatus
 import com.blockchain.swap.nabu.models.nabu.UserCampaignState
 import com.blockchain.swap.nabu.service.TierService
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.android.campaign.blockstackCampaignName
-import piuk.blockchain.android.simplebuy.OrderState
 import piuk.blockchain.android.simplebuy.SimpleBuyUtils
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 
@@ -83,7 +83,7 @@ class AnnouncementQueries(
         val state = sbUtils.inflateSimpleBuyState(simpleBuyPrefs)
 
         return state?.let {
-            if (it.order.orderState == OrderState.CONFIRMED) {
+            if (it.order.orderState == OrderState.FINISHED) {
                 custodialWalletManager.getBuyOrderStatus(it.id!!)
                     // Bit of a hack here - if the order is COMPLETE, then we wipe our local copy of the order state
                     // TODO: Find a better place to do this. Because, Ugh! Unexpected side effects!

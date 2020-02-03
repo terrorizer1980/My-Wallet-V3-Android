@@ -4,6 +4,7 @@ import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.BankDetail
 import com.blockchain.swap.nabu.models.simplebuy.BuyLimits
+import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPair
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairs
@@ -14,6 +15,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Single
+import java.util.Date
 
 // We've no idea what these returned API objects are going to look like, but I need something to mock and develop
 // against, so I'll guess...
@@ -44,6 +46,12 @@ interface CustodialWalletManager {
     ): Single<SimpleBuyPairs>
 
     fun getBankAccount(): Single<BankAccount>
+
+    fun createOrder(
+        cryptoCurrency: CryptoCurrency,
+        amount: FiatValue,
+        action: String
+    ): Single<OrderCreation>
 
     fun getPredefinedAmounts(
         currency: String
@@ -96,6 +104,14 @@ class MockCustodialWalletManager(
             )
         )
 
+    override fun createOrder(
+        cryptoCurrency: CryptoCurrency,
+        amount: FiatValue,
+        action: String
+    ): Single<OrderCreation> {
+        TODO("not implemented")
+    }
+
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> = Single.just(
         listOf(
             FiatValue.fromMinor(currency, 100000),
@@ -146,6 +162,31 @@ class LiveCustodialWalletManager(
         TODO("not implemented")
     }
 
+    override fun createOrder(
+        cryptoCurrency: CryptoCurrency,
+        amount: FiatValue,
+        action: String
+    ): Single<OrderCreation> =
+        nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
+                nabuService.createOrder(nabuSessionTokenResp,
+                    CustodialWalletOrder(
+                        pair = "${cryptoCurrency.symbol}-${amount.currencyCode}",
+                        action = action,
+                        input = OrderInput(
+                            amount.currencyCode, amount.valueMinor.toString()
+                        ),
+                        output = OrderOutput(cryptoCurrency.symbol)))
+            }
+        }.map {
+            OrderCreation(
+                id = it.id,
+                pair = it.pair,
+                expiresAt = it.expiresAt,
+                state = it.state.toLocalState()
+            )
+        }
+
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
         currency: String
@@ -154,6 +195,17 @@ class LiveCustodialWalletManager(
             nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
                 nabuService.getSupportCurrencies(nabuSessionTokenResp)
             }
+        }
+
+    private fun OrderStateResponse.toLocalState(): OrderState =
+        when (this) {
+            OrderStateResponse.PENDING_DEPOSIT -> OrderState.PENDING_DEPOSIT
+            OrderStateResponse.CANCELED -> OrderState.CANCELED
+            OrderStateResponse.FINISHED -> OrderState.FINISHED
+            OrderStateResponse.PENDING_EXECUTION -> OrderState.PENDING_EXECUTION
+            OrderStateResponse.DEPOSIT_MATCHED -> OrderState.DEPOSIT_MATCHED
+            OrderStateResponse.EXPIRED -> OrderState.EXPIRED
+            OrderStateResponse.FAILED -> OrderState.FAILED
         }
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Single<CryptoValue> {
@@ -175,3 +227,28 @@ class LiveCustodialWalletManager(
         TODO("not implemented")
     }
 }
+
+data class OrderCreation(val id: String, val pair: String, val expiresAt: Date, val state: OrderState)
+
+enum class OrderState {
+    UNITIALISED,
+    INITIALISED,
+    PENDING_DEPOSIT,
+    PENDING_EXECUTION,
+    DEPOSIT_MATCHED,
+    FINISHED,
+    CANCELED,
+    FAILED,
+    EXPIRED;
+}
+
+data class CustodialWalletOrder(
+    private val pair: String,
+    private val action: String,
+    private val input: OrderInput,
+    private val output: OrderOutput
+)
+
+data class OrderInput(private val symbol: String, private val amount: String)
+
+data class OrderOutput(private val symbol: String)

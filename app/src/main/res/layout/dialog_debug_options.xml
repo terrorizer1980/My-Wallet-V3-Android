@@ -110,6 +110,15 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="8dp"/>
 
+    <Button
+        android:id="@+id/clear_simple_buy_state"
+        style="@style/CtaButton.Blue"
+        android:text="Clear SB order"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"/>
+
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
