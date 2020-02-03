@@ -220,8 +220,8 @@ class LiveCustodialWalletManager(
         nabuToken.fetchNabuToken().flatMap {
             nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
                 nabuService.getPredefinedAmounts(nabuSessionTokenResp, currency)
-            }.map { response ->
-                response.amounts[currency]?.map { value ->
+            }.map { amounts ->
+                amounts[currency]?.map { value ->
                     FiatValue.fromMinor(currency, value)
                 } ?: emptyList()
             }

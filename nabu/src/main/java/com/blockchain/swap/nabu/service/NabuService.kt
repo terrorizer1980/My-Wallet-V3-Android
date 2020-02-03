@@ -224,13 +224,7 @@ class NabuService(retrofit: Retrofit) {
     ): Single<SimpleBuyPredefinedAmountsResponse> = service.getPredefinedAmounts(
         sessionToken.authHeader,
         currency
-    ).doOnError {
-        println("it")
-    }.doOnSuccess {
-        println(it)
-    }.map {
-        SimpleBuyPredefinedAmountsResponse(it)
-    }.wrapErrorMessage()
+    ).wrapErrorMessage()
 
     internal fun isEligibleForSimpleBuy(
         currency: String
