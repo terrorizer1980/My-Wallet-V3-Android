@@ -192,4 +192,3 @@ data class BuyLimits(private val min: Long, private val max: Long) {
     fun minLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, min)
     fun maxLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, max)
 }
-
