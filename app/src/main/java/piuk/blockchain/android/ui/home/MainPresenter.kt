@@ -25,6 +25,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
@@ -103,6 +104,7 @@ class MainPresenter internal constructor(
     private val sunriverCampaignRegistration: SunriverCampaignRegistration,
     private val xlmDataManager: XlmDataManager,
     private val pitFeatureFlag: FeatureFlag,
+    private val simpleBuyFlag: FeatureFlag,
     private val pitLinking: PitLinking,
     private val nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
@@ -140,10 +142,12 @@ class MainPresenter internal constructor(
     }
 
     private fun checkSimpleBuyAvailability() {
-        compositeDisposable += nabuUser.observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { view?.setSimpleBuyEnabled(false) }.subscribeBy(onSuccess = {
-                view?.setSimpleBuyEnabled(it.isSimpleBuyTagged)
-                if (it.isSimpleBuyTagged) {
+        compositeDisposable += nabuUser.zipWith(simpleBuyFlag.enabled).observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { view?.setSimpleBuyEnabled(false) }
+            .subscribeBy(onSuccess = { (nabuUser, simpleBuyEnabled) ->
+                val showSimpleBuy = nabuUser.isSimpleBuyTagged && simpleBuyEnabled
+                view?.setSimpleBuyEnabled(showSimpleBuy)
+                if (showSimpleBuy) {
                     view?.setBuySellEnabled(enabled = false, useWebView = false)
                 }
             }, onError = {

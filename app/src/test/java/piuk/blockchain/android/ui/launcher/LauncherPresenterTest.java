@@ -20,10 +20,10 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import piuk.blockchain.android.BlockchainTestApplication;
 import piuk.blockchain.android.R;
-import piuk.blockchain.android.simplebuy.SimpleBuyConfiguration;
 import piuk.blockchain.androidcore.data.access.AccessState;
 
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.remoteconfig.FeatureFlag;
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager;
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility;
 
@@ -75,7 +75,7 @@ public class LauncherPresenterTest {
     @Mock
     private EnvironmentConfig environmentConfig;
     @Mock
-    private SimpleBuyConfiguration simpleBuyConfiguration;
+    private FeatureFlag featureFlag;
     @Mock
     private CustodialWalletManager custodialWalletManager;
 
@@ -92,11 +92,11 @@ public class LauncherPresenterTest {
                 settingsDataManager,
                 notificationTokenManager,
                 environmentConfig,
-                simpleBuyConfiguration,
+                featureFlag,
                 custodialWalletManager
         );
         subject.initView(launcherActivity);
-        Mockito.when(simpleBuyConfiguration.isEnabled()).thenReturn(Single.just(false));
+        Mockito.when(featureFlag.getEnabled()).thenReturn(Single.just(false));
         Mockito.when(custodialWalletManager.isEligibleForSimpleBuy(any()))
                 .thenReturn(Single.just(new SimpleBuyEligibility(true)));
     }

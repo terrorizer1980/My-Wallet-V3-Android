@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
+import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.Settings
@@ -11,8 +12,8 @@ import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.R
-import piuk.blockchain.android.simplebuy.SimpleBuyConfiguration
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -33,7 +34,7 @@ class LauncherPresenter(
     private val settingsDataManager: SettingsDataManager,
     private val notificationTokenManager: NotificationTokenManager,
     private val envSettings: EnvironmentConfig,
-    private val simpleBuyConfiguration: SimpleBuyConfiguration,
+    private val featureFlag: FeatureFlag,
     private val custodialWalletManager: CustodialWalletManager
 ) : BasePresenter<LauncherView>() {
 
@@ -120,9 +121,9 @@ class LauncherPresenter(
             if (settings.isSimpleBuyAllowed().not()) {
                 Single.just(settings to false)
             } else {
-                custodialWalletManager.isEligibleForSimpleBuy(settings.currency)
-                    .map { simpleBuyEligible ->
-                        settings to simpleBuyEligible.eligible
+                custodialWalletManager.isEligibleForSimpleBuy(settings.currency).zipWith(featureFlag.enabled)
+                    .map { (simpleBuyEligible, simpleBuyFeatureFlagEnabled) ->
+                        settings to (simpleBuyEligible.eligible && simpleBuyFeatureFlagEnabled)
                         // && accessState.isNewlyCreated  commented out for the time being to make testing easier
                     }
             }

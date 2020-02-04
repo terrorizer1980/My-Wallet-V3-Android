@@ -27,8 +27,6 @@ import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrate
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
-import piuk.blockchain.android.simplebuy.SimpleBuyConfiguration
-import piuk.blockchain.android.simplebuy.SimpleBuyConfigurationImpl
 import piuk.blockchain.android.simplebuy.SimpleBuyFlowNavigator
 import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
 import piuk.blockchain.android.simplebuy.SimpleBuyModel
@@ -271,6 +269,7 @@ val applicationModule = applicationContext {
                 sunriverCampaignRegistration = get(),
                 xlmDataManager = get(),
                 pitFeatureFlag = get("ff_pit_linking"),
+                simpleBuyFlag = get("ff_simple_buy"),
                 pitLinking = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
@@ -825,10 +824,6 @@ val applicationModule = applicationContext {
             )
         }
 
-        factory {
-            SimpleBuyConfigurationImpl()
-        }.bind(SimpleBuyConfiguration::class)
-
         factory { TransactionHelper(get(), get()) }
 
         factory {
@@ -956,7 +951,7 @@ val applicationModule = applicationContext {
                 settingsDataManager = get(),
                 notificationTokenManager = get(),
                 envSettings = get(),
-                simpleBuyConfiguration = get(),
+                featureFlag = get("ff_simple_buy"),
                 custodialWalletManager = get()
             )
         }

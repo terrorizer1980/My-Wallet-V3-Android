@@ -63,6 +63,7 @@ class MainPresenterTest {
     private val xlmDataManager: XlmDataManager = mock()
     private val pitLinking: PitLinking = mock()
     private val featureFlag: FeatureFlag = mock()
+    private val simpleBuyFeatureFlag: FeatureFlag = mock()
     private val crashLogger: CrashLogger = mock()
     private val nabuDatamanager: NabuDataManager = mock()
 
@@ -111,6 +112,7 @@ class MainPresenterTest {
             sunriverCampaignRegistration = sunriverCampaignRegistration,
             xlmDataManager = xlmDataManager,
             pitFeatureFlag = featureFlag,
+            simpleBuyFlag = simpleBuyFeatureFlag,
             pitLinking = pitLinking,
             nabuToken = nabuToken,
             nabuDataManager = nabuDatamanager,
