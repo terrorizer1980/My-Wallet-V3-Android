@@ -54,7 +54,11 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
 
     data class UpdatedPredefinedAmounts(private val amounts: List<FiatValue>) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState {
-            return oldState.copy(predefinedAmounts = amounts)
+            return oldState.copy(predefinedAmounts = amounts.filter {
+                val isBiggerThanMin = it.valueMinor >= oldState.minAmount?.valueMinor ?: return@filter true
+                val isSmallerThanMax = it.valueMinor <= oldState.maxAmount?.valueMinor ?: return@filter true
+                isBiggerThanMin && isSmallerThanMax
+            })
         }
     }
 
