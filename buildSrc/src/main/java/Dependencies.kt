@@ -6,8 +6,8 @@ object Versions {
     const val minSdk = 21
     const val targetSdk = 28
     const val compileSdk = 28
-    const val versionCode = 503
-    const val versionName = "6.30.4"
+    const val versionCode = 504
+    const val versionName = "6.30.5"
     const val buildTools = "28.0.3"
 
     // Build tools and languages
@@ -91,7 +91,7 @@ object Versions {
     const val sparkline = "1.2.0"
 
     // Third Party SDKs
-    const val veriff = "2.6.1"
+    const val veriff = "2.8.0"
     const val probity = "1.0.0"
 
     // Logging
