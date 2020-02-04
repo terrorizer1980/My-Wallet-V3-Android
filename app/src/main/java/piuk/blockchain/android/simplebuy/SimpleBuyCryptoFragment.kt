@@ -55,12 +55,20 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         model.process(SimpleBuyIntent.FetchPredefinedAmounts(currencyPrefs.selectedFiatCurrency))
 
         fiat_currency_symbol.text = fiatSymbol
-
+        input_layout_amount.isHintAnimationEnabled = false
         input_amount.addTextChangedListener(object : AfterTextChangedWatcher() {
             override fun afterTextChanged(s: Editable?) {
+                input_layout_amount.hint =
+                    if (s?.toString().isNullOrEmpty() && input_amount.hasFocus().not()) "0.00" else ""
                 model.process(SimpleBuyIntent.EnteredAmount(s.toString()))
             }
         })
+
+        input_amount.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                input_layout_amount.hint = ""
+            }
+        }
 
         btn_continue.setOnClickListener {
             model.process(SimpleBuyIntent.BuyButtonClicked)

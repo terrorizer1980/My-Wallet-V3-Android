@@ -24,7 +24,7 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
         super.onViewCreated(view, savedInstanceState)
         model.process(SimpleBuyIntent.FetchBankAccount)
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.BANK_DETAILS))
-        activity.setupToolbar(R.string.transfer, false)
+        activity.setupToolbar(R.string.transfer_details, false)
         confirm.setOnClickListener { navigator().exitSimpleBuyFlow() }
     }
 

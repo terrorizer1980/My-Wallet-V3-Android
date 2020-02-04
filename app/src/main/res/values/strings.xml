@@ -1739,7 +1739,7 @@
     <string name="simple_buy_what_you_want_to_buy">What would you like to buy?</string>
     <string name="simple_buy_enter_amount">Enter amount</string>
     <string name="simple_buy_buy_crypto_title">Buy Crypto</string>
-    <string name="simple_buy_verify_email_instruction">We sent an email to %1$s with a verification link. Didn’t get it? Check your spam folder.</string>
+    <string name="simple_buy_verify_email_instruction">We sent an email to  <b>%1$s</b> with a verification link. Didn’t get it? Check your spam folder.</string>
     <string name="simple_buy_error_fetching_price">Error fetching latest price.</string>
     <string name="simple_buy_up_to_amount">Up to %1$s</string>
     <string name="use_max">Use MAX</string>
@@ -1771,4 +1771,5 @@
     <string name="are_ypu_sure">Are you sure?</string>
     <string name="go_back">Go Back</string>
     <string name="cancel_token_instruction">This will remove your %1$s Buy order.</string>
+    <string name="transfer_details">Transfer details.</string>
 </resources>

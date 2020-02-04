@@ -50,8 +50,8 @@
 
     <View
         android:id="@+id/separator"
-        android:layout_marginTop="10dp"
         style="@style/Separator"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/crypto_icon" />
@@ -73,29 +73,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/standard_margin"
+        android:layout_marginEnd="5dp"
         android:text="@string/amount"
-        app:layout_constraintEnd_toStartOf="@+id/error_action"
         android:textColor="@color/grey_600"
         android:visibility="gone"
-        app:layout_goneMarginEnd="@dimen/standard_margin"
-        android:layout_marginEnd="5dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/error_action"
         app:layout_constraintTop_toBottomOf="@+id/separator"
+        app:layout_goneMarginEnd="@dimen/standard_margin"
         tools:text="Up tp $25,000"
         tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        style="@style/Text.Standard.14"
         android:id="@+id/error_action"
+        style="@style/Text.Standard.14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/blue_600"
-        tools:visibility="visible"
         android:layout_marginEnd="@dimen/standard_margin"
+        android:textColor="@color/blue_600"
         app:layout_constraintBottom_toBottomOf="@+id/up_to_amount"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/up_to_amount"
-        tools:text="12354" />
+        tools:text="12354"
+        tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/fiat_currency_symbol"
@@ -105,11 +105,11 @@
         android:text="€"
         android:textColor="@color/grey_400"
         android:textSize="24sp"
-        app:layout_constraintVertical_bias="0.6"
         app:layout_constraintBottom_toBottomOf="@+id/input_layout_amount"
         app:layout_constraintEnd_toStartOf="@+id/input_layout_amount"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/input_layout_amount" />
+        app:layout_constraintTop_toTopOf="@+id/input_layout_amount"
+        app:layout_constraintVertical_bias="0.6" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/input_layout_amount"
@@ -121,6 +121,7 @@
         android:textColorHint="@color/grey_400"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:hint="0.00"
         app:layout_constraintTop_toBottomOf="@+id/amount">
 
         <androidx.appcompat.widget.AppCompatEditText
@@ -128,7 +129,7 @@
             style="@style/Text.Semibold.16"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/simple_buy_enter_amount"
+
             android:inputType="numberDecimal"
             android:textSize="32sp" />
 
@@ -151,13 +152,11 @@
         style="@style/Text.Standard.16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/small_margin"
         android:layout_marginEnd="8dp"
         android:background="@drawable/predefined_amount_text_background"
         android:textColor="@color/grey_800"
-        app:layout_constraintEnd_toStartOf="@+id/predefined_amount_2"
-        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/input_layout_amount"
         tools:text="$4" />
@@ -169,11 +168,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/small_margin"
         android:layout_marginEnd="8dp"
         android:background="@drawable/predefined_amount_text_background"
         android:textColor="@color/grey_800"
-        app:layout_constraintEnd_toStartOf="@+id/predefined_amount_3"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/predefined_amount_1"
         app:layout_constraintTop_toBottomOf="@+id/input_layout_amount"
@@ -185,11 +183,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/small_margin"
         android:layout_marginEnd="8dp"
         android:background="@drawable/predefined_amount_text_background"
         android:textColor="@color/grey_800"
-        app:layout_constraintEnd_toStartOf="@+id/predefined_amount_4"
         app:layout_constraintStart_toEndOf="@+id/predefined_amount_2"
         app:layout_constraintTop_toBottomOf="@+id/input_layout_amount"
         tools:text="$4" />
@@ -200,11 +197,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/small_margin"
         android:layout_marginEnd="8dp"
         android:background="@drawable/predefined_amount_text_background"
         android:textColor="@color/grey_800"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/predefined_amount_3"
         app:layout_constraintTop_toBottomOf="@+id/input_layout_amount"
         tools:text="$4" />
