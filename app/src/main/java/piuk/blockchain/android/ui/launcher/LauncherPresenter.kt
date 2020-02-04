@@ -138,7 +138,7 @@ class LauncherPresenter(
                 ) {
                     startSimpleBuy()
                 } else
-                    startMainActivity()
+                    startSimpleBuy()
             }, {
                 view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
                 view.onRequestPin()

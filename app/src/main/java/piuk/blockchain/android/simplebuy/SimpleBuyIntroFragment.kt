@@ -1,6 +1,10 @@
 package piuk.blockchain.android.simplebuy
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +23,6 @@ import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
-import java.lang.IllegalStateException
 
 class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
 
@@ -53,8 +56,14 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
         super.onResume()
         compositeDisposable += walletSettings.fetchSettings().subscribe {
             if (!it.isEmailVerified) {
-                email_confirmation_note.text =
-                    resources.getString(R.string.simple_buy_verify_email_instruction, it.email)
+                val emailString = resources.getString(R.string.simple_buy_verify_email_instruction, it.email)
+                val spannableString = SpannableStringBuilder(emailString)
+                spannableString.setSpan(StyleSpan(Typeface.BOLD),
+                    emailString.indexOf(it.email),
+                    emailString.indexOf(it.email) + it.email.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                email_confirmation_note.text = spannableString
             } else {
                 email_confirmation_note.gone()
                 separator.gone()
