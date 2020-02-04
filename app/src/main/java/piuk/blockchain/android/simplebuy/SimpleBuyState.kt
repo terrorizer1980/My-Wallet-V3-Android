@@ -1,6 +1,7 @@
 package piuk.blockchain.android.simplebuy
 
 import com.blockchain.swap.nabu.datamanagers.OrderState
+import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import info.blockchain.balance.CryptoCurrency
@@ -25,6 +26,7 @@ data class SimpleBuyState(
     val selectedCryptoCurrency: CryptoCurrency? = null,
     private val orderState: OrderState = OrderState.UNITIALISED,
     private val expirationDate: Date? = null,
+    private val quote: Quote? = null,
     val kycStartedButNotCompleted: Boolean = false,
     val kycVerificationState: KycState = KycState.PENDING,
     val bankAccount: BankAccount? = null,
@@ -38,7 +40,8 @@ data class SimpleBuyState(
         SimpleBuyOrder(
             orderState,
             amount,
-            expirationDate
+            expirationDate,
+            quote
         )
     }
 
@@ -113,5 +116,6 @@ enum class InputError {
 data class SimpleBuyOrder(
     val orderState: OrderState = OrderState.UNITIALISED,
     val amount: FiatValue? = null,
-    val expirationDate: Date? = null
+    val expirationDate: Date? = null,
+    val quote: Quote? = null
 )

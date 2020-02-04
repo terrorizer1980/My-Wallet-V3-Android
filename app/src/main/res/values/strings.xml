@@ -1747,8 +1747,9 @@
     <string name="use_min">Use MIN</string>
     <string name="too_low">Too low</string>
     <string name="checkout">Checkout</string>
-    <string name="checkout_subtitle">Summary of purchase/explainer</string>
+    <string name="checkout_subtitle">Please review and confirm your %1$s buy.</string>
     <string name="total_cost">Total Cost</string>
+    <string name="date">Date</string>
     <string name="purchase_note">Your purchase will execute at the Market rate at the end time we receive your deposit.</string>
     <string name="buy_crypto">Buy %1$s</string>
     <string name="kyc_pending_title">KYC Done - Pending</string>

@@ -1,6 +1,7 @@
 package piuk.blockchain.android.simplebuy
 
 import com.blockchain.swap.nabu.datamanagers.OrderState
+import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import info.blockchain.balance.CryptoCurrency
@@ -68,6 +69,12 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
         }
     }
 
+    data class QuoteUpdated(private val quote: Quote) : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState {
+            return oldState.copy(quote = quote)
+        }
+    }
+
     data class FetchBuyLimits(val currency: String) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState.copy(currency = currency)
     }
@@ -119,6 +126,11 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
     object FetchKycState : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(kycVerificationState = KycState.PENDING)
+    }
+
+    object FetchQuote : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState
     }
 
     class KycStateUpdated(val kycState: KycState) : SimpleBuyIntent() {

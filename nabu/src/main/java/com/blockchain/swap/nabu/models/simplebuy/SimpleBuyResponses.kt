@@ -1,5 +1,6 @@
 package com.blockchain.swap.nabu.models.simplebuy
 
+import java.math.BigInteger
 import java.util.Date
 
 data class SimpleBuyPairsResp(val pairs: List<SimpleBuyPairResp>)
@@ -13,6 +14,14 @@ data class BankAccount(val details: List<BankDetail>)
 data class BankDetail(val title: String, val value: String, val isCopyable: Boolean = false)
 
 data class SimpleBuyEligibility(val eligible: Boolean)
+
+data class SimpleBuyQuoteResponse(
+    val fee: BigInteger,
+    val rate: BigInteger,
+    val rateWithoutFee: BigInteger,
+    val pair: String,
+    val time: Date
+)
 
 data class OrderCreationResponse(val id: String, val pair: String, val expiresAt: Date, val state: OrderStateResponse)
 

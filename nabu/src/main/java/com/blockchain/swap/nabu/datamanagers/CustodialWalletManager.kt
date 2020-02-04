@@ -3,8 +3,8 @@ package com.blockchain.swap.nabu.datamanagers
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.BankDetail
-import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
+import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.service.NabuService
 import info.blockchain.balance.CryptoCurrency
@@ -43,6 +43,8 @@ interface CustodialWalletManager {
     ): Single<SimpleBuyPairs>
 
     fun getBankAccount(): Single<BankAccount>
+
+    fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote>
 
     fun createOrder(
         cryptoCurrency: CryptoCurrency,
@@ -101,6 +103,9 @@ class MockCustodialWalletManager(
             )
         )
 
+    override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
+        Single.just(Quote(date = Date()))
+
     override fun createOrder(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
@@ -115,8 +120,8 @@ class MockCustodialWalletManager(
             FiatValue.fromMinor(currency, 5000),
             FiatValue.fromMinor(currency, 1000),
             FiatValue.fromMinor(currency, 500)
-        )
-    )
+
+        ))
 
     override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
         Single.just(SimpleBuyEligibility(true))
@@ -158,6 +163,20 @@ class LiveCustodialWalletManager(
     override fun getBankAccount(): Single<BankAccount> {
         TODO("not implemented")
     }
+
+    override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
+        nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
+                nabuService.getSimpleBuyQuote(
+                    sessionToken = nabuSessionTokenResp,
+                    action = action,
+                    currencyPair = "${crypto.symbol}-${amount.currencyCode}",
+                    amount = amount.valueMinor.toString()
+                )
+            }.map { quoteResponse ->
+                Quote(date = quoteResponse.time)
+            }
+        }
 
     override fun createOrder(
         cryptoCurrency: CryptoCurrency,
@@ -276,3 +295,5 @@ data class BuyLimits(private val min: Long, private val max: Long) {
     fun minLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, min)
     fun maxLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, max)
 }
+
+data class Quote(val date: Date)

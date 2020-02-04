@@ -22,6 +22,7 @@ import com.blockchain.swap.nabu.models.nabu.VeriffToken
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
 import com.blockchain.swap.nabu.models.simplebuy.OrderCreationResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPredefinedAmountsResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
@@ -188,6 +189,14 @@ internal interface Nabu {
         @Header("authorization") authorization: String,
         @Query("currency") currency: String
     ): Single<SimpleBuyPredefinedAmountsResponse>
+
+    @GET(NABU_SIMPLE_QUOTE)
+    fun getSimpleBuyQuote(
+        @Header("authorization") authorization: String,
+        @Query("currencyPair") currencyPair: String,
+        @Query("action") action: String,
+        @Query("amount") amount: String
+    ): Single<SimpleBuyQuoteResponse>
 
     @GET(NABU_SIMPLE_BUY_ELIGIBILITY)
     fun isEligibleForSimpleBuy(

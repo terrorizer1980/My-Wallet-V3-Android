@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.blockchain.swap.nabu.datamanagers.OrderState
+import com.blockchain.swap.nabu.datamanagers.Quote
 import kotlinx.android.synthetic.main.fragment_simple_buy_checkout.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(), SimpleBuyScreen,
     CancelOrderConfirmationListener {
@@ -30,6 +33,8 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         }
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.CHECKOUT))
         activity.setupToolbar(R.string.checkout)
+
+        model.process(SimpleBuyIntent.FetchQuote)
     }
 
     override fun navigator(): SimpleBuyNavigator =
@@ -40,6 +45,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     override fun render(newState: SimpleBuyState) {
         total_cost.text = newState.order.amount?.formatOrSymbolForZero()
         button_buy.text = resources.getString(R.string.buy_crypto, newState.selectedCryptoCurrency?.symbol)
+        checkout_subtitle.text =
+            resources.getString(R.string.checkout_subtitle, newState.selectedCryptoCurrency?.symbol)
+
+        date.text = newState.order.quote?.formatDate()
+
         button_cancel.setOnClickListener {
             showBottomSheet(SimpleBuyCancelOrderBottomSheet.newInstance(newState.selectedCryptoCurrency
                 ?: return@setOnClickListener))
@@ -67,6 +77,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         super.onPause()
         model.process(SimpleBuyIntent.ConfirmationHandled)
     }
+}
+
+private fun Quote.formatDate(): String {
+    val format = SimpleDateFormat("MMMM d, yyyy @ hh:mm aa", Locale.getDefault())
+    return format.format(this.date)
 }
 
 interface CancelOrderConfirmationListener {

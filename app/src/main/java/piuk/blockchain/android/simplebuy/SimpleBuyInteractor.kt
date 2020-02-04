@@ -54,6 +54,14 @@ class SimpleBuyInteractor(
             SimpleBuyIntent.BankAccountUpdated(it)
         }
 
+    fun fetchQuote(cryptoCurrency: CryptoCurrency?, amount: FiatValue?): Single<SimpleBuyIntent.QuoteUpdated> =
+        custodialWalletManager.getQuote(
+            crypto = cryptoCurrency ?: throw IllegalStateException("Missing Cryptocurrency "),
+            action = "BUY",
+            amount = amount ?: throw IllegalStateException("Missing amount ")).map {
+            SimpleBuyIntent.QuoteUpdated(it)
+        }
+
     fun pollForKycState(): Single<SimpleBuyIntent.KycStateUpdated> =
         tierService.tiers().map {
             when {

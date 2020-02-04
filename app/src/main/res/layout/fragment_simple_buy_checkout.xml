@@ -28,16 +28,50 @@
         app:layout_constraintTop_toBottomOf="@+id/checkout" />
 
     <View
-        android:id="@+id/amount_top_separator"
+        android:id="@+id/date_top_separator"
+        style="@style/Separator"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="30dp"
-        android:layout_marginEnd="@dimen/standard_margin"
-        android:background="@color/grey_000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkout_subtitle" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/date_title"
+        style="@style/Text.Semibold.16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/small_margin"
+        android:layout_marginBottom="@dimen/small_margin"
+        android:text="@string/date"
+        android:textColor="@color/grey_600"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/date_top_separator" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/date"
+        style="@style/Text.Semibold.16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/small_margin"
+        android:layout_marginEnd="@dimen/standard_margin"
+        android:layout_marginBottom="@dimen/small_margin"
+        android:textColor="@color/grey_800"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/date_top_separator"
+        tools:text="April 8, 2019 @ 06:14 PM" />
+
+    <View
+        android:id="@+id/amount_top_separator"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/small_margin"
+        style="@style/Separator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/date" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/total_cost_title"
