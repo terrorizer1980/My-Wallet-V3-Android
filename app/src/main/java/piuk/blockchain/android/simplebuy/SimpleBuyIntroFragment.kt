@@ -12,23 +12,25 @@ import androidx.fragment.app.Fragment
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.swap.nabu.NabuToken
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_simple_buy_intro.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.base.ErrorDialogData
+import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.setupToolbar
-import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 
 class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
 
     private val walletSettings: SettingsDataManager by inject()
     private val nabuToken: NabuToken by inject()
-    private val appUtil: AppUtil by inject()
     private val currencyPrefs: CurrencyPrefs by inject()
     private val simpleBuyPrefs: SimpleBuyPrefs by inject()
 
@@ -45,11 +47,36 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
         activity?.setupToolbar(R.string.simple_buy_intro_title)
         skip_simple_buy.setOnClickListener { navigator().exitSimpleBuyFlow() }
         buy_crypto_now.setOnClickListener {
-            nabuToken.fetchNabuToken(currency = currencyPrefs.selectedFiatCurrency, action = "simplebuy").subscribeBy {
-                simpleBuyPrefs.clearState()
-                navigator().goToBuyCryptoScreen()
-            }
+            nabuToken.fetchNabuToken(currency = currencyPrefs.selectedFiatCurrency, action = "simplebuy")
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe {
+                    showLoadingState()
+                }
+                .subscribeBy(
+                    onSuccess = {
+                        simpleBuyPrefs.clearState()
+                        navigator().goToBuyCryptoScreen()
+                    },
+                    onError = {
+                        showError()
+                    }
+                )
         }
+    }
+
+    private fun showError() {
+        buy_crypto_now.visible()
+        progress.gone()
+        ErrorSlidingBottomDialog.newInstance(ErrorDialogData(
+            resources.getString(R.string.ops),
+            resources.getString(R.string.something_went_wrong_try_again),
+            resources.getString(R.string.ok_cap)))
+            .show(childFragmentManager, "BOTTOM_SHEET")
+    }
+
+    private fun showLoadingState() {
+        buy_crypto_now.gone()
+        progress.visible()
     }
 
     override fun onResume() {

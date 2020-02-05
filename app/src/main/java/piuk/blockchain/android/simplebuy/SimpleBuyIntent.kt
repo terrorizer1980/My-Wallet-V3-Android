@@ -118,6 +118,15 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
             oldState.copy(kycStartedButNotCompleted = true, currentScreen = FlowScreen.KYC)
     }
 
+    class ErrorIntent(private val error: ErrorState = ErrorState.GenericError) : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState.copy(errorState = error)
+
+        override fun isValidFor(oldState: SimpleBuyState): Boolean {
+            return oldState.errorState == null
+        }
+    }
+
     object KycCompleted : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(kycStartedButNotCompleted = false)
@@ -147,5 +156,10 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
         SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(orderState = orderState, expirationDate = expirationDate, id = id)
+    }
+
+    object ClearError : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
+            oldState.copy(errorState = null)
     }
 }

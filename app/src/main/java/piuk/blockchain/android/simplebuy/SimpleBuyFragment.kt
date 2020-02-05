@@ -1,6 +1,8 @@
 package piuk.blockchain.android.simplebuy
 
-interface SimpleBuyScreen {
+import piuk.blockchain.android.ui.base.ErrorDialogHost
+
+interface SimpleBuyScreen : ErrorDialogHost {
     fun navigator(): SimpleBuyNavigator
     // methods for handling back press and navigation back arrow
     // return true if we want the screen to get popped or handle the back press itself
@@ -8,6 +10,8 @@ interface SimpleBuyScreen {
 
     // return true if we want the screen to handle the back press and not get popped
     fun backPressedHandled(): Boolean = false
+
+    override fun onErrorCtaActionOrDismiss() {}
 }
 
 interface SimpleBuyNavigator {

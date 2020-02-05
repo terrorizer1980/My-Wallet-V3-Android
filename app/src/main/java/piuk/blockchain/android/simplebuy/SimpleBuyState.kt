@@ -31,6 +31,7 @@ data class SimpleBuyState(
     val kycVerificationState: KycState = KycState.PENDING,
     val bankAccount: BankAccount? = null,
     val currentScreen: FlowScreen = FlowScreen.INTRO,
+    @Transient val errorState: ErrorState? = null,
     // we use this flag to avoid navigating back and forth, reset after navigating
     @Transient val confirmationActionRequested: Boolean = false
 ) : MviState {
@@ -111,6 +112,10 @@ enum class FlowScreen {
 
 enum class InputError {
     BELOW_MIN, ABOVE_MAX
+}
+
+sealed class ErrorState {
+    object GenericError : ErrorState()
 }
 
 data class SimpleBuyOrder(

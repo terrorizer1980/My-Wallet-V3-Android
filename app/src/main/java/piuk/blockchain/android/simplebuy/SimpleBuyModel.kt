@@ -22,26 +22,26 @@ class SimpleBuyModel(
             is SimpleBuyIntent.FetchBuyLimits -> interactor.fetchBuyLimitsAndSupportedCryptoCurrencies(intent.currency)
                 .subscribeBy(
                     onSuccess = { process(it) },
-                    onError = { /*handle case when limits weren't received*/ }
+                    onError = { process(SimpleBuyIntent.ErrorIntent()) }
                 )
             is SimpleBuyIntent.FetchPredefinedAmounts -> interactor.fetchPredefinedAmounts(intent.currency).subscribeBy(
                 onSuccess = { process(it) },
-                onError = { /*do nothing, show no amounts*/ }
+                onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )
             is SimpleBuyIntent.CancelOrder -> interactor.cancelOrder().subscribeBy(
                 onSuccess = { process(it) },
-                onError = { /*do nothing, show no amounts*/ }
+                onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )
             is SimpleBuyIntent.ConfirmOrder -> interactor.createOrder(
                 previousState.selectedCryptoCurrency,
                 previousState.order.amount
             ).subscribeBy(
                 onSuccess = { process(it) },
-                onError = { /*do nothing, show no amounts*/ }
+                onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )
             is SimpleBuyIntent.FetchBankAccount -> interactor.fetchBankAccount().subscribeBy(
                 onSuccess = { process(it) },
-                onError = { /*do nothing, show no amounts*/ }
+                onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )
             is SimpleBuyIntent.FetchKycState -> interactor.pollForKycState().subscribeBy(
                 onSuccess = { process(it) },
@@ -53,7 +53,7 @@ class SimpleBuyModel(
             )
                 .subscribeBy(
                     onSuccess = { process(it) },
-                    onError = { /* will show error state */ }
+                    onError = { process(SimpleBuyIntent.ErrorIntent()) }
                 )
             is SimpleBuyIntent.KycStateUpdated -> null
             is SimpleBuyIntent.QuoteUpdated -> null
@@ -68,6 +68,8 @@ class SimpleBuyModel(
             is SimpleBuyIntent.BankAccountUpdated -> null
             is SimpleBuyIntent.KycCompleted -> null
             is SimpleBuyIntent.KycStareted -> null
+            is SimpleBuyIntent.ErrorIntent -> null
+            is SimpleBuyIntent.ClearError -> null
             is SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies -> null
             is SimpleBuyIntent.NewCryptoCurrencySelected -> null
             is SimpleBuyIntent.EnteredAmount -> null
