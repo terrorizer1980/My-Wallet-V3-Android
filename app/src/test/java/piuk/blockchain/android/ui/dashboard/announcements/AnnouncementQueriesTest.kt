@@ -6,11 +6,10 @@ import com.blockchain.swap.nabu.models.nabu.LimitsJson
 import com.blockchain.swap.nabu.models.nabu.TierJson
 import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.swap.nabu.datamanagers.BuyOrderStatus
+import com.blockchain.swap.nabu.datamanagers.BuyOrderState
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.datamanagers.OrderState
-import com.blockchain.swap.nabu.datamanagers.OrderStatus
 import com.blockchain.swap.nabu.service.TierService
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
@@ -197,8 +196,8 @@ class AnnouncementQueriesTest {
         whenever(order.orderState).thenReturn(OrderState.FINISHED)
         whenever(sbUtils.inflateSimpleBuyState(simpleBuyPrefs)).thenReturn(state)
 
-        val remoteOrder: BuyOrderStatus = mock()
-        whenever(remoteOrder.status).thenReturn(OrderStatus.UNKNOWN_ORDER)
+        val remoteOrder: BuyOrderState = mock()
+        whenever(remoteOrder.status).thenReturn(OrderState.UNITIALISED)
         whenever(custodialWalletManager.getBuyOrderStatus(any())).thenReturn(Single.just(remoteOrder))
 
         subject.isSimpleBuyTransactionPending()
@@ -218,8 +217,8 @@ class AnnouncementQueriesTest {
         whenever(order.orderState).thenReturn(OrderState.FINISHED)
         whenever(sbUtils.inflateSimpleBuyState(simpleBuyPrefs)).thenReturn(state)
 
-        val remoteOrder: BuyOrderStatus = mock()
-        whenever(remoteOrder.status).thenReturn(OrderStatus.COMPLETE)
+        val remoteOrder: BuyOrderState = mock()
+        whenever(remoteOrder.status).thenReturn(OrderState.FINISHED)
         whenever(custodialWalletManager.getBuyOrderStatus(any())).thenReturn(Single.just(remoteOrder))
 
         subject.isSimpleBuyTransactionPending()
@@ -241,8 +240,8 @@ class AnnouncementQueriesTest {
         whenever(order.orderState).thenReturn(OrderState.FINISHED)
         whenever(sbUtils.inflateSimpleBuyState(simpleBuyPrefs)).thenReturn(state)
 
-        val remoteOrder: BuyOrderStatus = mock()
-        whenever(remoteOrder.status).thenReturn(OrderStatus.AWAITING_FUNDS)
+        val remoteOrder: BuyOrderState = mock()
+        whenever(remoteOrder.status).thenReturn(OrderState.AWAITING_FUNDS)
         whenever(custodialWalletManager.getBuyOrderStatus(any())).thenReturn(Single.just(remoteOrder))
 
         subject.isSimpleBuyTransactionPending()

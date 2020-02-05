@@ -89,7 +89,7 @@ class SimpleBuyModelTest {
     fun `confirm order should make the order to confirm if interactor doesnt return an error`() {
         val date = Date()
         whenever(interactor.createOrder(anyOrNull(), anyOrNull()))
-            .thenReturn(Single.just(SimpleBuyIntent.OrderCreated("testId", date, OrderState.PENDING_DEPOSIT)))
+            .thenReturn(Single.just(SimpleBuyIntent.OrderCreated("testId", date, OrderState.AWAITING_FUNDS)))
         val testObserver = model.state.test()
         model.process(SimpleBuyIntent.ConfirmOrder)
 
@@ -97,7 +97,7 @@ class SimpleBuyModelTest {
         testObserver.assertValueAt(1, SimpleBuyState(confirmationActionRequested = true))
         testObserver.assertValueAt(2,
             SimpleBuyState(confirmationActionRequested = true,
-                orderState = OrderState.PENDING_DEPOSIT,
+                orderState = OrderState.AWAITING_FUNDS,
                 id = "testId",
                 expirationDate = date))
     }

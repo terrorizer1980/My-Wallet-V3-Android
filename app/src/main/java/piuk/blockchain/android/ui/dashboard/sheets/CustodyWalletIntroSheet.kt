@@ -21,7 +21,6 @@ class CustodyWalletIntroSheet : DashboardBottomSheet() {
 
     private fun onCtaClick() {
         dismiss()
-        onSheetHidden()
     }
 
     companion object {

@@ -70,7 +70,8 @@ val coincoreModule = applicationContext {
                 erc20Account = get(),
                 exchangeRates = get(),
                 currencyPrefs = get(),
-                custodialWalletManager = get()
+                custodialWalletManager = get(),
+                stringUtils = get()
             )
         }
 

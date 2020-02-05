@@ -1,7 +1,6 @@
 package piuk.blockchain.android.ui.dashboard.assetdetails
 
 import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.appcompat.widget.AppCompatTextView
@@ -30,8 +29,8 @@ import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.coincore.AssetTokens
-import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.ui.dashboard.setDeltaColour
+import piuk.blockchain.android.ui.dashboard.sheets.DashboardBottomSheet
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -47,7 +46,7 @@ import java.util.Currency
 import java.util.Date
 import java.util.Locale
 
-class AssetDetailSheet : SlidingModalBottomDialog() {
+class AssetDetailSheet : DashboardBottomSheet() {
 
     val compositeDisposable = CompositeDisposable()
 
@@ -55,16 +54,15 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
     private val assetDetailsViewModel: AssetDetailsCalculator by inject()
     private val locale: Locale by inject()
 
-    interface Host {
-        fun onSheetClosed()
+    interface Host : DashboardBottomSheet.Host {
         fun gotoSendFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter)
         fun goToReceiveFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter)
         fun gotoActivityFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter)
         fun gotoSwap(fromCryptoCurrency: CryptoCurrency, filter: AssetFilter)
     }
 
-    private val host: Host by lazy {
-        parentFragment as? Host ?: throw IllegalStateException("Host fragment is not a AssetDetailSheet.Host")
+    override val host: Host by lazy {
+        super.host as? Host ?: throw IllegalStateException("Host fragment is not a AssetDetailSheet.Host")
     }
 
     private val cryptoCurrency: CryptoCurrency by lazy {
@@ -360,16 +358,6 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             CryptoCurrency.PAX -> 2
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         }
-
-    override fun onSheetHidden() {
-        host.onSheetClosed()
-        super.onSheetHidden()
-    }
-
-    override fun onCancel(dialog: DialogInterface) {
-        host.onSheetClosed()
-        super.onCancel(dialog)
-    }
 
     companion object {
         private const val ARG_CRYPTO_CURRENCY = "crypto"

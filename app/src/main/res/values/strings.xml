@@ -1132,6 +1132,25 @@
     <string name="custody_intro_body_1">When you buy bitcoin from your Blockchain.com Wallet, your bitcoin will be kept on your Custody Balance. You can keep it safely in there or transfer your funds to your Wallet.</string>
     <string name="custody_intro_body_2">If you want to swap or send these funds you need to transfer them to your bitcoin Wallet.</string>
 
+    <!-- force backup before send sheet -->
+    <string name="backup_before_send_title">Backup Your Wallet</string>
+    <string name="backup_before_send_body">Before you can send from your Custody Wallet, secure your crypto with your Backup Phrase. Please write these 12 words down, in order, and keep them somewhere safe. These 12 words allow you to always access your funds.</string>
+    <string name="backup_before_send_cta">Backup Now</string>
+
+    <!-- basic transfer to wallet -->
+    <string name="basic_transfer_title">Send to %1s</string>
+    <string name="basic_transfer_body">Blockchain.com only allows sending your Wallet\'s total amount at this time.</string>
+    <string name="basic_transfer_cta">Send</string>
+
+    <!-- basic transfer complete -->
+    <string name="basic_transfer_complete_title">Success! %1s Sent.</string>
+    <string name="basic_transfer_complete_body">It may take up to 60 minutes for a transaction to be validated by the blockchain network.</string>
+    <string name="basic_transfer_complete_cta">OK</string>
+
+    <!-- basic transfer error -->
+    <string name="basic_transfer_error_title">Oops!</string>
+    <string name="basic_transfer_error_body">Something went wrong. Please go back and try again.</string>
+
     <!-- buy/Sell -->
     <!-- Account created Success -->
     <string name="buy_sell_buy">Buy</string>

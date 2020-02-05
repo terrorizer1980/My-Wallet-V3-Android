@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.dashboard
 
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.prices.data.PriceDatum
 import io.reactivex.Single
@@ -15,7 +16,8 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import timber.log.Timber
 
 class DashboardInteractor(
-    private val tokens: AssetTokenLookup
+    private val tokens: AssetTokenLookup,
+    private val payloadManager: PayloadManager
 ) {
     // We have a problem here, in that pax init depends on ETH init
     // Ultimately, we want to init metadata straight after decrypting (or creating) the wallet
@@ -93,6 +95,14 @@ class DashboardInteractor(
         return tokens[crypto].totalBalance(AssetFilter.Custodial)
             .subscribeBy(
                 onSuccess = { model.process(UpdateHasCustodialBalanceIntent(crypto, !it.isZero)) },
+                onError = { Timber.e(it) }
+            )
+    }
+
+    fun hasUserBackedUp(model: DashboardModel): Disposable? {
+        return Single.just(payloadManager.isWalletBackedUp)
+            .subscribeBy(
+                onSuccess = { model.process(BackupStatusUpdate(it)) },
                 onError = { Timber.e(it) }
             )
     }

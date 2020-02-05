@@ -8,7 +8,6 @@ import com.blockchain.swap.nabu.models.nabu.kycVerified
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.OrderState
-import com.blockchain.swap.nabu.datamanagers.OrderStatus
 import com.blockchain.swap.nabu.models.nabu.UserCampaignState
 import com.blockchain.swap.nabu.service.TierService
 import io.reactivex.Single
@@ -87,8 +86,8 @@ class AnnouncementQueries(
                 custodialWalletManager.getBuyOrderStatus(it.id!!)
                     // Bit of a hack here - if the order is COMPLETE, then we wipe our local copy of the order state
                     // TODO: Find a better place to do this. Because, Ugh! Unexpected side effects!
-                    .doOnSuccess { order -> if (order.status == OrderStatus.COMPLETE) simpleBuyPrefs.clearState() }
-                    .map { order -> order.status == OrderStatus.AWAITING_FUNDS }
+                    .doOnSuccess { order -> if (order.status == OrderState.FINISHED) simpleBuyPrefs.clearState() }
+                    .map { order -> order.status == OrderState.AWAITING_FUNDS }
                     .onErrorReturn { false }
             } else {
                 Single.just(false)

@@ -12,19 +12,20 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Single
+import java.util.concurrent.TimeUnit
 import java.util.Date
 
-// We've no idea what these returned API objects are going to look like, but I need something to mock and develop
-// against, so I'll guess...
-enum class OrderStatus {
-    UNKNOWN_ORDER, // The server has never heard of this trade
+enum class OrderState {
+    UNITIALISED,
+    INITIALISED,
     AWAITING_FUNDS, // Waiting for a bank transfer etc
     PENDING, // Funds received, but crypto not yet released (don't know if we'll need this?)
-    COMPLETE, // All done
-    EXPIRED // Timeout
+    FINISHED,
+    CANCELED,
+    FAILED
 }
 
-data class BuyOrderStatus(val status: OrderStatus)
+data class BuyOrderState(val status: OrderState)
 
 // inject an instance of this to provide simple buy and custodial balance/transfer services.
 // In the short-term, use aa instance which provides mock data - for development and testing.
@@ -60,9 +61,11 @@ interface CustodialWalletManager {
         currency: String
     ): Single<SimpleBuyEligibility>
 
-    fun getBuyOrderStatus(orderId: String): Single<BuyOrderStatus>
+    fun getBuyOrderStatus(orderId: String): Single<BuyOrderState>
 
     fun deleteBuyOrder(orderId: String): Completable
+
+    fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable
 }
 
 // Provide mock data for development and testing etc
@@ -141,10 +144,10 @@ class MockCustodialWalletManager(
                 }
             }
 
-    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderStatus> {
+    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderState> {
         return Single.just(
-            BuyOrderStatus(
-                status = OrderStatus.AWAITING_FUNDS
+            BuyOrderState(
+                status = OrderState.AWAITING_FUNDS
             )
         )
     }
@@ -152,6 +155,9 @@ class MockCustodialWalletManager(
     override fun deleteBuyOrder(orderId: String): Completable {
         return Completable.complete()
     }
+
+    override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
+        Completable.timer(5, TimeUnit.SECONDS)
 }
 
 class LiveCustodialWalletManager(
@@ -222,13 +228,13 @@ class LiveCustodialWalletManager(
 
     private fun OrderStateResponse.toLocalState(): OrderState =
         when (this) {
-            OrderStateResponse.PENDING_DEPOSIT -> OrderState.PENDING_DEPOSIT
-            OrderStateResponse.CANCELED -> OrderState.CANCELED
+            OrderStateResponse.PENDING_DEPOSIT -> OrderState.AWAITING_FUNDS
             OrderStateResponse.FINISHED -> OrderState.FINISHED
-            OrderStateResponse.PENDING_EXECUTION -> OrderState.PENDING_EXECUTION
-            OrderStateResponse.DEPOSIT_MATCHED -> OrderState.DEPOSIT_MATCHED
-            OrderStateResponse.EXPIRED -> OrderState.EXPIRED
-            OrderStateResponse.FAILED -> OrderState.FAILED
+            OrderStateResponse.PENDING_EXECUTION,
+            OrderStateResponse.DEPOSIT_MATCHED -> OrderState.PENDING
+            OrderStateResponse.FAILED,
+            OrderStateResponse.EXPIRED -> OrderState.FAILED
+            OrderStateResponse.CANCELED -> OrderState.CANCELED
         }
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Single<CryptoValue> {
@@ -249,28 +255,20 @@ class LiveCustodialWalletManager(
     override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
         nabuService.isEligibleForSimpleBuy(currency).onErrorReturn { SimpleBuyEligibility(false) }
 
-    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderStatus> {
+    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderState> {
         TODO("not implemented")
     }
 
     override fun deleteBuyOrder(orderId: String): Completable {
         TODO("not implemented")
     }
+
+    override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable {
+        TODO("not implemented")
+    }
 }
 
 data class OrderCreation(val id: String, val pair: String, val expiresAt: Date, val state: OrderState)
-
-enum class OrderState {
-    UNITIALISED,
-    INITIALISED,
-    PENDING_DEPOSIT,
-    PENDING_EXECUTION,
-    DEPOSIT_MATCHED,
-    FINISHED,
-    CANCELED,
-    FAILED,
-    EXPIRED;
-}
 
 data class CustodialWalletOrder(
     private val pair: String,

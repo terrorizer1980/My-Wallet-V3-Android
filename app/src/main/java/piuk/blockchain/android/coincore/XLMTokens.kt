@@ -28,9 +28,8 @@ class XLMTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.XLM
 
-    override fun defaultAccount(): Single<AccountReference> {
-        TODO("not implemented")
-    }
+    override fun defaultAccount(): Single<AccountReference> =
+        xlmDataManager.defaultAccountReference()
 
     override fun custodialBalance(): Single<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.XLM)

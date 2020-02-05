@@ -425,8 +425,10 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         menu.findItem(R.id.nav_simple_buy).isVisible = enabled
     }
 
-    override fun launchBackupFunds() {
-        BackupWalletActivity.start(this)
+    override fun launchBackupFunds(fragment: Fragment?, requestCode: Int) {
+        fragment?.let {
+            BackupWalletActivity.startForResult(it, requestCode)
+        } ?: BackupWalletActivity.start(this)
     }
 
     override fun launchSetup2Fa() {

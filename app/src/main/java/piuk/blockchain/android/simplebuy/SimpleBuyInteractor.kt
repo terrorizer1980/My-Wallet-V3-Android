@@ -74,7 +74,9 @@ class SimpleBuyInteractor(
             SimpleBuyIntent.KycStateUpdated(KycState.PENDING)
         }
             .repeatWhen { it.delay(5, TimeUnit.SECONDS).zipWith(Flowable.range(0, 6)) }
-            .takeUntil { it.kycState != KycState.PENDING }.last(SimpleBuyIntent.KycStateUpdated(KycState.PENDING)).map {
+            .takeUntil { it.kycState != KycState.PENDING }
+            .last(SimpleBuyIntent.KycStateUpdated(KycState.PENDING))
+            .map {
                 if (it.kycState == KycState.PENDING) {
                     return@map SimpleBuyIntent.KycStateUpdated(KycState.UNDECIDED)
                 } else {

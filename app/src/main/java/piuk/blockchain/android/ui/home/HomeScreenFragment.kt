@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.home
 
+import androidx.fragment.app.Fragment
 import piuk.blockchain.android.campaign.CampaignType
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.ui.base.MvpFragment
@@ -33,7 +34,7 @@ interface HomeNavigator {
     fun launchKycIntro()
     fun launchThePitLinking(linkId: String = "")
     fun launchThePit()
-    fun launchBackupFunds()
+    fun launchBackupFunds(fragment: Fragment? = null, requestCode: Int = 0)
     fun launchSetup2Fa()
     fun launchVerifyEmail()
     fun launchSetupFingerprintLogin()

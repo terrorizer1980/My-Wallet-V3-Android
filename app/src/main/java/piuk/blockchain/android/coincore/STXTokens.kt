@@ -24,10 +24,14 @@ class STXTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.STX
 
-    override fun defaultAccount(): Single<AccountReference> {
+    override fun defaultAccount(): Single<AccountReference> =
+        Single.just(getDefaultStxAccountRef())
+
+    private fun getDefaultStxAccountRef(): AccountReference {
         val hdWallets = payloadManager.payload?.hdWallets
-            ?: return Single.error(IllegalStateException("Wallet not available"))
-        return Single.just(hdWallets[0].stxAccount.toAccountReference())
+            ?: throw IllegalStateException("Wallet not available")
+
+        return hdWallets[0].stxAccount.toAccountReference()
     }
 
     override fun custodialBalance(): Single<CryptoValue> {

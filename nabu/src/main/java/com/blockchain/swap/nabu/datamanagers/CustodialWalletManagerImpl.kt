@@ -45,9 +45,12 @@ class CustodialWalletManagerImpl(
     override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
         liveCustodialWalletManager.isEligibleForSimpleBuy(currency)
 
-    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderStatus> =
+    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderState> =
         mockCustodialWalletManager.getBuyOrderStatus(orderId)
 
     override fun deleteBuyOrder(orderId: String): Completable =
         mockCustodialWalletManager.deleteBuyOrder(orderId)
+
+    override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
+        mockCustodialWalletManager.transferFundsToWallet(amount, walletAddress)
 }

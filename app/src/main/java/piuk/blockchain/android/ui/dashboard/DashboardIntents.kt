@@ -161,16 +161,15 @@ class ShowAssetDetails(
 class ShowDashboardSheet(
     private val dashboardSheet: DashboardSheet
 ) : DashboardIntent() {
+    override fun isValidFor(oldState: DashboardState): Boolean =
+        dashboardSheet != DashboardSheet.CUSTODY_INTRO
+
     override fun reduce(oldState: DashboardState): DashboardState =
         // Custody sheet isn't displayed via this intent, so filter it out
-        if (dashboardSheet == DashboardSheet.CUSTODY_INTRO) {
-            oldState
-        } else {
-            oldState.copy(
-                showDashboardSheet = dashboardSheet,
-                showAssetSheetFor = null
-            )
-        }
+        oldState.copy(
+            showDashboardSheet = dashboardSheet,
+            showAssetSheetFor = null
+        )
 }
 
 object ClearBottomSheet : DashboardIntent() {
@@ -181,3 +180,47 @@ object ClearBottomSheet : DashboardIntent() {
             pendingAssetSheetFor = null
         )
 }
+
+class StartCustodialTransfer(
+    private val cryptoCurrency: CryptoCurrency
+) : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState =
+        oldState.copy(
+            showDashboardSheet = null,
+            showAssetSheetFor = null,
+            pendingAssetSheetFor = null,
+            transferFundsCurrency = cryptoCurrency
+        )
+}
+
+object AbortFundsTransfer : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState =
+        oldState.copy(
+            showDashboardSheet = null,
+            transferFundsCurrency = null
+            )
+        }
+
+object CheckBackupStatus : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState =
+        oldState
+}
+
+class BackupStatusUpdate(
+    private val isBackedUp: Boolean
+) : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState =
+        if (isBackedUp) {
+            oldState.copy(showDashboardSheet = DashboardSheet.BASIC_WALLET_TRANSFER)
+        } else {
+            oldState.copy(showDashboardSheet = DashboardSheet.BACKUP_BEFORE_SEND)
+        }
+}
+
+object TransferFunds : DashboardIntent() {
+    override fun isValidFor(oldState: DashboardState): Boolean =
+        oldState.transferFundsCurrency != null
+
+    override fun reduce(oldState: DashboardState): DashboardState =
+        oldState.copy(showDashboardSheet = DashboardSheet.BASIC_WALLET_TRANSFER)
+    }

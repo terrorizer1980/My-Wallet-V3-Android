@@ -102,6 +102,14 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <style name="Text.Standard.Centered.36">
+        <item name="android:textSize">36sp</item>
+    </style>
+
+    <style name="Text.Standard.Centered.48">
+        <item name="android:textSize">48sp</item>
+    </style>
+
     <style name="Text.Semibold">
         <item name="fontFamily">@font/inter_medium</item>
     </style>

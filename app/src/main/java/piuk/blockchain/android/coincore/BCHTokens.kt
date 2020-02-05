@@ -3,6 +3,7 @@ package piuk.blockchain.android.coincore
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.toAccountReference
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -35,9 +36,11 @@ class BCHTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BCH
 
-    override fun defaultAccount(): Single<AccountReference> {
-        TODO("not implemented")
-    }
+    override fun defaultAccount(): Single<AccountReference> =
+        with(bchDataManager) {
+            val a = getAccountMetadataList()[getDefaultAccountPosition()]
+            Single.just(a.toAccountReference())
+        }
 
     override fun custodialBalance(): Single<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.BCH)

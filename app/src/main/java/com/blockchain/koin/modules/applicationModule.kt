@@ -749,7 +749,8 @@ val applicationModule = applicationContext {
 
         factory {
             DashboardInteractor(
-                tokens = get()
+                tokens = get(),
+                payloadManager = get()
             )
         }
 

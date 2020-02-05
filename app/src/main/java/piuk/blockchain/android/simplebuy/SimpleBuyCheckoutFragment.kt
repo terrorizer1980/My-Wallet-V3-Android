@@ -66,7 +66,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
                 model.process(SimpleBuyIntent.ClearState)
                 navigator().exitSimpleBuyFlow()
             }
-            OrderState.PENDING_DEPOSIT -> {
+            OrderState.AWAITING_FUNDS -> {
                 if (newState.confirmationActionRequested)
                     navigator().goToBankDetailsScreen()
             }

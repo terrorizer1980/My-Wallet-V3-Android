@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.extensions.exhaustive
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
-import info.blockchain.balance.format
+import info.blockchain.balance.formatWithUnit
 import kotlinx.android.synthetic.main.dialog_dashboard_asset_detail_item.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.AssetAction
@@ -47,7 +47,7 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
 
             asset_spend_locked.goneIf { item.assetFilter == AssetFilter.Wallet }
 
-            asset_balance_crypto.text = item.crypto.format()
+            asset_balance_crypto.text = item.crypto.formatWithUnit()
             asset_balance_fiat.text = item.fiat.toStringWithSymbol()
         }
     }

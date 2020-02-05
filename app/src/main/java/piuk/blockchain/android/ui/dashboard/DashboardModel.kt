@@ -65,7 +65,8 @@ enum class DashboardSheet {
     STX_AIRDROP_COMPLETE,
     CUSTODY_INTRO,
     SIMPLE_BUY_PAYMENT,
-    BACKUP_BEFORE_SEND
+    BACKUP_BEFORE_SEND,
+    BASIC_WALLET_TRANSFER
 }
 
 data class DashboardState(
@@ -80,7 +81,8 @@ data class DashboardState(
     val showDashboardSheet: DashboardSheet? = null,
     val announcement: AnnouncementCard? = null,
     val pendingAssetSheetFor: CryptoCurrency? = null,
-    val custodyIntroSeen: Boolean = false
+    val custodyIntroSeen: Boolean = false,
+    val transferFundsCurrency: CryptoCurrency? = null
 ) : MviState, BalanceState {
 
     // If ALL the assets are refreshing, then report true. Else false
@@ -173,12 +175,20 @@ class DashboardModel(
             }
             is RefreshPrices -> interactor.refreshPrices(this, intent.cryptoCurrency)
             is PriceUpdate -> interactor.refreshPriceHistory(this, intent.cryptoCurrency)
+            is StartCustodialTransfer -> {
+                process(CheckBackupStatus)
+                null
+            }
+            is CheckBackupStatus -> interactor.hasUserBackedUp(this)
+            is BackupStatusUpdate,
             is BalanceUpdateError,
             is PriceHistoryUpdate,
             is ClearAnnouncement,
             is ShowAnnouncement,
             is ShowAssetDetails,
             is ShowDashboardSheet,
+            is AbortFundsTransfer,
+            is TransferFunds,
             is ClearBottomSheet -> null
         }
     }

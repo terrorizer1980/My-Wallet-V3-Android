@@ -9,10 +9,10 @@ abstract class DashboardBottomSheet : SlidingModalBottomDialog() {
         fun onSheetClosed()
     }
 
-    protected val host: Host by lazy {
+    protected open val host: Host by lazy {
         parentFragment as? Host
             ?: activity as? Host
-            ?: throw IllegalStateException("Host is not a PromoBottomSheet.Host")
+            ?: throw IllegalStateException("Host is not a DashboardBottomSheet.Host")
     }
 
     override fun onSheetHidden() {
@@ -23,5 +23,10 @@ abstract class DashboardBottomSheet : SlidingModalBottomDialog() {
     override fun onCancel(dialog: DialogInterface) {
         host.onSheetClosed()
         super.onCancel(dialog)
+    }
+
+    override fun dismiss() {
+        host.onSheetClosed()
+        super.dismiss()
     }
 }

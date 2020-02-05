@@ -42,6 +42,7 @@ abstract class MviModel<S : MviState, I : MviIntent<S>>(
                         performAction(previousState, intent)?.let { disposables += it }
                         intent.reduce(previousState)
                     } else {
+                        Timber.d("***> Model: Dropping invalid Intent: ${intent.javaClass.simpleName}")
                         previousState
                     }
                 }

@@ -8,6 +8,8 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Single
+import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.androidcore.R
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
@@ -19,14 +21,23 @@ class PAXTokens(
     private val erc20Account: Erc20Account,
     private val exchangeRates: ExchangeRateDataManager,
     private val currencyPrefs: CurrencyPrefs,
+    private val stringUtils: StringUtils,
     private val custodialWalletManager: CustodialWalletManager
 ) : AssetTokensBase(rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.PAX
 
-    override fun defaultAccount(): Single<AccountReference> {
-        TODO("not implemented")
+    override fun defaultAccount(): Single<AccountReference> =
+        Single.just(getDefaultPaxAccountRef())
+
+    private fun getDefaultPaxAccountRef(): AccountReference {
+        val paxAddress = erc20Account.ethDataManager.getEthWallet()?.account?.address
+            ?: throw Exception("No ether wallet found")
+
+        val label = stringUtils.getString(R.string.pax_default_account_label)
+
+        return AccountReference.Pax(label, paxAddress, "")
     }
 
     override fun noncustodialBalance(): Single<CryptoValue> =

@@ -31,8 +31,10 @@ import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
 import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailSheet
 import piuk.blockchain.android.ui.dashboard.sheets.DashboardBottomSheet
+import piuk.blockchain.android.ui.dashboard.transfer.BasicTransferToWallet
 import piuk.blockchain.android.ui.dashboard.sheets.CustodyWalletIntroSheet
 import piuk.blockchain.android.ui.dashboard.sheets.BankDetailsBottomSheet
+import piuk.blockchain.android.ui.dashboard.sheets.ForceBackupForSendSheet
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.androidcore.data.events.ActionEvent
@@ -44,8 +46,10 @@ class EmptyDashboardItem : DashboardItem
 private typealias RefreshFn = () -> Unit
 
 class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent, DashboardState>(),
+    DashboardBottomSheet.Host,
     AssetDetailSheet.Host,
-    DashboardBottomSheet.Host {
+    ForceBackupForSendSheet.Host,
+    BasicTransferToWallet.Host {
 
     override val model: DashboardModel by inject()
 
@@ -92,7 +96,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
             showAssetSheet(newState.showAssetSheetFor)
         } else {
             if (this.state?.showDashboardSheet != newState.showDashboardSheet) {
-                showPromoSheet(newState.showDashboardSheet)
+                showPromoSheet(newState)
             }
         }
 
@@ -156,20 +160,17 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         }
     }
 
-    private fun showPromoSheet(promoSheet: DashboardSheet?) {
-        when (promoSheet) {
-            DashboardSheet.STX_AIRDROP_COMPLETE -> showBottomSheet(
-                AirdropStatusSheet.newInstance(blockstackCampaignName)
-            )
-            DashboardSheet.CUSTODY_INTRO -> showBottomSheet(
-                CustodyWalletIntroSheet.newInstance()
-            )
-            DashboardSheet.SIMPLE_BUY_PAYMENT -> showBottomSheet(
-                BankDetailsBottomSheet.newInstance()
-            )
-            DashboardSheet.BACKUP_BEFORE_SEND -> TODO("Not implemented")
-            null -> { /* no-op */ }
-        }.exhaustive
+    private fun showPromoSheet(state: DashboardState) {
+        showBottomSheet(
+            when (state.showDashboardSheet) {
+                DashboardSheet.STX_AIRDROP_COMPLETE -> AirdropStatusSheet.newInstance(blockstackCampaignName)
+                DashboardSheet.CUSTODY_INTRO -> CustodyWalletIntroSheet.newInstance()
+                DashboardSheet.SIMPLE_BUY_PAYMENT -> BankDetailsBottomSheet.newInstance()
+                DashboardSheet.BACKUP_BEFORE_SEND -> ForceBackupForSendSheet.newInstance()
+                DashboardSheet.BASIC_WALLET_TRANSFER -> BasicTransferToWallet.newInstance(state.transferFundsCurrency!!)
+                null -> null
+            }
+        )
     }
 
     private fun showAnnouncement(card: AnnouncementCard?) {
@@ -254,6 +255,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         when (requestCode) {
             MainActivity.SETTINGS_EDIT,
             MainActivity.ACCOUNT_EDIT -> model.process(RefreshAllIntent)
+            BACKUP_FUNDS_REQUEST_CODE -> startTransferFunds()
         }
     }
 
@@ -314,7 +316,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         when (filter) {
             AssetFilter.Total -> throw IllegalStateException("The Send.Total action is invalid")
             AssetFilter.Wallet -> navigator().gotoSendFor(cryptoCurrency)
-            AssetFilter.Custodial -> { /* TODO: Hook up the custodial send, when we have designs */ }
+            AssetFilter.Custodial -> model.process(StartCustodialTransfer(cryptoCurrency))
         }.exhaustive
     }
 
@@ -343,6 +345,18 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
             AssetFilter.Custodial -> throw IllegalStateException("The Swap.Custodial action is invalid")
         }.exhaustive
 
+    override fun startBackupForTransfer() {
+        navigator().launchBackupFunds(this, BACKUP_FUNDS_REQUEST_CODE)
+    }
+
+    override fun startTransferFunds() {
+        model.process(TransferFunds)
+    }
+
+    override fun abortTransferFunds() {
+        model.process(AbortFundsTransfer)
+    }
+
     companion object {
         fun newInstance() = DashboardFragment()
 
@@ -353,6 +367,8 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         private const val IDX_CARD_BCH = 4
         private const val IDX_CARD_XLM = 5
         private const val IDX_CARD_PAX = 6
+
+        private const val BACKUP_FUNDS_REQUEST_CODE = 8265
     }
 }
 

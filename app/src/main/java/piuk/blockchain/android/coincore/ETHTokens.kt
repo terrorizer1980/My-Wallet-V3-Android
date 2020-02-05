@@ -3,6 +3,7 @@ package piuk.blockchain.android.coincore
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.toAccountReference
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -35,9 +36,12 @@ class ETHTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.ETHER
 
-    override fun defaultAccount(): Single<AccountReference> {
-        TODO("not implemented")
-    }
+    override fun defaultAccount(): Single<AccountReference> =
+        Single.just(getDefaultEthAccountRef())
+
+    private fun getDefaultEthAccountRef(): AccountReference =
+        ethDataManager.getEthWallet()?.account?.toAccountReference()
+            ?: throw Exception("No ether wallet found")
 
     override fun custodialBalance(): Single<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.ETHER)

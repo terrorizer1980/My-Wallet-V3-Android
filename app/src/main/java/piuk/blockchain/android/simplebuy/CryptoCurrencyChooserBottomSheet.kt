@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.layout_crypto_currency_chooser_item.view.*
-import kotlinx.android.synthetic.main.simple_buy_ctypto_currency_chooser.view.*
+import kotlinx.android.synthetic.main.simple_buy_crypto_currency_chooser.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.util.drawableResFilled
@@ -24,7 +24,7 @@ class CryptoCurrencyChooserBottomSheet : SlidingModalBottomDialog() {
     }
 
     override val layoutResource: Int
-        get() = R.layout.simple_buy_ctypto_currency_chooser
+        get() = R.layout.simple_buy_crypto_currency_chooser
 
     override fun initControls(view: View) {
         view.recycler.adapter =

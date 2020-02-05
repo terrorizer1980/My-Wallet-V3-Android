@@ -34,7 +34,6 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
 
     private fun onCtaOKClick() {
         dismiss()
-        onSheetHidden()
     }
 
     private fun onCtaCancelClick(orderId: String) {
