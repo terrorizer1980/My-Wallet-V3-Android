@@ -16,6 +16,7 @@ interface MviState
 
 interface MviIntent<S : MviState> {
     fun reduce(oldState: S): S
+    fun isValidFor(oldState: S): Boolean = true
 }
 
 abstract class MviModel<S : MviState, I : MviIntent<S>>(
@@ -37,9 +38,12 @@ abstract class MviModel<S : MviState, I : MviIntent<S>>(
                 .observeOn(Schedulers.computation())
                 .scan(initialState) { previousState, intent ->
                     Timber.d("***> Model: ProcessIntent: ${intent.javaClass.simpleName}")
-
-                    performAction(previousState, intent)?.let { disposables += it }
-                    intent.reduce(previousState)
+                    if (intent.isValidFor(previousState)) {
+                        performAction(previousState, intent)?.let { disposables += it }
+                        intent.reduce(previousState)
+                    } else {
+                        previousState
+                    }
                 }
                 .subscribeOn(Schedulers.computation())
                 .subscribeBy(
