@@ -1,5 +1,10 @@
-package com.blockchain.swap.nabu.datamanagers
+package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
+import com.blockchain.swap.nabu.datamanagers.BuyOrderState
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.swap.nabu.datamanagers.OrderCreation
+import com.blockchain.swap.nabu.datamanagers.Quote
+import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -9,8 +14,8 @@ import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Single
 
-class CustodialWalletManagerImpl(
-    private val mockCustodialWalletManager: MockCustodialWalletManager,
+class CustodialWalletManagerSwitcher(
+    private val mockCustodialWalletManager: StubCustodialWalletManager,
     private val liveCustodialWalletManager: LiveCustodialWalletManager
 ) : CustodialWalletManager {
 
