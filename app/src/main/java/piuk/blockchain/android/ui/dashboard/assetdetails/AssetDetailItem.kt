@@ -1,12 +1,11 @@
 package piuk.blockchain.android.ui.dashboard.assetdetails
 
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.view.menu.MenuPopupHelper
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.extensions.exhaustive
 import info.blockchain.balance.CryptoValue
@@ -52,47 +51,33 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         }
     }
 
-    // Can't use a standard PopupMenu here - because we don't get icon in popup menus until API29
-    // However, the menubuilder approach with icons leads to a scrappy looking menu. What we'll
-    // probably have to do to get this to look like the designs is to build a custom popup window, which is
-    // a bit (lot!) annoying.
-    // TODO:
-    //      I'll come back to this later; for now it just needs to be working... and who knows
-    //      in a day or three I may have had a better idea, or found a library or something :fingerscrossed:
-
     private fun doShowMenu(detailItem: AssetDetailItem, onActionSelected: AssetActionHandler) {
 
-        val menuBuilder = MenuBuilder(itemView.context)
-        val inflater = MenuInflater(itemView.context)
-        inflater.inflate(R.menu.menu_asset_actions, menuBuilder)
+        PopupMenu(itemView.context, itemView.action_menu).apply {
+            menuInflater.inflate(R.menu.menu_asset_actions, menu)
 
-        // enable available actions
-        detailItem.tokens.actions(detailItem.assetFilter).forEach {
-            menuBuilder.findItem(mapActionToMenuItem(it))?.isVisible = true
-        }
-
-        menuBuilder.isGroupDividerEnabled = true
-
-        menuBuilder.setCallback(object : MenuBuilder.Callback {
-            override fun onMenuModeChange(menu: MenuBuilder?) {}
-
-            override fun onMenuItemSelected(menu: MenuBuilder?, item: MenuItem?): Boolean =
-                item?.run {
-                    onActionSelected(
-                        mapMenuItemToAction(item.itemId),
-                        detailItem.assetFilter
-                    )
-                    true
-                } ?: false
+            // enable available actions
+            detailItem.tokens.actions(detailItem.assetFilter).forEach {
+                menu.findItem(mapActionToMenuItem(it))?.isVisible = true
             }
-        )
 
-        val actionMenu = MenuPopupHelper(itemView.context, menuBuilder, itemView.action_menu)
-        actionMenu.setOnDismissListener {
-            itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
+            MenuCompat.setGroupDividerEnabled(menu, true)
+
+            setOnMenuItemClickListener {
+                onActionSelected(
+                    mapMenuItemToAction(it.itemId),
+                    detailItem.assetFilter
+                )
+                true
+            }
+
+            setOnDismissListener {
+                itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
+            }
+
+            gravity = Gravity.END
+            show()
         }
-        actionMenu.setForceShowIcon(true)
-        actionMenu.show()
 
         itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.grey_000))
     }
