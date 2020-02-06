@@ -13,6 +13,7 @@ import info.blockchain.balance.FiatValue
 import kotlinx.android.synthetic.main.fragment_simple_buy_buy_crypto.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.android.util.drawableResFilled
@@ -26,8 +27,10 @@ import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatch
 import java.util.Locale
 import java.util.Currency
 
-class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(), SimpleBuyScreen,
-    CurrencyChangeListener {
+class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(),
+    SimpleBuyScreen,
+    CurrencyChangeListener,
+    SlidingModalBottomDialog.Host {
 
     override val model: SimpleBuyModel by inject()
 
@@ -193,6 +196,10 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     override fun onPause() {
         super.onPause()
         model.process(SimpleBuyIntent.ConfirmationHandled)
+    }
+
+    override fun onSheetClosed() {
+        // TODO - clear state if required?
     }
 }
 

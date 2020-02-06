@@ -29,8 +29,8 @@ import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.coincore.AssetTokens
+import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.ui.dashboard.setDeltaColour
-import piuk.blockchain.android.ui.dashboard.sheets.DashboardBottomSheet
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -46,7 +46,7 @@ import java.util.Currency
 import java.util.Date
 import java.util.Locale
 
-class AssetDetailSheet : DashboardBottomSheet() {
+class AssetDetailSheet : SlidingModalBottomDialog() {
 
     val compositeDisposable = CompositeDisposable()
 
@@ -54,7 +54,7 @@ class AssetDetailSheet : DashboardBottomSheet() {
     private val assetDetailsViewModel: AssetDetailsCalculator by inject()
     private val locale: Locale by inject()
 
-    interface Host : DashboardBottomSheet.Host {
+    interface Host : SlidingModalBottomDialog.Host {
         fun gotoSendFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter)
         fun goToReceiveFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter)
         fun gotoActivityFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter)

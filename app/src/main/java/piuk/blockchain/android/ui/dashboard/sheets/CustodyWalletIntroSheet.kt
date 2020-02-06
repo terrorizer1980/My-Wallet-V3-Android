@@ -3,8 +3,9 @@ package piuk.blockchain.android.ui.dashboard.sheets
 import android.view.View
 import kotlinx.android.synthetic.main.dialog_custodial_intro.view.*
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 
-class CustodyWalletIntroSheet : DashboardBottomSheet() {
+class CustodyWalletIntroSheet : SlidingModalBottomDialog() {
 
     override val layoutResource: Int = R.layout.dialog_custodial_intro
 

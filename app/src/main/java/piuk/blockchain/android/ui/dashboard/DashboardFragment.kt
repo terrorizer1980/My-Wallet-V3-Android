@@ -30,7 +30,6 @@ import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
 import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailSheet
-import piuk.blockchain.android.ui.dashboard.sheets.DashboardBottomSheet
 import piuk.blockchain.android.ui.dashboard.transfer.BasicTransferToWallet
 import piuk.blockchain.android.ui.dashboard.sheets.CustodyWalletIntroSheet
 import piuk.blockchain.android.ui.dashboard.sheets.BankDetailsBottomSheet
@@ -46,7 +45,6 @@ class EmptyDashboardItem : DashboardItem
 private typealias RefreshFn = () -> Unit
 
 class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent, DashboardState>(),
-    DashboardBottomSheet.Host,
     AssetDetailSheet.Host,
     ForceBackupForSendSheet.Host,
     BasicTransferToWallet.Host {

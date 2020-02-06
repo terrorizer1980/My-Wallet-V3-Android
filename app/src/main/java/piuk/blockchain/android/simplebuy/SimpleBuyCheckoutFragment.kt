@@ -11,14 +11,17 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.ErrorDialogData
 import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
+import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(), SimpleBuyScreen,
-    CancelOrderConfirmationListener {
+class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(),
+    SimpleBuyScreen,
+    CancelOrderConfirmationListener,
+    SlidingModalBottomDialog.Host {
 
     override val model: SimpleBuyModel by inject()
 
@@ -95,6 +98,10 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     override fun onPause() {
         super.onPause()
         model.process(SimpleBuyIntent.ConfirmationHandled)
+    }
+
+    override fun onSheetClosed() {
+        // TODO - clear state if required?
     }
 }
 

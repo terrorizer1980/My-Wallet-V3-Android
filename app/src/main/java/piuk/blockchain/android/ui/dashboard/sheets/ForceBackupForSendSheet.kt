@@ -4,10 +4,11 @@ import android.content.DialogInterface
 import android.view.View
 import kotlinx.android.synthetic.main.dialog_custodial_intro.view.*
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 
-class ForceBackupForSendSheet : DashboardBottomSheet() {
+class ForceBackupForSendSheet : SlidingModalBottomDialog() {
 
-    interface Host : DashboardBottomSheet.Host {
+    interface Host : SlidingModalBottomDialog.Host {
         fun startBackupForTransfer()
         fun startTransferFunds()
     }

@@ -20,7 +20,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.coincore.AssetTokens
-import piuk.blockchain.android.ui.dashboard.sheets.DashboardBottomSheet
+import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.util.setCoinIcon
 import piuk.blockchain.android.util.setImageDrawable
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -29,9 +29,9 @@ import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounce
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 
-class BasicTransferToWallet : DashboardBottomSheet() {
+class BasicTransferToWallet : SlidingModalBottomDialog() {
 
-    interface Host : DashboardBottomSheet.Host {
+    interface Host : SlidingModalBottomDialog.Host {
         fun abortTransferFunds()
     }
 
