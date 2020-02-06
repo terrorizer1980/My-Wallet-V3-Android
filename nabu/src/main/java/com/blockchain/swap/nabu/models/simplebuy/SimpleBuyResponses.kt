@@ -5,8 +5,6 @@ import java.util.Date
 
 data class SimpleBuyPairsResp(val pairs: List<SimpleBuyPairResp>)
 
-typealias SimpleBuyPredefinedAmountsResponse = Map<String, List<Long>>
-
 data class SimpleBuyPairResp(val pair: String, val buyMin: Long, val buyMax: Long)
 
 data class BankAccount(val details: List<BankDetail>)
