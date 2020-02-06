@@ -5,24 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/what_you_want_To_buy"
-        style="@style/Text.Semibold.16"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:text="@string/simple_buy_what_you_want_to_buy"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/crypto_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
+        android:layout_marginTop="@dimen/standard_margin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/what_you_want_To_buy"
+        app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/vector_bitcoin_colored" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -118,10 +108,10 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="40dp"
+        android:hint="0.00"
         android:textColorHint="@color/grey_400"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:hint="0.00"
         app:layout_constraintTop_toBottomOf="@+id/amount">
 
         <androidx.appcompat.widget.AppCompatEditText

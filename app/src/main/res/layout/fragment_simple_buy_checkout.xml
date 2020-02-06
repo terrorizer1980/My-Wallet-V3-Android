@@ -5,16 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/checkout"
-        style="@style/Text.Standard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:text="@string/checkout"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/checkout_subtitle"
@@ -22,10 +12,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="@dimen/standard_margin"
         android:text="@string/checkout_subtitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkout" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/date_top_separator"
@@ -135,6 +125,7 @@
         android:id="@+id/button_cancel"
         style="@style/CtaButton.White"
         android:layout_width="0dp"
+        android:textColor="@color/red_600"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/standard_margin"
         android:text="@string/cancel"

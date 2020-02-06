@@ -88,6 +88,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         newState.selectedCryptoCurrency?.let {
             crypto_icon.setImageResource(it.drawableResFilled())
             crypto_text.text = it.unit
+            activity.setupToolbar(resources.getString(R.string.simple_buy_token, it.symbol))
         }
         arrow.visibleIf { newState.availableCryptoCurrencies.size > 1 }
         if (newState.maxAmount != null && newState.minAmount != null) {

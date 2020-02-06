@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16sp"
-            android:text="@string/simple_buy_dont_own_crypto"
+            android:text="@string/simple_buy_buy_crypto"
             android:textColor="@color/grey_800"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/simple_buy_instructions"
@@ -143,10 +143,10 @@
 
         <Button
             android:id="@+id/skip_simple_buy"
-            style="@style/CtaButton.White"
+            style="@style/CtaButton.Black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/small_margin"
             android:text="@string/simple_buy_skip_action"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -4,11 +4,12 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.copyable_text_form_item.view.*
 import piuk.blockchain.android.R
-import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
 
 class CopyableTextFormItem @JvmOverloads constructor(
@@ -36,7 +37,14 @@ class CopyableTextFormItem @JvmOverloads constructor(
                 context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = android.content.ClipData.newPlainText("Copied Text", value)
             clipboard.primaryClip = clip
-            (context as? AppCompatActivity)?.toast(R.string.copied_to_clipboard)
+            val snackbar = Snackbar.make(
+                parent as View,
+                resources.getString(R.string.simple_buy_copied_to_clipboard, title),
+                Snackbar.LENGTH_SHORT
+            )
+
+            snackbar.view.setBackgroundColor(ContextCompat.getColor(context, R.color.simple_buy_snackbar))
+            snackbar.show()
         }
     }
 }

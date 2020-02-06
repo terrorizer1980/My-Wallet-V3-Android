@@ -1749,8 +1749,8 @@
 
     <!--Simple buy-->
     <string name="simple_buy_intro_title">Welcome to Blockchain</string>
-    <string name="simple_buy_dont_own_crypto">Don\'t own crypto?</string>
-    <string name="simple_buy_instructions_to_buy">We can help you buy in a just a few simple steps. Documents required....</string>
+    <string name="simple_buy_buy_crypto">Buy Crypto</string>
+    <string name="simple_buy_instructions_to_buy">We can help you buy in just a few simple steps.</string>
     <string name="simple_buy_intro_main_button_action">I want to buy crypto</string>
     <string name="simple_buy_deposit_my_crypto">Deposit my crypto</string>
     <string name="simple_buy_skip_text">Looking for a new wallet to store your crypto?</string>
@@ -1791,7 +1791,9 @@
     <string name="are_ypu_sure">Are you sure?</string>
     <string name="go_back">Go Back</string>
     <string name="cancel_token_instruction">This will remove your %1$s Buy order.</string>
-    <string name="transfer_details">Transfer details.</string>
+    <string name="transfer_details">Transfer Details</string>
     <string name="ops">Oops!</string>
     <string name="something_went_wrong_try_again">Something went wrong. Please try again.</string>
+    <string name="simple_buy_token">Buy %1s</string>
+    <string name="simple_buy_copied_to_clipboard">%1s is on your clipboard</string>
 </resources>
