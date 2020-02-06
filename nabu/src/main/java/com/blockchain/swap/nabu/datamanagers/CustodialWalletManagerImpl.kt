@@ -23,8 +23,6 @@ class CustodialWalletManagerImpl(
     ): Single<SimpleBuyPairs> =
         liveCustodialWalletManager.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, currency)
 
-    override fun getBankAccount(): Single<BankAccount> = mockCustodialWalletManager.getBankAccount()
-
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
         mockCustodialWalletManager.getQuote(action, crypto, amount)
 
@@ -41,6 +39,9 @@ class CustodialWalletManagerImpl(
 
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
         liveCustodialWalletManager.getPredefinedAmounts(currency)
+
+    override fun getBankAccountDetails(currency: String): Single<BankAccount> =
+        mockCustodialWalletManager.getBankAccountDetails(currency)
 
     override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
         liveCustodialWalletManager.isEligibleForSimpleBuy(currency)

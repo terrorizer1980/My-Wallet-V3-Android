@@ -19,6 +19,8 @@ import com.blockchain.swap.nabu.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.swap.nabu.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
+import com.blockchain.swap.nabu.models.simplebuy.BankAccount
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
@@ -217,6 +219,11 @@ class NabuService(retrofit: Retrofit) {
     ): Single<SimpleBuyPairsResp> = service.getSupportedSimpleBuyPairs(
         sessionToken.authHeader
     ).wrapErrorMessage()
+
+    fun getSimpleBuyBankAccountDetails(sessionToken: NabuSessionTokenResponse, currency: String): Single<BankAccount> =
+        service.getSimpleBuyBankAccountDetails(
+            sessionToken.authHeader, SimpleBuyCurrency(currency)
+        ).wrapErrorMessage()
 
     internal fun getSimpleBuyQuote(
         sessionToken: NabuSessionTokenResponse,

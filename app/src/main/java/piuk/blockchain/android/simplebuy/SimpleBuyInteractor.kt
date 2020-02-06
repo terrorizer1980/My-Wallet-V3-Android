@@ -49,8 +49,8 @@ class SimpleBuyInteractor(
             SimpleBuyIntent.OrderCreated(id = it.id, expirationDate = it.expiresAt, orderState = it.state)
         }.trackLoading(appUtil.activityIndicator)
 
-    fun fetchBankAccount(): Single<SimpleBuyIntent.BankAccountUpdated> =
-        custodialWalletManager.getBankAccount().map {
+    fun fetchBankAccount(currency: String): Single<SimpleBuyIntent.BankAccountUpdated> =
+        custodialWalletManager.getBankAccountDetails(currency).map {
             SimpleBuyIntent.BankAccountUpdated(it)
         }
 

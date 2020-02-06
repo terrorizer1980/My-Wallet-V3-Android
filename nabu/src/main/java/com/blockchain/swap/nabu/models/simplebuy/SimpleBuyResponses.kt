@@ -13,6 +13,8 @@ data class BankDetail(val title: String, val value: String, val isCopyable: Bool
 
 data class SimpleBuyEligibility(val eligible: Boolean)
 
+data class SimpleBuyCurrency(val currency: String)
+
 data class SimpleBuyQuoteResponse(
     val fee: BigInteger,
     val rate: BigInteger,

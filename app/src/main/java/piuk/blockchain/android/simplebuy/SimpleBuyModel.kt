@@ -39,7 +39,7 @@ class SimpleBuyModel(
                 onSuccess = { process(it) },
                 onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )
-            is SimpleBuyIntent.FetchBankAccount -> interactor.fetchBankAccount().subscribeBy(
+            is SimpleBuyIntent.FetchBankAccount -> interactor.fetchBankAccount(previousState.currency).subscribeBy(
                 onSuccess = { process(it) },
                 onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )

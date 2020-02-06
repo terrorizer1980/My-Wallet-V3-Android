@@ -43,8 +43,6 @@ interface CustodialWalletManager {
         currency: String
     ): Single<SimpleBuyPairs>
 
-    fun getBankAccount(): Single<BankAccount>
-
     fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote>
 
     fun createOrder(
@@ -56,6 +54,10 @@ interface CustodialWalletManager {
     fun getPredefinedAmounts(
         currency: String
     ): Single<List<FiatValue>>
+
+    fun getBankAccountDetails(
+        currency: String
+    ): Single<BankAccount>
 
     fun isEligibleForSimpleBuy(
         currency: String
@@ -94,17 +96,15 @@ class MockCustodialWalletManager(
             )
         )
 
-    override fun getBankAccount(): Single<BankAccount> =
-        Single.just(
-            BankAccount(
-                listOf(
-                    BankDetail("Bank Name", "LHV"),
-                    BankDetail("Bank ID", "DE81 1234 5678 9101 1234 33", true),
-                    BankDetail("Bank Code (SWIFT/BIC", "DEKTDE7GSSS", true),
-                    BankDetail("Recipient", "Fred Wilson")
-                )
+    override fun getBankAccountDetails(currency: String): Single<BankAccount> =
+        Single.just(BankAccount(
+            listOf(
+                BankDetail("Bank Name", "LHV"),
+                BankDetail("Bank ID", "DE81 1234 5678 9101 1234 33", true),
+                BankDetail("Bank Code (SWIFT/BIC", "DEKTDE7GSSS", true),
+                BankDetail("Recipient", "Fred Wilson")
             )
-        )
+        ))
 
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
         Single.just(Quote(date = Date()))
@@ -165,10 +165,6 @@ class LiveCustodialWalletManager(
     private val nabuService: NabuService,
     private val nabuDataManager: NabuDataManager
 ) : CustodialWalletManager {
-
-    override fun getBankAccount(): Single<BankAccount> {
-        TODO("not implemented")
-    }
 
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
         nabuToken.fetchNabuToken().flatMap {
@@ -250,6 +246,13 @@ class LiveCustodialWalletManager(
                 currencyAmounts[currency]?.map { value ->
                     FiatValue.fromMinor(currency, value)
                 } ?: emptyList()
+            }
+        }
+
+    override fun getBankAccountDetails(currency: String): Single<BankAccount> =
+        nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
+                nabuService.getSimpleBuyBankAccountDetails(nabuSessionTokenResp, currency)
             }
         }
 
