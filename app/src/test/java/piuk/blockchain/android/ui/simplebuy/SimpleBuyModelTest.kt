@@ -110,7 +110,8 @@ class SimpleBuyModelTest {
         model.process(SimpleBuyIntent.FetchKycState)
 
         testObserver.assertValueAt(0, SimpleBuyState())
-        testObserver.assertValueAt(1, SimpleBuyState(kycVerificationState = KycState.VERIFIED))
+        testObserver.assertValueAt(1, SimpleBuyState(kycVerificationState = KycState.PENDING))
+        testObserver.assertValueAt(2, SimpleBuyState(kycVerificationState = KycState.VERIFIED))
     }
 
     @Test

@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.base
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
@@ -25,7 +26,6 @@ class ErrorSlidingBottomDialog : SlidingModalBottomDialog() {
 
         view.cta_button.setOnClickListener {
             dismiss()
-            (parentFragment as? ErrorDialogHost)?.onErrorCtaActionOrDismiss()
         }
     }
 
@@ -36,12 +36,20 @@ class ErrorSlidingBottomDialog : SlidingModalBottomDialog() {
             ErrorSlidingBottomDialog().apply {
                 arguments = Bundle().apply { putParcelable(ERROR_DIALOG_DATA_KEY, errorDialogData) }
             }
+
+        fun newInstance(context: Context): ErrorSlidingBottomDialog =
+            ErrorSlidingBottomDialog().apply {
+                arguments = Bundle().apply {
+                    putParcelable(ERROR_DIALOG_DATA_KEY,
+                        ErrorDialogData(
+                            context.getString(R.string.ops),
+                            context.getString(R.string.something_went_wrong_try_again),
+                            context.getString(R.string.ok_cap)
+                        ))
+                }
+            }
     }
 }
 
 @Parcelize
 data class ErrorDialogData(val title: String, val description: String, val buttonText: String) : Parcelable
-
-interface ErrorDialogHost {
-    fun onErrorCtaActionOrDismiss()
-}

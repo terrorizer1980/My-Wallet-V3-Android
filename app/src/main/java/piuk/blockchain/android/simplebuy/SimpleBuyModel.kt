@@ -39,10 +39,16 @@ class SimpleBuyModel(
                 onSuccess = { process(it) },
                 onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )
-            is SimpleBuyIntent.FetchBankAccount -> interactor.fetchBankAccount(previousState.currency).subscribeBy(
-                onSuccess = { process(it) },
-                onError = { process(SimpleBuyIntent.ErrorIntent()) }
-            )
+            is SimpleBuyIntent.FetchBankAccount -> {
+                if (previousState.bankAccount != null) {
+                    process(SimpleBuyIntent.BankAccountUpdated(previousState.bankAccount))
+                    null
+                } else {
+                    interactor.fetchBankAccount(previousState.currency).subscribeBy(
+                        onSuccess = { process(it) },
+                        onError = { process(SimpleBuyIntent.ErrorIntent()) })
+                }
+            }
             is SimpleBuyIntent.FetchKycState -> interactor.pollForKycState().subscribeBy(
                 onSuccess = { process(it) },
                 onError = { /*never fails. will return SimpleBuyIntent.KycStateUpdated(KycState.FAILED)*/ }
@@ -50,17 +56,16 @@ class SimpleBuyModel(
             is SimpleBuyIntent.FetchQuote -> interactor.fetchQuote(
                 previousState.selectedCryptoCurrency,
                 previousState.order.amount
+            ).subscribeBy(
+                onSuccess = { process(it) },
+                onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )
-                .subscribeBy(
-                    onSuccess = { process(it) },
-                    onError = { process(SimpleBuyIntent.ErrorIntent()) }
-                )
-            is SimpleBuyIntent.KycStateUpdated -> null
-            is SimpleBuyIntent.QuoteUpdated -> null
             is SimpleBuyIntent.BuyButtonClicked -> interactor.checkTierLevel().subscribeBy(
                 onSuccess = { process(it) },
-                onError = { /*never fails. will return SimpleBuyIntent.KycStateUpdated(KycState.FAILED)*/ }
+                onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )
+            is SimpleBuyIntent.KycStateUpdated -> null
+            is SimpleBuyIntent.QuoteUpdated -> null
             is SimpleBuyIntent.FlowCurrentScreen -> null
             is SimpleBuyIntent.ClearState -> null
             is SimpleBuyIntent.UpdatedPredefinedAmounts -> null

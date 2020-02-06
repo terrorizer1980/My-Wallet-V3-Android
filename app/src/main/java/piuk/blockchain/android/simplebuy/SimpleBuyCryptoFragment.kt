@@ -5,7 +5,6 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
@@ -13,7 +12,7 @@ import info.blockchain.balance.FiatValue
 import kotlinx.android.synthetic.main.fragment_simple_buy_buy_crypto.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
+import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.android.util.drawableResFilled
@@ -29,8 +28,7 @@ import java.util.Currency
 
 class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(),
     SimpleBuyScreen,
-    CurrencyChangeListener,
-    SlidingModalBottomDialog.Host {
+    CurrencyChangeListener {
 
     override val model: SimpleBuyModel by inject()
 
@@ -85,6 +83,11 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     }
 
     override fun render(newState: SimpleBuyState) {
+        if (newState.errorState != null) {
+            showErrorState(newState.errorState)
+            return
+        }
+
         newState.selectedCryptoCurrency?.let {
             crypto_icon.setImageResource(it.drawableResFilled())
             crypto_text.text = it.unit
@@ -134,10 +137,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
                 .newInstance(newState.availableCryptoCurrencies))
         }
 
-        if (newState.supportedPairsAndLimits?.isEmpty() == true) {
-            renderNoCurrenciesAvailableState()
-        }
-        if (newState.confirmationActionRequested) {
+        if (newState.confirmationActionRequested && newState.kycVerificationState != null) {
             if (newState.kycVerificationState != KycState.VERIFIED) {
                 model.process(SimpleBuyIntent.ConfirmationHandled)
                 model.process(SimpleBuyIntent.KycStareted)
@@ -148,16 +148,8 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         }
     }
 
-    private fun renderNoCurrenciesAvailableState() {
-        val dialog = AlertDialog.Builder(requireContext(), R.style.AlertDialogStyle)
-            .setTitle(R.string.simple_buy_no_currencies_available_title)
-            .setMessage(R.string.simple_buy_no_currencies_available)
-            .setCancelable(false)
-            .setPositiveButton(R.string.continue_to_wallet) { _, _ ->
-                navigator().exitSimpleBuyFlow()
-            }.create()
-
-        showAlert(dialog)
+    private fun showErrorState(errorState: ErrorState) {
+        showBottomSheet(ErrorSlidingBottomDialog.newInstance(activity))
     }
 
     private fun handleError(error: InputError, state: SimpleBuyState) {
@@ -200,7 +192,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     }
 
     override fun onSheetClosed() {
-        // TODO - clear state if required?
+        model.process(SimpleBuyIntent.ClearError)
     }
 }
 

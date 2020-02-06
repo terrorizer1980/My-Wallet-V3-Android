@@ -28,7 +28,7 @@ data class SimpleBuyState(
     private val expirationDate: Date? = null,
     private val quote: Quote? = null,
     val kycStartedButNotCompleted: Boolean = false,
-    val kycVerificationState: KycState = KycState.PENDING,
+    val kycVerificationState: KycState? = null,
     val bankAccount: BankAccount? = null,
     val currentScreen: FlowScreen = FlowScreen.INTRO,
     @Transient val errorState: ErrorState? = null,
@@ -116,6 +116,7 @@ enum class InputError {
 
 sealed class ErrorState {
     object GenericError : ErrorState()
+    object NoAvailableCurrenciesToTrade : ErrorState()
 }
 
 data class SimpleBuyOrder(

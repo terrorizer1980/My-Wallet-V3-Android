@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_simple_buy_bank_details.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -29,12 +30,20 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
     }
 
     override fun render(newState: SimpleBuyState) {
+        if (newState.errorState != null) {
+            showErrorState(newState.errorState)
+        }
+
         if (newState.bankAccount != null && newState.order.amount != null) {
             bank_details_container.initWithBankDetailsAndAmount(newState.bankAccount.details,
                 newState.order.amount!!)
             secure_transfer.text = getString(R.string.simple_buy_securely_transfer,
                 newState.order.amount?.currencyCode ?: "")
         }
+    }
+
+    private fun showErrorState(errorState: ErrorState) {
+        showBottomSheet(ErrorSlidingBottomDialog.newInstance(activity))
     }
 
     override fun backPressedHandled(): Boolean {

@@ -29,6 +29,11 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
     data class UpdatedBuyLimitsAndSupportedCryptoCurrencies(val simpleBuyPairs: SimpleBuyPairs) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState {
             val supportedPairsAndLimits = simpleBuyPairs.pairs.filter { it.fiatCurrency == oldState.currency }
+
+            if (supportedPairsAndLimits.isEmpty()) {
+                return oldState.copy(errorState = ErrorState.NoAvailableCurrenciesToTrade)
+            }
+
             val selectedCryptoCurrency = oldState.selectedCryptoCurrency ?: simpleBuyPairs.pairs.firstOrNull {
                 it.fiatCurrency == oldState.currency
             }?.cryptoCurrency

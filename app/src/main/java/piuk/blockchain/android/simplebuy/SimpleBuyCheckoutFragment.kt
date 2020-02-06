@@ -9,7 +9,6 @@ import com.blockchain.swap.nabu.datamanagers.Quote
 import kotlinx.android.synthetic.main.fragment_simple_buy_checkout.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.base.ErrorDialogData
 import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
@@ -40,6 +39,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         activity.setupToolbar(R.string.checkout)
 
         model.process(SimpleBuyIntent.FetchQuote)
+        model.process(SimpleBuyIntent.FetchBankAccount)
     }
 
     override fun navigator(): SimpleBuyNavigator =
@@ -58,6 +58,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
             resources.getString(R.string.checkout_subtitle, newState.selectedCryptoCurrency?.symbol)
 
         date.text = newState.order.quote?.formatDate()
+        button_buy.isEnabled = newState.bankAccount != null && newState.order.quote != null
 
         button_cancel.setOnClickListener {
             showBottomSheet(SimpleBuyCancelOrderBottomSheet.newInstance(newState.selectedCryptoCurrency
@@ -79,16 +80,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     }
 
     private fun showErrorState(errorState: ErrorState) {
-        showBottomSheet(ErrorSlidingBottomDialog.newInstance(ErrorDialogData(
-            getString(R.string.ops),
-            getString(R.string.something_went_wrong_try_again),
-            getString(R.string.ok_cap)
-        )))
-    }
-
-    override fun onErrorCtaActionOrDismiss() {
-        super.onErrorCtaActionOrDismiss()
-        model.process(SimpleBuyIntent.ClearError)
+        showBottomSheet(ErrorSlidingBottomDialog.newInstance(activity))
     }
 
     override fun onOrderCancelationConfirmed() {
@@ -101,7 +93,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     }
 
     override fun onSheetClosed() {
-        // TODO - clear state if required?
+        model.process(SimpleBuyIntent.ClearError)
     }
 }
 

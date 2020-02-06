@@ -1,8 +1,8 @@
 package piuk.blockchain.android.simplebuy
 
-import piuk.blockchain.android.ui.base.ErrorDialogHost
+import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 
-interface SimpleBuyScreen : ErrorDialogHost {
+interface SimpleBuyScreen : SlidingModalBottomDialog.Host {
     fun navigator(): SimpleBuyNavigator
     // methods for handling back press and navigation back arrow
     // return true if we want the screen to get popped or handle the back press itself
@@ -11,7 +11,7 @@ interface SimpleBuyScreen : ErrorDialogHost {
     // return true if we want the screen to handle the back press and not get popped
     fun backPressedHandled(): Boolean = false
 
-    override fun onErrorCtaActionOrDismiss() {}
+    override fun onSheetClosed() {}
 }
 
 interface SimpleBuyNavigator {
