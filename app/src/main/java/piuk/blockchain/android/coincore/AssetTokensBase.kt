@@ -6,8 +6,9 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
+import io.reactivex.Maybe
 import io.reactivex.Single
-import io.reactivex.rxkotlin.Singles
+import io.reactivex.rxkotlin.Maybes
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -43,8 +44,8 @@ interface AssetTokens {
     fun defaultAccount(): Single<AccountReference>
 //    fun accounts(): Single<AccountsList>
 
-    fun totalBalance(filter: AssetFilter = AssetFilter.Total): Single<CryptoValue>
-    fun balance(account: AccountReference): Single<CryptoValue>
+    fun totalBalance(filter: AssetFilter = AssetFilter.Total): Maybe<CryptoValue>
+    fun balance(account: AccountReference): Maybe<CryptoValue>
 
     fun exchangeRate(): Single<FiatValue>
     fun historicRate(epochWhen: Long): Single<FiatValue>
@@ -69,18 +70,18 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
 
     protected open fun onLogoutSignal(event: AuthEvent) { }
 
-    final override fun totalBalance(filter: AssetFilter): Single<CryptoValue> =
+    final override fun totalBalance(filter: AssetFilter): Maybe<CryptoValue> =
         when (filter) {
             AssetFilter.Wallet -> noncustodialBalance()
             AssetFilter.Custodial -> custodialBalance()
-            AssetFilter.Total -> Singles.zip(
+            AssetFilter.Total -> Maybes.zip(
                 noncustodialBalance(),
                 custodialBalance()
             ) { noncustodial, custodial -> noncustodial + custodial }
         }
 
-    protected abstract fun custodialBalance(): Single<CryptoValue>
-    protected abstract fun noncustodialBalance(): Single<CryptoValue>
+    protected abstract fun custodialBalance(): Maybe<CryptoValue>
+    protected abstract fun noncustodialBalance(): Maybe<CryptoValue>
 
     protected open val noncustodialActions = setOf(
         AssetAction.ViewActivity,

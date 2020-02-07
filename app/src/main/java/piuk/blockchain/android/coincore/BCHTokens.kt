@@ -10,6 +10,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.StringUtils
@@ -42,7 +43,7 @@ class BCHTokens(
             Single.just(a.toAccountReference())
         }
 
-    override fun custodialBalance(): Single<CryptoValue> =
+    override fun custodialBalance(): Maybe<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.BCH)
 
     override fun noncustodialBalance(): Single<CryptoValue> =
