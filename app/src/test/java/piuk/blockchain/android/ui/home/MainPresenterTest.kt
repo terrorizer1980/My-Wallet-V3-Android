@@ -113,6 +113,7 @@ class MainPresenterTest {
             xlmDataManager = xlmDataManager,
             pitFeatureFlag = featureFlag,
             simpleBuyFlag = simpleBuyFeatureFlag,
+            custodialWalletManager = mock(),
             pitLinking = pitLinking,
             nabuToken = nabuToken,
             nabuDataManager = nabuDatamanager,

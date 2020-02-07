@@ -181,9 +181,7 @@ internal interface Nabu {
     ): Single<SendToMercuryAddressResponse>
 
     @GET(NABU_SIMPLE_BUY_PAIRS)
-    fun getSupportedSimpleBuyPairs(
-        @Header("authorization") authorization: String
-    ): Single<SimpleBuyPairsResp>
+    fun getSupportedSimpleBuyPairs(): Single<SimpleBuyPairsResp>
 
     @GET(NABU_SIMPLE_BUY_AMOUNTS)
     fun getPredefinedAmounts(
@@ -206,9 +204,7 @@ internal interface Nabu {
     ): Single<BankAccount>
 
     @GET(NABU_SIMPLE_BUY_ELIGIBILITY)
-    fun isEligibleForSimpleBuy(
-        @Query("fiatCurrency") currency: String
-    ): Single<SimpleBuyEligibility>
+    fun isEligibleForSimpleBuy(@Header("authorization") authorization: String): Single<SimpleBuyEligibility>
 
     @POST(NABU_SIMPLE_BUY_CREATE_ORDER)
     fun createOrder(

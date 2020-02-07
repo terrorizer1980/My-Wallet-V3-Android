@@ -97,8 +97,8 @@ public class LauncherPresenterTest {
         );
         subject.initView(launcherActivity);
         Mockito.when(featureFlag.getEnabled()).thenReturn(Single.just(false));
-        Mockito.when(custodialWalletManager.isEligibleForSimpleBuy(any()))
-                .thenReturn(Single.just(new SimpleBuyEligibility(true)));
+        Mockito.when(custodialWalletManager.isCurrencySupportedForSimpleBuy(any()))
+                .thenReturn(Single.just(true));
     }
 
     /**

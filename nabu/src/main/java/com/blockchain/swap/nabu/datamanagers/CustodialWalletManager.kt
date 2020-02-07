@@ -1,7 +1,6 @@
 package com.blockchain.swap.nabu.datamanagers
 
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -54,9 +53,11 @@ interface CustodialWalletManager {
         currency: String
     ): Single<BankAccount>
 
-    fun isEligibleForSimpleBuy(
+    fun isEligibleForSimpleBuy(): Single<Boolean>
+
+    fun isCurrencySupportedForSimpleBuy(
         currency: String
-    ): Single<SimpleBuyEligibility>
+    ): Single<Boolean>
 
     fun getBuyOrderStatus(orderId: String): Single<BuyOrderState>
 

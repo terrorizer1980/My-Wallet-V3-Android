@@ -11,7 +11,6 @@ import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.BankDetail
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -139,8 +138,12 @@ class StubCustodialWalletManager(
 
         ))
 
-    override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
-        Single.just(SimpleBuyEligibility(true))
+    override fun isEligibleForSimpleBuy(): Single<Boolean> =
+        Single.just(true)
+
+    override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> {
+        TODO("not implemented")
+    }
 
     override fun getBalanceForAsset(
         crypto: CryptoCurrency

@@ -214,11 +214,8 @@ class NabuService(retrofit: Retrofit) {
         SendToMercuryAddressRequest(cryptoSymbol)
     ).wrapErrorMessage()
 
-    internal fun getSupportCurrencies(
-        sessionToken: NabuSessionTokenResponse
-    ): Single<SimpleBuyPairsResp> = service.getSupportedSimpleBuyPairs(
-        sessionToken.authHeader
-    ).wrapErrorMessage()
+    internal fun getSupportCurrencies(): Single<SimpleBuyPairsResp> = service.getSupportedSimpleBuyPairs()
+        .wrapErrorMessage()
 
     fun getSimpleBuyBankAccountDetails(sessionToken: NabuSessionTokenResponse, currency: String): Single<BankAccount> =
         service.getSimpleBuyBankAccountDetails(
@@ -246,9 +243,9 @@ class NabuService(retrofit: Retrofit) {
     ).wrapErrorMessage()
 
     internal fun isEligibleForSimpleBuy(
-        currency: String
+        sessionToken: NabuSessionTokenResponse
     ): Single<SimpleBuyEligibility> = service.isEligibleForSimpleBuy(
-        currency
+        sessionToken.authHeader
     ).wrapErrorMessage()
 
     internal fun createOrder(

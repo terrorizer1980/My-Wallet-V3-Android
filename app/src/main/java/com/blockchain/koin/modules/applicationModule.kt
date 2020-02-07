@@ -266,6 +266,7 @@ val applicationModule = applicationContext {
                 kycStatusHelper = get(),
                 lockboxDataManager = get(),
                 deepLinkProcessor = get(),
+                custodialWalletManager = get(),
                 sunriverCampaignRegistration = get(),
                 xlmDataManager = get(),
                 pitFeatureFlag = get("ff_pit_linking"),

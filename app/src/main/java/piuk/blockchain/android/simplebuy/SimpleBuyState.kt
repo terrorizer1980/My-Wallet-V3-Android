@@ -103,7 +103,9 @@ data class SimpleBuyState(
 }
 
 enum class KycState {
-    PENDING, FAILED, UNDECIDED, VERIFIED
+    PENDING, FAILED, UNDECIDED, VERIFIED_AND_ELIGIBLE, VERIFIED_BUT_NOT_ELIGIBLE;
+
+    fun verified() = this == VERIFIED_AND_ELIGIBLE || this == VERIFIED_BUT_NOT_ELIGIBLE
 }
 
 enum class FlowScreen {

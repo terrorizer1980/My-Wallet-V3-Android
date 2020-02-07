@@ -138,12 +138,18 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         }
 
         if (newState.confirmationActionRequested && newState.kycVerificationState != null) {
-            if (newState.kycVerificationState != KycState.VERIFIED) {
-                model.process(SimpleBuyIntent.ConfirmationHandled)
-                model.process(SimpleBuyIntent.KycStareted)
-                navigator().startKyc()
-            } else {
-                navigator().goToCheckOutScreen()
+            when {
+                newState.kycVerificationState.verified().not() -> {
+                    model.process(SimpleBuyIntent.ConfirmationHandled)
+                    model.process(SimpleBuyIntent.KycStareted)
+                    navigator().startKyc()
+                }
+                newState.kycVerificationState == KycState.VERIFIED_BUT_NOT_ELIGIBLE -> {
+                    navigator().goToKycVerificationScreen()
+                }
+                else -> {
+                    navigator().goToCheckOutScreen()
+                }
             }
         }
     }

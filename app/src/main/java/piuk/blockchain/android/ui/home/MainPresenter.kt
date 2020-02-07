@@ -16,6 +16,7 @@ import com.blockchain.logging.CrashLogger
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.Environment
@@ -107,6 +108,7 @@ class MainPresenter internal constructor(
     private val simpleBuyFlag: FeatureFlag,
     private val pitLinking: PitLinking,
     private val nabuToken: NabuToken,
+    private val custodialWalletManager: CustodialWalletManager,
     private val nabuDataManager: NabuDataManager,
     private val crashLogger: CrashLogger
 ) : MvpPresenter<MainView>() {
@@ -142,10 +144,11 @@ class MainPresenter internal constructor(
     }
 
     private fun checkSimpleBuyAvailability() {
-        compositeDisposable += nabuUser.zipWith(simpleBuyFlag.enabled).observeOn(AndroidSchedulers.mainThread())
+        val eligibility = custodialWalletManager.isEligibleForSimpleBuy()
+        compositeDisposable += eligibility.zipWith(simpleBuyFlag.enabled).observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view?.setSimpleBuyEnabled(false) }
-            .subscribeBy(onSuccess = { (nabuUser, simpleBuyEnabled) ->
-                val showSimpleBuy = nabuUser.isSimpleBuyTagged && simpleBuyEnabled
+            .subscribeBy(onSuccess = { (eligible, simpleBuyEnabled) ->
+                val showSimpleBuy = eligible && simpleBuyEnabled
                 view?.setSimpleBuyEnabled(showSimpleBuy)
                 if (showSimpleBuy) {
                     view?.setBuySellEnabled(enabled = false, useWebView = false)
