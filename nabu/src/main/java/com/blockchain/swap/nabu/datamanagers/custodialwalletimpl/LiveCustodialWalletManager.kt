@@ -13,6 +13,7 @@ import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
+import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
@@ -40,7 +41,7 @@ class LiveCustodialWalletManager(
                     amount = amount.valueMinor.toString()
                 )
             }.map { quoteResponse ->
-                Quote(date = quoteResponse.time)
+                Quote(date = quoteResponse.time.toLocalTime())
             }
         }
 

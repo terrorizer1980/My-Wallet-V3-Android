@@ -29,7 +29,7 @@ class CustodialWalletManagerSwitcher(
         liveCustodialWalletManager.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, currency)
 
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
-        mockCustodialWalletManager.getQuote(action, crypto, amount)
+        liveCustodialWalletManager.getQuote(action, crypto, amount)
 
     override fun createOrder(
         cryptoCurrency: CryptoCurrency,
