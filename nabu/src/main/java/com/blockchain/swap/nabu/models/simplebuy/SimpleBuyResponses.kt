@@ -29,3 +29,8 @@ enum class OrderStateResponse {
     FAILED,
     EXPIRED
 }
+
+data class SimpleBuyBalanceResponse(
+    val available: String,
+    val pending: String
+)

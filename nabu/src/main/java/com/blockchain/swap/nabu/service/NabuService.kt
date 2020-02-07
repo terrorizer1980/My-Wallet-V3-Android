@@ -28,6 +28,7 @@ import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuSessionTokenResponse
 import com.blockchain.veriff.VeriffApplicantAndToken
+import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.Retrofit
@@ -256,6 +257,13 @@ class NabuService(retrofit: Retrofit) {
         order: CustodialWalletOrder
     ) = service.createOrder(
         sessionToken.authHeader, order
+    ).wrapErrorMessage()
+
+    fun getBalanceForAsset(
+        sessionToken: NabuSessionTokenResponse,
+        cryptoCurrency: CryptoCurrency
+    ) = service.getBalanceForAsset(
+        sessionToken.authHeader, cryptoCurrency.symbol
     ).wrapErrorMessage()
 
     companion object {

@@ -13,6 +13,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Single
+import timber.log.Timber
 
 class CustodialWalletManagerSwitcher(
     private val mockCustodialWalletManager: StubCustodialWalletManager,
@@ -20,7 +21,7 @@ class CustodialWalletManagerSwitcher(
 ) : CustodialWalletManager {
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Single<CryptoValue> =
-        mockCustodialWalletManager.getBalanceForAsset(crypto)
+        liveCustodialWalletManager.getBalanceForAsset(crypto)
 
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,

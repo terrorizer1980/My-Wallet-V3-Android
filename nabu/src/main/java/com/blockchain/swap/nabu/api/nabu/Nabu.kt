@@ -23,12 +23,14 @@ import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.OrderCreationResponse
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuSessionTokenResponse
+import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.Body
@@ -215,4 +217,10 @@ internal interface Nabu {
         @Header("authorization") authorization: String,
         @Body order: CustodialWalletOrder
     ): Single<OrderCreationResponse>
+
+    @GET("$NABU_SIMPLE_BUY_ASSET_BALANCE/{crypto}")
+    fun getBalanceForAsset(
+        @Header("authorization") authorization: String,
+        @Path("crypto") cryptoSymbol: String)
+    : Single<SimpleBuyBalanceResponse>
 }
