@@ -10,6 +10,11 @@ import piuk.blockchain.android.ui.base.mvi.MviIntent
 import java.util.Date
 
 sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
+
+    override fun isValidFor(oldState: SimpleBuyState): Boolean {
+        return oldState.errorState == null
+    }
+
     class NewCryptoCurrencySelected(val currency: CryptoCurrency) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             if (oldState.selectedCryptoCurrency == currency) oldState else
@@ -128,7 +133,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
             oldState.copy(errorState = error)
 
         override fun isValidFor(oldState: SimpleBuyState): Boolean {
-            return oldState.errorState == null
+            return true
         }
     }
 

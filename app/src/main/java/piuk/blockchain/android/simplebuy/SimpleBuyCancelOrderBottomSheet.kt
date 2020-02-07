@@ -23,6 +23,7 @@ class SimpleBuyCancelOrderBottomSheet : SlidingModalBottomDialog() {
             cancel_order_token.text = getString(R.string.cancel_token_instruction, cryptoCurrency.symbol)
             cancel_order.setOnClickListener {
                 (parentFragment as? CancelOrderConfirmationListener)?.onOrderCancelationConfirmed()
+                dismiss()
             }
             go_back.setOnClickListener {
                 dismiss()

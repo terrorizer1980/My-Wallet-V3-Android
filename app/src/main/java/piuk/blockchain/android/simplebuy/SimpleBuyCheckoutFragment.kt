@@ -66,10 +66,6 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         }
 
         when (newState.order.orderState) {
-            OrderState.CANCELED -> {
-                model.process(SimpleBuyIntent.ClearState)
-                navigator().exitSimpleBuyFlow()
-            }
             OrderState.AWAITING_FUNDS -> {
                 if (newState.confirmationActionRequested)
                     navigator().goToBankDetailsScreen()
@@ -85,6 +81,8 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 
     override fun onOrderCancelationConfirmed() {
         model.process(SimpleBuyIntent.CancelOrder)
+        model.process(SimpleBuyIntent.ClearState)
+        navigator().exitSimpleBuyFlow()
     }
 
     override fun onPause() {
