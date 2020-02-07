@@ -26,7 +26,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
@@ -34,6 +33,7 @@ import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerifiedLinkState
 import piuk.blockchain.android.deeplink.LinkState
 import piuk.blockchain.android.kyc.KycLinkState
+import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.sunriver.CampaignLinkState
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.launcher.LauncherActivity
@@ -105,12 +105,11 @@ class MainPresenter internal constructor(
     private val sunriverCampaignRegistration: SunriverCampaignRegistration,
     private val xlmDataManager: XlmDataManager,
     private val pitFeatureFlag: FeatureFlag,
-    private val simpleBuyFlag: FeatureFlag,
     private val pitLinking: PitLinking,
-    private val nabuToken: NabuToken,
-    private val custodialWalletManager: CustodialWalletManager,
     private val nabuDataManager: NabuDataManager,
-    private val crashLogger: CrashLogger
+    private val simpleBuySync: SimpleBuySyncFactory,
+    private val crashLogger: CrashLogger,
+    nabuToken: NabuToken
 ) : MvpPresenter<MainView>() {
 
     override val alwaysDisableScreenshots: Boolean = false
@@ -119,9 +118,11 @@ class MainPresenter internal constructor(
     internal val defaultCurrency: String
         get() = prefs.selectedFiatCurrency
 
-    private val nabuUser = nabuToken.fetchNabuToken().flatMap {
-        nabuDataManager.getUser(it)
-    }
+    private val nabuUser = nabuToken
+        .fetchNabuToken()
+        .flatMap {
+            nabuDataManager.getUser(it)
+        }
 
     override fun onViewAttached() {
         if (!accessState.isLoggedIn) {
@@ -139,23 +140,24 @@ class MainPresenter internal constructor(
 
             checkPitAvailability()
 
-            checkSimpleBuyAvailability()
+            initSimpleBuyState()
         }
     }
 
-    private fun checkSimpleBuyAvailability() {
-        val eligibility = custodialWalletManager.isEligibleForSimpleBuy()
-        compositeDisposable += eligibility.zipWith(simpleBuyFlag.enabled).observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { view?.setSimpleBuyEnabled(false) }
-            .subscribeBy(onSuccess = { (eligible, simpleBuyEnabled) ->
-                val showSimpleBuy = eligible && simpleBuyEnabled
-                view?.setSimpleBuyEnabled(showSimpleBuy)
-                if (showSimpleBuy) {
-                    view?.setBuySellEnabled(enabled = false, useWebView = false)
-                }
-            }, onError = {
-                view?.setSimpleBuyEnabled(false)
-            })
+    private fun initSimpleBuyState() {
+        compositeDisposable +=
+            simpleBuySync.performSync()
+                .doOnSubscribe { view?.setSimpleBuyEnabled(false) }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onComplete = {
+                        val isEnabled = simpleBuySync.isEnabled()
+                        if (isEnabled) {
+                            view?.setSimpleBuyEnabled(true)
+                            view?.setBuySellEnabled(enabled = false, useWebView = false)
+                        }
+                    }
+                )
     }
 
     override fun onViewDetached() {}

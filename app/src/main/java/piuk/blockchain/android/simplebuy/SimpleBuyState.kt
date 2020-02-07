@@ -24,7 +24,7 @@ data class SimpleBuyState(
     val currency: String = "USD",
     val predefinedAmounts: List<FiatValue> = emptyList(),
     val selectedCryptoCurrency: CryptoCurrency? = null,
-    private val orderState: OrderState = OrderState.UNITIALISED,
+    val orderState: OrderState = OrderState.UNINITIALISED,
     private val expirationDate: Date? = null,
     private val quote: Quote? = null,
     val kycStartedButNotCompleted: Boolean = false,
@@ -122,7 +122,7 @@ sealed class ErrorState {
 }
 
 data class SimpleBuyOrder(
-    val orderState: OrderState = OrderState.UNITIALISED,
+    val orderState: OrderState = OrderState.UNINITIALISED,
     val amount: FiatValue? = null,
     val expirationDate: Date? = null,
     val quote: Quote? = null

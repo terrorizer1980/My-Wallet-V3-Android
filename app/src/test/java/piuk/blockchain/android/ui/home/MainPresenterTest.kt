@@ -25,6 +25,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
+import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
@@ -63,7 +64,7 @@ class MainPresenterTest {
     private val xlmDataManager: XlmDataManager = mock()
     private val pitLinking: PitLinking = mock()
     private val featureFlag: FeatureFlag = mock()
-    private val simpleBuyFeatureFlag: FeatureFlag = mock()
+    private val simpleBuySync: SimpleBuySyncFactory = mock()
     private val crashLogger: CrashLogger = mock()
     private val nabuDatamanager: NabuDataManager = mock()
 
@@ -112,8 +113,7 @@ class MainPresenterTest {
             sunriverCampaignRegistration = sunriverCampaignRegistration,
             xlmDataManager = xlmDataManager,
             pitFeatureFlag = featureFlag,
-            simpleBuyFlag = simpleBuyFeatureFlag,
-            custodialWalletManager = mock(),
+            simpleBuySync = simpleBuySync,
             pitLinking = pitLinking,
             nabuToken = nabuToken,
             nabuDataManager = nabuDatamanager,

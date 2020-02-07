@@ -124,9 +124,10 @@ class LauncherPresenter(
                     settings to simpleBuyFlowCanBeLaunched
                 }
         }
-            .doOnComplete { accessState.isLoggedIn = true }
-            .doOnNext { notificationTokenManager.registerAuthEvent() }
-            .subscribe({ (settings, simpleBuyEnabled) ->
+        .doOnComplete { accessState.isLoggedIn = true }
+        .doOnNext { notificationTokenManager.registerAuthEvent() }
+        .subscribe(
+            { (settings, simpleBuyEnabled) ->
                 setCurrencyUnits(settings)
                 if (simpleBuyEnabled &&
                     view?.getPageIntent()?.getBooleanExtra(AppUtil.INTENT_EXTRA_IS_AFTER_WALLET_CREATION,

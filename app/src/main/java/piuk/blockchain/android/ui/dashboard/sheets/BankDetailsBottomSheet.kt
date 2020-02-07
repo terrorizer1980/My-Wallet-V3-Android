@@ -7,23 +7,20 @@ import kotlinx.android.synthetic.main.dialog_simple_buy_bank_details.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.simplebuy.SimpleBuyState
-import piuk.blockchain.android.simplebuy.SimpleBuyUtils
+import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
 
 class BankDetailsBottomSheet : SlidingModalBottomDialog() {
 
     private val prefs: SimpleBuyPrefs by inject()
-    private val sbUtils: SimpleBuyUtils by inject()
+    private val sbStateFacatory: SimpleBuySyncFactory by inject()
     private val custodialWalletManager: CustodialWalletManager by inject()
 
     override val layoutResource = R.layout.dialog_simple_buy_bank_details
 
-    override fun initControls(view: View) {
-        sbUtils.inflateSimpleBuyState(prefs)?.let {
-            renderState(view, it)
-        } ?: onCtaOKClick()
-    }
+    override fun initControls(view: View) =
+        sbStateFacatory.currentState()?.let { renderState(view, it) } ?: onCtaOKClick()
 
     override fun onSheetHidden() {
         super.onSheetHidden()

@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
-import com.blockchain.swap.nabu.datamanagers.BuyOrderState
+import com.blockchain.swap.nabu.datamanagers.BuyOrder
+import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.Quote
@@ -11,6 +12,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 class CustodialWalletManagerSwitcher(
@@ -53,8 +55,11 @@ class CustodialWalletManagerSwitcher(
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
         liveCustodialWalletManager.isCurrencySupportedForSimpleBuy(currency)
 
-    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderState> =
-        mockCustodialWalletManager.getBuyOrderStatus(orderId)
+    override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
+        mockCustodialWalletManager.getOutstandingBuyOrders()
+
+    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> =
+        mockCustodialWalletManager.getBuyOrder(orderId)
 
     override fun deleteBuyOrder(orderId: String): Completable =
         mockCustodialWalletManager.deleteBuyOrder(orderId)

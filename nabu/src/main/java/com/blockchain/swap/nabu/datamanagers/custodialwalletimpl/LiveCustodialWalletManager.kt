@@ -2,9 +2,9 @@ package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
-import com.blockchain.swap.nabu.datamanagers.BuyOrderState
+import com.blockchain.swap.nabu.datamanagers.BuyOrder
+import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.CustodialWalletOrder
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.OrderInput
@@ -15,6 +15,7 @@ import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
+import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.service.NabuService
@@ -22,6 +23,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 
 class LiveCustodialWalletManager(
@@ -143,7 +145,11 @@ class LiveCustodialWalletManager(
             it.pairs.firstOrNull { it.fiatCurrency == currency } != null ?: false
         }.onErrorReturn { false }
 
-    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderState> {
+    override fun getOutstandingBuyOrders(): Single<BuyOrderList> {
+        TODO("not implemented")
+    }
+
+    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> {
         TODO("not implemented")
     }
 

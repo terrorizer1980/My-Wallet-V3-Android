@@ -1,5 +1,8 @@
 package com.blockchain.swap.nabu.models.simplebuy
 
+import com.blockchain.swap.nabu.datamanagers.OrderInput
+import com.blockchain.swap.nabu.datamanagers.OrderOutput
+
 import java.util.Date
 
 data class SimpleBuyPairsResp(val pairs: List<SimpleBuyPairResp>)
@@ -34,3 +37,10 @@ enum class OrderStateResponse {
     FAILED,
     EXPIRED
 }
+
+data class CustodialWalletOrder(
+    private val pair: String,
+    private val action: String,
+    private val input: OrderInput,
+    private val output: OrderOutput
+)
