@@ -12,6 +12,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import timber.log.Timber
 
@@ -20,7 +21,7 @@ class CustodialWalletManagerSwitcher(
     private val liveCustodialWalletManager: LiveCustodialWalletManager
 ) : CustodialWalletManager {
 
-    override fun getBalanceForAsset(crypto: CryptoCurrency): Single<CryptoValue> =
+    override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
         liveCustodialWalletManager.getBalanceForAsset(crypto)
 
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
