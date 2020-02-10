@@ -32,6 +32,7 @@ import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuSessionTokenResponse
 import io.reactivex.Completable
 import io.reactivex.Single
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -217,5 +218,5 @@ internal interface Nabu {
     fun getBalanceForAsset(
         @Header("authorization") authorization: String,
         @Path("crypto") cryptoSymbol: String
-    ): Single<SimpleBuyBalanceResponse>
+    ): Single<Response<SimpleBuyBalanceResponse>>
 }

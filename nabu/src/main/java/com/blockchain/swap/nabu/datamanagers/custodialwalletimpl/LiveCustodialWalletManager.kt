@@ -110,8 +110,8 @@ class LiveCustodialWalletManager(
         nabuToken.fetchNabuToken().flatMapMaybe {
             nabuDataManager.authenticateMaybe(it) { nabuSessionTokenResp ->
                 nabuService.getBalanceForAsset(nabuSessionTokenResp, crypto)
-                    .flatMap { balance ->
-                        Maybe.just(CryptoValue.fromMinor(crypto, balance.available.toBigDecimal()))
+                    .map { balance ->
+                        CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
                     }
             }
         }

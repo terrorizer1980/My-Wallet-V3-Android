@@ -5,7 +5,6 @@ import com.blockchain.swap.nabu.extensions.wrapErrorMessage
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.ApplicantIdRequest
-import com.blockchain.swap.nabu.models.nabu.NabuApiException
 import com.blockchain.swap.nabu.models.nabu.NabuBasicUser
 import com.blockchain.swap.nabu.models.nabu.NabuCountryResponse
 import com.blockchain.swap.nabu.models.nabu.NabuJwt
@@ -266,21 +265,13 @@ class NabuService(retrofit: Retrofit) {
         cryptoCurrency: CryptoCurrency
     ): Maybe<SimpleBuyBalanceResponse> = service.getBalanceForAsset(
         sessionToken.authHeader, cryptoCurrency.symbol
-    ).flatMapMaybe { Maybe.just(it) }
-    .onErrorResumeNext(::handleBalanceErrorMaybe)
-
-    // Need to use a fn ref here to avoid ambiguity.
-    private fun handleBalanceErrorMaybe(t: Throwable): Maybe<SimpleBuyBalanceResponse> =
-        when (t) {
-            is HttpException -> {
-                if (t.code() == 204) {
-                    Maybe.empty<SimpleBuyBalanceResponse>()
-                } else {
-                    Maybe.error(NabuApiException.fromResponseBody(t.response()))
-                }
-            }
-            else -> Maybe.error(t)
+    ).flatMapMaybe {
+        when (it.code()) {
+            200 -> Maybe.just(it.body())
+            204 -> Maybe.empty()
+            else -> Maybe.error(HttpException(it))
         }
+    }
 
     companion object {
         internal const val CLIENT_TYPE = "APP"
