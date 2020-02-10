@@ -5,6 +5,9 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.SingleSource
+import io.reactivex.annotations.CheckReturnValue
+import io.reactivex.annotations.SchedulerSupport
 import io.reactivex.disposables.Disposable
 import io.reactivex.exceptions.OnErrorNotImplementedException
 import io.reactivex.internal.functions.Functions
@@ -58,3 +61,17 @@ fun <T> Observable<T>.emptySubscribe(): Disposable =
  */
 fun Completable.emptySubscribe(): Disposable =
     subscribe(Functions.EMPTY_ACTION, Functions.ERROR_CONSUMER)
+
+/**
+ * Get a "this is ambiguous" error using Maybe.switchIfEmpty(): Single on a maybe in Kotlin. So fix it here!
+ */
+
+@CheckReturnValue
+@SchedulerSupport(SchedulerSupport.NONE)
+fun <T> Maybe<T>.switchToSingleIfEmpty(other: SingleSource<out T>?): Single<T> =
+    switchIfEmpty(other)
+
+@CheckReturnValue
+@SchedulerSupport(SchedulerSupport.NONE)
+fun <T> Maybe<T>.switchToSingleIfEmpty(source: () -> SingleSource<out T>?): Single<T> =
+    switchIfEmpty(source())

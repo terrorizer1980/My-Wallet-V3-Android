@@ -148,16 +148,16 @@ class StubCustodialWalletManager(
 
     override fun getBalanceForAsset(
         crypto: CryptoCurrency
-    ): Single<CryptoValue> =
+    ): Maybe<CryptoValue> =
         nabuToken.fetchNabuToken()
-            .flatMap {
+            .flatMapMaybe {
                 when (crypto) {
-                    CryptoCurrency.BTC -> Single.just(CryptoValue.bitcoinFromSatoshis(726800000))
-                    CryptoCurrency.ETHER -> Single.just(CryptoValue.ZeroEth)
-                    CryptoCurrency.BCH -> Single.just(CryptoValue.ZeroBch)
-                    CryptoCurrency.XLM -> Single.just(CryptoValue.ZeroXlm)
-                    CryptoCurrency.PAX -> Single.just(CryptoValue.usdPaxFromMajor(2785.toBigDecimal()))
-                    CryptoCurrency.STX -> Single.just(CryptoValue.ZeroStx)
+                    CryptoCurrency.BTC -> Maybe.just(CryptoValue.bitcoinFromSatoshis(726800000))
+                    CryptoCurrency.ETHER -> Maybe.just(CryptoValue.ZeroEth)
+                    CryptoCurrency.BCH -> Maybe.empty()
+                    CryptoCurrency.XLM -> Maybe.empty()
+                    CryptoCurrency.PAX -> Maybe.just(CryptoValue.usdPaxFromMajor(2785.toBigDecimal()))
+                    CryptoCurrency.STX -> Maybe.empty()
                 }
             }
 

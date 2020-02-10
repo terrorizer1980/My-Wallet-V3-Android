@@ -21,6 +21,8 @@ import com.blockchain.utils.Optional
 import com.blockchain.veriff.VeriffApplicantAndToken
 import info.blockchain.wallet.exceptions.ApiException
 import io.reactivex.Completable
+import io.reactivex.Maybe
+import io.reactivex.MaybeSource
 import io.reactivex.Single
 import io.reactivex.SingleSource
 import io.reactivex.schedulers.Schedulers
@@ -101,6 +103,11 @@ interface NabuDataManager {
         offlineToken: NabuOfflineTokenResponse,
         singleFunction: (NabuSessionTokenResponse) -> Single<T>
     ): Single<T>
+
+    fun <T> authenticateMaybe(
+        offlineToken: NabuOfflineTokenResponse,
+        maybeFunction: (NabuSessionTokenResponse) -> Maybe<T>
+    ): Maybe<T>
 
     fun clearAccessToken()
 
@@ -318,6 +325,16 @@ internal class NabuDataManagerImpl(
                     .onErrorResumeNext { refreshOrReturnError(it, offlineToken, singleFunction) }
             }
 
+    override fun <T> authenticateMaybe(
+        offlineToken: NabuOfflineTokenResponse,
+        maybeFunction: (NabuSessionTokenResponse) -> Maybe<T>
+    ): Maybe<T> =
+        currentToken(offlineToken)
+            .flatMapMaybe { tokenResponse ->
+                maybeFunction(tokenResponse)
+                    .onErrorResumeNext { e: Throwable -> refreshOrReturnError(e, offlineToken, maybeFunction) }
+            }
+
     override fun invalidateToken() {
         nabuTokenStore.invalidate()
     }
@@ -373,6 +390,19 @@ internal class NabuDataManagerImpl(
                 .flatMap { singleFunction(it) }
         } else {
             Single.error(throwable)
+        }
+
+    private fun <T> refreshOrReturnError(
+        throwable: Throwable,
+        offlineToken: NabuOfflineTokenResponse,
+        maybeFunction: (NabuSessionTokenResponse) -> Maybe<T>
+    ): MaybeSource<T> =
+        if (unauthenticated(throwable)) {
+            refreshToken(offlineToken)
+                .doOnSubscribe { clearAccessToken() }
+                .flatMapMaybe { maybeFunction(it) }
+        } else {
+            Maybe.error(throwable)
         }
 
     private fun recoverOrReturnError(

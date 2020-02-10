@@ -6,6 +6,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.subscribeBy
@@ -15,6 +16,9 @@ import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.extensions.switchToSingleIfEmpty
+import timber.log.Timber
+import java.util.concurrent.atomic.AtomicBoolean
 
 enum class AssetFilter {
     Total,
@@ -59,6 +63,12 @@ interface AssetTokens {
 //    fun execute(pending: PendingTransaction)
 
     fun actions(filter: AssetFilter): AvailableActions
+
+    /** Has this user got a configured wallet for asset type?
+    // The balance methods will return zero for un-configured wallets - ie custodial - but we need a way
+    // to differentiate between zero and not configured, so call this in the dashboard asset view when
+    // deciding if to show custodial etc **/
+    fun hasActiveWallet(filter: AssetFilter): Boolean
 }
 
 abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
@@ -79,8 +89,21 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
             ) { noncustodial, custodial -> noncustodial + custodial }
         }
 
-    protected abstract fun custodialBalance(): Single<CryptoValue>
+    protected abstract fun custodialBalanceMaybe(): Maybe<CryptoValue>
     protected abstract fun noncustodialBalance(): Single<CryptoValue>
+
+    private val isNonCustodialConfigured = AtomicBoolean(false)
+
+    private fun custodialBalance(): Single<CryptoValue> =
+        custodialBalanceMaybe()
+            .doOnComplete { isNonCustodialConfigured.set(false) }
+            .doOnSuccess { isNonCustodialConfigured.set(true) }
+            .switchToSingleIfEmpty { Single.just(CryptoValue.zero(asset)) }
+            // Report and then eat errors getting custodial balances - TODO add UI element to inform the user?
+            .onErrorReturn {
+                Timber.d("Unable to get non-custodial balance: $it")
+                CryptoValue.zero(asset)
+            }
 
     protected open val noncustodialActions = setOf(
         AssetAction.ViewActivity,
@@ -98,6 +121,13 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
             AssetFilter.Total -> custodialActions.intersect(noncustodialActions)
             AssetFilter.Custodial -> custodialActions
             AssetFilter.Wallet -> noncustodialActions
+        }
+
+    override fun hasActiveWallet(filter: AssetFilter): Boolean =
+        when (filter) {
+            AssetFilter.Total -> true
+            AssetFilter.Wallet -> true
+            AssetFilter.Custodial -> isNonCustodialConfigured.get()
         }
 }
 

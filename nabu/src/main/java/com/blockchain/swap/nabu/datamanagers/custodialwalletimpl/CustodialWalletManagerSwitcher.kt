@@ -20,9 +20,6 @@ class CustodialWalletManagerSwitcher(
     private val liveCustodialWalletManager: LiveCustodialWalletManager
 ) : CustodialWalletManager {
 
-    override fun getBalanceForAsset(crypto: CryptoCurrency): Single<CryptoValue> =
-        mockCustodialWalletManager.getBalanceForAsset(crypto)
-
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
         currency: String
@@ -51,6 +48,9 @@ class CustodialWalletManagerSwitcher(
 
     override fun isEligibleForSimpleBuy(): Single<Boolean> =
         mockCustodialWalletManager.isEligibleForSimpleBuy()
+
+    override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
+        mockCustodialWalletManager.getBalanceForAsset(crypto)
 
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
         liveCustodialWalletManager.isCurrencySupportedForSimpleBuy(currency)

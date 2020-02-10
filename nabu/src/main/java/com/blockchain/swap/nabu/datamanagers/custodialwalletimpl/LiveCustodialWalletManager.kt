@@ -106,9 +106,15 @@ class LiveCustodialWalletManager(
             OrderStateResponse.CANCELED -> OrderState.CANCELED
         }
 
-    override fun getBalanceForAsset(crypto: CryptoCurrency): Single<CryptoValue> {
-        TODO("not implemented")
-    }
+    override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
+        nabuToken.fetchNabuToken().flatMapMaybe {
+            nabuDataManager.authenticateMaybe(it) { nabuSessionTokenResp ->
+                nabuService.getBalanceForAsset(nabuSessionTokenResp, crypto)
+                    .map { balance ->
+                        CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
+                    }
+            }
+        }
 
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
         nabuToken.fetchNabuToken().flatMap {

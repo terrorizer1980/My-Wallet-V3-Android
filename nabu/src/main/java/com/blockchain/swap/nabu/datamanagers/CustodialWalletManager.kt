@@ -29,7 +29,7 @@ interface CustodialWalletManager {
 
     fun getBalanceForAsset(
         crypto: CryptoCurrency
-    ): Single<CryptoValue>
+    ): Maybe<CryptoValue>
 
     fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
