@@ -19,8 +19,7 @@ import java.util.Locale
 
 class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(),
     SimpleBuyScreen,
-    CancelOrderConfirmationListener,
-    SlidingModalBottomDialog.Host {
+    CancelOrderConfirmationListener {
 
     override val model: SimpleBuyModel by inject()
 
@@ -92,6 +91,8 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 
     override fun onSheetClosed() {
         model.process(SimpleBuyIntent.ClearError)
+        model.process(SimpleBuyIntent.ClearState)
+        navigator().exitSimpleBuyFlow()
     }
 }
 
