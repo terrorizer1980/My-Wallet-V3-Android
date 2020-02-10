@@ -68,7 +68,7 @@ interface AssetTokens {
     // The balance methods will return zero for un-configured wallets - ie custodial - but we need a way
     // to differentiate between zero and not configured, so call this in the dashboard asset view when
     // deciding if to show custodial etc **/
-    fun hasActiveWallet(filter: AssetFilter): Single<Boolean>
+    fun hasActiveWallet(filter: AssetFilter): Boolean
 }
 
 abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
@@ -123,15 +123,11 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
             AssetFilter.Wallet -> noncustodialActions
         }
 
-    override fun hasActiveWallet(filter: AssetFilter): Single<Boolean> =
-        Single.defer {
-            Single.just(
-                when (filter) {
-                    AssetFilter.Total -> true
-                    AssetFilter.Wallet -> true
-                    AssetFilter.Custodial -> isNonCustodialConfigured.get()
-                }
-            )
+    override fun hasActiveWallet(filter: AssetFilter): Boolean =
+        when (filter) {
+            AssetFilter.Total -> true
+            AssetFilter.Wallet -> true
+            AssetFilter.Custodial -> isNonCustodialConfigured.get()
         }
 }
 
