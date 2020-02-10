@@ -176,4 +176,3 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
 interface PaymentAccountMapper {
     fun map(bankAccountResponse: BankAccountResponse): BankAccount?
 }
-
