@@ -14,16 +14,24 @@ data class SimpleBuyPairResp(val pair: String, val buyMin: Long, val buyMax: Lon
     val cryptoCurrency = pair.split("-")[0]
 }
 
-data class BankAccount(val details: List<BankDetail>)
-
-data class BankDetail(val title: String, val value: String, val isCopyable: Boolean = false)
-
 data class SimpleBuyEligibility(val eligible: Boolean)
 
 data class SimpleBuyCurrency(val currency: String)
 
 data class SimpleBuyQuoteResponse(
     val time: Date
+)
+
+data class BankAccountResponse(val address: String?, val agent: BankAgentResponse, val currency: String)
+
+data class BankAgentResponse(
+    val account: String?,
+    val address: String?,
+    val code: String?,
+    val country: String?,
+    val name: String?,
+    val recipient: String?,
+    val routingNumber: String?
 )
 
 enum class OrderStateResponse {

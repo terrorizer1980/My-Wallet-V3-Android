@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
 import com.blockchain.swap.nabu.Authenticator
+import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
@@ -12,8 +13,8 @@ import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.extensions.toLocalTime
-import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
+import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -30,7 +31,8 @@ import java.util.UnknownFormatConversionException
 
 class LiveCustodialWalletManager(
     private val nabuService: NabuService,
-    private val authenticator: Authenticator
+    private val authenticator: Authenticator,
+    private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>
 ) : CustodialWalletManager {
 
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
@@ -97,6 +99,9 @@ class LiveCustodialWalletManager(
     override fun getBankAccountDetails(currency: String): Single<BankAccount> =
         authenticator.authenticate {
             nabuService.getSimpleBuyBankAccountDetails(it, currency)
+        }.map { response ->
+            paymentAccountMapperMappers[currency]?.map(response)
+                ?: throw IllegalStateException("Not valid Account returned")
         }
 
     override fun isEligibleForSimpleBuy(): Single<Boolean> =
@@ -167,3 +172,8 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
         state = state.toLocalState(),
         expires = expiresAt
     )
+
+interface PaymentAccountMapper {
+    fun map(bankAccountResponse: BankAccountResponse): BankAccount?
+}
+

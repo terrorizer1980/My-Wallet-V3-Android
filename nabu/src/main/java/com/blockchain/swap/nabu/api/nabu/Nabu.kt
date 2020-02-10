@@ -19,9 +19,9 @@ import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.swap.nabu.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.swap.nabu.models.nabu.VeriffToken
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
-import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderListResponse
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
+import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
@@ -205,7 +205,7 @@ internal interface Nabu {
     fun getSimpleBuyBankAccountDetails(
         @Header("authorization") authorization: String,
         @Body currency: SimpleBuyCurrency
-    ): Single<BankAccount>
+    ): Single<BankAccountResponse>
 
     @GET(NABU_SIMPLE_BUY_ELIGIBILITY)
     fun isEligibleForSimpleBuy(@Header("authorization") authorization: String): Single<SimpleBuyEligibility>
@@ -233,9 +233,9 @@ internal interface Nabu {
         @Path("orderId") orderId: String
     ): Single<BuyOrderResponse>
 
-    @GET("$NABU_SIMPLE_BUY_ASSET_BALANCE/{crypto}")
+    @GET(NABU_SIMPLE_BUY_ASSET_BALANCE)
     fun getBalanceForAsset(
         @Header("authorization") authorization: String,
-        @Path("crypto") cryptoSymbol: String
+        @Query("ccy") cryptoSymbol: String
     ): Single<Response<SimpleBuyBalanceResponse>>
 }

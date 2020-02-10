@@ -1786,7 +1786,8 @@
     <string name="simple_buy_securely_transfer">Securely transfer %1$s from your bank account to Blockchain. Depending on the transfer method and availability of funds, this may take up to 1 business day.</string>
     <string name="simple_buy_amount_to_send">Amount to send</string>
     <string name="simple_buy_pending_buy_sheet_title">Pending %1s Buy</string>
-    <string name="recipient_name_must_match">Your Recipient name above must match the account holder\'s name on your bank account for your transfer to be successful. Your transfer could be rejected if there is not a match.</string>
+    <string name="recipient_name_must_match_eur">Your Recipient name above must match the account holder\'s name on your bank account for your transfer to be successful. Your transfer could be rejected if there is not a match.</string>
+    <string name="recipient_name_must_match_gbp">Your Recipient name above must match the account holder\'s name on your bank account for your transfer to be successful. Your transfer could be rejected if there is not a match.\n\nBy depositing funds to this account, you agree to <annotation link="modular_terms_and_conditions">Terms &amp; Conditions of Modulr</annotation>, our banking partner.</string>
     <string name="simple_buy_no_currencies_available_title">No currencies available</string>
     <string name="simple_buy_no_currencies_available">Unfortunately, currently there are no currencies that you can trade :( </string>
     <string name="cancel_order">Cancel order</string>
@@ -1798,4 +1799,12 @@
     <string name="something_went_wrong_try_again">Something went wrong. Please try again.</string>
     <string name="simple_buy_token">Buy %1s</string>
     <string name="simple_buy_copied_to_clipboard">%1s is on your clipboard</string>
+    <string name="account_number">Account Number</string>
+    <string name="bank_code_swift_bic">Bank Code (SWIFT/BIC)</string>
+    <string name="recipient_name">Recipient</string>
+    <string name="sort_code">Sort Code</string>
+    <string name="bank_name">Bank Name</string>
+    <string name="bank_country">Bank Country</string>
+    <string name="iban">IBAN</string>
+    <string name="estonia">Estonia</string>
 </resources>

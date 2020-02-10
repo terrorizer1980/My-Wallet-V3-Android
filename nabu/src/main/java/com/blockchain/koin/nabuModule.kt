@@ -85,7 +85,10 @@ val nabuModule = applicationContext {
                 mockCustodialWalletManager = StubCustodialWalletManager(),
                 liveCustodialWalletManager = LiveCustodialWalletManager(
                     nabuService = get(),
-                    authenticator = get()
+                    authenticator = get(),
+                    paymentAccountMapperMappers = mapOf(
+                        "EUR" to get("EUR"), "GBP" to get("GBP")
+                    )
                 )
             )
         }.bind(CustodialWalletManager::class)
