@@ -58,6 +58,7 @@ class AssetDetailsCalculatorTest {
         )
 
         whenever(token.exchangeRate()).thenReturn(Single.just(price))
+        whenever(token.hasActiveWallet(any())).thenReturn(true)
 
         whenever(token.totalBalance(any())).thenAnswer {
             when (it.arguments[0] as AssetFilter) {
@@ -75,7 +76,7 @@ class AssetDetailsCalculatorTest {
         // three possible enum values changes the failure into an expected 'Failed, not equal' result (hence the
         // doAnswer() nonsense instead of eq() etc - I tried many things)
         // All very strange.
-        assertEquals(v[0], expectedResult)
+        assertEquals(expectedResult, v[0])
     }
 
     @Test
