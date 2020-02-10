@@ -16,7 +16,6 @@ import com.blockchain.logging.CrashLogger
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
-import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.Environment
