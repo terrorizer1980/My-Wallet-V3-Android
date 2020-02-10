@@ -20,6 +20,7 @@ import com.blockchain.swap.nabu.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.swap.nabu.models.nabu.VeriffToken
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
+import com.blockchain.swap.nabu.models.simplebuy.BuyOrderListResponse
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
@@ -32,6 +33,7 @@ import com.blockchain.swap.nabu.models.tokenresponse.NabuSessionTokenResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -206,9 +208,20 @@ internal interface Nabu {
     @GET(NABU_SIMPLE_BUY_ELIGIBILITY)
     fun isEligibleForSimpleBuy(@Header("authorization") authorization: String): Single<SimpleBuyEligibility>
 
-    @POST(NABU_SIMPLE_BUY_CREATE_ORDER)
+    @POST(NABU_SIMPLE_BUY_ORDERS)
     fun createOrder(
         @Header("authorization") authorization: String,
         @Body order: CustodialWalletOrder
     ): Single<BuyOrderResponse>
+
+    @GET("$NABU_SIMPLE_BUY_ORDERS")
+    fun getOutstandingBuyOrders(
+        @Header("authorization") authorization: String
+    ):Single<BuyOrderListResponse>
+
+    @DELETE("$NABU_SIMPLE_BUY_ORDERS/{userId}")
+    fun deleteBuyOrder(
+        @Header("authorization") authorization: String,
+        @Path("orderId") orderId: String
+    ): Completable
 }

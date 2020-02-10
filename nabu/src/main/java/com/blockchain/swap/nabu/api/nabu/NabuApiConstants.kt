@@ -25,4 +25,4 @@ internal const val NABU_SIMPLE_BUY_ACCOUNT_DETAILS = "payments/accounts/simplebu
 internal const val NABU_SIMPLE_QUOTE = "simple-buy/quote"
 internal const val NABU_SIMPLE_BUY_AMOUNTS = "simple-buy/amounts"
 internal const val NABU_SIMPLE_BUY_ELIGIBILITY = "simple-buy/eligible"
-internal const val NABU_SIMPLE_BUY_CREATE_ORDER = "simple-buy/trades"
+internal const val NABU_SIMPLE_BUY_ORDERS = "simple-buy/trades"

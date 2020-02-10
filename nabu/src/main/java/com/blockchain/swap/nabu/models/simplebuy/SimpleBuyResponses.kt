@@ -56,3 +56,5 @@ data class BuyOrderResponse(
     val state: OrderStateResponse,
     val expiresAt: Date
 )
+
+typealias BuyOrderListResponse = List<BuyOrderResponse>

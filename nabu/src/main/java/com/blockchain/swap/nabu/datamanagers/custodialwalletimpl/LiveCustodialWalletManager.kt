@@ -1,11 +1,10 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
-import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.Authenticator
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.datamanagers.OrderInput
 import com.blockchain.swap.nabu.datamanagers.OrderOutput
 import com.blockchain.swap.nabu.datamanagers.OrderState
@@ -30,16 +29,14 @@ import java.math.BigDecimal
 import java.util.UnknownFormatConversionException
 
 class LiveCustodialWalletManager(
-    private val nabuToken: NabuToken,
     private val nabuService: NabuService,
-    private val nabuDataManager: NabuDataManager
+    private val authenticator: Authenticator
 ) : CustodialWalletManager {
 
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.getSimpleBuyQuote(
-                    sessionToken = nabuSessionTokenResp,
+        authenticator.authenticate {
+            nabuService.getSimpleBuyQuote(
+                    sessionToken = it,
                     action = action,
                     currencyPair = "${crypto.symbol}-${amount.currencyCode}",
                     amount = amount.valueMinor.toString()
@@ -47,38 +44,34 @@ class LiveCustodialWalletManager(
             }.map { quoteResponse ->
                 Quote(date = quoteResponse.time.toLocalTime())
             }
-        }
 
     override fun createOrder(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
         action: String
     ): Single<BuyOrder> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.createOrder(nabuSessionTokenResp,
-                    CustodialWalletOrder(
-                        pair = "${cryptoCurrency.symbol}-${amount.currencyCode}",
-                        action = action,
-                        input = OrderInput(
-                            amount.currencyCode, amount.valueMinor.toString()
-                        ),
-                        output = OrderOutput(
-                            cryptoCurrency.symbol
-                        )
+        authenticator.authenticate {
+            nabuService.createOrder(
+                it,
+                CustodialWalletOrder(
+                    pair = "${cryptoCurrency.symbol}-${amount.currencyCode}",
+                    action = action,
+                    input = OrderInput(
+                        amount.currencyCode, amount.valueMinor.toString()
+                    ),
+                    output = OrderOutput(
+                        cryptoCurrency.symbol
                     )
-                ).map { response -> response.toBuyOrder() }
-            }
-        }
+                )
+            )
+        }.map { response -> response.toBuyOrder() }
 
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
         currency: String
     ): Single<SimpleBuyPairs> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.getSupportCurrencies()
-            }
+        authenticator.authenticate {
+            nabuService.getSupportCurrencies()
         }.map {
             SimpleBuyPairs(it.pairs.map { responsePair ->
                 SimpleBuyPair(
@@ -96,29 +89,23 @@ class LiveCustodialWalletManager(
     }
 
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.getPredefinedAmounts(nabuSessionTokenResp, currency)
-            }.map { response ->
-                val currencyAmounts = response.firstOrNull { it[currency] != null } ?: emptyMap()
-                currencyAmounts[currency]?.map { value ->
-                    FiatValue.fromMinor(currency, value)
-                } ?: emptyList()
-            }
+        authenticator.authenticate {
+            nabuService.getPredefinedAmounts(it, currency)
+        }.map { response ->
+            val currencyAmounts = response.firstOrNull { it[currency] != null } ?: emptyMap()
+            currencyAmounts[currency]?.map { value ->
+                FiatValue.fromMinor(currency, value)
+            } ?: emptyList()
         }
 
     override fun getBankAccountDetails(currency: String): Single<BankAccount> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.getSimpleBuyBankAccountDetails(nabuSessionTokenResp, currency)
-            }
+        authenticator.authenticate {
+            nabuService.getSimpleBuyBankAccountDetails(it, currency)
         }
 
     override fun isEligibleForSimpleBuy(): Single<Boolean> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.isEligibleForSimpleBuy(nabuSessionTokenResp)
-            }
+        authenticator.authenticate {
+            nabuService.isEligibleForSimpleBuy(it)
         }.map {
             it.eligible
         }.onErrorReturn {
@@ -127,20 +114,22 @@ class LiveCustodialWalletManager(
 
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
         nabuService.getSupportCurrencies().map {
-            it.pairs.firstOrNull { it.fiatCurrency == currency } != null ?: false
+            it.pairs.firstOrNull { pair -> pair.fiatCurrency == currency } != null ?: false
         }.onErrorReturn { false }
 
-    override fun getOutstandingBuyOrders(): Single<BuyOrderList> {
-        TODO("not implemented")
-    }
+    override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
+        authenticator.authenticate { nabuSessionTokenResp ->
+            nabuService.getOutstandingBuyOrders(nabuSessionTokenResp)
+        }.map { emptyList<BuyOrder>() }  // TODO: Map this!
 
     override fun getBuyOrder(orderId: String): Maybe<BuyOrder> {
         TODO("not implemented")
     }
 
-    override fun deleteBuyOrder(orderId: String): Completable {
-        TODO("not implemented")
-    }
+    override fun deleteBuyOrder(orderId: String): Completable =
+        authenticator.authenticateCompletable {
+            nabuService.deleteBuyOrder(it, orderId)
+        }
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable {
         TODO("not implemented")

@@ -255,6 +255,19 @@ class NabuService(retrofit: Retrofit) {
         sessionToken.authHeader, order
     ).wrapErrorMessage()
 
+    internal fun getOutstandingBuyOrders(
+        sessionToken: NabuSessionTokenResponse
+    ) = service.getOutstandingBuyOrders(
+        sessionToken.authHeader
+    ).wrapErrorMessage()
+
+    internal fun deleteBuyOrder(
+        sessionToken: NabuSessionTokenResponse,
+        orderId: String
+    ) = service.deleteBuyOrder(
+        sessionToken.authHeader, orderId
+    ).wrapErrorMessage()
+
     companion object {
         internal const val CLIENT_TYPE = "APP"
     }
