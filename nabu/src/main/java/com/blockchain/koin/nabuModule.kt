@@ -82,11 +82,10 @@ val nabuModule = applicationContext {
 
         factory {
             CustodialWalletManagerSwitcher(
-                mockCustodialWalletManager = StubCustodialWalletManager(nabuToken = get()),
+                mockCustodialWalletManager = StubCustodialWalletManager(),
                 liveCustodialWalletManager = LiveCustodialWalletManager(
-                    nabuToken = get(),
                     nabuService = get(),
-                    nabuDataManager = get()
+                    authenticator = get()
                 )
             )
         }.bind(CustodialWalletManager::class)

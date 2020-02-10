@@ -1,6 +1,5 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
-import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
@@ -22,9 +21,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 // Provide mock data for development and testing etc
-class StubCustodialWalletManager(
-    private val nabuToken: NabuToken
-) : CustodialWalletManager {
+class StubCustodialWalletManager() : CustodialWalletManager {
 
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
@@ -148,17 +145,14 @@ class StubCustodialWalletManager(
     override fun getBalanceForAsset(
         crypto: CryptoCurrency
     ): Single<CryptoValue> =
-        nabuToken.fetchNabuToken()
-            .flatMap {
-                when (crypto) {
-                    CryptoCurrency.BTC -> Single.just(CryptoValue.bitcoinFromSatoshis(726800000))
-                    CryptoCurrency.ETHER -> Single.just(CryptoValue.ZeroEth)
-                    CryptoCurrency.BCH -> Single.just(CryptoValue.ZeroBch)
-                    CryptoCurrency.XLM -> Single.just(CryptoValue.ZeroXlm)
-                    CryptoCurrency.PAX -> Single.just(CryptoValue.usdPaxFromMajor(2785.toBigDecimal()))
-                    CryptoCurrency.STX -> Single.just(CryptoValue.ZeroStx)
-                }
-            }
+        when (crypto) {
+            CryptoCurrency.BTC -> Single.just(CryptoValue.bitcoinFromSatoshis(726800000))
+            CryptoCurrency.ETHER -> Single.just(CryptoValue.ZeroEth)
+            CryptoCurrency.BCH -> Single.just(CryptoValue.ZeroBch)
+            CryptoCurrency.XLM -> Single.just(CryptoValue.ZeroXlm)
+            CryptoCurrency.PAX -> Single.just(CryptoValue.usdPaxFromMajor(2785.toBigDecimal()))
+            CryptoCurrency.STX -> Single.just(CryptoValue.ZeroStx)
+        }
 
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
         Single.just(
