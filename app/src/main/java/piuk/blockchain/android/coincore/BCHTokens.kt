@@ -43,7 +43,7 @@ class BCHTokens(
             Single.just(a.toAccountReference())
         }
 
-    override fun custodialBalance(): Maybe<CryptoValue> =
+    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.BCH)
 
     override fun noncustodialBalance(): Single<CryptoValue> =

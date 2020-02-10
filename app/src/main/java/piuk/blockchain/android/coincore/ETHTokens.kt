@@ -10,6 +10,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.StringUtils
@@ -43,7 +44,7 @@ class ETHTokens(
         ethDataManager.getEthWallet()?.account?.toAccountReference()
             ?: throw Exception("No ether wallet found")
 
-    override fun custodialBalance(): Single<CryptoValue> =
+    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.ETHER)
 
     override fun noncustodialBalance(): Single<CryptoValue> =

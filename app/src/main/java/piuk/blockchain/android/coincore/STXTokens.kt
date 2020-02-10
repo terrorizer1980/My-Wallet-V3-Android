@@ -9,6 +9,7 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.stx.STXAccount
+import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -34,7 +35,7 @@ class STXTokens(
         return hdWallets[0].stxAccount.toAccountReference()
     }
 
-    override fun custodialBalance(): Single<CryptoValue> {
+    override fun custodialBalanceMaybe(): Maybe<CryptoValue> {
         TODO("not implemented")
     }
 
