@@ -8,6 +8,7 @@ import com.blockchain.network.websocket.debugLog
 import com.blockchain.network.websocket.newBlockchainWebSocket
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
+import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.PaymentAccountMapper
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
 import com.blockchain.ui.password.SecondPasswordHandler
@@ -27,6 +28,8 @@ import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrate
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
+import piuk.blockchain.android.simplebuy.EURPaymentAccountMapper
+import piuk.blockchain.android.simplebuy.GBPPaymentAccountMapper
 import piuk.blockchain.android.simplebuy.SimpleBuyFlowNavigator
 import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
 import piuk.blockchain.android.simplebuy.SimpleBuyModel
@@ -276,6 +279,14 @@ val applicationModule = applicationContext {
                 crashLogger = get()
             )
         }
+
+        factory("GBP") {
+            GBPPaymentAccountMapper(stringUtils = get())
+        }.bind(PaymentAccountMapper::class)
+
+        factory("EUR") {
+            EURPaymentAccountMapper(stringUtils = get())
+        }.bind(PaymentAccountMapper::class)
 
         bean {
             CoinsWebSocketStrategy(

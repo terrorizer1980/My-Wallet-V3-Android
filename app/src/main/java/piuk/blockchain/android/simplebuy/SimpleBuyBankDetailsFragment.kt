@@ -1,19 +1,24 @@
 package piuk.blockchain.android.simplebuy
 
+import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.ui.urllinks.MODULAR_TERMS_AND_CONDITIONS
 import kotlinx.android.synthetic.main.fragment_simple_buy_bank_details.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
+import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 
 class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(), SimpleBuyScreen {
     override val model: SimpleBuyModel by inject()
+    private val stringUtils: StringUtils by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +37,19 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
     override fun render(newState: SimpleBuyState) {
         if (newState.errorState != null) {
             showErrorState(newState.errorState)
+        }
+
+        if (newState.currency == "GBP") {
+            val linksMap = mapOf<String, Uri>(
+                "modular_terms_and_conditions" to Uri.parse(MODULAR_TERMS_AND_CONDITIONS)
+            )
+            bank_deposit_instruction.text =
+                stringUtils.getStringWithMappedLinks(R.string.recipient_name_must_match_gbp,
+                    linksMap,
+                    requireActivity())
+            bank_deposit_instruction.movementMethod = LinkMovementMethod.getInstance()
+        } else {
+            bank_deposit_instruction.text = getString(R.string.recipient_name_must_match_eur)
         }
 
         if (newState.bankAccount != null && newState.order.amount != null) {

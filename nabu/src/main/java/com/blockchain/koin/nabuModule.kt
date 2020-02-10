@@ -86,7 +86,10 @@ val nabuModule = applicationContext {
                 liveCustodialWalletManager = LiveCustodialWalletManager(
                     nabuToken = get(),
                     nabuService = get(),
-                    nabuDataManager = get()
+                    nabuDataManager = get(),
+                    paymentAccountMapperMappers = mapOf(
+                        "EUR" to get("EUR"), "GBP" to get("GBP")
+                    )
                 )
             )
         }.bind(CustodialWalletManager::class)

@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
 import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
@@ -14,7 +15,7 @@ import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.extensions.toLocalTime
-import com.blockchain.swap.nabu.models.simplebuy.BankAccount
+import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -25,11 +26,13 @@ import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import java.lang.IllegalStateException
 
 class LiveCustodialWalletManager(
     private val nabuToken: NabuToken,
     private val nabuService: NabuService,
-    private val nabuDataManager: NabuDataManager
+    private val nabuDataManager: NabuDataManager,
+    private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>
 ) : CustodialWalletManager {
 
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
@@ -133,6 +136,9 @@ class LiveCustodialWalletManager(
             nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
                 nabuService.getSimpleBuyBankAccountDetails(nabuSessionTokenResp, currency)
             }
+        }.map { response ->
+            paymentAccountMapperMappers[currency]?.map(response)
+                ?: throw IllegalStateException("Not valid Account returned")
         }
 
     override fun isEligibleForSimpleBuy(): Single<Boolean> =
@@ -166,4 +172,8 @@ class LiveCustodialWalletManager(
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable {
         TODO("not implemented")
     }
+}
+
+interface PaymentAccountMapper {
+    fun map(bankAccountResponse: BankAccountResponse): BankAccount?
 }

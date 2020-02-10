@@ -1,6 +1,5 @@
 package com.blockchain.swap.nabu.datamanagers
 
-import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -99,3 +98,7 @@ data class BuyLimits(private val min: Long, private val max: Long) {
 }
 
 data class Quote(val date: Date)
+
+data class BankAccount(val details: List<BankDetail>)
+
+data class BankDetail(val title: String, val value: String, val isCopyable: Boolean = false)

@@ -1,12 +1,12 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
+import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
-import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -47,7 +47,7 @@ class CustodialWalletManagerSwitcher(
         mockCustodialWalletManager.getBankAccountDetails(currency)
 
     override fun isEligibleForSimpleBuy(): Single<Boolean> =
-        mockCustodialWalletManager.isEligibleForSimpleBuy()
+        liveCustodialWalletManager.isEligibleForSimpleBuy()
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
         mockCustodialWalletManager.getBalanceForAsset(crypto)

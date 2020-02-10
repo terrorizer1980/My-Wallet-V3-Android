@@ -43,9 +43,10 @@
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/Text.Light.14"
             android:layout_width="match_parent"
+            android:id="@+id/bank_deposit_instruction"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/standard_margin"
-            android:text="@string/recipient_name_must_match" />
+            android:text="@string/recipient_name_must_match_eur" />
 
         <LinearLayout
             android:layout_width="match_parent"
