@@ -268,6 +268,13 @@ class NabuService(retrofit: Retrofit) {
         sessionToken.authHeader, orderId
     ).wrapErrorMessage()
 
+    fun getBuyOrder(
+        sessionToken: NabuSessionTokenResponse,
+        orderId: String
+    ) = service.getBuyOrder(
+        sessionToken.authHeader, orderId
+    ).wrapErrorMessage()
+
     companion object {
         internal const val CLIENT_TYPE = "APP"
     }

@@ -22,7 +22,6 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Single
 import okhttp3.internal.toLongOrDefault
 import java.math.BigDecimal
@@ -118,15 +117,16 @@ class LiveCustodialWalletManager(
         }.onErrorReturn { false }
 
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
-        authenticator.authenticate { nabuSessionTokenResp ->
-            nabuService.getOutstandingBuyOrders(nabuSessionTokenResp)
+        authenticator.authenticate {
+            nabuService.getOutstandingBuyOrders(it)
         }.map {
             it.map { order -> order.toBuyOrder() }
         }
 
-    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> {
-        TODO("not implemented")
-    }
+    override fun getBuyOrder(orderId: String): Single<BuyOrder> =
+        authenticator.authenticate {
+            nabuService.getBuyOrder(it, orderId)
+        }.map { it.toBuyOrder() }
 
     override fun deleteBuyOrder(orderId: String): Completable =
         authenticator.authenticateCompletable {

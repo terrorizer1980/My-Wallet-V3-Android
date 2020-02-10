@@ -214,14 +214,20 @@ internal interface Nabu {
         @Body order: CustodialWalletOrder
     ): Single<BuyOrderResponse>
 
-    @GET("$NABU_SIMPLE_BUY_ORDERS")
+    @GET(NABU_SIMPLE_BUY_ORDERS)
     fun getOutstandingBuyOrders(
         @Header("authorization") authorization: String
-    ):Single<BuyOrderListResponse>
+    ): Single<BuyOrderListResponse>
 
     @DELETE("$NABU_SIMPLE_BUY_ORDERS/{userId}")
     fun deleteBuyOrder(
-        @Header("authorization") authorization: String,
+        vauthorization: String,
         @Path("orderId") orderId: String
     ): Completable
+
+    @GET("$NABU_SIMPLE_BUY_ORDERS/{userId}")
+    fun getBuyOrder(
+        @Header("authorization") authHeader: String,
+        @Path("orderId") orderId: String
+    ): Single<BuyOrderResponse>
 }

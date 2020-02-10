@@ -11,7 +11,6 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Single
 
 class CustodialWalletManagerSwitcher(
@@ -57,7 +56,7 @@ class CustodialWalletManagerSwitcher(
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
         mockCustodialWalletManager.getOutstandingBuyOrders()
 
-    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> =
+    override fun getBuyOrder(orderId: String): Single<BuyOrder> =
         mockCustodialWalletManager.getBuyOrder(orderId)
 
     override fun deleteBuyOrder(orderId: String): Completable =

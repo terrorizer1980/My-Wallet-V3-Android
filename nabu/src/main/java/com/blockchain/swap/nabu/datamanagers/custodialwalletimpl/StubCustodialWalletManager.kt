@@ -15,7 +15,6 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Single
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -176,8 +175,8 @@ class StubCustodialWalletManager() : CustodialWalletManager {
             )
         )
 
-    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> =
-        Maybe.just(
+    override fun getBuyOrder(orderId: String): Single<BuyOrder> =
+        Single.just(
             BuyOrder(
                 id = orderId,
                 pair = "BTC-USD",

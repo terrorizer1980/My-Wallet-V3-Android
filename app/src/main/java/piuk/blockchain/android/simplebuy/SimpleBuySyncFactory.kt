@@ -115,6 +115,8 @@ class SimpleBuySyncFactory(
         id?.let {
             custodialWallet.getBuyOrder(it)
                 .map { order -> order.toSimpleBuyState() }
+                .toMaybe()
+                .onErrorResumeNext(Maybe.empty<SimpleBuyState>())
         } ?: Maybe.empty()
 
     private fun maybeInflateLocalState(): Maybe<SimpleBuyState> =

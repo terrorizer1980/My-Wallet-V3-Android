@@ -2,9 +2,6 @@ package com.blockchain.swap.nabu.models.simplebuy
 
 import com.blockchain.swap.nabu.datamanagers.OrderInput
 import com.blockchain.swap.nabu.datamanagers.OrderOutput
-import com.blockchain.swap.nabu.datamanagers.OrderState
-import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.FiatValue
 
 import java.util.Date
 
