@@ -1,12 +1,12 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
-import com.blockchain.swap.nabu.datamanagers.BuyOrderState
+import com.blockchain.swap.nabu.datamanagers.BuyOrder
+import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -46,14 +46,20 @@ class CustodialWalletManagerSwitcher(
     override fun getBankAccountDetails(currency: String): Single<BankAccount> =
         mockCustodialWalletManager.getBankAccountDetails(currency)
 
-    override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
-        liveCustodialWalletManager.isEligibleForSimpleBuy(currency)
+    override fun isEligibleForSimpleBuy(): Single<Boolean> =
+        mockCustodialWalletManager.isEligibleForSimpleBuy()
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
         mockCustodialWalletManager.getBalanceForAsset(crypto)
 
-    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderState> =
-        mockCustodialWalletManager.getBuyOrderStatus(orderId)
+    override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
+        liveCustodialWalletManager.isCurrencySupportedForSimpleBuy(currency)
+
+    override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
+        mockCustodialWalletManager.getOutstandingBuyOrders()
+
+    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> =
+        mockCustodialWalletManager.getBuyOrder(orderId)
 
     override fun deleteBuyOrder(orderId: String): Completable =
         mockCustodialWalletManager.deleteBuyOrder(orderId)

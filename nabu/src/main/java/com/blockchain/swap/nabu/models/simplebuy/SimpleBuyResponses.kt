@@ -1,10 +1,18 @@
 package com.blockchain.swap.nabu.models.simplebuy
 
+import com.blockchain.swap.nabu.datamanagers.OrderInput
+import com.blockchain.swap.nabu.datamanagers.OrderOutput
+
 import java.util.Date
 
 data class SimpleBuyPairsResp(val pairs: List<SimpleBuyPairResp>)
 
-data class SimpleBuyPairResp(val pair: String, val buyMin: Long, val buyMax: Long)
+data class SimpleBuyPairResp(val pair: String, val buyMin: Long, val buyMax: Long) {
+    @Transient
+    val fiatCurrency = pair.split("-")[1]
+    @Transient
+    val cryptoCurrency = pair.split("-")[0]
+}
 
 data class BankAccount(val details: List<BankDetail>)
 
@@ -31,6 +39,12 @@ enum class OrderStateResponse {
 }
 
 data class SimpleBuyBalanceResponse(
-    val available: String,
-    val pending: String
+    val available: String
+)
+
+data class CustodialWalletOrder(
+    private val pair: String,
+    private val action: String,
+    private val input: OrderInput,
+    private val output: OrderOutput
 )

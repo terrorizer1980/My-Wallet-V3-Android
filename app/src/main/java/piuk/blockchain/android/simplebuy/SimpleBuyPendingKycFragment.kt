@@ -34,7 +34,8 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
         kyc_progress.visibleIf { newState.kycVerificationState == KycState.PENDING }
         kyc_failed_icon.visibleIf {
             newState.kycVerificationState == KycState.FAILED ||
-                    newState.kycVerificationState == KycState.UNDECIDED
+                    newState.kycVerificationState == KycState.UNDECIDED ||
+                    newState.kycVerificationState == KycState.VERIFIED_BUT_NOT_ELIGIBLE
         }
 
         kyc_pending_subtitle.text = when (newState.kycVerificationState) {
@@ -46,6 +47,7 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
             KycState.PENDING -> resources.getString(R.string.kyc_verifying_info)
             KycState.FAILED -> resources.getString(R.string.kyc_manual_review_required)
             KycState.UNDECIDED -> resources.getString(R.string.kyc_pending_review)
+            KycState.VERIFIED_BUT_NOT_ELIGIBLE -> resources.getString(R.string.kyc_veriff_but_not_eligible_review)
             else -> ""
         }
 
@@ -53,6 +55,7 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
             KycState.PENDING -> resources.getString(R.string.kyc_verifying_time_info)
             KycState.FAILED,
             KycState.UNDECIDED -> resources.getString(R.string.kyc_verifying_manual_review_required_info)
+            KycState.VERIFIED_BUT_NOT_ELIGIBLE -> resources.getString(R.string.kyc_veriff_but_not_eligible_review_info)
             else -> ""
         }
 
@@ -61,14 +64,16 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
                     newState.kycVerificationState == KycState.UNDECIDED
         }
 
-        if (newState.kycVerificationState == KycState.VERIFIED) {
+        if (newState.kycVerificationState == KycState.VERIFIED_AND_ELIGIBLE) {
             navigator().goToCheckOutScreen()
         }
 
         kyc_failed_icon.setImageResource(
-            if (newState.kycVerificationState == KycState.FAILED)
-                R.drawable.ic_kyc_failed_warning
-            else R.drawable.ic_kyc_pending
+            when (newState.kycVerificationState) {
+                KycState.FAILED -> R.drawable.ic_kyc_failed_warning
+                KycState.VERIFIED_BUT_NOT_ELIGIBLE -> R.drawable.ic_kyc_approved
+                else -> R.drawable.ic_kyc_pending
+            }
         )
     }
 

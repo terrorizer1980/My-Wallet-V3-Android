@@ -51,9 +51,7 @@ val dashboardAnnouncementsModule = applicationContext {
                 settings = get(),
                 nabu = get(),
                 tierService = get(),
-                simpleBuyPrefs = get(),
-                sbUtils = get(),
-                custodialWalletManager = get()
+                sbStateFactory = get()
             )
         }
 

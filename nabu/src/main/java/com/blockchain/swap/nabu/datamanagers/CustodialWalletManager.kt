@@ -1,7 +1,6 @@
 package com.blockchain.swap.nabu.datamanagers
 
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -12,7 +11,7 @@ import io.reactivex.Single
 import java.util.Date
 
 enum class OrderState {
-    UNITIALISED,
+    UNINITIALISED,
     INITIALISED,
     AWAITING_FUNDS, // Waiting for a bank transfer etc
     PENDING, // Funds received, but crypto not yet released (don't know if we'll need this?)
@@ -20,8 +19,6 @@ enum class OrderState {
     CANCELED,
     FAILED
 }
-
-data class BuyOrderState(val status: OrderState)
 
 // inject an instance of this to provide simple buy and custodial balance/transfer services.
 // In the short-term, use aa instance which provides mock data - for development and testing.
@@ -55,25 +52,34 @@ interface CustodialWalletManager {
         currency: String
     ): Single<BankAccount>
 
-    fun isEligibleForSimpleBuy(
-        currency: String
-    ): Single<SimpleBuyEligibility>
+    fun isEligibleForSimpleBuy(): Single<Boolean>
 
-    fun getBuyOrderStatus(orderId: String): Single<BuyOrderState>
+    fun isCurrencySupportedForSimpleBuy(
+        currency: String
+    ): Single<Boolean>
+
+    fun getOutstandingBuyOrders(): Single<BuyOrderList>
+
+    fun getBuyOrder(orderId: String): Maybe<BuyOrder>
 
     fun deleteBuyOrder(orderId: String): Completable
 
     fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable
 }
 
+// TODO: Merge this with BuyOrder?
 data class OrderCreation(val id: String, val pair: String, val expiresAt: Date, val state: OrderState)
 
-data class CustodialWalletOrder(
-    private val pair: String,
-    private val action: String,
-    private val input: OrderInput,
-    private val output: OrderOutput
+data class BuyOrder(
+    val id: String,
+    val pair: String,
+    val fiatInput: FiatValue, // "inputCurrency": "USD", "inputQuantity": "50000",
+    val outputCrypto: CryptoValue, // "outputCurrency": "BTC", "outputQuantity": "0",
+    val state: OrderState = OrderState.UNINITIALISED,
+    val expires: Date = Date()
 )
+
+typealias BuyOrderList = List<BuyOrder>
 
 data class OrderInput(private val symbol: String, private val amount: String)
 

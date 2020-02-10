@@ -2,9 +2,9 @@ package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
-import com.blockchain.swap.nabu.datamanagers.BuyOrderState
+import com.blockchain.swap.nabu.datamanagers.BuyOrder
+import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.CustodialWalletOrder
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.OrderInput
@@ -15,8 +15,8 @@ import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
+import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.service.NabuService
 import info.blockchain.balance.CryptoCurrency
@@ -81,7 +81,7 @@ class LiveCustodialWalletManager(
     ): Single<SimpleBuyPairs> =
         nabuToken.fetchNabuToken().flatMap {
             nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.getSupportCurrencies(nabuSessionTokenResp)
+                nabuService.getSupportCurrencies()
             }
         }.map {
             SimpleBuyPairs(it.pairs.map { responsePair ->
@@ -135,10 +135,27 @@ class LiveCustodialWalletManager(
             }
         }
 
-    override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
-        nabuService.isEligibleForSimpleBuy(currency).onErrorReturn { SimpleBuyEligibility(false) }
+    override fun isEligibleForSimpleBuy(): Single<Boolean> =
+        nabuToken.fetchNabuToken().flatMap {
+            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
+                nabuService.isEligibleForSimpleBuy(nabuSessionTokenResp)
+            }
+        }.map {
+            it.eligible
+        }.onErrorReturn {
+            false
+        }
 
-    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderState> {
+    override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
+        nabuService.getSupportCurrencies().map {
+            it.pairs.firstOrNull { it.fiatCurrency == currency } != null ?: false
+        }.onErrorReturn { false }
+
+    override fun getOutstandingBuyOrders(): Single<BuyOrderList> {
+        TODO("not implemented")
+    }
+
+    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> {
         TODO("not implemented")
     }
 

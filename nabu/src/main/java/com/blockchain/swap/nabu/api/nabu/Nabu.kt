@@ -1,6 +1,5 @@
 package com.blockchain.swap.nabu.api.nabu
 
-import com.blockchain.swap.nabu.datamanagers.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.ApplicantIdRequest
@@ -21,6 +20,7 @@ import com.blockchain.swap.nabu.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.swap.nabu.models.nabu.VeriffToken
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
+import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.OrderCreationResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
@@ -182,9 +182,7 @@ internal interface Nabu {
     ): Single<SendToMercuryAddressResponse>
 
     @GET(NABU_SIMPLE_BUY_PAIRS)
-    fun getSupportedSimpleBuyPairs(
-        @Header("authorization") authorization: String
-    ): Single<SimpleBuyPairsResp>
+    fun getSupportedSimpleBuyPairs(): Single<SimpleBuyPairsResp>
 
     @GET(NABU_SIMPLE_BUY_AMOUNTS)
     fun getPredefinedAmounts(
@@ -207,9 +205,7 @@ internal interface Nabu {
     ): Single<BankAccount>
 
     @GET(NABU_SIMPLE_BUY_ELIGIBILITY)
-    fun isEligibleForSimpleBuy(
-        @Query("fiatCurrency") currency: String
-    ): Single<SimpleBuyEligibility>
+    fun isEligibleForSimpleBuy(@Header("authorization") authorization: String): Single<SimpleBuyEligibility>
 
     @POST(NABU_SIMPLE_BUY_CREATE_ORDER)
     fun createOrder(

@@ -1,7 +1,6 @@
 package com.blockchain.swap.nabu.service
 
 import com.blockchain.swap.nabu.api.nabu.Nabu
-import com.blockchain.swap.nabu.datamanagers.CustodialWalletOrder
 import com.blockchain.swap.nabu.extensions.wrapErrorMessage
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
@@ -22,6 +21,7 @@ import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
+import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
@@ -219,11 +219,8 @@ class NabuService(retrofit: Retrofit) {
         SendToMercuryAddressRequest(cryptoSymbol)
     ).wrapErrorMessage()
 
-    internal fun getSupportCurrencies(
-        sessionToken: NabuSessionTokenResponse
-    ): Single<SimpleBuyPairsResp> = service.getSupportedSimpleBuyPairs(
-        sessionToken.authHeader
-    ).wrapErrorMessage()
+    internal fun getSupportCurrencies(): Single<SimpleBuyPairsResp> = service.getSupportedSimpleBuyPairs()
+        .wrapErrorMessage()
 
     fun getSimpleBuyBankAccountDetails(sessionToken: NabuSessionTokenResponse, currency: String): Single<BankAccount> =
         service.getSimpleBuyBankAccountDetails(
@@ -251,9 +248,9 @@ class NabuService(retrofit: Retrofit) {
     ).wrapErrorMessage()
 
     internal fun isEligibleForSimpleBuy(
-        currency: String
+        sessionToken: NabuSessionTokenResponse
     ): Single<SimpleBuyEligibility> = service.isEligibleForSimpleBuy(
-        currency
+        sessionToken.authHeader
     ).wrapErrorMessage()
 
     internal fun createOrder(

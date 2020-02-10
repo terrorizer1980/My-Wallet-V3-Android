@@ -2,7 +2,8 @@ package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
-import com.blockchain.swap.nabu.datamanagers.BuyOrderState
+import com.blockchain.swap.nabu.datamanagers.BuyOrder
+import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.OrderState
@@ -11,7 +12,6 @@ import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
 import com.blockchain.swap.nabu.models.simplebuy.BankDetail
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -140,8 +140,11 @@ class StubCustodialWalletManager(
 
         ))
 
-    override fun isEligibleForSimpleBuy(currency: String): Single<SimpleBuyEligibility> =
-        Single.just(SimpleBuyEligibility(true))
+    override fun isEligibleForSimpleBuy(): Single<Boolean> =
+        Single.just(true)
+
+    override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
+        Single.just(true)
 
     override fun getBalanceForAsset(
         crypto: CryptoCurrency
@@ -158,13 +161,39 @@ class StubCustodialWalletManager(
                 }
             }
 
-    override fun getBuyOrderStatus(orderId: String): Single<BuyOrderState> {
-        return Single.just(
-            BuyOrderState(
-                status = OrderState.AWAITING_FUNDS
+    override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
+        Single.just(
+            listOf(
+                BuyOrder(
+                    id = "006bd84e-de7b-4697-8989-92eab7720000",
+                    pair = "BTC-USD",
+                    fiatInput = FiatValue.fromMinor("GBP", 50000),
+                    outputCrypto = CryptoValue.ZeroBtc,
+                    state = OrderState.FINISHED,
+                    expires = Date()
+                ),
+                BuyOrder(
+                    id = "006bd84e-de7b-4697-8989-92eab7721111",
+                    pair = "BTC-USD",
+                    fiatInput = FiatValue.fromMinor("GBP", 70000),
+                    outputCrypto = CryptoValue.bitcoinFromSatoshis(1980000),
+                    state = OrderState.CANCELED,
+                    expires = Date()
+                )
             )
         )
-    }
+
+    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> =
+        Maybe.just(
+            BuyOrder(
+                id = orderId,
+                pair = "BTC-USD",
+                fiatInput = FiatValue.fromMinor("GBP", 70000),
+                outputCrypto = CryptoValue.bitcoinFromSatoshis(1980000),
+                state = OrderState.AWAITING_FUNDS,
+                expires = Date()
+            )
+        )
 
     override fun deleteBuyOrder(orderId: String): Completable {
         return Completable.complete()
