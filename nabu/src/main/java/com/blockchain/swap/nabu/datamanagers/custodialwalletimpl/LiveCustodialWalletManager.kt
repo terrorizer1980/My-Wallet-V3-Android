@@ -120,7 +120,9 @@ class LiveCustodialWalletManager(
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
         authenticator.authenticate { nabuSessionTokenResp ->
             nabuService.getOutstandingBuyOrders(nabuSessionTokenResp)
-        }.map { emptyList<BuyOrder>() }  // TODO: Map this!
+        }.map {
+            it.map { order -> order.toBuyOrder() }
+        }
 
     override fun getBuyOrder(orderId: String): Maybe<BuyOrder> {
         TODO("not implemented")
