@@ -270,7 +270,7 @@ class NabuService(retrofit: Retrofit) {
     ): Maybe<SimpleBuyBalanceResponse> = service.getBalanceForAsset(
         sessionToken.authHeader, cryptoCurrency.symbol
     ).flatMapMaybe { Maybe.just(it) }
-     .onErrorResumeNext( ::handleBalanceErrorMaybe )
+    .onErrorResumeNext(::handleBalanceErrorMaybe)
 
     // Need to use a fn ref here to avoid ambiguity.
     private fun handleBalanceErrorMaybe(t: Throwable): Maybe<SimpleBuyBalanceResponse> =

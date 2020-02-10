@@ -97,9 +97,9 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
     private fun custodialBalance(): Single<CryptoValue> =
         custodialBalanceMaybe()
             .doOnComplete { isNonCustodialConfigured.set(false) }
-            .doOnSuccess {  isNonCustodialConfigured.set(true) }
+            .doOnSuccess { isNonCustodialConfigured.set(true) }
             .switchToSingleIfEmpty { Single.just(CryptoValue.zero(asset)) }
-            // Eat and report errors getting custodial balances - TODO add UI element to inform the user of this state.
+            // Report and then eat errors getting custodial balances - TODO add UI element to inform the user?
             .onErrorReturn {
                 Timber.d("Unable to get non-custodial balance: $it")
                 CryptoValue.zero(asset)

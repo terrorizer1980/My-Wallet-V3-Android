@@ -5,7 +5,6 @@ import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Completable
-import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -49,5 +48,3 @@ fun Completable.toCryptoSingle(cryptoValue: CryptoCurrency, getValue: () -> BigI
         }
     )
 }
-
-
