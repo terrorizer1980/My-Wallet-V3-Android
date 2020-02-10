@@ -2,6 +2,9 @@ package com.blockchain.swap.nabu.models.simplebuy
 
 import com.blockchain.swap.nabu.datamanagers.OrderInput
 import com.blockchain.swap.nabu.datamanagers.OrderOutput
+import com.blockchain.swap.nabu.datamanagers.OrderState
+import info.blockchain.balance.CryptoValue
+import info.blockchain.balance.FiatValue
 
 import java.util.Date
 
@@ -26,8 +29,6 @@ data class SimpleBuyQuoteResponse(
     val time: Date
 )
 
-data class OrderCreationResponse(val id: String, val pair: String, val expiresAt: Date, val state: OrderStateResponse)
-
 enum class OrderStateResponse {
     PENDING_DEPOSIT,
     PENDING_EXECUTION,
@@ -43,4 +44,15 @@ data class CustodialWalletOrder(
     private val action: String,
     private val input: OrderInput,
     private val output: OrderOutput
+)
+
+data class BuyOrderResponse(
+    val id: String,
+    val pair: String,
+    val inputCurrency: String,
+    val inputQuantity: String,
+    val outputCurrency: String,
+    val outputQuantity: String,
+    val state: OrderStateResponse,
+    val expiresAt: Date
 )

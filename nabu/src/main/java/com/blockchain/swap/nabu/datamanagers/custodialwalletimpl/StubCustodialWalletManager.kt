@@ -5,7 +5,6 @@ import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
@@ -127,7 +126,7 @@ class StubCustodialWalletManager(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
         action: String
-    ): Single<OrderCreation> {
+    ): Single<BuyOrder> {
         TODO("not implemented")
     }
 
@@ -167,16 +166,16 @@ class StubCustodialWalletManager(
                 BuyOrder(
                     id = "006bd84e-de7b-4697-8989-92eab7720000",
                     pair = "BTC-USD",
-                    fiatInput = FiatValue.fromMinor("GBP", 50000),
-                    outputCrypto = CryptoValue.ZeroBtc,
+                    fiat = FiatValue.fromMinor("GBP", 50000),
+                    crypto = CryptoValue.ZeroBtc,
                     state = OrderState.FINISHED,
                     expires = Date()
                 ),
                 BuyOrder(
                     id = "006bd84e-de7b-4697-8989-92eab7721111",
                     pair = "BTC-USD",
-                    fiatInput = FiatValue.fromMinor("GBP", 70000),
-                    outputCrypto = CryptoValue.bitcoinFromSatoshis(1980000),
+                    fiat = FiatValue.fromMinor("GBP", 70000),
+                    crypto = CryptoValue.bitcoinFromSatoshis(1980000),
                     state = OrderState.CANCELED,
                     expires = Date()
                 )
@@ -188,8 +187,8 @@ class StubCustodialWalletManager(
             BuyOrder(
                 id = orderId,
                 pair = "BTC-USD",
-                fiatInput = FiatValue.fromMinor("GBP", 70000),
-                outputCrypto = CryptoValue.bitcoinFromSatoshis(1980000),
+                fiat = FiatValue.fromMinor("GBP", 70000),
+                crypto = CryptoValue.bitcoinFromSatoshis(1980000),
                 state = OrderState.AWAITING_FUNDS,
                 expires = Date()
             )

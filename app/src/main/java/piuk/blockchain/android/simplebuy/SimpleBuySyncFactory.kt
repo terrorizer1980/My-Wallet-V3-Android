@@ -136,9 +136,9 @@ class SimpleBuySyncFactory(
 private fun BuyOrder.toSimpleBuyState(): SimpleBuyState =
     SimpleBuyState(
         id = id,
-        enteredAmount = fiatInput.formatOrSymbolForZero().replace(",", ""),
-        currency = fiatInput.currencyCode,
-        selectedCryptoCurrency = outputCrypto.currency,
+        enteredAmount = fiat.formatOrSymbolForZero().replace(",", ""),
+        currency = fiat.currencyCode,
+        selectedCryptoCurrency = crypto.currency,
         orderState = state,
         expirationDate = expires,
         kycVerificationState = KycState.VERIFIED_AND_ELIGIBLE, // This MUST be so if we have an order in process.

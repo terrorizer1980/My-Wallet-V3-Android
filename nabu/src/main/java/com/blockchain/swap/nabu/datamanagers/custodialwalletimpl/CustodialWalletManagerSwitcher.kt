@@ -3,7 +3,6 @@ package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
@@ -36,7 +35,7 @@ class CustodialWalletManagerSwitcher(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
         action: String
-    ): Single<OrderCreation> =
+    ): Single<BuyOrder> =
         liveCustodialWalletManager.createOrder(
             cryptoCurrency,
             amount,

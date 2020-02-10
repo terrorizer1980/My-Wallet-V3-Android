@@ -6,7 +6,6 @@ import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
-import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.OrderInput
 import com.blockchain.swap.nabu.datamanagers.OrderOutput
 import com.blockchain.swap.nabu.datamanagers.OrderState
@@ -15,6 +14,7 @@ import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
+import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -25,6 +25,9 @@ import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import okhttp3.internal.toLongOrDefault
+import java.math.BigDecimal
+import java.util.UnknownFormatConversionException
 
 class LiveCustodialWalletManager(
     private val nabuToken: NabuToken,
@@ -50,7 +53,7 @@ class LiveCustodialWalletManager(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
         action: String
-    ): Single<OrderCreation> =
+    ): Single<BuyOrder> =
         nabuToken.fetchNabuToken().flatMap {
             nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
                 nabuService.createOrder(nabuSessionTokenResp,
@@ -64,15 +67,8 @@ class LiveCustodialWalletManager(
                             cryptoCurrency.symbol
                         )
                     )
-                )
+                ).map { response -> response.toBuyOrder() }
             }
-        }.map {
-            OrderCreation(
-                id = it.id,
-                pair = it.pair,
-                expiresAt = it.expiresAt,
-                state = it.state.toLocalState()
-            )
         }
 
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
@@ -93,17 +89,6 @@ class LiveCustodialWalletManager(
                     )
                 )
             })
-        }
-
-    private fun OrderStateResponse.toLocalState(): OrderState =
-        when (this) {
-            OrderStateResponse.PENDING_DEPOSIT -> OrderState.AWAITING_FUNDS
-            OrderStateResponse.FINISHED -> OrderState.FINISHED
-            OrderStateResponse.PENDING_EXECUTION,
-            OrderStateResponse.DEPOSIT_MATCHED -> OrderState.PENDING
-            OrderStateResponse.FAILED,
-            OrderStateResponse.EXPIRED -> OrderState.FAILED
-            OrderStateResponse.CANCELED -> OrderState.CANCELED
         }
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Single<CryptoValue> {
@@ -161,3 +146,28 @@ class LiveCustodialWalletManager(
         TODO("not implemented")
     }
 }
+
+private fun OrderStateResponse.toLocalState(): OrderState =
+    when (this) {
+        OrderStateResponse.PENDING_DEPOSIT -> OrderState.AWAITING_FUNDS
+        OrderStateResponse.FINISHED -> OrderState.FINISHED
+        OrderStateResponse.PENDING_EXECUTION,
+        OrderStateResponse.DEPOSIT_MATCHED -> OrderState.PENDING
+        OrderStateResponse.FAILED,
+        OrderStateResponse.EXPIRED -> OrderState.FAILED
+        OrderStateResponse.CANCELED -> OrderState.CANCELED
+    }
+
+private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
+    BuyOrder(
+        id = id,
+        pair = pair,
+        fiat = FiatValue.fromMinor(inputCurrency, inputQuantity.toLongOrDefault(0)),
+        crypto = CryptoValue.fromMinor(
+            CryptoCurrency.fromSymbol(outputCurrency)
+                ?: throw UnknownFormatConversionException("Unknown Crypto currency: $outputCurrency"),
+            outputQuantity.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        ),
+        state = state.toLocalState(),
+        expires = expiresAt
+    )

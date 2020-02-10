@@ -20,9 +20,9 @@ import com.blockchain.swap.nabu.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.swap.nabu.models.nabu.VeriffToken
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
 import com.blockchain.swap.nabu.models.simplebuy.BankAccount
+import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
-import com.blockchain.swap.nabu.models.simplebuy.OrderCreationResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
@@ -210,5 +210,5 @@ internal interface Nabu {
     fun createOrder(
         @Header("authorization") authorization: String,
         @Body order: CustodialWalletOrder
-    ): Single<OrderCreationResponse>
+    ): Single<BuyOrderResponse>
 }
