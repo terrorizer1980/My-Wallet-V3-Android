@@ -7,6 +7,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
+import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.R
@@ -44,7 +45,7 @@ class PAXTokens(
         erc20Account.getBalance()
             .map { CryptoValue.usdPaxFromMinor(it) }
 
-    override fun custodialBalance(): Single<CryptoValue> =
+    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.PAX)
 
     override fun balance(account: AccountReference): Single<CryptoValue> {

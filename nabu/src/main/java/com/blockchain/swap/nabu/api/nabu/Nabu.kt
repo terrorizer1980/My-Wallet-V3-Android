@@ -24,6 +24,7 @@ import com.blockchain.swap.nabu.models.simplebuy.BuyOrderListResponse
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
@@ -32,6 +33,7 @@ import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuSessionTokenResponse
 import io.reactivex.Completable
 import io.reactivex.Single
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -221,7 +223,7 @@ internal interface Nabu {
 
     @DELETE("$NABU_SIMPLE_BUY_ORDERS/{userId}")
     fun deleteBuyOrder(
-        vauthorization: String,
+        @Header("authorization") authorization: String,
         @Path("orderId") orderId: String
     ): Completable
 
@@ -230,4 +232,10 @@ internal interface Nabu {
         @Header("authorization") authHeader: String,
         @Path("orderId") orderId: String
     ): Single<BuyOrderResponse>
+
+    @GET("$NABU_SIMPLE_BUY_ASSET_BALANCE/{crypto}")
+    fun getBalanceForAsset(
+        @Header("authorization") authorization: String,
+        @Path("crypto") cryptoSymbol: String
+    ): Single<Response<SimpleBuyBalanceResponse>>
 }

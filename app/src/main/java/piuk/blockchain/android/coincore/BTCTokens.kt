@@ -10,6 +10,7 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -34,7 +35,7 @@ class BTCTokens(
     override fun defaultAccount(): Single<AccountReference> =
         Single.just(payloadDataManager.defaultAccount.toAccountReference())
 
-    override fun custodialBalance(): Single<CryptoValue> =
+    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.BTC)
 
     override fun noncustodialBalance(): Single<CryptoValue> =
@@ -42,7 +43,6 @@ class BTCTokens(
 
     override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = accountReference(account)
-
         return updater()
             .toCryptoSingle(CryptoCurrency.BTC) { payloadManager.getAddressBalance(ref.xpub) }
     }

@@ -36,6 +36,10 @@ enum class OrderStateResponse {
     EXPIRED
 }
 
+data class SimpleBuyBalanceResponse(
+    val available: String
+)
+
 data class CustodialWalletOrder(
     private val pair: String,
     private val action: String,

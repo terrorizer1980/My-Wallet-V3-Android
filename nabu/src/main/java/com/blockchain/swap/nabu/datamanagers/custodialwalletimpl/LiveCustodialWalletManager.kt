@@ -22,6 +22,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import okhttp3.internal.toLongOrDefault
 import java.math.BigDecimal
@@ -83,10 +84,6 @@ class LiveCustodialWalletManager(
             })
         }
 
-    override fun getBalanceForAsset(crypto: CryptoCurrency): Single<CryptoValue> {
-        TODO("not implemented")
-    }
-
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
         authenticator.authenticate {
             nabuService.getPredefinedAmounts(it, currency)
@@ -132,6 +129,14 @@ class LiveCustodialWalletManager(
         authenticator.authenticateCompletable {
             nabuService.deleteBuyOrder(it, orderId)
         }
+
+    override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
+        authenticator.authenticateMaybe {
+            nabuService.getBalanceForAsset(it, crypto)
+                .map { balance ->
+                    CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
+                }
+            }
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable {
         TODO("not implemented")

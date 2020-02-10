@@ -61,11 +61,14 @@ class AssetDetailsCalculator(locale: Locale) {
             val walletFiat = walletBalance.toFiat(fiatPrice)
             val custodialFiat = custodialBalance.toFiat(fiatPrice)
 
-            mapOf(
+            mutableMapOf(
                 AssetFilter.Total to BalancePair(totalBalance, totalFiat),
-                AssetFilter.Wallet to BalancePair(walletBalance, walletFiat),
-                AssetFilter.Custodial to BalancePair(custodialBalance, custodialFiat)
-            )
+                AssetFilter.Wallet to BalancePair(walletBalance, walletFiat)
+            ).apply {
+                if (assetTokens.hasActiveWallet(AssetFilter.Custodial)) {
+                    put(AssetFilter.Custodial, BalancePair(custodialBalance, custodialFiat))
+                }
+            }
         }
     }
 }
