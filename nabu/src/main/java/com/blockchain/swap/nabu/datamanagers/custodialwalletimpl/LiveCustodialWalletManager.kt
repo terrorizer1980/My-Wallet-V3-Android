@@ -110,7 +110,7 @@ class LiveCustodialWalletManager(
         }.map {
             it.eligible
         }.onErrorReturn {
-            false
+            true //false
         }
 
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =

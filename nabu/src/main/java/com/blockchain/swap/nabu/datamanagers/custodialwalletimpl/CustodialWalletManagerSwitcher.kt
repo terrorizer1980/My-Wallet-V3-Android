@@ -49,19 +49,20 @@ class CustodialWalletManagerSwitcher(
         liveCustodialWalletManager.isEligibleForSimpleBuy()
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
-        mockCustodialWalletManager.getBalanceForAsset(crypto)
+        liveCustodialWalletManager.getBalanceForAsset(crypto)
 
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
         liveCustodialWalletManager.isCurrencySupportedForSimpleBuy(currency)
 
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
-        mockCustodialWalletManager.getOutstandingBuyOrders()
+//        mockCustodialWalletManager.getOutstandingBuyOrders()
+        liveCustodialWalletManager.getOutstandingBuyOrders()
 
     override fun getBuyOrder(orderId: String): Single<BuyOrder> =
-        mockCustodialWalletManager.getBuyOrder(orderId)
+        liveCustodialWalletManager.getBuyOrder(orderId)
 
     override fun deleteBuyOrder(orderId: String): Completable =
-        mockCustodialWalletManager.deleteBuyOrder(orderId)
+        liveCustodialWalletManager.deleteBuyOrder(orderId)
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         mockCustodialWalletManager.transferFundsToWallet(amount, walletAddress)
