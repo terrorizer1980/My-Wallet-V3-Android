@@ -228,6 +228,9 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
         compositeDisposable += metadataEvent.subscribe {
             model.process(RefreshAllIntent)
+            if(announcements.enable()) {
+                announcements.checkLatest(announcementHost, compositeDisposable)
+            }
         }
 
         compositeDisposable += actionEvent.subscribe {

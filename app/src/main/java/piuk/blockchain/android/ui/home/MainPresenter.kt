@@ -21,6 +21,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.exceptions.HDWalletException
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
+import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
@@ -139,7 +140,7 @@ class MainPresenter internal constructor(
 
             checkPitAvailability()
 
-            initSimpleBuyState()
+//            initSimpleBuyState()
         }
     }
 
@@ -207,6 +208,13 @@ class MainPresenter internal constructor(
 
     internal fun initMetadataElements() {
         compositeDisposable += metadataLoader.loader()
+            .flatMapCompletable { firstLoad ->
+                if(firstLoad) {
+                    simpleBuySync.performSync()
+                } else {
+                    Completable.complete()
+                }
+            }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
                 view?.showProgressDialog(R.string.please_wait)
