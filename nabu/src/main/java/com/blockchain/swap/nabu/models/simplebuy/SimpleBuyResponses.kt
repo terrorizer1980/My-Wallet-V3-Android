@@ -34,8 +34,6 @@ data class BankAgentResponse(
     val routingNumber: String?
 )
 
-data class OrderCreationResponse(val id: String, val pair: String, val expiresAt: Date, val state: OrderStateResponse)
-
 enum class OrderStateResponse {
     PENDING_DEPOSIT,
     PENDING_EXECUTION,
@@ -56,3 +54,16 @@ data class CustodialWalletOrder(
     private val input: OrderInput,
     private val output: OrderOutput
 )
+
+data class BuyOrderResponse(
+    val id: String,
+    val pair: String,
+    val inputCurrency: String,
+    val inputQuantity: String,
+    val outputCurrency: String,
+    val outputQuantity: String,
+    val state: OrderStateResponse,
+    val expiresAt: Date
+)
+
+typealias BuyOrderListResponse = List<BuyOrderResponse>

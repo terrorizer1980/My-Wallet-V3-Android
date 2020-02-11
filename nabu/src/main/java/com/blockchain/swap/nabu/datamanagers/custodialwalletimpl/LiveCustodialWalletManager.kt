@@ -1,13 +1,11 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
-import com.blockchain.swap.nabu.NabuToken
+import com.blockchain.swap.nabu.Authenticator
 import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.NabuDataManager
-import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.OrderInput
 import com.blockchain.swap.nabu.datamanagers.OrderOutput
 import com.blockchain.swap.nabu.datamanagers.OrderState
@@ -15,6 +13,7 @@ import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.extensions.toLocalTime
+import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
@@ -26,20 +25,20 @@ import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import java.lang.IllegalStateException
+import okhttp3.internal.toLongOrDefault
+import java.math.BigDecimal
+import java.util.UnknownFormatConversionException
 
 class LiveCustodialWalletManager(
-    private val nabuToken: NabuToken,
     private val nabuService: NabuService,
-    private val nabuDataManager: NabuDataManager,
+    private val authenticator: Authenticator,
     private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>
 ) : CustodialWalletManager {
 
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.getSimpleBuyQuote(
-                    sessionToken = nabuSessionTokenResp,
+        authenticator.authenticate {
+            nabuService.getSimpleBuyQuote(
+                    sessionToken = it,
                     action = action,
                     currencyPair = "${crypto.symbol}-${amount.currencyCode}",
                     amount = amount.valueMinor.toString()
@@ -47,45 +46,34 @@ class LiveCustodialWalletManager(
             }.map { quoteResponse ->
                 Quote(date = quoteResponse.time.toLocalTime())
             }
-        }
 
     override fun createOrder(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
         action: String
-    ): Single<OrderCreation> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.createOrder(nabuSessionTokenResp,
-                    CustodialWalletOrder(
-                        pair = "${cryptoCurrency.symbol}-${amount.currencyCode}",
-                        action = action,
-                        input = OrderInput(
-                            amount.currencyCode, amount.valueMinor.toString()
-                        ),
-                        output = OrderOutput(
-                            cryptoCurrency.symbol
-                        )
+    ): Single<BuyOrder> =
+        authenticator.authenticate {
+            nabuService.createOrder(
+                it,
+                CustodialWalletOrder(
+                    pair = "${cryptoCurrency.symbol}-${amount.currencyCode}",
+                    action = action,
+                    input = OrderInput(
+                        amount.currencyCode, amount.valueMinor.toString()
+                    ),
+                    output = OrderOutput(
+                        cryptoCurrency.symbol
                     )
                 )
-            }
-        }.map {
-            OrderCreation(
-                id = it.id,
-                pair = it.pair,
-                expiresAt = it.expiresAt,
-                state = it.state.toLocalState()
             )
-        }
+        }.map { response -> response.toBuyOrder() }
 
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
         currency: String
     ): Single<SimpleBuyPairs> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.getSupportCurrencies()
-            }
+        authenticator.authenticate {
+            nabuService.getSupportCurrencies()
         }.map {
             SimpleBuyPairs(it.pairs.map { responsePair ->
                 SimpleBuyPair(
@@ -98,81 +86,92 @@ class LiveCustodialWalletManager(
             })
         }
 
-    private fun OrderStateResponse.toLocalState(): OrderState =
-        when (this) {
-            OrderStateResponse.PENDING_DEPOSIT -> OrderState.AWAITING_FUNDS
-            OrderStateResponse.FINISHED -> OrderState.FINISHED
-            OrderStateResponse.PENDING_EXECUTION,
-            OrderStateResponse.DEPOSIT_MATCHED -> OrderState.PENDING
-            OrderStateResponse.FAILED,
-            OrderStateResponse.EXPIRED -> OrderState.FAILED
-            OrderStateResponse.CANCELED -> OrderState.CANCELED
-        }
-
-    override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
-        nabuToken.fetchNabuToken().flatMapMaybe {
-            nabuDataManager.authenticateMaybe(it) { nabuSessionTokenResp ->
-                nabuService.getBalanceForAsset(nabuSessionTokenResp, crypto)
-                    .map { balance ->
-                        CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
-                    }
-            }
-        }
-
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.getPredefinedAmounts(nabuSessionTokenResp, currency)
-            }.map { response ->
-                val currencyAmounts = response.firstOrNull { it[currency] != null } ?: emptyMap()
-                currencyAmounts[currency]?.map { value ->
-                    FiatValue.fromMinor(currency, value)
-                } ?: emptyList()
-            }
+        authenticator.authenticate {
+            nabuService.getPredefinedAmounts(it, currency)
+        }.map { response ->
+            val currencyAmounts = response.firstOrNull { it[currency] != null } ?: emptyMap()
+            currencyAmounts[currency]?.map { value ->
+                FiatValue.fromMinor(currency, value)
+            } ?: emptyList()
         }
 
     override fun getBankAccountDetails(currency: String): Single<BankAccount> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.getSimpleBuyBankAccountDetails(nabuSessionTokenResp, currency)
-            }
+        authenticator.authenticate {
+            nabuService.getSimpleBuyBankAccountDetails(it, currency)
         }.map { response ->
             paymentAccountMapperMappers[currency]?.map(response)
                 ?: throw IllegalStateException("Not valid Account returned")
         }
 
     override fun isEligibleForSimpleBuy(): Single<Boolean> =
-        nabuToken.fetchNabuToken().flatMap {
-            nabuDataManager.authenticate(it) { nabuSessionTokenResp ->
-                nabuService.isEligibleForSimpleBuy(nabuSessionTokenResp)
-            }
+        authenticator.authenticate {
+            nabuService.isEligibleForSimpleBuy(it)
         }.map {
             it.eligible
         }.onErrorReturn {
-            false
+            true //false
         }
 
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
         nabuService.getSupportCurrencies().map {
-            it.pairs.firstOrNull { it.fiatCurrency == currency } != null ?: false
+            it.pairs.firstOrNull { pair -> pair.fiatCurrency == currency } != null ?: false
         }.onErrorReturn { false }
 
-    override fun getOutstandingBuyOrders(): Single<BuyOrderList> {
-        TODO("not implemented")
-    }
+    override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
+        authenticator.authenticate {
+            nabuService.getOutstandingBuyOrders(it)
+        }.map {
+            it.map { order -> order.toBuyOrder() }
+        }
 
-    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> {
-        TODO("not implemented")
-    }
+    override fun getBuyOrder(orderId: String): Single<BuyOrder> =
+        authenticator.authenticate {
+            nabuService.getBuyOrder(it, orderId)
+        }.map { it.toBuyOrder() }
 
-    override fun deleteBuyOrder(orderId: String): Completable {
-        TODO("not implemented")
-    }
+    override fun deleteBuyOrder(orderId: String): Completable =
+        authenticator.authenticateCompletable {
+            nabuService.deleteBuyOrder(it, orderId)
+        }
+
+    override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
+        authenticator.authenticateMaybe {
+            nabuService.getBalanceForAsset(it, crypto)
+                .map { balance ->
+                    CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
+                }
+            }
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable {
         TODO("not implemented")
     }
 }
+
+private fun OrderStateResponse.toLocalState(): OrderState =
+    when (this) {
+        OrderStateResponse.PENDING_DEPOSIT -> OrderState.AWAITING_FUNDS
+        OrderStateResponse.FINISHED -> OrderState.FINISHED
+        OrderStateResponse.PENDING_EXECUTION,
+        OrderStateResponse.DEPOSIT_MATCHED -> OrderState.PENDING
+        OrderStateResponse.FAILED,
+        OrderStateResponse.EXPIRED -> OrderState.FAILED
+        OrderStateResponse.CANCELED -> OrderState.CANCELED
+    }
+
+private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
+    BuyOrder(
+        id = id,
+        pair = pair,
+        fiat = FiatValue.fromMinor(inputCurrency, inputQuantity.toLongOrDefault(0)),
+        crypto = CryptoValue.fromMinor(
+            CryptoCurrency.fromSymbol(outputCurrency)
+                ?: throw UnknownFormatConversionException("Unknown Crypto currency: $outputCurrency"),
+            outputQuantity.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        ),
+        state = state.toLocalState(),
+        expires = expiresAt
+    )
 
 interface PaymentAccountMapper {
     fun map(bankAccountResponse: BankAccountResponse): BankAccount?

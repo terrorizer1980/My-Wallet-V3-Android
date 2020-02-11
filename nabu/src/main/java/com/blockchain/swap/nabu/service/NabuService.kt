@@ -262,6 +262,26 @@ class NabuService(retrofit: Retrofit) {
         sessionToken.authHeader, order
     ).wrapErrorMessage()
 
+    internal fun getOutstandingBuyOrders(
+        sessionToken: NabuSessionTokenResponse
+    ) = service.getOutstandingBuyOrders(
+        sessionToken.authHeader
+    ).wrapErrorMessage()
+
+    internal fun deleteBuyOrder(
+        sessionToken: NabuSessionTokenResponse,
+        orderId: String
+    ) = service.deleteBuyOrder(
+        sessionToken.authHeader, orderId
+    ).wrapErrorMessage()
+
+    fun getBuyOrder(
+        sessionToken: NabuSessionTokenResponse,
+        orderId: String
+    ) = service.getBuyOrder(
+        sessionToken.authHeader, orderId
+    ).wrapErrorMessage()
+
     @Suppress("MoveLambdaOutsideParentheses")
     fun getBalanceForAsset(
         sessionToken: NabuSessionTokenResponse,

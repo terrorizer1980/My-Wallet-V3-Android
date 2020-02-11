@@ -19,10 +19,11 @@ import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.swap.nabu.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.swap.nabu.models.nabu.VeriffToken
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
+import com.blockchain.swap.nabu.models.simplebuy.BuyOrderListResponse
+import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
-import com.blockchain.swap.nabu.models.simplebuy.OrderCreationResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
@@ -34,6 +35,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -208,15 +210,32 @@ internal interface Nabu {
     @GET(NABU_SIMPLE_BUY_ELIGIBILITY)
     fun isEligibleForSimpleBuy(@Header("authorization") authorization: String): Single<SimpleBuyEligibility>
 
-    @POST(NABU_SIMPLE_BUY_CREATE_ORDER)
+    @POST(NABU_SIMPLE_BUY_ORDERS)
     fun createOrder(
         @Header("authorization") authorization: String,
         @Body order: CustodialWalletOrder
-    ): Single<OrderCreationResponse>
+    ): Single<BuyOrderResponse>
 
-    @GET("$NABU_SIMPLE_BUY_ASSET_BALANCE/{crypto}")
+    @GET(NABU_SIMPLE_BUY_ORDERS)
+    fun getOutstandingBuyOrders(
+        @Header("authorization") authorization: String
+    ): Single<BuyOrderListResponse>
+
+    @DELETE("$NABU_SIMPLE_BUY_ORDERS/{userId}")
+    fun deleteBuyOrder(
+        @Header("authorization") authorization: String,
+        @Path("orderId") orderId: String
+    ): Completable
+
+    @GET("$NABU_SIMPLE_BUY_ORDERS/{userId}")
+    fun getBuyOrder(
+        @Header("authorization") authHeader: String,
+        @Path("orderId") orderId: String
+    ): Single<BuyOrderResponse>
+
+    @GET(NABU_SIMPLE_BUY_ASSET_BALANCE)
     fun getBalanceForAsset(
         @Header("authorization") authorization: String,
-        @Path("crypto") cryptoSymbol: String
+        @Query("ccy") cryptoSymbol: String
     ): Single<Response<SimpleBuyBalanceResponse>>
 }

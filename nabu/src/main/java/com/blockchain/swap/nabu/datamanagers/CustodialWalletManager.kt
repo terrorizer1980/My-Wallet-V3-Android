@@ -41,7 +41,7 @@ interface CustodialWalletManager {
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
         action: String
-    ): Single<OrderCreation>
+    ): Single<BuyOrder>
 
     fun getPredefinedAmounts(
         currency: String
@@ -59,21 +59,18 @@ interface CustodialWalletManager {
 
     fun getOutstandingBuyOrders(): Single<BuyOrderList>
 
-    fun getBuyOrder(orderId: String): Maybe<BuyOrder>
+    fun getBuyOrder(orderId: String): Single<BuyOrder>
 
     fun deleteBuyOrder(orderId: String): Completable
 
     fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable
 }
 
-// TODO: Merge this with BuyOrder?
-data class OrderCreation(val id: String, val pair: String, val expiresAt: Date, val state: OrderState)
-
 data class BuyOrder(
     val id: String,
     val pair: String,
-    val fiatInput: FiatValue, // "inputCurrency": "USD", "inputQuantity": "50000",
-    val outputCrypto: CryptoValue, // "outputCurrency": "BTC", "outputQuantity": "0",
+    val fiat: FiatValue,
+    val crypto: CryptoValue,
     val state: OrderState = OrderState.UNINITIALISED,
     val expires: Date = Date()
 )

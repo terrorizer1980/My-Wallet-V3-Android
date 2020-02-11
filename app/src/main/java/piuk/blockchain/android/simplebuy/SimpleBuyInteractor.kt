@@ -46,7 +46,7 @@ class SimpleBuyInteractor(
             action = "BUY",
             amount = amount ?: throw IllegalStateException("Missing amount ")
         ).map {
-            SimpleBuyIntent.OrderCreated(id = it.id, expirationDate = it.expiresAt, orderState = it.state)
+            SimpleBuyIntent.OrderCreated(id = it.id, expirationDate = it.expires, orderState = it.state)
         }.trackLoading(appUtil.activityIndicator)
 
     fun fetchBankAccount(currency: String): Single<SimpleBuyIntent.BankAccountUpdated> =

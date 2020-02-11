@@ -4,7 +4,6 @@ import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -33,7 +32,7 @@ class CustodialWalletManagerSwitcher(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
         action: String
-    ): Single<OrderCreation> =
+    ): Single<BuyOrder> =
         liveCustodialWalletManager.createOrder(
             cryptoCurrency,
             amount,
@@ -50,19 +49,20 @@ class CustodialWalletManagerSwitcher(
         liveCustodialWalletManager.isEligibleForSimpleBuy()
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
-        mockCustodialWalletManager.getBalanceForAsset(crypto)
+        liveCustodialWalletManager.getBalanceForAsset(crypto)
 
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
         liveCustodialWalletManager.isCurrencySupportedForSimpleBuy(currency)
 
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
-        mockCustodialWalletManager.getOutstandingBuyOrders()
+//        mockCustodialWalletManager.getOutstandingBuyOrders()
+        liveCustodialWalletManager.getOutstandingBuyOrders()
 
-    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> =
-        mockCustodialWalletManager.getBuyOrder(orderId)
+    override fun getBuyOrder(orderId: String): Single<BuyOrder> =
+        liveCustodialWalletManager.getBuyOrder(orderId)
 
     override fun deleteBuyOrder(orderId: String): Completable =
-        mockCustodialWalletManager.deleteBuyOrder(orderId)
+        liveCustodialWalletManager.deleteBuyOrder(orderId)
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         mockCustodialWalletManager.transferFundsToWallet(amount, walletAddress)

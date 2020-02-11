@@ -1,13 +1,11 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
-import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BankDetail
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.OrderCreation
 import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
@@ -23,9 +21,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 // Provide mock data for development and testing etc
-class StubCustodialWalletManager(
-    private val nabuToken: NabuToken
-) : CustodialWalletManager {
+class StubCustodialWalletManager() : CustodialWalletManager {
 
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
@@ -127,7 +123,7 @@ class StubCustodialWalletManager(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
         action: String
-    ): Single<OrderCreation> {
+    ): Single<BuyOrder> {
         TODO("not implemented")
     }
 
@@ -149,17 +145,14 @@ class StubCustodialWalletManager(
     override fun getBalanceForAsset(
         crypto: CryptoCurrency
     ): Maybe<CryptoValue> =
-        nabuToken.fetchNabuToken()
-            .flatMapMaybe {
-                when (crypto) {
-                    CryptoCurrency.BTC -> Maybe.just(CryptoValue.bitcoinFromSatoshis(726800000))
-                    CryptoCurrency.ETHER -> Maybe.just(CryptoValue.ZeroEth)
-                    CryptoCurrency.BCH -> Maybe.empty()
-                    CryptoCurrency.XLM -> Maybe.empty()
-                    CryptoCurrency.PAX -> Maybe.just(CryptoValue.usdPaxFromMajor(2785.toBigDecimal()))
-                    CryptoCurrency.STX -> Maybe.empty()
-                }
-            }
+        when (crypto) {
+            CryptoCurrency.BTC -> Maybe.just(CryptoValue.bitcoinFromSatoshis(726800000))
+            CryptoCurrency.ETHER -> Maybe.just(CryptoValue.ZeroEth)
+            CryptoCurrency.BCH -> Maybe.empty()
+            CryptoCurrency.XLM -> Maybe.empty()
+            CryptoCurrency.PAX -> Maybe.just(CryptoValue.usdPaxFromMajor(2785.toBigDecimal()))
+            CryptoCurrency.STX -> Maybe.empty()
+        }
 
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
         Single.just(
@@ -167,29 +160,29 @@ class StubCustodialWalletManager(
                 BuyOrder(
                     id = "006bd84e-de7b-4697-8989-92eab7720000",
                     pair = "BTC-USD",
-                    fiatInput = FiatValue.fromMinor("GBP", 50000),
-                    outputCrypto = CryptoValue.ZeroBtc,
+                    fiat = FiatValue.fromMinor("GBP", 50000),
+                    crypto = CryptoValue.ZeroBtc,
                     state = OrderState.FINISHED,
                     expires = Date()
                 ),
                 BuyOrder(
                     id = "006bd84e-de7b-4697-8989-92eab7721111",
                     pair = "BTC-USD",
-                    fiatInput = FiatValue.fromMinor("GBP", 70000),
-                    outputCrypto = CryptoValue.bitcoinFromSatoshis(1980000),
+                    fiat = FiatValue.fromMinor("GBP", 70000),
+                    crypto = CryptoValue.bitcoinFromSatoshis(1980000),
                     state = OrderState.CANCELED,
                     expires = Date()
                 )
             )
         )
 
-    override fun getBuyOrder(orderId: String): Maybe<BuyOrder> =
-        Maybe.just(
+    override fun getBuyOrder(orderId: String): Single<BuyOrder> =
+        Single.just(
             BuyOrder(
                 id = orderId,
                 pair = "BTC-USD",
-                fiatInput = FiatValue.fromMinor("GBP", 70000),
-                outputCrypto = CryptoValue.bitcoinFromSatoshis(1980000),
+                fiat = FiatValue.fromMinor("GBP", 70000),
+                crypto = CryptoValue.bitcoinFromSatoshis(1980000),
                 state = OrderState.AWAITING_FUNDS,
                 expires = Date()
             )
