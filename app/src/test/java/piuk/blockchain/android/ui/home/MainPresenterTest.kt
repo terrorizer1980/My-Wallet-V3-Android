@@ -117,7 +117,8 @@ class MainPresenterTest {
             pitLinking = pitLinking,
             nabuToken = nabuToken,
             nabuDataManager = nabuDatamanager,
-            crashLogger = crashLogger
+            crashLogger = crashLogger,
+            simpleBuyAvailability = mock()
         )
 
         subject.attachView(view)

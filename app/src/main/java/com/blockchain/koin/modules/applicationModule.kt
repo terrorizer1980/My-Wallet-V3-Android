@@ -30,6 +30,7 @@ import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
 import piuk.blockchain.android.simplebuy.EURPaymentAccountMapper
 import piuk.blockchain.android.simplebuy.GBPPaymentAccountMapper
+import piuk.blockchain.android.simplebuy.SimpleBuyAvailability
 import piuk.blockchain.android.simplebuy.SimpleBuyFlowNavigator
 import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
 import piuk.blockchain.android.simplebuy.SimpleBuyModel
@@ -276,7 +277,8 @@ val applicationModule = applicationContext {
                 nabuDataManager = get(),
                 nabuToken = get(),
                 simpleBuySync = get(),
-                crashLogger = get()
+                crashLogger = get(),
+                simpleBuyAvailability = get()
             )
         }
 
@@ -308,6 +310,15 @@ val applicationModule = applicationContext {
 
         factory {
             GsonBuilder().create()
+        }
+
+        factory {
+            SimpleBuyAvailability(
+                simpleBuyPrefs = get(),
+                custodialWalletManager = get(),
+                currencyPrefs = get(),
+                tierService = get()
+            )
         }
 
         factory {

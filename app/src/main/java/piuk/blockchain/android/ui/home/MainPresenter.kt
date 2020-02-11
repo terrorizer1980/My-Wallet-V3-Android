@@ -33,6 +33,7 @@ import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerifiedLinkState
 import piuk.blockchain.android.deeplink.LinkState
 import piuk.blockchain.android.kyc.KycLinkState
+import piuk.blockchain.android.simplebuy.SimpleBuyAvailability
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.sunriver.CampaignLinkState
 import piuk.blockchain.android.thepit.PitLinking
@@ -109,6 +110,7 @@ class MainPresenter internal constructor(
     private val nabuDataManager: NabuDataManager,
     private val simpleBuySync: SimpleBuySyncFactory,
     private val crashLogger: CrashLogger,
+    private val simpleBuyAvailability: SimpleBuyAvailability,
     nabuToken: NabuToken
 ) : MvpPresenter<MainView>() {
 
@@ -146,14 +148,13 @@ class MainPresenter internal constructor(
 
     private fun initSimpleBuyState() {
         compositeDisposable +=
-            simpleBuySync.performSync()
+            simpleBuyAvailability.isAvailable()
                 .doOnSubscribe { view?.setSimpleBuyEnabled(false) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onComplete = {
-                        val isEnabled = simpleBuySync.isEnabled()
-                        if (isEnabled) {
-                            view?.setSimpleBuyEnabled(true)
+                    onSuccess = {
+                        view?.setSimpleBuyEnabled(it)
+                        if (it) {
                             view?.setBuySellEnabled(enabled = false, useWebView = false)
                         }
                     }
@@ -382,10 +383,10 @@ class MainPresenter internal constructor(
     private fun initBuyService() {
         compositeDisposable +=
             Observables.zip(buyDataManager.canBuy,
-                nabuUser.toObservable(),
+                simpleBuyAvailability.isAvailable().toObservable(),
                 buyDataManager.isCoinifyAllowed).subscribe(
-                { (isEnabled, nabuUser, isCoinifyAllowed) ->
-                    view?.setBuySellEnabled(isEnabled && !nabuUser.isSimpleBuyTagged, isCoinifyAllowed)
+                { (isEnabled, available, isCoinifyAllowed) ->
+                    view?.setBuySellEnabled(isEnabled && !available, isCoinifyAllowed)
                     if (isEnabled && !isCoinifyAllowed) {
                         compositeDisposable += buyDataManager.watchPendingTrades()
                             .applySchedulers()
@@ -393,7 +394,7 @@ class MainPresenter internal constructor(
 
                         compositeDisposable += buyDataManager.webViewLoginDetails
                             .subscribe({ view?.setWebViewLoginDetails(it) }, { it.printStackTrace() })
-                    } else if (isEnabled && isCoinifyAllowed && !nabuUser.isSimpleBuyTagged) {
+                    } else if (isEnabled && isCoinifyAllowed && !available) {
                         notifyCompletedCoinifyTrades()
                     }
                 }, { throwable ->

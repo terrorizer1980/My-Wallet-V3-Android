@@ -38,14 +38,14 @@ class LiveCustodialWalletManager(
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
         authenticator.authenticate {
             nabuService.getSimpleBuyQuote(
-                    sessionToken = it,
-                    action = action,
-                    currencyPair = "${crypto.symbol}-${amount.currencyCode}",
-                    amount = amount.valueMinor.toString()
-                )
-            }.map { quoteResponse ->
-                Quote(date = quoteResponse.time.toLocalTime())
-            }
+                sessionToken = it,
+                action = action,
+                currencyPair = "${crypto.symbol}-${amount.currencyCode}",
+                amount = amount.valueMinor.toString()
+            )
+        }.map { quoteResponse ->
+            Quote(date = quoteResponse.time.toLocalTime())
+        }
 
     override fun createOrder(
         cryptoCurrency: CryptoCurrency,
@@ -141,7 +141,7 @@ class LiveCustodialWalletManager(
                 .map { balance ->
                     CryptoValue.fromMinor(crypto, balance.available.toBigDecimal())
                 }
-            }
+        }
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable {
         TODO("not implemented")
