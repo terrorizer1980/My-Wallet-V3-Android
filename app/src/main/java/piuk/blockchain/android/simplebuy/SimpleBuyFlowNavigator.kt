@@ -12,6 +12,9 @@ class SimpleBuyFlowNavigator(private val simpleBuyModel: SimpleBuyModel, private
             tierService.tiers().toObservable().map { tier ->
                 if (tier.combinedState == Kyc2TierState.Tier2Approved) {
                     FlowScreen.CHECKOUT
+                } else if (tier.combinedState == Kyc2TierState.Tier2InReview ||
+                    tier.combinedState == Kyc2TierState.Tier2Failed) {
+                    FlowScreen.KYC_VERIFICATION
                 } else {
                     FlowScreen.KYC
                 }

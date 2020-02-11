@@ -144,7 +144,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
                     model.process(SimpleBuyIntent.KycStareted)
                     navigator().startKyc()
                 }
-                newState.kycVerificationState == KycState.VERIFIED_BUT_NOT_ELIGIBLE -> {
+                newState.kycVerificationState.kycDataAlreadySubmitted() -> {
                     navigator().goToKycVerificationScreen()
                 }
                 else -> {

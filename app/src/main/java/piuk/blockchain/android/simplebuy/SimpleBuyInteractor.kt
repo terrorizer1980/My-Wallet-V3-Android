@@ -101,6 +101,8 @@ class SimpleBuyInteractor(
                         SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_BUT_NOT_ELIGIBLE)
                     }
                 }
+                Kyc2TierState.Tier2Failed -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.FAILED))
+                Kyc2TierState.Tier2InReview -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.IN_REVIEW))
                 else -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.PENDING))
             }
         }.onErrorReturn { SimpleBuyIntent.KycStateUpdated(KycState.PENDING) }

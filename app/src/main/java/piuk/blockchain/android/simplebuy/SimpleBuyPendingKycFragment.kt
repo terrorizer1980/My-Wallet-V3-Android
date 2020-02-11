@@ -38,11 +38,6 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
                     newState.kycVerificationState == KycState.VERIFIED_BUT_NOT_ELIGIBLE
         }
 
-        kyc_pending_subtitle.text = when (newState.kycVerificationState) {
-            KycState.PENDING -> resources.getString(R.string.kyc_pending_subtitle)
-            else -> ""
-        }
-
         verif_text.text = when (newState.kycVerificationState) {
             KycState.PENDING -> resources.getString(R.string.kyc_verifying_info)
             KycState.FAILED -> resources.getString(R.string.kyc_manual_review_required)
