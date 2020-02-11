@@ -16,12 +16,11 @@ class SimpleBuyAvailability(
 
     fun isAvailable(): Single<Boolean> {
         val hasStartedAtLeastOnce = simpleBuyPrefs.flowStartedAtLeastOnce()
-        if (!hasStartedAtLeastOnce) return Single.just(false)
 
         val goldAndEligibleAvailabilityCheck = tierService.tiers().flatMap {
             when (it.combinedState) {
                 Kyc2TierState.Tier2Approved -> custodialWalletManager.isEligibleForSimpleBuy()
-                else -> Single.just(true)
+                else -> Single.just(hasStartedAtLeastOnce)
             }
         }.onErrorReturn { false }
 

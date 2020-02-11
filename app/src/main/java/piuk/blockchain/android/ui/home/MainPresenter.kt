@@ -141,8 +141,6 @@ class MainPresenter internal constructor(
             doPushNotifications()
 
             checkPitAvailability()
-
-//            initSimpleBuyState()
         }
     }
 
@@ -234,7 +232,7 @@ class MainPresenter internal constructor(
                     checkKycStatus()
                     setDebugExchangeVisibility()
                     initBuyService()
-
+                    initSimpleBuyState()
                     checkForPendingLinks()
                 },
                 onError = { throwable ->
