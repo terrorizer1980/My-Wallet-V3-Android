@@ -233,9 +233,9 @@ internal interface Nabu {
         @Path("orderId") orderId: String
     ): Single<BuyOrderResponse>
 
-    @GET("$NABU_SIMPLE_BUY_ASSET_BALANCE/{crypto}")
+    @GET(NABU_SIMPLE_BUY_ASSET_BALANCE)
     fun getBalanceForAsset(
         @Header("authorization") authorization: String,
-        @Path("crypto") cryptoSymbol: String
+        @Query("ccy") cryptoSymbol: String
     ): Single<Response<SimpleBuyBalanceResponse>>
 }
