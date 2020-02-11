@@ -41,7 +41,7 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         setContentView(R.layout.activity_simple_buy)
         setSupportActionBar(toolbar_general)
         if (savedInstanceState == null) {
-            compositeDisposable += simpleBuyFlowNavigator.navigateTo().subscribeBy {
+            compositeDisposable += simpleBuyFlowNavigator.navigateTo(startedFromKycResume).subscribeBy {
                 when (it) {
                     FlowScreen.INTRO -> {
                         if (startedFromDashboard) goToBuyCryptoScreen(false) else launchIntro()
