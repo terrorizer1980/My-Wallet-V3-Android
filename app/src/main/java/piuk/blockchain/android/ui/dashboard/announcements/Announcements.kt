@@ -21,6 +21,7 @@ interface AnnouncementHost {
 
     // Actions
     fun startKyc(campaignType: CampaignType)
+
     fun startSwap(swapTarget: CryptoCurrency = CryptoCurrency.ETHER)
     fun startBuySell()
     fun startPitLinking()
@@ -57,8 +58,9 @@ class AnnouncementList(
     // Hack to block announcements until metadate/simple buy etc is initialised.
     // TODO: Refactor app startup so we can avoid nonsense like this
     private var isEnabled = AtomicBoolean(false)
+
     fun enable(): Boolean {
-        if(!isEnabled.get()) {
+        if (!isEnabled.get()) {
             isEnabled.set(true)
             return true
         }
@@ -68,7 +70,7 @@ class AnnouncementList(
     fun checkLatest(host: AnnouncementHost, disposables: CompositeDisposable) {
         host.dismissAnnouncementCard()
 
-        if(isEnabled.get()) {
+        if (isEnabled.get()) {
             disposables += showNextAnnouncement(host)
                 .subscribeBy(onError = Timber::e)
         }

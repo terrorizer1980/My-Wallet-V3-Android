@@ -210,7 +210,7 @@ class MainPresenter internal constructor(
     internal fun initMetadataElements() {
         compositeDisposable += metadataLoader.loader()
             .flatMapCompletable { firstLoad ->
-                if(firstLoad) {
+                if (firstLoad) {
                     simpleBuySync.performSync()
                 } else {
                     Completable.complete()

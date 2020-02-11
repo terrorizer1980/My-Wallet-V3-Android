@@ -228,7 +228,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
         compositeDisposable += metadataEvent.subscribe {
             model.process(RefreshAllIntent)
-            if(announcements.enable()) {
+            if (announcements.enable()) {
                 announcements.checkLatest(announcementHost, compositeDisposable)
             }
         }
@@ -330,9 +330,11 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
     override fun gotoActivityFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter) {
         when (filter) {
-            AssetFilter.Total -> { /* TODO: Hook up the everything activity view, when we have designs */ }
+            AssetFilter.Total -> { /* TODO: Hook up the everything activity view, when we have designs */
+            }
             AssetFilter.Wallet -> navigator().gotoTransactionsFor(cryptoCurrency)
-            AssetFilter.Custodial -> { /* TODO: Hook up the custodial activity, when we have designs */ }
+            AssetFilter.Custodial -> { /* TODO: Hook up the custodial activity, when we have designs */
+            }
         }.exhaustive
     }
 
