@@ -51,6 +51,9 @@ class CustodialWalletManagerSwitcher(
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
         liveCustodialWalletManager.getBalanceForAsset(crypto)
 
+    override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
+        mockCustodialWalletManager.getBalanceForAsset(crypto)
+
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
         liveCustodialWalletManager.isCurrencySupportedForSimpleBuy(currency)
 

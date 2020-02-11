@@ -23,8 +23,8 @@ import com.blockchain.swap.nabu.models.simplebuy.BuyOrderListResponse
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
+import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
@@ -233,9 +233,9 @@ internal interface Nabu {
         @Path("orderId") orderId: String
     ): Single<BuyOrderResponse>
 
-    @GET(NABU_SIMPLE_BUY_ASSET_BALANCE)
+    @GET("$NABU_SIMPLE_BUY_ASSET_BALANCE/{crypto}")
     fun getBalanceForAsset(
         @Header("authorization") authorization: String,
-        @Query("ccy") cryptoSymbol: String
+        @Path("crypto") cryptoSymbol: String
     ): Single<Response<SimpleBuyBalanceResponse>>
 }
