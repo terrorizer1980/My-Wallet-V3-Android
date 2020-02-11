@@ -55,7 +55,6 @@ class CustodialWalletManagerSwitcher(
         liveCustodialWalletManager.isCurrencySupportedForSimpleBuy(currency)
 
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
-//        mockCustodialWalletManager.getOutstandingBuyOrders()
         liveCustodialWalletManager.getOutstandingBuyOrders()
 
     override fun getBuyOrder(orderId: String): Single<BuyOrder> =

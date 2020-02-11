@@ -52,6 +52,8 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
 
     private fun clearSimpleBuyState() {
         simpleBuyPrefs.clearState()
+        context?.toast("Local SB State cleared")
+        dismiss()
     }
 
     private fun onRndDeviceId() {

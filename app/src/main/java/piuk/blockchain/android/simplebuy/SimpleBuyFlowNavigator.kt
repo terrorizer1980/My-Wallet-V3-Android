@@ -2,6 +2,7 @@ package piuk.blockchain.android.simplebuy
 
 import com.blockchain.swap.nabu.models.nabu.Kyc2TierState
 import com.blockchain.swap.nabu.service.TierService
+import io.reactivex.Observable
 import io.reactivex.Single
 
 class SimpleBuyFlowNavigator(private val simpleBuyModel: SimpleBuyModel, private val tierService: TierService) {
@@ -16,13 +17,7 @@ class SimpleBuyFlowNavigator(private val simpleBuyModel: SimpleBuyModel, private
                 }
             }
         } else {
-            tierService.tiers().toObservable().map { tier ->
-                if (tier.combinedState == Kyc2TierState.Tier2Approved) {
-                    FlowScreen.CHECKOUT
-                } else {
-                    FlowScreen.KYC
-                }
-            }
+            Observable.just(it.currentScreen)
         }
     }.firstOrError()
 }

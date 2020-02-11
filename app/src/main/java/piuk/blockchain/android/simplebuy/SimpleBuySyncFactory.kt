@@ -11,6 +11,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
 // Ensure that the local and remote SimpleBuy state is the same.
@@ -72,7 +73,10 @@ class SimpleBuySyncFactory(
         return maybeInflateLocalState()
             .flatMap(
                 /* onSuccessMapper = */ { Maybe.defer { updateWithRemote(it) } },
-                /* onErrorMapper = */ { Maybe.error<SimpleBuyState>(it) },
+                /* onErrorMapper = */ {
+                    Timber.e(">**** syncStates: $it")
+                    Maybe.error<SimpleBuyState>(it)
+                },
                 /* onCompleteSupplier = */ { Maybe.defer { getPendingBuy() } }
             )
     }
