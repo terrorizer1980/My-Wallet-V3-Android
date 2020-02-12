@@ -23,7 +23,7 @@ import info.blockchain.wallet.exceptions.HDWalletException
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.Observables
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -380,8 +380,8 @@ class MainPresenter internal constructor(
 
     private fun initBuyService() {
         compositeDisposable +=
-            Observables.zip(buyDataManager.canBuy,
-                simpleBuyAvailability.isAvailable().toObservable(),
+            Singles.zip(buyDataManager.canBuy,
+                simpleBuyAvailability.isAvailable(),
                 buyDataManager.isCoinifyAllowed).subscribe(
                 { (isEnabled, available, isCoinifyAllowed) ->
                     view?.setBuySellEnabled(isEnabled && !available, isCoinifyAllowed)
@@ -434,7 +434,7 @@ class MainPresenter internal constructor(
     internal fun routeToBuySell() {
         compositeDisposable += buyDataManager.isCoinifyAllowed
             .subscribeBy(onError = { it.printStackTrace() },
-                onNext = { coinifyAllowed ->
+                onSuccess = { coinifyAllowed ->
                     if (coinifyAllowed)
                         view?.launchBuySell()
                 })

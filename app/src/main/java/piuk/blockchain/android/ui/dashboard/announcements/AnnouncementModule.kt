@@ -146,7 +146,8 @@ val dashboardAnnouncementsModule = applicationContext {
             BuyBitcoinAnnouncement(
                 dismissRecorder = get(),
                 walletStatus = get(),
-                buyDataManager = get()
+                buyDataManager = get(),
+                simpleBuyAvailability = get()
             )
         }.bind(AnnouncementRule::class)
 
