@@ -141,7 +141,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
             when {
                 newState.kycVerificationState.verified().not() -> {
                     model.process(SimpleBuyIntent.ConfirmationHandled)
-                    model.process(SimpleBuyIntent.KycStareted)
+                    model.process(SimpleBuyIntent.KycStarted)
                     navigator().startKyc()
                 }
                 newState.kycVerificationState.kycDataAlreadySubmitted() -> {

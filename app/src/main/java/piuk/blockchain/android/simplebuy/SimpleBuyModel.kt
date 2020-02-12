@@ -72,7 +72,7 @@ class SimpleBuyModel(
             is SimpleBuyIntent.ConfirmationHandled -> null
             is SimpleBuyIntent.BankAccountUpdated -> null
             is SimpleBuyIntent.KycCompleted -> null
-            is SimpleBuyIntent.KycStareted -> null
+            is SimpleBuyIntent.KycStarted -> null
             is SimpleBuyIntent.ErrorIntent -> null
             is SimpleBuyIntent.ClearError -> null
             is SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies -> null

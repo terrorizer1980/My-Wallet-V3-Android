@@ -63,22 +63,24 @@ class SimpleBuyInteractor(
         }
 
     fun pollForKycState(): Single<SimpleBuyIntent.KycStateUpdated> =
-        tierService.tiers().flatMap {
-            when {
-                it.combinedState == Kyc2TierState.Tier2Approved ->
-                    custodialWalletManager.isEligibleForSimpleBuy().map { eligible ->
-                        if (eligible) {
-                            SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_AND_ELIGIBLE)
-                        } else {
-                            SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_BUT_NOT_ELIGIBLE)
+        tierService.tiers()
+            .flatMap {
+                when {
+                    it.combinedState == Kyc2TierState.Tier2Approved ->
+                        custodialWalletManager.isEligibleForSimpleBuy().map { eligible ->
+                            if (eligible) {
+                                SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_AND_ELIGIBLE)
+                            } else {
+                                SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_BUT_NOT_ELIGIBLE)
+                            }
                         }
-                    }
-                it.combinedState.isRejectedOrInReview() -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.FAILED))
-                else -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.PENDING))
+                    it.combinedState.isRejectedOrInReview() ->
+                        Single.just(SimpleBuyIntent.KycStateUpdated(KycState.FAILED))
+                    else -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.PENDING))
+                }
+            }.onErrorReturn {
+                SimpleBuyIntent.KycStateUpdated(KycState.PENDING)
             }
-        }.onErrorReturn {
-            SimpleBuyIntent.KycStateUpdated(KycState.PENDING)
-        }
             .repeatWhen { it.delay(5, TimeUnit.SECONDS).zipWith(Flowable.range(0, 6)) }
             .takeUntil { it.kycState != KycState.PENDING }
             .last(SimpleBuyIntent.KycStateUpdated(KycState.PENDING))
@@ -102,7 +104,7 @@ class SimpleBuyInteractor(
                     }
                 }
                 Kyc2TierState.Tier2Failed -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.FAILED))
-                Kyc2TierState.Tier2InReview -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.IN_REVIEW))
+                Kyc2TierState.Tier2InPending -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.IN_REVIEW))
                 else -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.PENDING))
             }
         }.onErrorReturn { SimpleBuyIntent.KycStateUpdated(KycState.PENDING) }

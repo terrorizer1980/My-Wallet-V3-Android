@@ -123,9 +123,9 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
             oldState.copy(confirmationActionRequested = false)
     }
 
-    object KycStareted : SimpleBuyIntent() {
+    object KycStarted : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(kycStartedButNotCompleted = true, currentScreen = FlowScreen.KYC)
+            oldState.copy(kycStartedButNotCompleted = true, currentScreen = FlowScreen.KYC, kycVerificationState = null)
     }
 
     class ErrorIntent(private val error: ErrorState = ErrorState.GenericError) : SimpleBuyIntent() {
