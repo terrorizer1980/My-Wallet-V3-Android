@@ -3,6 +3,9 @@ package piuk.blockchain.androidcore.utils
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
+import java.util.Currency
+import java.util.Locale
 
 interface UUIDGenerator {
     fun generateUUID(): String
@@ -73,8 +76,12 @@ class PrefsUtil(
 
     // From CurrencyPrefs
     override var selectedFiatCurrency: String
-        get() = getValue(KEY_SELECTED_FIAT, DEFAULT_FIAT_CURRENCY)
+        get() = getValue(KEY_SELECTED_FIAT, defaultCurrency())
         set(fiat) = setValue(KEY_SELECTED_FIAT, fiat)
+
+    private fun defaultCurrency(): String =
+        if (UNIT_FIAT.contains(Currency.getInstance(Locale.getDefault()).currencyCode))
+            Currency.getInstance(Locale.getDefault()).currencyCode else DEFAULT_FIAT_CURRENCY
 
     override var selectedCryptoCurrency: CryptoCurrency
         get() =

@@ -7,7 +7,9 @@ import androidx.fragment.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import com.blockchain.logging.CrashLogger
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.SimpleBuyPrefs
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.dialog_debug_options.*
@@ -30,6 +32,7 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
     private val loginState: AccessState by inject()
     private val crashLogger: CrashLogger by inject()
     private val simpleBuyPrefs: SimpleBuyPrefs by inject()
+    private val currencyPrefs: CurrencyPrefs by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,8 +49,32 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
         btn_reset_prefs.setOnClickListener { onResetPrefs() }
         clear_simple_buy_state.setOnClickListener { clearSimpleBuyState() }
         btn_store_linkId.setOnClickListener { prefs.pitToWalletLinkId = "11111111-2222-3333-4444-55556666677" }
-
+        device_currency.text = "Select a new currency. Current one is ${currencyPrefs.selectedFiatCurrency}"
         firebase_token.text = prefs.firebaseToken
+
+        radio_eur.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                currencyPrefs.selectedFiatCurrency = "EUR"
+                context?.toast("Currency changed to EUR")
+                dismiss()
+            }
+        }
+
+        radio_usd.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                currencyPrefs.selectedFiatCurrency = "USD"
+                context?.toast("Currency changed to USD")
+                dismiss()
+            }
+        }
+
+        radio_gbp.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                currencyPrefs.selectedFiatCurrency = "GBP"
+                context?.toast("Currency changed to GBP")
+                dismiss()
+            }
+        }
     }
 
     private fun clearSimpleBuyState() {
@@ -60,6 +87,29 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
         prefs.qaRandomiseDeviceId = true
         context?.toast("Device ID randomisation enabled")
         dismiss()
+    }
+
+    fun onRadioButtonClicked(view: View) {
+        if (view is RadioButton) {
+            // Is the button now checked?
+            val checked = view.isChecked
+
+            // Check which radio button was clicked
+            when (view.getId()) {
+                R.id.radio_eur ->
+                    if (checked) {
+                        // Pirates are the best
+                    }
+                R.id.radio_gbp ->
+                    if (checked) {
+                        // Ninjas rule
+                    }
+                R.id.radio_eur ->
+                    if (checked) {
+                        // Ninjas rule
+                    }
+            }
+        }
     }
 
     private fun onResetWallet() {

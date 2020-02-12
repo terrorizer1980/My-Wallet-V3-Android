@@ -980,7 +980,8 @@ val applicationModule = applicationContext {
                 notificationTokenManager = get(),
                 envSettings = get(),
                 featureFlag = get("ff_simple_buy"),
-                custodialWalletManager = get()
+                custodialWalletManager = get(),
+                currencyPrefs = get()
             )
         }
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.wallet.api.Environment
@@ -34,6 +35,7 @@ class LauncherPresenter(
     private val notificationTokenManager: NotificationTokenManager,
     private val envSettings: EnvironmentConfig,
     private val featureFlag: FeatureFlag,
+    private val currencyPrefs: CurrencyPrefs,
     private val custodialWalletManager: CustodialWalletManager
 ) : BasePresenter<LauncherView>() {
 
@@ -124,22 +126,22 @@ class LauncherPresenter(
                     settings to simpleBuyFlowCanBeLaunched
                 }
         }
-        .doOnComplete { accessState.isLoggedIn = true }
-        .doOnNext { notificationTokenManager.registerAuthEvent() }
-        .subscribe(
-            { (settings, simpleBuyEnabled) ->
-                setCurrencyUnits(settings)
-                if (simpleBuyEnabled &&
-                    view?.getPageIntent()?.getBooleanExtra(AppUtil.INTENT_EXTRA_IS_AFTER_WALLET_CREATION,
-                        false) == true
-                ) {
-                    startSimpleBuy()
-                } else
-                    startMainActivity()
-            }, {
-                view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
-                view.onRequestPin()
-            })
+            .doOnComplete { accessState.isLoggedIn = true }
+            .doOnNext { notificationTokenManager.registerAuthEvent() }
+            .subscribe(
+                { (settings, simpleBuyEnabled) ->
+                    setCurrencyUnits(settings)
+                    if (simpleBuyEnabled &&
+                        view?.getPageIntent()?.getBooleanExtra(AppUtil.INTENT_EXTRA_IS_AFTER_WALLET_CREATION,
+                            false) == true
+                    ) {
+                        startSimpleBuy()
+                    } else
+                        startMainActivity()
+                }, {
+                    view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
+                    view.onRequestPin()
+                })
     }
 
     private fun startMainActivity() {
@@ -151,8 +153,7 @@ class LauncherPresenter(
     }
 
     private fun fiatUnitForFreshAccount() =
-        if (UNIT_FIAT.contains(Currency.getInstance(Locale.getDefault()).currencyCode))
-            Currency.getInstance(Locale.getDefault()).currencyCode else "USD"
+        currencyPrefs.selectedFiatCurrency
 
     private fun setCurrencyUnits(settings: Settings) {
         prefs.selectedFiatCurrency = settings.currency
