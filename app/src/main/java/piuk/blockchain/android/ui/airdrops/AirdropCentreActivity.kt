@@ -86,7 +86,6 @@ class HeadingViewHolder(itemView: View) : AirdropViewHolder<ListItem.HeaderItem>
 
 class StatusViewHolder(itemView: View) : AirdropViewHolder<ListItem.AirdropItem>(itemView) {
 
-    private var lastClick = 0L
 
     fun bind(item: ListItem.AirdropItem, onClick: (String) -> Unit) {
         with(itemView) {

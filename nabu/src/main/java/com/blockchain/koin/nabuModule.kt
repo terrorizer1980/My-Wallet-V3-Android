@@ -66,8 +66,6 @@ val nabuModule = applicationContext {
             )
         }.bind(NabuToken::class)
 
-        factory { MetadataRepositoryNabuTokenAdapter(get(), get(), get()) as NabuToken }
-
         factory {
             NabuDataManagerImpl(
                 nabuService = get(),
