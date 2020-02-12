@@ -367,7 +367,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="share_instructions">タップしてこのアドレスをコピー。メールもしくはテキストで送信者と共有</string>
   <string name="common_pin_dialog_title">警告</string>
   <string name="common_pin_dialog_message">選択したPINは非常に一般的なものであり、あなたの携帯電話にアクセスがある人物に3回の試行で推測されてしまう可能性があります。それでもこのPINを使用しますか？</string>
-  <string name="common_pin_dialog_try_again">[%key:try_again%]</string>
+  <string name="common_pin_dialog_try_again">再試行</string>
   <string name="common_pin_dialog_continue">続行</string>
   <string name="logged_out_enter_password">財布の復号化にエラーが発生し、ログアウトされました。以下にパスワードを入力してログインしてください。</string>
   <string name="logged_out_forget_wallet">この財布を忘れて最初から始めたい場合は\'財布を忘れる\'をクリックしてください。</string>

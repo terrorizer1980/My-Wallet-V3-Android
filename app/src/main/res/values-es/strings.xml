@@ -368,8 +368,8 @@ No lo compartas con otras personas.</string>
   <string name="share_instructions">Pulsa para copiar esta dirección. Compártela con el remitente por correo electrónico o mensaje de texto.</string>
   <string name="common_pin_dialog_title">Advertencia</string>
   <string name="common_pin_dialog_message">El PIN seleccionado es muy común y puede ser fácilmente adivinado por alguien con acceso a tu teléfono en 3 intentos. ¿Quieres usar este PIN de todos modos?</string>
-  <string name="common_pin_dialog_try_again">[%key:try_again%]</string>
-  <string name="common_pin_dialog_continue">[%key:CONTINUE%]</string>
+  <string name="common_pin_dialog_try_again">No, Usar Otro</string>
+  <string name="common_pin_dialog_continue">Sí, Continuar</string>
   <string name="logged_out_enter_password">Has cerrado sesión o hubo un error al decodificar tu monedero. Introduce tu contraseña a continuación para iniciar sesión.</string>
   <string name="logged_out_forget_wallet">Si quieres olvidar este monedero y comenzar denuevo, presiona \'Olvidar Monedero\'.</string>
   <string name="forget_wallet">Olvidar monedero</string>

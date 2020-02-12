@@ -148,6 +148,6 @@ internal class AccessStateImpl(
     override fun forgetWallet() = rxBus.emitEvent(AuthEvent::class.java, AuthEvent.FORGET)
 
     companion object {
-        private const val LOGOUT_TIMEOUT_MILLIS = 1000L * 30L
+        private const val LOGOUT_TIMEOUT_MILLIS = 1000L * 60L * 5L // 5 minutes
     }
 }

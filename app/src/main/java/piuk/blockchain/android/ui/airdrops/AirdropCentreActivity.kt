@@ -34,6 +34,8 @@ class AirdropCentreActivity : MvpActivity<AirdropCentreView, AirdropCentrePresen
         setContentView(R.layout.activity_airdrops)
         setupToolbar(toolbar_general, R.string.airdrop_activity_title)
 
+        toolbar_general.setNavigationOnClickListener { finish() }
+
         airdrop_list.layoutManager = LinearLayoutManager(this)
     }
 
@@ -91,8 +93,15 @@ class StatusViewHolder(itemView: View) : AirdropViewHolder<ListItem.AirdropItem>
             icon.setCoinIcon(item.airdrop.currency)
             currency.text = item.airdrop.currency.symbol
             val formatted = DateFormat.getDateInstance(DateFormat.SHORT).format(item.airdrop.date)
-            date.text = formatted
             setOnClickListenerDebounced { onClick(item.airdrop.name) }
+            date.text = resources.getString(
+                if (item.airdrop.isActive) {
+                    R.string.airdrop_status_date_active
+                } else {
+                    R.string.airdrop_status_date_inactive
+                },
+                formatted
+            )
         }
     }
 }
