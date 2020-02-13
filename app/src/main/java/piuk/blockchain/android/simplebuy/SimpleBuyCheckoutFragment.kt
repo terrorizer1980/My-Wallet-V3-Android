@@ -91,9 +91,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     }
 
     override fun onSheetClosed() {
-        model.process(SimpleBuyIntent.ClearError)
-        model.process(SimpleBuyIntent.ClearState)
-        navigator().exitSimpleBuyFlow()
+
     }
 }
 

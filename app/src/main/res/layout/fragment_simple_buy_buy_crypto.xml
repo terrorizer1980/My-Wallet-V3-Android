@@ -93,7 +93,7 @@
         android:layout_height="wrap_content"
         android:text="€"
         android:textColor="@color/grey_400"
-        android:textSize="24sp"
+        android:textSize="32sp"
         app:layout_constraintBottom_toBottomOf="@+id/input_layout_amount"
         app:layout_constraintEnd_toStartOf="@+id/input_layout_amount"
         app:layout_constraintStart_toStartOf="parent"
