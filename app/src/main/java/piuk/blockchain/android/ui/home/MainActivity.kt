@@ -68,7 +68,6 @@ import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.android.ui.home.analytics.SideNavEvent
 import piuk.blockchain.android.ui.kyc.status.KycStatusActivity
 import piuk.blockchain.android.ui.onboarding.OnboardingActivity
-import piuk.blockchain.android.ui.tour.BuySellTourFragment
 import piuk.blockchain.android.ui.tour.IntroTourAnalyticsEvent
 import piuk.blockchain.android.ui.tour.IntroTourHost
 import piuk.blockchain.android.ui.tour.IntroTourStep
@@ -914,23 +913,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                 msgTitle = R.string.tour_step_four_title,
                 msgBody = R.string.tour_step_four_body,
                 msgButton = R.string.tour_step_four_btn
-            ),
-            IntroTourStep(
-                name = "Step_Five",
-                lookupTriggerView = {
-                    bottom_navigation.getViewAtPosition(ITEM_HOME).performClick()
-                    drawer_layout.openDrawer(GravityCompat.START)
-                    null
-                },
-                triggerClick = {
-                    drawer_layout.closeDrawers()
-                    replaceContentFragment(BuySellTourFragment.newInstance())
-                },
-                analyticsEvent = IntroTourAnalyticsEvent.IntroBuySellViewedAnalytics,
-                msgIcon = R.drawable.ic_nav_buy_sell,
-                msgTitle = R.string.tour_step_five_title,
-                msgBody = R.string.tour_step_five_body,
-                msgButton = R.string.tour_step_five_btn
             )
         )
 

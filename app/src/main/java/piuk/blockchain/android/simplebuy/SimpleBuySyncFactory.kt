@@ -178,7 +178,7 @@ class SimpleBuySyncFactory(
 fun BuyOrder.toSimpleBuyState(): SimpleBuyState =
     SimpleBuyState(
         id = id,
-        enteredAmount = fiat.formatOrSymbolForZero().replace(",", ""),
+        enteredAmount = fiat.toStringWithoutSymbol().replace(",", ""),
         currency = fiat.currencyCode,
         selectedCryptoCurrency = crypto.currency,
         orderState = state,

@@ -9,7 +9,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.dialog_simple_buy_bank_details.view.*
-import kotlinx.android.synthetic.main.fragment_simple_buy_bank_details.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.simplebuy.SimpleBuyState
@@ -65,7 +64,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
                     disposables += custodialWalletManager.getBankAccountDetails(state.currency)
                         .subscribeBy(
                             onSuccess = { renderAccountDetails(view, it, amount) },
-                            onError = { closeBecauseError("Cannot get bank details") }
+                            onError = { closeBecauseError("Cannot get bank details: ${it.message}") }
                         )
                 }
             } else {
@@ -79,8 +78,10 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
     }
 
     private fun renderAccountDetails(view: View, account: BankAccount, amount: FiatValue) {
-        view.bank_details_container.initWithBankDetailsAndAmount(account.details, amount)
-        secure_transfer.text = getString(R.string.simple_buy_securely_transfer, amount.currencyCode)
+        with(view) {
+            bank_details_container.initWithBankDetailsAndAmount(account.details, amount)
+            secure_transfer.text = getString(R.string.simple_buy_securely_transfer, amount.toStringWithSymbol())
+        }
     }
 
     companion object {
