@@ -32,6 +32,7 @@ import piuk.blockchain.android.simplebuy.EURPaymentAccountMapper
 import piuk.blockchain.android.simplebuy.GBPPaymentAccountMapper
 import piuk.blockchain.android.simplebuy.SimpleBuyAvailability
 import piuk.blockchain.android.simplebuy.SimpleBuyFlowNavigator
+import piuk.blockchain.android.simplebuy.SimpleBuyInflateAdapter
 import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
 import piuk.blockchain.android.simplebuy.SimpleBuyModel
 import piuk.blockchain.android.simplebuy.SimpleBuyState
@@ -804,11 +805,15 @@ val applicationModule = applicationContext {
         }
 
         bean {
+            val inflateAdapter = SimpleBuyInflateAdapter(
+                prefs = get(),
+                gson = get()
+            )
+
             SimpleBuySyncFactory(
                 custodialWallet = get(),
-                prefs = get(),
-                gson = get(),
-                simpleBuyFlag = get("ff_simple_buy")
+                availabilityChecker = get(),
+                localStateAdapter = inflateAdapter
             )
         }
 

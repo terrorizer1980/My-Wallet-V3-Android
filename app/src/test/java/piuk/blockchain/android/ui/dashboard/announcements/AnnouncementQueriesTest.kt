@@ -5,7 +5,6 @@ import com.blockchain.swap.nabu.models.nabu.LimitsJson
 import com.blockchain.swap.nabu.models.nabu.TierJson
 import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.swap.nabu.NabuToken
-import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.service.TierService
@@ -27,7 +26,6 @@ class AnnouncementQueriesTest {
     private val nabu: NabuDataManager = mock()
     private val tierService: TierService = mock()
 
-    private val custodialWalletManager: CustodialWalletManager = mock()
     private val sbSync: SimpleBuySyncFactory = mock()
 
     private val sampleLimits = LimitsJson("", 0.toBigDecimal(), 0.toBigDecimal())

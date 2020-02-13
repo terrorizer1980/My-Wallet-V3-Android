@@ -1,10 +1,9 @@
-package piuk.blockchain.android.ui.simplebuy
+package piuk.blockchain.android.simplebuy
 
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import info.blockchain.balance.CryptoCurrency
 import org.junit.Test
-import piuk.blockchain.android.simplebuy.SimpleBuyState
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 

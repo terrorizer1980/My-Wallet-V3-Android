@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.simplebuy
+package piuk.blockchain.android.simplebuy
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.SimpleBuyPrefs
@@ -18,11 +18,6 @@ import org.amshove.kluent.`it returns`
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import piuk.blockchain.android.simplebuy.KycState
-import piuk.blockchain.android.simplebuy.SimpleBuyIntent
-import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
-import piuk.blockchain.android.simplebuy.SimpleBuyModel
-import piuk.blockchain.android.simplebuy.SimpleBuyState
 import java.util.Date
 
 class SimpleBuyModelTest {

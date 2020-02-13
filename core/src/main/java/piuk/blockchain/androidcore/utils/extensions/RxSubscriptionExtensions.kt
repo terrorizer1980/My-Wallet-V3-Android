@@ -3,6 +3,7 @@ package piuk.blockchain.androidcore.utils.extensions
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
+import io.reactivex.MaybeSource
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.SingleSource
@@ -75,3 +76,15 @@ fun <T> Maybe<T>.switchToSingleIfEmpty(other: SingleSource<out T>?): Single<T> =
 @SchedulerSupport(SchedulerSupport.NONE)
 fun <T> Maybe<T>.switchToSingleIfEmpty(source: () -> SingleSource<out T>?): Single<T> =
     switchIfEmpty(source())
+
+@CheckReturnValue
+@SchedulerSupport(SchedulerSupport.NONE)
+fun <T, R> Maybe<T>.flatMapBy(
+    onSuccess: (T) -> MaybeSource<out R>?,
+    onError: (Throwable?) -> MaybeSource<out R>?,
+    onComplete: () -> MaybeSource<out R>?
+): Maybe<R> = this.flatMap(
+    onSuccess,
+    onError,
+    onComplete
+)
