@@ -317,7 +317,8 @@ val applicationModule = applicationContext {
                 simpleBuyPrefs = get(),
                 custodialWalletManager = get(),
                 currencyPrefs = get(),
-                tierService = get()
+                tierService = get(),
+                simpleBuyFlag = get("ff_simple_buy")
             )
         }
 
