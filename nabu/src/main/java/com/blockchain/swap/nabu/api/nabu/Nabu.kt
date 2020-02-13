@@ -28,6 +28,7 @@ import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
+import com.blockchain.swap.nabu.models.simplebuy.TransferRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuSessionTokenResponse
@@ -38,6 +39,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -238,4 +240,11 @@ internal interface Nabu {
         @Header("authorization") authorization: String,
         @Query("ccy") cryptoSymbol: String
     ): Single<Response<SimpleBuyBalanceResponse>>
+
+    @Headers("blockchain-origin: simplebuy")
+    @POST(NABU_SIMPLE_BUY_BALANCE_TRANSFER)
+    fun transferFunds(
+        @Header("authorization") authorization: String,
+        @Body request: TransferRequest
+    ): Completable
 }

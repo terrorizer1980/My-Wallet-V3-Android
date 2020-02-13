@@ -17,6 +17,7 @@ import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
+import com.blockchain.swap.nabu.models.simplebuy.TransferRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.service.NabuService
 import info.blockchain.balance.CryptoCurrency
@@ -25,6 +26,7 @@ import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.rxkotlin.flatMapIterable
 import okhttp3.internal.toLongOrDefault
 import java.math.BigDecimal
 import java.util.UnknownFormatConversionException
@@ -143,8 +145,22 @@ class LiveCustodialWalletManager(
                 }
         }
 
-    override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable {
-        TODO("not implemented")
+    override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
+        authenticator.authenticateCompletable {
+            nabuService.transferFunds(
+                it,
+                TransferRequest(
+                    address = walletAddress,
+                    currency = amount.currency.symbol,
+                    amount = amount.amount.toString()
+                )
+            )
+        }
+
+    override fun cancelAllPendingBuys(): Completable {
+        return getOutstandingBuyOrders().toObservable()
+            .flatMapIterable()
+            .flatMapCompletable { deleteBuyOrder(it.id) }
     }
 }
 

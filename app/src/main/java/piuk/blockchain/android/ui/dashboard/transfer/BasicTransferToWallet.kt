@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.swap.nabu.datamanagers.SimpleBuyError
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -133,7 +134,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
             .observeOn(uiScheduler)
             .doOnSubscribe { updateTransferInProgress() }
             .subscribeBy(
-                onError = { updateTransferError() },
+                onError = { updateTransferError(it) },
                 onComplete = { updateTransferDone() }
             )
     }
@@ -161,11 +162,17 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
         isCancelable = true
     }
 
-    private fun updateTransferError() {
+    private fun updateTransferError(t: Throwable) {
         with(dialogView) {
             image.setImageDrawable(R.drawable.vector_pit_request_failure)
-            complete_title.text = getString(R.string.basic_transfer_error_title)
-            complete_message.text = getString(R.string.basic_transfer_error_body)
+
+            if (t is SimpleBuyError.WithdrawlInsufficientFunds || t is SimpleBuyError.WithdrawlAlreadyPending) {
+                complete_title.text = getString(R.string.basic_transfer_error_in_progress_title)
+                complete_message.text = getString(R.string.basic_transfer_error_in_progress_body)
+            } else {
+                complete_title.text = getString(R.string.basic_transfer_error_title)
+                complete_message.text = getString(R.string.basic_transfer_error_body)
+            }
 
             switchView(VIEW_COMPLETE)
         }

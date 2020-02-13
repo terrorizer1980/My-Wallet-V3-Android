@@ -21,7 +21,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 // Provide mock data for development and testing etc
-class StubCustodialWalletManager() : CustodialWalletManager {
+class StubCustodialWalletManager : CustodialWalletManager {
 
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
@@ -194,4 +194,8 @@ class StubCustodialWalletManager() : CustodialWalletManager {
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         Completable.timer(5, TimeUnit.SECONDS)
+
+    override fun cancelAllPendingBuys(): Completable {
+        return Completable.complete()
+    }
 }

@@ -66,4 +66,10 @@ data class BuyOrderResponse(
     val expiresAt: Date
 )
 
+data class TransferRequest(
+    val address: String,
+    val currency: String,
+    val amount: String
+)
+
 typealias BuyOrderListResponse = List<BuyOrderResponse>

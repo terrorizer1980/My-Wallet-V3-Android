@@ -64,6 +64,9 @@ interface CustodialWalletManager {
     fun deleteBuyOrder(orderId: String): Completable
 
     fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable
+
+    // For test/dev
+    fun cancelAllPendingBuys(): Completable
 }
 
 data class BuyOrder(
@@ -99,3 +102,10 @@ data class Quote(val date: Date)
 data class BankAccount(val details: List<BankDetail>)
 
 data class BankDetail(val title: String, val value: String, val isCopyable: Boolean = false)
+
+sealed class SimpleBuyError : Throwable() {
+    object OrderLimitReached : SimpleBuyError()
+    object OrderNotCancelable : SimpleBuyError()
+    object WithdrawlAlreadyPending : SimpleBuyError()
+    object WithdrawlInsufficientFunds : SimpleBuyError()
+}

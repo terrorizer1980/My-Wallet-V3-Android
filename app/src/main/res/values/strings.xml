@@ -1150,6 +1150,10 @@
     <!-- basic transfer error -->
     <string name="basic_transfer_error_title">Oops!</string>
     <string name="basic_transfer_error_body">Something went wrong. Please go back and try again.</string>
+
+    <string name="basic_transfer_error_in_progress_title">Send In Progress</string>
+    <string name="basic_transfer_error_in_progress_body">There is a transaction in progress. We’ll let you know once the funds reach your wallet.</string>
+
     <string name="airdrop_status_date_active">Drops on %1s</string>
     <string name="airdrop_status_date_inactive">Ended on %1s</string>
 

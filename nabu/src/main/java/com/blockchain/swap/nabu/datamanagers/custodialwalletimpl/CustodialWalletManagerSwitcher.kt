@@ -13,56 +13,68 @@ import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import om.blockchain.swap.nabu.BuildConfig
 
 class CustodialWalletManagerSwitcher(
     private val mockCustodialWalletManager: StubCustodialWalletManager,
     private val liveCustodialWalletManager: LiveCustodialWalletManager
 ) : CustodialWalletManager {
 
+    @Suppress("ConstantConditionIf")
+    private val proxy: CustodialWalletManager by lazy {
+        if (BuildConfig.USE_MOCK_SIMPLE_BUY_BACKEND)
+            mockCustodialWalletManager
+        else
+            liveCustodialWalletManager
+    }
+
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
         currency: String
     ): Single<SimpleBuyPairs> =
-        liveCustodialWalletManager.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, currency)
+        proxy.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, currency)
 
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
-        liveCustodialWalletManager.getQuote(action, crypto, amount)
+        proxy.getQuote(action, crypto, amount)
 
     override fun createOrder(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
         action: String
     ): Single<BuyOrder> =
-        liveCustodialWalletManager.createOrder(
+        proxy.createOrder(
             cryptoCurrency,
             amount,
             action
         )
 
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
-        liveCustodialWalletManager.getPredefinedAmounts(currency)
+        proxy.getPredefinedAmounts(currency)
 
     override fun getBankAccountDetails(currency: String): Single<BankAccount> =
-        mockCustodialWalletManager.getBankAccountDetails(currency)
+        proxy.getBankAccountDetails(currency)
 
     override fun isEligibleForSimpleBuy(): Single<Boolean> =
-        liveCustodialWalletManager.isEligibleForSimpleBuy()
+        proxy.isEligibleForSimpleBuy()
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
-        liveCustodialWalletManager.getBalanceForAsset(crypto)
+        proxy.getBalanceForAsset(crypto)
 
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
-        liveCustodialWalletManager.isCurrencySupportedForSimpleBuy(currency)
+        proxy.isCurrencySupportedForSimpleBuy(currency)
 
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
-        liveCustodialWalletManager.getOutstandingBuyOrders()
+        proxy.getOutstandingBuyOrders()
 
     override fun getBuyOrder(orderId: String): Single<BuyOrder> =
-        liveCustodialWalletManager.getBuyOrder(orderId)
+        proxy.getBuyOrder(orderId)
 
     override fun deleteBuyOrder(orderId: String): Completable =
-        liveCustodialWalletManager.deleteBuyOrder(orderId)
+        proxy.deleteBuyOrder(orderId)
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
-        mockCustodialWalletManager.transferFundsToWallet(amount, walletAddress)
+        proxy.transferFundsToWallet(amount, walletAddress)
+
+    override fun cancelAllPendingBuys(): Completable =
+        proxy.cancelAllPendingBuys()
 }

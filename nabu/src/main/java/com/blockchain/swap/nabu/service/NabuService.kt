@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.service
 
 import com.blockchain.swap.nabu.api.nabu.Nabu
+import com.blockchain.swap.nabu.datamanagers.SimpleBuyError
 import com.blockchain.swap.nabu.extensions.wrapErrorMessage
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
@@ -25,6 +26,7 @@ import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyQuoteResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyPairsResp
+import com.blockchain.swap.nabu.models.simplebuy.TransferRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.models.tokenresponse.NabuSessionTokenResponse
@@ -260,7 +262,13 @@ class NabuService(retrofit: Retrofit) {
         order: CustodialWalletOrder
     ) = service.createOrder(
         sessionToken.authHeader, order
-    ).wrapErrorMessage()
+    ).onErrorResumeNext {
+        if (it is HttpException && it.code() == 409) {
+            Single.error(SimpleBuyError.OrderLimitReached)
+        } else {
+            Single.error(it)
+        }
+    }.wrapErrorMessage()
 
     internal fun getOutstandingBuyOrders(
         sessionToken: NabuSessionTokenResponse
@@ -273,7 +281,13 @@ class NabuService(retrofit: Retrofit) {
         orderId: String
     ) = service.deleteBuyOrder(
         sessionToken.authHeader, orderId
-    ).wrapErrorMessage()
+    ).onErrorResumeNext {
+        if (it is HttpException && it.code() == 409) {
+            Completable.error(SimpleBuyError.OrderNotCancelable)
+        } else {
+            Completable.error(it)
+        }
+    }.wrapErrorMessage()
 
     fun getBuyOrder(
         sessionToken: NabuSessionTokenResponse,
@@ -295,6 +309,24 @@ class NabuService(retrofit: Retrofit) {
             else -> Maybe.error(HttpException(it))
         }
     }
+
+    fun transferFunds(
+        sessionToken: NabuSessionTokenResponse,
+        request: TransferRequest
+    ): Completable = service.transferFunds(
+        sessionToken.authHeader,
+        request
+    ).onErrorResumeNext {
+        if (it is HttpException) {
+            when (it.code()) {
+                403 -> Completable.error(SimpleBuyError.WithdrawlAlreadyPending)
+                409 -> Completable.error(SimpleBuyError.WithdrawlInsufficientFunds)
+                else -> Completable.error(it)
+            }
+        } else {
+            Completable.error(it)
+        }
+    }.wrapErrorMessage()
 
     companion object {
         internal const val CLIENT_TYPE = "APP"
