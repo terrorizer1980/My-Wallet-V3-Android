@@ -28,6 +28,7 @@ class SimpleBuyAvailability(
         }.onErrorReturn { false }
 
         return custodialWalletManager.isCurrencySupportedForSimpleBuy(currencyPrefs.selectedFiatCurrency)
+            .onErrorReturn { false }
             .zipWith(simpleBuyFlag.enabled)
             .flatMap { (currencySupported, enabled) ->
                 if (!currencySupported || !enabled) {
