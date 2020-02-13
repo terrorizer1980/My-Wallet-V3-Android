@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.swap.nabu.NabuToken
@@ -26,6 +28,7 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
     private val nabuToken: NabuToken by inject()
     private val currencyPrefs: CurrencyPrefs by inject()
     private val simpleBuyPrefs: SimpleBuyPrefs by inject()
+    private val analytics: Analytics by inject()
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -38,8 +41,13 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.setupToolbar(R.string.simple_buy_intro_title)
-        skip_simple_buy.setOnClickListener { navigator().exitSimpleBuyFlow() }
+        skip_simple_buy.setOnClickListener {
+            analytics.logEvent(SimpleBuyAnalytics.SKIP_ALREADY_HAVE_CRYPTO)
+            navigator().exitSimpleBuyFlow()
+        }
+        analytics.logEvent(SimpleBuyAnalytics.INTRO_SCREEN_SHOW)
         buy_crypto_now.setOnClickListener {
+            analytics.logEvent(SimpleBuyAnalytics.I_WANT_TO_BUY_CRYPTO_BUTTON_CLICKED)
             nabuToken.fetchNabuToken(currency = currencyPrefs.selectedFiatCurrency, action = "simplebuy")
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
@@ -53,6 +61,7 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
                     },
                     onError = {
                         showError()
+                        analytics.logEvent(SimpleBuyAnalytics.I_WANT_TO_BUY_CRYPTO_ERROR)
                     }
                 )
         }

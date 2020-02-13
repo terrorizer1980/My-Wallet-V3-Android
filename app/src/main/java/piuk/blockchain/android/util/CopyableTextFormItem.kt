@@ -16,6 +16,7 @@ class CopyableTextFormItem @JvmOverloads constructor(
     private val title: String,
     private val value: String,
     private val isCopyable: Boolean,
+    private val onCopy: (String) -> Unit = {},
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -45,6 +46,7 @@ class CopyableTextFormItem @JvmOverloads constructor(
 
             snackbar.view.setBackgroundColor(ContextCompat.getColor(context, R.color.simple_buy_snackbar))
             snackbar.show()
+            onCopy(title)
         }
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import kotlinx.android.synthetic.main.fragment_simple_buy_kyc_pending.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
@@ -25,6 +26,7 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
         super.onViewCreated(view, savedInstanceState)
         model.process(SimpleBuyIntent.FetchKycState)
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.KYC_VERIFICATION))
+        analytics.logEvent(SimpleBuyAnalytics.KYC_VERYFING)
         continue_to_wallet.setOnClickListener {
             navigator().exitSimpleBuyFlow()
         }
@@ -71,6 +73,15 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
                 else -> R.drawable.ic_kyc_pending
             }
         )
+
+        when (newState.kycVerificationState) {
+            KycState.VERIFIED_BUT_NOT_ELIGIBLE -> analytics.logEvent(SimpleBuyAnalytics.KYC_NOT_ELIGIBLE)
+            KycState.VERIFIED_AND_ELIGIBLE -> analytics.logEvent(SimpleBuyAnalytics.KYC_VERYFING)
+            KycState.PENDING -> analytics.logEvent(SimpleBuyAnalytics.KYC_PENDING)
+            KycState.IN_REVIEW -> analytics.logEvent(SimpleBuyAnalytics.KYC_MANUAL)
+            else -> {
+            }
+        }
     }
 
     override fun navigator(): SimpleBuyNavigator =

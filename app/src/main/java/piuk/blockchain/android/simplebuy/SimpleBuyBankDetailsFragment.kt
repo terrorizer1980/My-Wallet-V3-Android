@@ -6,6 +6,9 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
+import com.blockchain.notifications.analytics.bankDetailsShow
+import com.blockchain.notifications.analytics.bankFieldName
 import com.blockchain.ui.urllinks.MODULAR_TERMS_AND_CONDITIONS
 import kotlinx.android.synthetic.main.fragment_simple_buy_bank_details.*
 import org.koin.android.ext.android.inject
@@ -16,7 +19,8 @@ import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 
-class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(), SimpleBuyScreen {
+class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(), SimpleBuyScreen,
+    CopyFieldListener {
     override val model: SimpleBuyModel by inject()
     private val stringUtils: StringUtils by inject()
 
@@ -31,7 +35,10 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
         model.process(SimpleBuyIntent.FetchBankAccount)
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.BANK_DETAILS))
         activity.setupToolbar(R.string.transfer_details, false)
-        confirm.setOnClickListener { navigator().exitSimpleBuyFlow() }
+        confirm.setOnClickListener {
+            analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_FINISHED)
+            navigator().exitSimpleBuyFlow()
+        }
     }
 
     override fun render(newState: SimpleBuyState) {
@@ -51,6 +58,8 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
         } else {
             bank_deposit_instruction.text = getString(R.string.recipient_name_must_match_eur)
         }
+
+        analytics.logEvent(bankDetailsShow(newState.currency))
 
         if (newState.bankAccount != null && newState.order.amount != null) {
             bank_details_container.initWithBankDetailsAndAmount(newState.bankAccount.details,
@@ -72,4 +81,8 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
         (activity as? SimpleBuyNavigator) ?: throw IllegalStateException("Parent must implement SimpleBuyNavigator")
 
     override fun onBackPressed(): Boolean = true
+
+    override fun onFieldCopied(field: String) {
+        analytics.logEvent(bankFieldName(field))
+    }
 }

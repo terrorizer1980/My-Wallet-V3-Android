@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.Quote
 import kotlinx.android.synthetic.main.fragment_simple_buy_checkout.*
@@ -32,10 +33,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         super.onViewCreated(view, savedInstanceState)
         button_buy.setOnClickListener {
             model.process(SimpleBuyIntent.ConfirmOrder)
+            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CONFIRMED)
         }
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.CHECKOUT))
         activity.setupToolbar(R.string.checkout)
-
+        analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_SHOWN)
         model.process(SimpleBuyIntent.FetchQuote)
         model.process(SimpleBuyIntent.FetchBankAccount)
     }
@@ -61,6 +63,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         button_buy.isEnabled = newState.bankAccount != null && newState.order.quote != null
 
         button_cancel.setOnClickListener {
+            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_PRESS_CANCELL)
             showBottomSheet(SimpleBuyCancelOrderBottomSheet.newInstance(newState.selectedCryptoCurrency
                 ?: return@setOnClickListener))
         }
@@ -83,6 +86,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         model.process(SimpleBuyIntent.CancelOrder)
         model.process(SimpleBuyIntent.ClearState)
         navigator().exitSimpleBuyFlow()
+        analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CANCELLATION_CONFIRMED)
     }
 
     override fun onPause() {

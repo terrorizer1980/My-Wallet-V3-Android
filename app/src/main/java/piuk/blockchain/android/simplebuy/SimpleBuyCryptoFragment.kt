@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
+import com.blockchain.notifications.analytics.cryptoChanged
 import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
@@ -54,7 +56,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         model.process(SimpleBuyIntent.FetchBuyLimits(currencyPrefs.selectedFiatCurrency))
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.ENTER_AMOUNT))
         model.process(SimpleBuyIntent.FetchPredefinedAmounts(currencyPrefs.selectedFiatCurrency))
-
+        analytics.logEvent(SimpleBuyAnalytics.BUY_FORM_SHOWN)
         fiat_currency_symbol.text = fiatSymbol
         input_layout_amount.isHintAnimationEnabled = false
         input_amount.addTextChangedListener(object : AfterTextChangedWatcher() {
@@ -73,6 +75,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
 
         btn_continue.setOnClickListener {
             model.process(SimpleBuyIntent.BuyButtonClicked)
+            analytics.logEvent(SimpleBuyAnalytics.BUY_CONFIRM_CLICKED)
         }
     }
 
@@ -80,6 +83,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
 
         model.process(SimpleBuyIntent.NewCryptoCurrencySelected(currency))
         input_amount.clearFocus()
+        analytics.logEvent(cryptoChanged(currency.symbol))
     }
 
     override fun render(newState: SimpleBuyState) {
@@ -143,6 +147,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
                     model.process(SimpleBuyIntent.ConfirmationHandled)
                     model.process(SimpleBuyIntent.KycStarted)
                     navigator().startKyc()
+                    analytics.logEvent(SimpleBuyAnalytics.START_GOLD_FLOW)
                 }
                 newState.kycVerificationState.kycDataAlreadySubmitted() -> {
                     navigator().goToKycVerificationScreen()
@@ -166,6 +171,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
                     visible()
                     setOnClickListener {
                         input_amount.setText(state.maxAmount?.asInputAmount() ?: "")
+                        analytics.logEvent(SimpleBuyAnalytics.BUY_MAX_CLICKED)
                     }
                 }
                 up_to_amount.text = resources.getString(R.string.too_high)
@@ -174,7 +180,10 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
                 error_action.apply {
                     text = resources.getString(R.string.use_min)
                     visible()
-                    setOnClickListener { input_amount.setText(state.minAmount?.asInputAmount() ?: "") }
+                    setOnClickListener {
+                        analytics.logEvent(SimpleBuyAnalytics.BUY_MIN_CLICKED)
+                        input_amount.setText(state.minAmount?.asInputAmount() ?: "")
+                    }
                 }
                 up_to_amount.text = resources.getString(R.string.too_low)
             }

@@ -115,7 +115,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
 
     object FetchBankAccount : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState // add loading state here
+            oldState
     }
 
     object ConfirmationHandled : SimpleBuyIntent() {
