@@ -89,29 +89,6 @@ class DebugOptionsBottomDialog : BottomSheetDialogFragment() {
         dismiss()
     }
 
-    fun onRadioButtonClicked(view: View) {
-        if (view is RadioButton) {
-            // Is the button now checked?
-            val checked = view.isChecked
-
-            // Check which radio button was clicked
-            when (view.getId()) {
-                R.id.radio_eur ->
-                    if (checked) {
-                        // Pirates are the best
-                    }
-                R.id.radio_gbp ->
-                    if (checked) {
-                        // Ninjas rule
-                    }
-                R.id.radio_eur ->
-                    if (checked) {
-                        // Ninjas rule
-                    }
-            }
-        }
-    }
-
     private fun onResetWallet() {
         appUtil.clearCredentialsAndRestart(LauncherActivity::class.java)
         dismiss()
