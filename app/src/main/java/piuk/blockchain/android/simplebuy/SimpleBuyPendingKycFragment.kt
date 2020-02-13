@@ -56,7 +56,8 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
 
         continue_to_wallet.visibleIf {
             newState.kycVerificationState == KycState.FAILED ||
-                    newState.kycVerificationState == KycState.UNDECIDED
+                    newState.kycVerificationState == KycState.UNDECIDED ||
+                    newState.kycVerificationState == KycState.VERIFIED_BUT_NOT_ELIGIBLE
         }
 
         if (newState.kycVerificationState == KycState.VERIFIED_AND_ELIGIBLE) {
