@@ -182,13 +182,15 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     }
 
     private fun FiatValue.asInputAmount(): String =
-        this.toStringWithoutSymbol().replace(",", "")
+        this.toStringWithoutSymbol().replace(",", "").removeSuffix(".00")
 
     private fun AppCompatTextView.asPredefinedAmountText(amount: FiatValue?) {
         amount?.let { amount ->
             text = amount.formatOrSymbolForZero().removeSuffix(".00")
             visible()
-            setOnClickListener { input_amount.setText(amount.toStringWithoutSymbol().replace(",", "")) }
+            setOnClickListener {
+                input_amount.setText(amount.asInputAmount())
+            }
         } ?: this.gone()
     }
 

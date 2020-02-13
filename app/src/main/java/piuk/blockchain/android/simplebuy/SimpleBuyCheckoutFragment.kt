@@ -50,6 +50,8 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
             showErrorState(newState.errorState)
             return
         }
+
+        purchase_note.text = resources.getString(R.string.purchase_note, newState.selectedCryptoCurrency?.symbol)
         total_cost.text = newState.order.amount?.formatOrSymbolForZero()
         button_buy.text = resources.getString(R.string.buy_crypto, newState.selectedCryptoCurrency?.symbol)
         checkout_subtitle.text =

@@ -11,8 +11,9 @@
         android:paddingBottom="@dimen/small_margin">
 
         <TextView
-            android:id="@+id/email_confirmation_note"
+            android:id="@+id/intro_setup_wallet"
             style="@style/Text.Light.14"
+            android:text="@string/lets_setup_wallet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/standard_margin"
@@ -26,7 +27,7 @@
             android:layout_marginTop="14dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email_confirmation_note" />
+            app:layout_constraintTop_toBottomOf="@+id/intro_setup_wallet" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/trolley_icon"

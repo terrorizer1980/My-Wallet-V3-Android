@@ -52,7 +52,8 @@
         style="@style/Text.Standard.14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_margin"
+        android:layout_marginStart="@dimen/standard_margin"
         android:text="@string/amount"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separator" />
@@ -62,15 +63,13 @@
         style="@style/Text.Standard.14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/standard_margin"
         android:layout_marginEnd="5dp"
         android:text="@string/amount"
+        android:layout_marginStart="@dimen/standard_margin"
         android:textColor="@color/grey_600"
+        app:layout_constraintStart_toStartOf="parent"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/error_action"
-        app:layout_constraintTop_toBottomOf="@+id/separator"
-        app:layout_goneMarginEnd="@dimen/standard_margin"
+        app:layout_constraintTop_toBottomOf="@+id/amount"
         tools:text="Up tp $25,000"
         tools:visibility="visible" />
 

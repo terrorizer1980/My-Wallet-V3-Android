@@ -1,10 +1,6 @@
 package piuk.blockchain.android.simplebuy
 
-import android.graphics.Typeface
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +10,6 @@ import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.swap.nabu.NabuToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_simple_buy_intro.*
 import org.koin.android.ext.android.inject
@@ -22,14 +17,12 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.ErrorDialogData
 import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.setupToolbar
-import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 
 class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
 
-    private val walletSettings: SettingsDataManager by inject()
     private val nabuToken: NabuToken by inject()
     private val currencyPrefs: CurrencyPrefs by inject()
     private val simpleBuyPrefs: SimpleBuyPrefs by inject()
@@ -78,25 +71,6 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
     private fun showLoadingState() {
         buy_crypto_now.gone()
         progress.visible()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        compositeDisposable += walletSettings.fetchSettings().subscribe {
-            if (!it.isEmailVerified) {
-                val emailString = resources.getString(R.string.simple_buy_verify_email_instruction, it.email)
-                val spannableString = SpannableStringBuilder(emailString)
-                spannableString.setSpan(StyleSpan(Typeface.BOLD),
-                    emailString.indexOf(it.email),
-                    emailString.indexOf(it.email) + it.email.length,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-                email_confirmation_note.text = spannableString
-            } else {
-                email_confirmation_note.gone()
-                separator.gone()
-            }
-        }
     }
 
     override fun onPause() {

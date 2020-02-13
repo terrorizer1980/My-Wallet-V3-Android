@@ -17,7 +17,7 @@
     <string name="all_accounts">All Wallets</string>
     <string name="please_wait">Please wait</string>
     <string name="item_buy_sell">Buy &amp; Sell</string>
-    <string name="item_buy">Buy</string>
+    <string name="item_buy">Buy Crypto</string>
     <string name="item_backup">Backup funds</string>
     <string name="item_lockbox">Lockbox</string>
     <string name="item_the_exchange">Exchange</string>
@@ -1753,10 +1753,10 @@
     <string name="simple_buy_intro_title">Welcome to Blockchain</string>
     <string name="simple_buy_buy_crypto">Buy Crypto</string>
     <string name="simple_buy_instructions_to_buy">We can help you buy in just a few simple steps.</string>
-    <string name="simple_buy_intro_main_button_action">I want to buy crypto</string>
+    <string name="simple_buy_intro_main_button_action">I Want to Buy Crypto</string>
     <string name="simple_buy_deposit_my_crypto">Deposit my crypto</string>
     <string name="simple_buy_skip_text">Looking for a new wallet to store your crypto?</string>
-    <string name="simple_buy_skip_action">Skip, I have crypto</string>
+    <string name="simple_buy_skip_action">Skip, I Have Crypto</string>
     <string name="simple_buy_what_you_want_to_buy">What would you like to buy?</string>
     <string name="simple_buy_enter_amount">Enter amount</string>
     <string name="simple_buy_buy_crypto_title">Buy Crypto</string>
@@ -1771,7 +1771,7 @@
     <string name="checkout_subtitle">Please review and confirm your %1$s buy.</string>
     <string name="total_cost">Total Cost</string>
     <string name="date">Date</string>
-    <string name="purchase_note">Your purchase will execute at the Market rate at the end time we receive your deposit.</string>
+    <string name="purchase_note">Once we receive your funds, we’ll start your %1$s buy order. Note, your final amount might change to due market activity. Fees may apply.</string>
     <string name="buy_crypto">Buy %1$s</string>
     <string name="kyc_pending_title">KYC Done - Pending</string>
     <string name="kyc_manual_review_title">KYC Done - Manual Review</string>
@@ -1809,4 +1809,5 @@
     <string name="bank_country">Bank Country</string>
     <string name="iban">IBAN</string>
     <string name="estonia">Estonia</string>
+    <string name="lets_setup_wallet">Let’s get your wallet set up. You can quickly buy crypto now or do this later.</string>
 </resources>
