@@ -48,7 +48,6 @@ class SimpleBuySyncFactoryTest {
     private fun whenSimpleBuyIsDisabled() =
         whenever(availabilityChecker.isAvailable()).thenReturn(Single.just(false))
 
-    // Check sync
     @Test
     fun `There are no buys in progress anywhere`() {
         whenSimpleBuyIsEnabled()
