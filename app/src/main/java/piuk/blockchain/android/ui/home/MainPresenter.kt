@@ -382,7 +382,7 @@ class MainPresenter internal constructor(
         compositeDisposable +=
             Singles.zip(buyDataManager.canBuy,
                 simpleBuyAvailability.isAvailable(),
-                buyDataManager.isCoinifyAllowed).subscribe(
+                buyDataManager.isCoinifyAllowed).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 { (isEnabled, available, isCoinifyAllowed) ->
                     view?.setBuySellEnabled(isEnabled && !available, isCoinifyAllowed)
                     if (isEnabled && !isCoinifyAllowed) {

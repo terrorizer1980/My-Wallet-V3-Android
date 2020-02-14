@@ -25,6 +25,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
 import piuk.blockchain.androidcoreui.utils.helperfunctions.AfterTextChangedWatcher
+import java.text.DecimalFormatSymbols
 import java.util.Locale
 import java.util.Currency
 
@@ -191,17 +192,23 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     }
 
     private fun FiatValue.asInputAmount(): String =
-        this.toStringWithoutSymbol().replace(",", "").removeSuffix(".00")
+        this.toStringWithoutSymbol().withoutThousandsSeparator().withoutTrailingDecimalsZeros()
 
     private fun AppCompatTextView.asPredefinedAmountText(amount: FiatValue?) {
         amount?.let { amount ->
-            text = amount.formatOrSymbolForZero().removeSuffix(".00")
+            text = amount.formatOrSymbolForZero().withoutTrailingDecimalsZeros()
             visible()
             setOnClickListener {
                 input_amount.setText(amount.asInputAmount())
             }
         } ?: this.gone()
     }
+
+    private fun String.withoutThousandsSeparator(): String =
+        replace(DecimalFormatSymbols(Locale.getDefault()).groupingSeparator.toString(), "")
+
+    private fun String.withoutTrailingDecimalsZeros(): String =
+        replace("${DecimalFormatSymbols(Locale.getDefault()).decimalSeparator}00", "")
 
     override fun onPause() {
         super.onPause()

@@ -22,6 +22,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     CancelOrderConfirmationListener {
 
     override val model: SimpleBuyModel by inject()
+    var lastState: SimpleBuyState? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,6 +49,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     override fun onBackPressed(): Boolean = true
 
     override fun render(newState: SimpleBuyState) {
+        lastState = newState
         if (newState.errorState != null) {
             showErrorState(newState.errorState)
             return
@@ -95,6 +97,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     }
 
     override fun onSheetClosed() {
+        if (lastState?.errorState != null) {
+            model.process(SimpleBuyIntent.ClearError)
+            model.process(SimpleBuyIntent.ClearState)
+            navigator().exitSimpleBuyFlow()
+        }
     }
 }
 

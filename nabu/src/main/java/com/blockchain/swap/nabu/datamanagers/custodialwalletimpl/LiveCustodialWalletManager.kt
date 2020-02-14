@@ -117,7 +117,7 @@ class LiveCustodialWalletManager(
 
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
         nabuService.getSupportCurrencies().map {
-            it.pairs.firstOrNull { pair -> pair.fiatCurrency == currency } != null ?: false
+            it.pairs.firstOrNull { it.pair.split("-")[1] == currency } != null
         }.onErrorReturn { false }
 
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
