@@ -9,6 +9,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.dialog_simple_buy_bank_details.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.simplebuy.CopyFieldListener
 import piuk.blockchain.android.simplebuy.SimpleBuyState
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
@@ -68,15 +69,27 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
             val amount = state.order.amount
             if (amount != null) {
 
-                transfer_msg.text = getString(R.string.simple_buy_securely_transfer, amount.toStringWithSymbol())
+                transfer_msg.text = getString(
+                    R.string.simple_buy_bank_account_sheet_instructions,
+                    amount.toStringWithSymbol(),
+                    state.selectedCryptoCurrency
+                )
 
                 if (state.bankAccount != null) {
-                    bank_details.initWithBankDetailsAndAmount(state.bankAccount.details, amount)
+                    bank_details.initWithBankDetailsAndAmount(
+                        state.bankAccount.details,
+                        amount,
+                        copyListeener
+                    )
                 } else {
                     disposables += custodialWalletManager.getBankAccountDetails(state.currency)
                         .subscribeBy(
                             onSuccess = {
-                                bank_details.initWithBankDetailsAndAmount(it.details, amount)
+                                bank_details.initWithBankDetailsAndAmount(
+                                    it.details,
+                                    amount,
+                                    copyListeener
+                                )
                             },
                             onError = {
                                 closeBecauseError("Cannot get bank details: ${it.message}")
@@ -90,6 +103,17 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
             title.text = getString(R.string.simple_buy_pending_buy_sheet_title, state.selectedCryptoCurrency!!)
             cta_button_ok.setOnClickListenerDebounced { onCtaOKClick() }
             cta_button_cancel.setOnClickListenerDebounced { onCtaCancelClick(state.id!!) }
+        }
+    }
+
+    private val copyListeener = object : CopyFieldListener {
+        override fun onFieldCopied(field: String) {
+            ToastCustom.makeText(
+                requireContext(),
+                resources.getString(R.string.simple_buy_copied_to_clipboard, field),
+                ToastCustom.LENGTH_SHORT,
+                ToastCustom.TYPE_OK
+            )
         }
     }
 

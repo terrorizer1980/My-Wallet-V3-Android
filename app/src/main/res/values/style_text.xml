@@ -82,7 +82,7 @@
     </style>
 
     <style name="Text.Light.12">
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="Text.Light.14">
