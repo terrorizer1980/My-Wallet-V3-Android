@@ -43,6 +43,11 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="CtaButton.NoMargin.Black">
+        <item name="android:background">@drawable/bkgd_button_black_selector</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
     <style name="CtaButton.NoMargin.White">
         <item name="android:background">@drawable/bkgd_button_white_selector</item>
         <item name="android:textColor">@color/blue_600</item>
