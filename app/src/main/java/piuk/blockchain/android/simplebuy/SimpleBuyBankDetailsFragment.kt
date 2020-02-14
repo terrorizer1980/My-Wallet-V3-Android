@@ -65,10 +65,12 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
 
         analytics.logEvent(bankDetailsShow(newState.currency))
 
-        if (newState.bankAccount != null && newState.order.amount != null) {
+        val amount = newState.order.amount
+        if (newState.bankAccount != null && amount != null) {
             bank_details_container.initWithBankDetailsAndAmount(
                 newState.bankAccount.details,
-                newState.order.amount!!
+                amount,
+                this
             )
             secure_transfer.text = getString(R.string.simple_buy_securely_transfer,
                 newState.order.amount?.currencyCode ?: "")
