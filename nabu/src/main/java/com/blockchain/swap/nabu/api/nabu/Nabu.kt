@@ -223,7 +223,7 @@ internal interface Nabu {
         @Header("authorization") authorization: String
     ): Single<BuyOrderListResponse>
 
-    @DELETE("$NABU_SIMPLE_BUY_ORDERS/{userId}")
+    @DELETE("$NABU_SIMPLE_BUY_ORDERS/{orderId}")
     fun deleteBuyOrder(
         @Header("authorization") authorization: String,
         @Path("orderId") orderId: String

@@ -1790,10 +1790,12 @@
     <string name="kyc_undecided_text">Copy for undecided state</string>
     <string name="continue_to_wallet">Continue to wallet</string>
     <string name="simple_buy_securely_transfer">Securely transfer %1$s from your bank account to Blockchain. Depending on the transfer method and availability of funds, this may take up to 1 business day.</string>
+    <string name="simple_buy_bank_account_sheet_instructions">Please transfer %1$s from your bank account to Blockchain.com. Once we receive the funds, we\'ll create your %2$s buy order.</string>
     <string name="simple_buy_amount_to_send">Amount to send</string>
     <string name="simple_buy_pending_buy_sheet_title">Pending %1s Buy</string>
     <string name="recipient_name_must_match_eur">Your Recipient name above must match the account holder\'s name on your bank account for your transfer to be successful. Your transfer could be rejected if there is not a match.</string>
     <string name="recipient_name_must_match_gbp">Your Recipient name above must match the account holder\'s name on your bank account for your transfer to be successful. Your transfer could be rejected if there is not a match.\n\nBy depositing funds to this account, you agree to <annotation link="modular_terms_and_conditions">Terms &amp; Conditions of Modulr</annotation>, our banking partner.</string>
+    <string name="recipient_name_must_match">Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected.</string>
     <string name="simple_buy_no_currencies_available_title">No currencies available</string>
     <string name="simple_buy_no_currencies_available">Unfortunately, currently there are no currencies that you can trade :( </string>
     <string name="cancel_order">Cancel order</string>

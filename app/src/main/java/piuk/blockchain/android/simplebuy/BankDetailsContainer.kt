@@ -21,20 +21,30 @@ class BankDetailsContainer @JvmOverloads constructor(
     ) {
         if (childCount == 0) {
             bankDetails.forEach {
-                addView(CopyableTextFormItem(it.title,
-                    it.value,
-                    it.isCopyable,
-                    { field -> copyFieldListener?.onFieldCopied(field) },
-                    context),
-                    LayoutParams(LayoutParams.MATCH_PARENT,
-                        LayoutParams.WRAP_CONTENT)
+                addView(
+                    CopyableTextFormItem(
+                        context = context,
+                        title = it.title,
+                        value = it.value,
+                        isCopyable = it.isCopyable,
+                        onCopy = { field -> copyFieldListener?.onFieldCopied(field) }
+                    ),
+                    LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        LayoutParams.WRAP_CONTENT
+                    )
                 )
             }
-            addView(CopyableTextFormItem(context.getString(R.string.simple_buy_amount_to_send),
-                amount.toStringWithSymbol(),
-                false,
-                {},
-                context)
+            addView(
+                CopyableTextFormItem(
+                    context = context,
+                    title = context.getString(R.string.simple_buy_amount_to_send),
+                    value = amount.toStringWithSymbol()
+                ),
+                LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT
+                )
             )
         }
     }

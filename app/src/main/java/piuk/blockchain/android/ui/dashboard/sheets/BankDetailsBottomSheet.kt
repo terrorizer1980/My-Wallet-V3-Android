@@ -2,18 +2,19 @@ package piuk.blockchain.android.ui.dashboard.sheets
 
 import android.view.View
 import com.blockchain.preferences.SimpleBuyPrefs
-import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import info.blockchain.balance.FiatValue
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.dialog_simple_buy_bank_details.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.simplebuy.CopyFieldListener
 import piuk.blockchain.android.simplebuy.SimpleBuyState
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
+import piuk.blockchain.androidcore.data.api.EnvironmentConfig
+import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
 import timber.log.Timber
 
@@ -22,6 +23,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
     private val prefs: SimpleBuyPrefs by inject()
     private val stateFactory: SimpleBuySyncFactory by inject()
     private val custodialWalletManager: CustodialWalletManager by inject()
+    private val environmentConfig: EnvironmentConfig by inject()
     private val disposables = CompositeDisposable()
 
     override val layoutResource = R.layout.dialog_simple_buy_bank_details
@@ -41,6 +43,14 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
     private fun closeBecauseError(logMsg: String) {
         Timber.d("Cannot open bank details sheet: $logMsg")
         onCtaOKClick()
+        if (environmentConfig.shouldShowDebugMenu()) {
+            ToastCustom.makeText(
+                requireContext(),
+                "Cannot open bank details sheet: $logMsg",
+                ToastCustom.LENGTH_LONG,
+                ToastCustom.TYPE_ERROR
+            )
+        }
     }
 
     private fun onCtaOKClick() {
@@ -58,13 +68,32 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
         with(view) {
             val amount = state.order.amount
             if (amount != null) {
+
+                transfer_msg.text = getString(
+                    R.string.simple_buy_bank_account_sheet_instructions,
+                    amount.toStringWithSymbol(),
+                    state.selectedCryptoCurrency
+                )
+
                 if (state.bankAccount != null) {
-                    renderAccountDetails(view, state.bankAccount, amount)
+                    bank_details.initWithBankDetailsAndAmount(
+                        state.bankAccount.details,
+                        amount,
+                        copyListeener
+                    )
                 } else {
                     disposables += custodialWalletManager.getBankAccountDetails(state.currency)
                         .subscribeBy(
-                            onSuccess = { renderAccountDetails(view, it, amount) },
-                            onError = { closeBecauseError("Cannot get bank details: ${it.message}") }
+                            onSuccess = {
+                                bank_details.initWithBankDetailsAndAmount(
+                                    it.details,
+                                    amount,
+                                    copyListeener
+                                )
+                            },
+                            onError = {
+                                closeBecauseError("Cannot get bank details: ${it.message}")
+                            }
                         )
                 }
             } else {
@@ -77,10 +106,14 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
         }
     }
 
-    private fun renderAccountDetails(view: View, account: BankAccount, amount: FiatValue) {
-        with(view) {
-            bank_details_container.initWithBankDetailsAndAmount(account.details, amount)
-            secure_transfer.text = getString(R.string.simple_buy_securely_transfer, amount.toStringWithSymbol())
+    private val copyListeener = object : CopyFieldListener {
+        override fun onFieldCopied(field: String) {
+            ToastCustom.makeText(
+                requireContext(),
+                resources.getString(R.string.simple_buy_copied_to_clipboard, field),
+                ToastCustom.LENGTH_SHORT,
+                ToastCustom.TYPE_OK
+            )
         }
     }
 

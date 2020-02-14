@@ -110,7 +110,7 @@ class StubCustodialWalletManager : CustodialWalletManager {
                 listOf(
                     BankDetail("Bank Name", "LHV"),
                     BankDetail("Bank ID", "DE81 1234 5678 9101 1234 33", true),
-                    BankDetail("Bank Code (SWIFT/BIC", "DEKTDE7GSSS", true),
+                    BankDetail("Bank Code (SWIFT/BIC)", "DEKTDE7GSSS", true),
                     BankDetail("Recipient", "Fred Wilson")
                 )
             )
