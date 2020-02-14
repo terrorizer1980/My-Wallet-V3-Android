@@ -59,9 +59,22 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
     }
 
     private fun onCtaCancelClick(orderId: String) {
-        custodialWalletManager.deleteBuyOrder(orderId)
-        prefs.clearState()
-        onCtaOKClick()
+        with(dialogView) {
+            cta_button_ok.isEnabled = false
+            cta_button_cancel.isEnabled = false
+        }
+        isCancelable = false
+
+        disposables += custodialWalletManager.deleteBuyOrder(orderId)
+            .subscribeBy(
+                onComplete = {
+                    prefs.clearState()
+                    onCtaOKClick()
+                },
+                onError = {
+                    closeBecauseError("Cancel order failed: $it")
+                }
+            )
     }
 
     private fun renderState(view: View, state: SimpleBuyState) {
@@ -71,7 +84,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
 
                 transfer_msg.text = getString(
                     R.string.simple_buy_bank_account_sheet_instructions,
-                    amount.toStringWithSymbol(),
+                    amount.currencyCode,
                     state.selectedCryptoCurrency
                 )
 

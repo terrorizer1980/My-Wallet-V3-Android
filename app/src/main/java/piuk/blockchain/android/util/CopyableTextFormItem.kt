@@ -29,11 +29,14 @@ class CopyableTextFormItem @JvmOverloads constructor(
             it.title.text = title
             it.value.text = value
             it.ic_copy.visibleIf { isCopyable }
-            it.ic_copy.setOnClickListener {
-                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = android.content.ClipData.newPlainText("Copied Text", value)
-                clipboard.primaryClip = clip
-                onCopy(title)
+            if(isCopyable) {
+                it.copy_tap_target.setOnClickListener {
+                    val clipboard =
+                        context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = android.content.ClipData.newPlainText("Copied Text", value)
+                    clipboard.primaryClip = clip
+                    onCopy(title)
+                }
             }
         }
     }
