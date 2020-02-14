@@ -16,6 +16,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Single
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import java.text.SimpleDateFormat
@@ -91,6 +92,7 @@ class SimpleBuySyncFactoryTest {
     }
 
     @Test
+    @Ignore("Temp not clearing state to facilitate happy path testing")
     fun `user is not eligible, clear any local state`() {
         whenSimpleBuyIsDisabled()
 
@@ -101,6 +103,24 @@ class SimpleBuySyncFactoryTest {
 
         // Local state is cleared
         verify(localState, atLeastOnce()).clear()
+
+        // Local and remote state is not queried
+        verifyNoMoreInteractions(localState)
+        verifyNoMoreInteractions(remoteState)
+    }
+
+    // TODO: Remove this, when we harden availability and have a new clearing state strategy
+    @Test
+    fun `Don't clear local state is SB is not available - temp fix, remove this`() {
+        whenSimpleBuyIsDisabled()
+
+        subject.performSync()
+            .test()
+            .assertComplete()
+            .awaitTerminalEvent()
+
+        // Local state is NOT cleared
+        verify(localState, never()).clear()
 
         // Local and remote state is not queried
         verifyNoMoreInteractions(localState)

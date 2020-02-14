@@ -61,7 +61,11 @@ class SimpleBuySyncFactory(
             .flatMapCompletable {
                 Timber.e("SB Sync: Enabled == $it")
                 if (!it) {
-                    localStateAdapter.clear()
+                    // TODO: Handle this better.
+                    //  We want to clear local state, but it's currently blocking testing that
+                    //  we do because we have intermittent failures in isAvailable checks.
+                    //  So comment the clear out for now to facilitate happy path testing
+                    // localStateAdapter.clear()
                     Completable.complete()
                 } else {
                     syncStates()
