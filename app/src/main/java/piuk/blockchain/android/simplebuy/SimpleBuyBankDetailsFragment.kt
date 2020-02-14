@@ -85,4 +85,10 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
     override fun onFieldCopied(field: String) {
         analytics.logEvent(bankFieldName(field))
     }
+
+    override fun onSheetClosed() {
+        super.onSheetClosed()
+        model.process(SimpleBuyIntent.ClearError)
+        navigator().exitSimpleBuyFlow()
+    }
 }

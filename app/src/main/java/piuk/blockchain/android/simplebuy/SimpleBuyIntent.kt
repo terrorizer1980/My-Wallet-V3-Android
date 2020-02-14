@@ -106,6 +106,10 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
     object ClearState : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             SimpleBuyState()
+
+        override fun isValidFor(oldState: SimpleBuyState): Boolean {
+            return true
+        }
     }
 
     object ConfirmOrder : SimpleBuyIntent() {

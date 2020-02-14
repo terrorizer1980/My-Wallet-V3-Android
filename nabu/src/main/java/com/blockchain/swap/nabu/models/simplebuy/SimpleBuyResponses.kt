@@ -7,12 +7,7 @@ import java.util.Date
 
 data class SimpleBuyPairsResp(val pairs: List<SimpleBuyPairResp>)
 
-data class SimpleBuyPairResp(val pair: String, val buyMin: Long, val buyMax: Long) {
-    @Transient
-    val fiatCurrency = pair.split("-")[1]
-    @Transient
-    val cryptoCurrency = pair.split("-")[0]
-}
+data class SimpleBuyPairResp(val pair: String, val buyMin: Long, val buyMax: Long)
 
 data class SimpleBuyEligibility(val eligible: Boolean)
 
