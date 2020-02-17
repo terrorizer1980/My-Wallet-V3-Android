@@ -376,7 +376,7 @@ Jangan berbagi dengan orang lain.</string>
   <string name="forget_wallet_warning">Ini akan menghapus semua data dompet pada perangkat ini. Konfirmasikan bahwa Anda telah memiliki informasi dompet yang disimpan di tempat lain jika tidak setiap bitcoin dalam dompet ini tidak akan dapat diakses!!</string>
   <string name="api_fail">Tidak dapat terhubung ke server. Harap coba lagi nanti.</string>
   <string name="large_tx_warning">Ini merupakan transaksi bitcoin yang terlalu besar. Dompet Anda perlu mengonsolidasi pembayaran yang lebih kecil yang Anda terima di masa lalu. Ini membutuhkan biaya yang relatif tinggi agar dapat dikonfirmasi dengan cepat.</string>
-  <string name="go_back">Kembali</string>
+  <string name="cancel_order_go_back">Kembali</string>
   <string name="accept_higher_fee">Terima biaya yang lebih tinggi</string>
   <string name="large_tx_high_fee_warning">\"Transaksi ini membutuhkan biaya yang lebih tinggi untuk recehan karena jumlah kecil dari kembalian untuk dikembalikan.\"</string>
   <string name="password_reveal_warning">Hati-hati! Mengungkapkan teks ini memungkinkan kata sandi Anda disalin ke clipboard, yang kemudian dapat dibaca oleh semua aplikasi pada perangkat Anda. Juga hati-hati dengan orang yang berdiri di belakang Anda!</string>

@@ -375,7 +375,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="forget_wallet_warning">このはこのデバイスの全ウォレットデータを削除します。ウォレット情報が別の場所に保管されているのを確認してください。そうでない場合このウォレットのビットコインにアクセスできなくなります！！</string>
   <string name="api_fail">サーバーに接続できませんでした。後で再試行してください。</string>
   <string name="large_tx_warning">このビットコイン取引は大きすぎます。あなたの財布は過去に受信した多くの少額支払いを統合する必要があります。迅速に確認されるためには比較的高額な手数料が必要です。</string>
-  <string name="go_back">戻る</string>
+  <string name="cancel_order_go_back">戻る</string>
   <string name="accept_higher_fee">より高額な費用に同意する</string>
   <string name="large_tx_high_fee_warning">\"この取引では少額の釣り銭金額が払い戻されるため、ダスト消費により高額な手数料が必要です。\"</string>
   <string name="password_reveal_warning">ご注意ください！このテキストを表示してクリップボードへのコピーを許可すると、デバイス上のすべてのアプリで読み取りが可能となります。背後にいる人にも注意してください！</string>

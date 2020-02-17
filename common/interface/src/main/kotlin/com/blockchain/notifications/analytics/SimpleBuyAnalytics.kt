@@ -33,7 +33,7 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     CUSTODY_WALLET_CARD_CLICKED("sb_custody_wallet_card_clicked"),
 
     BACK_UP_YOUR_WALLET_SHOWN("sb_backup_wallet_card_shown"),
-    BACK_UP_YOUR_WALLET_CLCIKED("sb_backup_wallet_card_clicked"),
+    BACK_UP_YOUR_WALLET_CLICKED("sb_backup_wallet_card_clicked"),
     WITHDRAW_WALLET_SCREEN_SHOW("sb_withdrawal_screen_shown"),
 
     WITHDRAW_WALLET_SCREEN_SUCCESS("sb_withdrawal_screen_success"),

@@ -1,9 +1,12 @@
 package piuk.blockchain.android.ui.dashboard
 
+import com.blockchain.preferences.SimpleBuyPrefs
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.prices.data.PriceDatum
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -17,7 +20,9 @@ import timber.log.Timber
 
 class DashboardInteractor(
     private val tokens: AssetTokenLookup,
-    private val payloadManager: PayloadManager
+    private val payloadManager: PayloadManager,
+    private val custodialWalletManager: CustodialWalletManager,
+    private val simpleBuyPrefs: SimpleBuyPrefs
 ) {
     // We have a problem here, in that pax init depends on ETH init
     // Ultimately, we want to init metadata straight after decrypting (or creating) the wallet
@@ -104,6 +109,19 @@ class DashboardInteractor(
             .subscribeBy(
                 onSuccess = { model.process(BackupStatusUpdate(it)) },
                 onError = { Timber.e(it) }
+            )
+    }
+
+    fun cancelSimpleBuyOrder(orderId: String?): Disposable? {
+        return orderId?.let {
+            custodialWalletManager.deleteBuyOrder(it)
+                .subscribeBy(
+                    onComplete = { simpleBuyPrefs.clearState() },
+                    onError = { error -> Timber.e(error) }
+                )
+        } ?: Completable.complete()
+            .subscribeBy(
+                onComplete = { simpleBuyPrefs.clearState() }
             )
     }
 

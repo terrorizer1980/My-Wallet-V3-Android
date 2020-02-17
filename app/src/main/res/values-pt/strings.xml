@@ -376,7 +376,7 @@ Não o compartilhe com ninguém.</string>
   <string name="forget_wallet_warning">Isto apagará todos os dados da carteira neste dispositivo. Por favor, certifique-se de que as informações de sua carteira estão salvas em outro lugar. Caso contrário, todos os bitcoins nesta carteira ficarão inacessíveis!!</string>
   <string name="api_fail">Impossível conectar ao servidor. Por favor, tente novamente mais tarde.</string>
   <string name="large_tx_warning">Esta transação bitcoin é grande demais. Sua carteira precisa consolidar muitos pagamentos menores já recebidos. Isto requer uma taxa relativamente alta para ser confirmado relativamente rápido.</string>
-  <string name="go_back">Voltar</string>
+  <string name="cancel_order_go_back">Voltar</string>
   <string name="accept_higher_fee">Aceitar taxa mais alta</string>
   <string name="large_tx_high_fee_warning">\"Esta transação requer uma taxa mais alta para gasto residual devido ao baixo valor de troco a ser devolvido.\"</string>
   <string name="password_reveal_warning">Tenha cuidado! Ao revelar este texto, sua senha poderá ser copiada à área de transferência, que poderá ser lida por todos os aplicativos em seu dispositivo. Também tome cuidado com pessoas atrás de você!</string>

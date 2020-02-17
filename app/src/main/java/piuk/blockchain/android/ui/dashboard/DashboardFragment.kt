@@ -21,6 +21,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.blockstackCampaignName
 import piuk.blockchain.android.coincore.AssetFilter
+import piuk.blockchain.android.simplebuy.SimpleBuyCancelOrderBottomSheet
 import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -47,7 +48,9 @@ private typealias RefreshFn = () -> Unit
 class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent, DashboardState>(),
     AssetDetailSheet.Host,
     ForceBackupForSendSheet.Host,
-    BasicTransferToWallet.Host {
+    BasicTransferToWallet.Host,
+    BankDetailsBottomSheet.Host,
+    SimpleBuyCancelOrderBottomSheet.Host {
 
     override val model: DashboardModel by inject()
 
@@ -166,6 +169,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
                 DashboardSheet.SIMPLE_BUY_PAYMENT -> BankDetailsBottomSheet.newInstance()
                 DashboardSheet.BACKUP_BEFORE_SEND -> ForceBackupForSendSheet.newInstance()
                 DashboardSheet.BASIC_WALLET_TRANSFER -> BasicTransferToWallet.newInstance(state.transferFundsCurrency!!)
+                DashboardSheet.SIMPLE_BUY_CANCEL_ORDER -> SimpleBuyCancelOrderBottomSheet.newInstance(true)
                 null -> null
             }
         )
@@ -301,10 +305,25 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
             model.process(ShowDashboardSheet(DashboardSheet.STX_AIRDROP_COMPLETE))
 
         override fun startSimpleBuyPaymentDetail() =
-            model.process((ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_PAYMENT)))
+            model.process(ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_PAYMENT))
 
         override fun finishSimpleBuySignup() {
             navigator().resumeSimpleBuyKyc()
+        }
+    }
+
+    override fun startWarnCancelSimpleBuyOrder() {
+//        analytics.logEvent()
+        model.process(ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_CANCEL_ORDER))
+    }
+
+    override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
+        if(cancelOrder && orderId != null) {
+//            analytics.logEvent()
+            model.process(CancelSimpleBuyOrder(orderId))
+        } else {
+//            analytics.logEvent()
+            model.process(ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_PAYMENT))
         }
     }
 

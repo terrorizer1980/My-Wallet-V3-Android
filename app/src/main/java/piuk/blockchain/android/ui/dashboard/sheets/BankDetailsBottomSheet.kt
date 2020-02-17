@@ -1,7 +1,9 @@
 package piuk.blockchain.android.ui.dashboard.sheets
 
+import android.content.Context
 import android.view.View
-import com.blockchain.preferences.SimpleBuyPrefs
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -20,7 +22,15 @@ import timber.log.Timber
 
 class BankDetailsBottomSheet : SlidingModalBottomDialog() {
 
-    private val prefs: SimpleBuyPrefs by inject()
+    interface Host : SlidingModalBottomDialog.Host {
+        fun startWarnCancelSimpleBuyOrder()
+    }
+
+    override val host: Host by lazy {
+        super.host as? Host ?: throw IllegalStateException("Host fragment is not a BankDetailsBottomSheet.Host")
+    }
+
+    private val analytics: Analytics by inject()
     private val stateFactory: SimpleBuySyncFactory by inject()
     private val custodialWalletManager: CustodialWalletManager by inject()
     private val environmentConfig: EnvironmentConfig by inject()
@@ -40,12 +50,15 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
         }
     }
 
+    private val parentContext: Context
+        get() = parentFragment?.context ?: activity ?: throw IllegalStateException("No parent")
+
     private fun closeBecauseError(logMsg: String) {
         Timber.d("Cannot open bank details sheet: $logMsg")
         onCtaOKClick()
         if (environmentConfig.shouldShowDebugMenu()) {
             ToastCustom.makeText(
-                requireContext(),
+                parentContext,
                 "Cannot open bank details sheet: $logMsg",
                 ToastCustom.LENGTH_LONG,
                 ToastCustom.TYPE_ERROR
@@ -65,16 +78,10 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
         }
         isCancelable = false
 
-        disposables += custodialWalletManager.deleteBuyOrder(orderId)
-            .subscribeBy(
-                onComplete = {
-                    prefs.clearState()
-                    onCtaOKClick()
-                },
-                onError = {
-                    closeBecauseError("Cancel order failed: $it")
-                }
-            )
+        analytics.logEvent(SimpleBuyAnalytics.PENDING_TRANSFER_MODAL_CANCEL_CLICKED)
+
+        onCtaOKClick()
+        host.startWarnCancelSimpleBuyOrder()
     }
 
     private fun renderState(view: View, state: SimpleBuyState) {
@@ -92,7 +99,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
                     bank_details.initWithBankDetailsAndAmount(
                         state.bankAccount.details,
                         amount,
-                        copyListeener
+                        copyListener
                     )
                 } else {
                     disposables += custodialWalletManager.getBankAccountDetails(state.currency)
@@ -101,7 +108,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
                                 bank_details.initWithBankDetailsAndAmount(
                                     it.details,
                                     amount,
-                                    copyListeener
+                                    copyListener
                                 )
                             },
                             onError = {
@@ -119,7 +126,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
         }
     }
 
-    private val copyListeener = object : CopyFieldListener {
+    private val copyListener = object : CopyFieldListener {
         override fun onFieldCopied(field: String) {
             ToastCustom.makeText(
                 requireContext(),

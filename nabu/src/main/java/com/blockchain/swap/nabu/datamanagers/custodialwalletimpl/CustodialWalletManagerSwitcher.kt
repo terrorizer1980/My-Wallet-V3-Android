@@ -52,7 +52,7 @@ class CustodialWalletManagerSwitcher(
         proxy.getPredefinedAmounts(currency)
 
     override fun getBankAccountDetails(currency: String): Single<BankAccount> =
-        proxy.getBankAccountDetails(currency)
+        mockCustodialWalletManager.getBankAccountDetails(currency)
 
     override fun isEligibleForSimpleBuy(): Single<Boolean> =
         proxy.isEligibleForSimpleBuy()
