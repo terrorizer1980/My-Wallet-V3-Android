@@ -30,7 +30,7 @@ class SimpleBuyCancelOrderBottomSheet : SlidingModalBottomDialog() {
         if (state?.selectedCryptoCurrency != null) {
             with(view) {
 
-                if(arguments.fromDashboard()) {
+                if (arguments.fromDashboard()) {
                     cancel_order.text = getString(R.string.cancel_order_do_cancel_dashboard)
                     go_back.text = getString(R.string.cancel_order_go_back_dashboard)
                 }

@@ -14,14 +14,14 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     BUY_CONFIRM_CLICKED("sb_form_confirm_click"),
 
     START_GOLD_FLOW("sb_kyc_start"),
-    KYC_VERYFING("sb_kyc_verifying"),
+    KYC_VERIFYING("sb_kyc_verifying"),
     KYC_MANUAL("sb_kyc_manual_review"),
     KYC_PENDING("sb_kyc_pending"),
     KYC_NOT_ELIGIBLE("sb_kyc_not_eligible"),
 
     CHECKOUT_SUMMARY_SHOWN("sb_checkout_shown"),
     CHECKOUT_SUMMARY_CONFIRMED("sb_checkout_confirm"),
-    CHECKOUT_SUMMARY_PRESS_CANCELL("sb_checkout_cancel"),
+    CHECKOUT_SUMMARY_PRESS_CANCEL("sb_checkout_cancel"),
     CHECKOUT_SUMMARY_CANCELLATION_CONFIRMED("sb_checkout_cancel_confirmed"),
     CHECKOUT_SUMMARY_CANCELLATION_GO_BACK("sb_checkout_cancel_go_back"),
 

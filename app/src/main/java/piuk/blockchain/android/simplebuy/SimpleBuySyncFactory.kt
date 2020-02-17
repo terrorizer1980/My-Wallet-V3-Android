@@ -107,9 +107,9 @@ class SimpleBuySyncFactory(
                     Completable.complete()
                 } else {
                     maybeInflateLocalState()
-                        .flatMapBy (
+                        .flatMapBy(
                             onSuccess = { localState ->
-                                if(localState.orderState == OrderState.AWAITING_FUNDS) {
+                                if (localState.orderState == OrderState.AWAITING_FUNDS) {
                                     updateWithRemote(localState)
                                         .doOnComplete { localStateAdapter.clear() }
                                 } else {

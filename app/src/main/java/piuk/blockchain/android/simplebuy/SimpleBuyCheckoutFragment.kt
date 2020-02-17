@@ -67,7 +67,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         button_buy.isEnabled = newState.bankAccount != null && newState.order.quote != null
 
         button_cancel.setOnClickListenerDebounced {
-            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_PRESS_CANCELL)
+            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_PRESS_CANCEL)
             showBottomSheet(SimpleBuyCancelOrderBottomSheet.newInstance())
         }
 
@@ -85,8 +85,8 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         showBottomSheet(ErrorSlidingBottomDialog.newInstance(activity))
     }
 
-    override fun cancelOrderConfirmAction(cancelOrder:Boolean, orderId: String?) {
-        if(cancelOrder) {
+    override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
+        if (cancelOrder) {
             model.process(SimpleBuyIntent.CancelOrder)
             model.process(SimpleBuyIntent.ClearState)
             navigator().exitSimpleBuyFlow()

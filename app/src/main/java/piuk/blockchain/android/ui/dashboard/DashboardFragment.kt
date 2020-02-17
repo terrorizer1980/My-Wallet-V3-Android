@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.extensions.exhaustive
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -313,16 +314,16 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     }
 
     override fun startWarnCancelSimpleBuyOrder() {
-//        analytics.logEvent()
+        analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_PRESS_CANCEL)
         model.process(ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_CANCEL_ORDER))
     }
 
     override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
-        if(cancelOrder && orderId != null) {
-//            analytics.logEvent()
+        if (cancelOrder && orderId != null) {
+            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CANCELLATION_CONFIRMED)
             model.process(CancelSimpleBuyOrder(orderId))
         } else {
-//            analytics.logEvent()
+            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CANCELLATION_GO_BACK)
             model.process(ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_PAYMENT))
         }
     }
