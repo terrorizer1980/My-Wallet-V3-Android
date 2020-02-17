@@ -272,13 +272,23 @@ class SimpleBuySyncFactoryTest {
             expires = EARLY_ORDER_DATE
         )
 
+        val remoteInput4 = BuyOrder(
+            id = ORDER_ID_4,
+            pair = "EUR-BTC",
+            fiat = FiatValue.fromMinor("EUR", 10000),
+            crypto = CryptoValue.ZeroBtc,
+            state = OrderState.FAILED,
+            expires = EARLY_ORDER_DATE
+        )
+
         whenever(localState.fetch()).thenReturn(null)
         whenever(remoteState.getOutstandingBuyOrders()).thenReturn(
             Single.just(
                 listOf(
                     remoteInput1,
                     remoteInput2,
-                    remoteInput3
+                    remoteInput3,
+                    remoteInput4
                 )
             )
         )
@@ -336,7 +346,6 @@ class SimpleBuySyncFactoryTest {
 
         validateFinalState(expectedResult)
     }
-
 
     @Test
     fun `remote pending overrides local and clears`() {
@@ -430,6 +439,235 @@ class SimpleBuySyncFactoryTest {
         validateFinalState(expectedResult)
     }
 
+    // Test lightweight sync
+    @Test
+    fun `lightweight, no local state`() {
+        whenSimpleBuyIsEnabled()
+
+        whenever(localState.fetch()).thenReturn(null)
+
+        val expectedResult = null
+
+        subject.lightweightSync()
+            .test()
+            .assertComplete()
+            .awaitTerminalEvent()
+
+        validateFinalStateLightweight(expectedResult)
+    }
+
+    @Test
+    fun `lightweight, local state initialised`() {
+        whenSimpleBuyIsEnabled()
+
+        val localInput = SimpleBuyState(
+            id = EXPECTED_ORDER_ID,
+            enteredAmount = "10000",
+            currency = "EUR",
+            selectedCryptoCurrency = CryptoCurrency.BTC,
+            orderState = OrderState.INITIALISED,
+            expirationDate = LAST_ORDER_DATE,
+            kycVerificationState = null,
+            currentScreen = FlowScreen.KYC
+        )
+
+        whenever(localState.fetch()).thenReturn(localInput)
+
+        val expectedResult = localInput
+
+        subject.lightweightSync()
+            .test()
+            .assertComplete()
+            .awaitTerminalEvent()
+
+        validateFinalStateLightweight(expectedResult)
+    }
+
+    @Test
+    fun `lightweight, local state awaiting funds, remote awaiting funds`() {
+        whenSimpleBuyIsEnabled()
+
+        val localInput = SimpleBuyState(
+            id = EXPECTED_ORDER_ID,
+            enteredAmount = "10000",
+            currency = "EUR",
+            selectedCryptoCurrency = CryptoCurrency.BTC,
+            orderState = OrderState.AWAITING_FUNDS,
+            expirationDate = LAST_ORDER_DATE,
+            kycVerificationState = null,
+            currentScreen = FlowScreen.KYC
+        )
+
+        val remoteInput = BuyOrder(
+            id = EXPECTED_ORDER_ID,
+            pair = "EUR-BTC",
+            fiat = FiatValue.fromMinor("EUR", 10000),
+            crypto = CryptoValue.ZeroBtc,
+            state = OrderState.AWAITING_FUNDS,
+            expires = LAST_ORDER_DATE
+        )
+
+        whenever(localState.fetch()).thenReturn(localInput)
+        whenever(remoteState.getBuyOrder(EXPECTED_ORDER_ID)).thenReturn(Single.just(remoteInput))
+
+        val expectedResult = localInput
+
+        subject.lightweightSync()
+            .test()
+            .assertComplete()
+            .awaitTerminalEvent()
+
+        validateFinalStateLightweight(expectedResult)
+    }
+
+    @Test
+    fun `lightweight, local state awaiting funds, remote pending`() {
+        whenSimpleBuyIsEnabled()
+
+        val localInput = SimpleBuyState(
+            id = EXPECTED_ORDER_ID,
+            enteredAmount = "10000",
+            currency = "EUR",
+            selectedCryptoCurrency = CryptoCurrency.BTC,
+            orderState = OrderState.AWAITING_FUNDS,
+            expirationDate = LAST_ORDER_DATE,
+            kycVerificationState = null,
+            currentScreen = FlowScreen.KYC
+        )
+
+        val remoteInput = BuyOrder(
+            id = EXPECTED_ORDER_ID,
+            pair = "EUR-BTC",
+            fiat = FiatValue.fromMinor("EUR", 10000),
+            crypto = CryptoValue.ZeroBtc,
+            state = OrderState.PENDING,
+            expires = LAST_ORDER_DATE
+        )
+
+        whenever(localState.fetch()).thenReturn(localInput)
+        whenever(remoteState.getBuyOrder(EXPECTED_ORDER_ID)).thenReturn(Single.just(remoteInput))
+
+        val expectedResult = null
+
+        subject.lightweightSync()
+            .test()
+            .assertComplete()
+            .awaitTerminalEvent()
+
+        validateFinalStateLightweight(expectedResult)
+    }
+
+    @Test
+    fun `lightweight, local state awaiting funds, remote finished`() {
+        whenSimpleBuyIsEnabled()
+
+        val localInput = SimpleBuyState(
+            id = EXPECTED_ORDER_ID,
+            enteredAmount = "10000",
+            currency = "EUR",
+            selectedCryptoCurrency = CryptoCurrency.BTC,
+            orderState = OrderState.AWAITING_FUNDS,
+            expirationDate = LAST_ORDER_DATE,
+            kycVerificationState = null,
+            currentScreen = FlowScreen.KYC
+        )
+
+        val remoteInput = BuyOrder(
+            id = EXPECTED_ORDER_ID,
+            pair = "EUR-BTC",
+            fiat = FiatValue.fromMinor("EUR", 10000),
+            crypto = CryptoValue.ZeroBtc,
+            state = OrderState.FINISHED,
+            expires = LAST_ORDER_DATE
+        )
+
+        whenever(localState.fetch()).thenReturn(localInput)
+        whenever(remoteState.getBuyOrder(EXPECTED_ORDER_ID)).thenReturn(Single.just(remoteInput))
+
+        val expectedResult = null
+
+        subject.lightweightSync()
+            .test()
+            .assertComplete()
+            .awaitTerminalEvent()
+
+        validateFinalStateLightweight(expectedResult)
+    }
+
+    @Test
+    fun `lightweight, local state awaiting funds, remote canceled`() {
+        whenSimpleBuyIsEnabled()
+
+        val localInput = SimpleBuyState(
+            id = EXPECTED_ORDER_ID,
+            enteredAmount = "10000",
+            currency = "EUR",
+            selectedCryptoCurrency = CryptoCurrency.BTC,
+            orderState = OrderState.AWAITING_FUNDS,
+            expirationDate = LAST_ORDER_DATE,
+            kycVerificationState = null,
+            currentScreen = FlowScreen.KYC
+        )
+
+        val remoteInput = BuyOrder(
+            id = EXPECTED_ORDER_ID,
+            pair = "EUR-BTC",
+            fiat = FiatValue.fromMinor("EUR", 10000),
+            crypto = CryptoValue.ZeroBtc,
+            state = OrderState.CANCELED,
+            expires = LAST_ORDER_DATE
+        )
+
+        whenever(localState.fetch()).thenReturn(localInput)
+        whenever(remoteState.getBuyOrder(EXPECTED_ORDER_ID)).thenReturn(Single.just(remoteInput))
+
+        val expectedResult = null
+
+        subject.lightweightSync()
+            .test()
+            .assertComplete()
+            .awaitTerminalEvent()
+
+        validateFinalStateLightweight(expectedResult)
+    }
+
+    @Test
+    fun `lightweight, local state awaiting funds, remote failed`() {
+        whenSimpleBuyIsEnabled()
+
+        val localInput = SimpleBuyState(
+            id = EXPECTED_ORDER_ID,
+            enteredAmount = "10000",
+            currency = "EUR",
+            selectedCryptoCurrency = CryptoCurrency.BTC,
+            orderState = OrderState.AWAITING_FUNDS,
+            expirationDate = LAST_ORDER_DATE,
+            kycVerificationState = null,
+            currentScreen = FlowScreen.KYC
+        )
+
+        val remoteInput = BuyOrder(
+            id = EXPECTED_ORDER_ID,
+            pair = "EUR-BTC",
+            fiat = FiatValue.fromMinor("EUR", 10000),
+            crypto = CryptoValue.ZeroBtc,
+            state = OrderState.FAILED,
+            expires = LAST_ORDER_DATE
+        )
+
+        whenever(localState.fetch()).thenReturn(localInput)
+        whenever(remoteState.getBuyOrder(EXPECTED_ORDER_ID)).thenReturn(Single.just(remoteInput))
+
+        val expectedResult = null
+
+        subject.lightweightSync()
+            .test()
+            .assertComplete()
+            .awaitTerminalEvent()
+
+        validateFinalStateLightweight(expectedResult)
+    }
+
     private fun validateFinalState(expected: SimpleBuyState?) {
         if (expected != null) {
             argumentCaptor<SimpleBuyState>().apply {
@@ -444,11 +682,22 @@ class SimpleBuySyncFactoryTest {
         verifyNoMoreInteractions(localState)
     }
 
+    private fun validateFinalStateLightweight(expected: SimpleBuyState?) {
+        // Lightweight sync only clears state, if remote is complete, so never updates
+        if (expected == null) {
+            verify(localState, atLeastOnce()).clear()
+        }
+
+        verify(localState, atLeastOnce()).fetch()
+        verifyNoMoreInteractions(localState)
+    }
+
     companion object {
         private const val EXPECTED_ORDER_ID = "12345-12345-1234-1234567890"
         private const val ORDER_ID_1 = "11111-11111-1111-1111111111"
         private const val ORDER_ID_2 = "22222-22222-2222-2222222222"
         private const val ORDER_ID_3 = "33333-33333-3333-3333333333"
+        private const val ORDER_ID_4 = "44444-44444-4444-4444444444"
 
         @SuppressLint("SimpleDateFormat")
         private val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")

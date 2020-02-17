@@ -21,7 +21,6 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.exceptions.HDWalletException
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
-import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
@@ -211,7 +210,7 @@ class MainPresenter internal constructor(
                 if (firstLoad) {
                     simpleBuySync.performSync()
                 } else {
-                    Completable.complete()
+                    simpleBuySync.lightweightSync()
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
