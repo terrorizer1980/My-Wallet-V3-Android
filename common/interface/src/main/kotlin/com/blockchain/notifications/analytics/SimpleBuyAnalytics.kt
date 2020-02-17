@@ -34,7 +34,6 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
 
     BACK_UP_YOUR_WALLET_SHOWN("sb_backup_wallet_card_shown"),
     BACK_UP_YOUR_WALLET_CLICKED("sb_backup_wallet_card_clicked"),
-    WITHDRAW_WALLET_SCREEN_SHOW("sb_withdrawal_screen_shown"),
 
     WITHDRAW_WALLET_SCREEN_SUCCESS("sb_withdrawal_screen_success"),
     WITHDRAW_WALLET_SCREEN_FAILURE("sb_withdrawal_screen_failure")
@@ -69,21 +68,21 @@ fun bankFieldName(field: String): AnalyticsEvent = object : AnalyticsEvent {
     )
 }
 
-fun pendingModalShow(currency: String): AnalyticsEvent = object : AnalyticsEvent {
+class PendingTransactionShown(currency: String) : AnalyticsEvent {
     override val event: String = "sb_pending_modal_shown"
     override val params: Map<String, String> = mapOf(
         "currency" to currency
     )
 }
 
-fun withDrawScreenShow(asset: String): AnalyticsEvent = object : AnalyticsEvent {
+class WithdrawScreenShown(asset: String) : AnalyticsEvent {
     override val event: String = "sb_withdrawal_screen_shown"
     override val params: Map<String, String> = mapOf(
         "asset" to asset
     )
 }
 
-fun withDrawScreenClicked(asset: String): AnalyticsEvent = object : AnalyticsEvent {
+class WithdrawScreenClicked(asset: String) : AnalyticsEvent {
     override val event: String = "sb_withdrawal_screen_clicked"
     override val params: Map<String, String> = mapOf(
         "asset" to asset

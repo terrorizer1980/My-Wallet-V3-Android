@@ -3,7 +3,9 @@ package piuk.blockchain.android.ui.dashboard.sheets
 import android.content.Context
 import android.view.View
 import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.PendingTransactionShown
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
+import com.blockchain.notifications.analytics.WithdrawScreenClicked
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -39,10 +41,11 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
 
     override val layoutResource = R.layout.dialog_simple_buy_bank_details
 
-    override fun initControls(view: View) =
+    override fun initControls(view: View) {
         stateFactory.currentState()?.let {
             renderState(view, it)
         } ?: closeBecauseError("State not found")
+    }
 
     override fun onSheetHidden() {
         super.onSheetHidden()
@@ -79,13 +82,13 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
         }
         isCancelable = false
 
-        analytics.logEvent(SimpleBuyAnalytics.PENDING_TRANSFER_MODAL_CANCEL_CLICKED)
-
         onCtaOKClick()
         host.startWarnCancelSimpleBuyOrder()
     }
 
     private fun renderState(view: View, state: SimpleBuyState) {
+        analytics.logEvent(PendingTransactionShown(state.selectedCryptoCurrency?.symbol ?: ""))
+
         with(view) {
             val amount = state.order.amount
             if (amount != null) {
@@ -123,7 +126,10 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
             }
 
             title.text = getString(R.string.simple_buy_pending_buy_sheet_title, state.selectedCryptoCurrency!!)
-            cta_button_ok.setOnClickListenerDebounced { onCtaOKClick() }
+            cta_button_ok.setOnClickListenerDebounced {
+                analytics.logEvent(WithdrawScreenClicked(state.selectedCryptoCurrency.symbol))
+                onCtaOKClick()
+            }
             cta_button_cancel.setOnClickListenerDebounced { onCtaCancelClick(state.id!!) }
         }
     }
