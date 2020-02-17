@@ -828,7 +828,7 @@
 
     <string name="dashboard_asset_balance_total">Total Balance</string>
     <string name="dashboard_asset_balance_wallet">Wallet Balance</string>
-    <string name="dashboard_asset_balance_custodial">Custody Balance</string>
+    <string name="dashboard_asset_balance_custodial">Trading Wallet</string>
 
     <string name="more">More</string>
 
