@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.View
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.PendingTransactionShown
-import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.WithdrawScreenClicked
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import io.reactivex.android.schedulers.AndroidSchedulers

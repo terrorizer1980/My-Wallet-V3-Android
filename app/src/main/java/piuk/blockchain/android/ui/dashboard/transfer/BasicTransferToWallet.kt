@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
-import com.blockchain.notifications.analytics.WithdrawScreenClicked
 import com.blockchain.notifications.analytics.WithdrawScreenShown
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyError
