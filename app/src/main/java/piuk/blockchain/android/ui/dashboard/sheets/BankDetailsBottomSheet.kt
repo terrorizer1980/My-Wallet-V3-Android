@@ -5,6 +5,7 @@ import android.view.View
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -103,6 +104,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
                     )
                 } else {
                     disposables += custodialWalletManager.getBankAccountDetails(state.currency)
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(
                             onSuccess = {
                                 bank_details.initWithBankDetailsAndAmount(
