@@ -47,8 +47,8 @@ class CreateWalletPresenter(
             view.setTitleText(R.string.recover_funds)
             view.setNextText(R.string.dialog_continue)
         } else {
-            view.setTitleText(R.string.new_wallet)
-            view.setNextText(R.string.create_wallet)
+            view.setTitleText(R.string.new_account_title)
+            view.setNextText(R.string.new_account_cta_text)
         }
     }
 

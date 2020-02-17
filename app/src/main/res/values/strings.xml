@@ -125,7 +125,7 @@
     <string name="double_encryption_password_error">Double encrypt password error. Please try again.</string>
     <string name="btn_scan_pairing_code">Scan pairing code</string>
     <string name="btn_manual_pairing">Manual Pairing</string>
-    <string name="create_a_wallet">Create a wallet</string>
+    <string name="create_a_wallet">Create an Account</string>
     <string name="log_in">Log in</string>
     <string name="login_auto_pair_title">Automatic Pairing</string>
     <string name="manual_pairing">Manual Pairing</string>
@@ -154,11 +154,10 @@
     <string name="restore_failed">Restoring wallet failed. Please try again</string>
     <string name="restoring_wallet">Restoring wallet.</string>
     <string name="password">Password</string>
-    <string name="email">Email</string>
-    <string name="agree_terms_of_service">By creating a new wallet you agree to the</string>
-    <string name="blockchain_tos">Blockchain Terms of Service</string>
-    <string name="create_wallet">Create Wallet</string>
-    <string name="new_wallet">New Wallet</string>
+    <string name="email">Your Email</string>
+    <string name="you_agree_terms_of_service">By creating an account, you agree to Blockchain\'s <annotation link="terms">Terms of Service</annotation> &amp; <annotation link="privacy">Privacy Policy</annotation>.</string>
+    <string name="new_account_cta_text">Continue</string>
+    <string name="new_account_title">Create an Account</string>
     <string name="strength_weak">Weak</string>
     <string name="strength_medium">Regular</string>
 
