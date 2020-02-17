@@ -11,13 +11,12 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     BUY_FORM_SHOWN("sb_buy_form_shown"),
     BUY_MIN_CLICKED("sb_buy_min"),
     BUY_MAX_CLICKED("sb_buy_max"),
-    BUY_CONFIRM_CLICKED("sb_form_confirm_click"),
 
     START_GOLD_FLOW("sb_kyc_start"),
     KYC_VERYFING("sb_kyc_verifying"),
     KYC_MANUAL("sb_kyc_manual_review"),
     KYC_PENDING("sb_kyc_pending"),
-    KYC_NOT_ELIGIBLE("sb_kyc_not_eligible"),
+    KYC_NOT_ELIGIBLE("sb_post_kyc_not_eligible"),
 
     CHECKOUT_SUMMARY_SHOWN("sb_checkout_shown"),
     CHECKOUT_SUMMARY_CONFIRMED("sb_checkout_confirm"),
