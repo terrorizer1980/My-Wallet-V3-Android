@@ -125,7 +125,7 @@
     <string name="double_encryption_password_error">Double encrypt password error. Please try again.</string>
     <string name="btn_scan_pairing_code">Scan pairing code</string>
     <string name="btn_manual_pairing">Manual Pairing</string>
-    <string name="create_a_wallet">Create a wallet</string>
+    <string name="create_a_wallet">Create an Account</string>
     <string name="log_in">Log in</string>
     <string name="login_auto_pair_title">Automatic Pairing</string>
     <string name="manual_pairing">Manual Pairing</string>
@@ -154,11 +154,10 @@
     <string name="restore_failed">Restoring wallet failed. Please try again</string>
     <string name="restoring_wallet">Restoring wallet.</string>
     <string name="password">Password</string>
-    <string name="email">Email</string>
-    <string name="agree_terms_of_service">By creating a new wallet you agree to the</string>
-    <string name="blockchain_tos">Blockchain Terms of Service</string>
-    <string name="create_wallet">Create Wallet</string>
-    <string name="new_wallet">New Wallet</string>
+    <string name="email">Your Email</string>
+    <string name="you_agree_terms_of_service">By creating an account, you agree to Blockchain\'s <annotation link="terms">Terms of Service</annotation> &amp; <annotation link="privacy">Privacy Policy</annotation>.</string>
+    <string name="new_account_cta_text">Continue</string>
+    <string name="new_account_title">Create an Account</string>
     <string name="strength_weak">Weak</string>
     <string name="strength_medium">Regular</string>
 
@@ -1092,8 +1091,8 @@
     <string name="simple_buy_finish_signup_card_cta">Continue</string>
 
     <!-- Simple buy pending buy -->
-    <string name="simple_buy_pending_buy_card_title">Pending Crypto Purchase</string>
-    <string name="simple_buy_pending_buy_card_body">Once we receive your bank transfer, your crypto purchase order will be completed.</string>
+    <string name="simple_buy_pending_buy_card_title">Pending Buy</string>
+    <string name="simple_buy_pending_buy_card_body">Once we receive your bank transfer, your buy order will be complete.</string>
     <string name="simple_buy_pending_buy_card_cta">View Bank Transfer Details</string>
 
     <!-- Enrole fingerprints announcement -->
@@ -1134,7 +1133,7 @@
 
     <!-- force backup before send sheet -->
     <string name="backup_before_send_title">Backup Your Wallet</string>
-    <string name="backup_before_send_body">Before you can send from your Custody Wallet, secure your crypto with your Backup Phrase. Please write these 12 words down, in order, and keep them somewhere safe. These 12 words allow you to always access your funds.</string>
+    <string name="backup_before_send_body">Your backup phrase will allow you to recover your crypto if you lose access to your wallet. \n\nPlease write down these 12 words in order and keep them somewhere safe. Never share it with anyone. Your backup phrase is the key to recovering your crypto if you ever get locked out.</string>
     <string name="backup_before_send_cta">Backup Now</string>
 
     <!-- basic transfer to wallet -->
@@ -1144,7 +1143,7 @@
 
     <!-- basic transfer complete -->
     <string name="basic_transfer_complete_title">Success! %1s Sent.</string>
-    <string name="basic_transfer_complete_body">It may take up to 60 minutes for a transaction to be validated by the blockchain network.</string>
+    <string name="basic_transfer_complete_body">It may take up to 1 hour for your transaction to be processed.</string>
     <string name="basic_transfer_complete_cta">OK</string>
 
     <!-- basic transfer error -->
@@ -1764,7 +1763,7 @@
     <string name="simple_buy_what_you_want_to_buy">What would you like to buy?</string>
     <string name="simple_buy_enter_amount">Enter amount</string>
     <string name="simple_buy_buy_crypto_title">Buy Crypto</string>
-    <string name="simple_buy_verify_email_instruction">We sent an email to %1$s with a verification link. Didn’t get it? Check your spam folder.</string>
+    <string name="simple_buy_verify_email_instruction">We sent an email to %1$s with a verification link. Didn\'t get it? Check your spam folder.</string>
     <string name="simple_buy_error_fetching_price">Error fetching latest price.</string>
     <string name="simple_buy_up_to_amount">Up to %1$s</string>
     <string name="use_max">Use MAX</string>
@@ -1777,9 +1776,6 @@
     <string name="date">Date</string>
     <string name="purchase_note">Once we receive your funds, we’ll start your %1$s buy order. Note, your final amount might change to due market activity. Fees may apply.</string>
     <string name="buy_crypto">Buy %1$s</string>
-    <string name="kyc_pending_title">KYC Done - Pending</string>
-    <string name="kyc_manual_review_title">KYC Done - Manual Review</string>
-    <string name="kyc_pending_subtitle">User goes through the GOLD KYC flow</string>
     <string name="kyc_verifying_info">Verifying your information</string>
     <string name="kyc_verifying_time_info">Usually takes less than a minute.</string>
     <string name="kyc_verifying_manual_review_required_info">You’ve successfully submitted your application. A Blockchain Support Member will review your information.</string>
@@ -1787,7 +1783,6 @@
     <string name="kyc_pending_review">Pending Review</string>
     <string name="kyc_veriff_but_not_eligible_review">Successful Application</string>
     <string name="kyc_veriff_but_not_eligible_review_info">Your identity has been successfully verified. You’re now Gold Level and can trade up to $25000 a day. \n\n Buy is not available in your region yet, we’ll let you know as soon as this happens.</string>
-    <string name="kyc_undecided_text">Copy for undecided state</string>
     <string name="continue_to_wallet">Continue to wallet</string>
     <string name="simple_buy_securely_transfer">Securely transfer %1$s from your bank account to Blockchain. Depending on the transfer method and availability of funds, this may take up to 1 business day.</string>
     <string name="simple_buy_bank_account_sheet_instructions">Please transfer %1$s from your bank account to Blockchain.com. Once we receive the funds, we\'ll create your %2$s buy order.</string>
