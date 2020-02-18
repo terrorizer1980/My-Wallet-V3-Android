@@ -377,7 +377,7 @@ Nie udostępniaj go innym.</string>
   <string name="forget_wallet_warning">W ten sposób wyczyścisz wszystkie dane portfela na tym urządzeniu. Potwierdź, że zapisałeś dane portfela w innym miejscu. W przeciwnym wypadku utracisz dostęp do wszystkich bitcoinów w tym portfelu!!</string>
   <string name="api_fail">Nie udało się połączyć z serwerem. Spróbuj ponownie później.</string>
   <string name="large_tx_warning">Ta transakcja bitcoin jest za duża. Twój portfel musi skonsolidować wiele mniejszych płatności, otrzymanych przez Ciebie w przeszłości. Wymaga to stosunkowo wysokiej opłaty w celu szybkiego potwierdzenia.</string>
-  <string name="go_back">Wróć</string>
+  <string name="cancel_order_go_back">Wróć</string>
   <string name="accept_higher_fee">Zaakceptuj wyższą opłatę</string>
   <string name="large_tx_high_fee_warning">\"Ta transakcja wymaga wyższej opłaty dla konsumpcji \"kurzu\" z powodu małej kwoty reszty.\"</string>
   <string name="password_reveal_warning">Bądź ostrożny! Ujawnienie tego tekstu umożliwi skopiowanie Twojego hasła do schowka, co z kolei zezwoli wszystkim aplikacjom na Twoim urządzeniu na jego odczytanie.  Uważaj również na wszystkie osoby za Twoimi plecami!</string>

@@ -787,7 +787,10 @@ val applicationModule = applicationContext {
         factory {
             DashboardInteractor(
                 tokens = get(),
-                payloadManager = get()
+                payloadManager = get(),
+                custodialWalletManager = get(),
+                simpleBuyPrefs = get(),
+                analytics = get()
             )
         }
 

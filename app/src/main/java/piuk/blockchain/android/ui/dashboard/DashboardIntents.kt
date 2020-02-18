@@ -172,6 +172,12 @@ class ShowDashboardSheet(
         )
 }
 
+class CancelSimpleBuyOrder(
+    val orderId: String?
+) : DashboardIntent() {
+    override fun reduce(oldState: DashboardState): DashboardState = oldState
+}
+
 object ClearBottomSheet : DashboardIntent() {
     override fun reduce(oldState: DashboardState): DashboardState =
         oldState.copy(

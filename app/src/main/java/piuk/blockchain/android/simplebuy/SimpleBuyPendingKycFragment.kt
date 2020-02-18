@@ -26,7 +26,7 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
         super.onViewCreated(view, savedInstanceState)
         model.process(SimpleBuyIntent.FetchKycState)
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.KYC_VERIFICATION))
-        analytics.logEvent(SimpleBuyAnalytics.KYC_VERYFING)
+        analytics.logEvent(SimpleBuyAnalytics.KYC_VERIFYING)
         continue_to_wallet.setOnClickListener {
             navigator().exitSimpleBuyFlow()
         }
@@ -76,7 +76,7 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
 
         when (newState.kycVerificationState) {
             KycState.VERIFIED_BUT_NOT_ELIGIBLE -> analytics.logEvent(SimpleBuyAnalytics.KYC_NOT_ELIGIBLE)
-            KycState.VERIFIED_AND_ELIGIBLE -> analytics.logEvent(SimpleBuyAnalytics.KYC_VERYFING)
+            KycState.VERIFIED_AND_ELIGIBLE -> analytics.logEvent(SimpleBuyAnalytics.KYC_VERIFYING)
             KycState.PENDING -> analytics.logEvent(SimpleBuyAnalytics.KYC_PENDING)
             KycState.IN_REVIEW -> analytics.logEvent(SimpleBuyAnalytics.KYC_MANUAL)
             else -> {

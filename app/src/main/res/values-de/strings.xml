@@ -376,7 +376,7 @@ Teilen Sie ihn nicht mit anderen.</string>
   <string name="forget_wallet_warning">Damit werden alle Wallet-Daten auf diesem Gerät gelöscht. Bitte bestätigen Sie, dass Sie Ihre Wallet-Information anderenorts gespeichert haben, da Sie sonst auf kein Bitcoin dieser Wallet mehr zugreifen können!!</string>
   <string name="api_fail">Es kann keine Verbindung mit dem Server hergestellt werden. Bitte erneut versuchen.</string>
   <string name="large_tx_warning">Diese Bitcoin-Transaktion ist zu groß. In Ihrer Wallet befinden sich viele kleine in der Vergangenheit eingegangene Zahlungen. Für eine schnelle Bestätigung ist eine relativ hohe Gebühr erforderlich.</string>
-  <string name="go_back">Zurück</string>
+  <string name="cancel_order_go_back">Zurück</string>
   <string name="accept_higher_fee">Höhere Gebühr akzeptieren</string>
   <string name="large_tx_high_fee_warning">„Da der zurückzugebene Wechselbetrag klein ist, erfordert diese Transaktion eine höhere Gebühr für Kleinstsummenkonsum.“</string>
   <string name="password_reveal_warning">Vorsicht! Durch die Offenlegung dieses Textes lässt sich Ihr Passwort in die Zwischenablage kopieren und kann dann von allen auf Ihrem Gerät vorhandenen Anwendungen gelesen werden. Achten Sie auch darauf, ob jemand hinter Ihnen steht!</string>

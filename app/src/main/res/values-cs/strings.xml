@@ -378,7 +378,7 @@ Nesdílejte ho s ostatními.</string>
   <string name="forget_wallet_warning">Tato akce vymaže všechna data peněženky na tomto zařízení. Potvrďte prosím, že jste údaje o své peněžence uložili někam jinam. V opačném případě nebudou žádné bitcoiny v této peněžence přístupné!!</string>
   <string name="api_fail">Nelze se připojit k serveru. Zkuste to prosím znovu.</string>
   <string name="large_tx_warning">Toto je příliš velká bitcoinová transakce. Vaše peněženka musí sloučit drobné částky, které jste přijali v minulosti. Je vyžadován relativně vysoký poplatek za účelem rychlého potvrzení.</string>
-  <string name="go_back">Přejít zpět</string>
+  <string name="cancel_order_go_back">Přejít zpět</string>
   <string name="accept_higher_fee">Přijmout vyšší poplatek</string>
   <string name="large_tx_high_fee_warning">„Tato transakce vyžaduje vyšší poplatek za drobné částky, které mají být vráceny.“</string>
   <string name="password_reveal_warning">Buďte opatrní! Odhalení tohoto textu umožní zkopírování hesla do schránky, kterou mohou poté přečíst všechny aplikace na vašem zařízení. Dávejte si také pozor na lidi, kteří stojí za vámi!</string>

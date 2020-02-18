@@ -389,7 +389,7 @@
  konsolidera många mindre betalningar du har fått tidigare. Detta kräver en relativt 
  hög avgift för att bekräftas snabbt. 
 </string>
-  <string name="go_back">Gå tillbaka</string>
+  <string name="cancel_order_go_back">Gå tillbaka</string>
   <string name="accept_higher_fee">Acceptera högre avgift</string>
   <string name="large_tx_high_fee_warning">\"Denna transaktion kräver en högre avgift för dammförbrukning på grund av den ringa förändringen som ska returneras.\"</string>
   <string name="password_reveal_warning">Var försiktig! Genom att avslöja denna text kan ditt lösenord kopieras till urklippet, vilket sedan kan läsas av alla program på enheten. Också vara medveten om att människor står bakom dig!</string>

@@ -66,7 +66,8 @@ enum class DashboardSheet {
     CUSTODY_INTRO,
     SIMPLE_BUY_PAYMENT,
     BACKUP_BEFORE_SEND,
-    BASIC_WALLET_TRANSFER
+    BASIC_WALLET_TRANSFER,
+    SIMPLE_BUY_CANCEL_ORDER
 }
 
 data class DashboardState(
@@ -180,6 +181,7 @@ class DashboardModel(
                 null
             }
             is CheckBackupStatus -> interactor.hasUserBackedUp(this)
+            is CancelSimpleBuyOrder -> interactor.cancelSimpleBuyOrder(intent.orderId)
             is BackupStatusUpdate,
             is BalanceUpdateError,
             is PriceHistoryUpdate,

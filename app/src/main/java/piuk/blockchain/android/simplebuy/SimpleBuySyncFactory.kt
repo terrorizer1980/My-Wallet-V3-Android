@@ -96,6 +96,37 @@ class SimpleBuySyncFactory(
         return isEnabled.get()
     }
 
+    fun lightweightSync(): Completable =
+        // If we have a local state in awaiting funds, check the server and clear it if the backend has transitioned
+        // to any completed state (pending, cancelled, finished, failed)
+        checkEnabled()
+            .doOnSuccess { isEnabled.set(it) }
+            .flatMapCompletable {
+                Timber.e("SB Sync: Enabled == $it")
+                if (!it) {
+                    Completable.complete()
+                } else {
+                    maybeInflateLocalState()
+                        .flatMapBy(
+                            onSuccess = { localState ->
+                                if (localState.orderState == OrderState.AWAITING_FUNDS) {
+                                    updateWithRemote(localState)
+                                        .doOnComplete { localStateAdapter.clear() }
+                                        .doOnSuccess { localStateAdapter.update(it) }
+                                } else {
+                                    Maybe.empty<SimpleBuyState>()
+                                }
+                            },
+                            onError = { Maybe.empty<SimpleBuyState>() }, // Do nothing
+                            onComplete = {
+                                localStateAdapter.clear()
+                                Maybe.empty<SimpleBuyState>()
+                            } // No local state. Do nothing
+                        )
+                        .ignoreElement()
+                }
+            }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun checkEnabled(): Single<Boolean> =
         availabilityChecker.isAvailable()

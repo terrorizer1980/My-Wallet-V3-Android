@@ -828,7 +828,7 @@
 
     <string name="dashboard_asset_balance_total">Total Balance</string>
     <string name="dashboard_asset_balance_wallet">Wallet Balance</string>
-    <string name="dashboard_asset_balance_custodial">Custody Balance</string>
+    <string name="dashboard_asset_balance_custodial">Trading Wallet</string>
 
     <string name="more">More</string>
 
@@ -1129,7 +1129,7 @@
 
     <!-- custody wallet intro sheet -->
     <string name="custody_intro_title">Your Custody Wallet.</string>
-    <string name="custody_intro_body_1">When you buy bitcoin from your Blockchain.com Wallet, your bitcoin will be kept on your Custody Balance. You can keep it safely in there or transfer your funds to your Wallet.</string>
+    <string name="custody_intro_body_1">When you buy crypto, we store your funds securely for you in a Crypto Trading Wallet. These funds are stored by us on your behalf. You can keep them safe with us or transfer them to your non-custodial Wallet to own and store yourself.</string>
     <string name="custody_intro_body_2">If you want to swap or send these funds you need to transfer them to your bitcoin Wallet.</string>
 
     <!-- force backup before send sheet -->
@@ -1798,9 +1798,12 @@
     <string name="recipient_name_must_match">Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected.</string>
     <string name="simple_buy_no_currencies_available_title">No currencies available</string>
     <string name="simple_buy_no_currencies_available">Unfortunately, currently there are no currencies that you can trade :( </string>
-    <string name="cancel_order">Cancel order</string>
     <string name="are_ypu_sure">Are you sure?</string>
-    <string name="go_back">Go Back</string>
+    <string name="cancel_order">Cancel Order</string>
+    <string name="cancel_order_do_cancel">Cancel Order</string>
+    <string name="cancel_order_go_back">Go Back</string>
+    <string name="cancel_order_do_cancel_dashboard">Yes, Cancel</string>
+    <string name="cancel_order_go_back_dashboard">No, Keep Order</string>
     <string name="cancel_token_instruction">This will remove your %1$s Buy order.</string>
     <string name="transfer_details">Transfer Details</string>
     <string name="ops">Oops!</string>

@@ -389,7 +389,7 @@
  menyatukan banyak bayaran yang lebih kecil yang anda terima pada masa lalu. Ini memerlukan yang relatif 
  yuran yang tinggi untuk disahkan dengan cepat. 
 </string>
-  <string name="go_back">Pergi balik</string>
+  <string name="cancel_order_go_back">Pergi balik</string>
   <string name="accept_higher_fee">Terima bayaran yang lebih tinggi</string>
   <string name="large_tx_high_fee_warning">\"Urus niaga ini memerlukan yuran yang lebih tinggi untuk penggunaan habuk disebabkan oleh sedikit perubahan yang akan dikembalikan.\"</string>
   <string name="password_reveal_warning">Berhati-hati! Mengungkapkan teks ini membolehkan kata laluan anda disalin ke papan keratan, yang kemudiannya boleh dibaca oleh semua aplikasi pada peranti anda. Juga sedar orang yang berdiri di belakang anda!</string>

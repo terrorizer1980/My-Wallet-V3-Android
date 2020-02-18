@@ -13,14 +13,14 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     BUY_MAX_CLICKED("sb_buy_max"),
 
     START_GOLD_FLOW("sb_kyc_start"),
-    KYC_VERYFING("sb_kyc_verifying"),
+    KYC_VERIFYING("sb_kyc_verifying"),
     KYC_MANUAL("sb_kyc_manual_review"),
     KYC_PENDING("sb_kyc_pending"),
     KYC_NOT_ELIGIBLE("sb_post_kyc_not_eligible"),
 
     CHECKOUT_SUMMARY_SHOWN("sb_checkout_shown"),
     CHECKOUT_SUMMARY_CONFIRMED("sb_checkout_confirm"),
-    CHECKOUT_SUMMARY_PRESS_CANCELL("sb_checkout_cancel"),
+    CHECKOUT_SUMMARY_PRESS_CANCEL("sb_checkout_cancel"),
     CHECKOUT_SUMMARY_CANCELLATION_CONFIRMED("sb_checkout_cancel_confirmed"),
     CHECKOUT_SUMMARY_CANCELLATION_GO_BACK("sb_checkout_cancel_go_back"),
 
@@ -32,11 +32,15 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     CUSTODY_WALLET_CARD_CLICKED("sb_custody_wallet_card_clicked"),
 
     BACK_UP_YOUR_WALLET_SHOWN("sb_backup_wallet_card_shown"),
-    BACK_UP_YOUR_WALLET_CLCIKED("sb_backup_wallet_card_clicked"),
-    WITHDRAW_WALLET_SCREEN_SHOW("sb_withdrawal_screen_shown"),
+    BACK_UP_YOUR_WALLET_CLICKED("sb_backup_wallet_card_clicked"),
 
     WITHDRAW_WALLET_SCREEN_SUCCESS("sb_withdrawal_screen_success"),
-    WITHDRAW_WALLET_SCREEN_FAILURE("sb_withdrawal_screen_failure")
+    WITHDRAW_WALLET_SCREEN_FAILURE("sb_withdrawal_screen_failure"),
+
+    BANK_DETAILS_CANCEL_PROMPT("sb_cancel_order_prompt"),
+    BANK_DETAILS_CANCEL_CONFIRMED("sb_cancel_order_confirmed"),
+    BANK_DETAILS_CANCEL_GO_BACK("sb_cancel_order_go_back"),
+    BANK_DETAILS_CANCEL_ERROR("sb_cancel_order_error")
 }
 
 fun buyConfirmClicked(amount: String, currency: String): AnalyticsEvent = object : AnalyticsEvent {
@@ -54,7 +58,7 @@ fun cryptoChanged(asset: String): AnalyticsEvent = object : AnalyticsEvent {
     )
 }
 
-fun bankDetailsShow(currency: String): AnalyticsEvent = object : AnalyticsEvent {
+class BankDetailsViewed(currency: String) : AnalyticsEvent {
     override val event: String = "sb_bank_details_shown"
     override val params: Map<String, String> = mapOf(
         "currency" to currency
@@ -68,21 +72,21 @@ fun bankFieldName(field: String): AnalyticsEvent = object : AnalyticsEvent {
     )
 }
 
-fun pendingModalShow(currency: String): AnalyticsEvent = object : AnalyticsEvent {
+class PendingTransactionShown(currency: String) : AnalyticsEvent {
     override val event: String = "sb_pending_modal_shown"
     override val params: Map<String, String> = mapOf(
         "currency" to currency
     )
 }
 
-fun withDrawScreenShow(asset: String): AnalyticsEvent = object : AnalyticsEvent {
+class WithdrawScreenShown(asset: String) : AnalyticsEvent {
     override val event: String = "sb_withdrawal_screen_shown"
     override val params: Map<String, String> = mapOf(
         "asset" to asset
     )
 }
 
-fun withDrawScreenClicked(asset: String): AnalyticsEvent = object : AnalyticsEvent {
+class WithdrawScreenClicked(asset: String) : AnalyticsEvent {
     override val event: String = "sb_withdrawal_screen_clicked"
     override val params: Map<String, String> = mapOf(
         "asset" to asset

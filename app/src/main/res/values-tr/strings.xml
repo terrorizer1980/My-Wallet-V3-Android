@@ -376,7 +376,7 @@ Başkalarıyla paylaşmayın</string>
   <string name="forget_wallet_warning">Bu işlem bu cihazdaki tüm cüzdan verilerini silecek. Lütfen cüzdan bilgilerinizi başka yerde kaydettiğinizi onaylayın yoksa bu cüzdandaki tüm bitcoinler erişilmez olacaktır!</string>
   <string name="api_fail">Sunucuya bağlanamadı. Lütfen daha sonra tekrar deneyin.</string>
   <string name="large_tx_warning">Büyük boyuta bir bitcoin işlemi. Cüzdanınız geçmişte almış olduğunuz birçok daha küçük ödemeyi birleştirmek zorundadır. Bu da hızlıca onaylanması için nispeten daha yüksek bir ücret gerektirir.</string>
-  <string name="go_back">Geri git</string>
+  <string name="cancel_order_go_back">Geri git</string>
   <string name="accept_higher_fee">Daha yüksek ücreti kabul et</string>
   <string name="large_tx_high_fee_warning">\"Bu işlem, küçük miktarda para üstü iadesi sebebiyle toz tüketimi için daha yüksek bir ücret gerektirir.\"</string>
   <string name="password_reveal_warning">Dikkatli olun! Bu metni göstermek şifrenizin not panonuza kopyalanmasına izin verir ve daha sonra cihazınızdaki tüm uygulamalar tarafından okunabilir. Ayrıca arkanızda bekleyen insanların da farkında olun!</string>
