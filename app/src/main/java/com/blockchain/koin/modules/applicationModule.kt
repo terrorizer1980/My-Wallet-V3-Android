@@ -775,7 +775,8 @@ val applicationModule = applicationContext {
                 tokens = get(),
                 payloadManager = get(),
                 custodialWalletManager = get(),
-                simpleBuyPrefs = get()
+                simpleBuyPrefs = get(),
+                analytics = get()
             )
         }
 
