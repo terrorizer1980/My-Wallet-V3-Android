@@ -111,6 +111,7 @@ class MainPresenter internal constructor(
     private val simpleBuySync: SimpleBuySyncFactory,
     private val crashLogger: CrashLogger,
     private val simpleBuyAvailability: SimpleBuyAvailability,
+    private val cacheCredentialsWiper: CacheCredentialsWiper,
     nabuToken: NabuToken
 ) : MvpPresenter<MainView>() {
 
@@ -366,6 +367,7 @@ class MainPresenter internal constructor(
     internal fun unPair() {
         view?.clearAllDynamicShortcuts()
         metadataLoader.unload()
+        cacheCredentialsWiper.wipe()
     }
 
     internal fun updateTicker() {
