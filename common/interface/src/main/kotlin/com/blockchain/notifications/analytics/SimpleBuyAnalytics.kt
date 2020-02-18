@@ -38,7 +38,6 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     WITHDRAW_WALLET_SCREEN_SUCCESS("sb_withdrawal_screen_success"),
     WITHDRAW_WALLET_SCREEN_FAILURE("sb_withdrawal_screen_failure"),
 
-    BANK_DETAILS_VIEWED("sb_pending_view_bank_details"),
     BANK_DETAILS_CANCEL_PROMPT("sb_cancel_order_prompt"),
     BANK_DETAILS_CANCEL_CONFIRMED("sb_cancel_order_confirmed"),
     BANK_DETAILS_CANCEL_GO_BACK("sb_cancel_order_go_back"),
@@ -60,7 +59,7 @@ fun cryptoChanged(asset: String): AnalyticsEvent = object : AnalyticsEvent {
     )
 }
 
-fun bankDetailsShow(currency: String): AnalyticsEvent = object : AnalyticsEvent {
+class BankDetailsViewed(currency: String) : AnalyticsEvent {
     override val event: String = "sb_bank_details_shown"
     override val params: Map<String, String> = mapOf(
         "currency" to currency

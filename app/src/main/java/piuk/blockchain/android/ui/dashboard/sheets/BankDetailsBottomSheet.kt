@@ -3,7 +3,8 @@ package piuk.blockchain.android.ui.dashboard.sheets
 import android.content.Context
 import android.view.View
 import com.blockchain.notifications.analytics.Analytics
-import com.blockchain.notifications.analytics.SimpleBuyAnalytics
+import com.blockchain.notifications.analytics.BankDetailsViewed
+import com.blockchain.notifications.analytics.bankFieldName
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -85,7 +86,9 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
     }
 
     private fun renderState(view: View, state: SimpleBuyState) {
-        analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_VIEWED)
+        state.selectedCryptoCurrency?.symbol?.let {
+            analytics.logEvent(BankDetailsViewed(it))
+        }
 
         with(view) {
             val amount = state.order.amount
@@ -131,6 +134,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
 
     private val copyListener = object : CopyFieldListener {
         override fun onFieldCopied(field: String) {
+            analytics.logEvent(bankFieldName(field))
             ToastCustom.makeText(
                 requireContext(),
                 resources.getString(R.string.simple_buy_copied_to_clipboard, field),
