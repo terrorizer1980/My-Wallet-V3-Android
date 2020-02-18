@@ -170,7 +170,10 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
                 DashboardSheet.SIMPLE_BUY_PAYMENT -> BankDetailsBottomSheet.newInstance()
                 DashboardSheet.BACKUP_BEFORE_SEND -> ForceBackupForSendSheet.newInstance()
                 DashboardSheet.BASIC_WALLET_TRANSFER -> BasicTransferToWallet.newInstance(state.transferFundsCurrency!!)
-                DashboardSheet.SIMPLE_BUY_CANCEL_ORDER -> SimpleBuyCancelOrderBottomSheet.newInstance(true)
+                DashboardSheet.SIMPLE_BUY_CANCEL_ORDER -> {
+                    analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_PROMPT)
+                    SimpleBuyCancelOrderBottomSheet.newInstance(true)
+                }
                 null -> null
             }
         )
@@ -320,10 +323,10 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
     override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
         if (cancelOrder && orderId != null) {
-            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CANCELLATION_CONFIRMED)
+            analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_CONFIRMED)
             model.process(CancelSimpleBuyOrder(orderId))
         } else {
-            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CANCELLATION_GO_BACK)
+            analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_GO_BACK)
             model.process(ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_PAYMENT))
         }
     }

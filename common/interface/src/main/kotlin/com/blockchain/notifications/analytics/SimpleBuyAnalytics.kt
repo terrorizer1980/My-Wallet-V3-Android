@@ -36,7 +36,13 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     BACK_UP_YOUR_WALLET_CLICKED("sb_backup_wallet_card_clicked"),
 
     WITHDRAW_WALLET_SCREEN_SUCCESS("sb_withdrawal_screen_success"),
-    WITHDRAW_WALLET_SCREEN_FAILURE("sb_withdrawal_screen_failure")
+    WITHDRAW_WALLET_SCREEN_FAILURE("sb_withdrawal_screen_failure"),
+
+    BANK_DETAILS_VIEWED("sb_pending_view_bank_details"),
+    BANK_DETAILS_CANCEL_PROMPT("sb_cancel_order_prompt"),
+    BANK_DETAILS_CANCEL_CONFIRMED("sb_cancel_order_confirmed"),
+    BANK_DETAILS_CANCEL_GO_BACK("sb_cancel_order_go_back"),
+    BANK_DETAILS_CANCEL_ERROR("sb_cancel_order_error")
 }
 
 fun buyConfirmClicked(amount: String, currency: String): AnalyticsEvent = object : AnalyticsEvent {

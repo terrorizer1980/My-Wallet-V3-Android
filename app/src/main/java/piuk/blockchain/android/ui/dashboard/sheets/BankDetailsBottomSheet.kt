@@ -3,8 +3,7 @@ package piuk.blockchain.android.ui.dashboard.sheets
 import android.content.Context
 import android.view.View
 import com.blockchain.notifications.analytics.Analytics
-import com.blockchain.notifications.analytics.PendingTransactionShown
-import com.blockchain.notifications.analytics.WithdrawScreenClicked
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -86,7 +85,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
     }
 
     private fun renderState(view: View, state: SimpleBuyState) {
-        analytics.logEvent(PendingTransactionShown(state.selectedCryptoCurrency?.symbol ?: ""))
+        analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_VIEWED)
 
         with(view) {
             val amount = state.order.amount
@@ -125,10 +124,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
             }
 
             title.text = getString(R.string.simple_buy_pending_buy_sheet_title, state.selectedCryptoCurrency!!)
-            cta_button_ok.setOnClickListenerDebounced {
-                analytics.logEvent(WithdrawScreenClicked(state.selectedCryptoCurrency.symbol))
-                onCtaOKClick()
-            }
+            cta_button_ok.setOnClickListenerDebounced { onCtaOKClick() }
             cta_button_cancel.setOnClickListenerDebounced { onCtaCancelClick(state.id!!) }
         }
     }
