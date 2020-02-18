@@ -54,8 +54,8 @@ class CreateWalletPresenterTest {
         // Act
         subject.parseExtras(intent)
         // Assert
-        verify(view).setTitleText(R.string.new_wallet)
-        verify(view).setNextText(R.string.create_wallet)
+        verify(view).setTitleText(R.string.new_account_title)
+        verify(view).setNextText(R.string.new_account_cta_text)
         verifyNoMoreInteractions(view)
     }
 
