@@ -212,6 +212,60 @@ class SimpleBuySyncFactoryTest {
     }
 
     @Test
+    fun `there are several remote buys, some in awaiting funds some in pending state, no local buy in progress`() {
+
+        whenSimpleBuyIsEnabled()
+
+        val remoteInput1 = BuyOrder(
+            id = ORDER_ID_2,
+            pair = "EUR-BTC",
+            fiat = FiatValue.fromMinor("EUR", 10000),
+            crypto = CryptoValue.ZeroBtc,
+            state = OrderState.PENDING_EXECUTION,
+            expires = MIDDLE_ORDER_DATE
+        )
+
+        val remoteInput2 = BuyOrder(
+            id = EXPECTED_ORDER_ID,
+            pair = "EUR-BTC",
+            fiat = FiatValue.fromMinor("EUR", 10000),
+            crypto = CryptoValue.ZeroBtc,
+            state = OrderState.PENDING_EXECUTION,
+            expires = LAST_ORDER_DATE
+        )
+
+        val remoteInput3 = BuyOrder(
+            id = ORDER_ID_2,
+            pair = "EUR-BTC",
+            fiat = FiatValue.fromMinor("EUR", 10000),
+            crypto = CryptoValue.ZeroBtc,
+            state = OrderState.AWAITING_FUNDS,
+            expires = EARLY_ORDER_DATE
+        )
+
+        whenever(localState.fetch()).thenReturn(null)
+        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(
+            Single.just(
+                listOf(
+                    remoteInput1,
+                    remoteInput2,
+                    remoteInput3
+                )
+            )
+        )
+
+        // If and when we encounter this situation, we will take the one that was submitted last
+        val expectedResult = remoteInput2.toSimpleBuyState() // Minor hack - should prob HC this
+
+        subject.performSync()
+            .test()
+            .assertComplete()
+            .awaitTerminalEvent()
+
+        validateFinalState(expectedResult)
+    }
+
+    @Test
     fun `remote overrides local`() {
         whenSimpleBuyIsEnabled()
         // We have a local confirmed buy, but it has been completed on another device

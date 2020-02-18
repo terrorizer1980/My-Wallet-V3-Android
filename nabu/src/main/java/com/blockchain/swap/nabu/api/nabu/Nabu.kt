@@ -231,7 +231,7 @@ internal interface Nabu {
         @Path("orderId") orderId: String
     ): Completable
 
-    @GET("$NABU_SIMPLE_BUY_ORDERS/{userId}")
+    @GET("$NABU_SIMPLE_BUY_ORDERS/{orderId}")
     fun getBuyOrder(
         @Header("authorization") authHeader: String,
         @Path("orderId") orderId: String

@@ -118,7 +118,7 @@ class SimpleBuySyncFactory(
             .flatMapMaybe { list ->
                 list.sortedByDescending { it.expires }
                     .firstOrNull {
-                        it.state == OrderState.AWAITING_FUNDS
+                        it.state == OrderState.AWAITING_FUNDS || it.state == OrderState.PENDING_EXECUTION
                     }?.let {
                         Maybe.just(it.toSimpleBuyState())
                     } ?: Maybe.empty()
@@ -131,7 +131,7 @@ class SimpleBuySyncFactory(
                 .flatMapMaybe { list ->
                     list.sortedByDescending { it.expires }
                         .firstOrNull {
-                            it.state == OrderState.AWAITING_FUNDS
+                            it.state == OrderState.AWAITING_FUNDS || it.state == OrderState.PENDING_EXECUTION
                         }?.let {
                             Maybe.just(it.toSimpleBuyState())
                         } ?: Maybe.just(localState)
@@ -158,8 +158,8 @@ class SimpleBuySyncFactory(
                 when (state.orderState) {
                     OrderState.UNINITIALISED,
                     OrderState.INITIALISED,
+                    OrderState.PENDING_EXECUTION,
                     OrderState.AWAITING_FUNDS -> Maybe.just(state)
-                    OrderState.PENDING,
                     OrderState.FINISHED,
                     OrderState.CANCELED,
                     OrderState.FAILED -> Maybe.empty()
