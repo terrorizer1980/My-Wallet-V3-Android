@@ -52,8 +52,8 @@
         style="@style/Text.Standard.14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/standard_margin"
         android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_margin"
         android:text="@string/amount"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/separator" />
@@ -63,12 +63,12 @@
         style="@style/Text.Standard.14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginEnd="5dp"
         android:text="@string/amount"
-        android:layout_marginStart="@dimen/standard_margin"
         android:textColor="@color/grey_600"
-        app:layout_constraintStart_toStartOf="parent"
         android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/amount"
         tools:text="Up tp $25,000"
         tools:visibility="visible" />
@@ -91,49 +91,41 @@
         style="@style/Text.Semibold.16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
         android:text="€"
         android:textColor="@color/grey_400"
         android:textSize="32sp"
-        app:layout_constraintBottom_toBottomOf="@+id/input_layout_amount"
-        app:layout_constraintEnd_toStartOf="@+id/input_layout_amount"
+        app:layout_constraintBottom_toBottomOf="@+id/input_amount"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/input_layout_amount"
+        app:layout_constraintTop_toTopOf="@+id/input_amount"
         app:layout_constraintVertical_bias="0.6" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/input_layout_amount"
-        android:layout_width="match_parent"
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/input_amount"
+        style="@style/Text.Semibold.16"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="40dp"
         android:hint="0.00"
-        android:textColorHint="@color/grey_400"
+        android:inputType="numberDecimal"
+        android:textSize="32sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amount">
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/input_amount"
-            style="@style/Text.Semibold.16"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:inputType="numberDecimal"
-            android:textSize="32sp" />
-
-
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintStart_toEndOf="@+id/fiat_currency_symbol"
+        app:layout_constraintTop_toBottomOf="@+id/amount" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/error_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/input_layout_amount"
-        app:layout_constraintStart_toEndOf="@+id/input_layout_amount"
-        app:layout_constraintTop_toTopOf="@+id/input_layout_amount"
-        app:srcCompat="@drawable/ic_simple_buy_invalid_amount" />
+        app:layout_constraintBottom_toBottomOf="@+id/input_amount"
+        app:layout_constraintStart_toEndOf="@+id/input_amount"
+        app:layout_constraintTop_toTopOf="@+id/input_amount"
+        app:srcCompat="@drawable/ic_simple_buy_invalid_amount"
+        tools:visibility="visible" />
 
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -147,7 +139,7 @@
         android:background="@drawable/predefined_amount_text_background"
         android:textColor="@color/grey_800"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_amount"
+        app:layout_constraintTop_toBottomOf="@+id/input_amount"
         tools:text="$4" />
 
 
@@ -163,7 +155,7 @@
         android:textColor="@color/grey_800"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/predefined_amount_1"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_amount"
+        app:layout_constraintTop_toBottomOf="@+id/input_amount"
         tools:text="$4" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -177,7 +169,7 @@
         android:background="@drawable/predefined_amount_text_background"
         android:textColor="@color/grey_800"
         app:layout_constraintStart_toEndOf="@+id/predefined_amount_2"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_amount"
+        app:layout_constraintTop_toBottomOf="@+id/input_amount"
         tools:text="$4" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -191,7 +183,7 @@
         android:background="@drawable/predefined_amount_text_background"
         android:textColor="@color/grey_800"
         app:layout_constraintStart_toEndOf="@+id/predefined_amount_3"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_amount"
+        app:layout_constraintTop_toBottomOf="@+id/input_amount"
         tools:text="$4" />
 
     <androidx.appcompat.widget.AppCompatButton

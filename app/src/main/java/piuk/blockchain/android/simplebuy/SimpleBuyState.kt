@@ -20,7 +20,7 @@ import java.util.regex.Pattern
 data class SimpleBuyState(
     val id: String? = null,
     val supportedPairsAndLimits: List<SimpleBuyPair>? = null,
-    val enteredAmount: String = "",
+    val enteredAmount: String = "", // Major units
     val currency: String = "USD",
     val predefinedAmounts: List<FiatValue> = emptyList(),
     val selectedCryptoCurrency: CryptoCurrency? = null,

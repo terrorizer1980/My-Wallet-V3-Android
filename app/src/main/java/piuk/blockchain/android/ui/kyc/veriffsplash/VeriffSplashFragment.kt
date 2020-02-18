@@ -43,10 +43,12 @@ import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 import kotlinx.android.synthetic.main.fragment_kyc_veriff_splash.*
 import piuk.blockchain.android.R
+import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.toast
+import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
 import java.lang.IllegalStateException
 
 class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresenter>(),
@@ -217,6 +219,9 @@ class VeriffSplashFragment : BaseFragment<VeriffSplashView, VeriffSplashPresente
         error_layout.visible()
         content_view.gone()
         loading_view.gone()
+        btn_goto_swap.visibleIf {
+            progressListener.campaignType != CampaignType.SimpleBuy
+        }
     }
 
     private fun showEmptyState() {
