@@ -1,5 +1,7 @@
 package piuk.blockchain.android.ui.dashboard
 
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.CryptoCurrency
@@ -22,7 +24,8 @@ class DashboardInteractor(
     private val tokens: AssetTokenLookup,
     private val payloadManager: PayloadManager,
     private val custodialWalletManager: CustodialWalletManager,
-    private val simpleBuyPrefs: SimpleBuyPrefs
+    private val simpleBuyPrefs: SimpleBuyPrefs,
+    private val analytics: Analytics
 ) {
     // We have a problem here, in that pax init depends on ETH init
     // Ultimately, we want to init metadata straight after decrypting (or creating) the wallet
@@ -117,7 +120,10 @@ class DashboardInteractor(
             custodialWalletManager.deleteBuyOrder(it)
                 .subscribeBy(
                     onComplete = { simpleBuyPrefs.clearState() },
-                    onError = { error -> Timber.e(error) }
+                    onError = { error ->
+                        analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_ERROR)
+                        Timber.e(error)
+                    }
                 )
         } ?: Completable.complete()
             .subscribeBy(
