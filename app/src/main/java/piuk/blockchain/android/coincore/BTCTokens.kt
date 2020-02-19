@@ -35,6 +35,10 @@ class BTCTokens(
     override fun defaultAccount(): Single<AccountReference> =
         Single.just(payloadDataManager.defaultAccount.toAccountReference())
 
+    override fun receiveAddress(): Single<String> =
+        payloadDataManager.getNextReceiveAddress(payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex))
+            .singleOrError()
+
     override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.BTC)
 

@@ -18,6 +18,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.zipWith
 import kotlinx.android.synthetic.main.dialog_basic_transfer_to_wallet.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
@@ -63,7 +64,8 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
 
     // Hold on to the address and crypto value; we'll need them for the API
     private var valueToSend: CryptoValue? = null
-    private var addressToSend: AccountReference? = null
+    private var addressToSend: String? = null
+    private var accountRef: AccountReference? = null
 
     override fun initControls(view: View) {
         with(view) {
@@ -95,11 +97,12 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
                     }
                 )
 
-            disposables += token.defaultAccount()
+            disposables += token.receiveAddress().zipWith(token.defaultAccount())
                 .observeOn(uiScheduler)
                 .subscribeBy(
-                    onSuccess = { account ->
-                        addressToSend = account
+                    onSuccess = { (address, account) ->
+                        addressToSend = address
+                        accountRef = account
                         title.text = getString(R.string.basic_transfer_title, account.label)
                         checkCtaEnable()
                     },
@@ -134,7 +137,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
         requireNotNull(amount)
         requireNotNull(address)
 
-        disposables += custodialWallet.transferFundsToWallet(amount, address.receiveAddress)
+        disposables += custodialWallet.transferFundsToWallet(amount, address)
             .observeOn(uiScheduler)
             .doOnSubscribe { updateTransferInProgress() }
             .subscribeBy(
@@ -194,7 +197,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
         if (v != null && a != null) {
             dialogView.cta_button.isEnabled = true
 
-            if (v.currency != a.cryptoCurrency) {
+            if (v.currency != accountRef?.cryptoCurrency) {
                 throw IllegalStateException("Crypto currency mismatch. Aborting!")
             }
         }

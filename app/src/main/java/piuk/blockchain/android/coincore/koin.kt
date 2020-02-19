@@ -36,7 +36,8 @@ val coincoreModule = applicationContext {
                 rxBus = get(),
                 crashLogger = get(),
                 stringUtils = get(),
-                custodialWalletManager = get()
+                custodialWalletManager = get(),
+                environmentSettings = get()
             )
         }
 

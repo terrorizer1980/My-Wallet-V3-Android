@@ -12,9 +12,11 @@ import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import org.bitcoinj.core.Address
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
+import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -31,6 +33,7 @@ class BCHTokens(
     private val stringUtils: StringUtils,
     private val crashLogger: CrashLogger,
     private val custodialWalletManager: CustodialWalletManager,
+    private val environmentSettings: EnvironmentConfig,
     rxBus: RxBus
 ) : BitcoinLikeTokens(rxBus) {
 
@@ -42,6 +45,15 @@ class BCHTokens(
             val a = getAccountMetadataList()[getDefaultAccountPosition()]
             Single.just(a.toAccountReference())
         }
+
+    override fun receiveAddress(): Single<String> =
+        bchDataManager.getNextReceiveAddress(
+            bchDataManager.getAccountMetadataList().indexOfFirst {
+                it.xpub == bchDataManager.getDefaultGenericMetadataAccount()!!.xpub
+            }).map {
+            val address = Address.fromBase58(environmentSettings.bitcoinCashNetworkParameters, it)
+            address.toCashAddress()
+        }.singleOrError()
 
     override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.BCH)

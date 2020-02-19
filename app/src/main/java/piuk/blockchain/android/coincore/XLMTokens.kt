@@ -32,6 +32,11 @@ class XLMTokens(
     override fun defaultAccount(): Single<AccountReference> =
         xlmDataManager.defaultAccountReference()
 
+    override fun receiveAddress(): Single<String> =
+        defaultAccount().map {
+            it.receiveAddress
+        }
+
     override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.XLM)
 

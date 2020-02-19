@@ -65,6 +65,20 @@ class BankDetailsViewed(currency: String) : AnalyticsEvent {
     )
 }
 
+class CustodialBalanceClicked(currency: String) : AnalyticsEvent {
+    override val event: String = "sb_trading_wallet_clicked"
+    override val params: Map<String, String> = mapOf(
+        "currency" to currency
+    )
+}
+
+class CustodialBalanceSendClicked(currency: String) : AnalyticsEvent {
+    override val event: String = "sb_trading_wallet_send"
+    override val params: Map<String, String> = mapOf(
+        "currency" to currency
+    )
+}
+
 fun bankFieldName(field: String): AnalyticsEvent = object : AnalyticsEvent {
     override val event: String = "sb_bank_details_copied"
     override val params: Map<String, String> = mapOf(

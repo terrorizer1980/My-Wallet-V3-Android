@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 enum class AssetFilter {
     Total,
     Wallet,
-//    ColdStorage,
+    //    ColdStorage,
 //    Lockbox,
     Custodial
 }
@@ -45,7 +45,8 @@ interface AssetTokens {
     val asset: CryptoCurrency
 
     fun defaultAccount(): Single<AccountReference>
-//    fun accounts(): Single<AccountsList>
+    //    fun accounts(): Single<AccountsList>
+    fun receiveAddress(): Single<String>
 
     fun totalBalance(filter: AssetFilter = AssetFilter.Total): Single<CryptoValue>
     fun balance(account: AccountReference): Single<CryptoValue>
@@ -77,7 +78,7 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
         .observeOn(Schedulers.computation())
         .subscribeBy(onNext = ::onLogoutSignal)
 
-    protected open fun onLogoutSignal(event: AuthEvent) { }
+    protected open fun onLogoutSignal(event: AuthEvent) {}
 
     final override fun totalBalance(filter: AssetFilter): Single<CryptoValue> =
         when (filter) {
