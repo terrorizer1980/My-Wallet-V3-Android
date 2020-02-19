@@ -124,8 +124,14 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
 
         error_icon.goneIf(newState.error == null)
         input_amount.backgroundTintList =
-            ColorStateList.valueOf(resources.getColor(if (newState.error != null)
-                R.color.red_600 else R.color.blue_600))
+            ColorStateList.valueOf(
+                resources.getColor(
+                    if (newState.error != null)
+                        R.color.red_600
+                    else
+                        R.color.blue_600
+                )
+            )
 
         newState.error?.let {
             handleError(it, newState)

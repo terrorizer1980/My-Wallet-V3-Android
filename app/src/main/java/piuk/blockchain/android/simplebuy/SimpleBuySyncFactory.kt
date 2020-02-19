@@ -112,7 +112,7 @@ class SimpleBuySyncFactory(
                                 if (localState.orderState == OrderState.AWAITING_FUNDS) {
                                     updateWithRemote(localState)
                                         .doOnComplete { localStateAdapter.clear() }
-                                        .doOnSuccess { localStateAdapter.update(it) }
+                                        .doOnSuccess { state -> localStateAdapter.update(state) }
                                 } else {
                                     Maybe.empty<SimpleBuyState>()
                                 }

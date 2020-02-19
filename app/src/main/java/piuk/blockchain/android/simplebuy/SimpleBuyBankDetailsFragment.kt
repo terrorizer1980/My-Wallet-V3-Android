@@ -54,7 +54,8 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
                 "modular_terms_and_conditions" to Uri.parse(MODULAR_TERMS_AND_CONDITIONS)
             )
             bank_deposit_instruction.text =
-                stringUtils.getStringWithMappedLinks(R.string.recipient_name_must_match_gbp,
+                stringUtils.getStringWithMappedLinks(
+                    R.string.recipient_name_must_match_gbp,
                     linksMap,
                     requireActivity()
                 )
@@ -72,8 +73,10 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
                 amount,
                 this
             )
-            secure_transfer.text = getString(R.string.simple_buy_securely_transfer,
-                newState.order.amount?.currencyCode ?: "")
+            secure_transfer.text = getString(
+                R.string.simple_buy_securely_transfer,
+                newState.order.amount?.currencyCode ?: ""
+            )
         }
     }
 

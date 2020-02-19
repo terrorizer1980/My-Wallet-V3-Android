@@ -72,7 +72,11 @@ class AnnouncementList(
 
         if (isEnabled.get()) {
             disposables += showNextAnnouncement(host)
-                .subscribeBy(onError = Timber::e)
+                .doOnSubscribe { Timber.d("SB Sync: Checking announcements...") }
+                .subscribeBy(
+                    onComplete = { Timber.d("SB Sync: Announcements checked") },
+                    onError = Timber::e
+                )
         }
     }
 
