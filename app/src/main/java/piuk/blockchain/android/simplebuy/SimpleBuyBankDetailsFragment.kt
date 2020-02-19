@@ -37,7 +37,7 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
         super.onViewCreated(view, savedInstanceState)
         model.process(SimpleBuyIntent.FetchBankAccount)
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.BANK_DETAILS))
-        activity.setupToolbar(R.string.transfer_details, false)
+        activity.setupToolbar(R.string.transfer_details, !navigator().hasMoreThanOneFragmentInTheStack())
         confirm.setOnClickListener {
             analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_FINISHED)
             navigator().exitSimpleBuyFlow()
@@ -82,7 +82,7 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
     }
 
     override fun backPressedHandled(): Boolean {
-        return true
+        return navigator().hasMoreThanOneFragmentInTheStack()
     }
 
     override fun navigator(): SimpleBuyNavigator =
