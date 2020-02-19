@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import com.blockchain.notifications.analytics.BankDetailsViewed
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
-import com.blockchain.notifications.analytics.bankDetailsShow
 import com.blockchain.notifications.analytics.bankFieldName
 import com.blockchain.ui.urllinks.MODULAR_TERMS_AND_CONDITIONS
 import com.google.android.material.snackbar.Snackbar
@@ -63,7 +63,7 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
             bank_deposit_instruction.text = getString(R.string.recipient_name_must_match_eur)
         }
 
-        analytics.logEvent(bankDetailsShow(newState.currency))
+        analytics.logEvent(BankDetailsViewed(newState.currency))
 
         val amount = newState.order.amount
         if (newState.bankAccount != null && amount != null) {

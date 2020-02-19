@@ -32,6 +32,9 @@ class PAXTokens(
     override fun defaultAccount(): Single<AccountReference> =
         Single.just(getDefaultPaxAccountRef())
 
+    override fun receiveAddress(): Single<String> =
+        Single.just(getDefaultPaxAccountRef().receiveAddress)
+
     private fun getDefaultPaxAccountRef(): AccountReference {
         val paxAddress = erc20Account.ethDataManager.getEthWallet()?.account?.address
             ?: throw Exception("No ether wallet found")
@@ -56,7 +59,9 @@ class PAXTokens(
         exchangeRates.fetchLastPrice(CryptoCurrency.PAX, currencyPrefs.selectedFiatCurrency)
 
     override fun historicRate(epochWhen: Long): Single<FiatValue> =
-        exchangeRates.getHistoricPrice(CryptoCurrency.PAX, currencyPrefs.selectedFiatCurrency, epochWhen)
+        exchangeRates.getHistoricPrice(CryptoCurrency.PAX,
+            currencyPrefs.selectedFiatCurrency,
+            epochWhen)
 
     // PAX does not support historic prices, so return an empty list
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =

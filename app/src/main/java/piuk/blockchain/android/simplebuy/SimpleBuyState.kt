@@ -20,7 +20,7 @@ import java.util.regex.Pattern
 data class SimpleBuyState(
     val id: String? = null,
     val supportedPairsAndLimits: List<SimpleBuyPair>? = null,
-    val enteredAmount: String = "",
+    val enteredAmount: String = "", // Major units
     val currency: String = "USD",
     val predefinedAmounts: List<FiatValue> = emptyList(),
     val selectedCryptoCurrency: CryptoCurrency? = null,
@@ -103,16 +103,14 @@ data class SimpleBuyState(
 }
 
 enum class KycState {
-    PENDING, /** no docs submitted for Gold. Or Gold submit was error */
+    PENDING, /** no docs submitted for Gold. Or Gold submit was error. Or kyc backend query returned an error  */
     FAILED, /** Docs processed, failed kyc. Not error state. */
-    IN_REVIEW,  /** Docs processed under manual review */
-    UNDECIDED,  /** Docs submitted, no result know from server yet */
-    VERIFIED_AND_ELIGIBLE,  /** Docs uploaded, processed and kyc passed. Eligible for simple buy */
-    VERIFIED_BUT_NOT_ELIGIBLE;  /** Docs uploaded, processed and kyc passed. User is NOT eligible for simple buy. */
+    IN_REVIEW, /** Docs processed under manual review */
+    UNDECIDED, /** Docs submitted, no result know from server yet */
+    VERIFIED_AND_ELIGIBLE, /** Docs uploaded, processed and kyc passed. Eligible for simple buy */
+    VERIFIED_BUT_NOT_ELIGIBLE; /** Docs uploaded, processed and kyc passed. User is NOT eligible for simple buy. */
 
     fun verified() = this == VERIFIED_AND_ELIGIBLE || this == VERIFIED_BUT_NOT_ELIGIBLE
-
-    fun docsSubmittedButNotVerified() = this == IN_REVIEW || this == FAILED
 
     fun docsSubmitted() = this != PENDING
 }

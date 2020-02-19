@@ -47,7 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:text="@string/go_back"/>
+            android:text="@string/cancel_order_go_back"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/cancel_order"
@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:text="@string/cancel_order" />
+            android:text="@string/cancel_order_do_cancel" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

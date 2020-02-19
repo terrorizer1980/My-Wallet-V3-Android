@@ -1,5 +1,6 @@
 package piuk.blockchain.android.simplebuy
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import com.blockchain.extensions.exhaustive
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
+import com.blockchain.notifications.analytics.buyConfirmClicked
 import com.blockchain.notifications.analytics.cryptoChanged
 import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
@@ -36,12 +38,13 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
 
     override val model: SimpleBuyModel by inject()
 
+    private var lastState: SimpleBuyState? = null
+
     override fun navigator(): SimpleBuyNavigator =
         (activity as? SimpleBuyNavigator)
             ?: throw IllegalStateException("Parent must implement SimpleBuyNavigator")
 
     private val currencyPrefs: CurrencyPrefs by inject()
-
     private val fiatSymbol: String
         get() = Currency.getInstance(currencyPrefs.selectedFiatCurrency).getSymbol(Locale.getDefault())
 
@@ -62,24 +65,16 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         model.process(SimpleBuyIntent.FetchPredefinedAmounts(currencyPrefs.selectedFiatCurrency))
         analytics.logEvent(SimpleBuyAnalytics.BUY_FORM_SHOWN)
         fiat_currency_symbol.text = fiatSymbol
-        input_layout_amount.isHintAnimationEnabled = false
         input_amount.addTextChangedListener(object : AfterTextChangedWatcher() {
             override fun afterTextChanged(s: Editable?) {
-                input_layout_amount.hint =
-                    if (s?.toString().isNullOrEmpty() && input_amount.hasFocus().not()) "0.00" else ""
                 model.process(SimpleBuyIntent.EnteredAmount(s.toString()))
             }
         })
 
-        input_amount.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                input_layout_amount.hint = ""
-            }
-        }
-
         btn_continue.setOnClickListener {
             model.process(SimpleBuyIntent.BuyButtonClicked)
-            analytics.logEvent(SimpleBuyAnalytics.BUY_CONFIRM_CLICKED)
+            analytics.logEvent(buyConfirmClicked(lastState?.order?.amount?.valueMinor.toString(),
+                lastState?.currency ?: ""))
         }
     }
 
@@ -90,6 +85,8 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     }
 
     override fun render(newState: SimpleBuyState) {
+        lastState = newState
+
         if (newState.errorState != null) {
             showErrorState(newState.errorState)
             return
@@ -133,8 +130,11 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
 
         btn_continue.isEnabled = newState.isAmountValid
         input_amount.isEnabled = newState.selectedCryptoCurrency != null
+
         error_icon.goneIf(newState.error == null)
-        input_layout_amount.error = if (newState.error != null) " " else null
+        input_amount.backgroundTintList =
+            ColorStateList.valueOf(resources.getColor(if (newState.error != null)
+                R.color.red_600 else R.color.blue_600))
 
         newState.error?.let {
             handleError(it, newState)

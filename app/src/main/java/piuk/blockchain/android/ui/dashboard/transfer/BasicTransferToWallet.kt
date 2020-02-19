@@ -3,6 +3,8 @@ package piuk.blockchain.android.ui.dashboard.transfer
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
+import com.blockchain.notifications.analytics.WithdrawScreenShown
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyError
 import info.blockchain.balance.AccountReference
@@ -15,6 +17,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.zipWith
 import kotlinx.android.synthetic.main.dialog_basic_transfer_to_wallet.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
@@ -59,14 +62,15 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
 
     // Hold on to the address and crypto value; we'll need them for the API
     private var valueToSend: CryptoValue? = null
-    private var addressToSend: AccountReference? = null
+    private var addressToSend: String? = null
+    private var accountRef: AccountReference? = null
 
     override fun initControls(view: View) {
         with(view) {
+            analytics.logEvent(WithdrawScreenShown(cryptoCurrency))
             cta_button.setOnClickListenerDebounced { onCtaClick() }
 
-            complete_title.text =
-                getString(R.string.basic_transfer_complete_title, cryptoCurrency.symbol)
+            complete_title.text = getString(R.string.basic_transfer_complete_title, cryptoCurrency.symbol)
 
             image.setCoinIcon(cryptoCurrency)
 
@@ -91,11 +95,12 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
                     }
                 )
 
-            disposables += token.defaultAccount()
+            disposables += token.receiveAddress().zipWith(token.defaultAccount())
                 .observeOn(uiScheduler)
                 .subscribeBy(
-                    onSuccess = { account ->
-                        addressToSend = account
+                    onSuccess = { (address, account) ->
+                        addressToSend = address
+                        accountRef = account
                         title.text = getString(R.string.basic_transfer_title, account.label)
                         checkCtaEnable()
                     },
@@ -130,7 +135,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
         requireNotNull(amount)
         requireNotNull(address)
 
-        disposables += custodialWallet.transferFundsToWallet(amount, address.receiveAddress)
+        disposables += custodialWallet.transferFundsToWallet(amount, address)
             .observeOn(uiScheduler)
             .doOnSubscribe { updateTransferInProgress() }
             .subscribeBy(
@@ -154,6 +159,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
     }
 
     private fun updateTransferDone() {
+        analytics.logEvent(SimpleBuyAnalytics.WITHDRAW_WALLET_SCREEN_SUCCESS)
         with(dialogView) {
             image.setImageDrawable(R.drawable.ic_success_check)
 
@@ -163,6 +169,9 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
     }
 
     private fun updateTransferError(t: Throwable) {
+
+        analytics.logEvent(SimpleBuyAnalytics.WITHDRAW_WALLET_SCREEN_FAILURE)
+
         with(dialogView) {
             image.setImageDrawable(R.drawable.vector_pit_request_failure)
 
@@ -186,7 +195,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
         if (v != null && a != null) {
             dialogView.cta_button.isEnabled = true
 
-            if (v.currency != a.cryptoCurrency) {
+            if (v.currency != accountRef?.cryptoCurrency) {
                 throw IllegalStateException("Crypto currency mismatch. Aborting!")
             }
         }

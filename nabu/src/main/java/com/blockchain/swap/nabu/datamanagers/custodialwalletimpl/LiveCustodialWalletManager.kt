@@ -169,7 +169,7 @@ private fun OrderStateResponse.toLocalState(): OrderState =
         OrderStateResponse.PENDING_DEPOSIT -> OrderState.AWAITING_FUNDS
         OrderStateResponse.FINISHED -> OrderState.FINISHED
         OrderStateResponse.PENDING_EXECUTION,
-        OrderStateResponse.DEPOSIT_MATCHED -> OrderState.PENDING
+        OrderStateResponse.DEPOSIT_MATCHED -> OrderState.PENDING_EXECUTION
         OrderStateResponse.FAILED,
         OrderStateResponse.EXPIRED -> OrderState.FAILED
         OrderStateResponse.CANCELED -> OrderState.CANCELED

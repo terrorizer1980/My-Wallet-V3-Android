@@ -89,6 +89,10 @@ class MetadataLoader(
         accessState.clearPin()
         buyDataManager.wipe()
         paxAccount.clear()
+        buyDataManager.wipe()
+        shapeShiftDataManager.clearShapeShiftData()
+        paxAccount.clear()
+
         _isLoaded.set(false)
     }
 }

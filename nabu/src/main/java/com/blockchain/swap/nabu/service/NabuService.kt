@@ -20,7 +20,6 @@ import com.blockchain.swap.nabu.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
@@ -298,11 +297,10 @@ class NabuService(retrofit: Retrofit) {
         sessionToken.authHeader, orderId
     ).wrapErrorMessage()
 
-    @Suppress("MoveLambdaOutsideParentheses")
     fun getBalanceForAsset(
         sessionToken: NabuSessionTokenResponse,
         cryptoCurrency: CryptoCurrency
-    ): Maybe<SimpleBuyBalanceResponse> = service.getBalanceForAsset(
+    ) = service.getBalanceForAsset(
         sessionToken.authHeader, cryptoCurrency.symbol
     ).flatMapMaybe {
         when (it.code()) {
@@ -310,7 +308,7 @@ class NabuService(retrofit: Retrofit) {
             204 -> Maybe.empty()
             else -> Maybe.error(HttpException(it))
         }
-    }
+    }.wrapErrorMessage()
 
     fun transferFunds(
         sessionToken: NabuSessionTokenResponse,

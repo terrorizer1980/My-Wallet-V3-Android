@@ -28,6 +28,10 @@ class STXTokens(
     override fun defaultAccount(): Single<AccountReference> =
         Single.just(getDefaultStxAccountRef())
 
+    override fun receiveAddress(): Single<String> {
+        TODO("not implemented")
+    }
+
     private fun getDefaultStxAccountRef(): AccountReference {
         val hdWallets = payloadManager.payload?.hdWallets
             ?: throw IllegalStateException("Wallet not available")

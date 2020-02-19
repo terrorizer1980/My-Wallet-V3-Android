@@ -76,6 +76,7 @@ import piuk.blockchain.android.ui.dashboard.DashboardState
 import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsCalculator
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
+import piuk.blockchain.android.ui.home.CacheCredentialsWiper
 import piuk.blockchain.android.ui.home.MainPresenter
 import piuk.blockchain.android.ui.home.MetadataLoader
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
@@ -255,6 +256,18 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            CacheCredentialsWiper(
+                ethDataManager = get(),
+                bchDataManager = get(),
+                payloadManager = get(),
+                walletOptionsState = get(),
+                buyConditions = get(),
+                coinifyDataManager = get(),
+                nabuDataManager = get()
+            )
+        }
+
+        factory {
             MainPresenter(
                 prefs = get(),
                 appUtil = get(),
@@ -279,7 +292,8 @@ val applicationModule = applicationContext {
                 nabuToken = get(),
                 simpleBuySync = get(),
                 crashLogger = get(),
-                simpleBuyAvailability = get()
+                simpleBuyAvailability = get(),
+                cacheCredentialsWiper = get()
             )
         }
 
@@ -773,7 +787,10 @@ val applicationModule = applicationContext {
         factory {
             DashboardInteractor(
                 tokens = get(),
-                payloadManager = get()
+                payloadManager = get(),
+                custodialWalletManager = get(),
+                simpleBuyPrefs = get(),
+                analytics = get()
             )
         }
 

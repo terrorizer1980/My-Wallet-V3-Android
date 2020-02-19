@@ -13,7 +13,7 @@ enum class OrderState {
     UNINITIALISED,
     INITIALISED,
     AWAITING_FUNDS, // Waiting for a bank transfer etc
-    PENDING, // Funds received, but crypto not yet released (don't know if we'll need this?)
+    PENDING_EXECUTION, // Funds received, but crypto not yet released (don't know if we'll need this?)
     FINISHED,
     CANCELED,
     FAILED

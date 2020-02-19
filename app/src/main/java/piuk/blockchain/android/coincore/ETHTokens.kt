@@ -40,6 +40,9 @@ class ETHTokens(
     override fun defaultAccount(): Single<AccountReference> =
         Single.just(getDefaultEthAccountRef())
 
+    override fun receiveAddress(): Single<String> =
+        Single.just(getDefaultEthAccountRef().receiveAddress)
+
     private fun getDefaultEthAccountRef(): AccountReference =
         ethDataManager.getEthWallet()?.account?.toAccountReference()
             ?: throw Exception("No ether wallet found")
@@ -66,10 +69,14 @@ class ETHTokens(
         exchangeRates.fetchLastPrice(CryptoCurrency.ETHER, currencyPrefs.selectedFiatCurrency)
 
     override fun historicRate(epochWhen: Long): Single<FiatValue> =
-        exchangeRates.getHistoricPrice(CryptoCurrency.ETHER, currencyPrefs.selectedFiatCurrency, epochWhen)
+        exchangeRates.getHistoricPrice(CryptoCurrency.ETHER,
+            currencyPrefs.selectedFiatCurrency,
+            epochWhen)
 
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
-        historicRates.getHistoricPriceSeries(CryptoCurrency.ETHER, currencyPrefs.selectedFiatCurrency, period)
+        historicRates.getHistoricPriceSeries(CryptoCurrency.ETHER,
+            currencyPrefs.selectedFiatCurrency,
+            period)
 
     private var isWalletUninitialised = true
 

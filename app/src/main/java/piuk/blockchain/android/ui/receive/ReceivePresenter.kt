@@ -96,8 +96,8 @@ class ReceivePresenter(
         }
     }
 
-    override fun onViewAttached() { }
-    override fun onViewDetached() { }
+    override fun onViewAttached() {}
+    override fun onViewDetached() {}
 
     internal fun onResume(defaultAccountPosition: Int) {
         when (currencyState.cryptoCurrency) {
@@ -330,8 +330,8 @@ class ReceivePresenter(
                 FormatsUtil.isValidBitcoinAddress(it) ->
                     v.showShareBottomSheet(getBitcoinUri(it, v.getBtcAmount()))
                 FormatsUtil.isValidEthereumAddress(it) ||
-                FormatsUtil.isValidBitcoinCashAddress(environmentSettings.bitcoinCashNetworkParameters, it) ||
-                it.isValidXlmQr() -> v.showShareBottomSheet(it)
+                        FormatsUtil.isValidBitcoinCashAddress(environmentSettings.bitcoinCashNetworkParameters, it) ||
+                        it.isValidXlmQr() -> v.showShareBottomSheet(it)
                 else -> throw IllegalStateException("Unknown address format $selectedAddress")
             }
         }

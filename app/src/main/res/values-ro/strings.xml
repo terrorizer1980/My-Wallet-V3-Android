@@ -390,7 +390,7 @@
  consolidați multe plăți mai mici pe care le-ați primit în trecut. Acest lucru necesită un relativ 
  taxă mare pentru a fi confirmată rapid. 
 </string>
-  <string name="go_back">Mergi înapoi</string>
+  <string name="cancel_order_go_back">Mergi înapoi</string>
   <string name="accept_higher_fee">Acceptați o taxă mai mare</string>
   <string name="large_tx_high_fee_warning">\"Această tranzacție necesită o taxă mai mare pentru consumul de praf datorită cantității mici de schimbare care trebuie returnată\".</string>
   <string name="password_reveal_warning">Ai grija! Descoperirea acestui text permite copierea parolei în clipboard, care poate fi apoi citită de toate aplicațiile de pe dispozitiv. De asemenea, fiți conștienți de oamenii care stau în spatele dvs.!</string>

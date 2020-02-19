@@ -11,7 +11,7 @@ class SimpleBuyFlowNavigator(private val simpleBuyModel: SimpleBuyModel, private
         simpleBuyModel.state.flatMap {
             if (startedFromKycResume || it.currentScreen == FlowScreen.KYC) {
                 tierService.tiers().toObservable().map { tier ->
-                    when(tier.combinedState) {
+                    when (tier.combinedState) {
                         Kyc2TierState.Tier2Approved -> FlowScreen.CHECKOUT
                         Kyc2TierState.Tier2InPending,
                         Kyc2TierState.Tier2InReview,

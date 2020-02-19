@@ -21,7 +21,6 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.exceptions.HDWalletException
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
-import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
@@ -111,6 +110,7 @@ class MainPresenter internal constructor(
     private val simpleBuySync: SimpleBuySyncFactory,
     private val crashLogger: CrashLogger,
     private val simpleBuyAvailability: SimpleBuyAvailability,
+    private val cacheCredentialsWiper: CacheCredentialsWiper,
     nabuToken: NabuToken
 ) : MvpPresenter<MainView>() {
 
@@ -211,7 +211,7 @@ class MainPresenter internal constructor(
                 if (firstLoad) {
                     simpleBuySync.performSync()
                 } else {
-                    Completable.complete()
+                    simpleBuySync.lightweightSync()
                 }
             }
             .observeOn(AndroidSchedulers.mainThread())
@@ -366,6 +366,7 @@ class MainPresenter internal constructor(
     internal fun unPair() {
         view?.clearAllDynamicShortcuts()
         metadataLoader.unload()
+        cacheCredentialsWiper.wipe()
     }
 
     internal fun updateTicker() {

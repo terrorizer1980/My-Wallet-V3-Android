@@ -14,12 +14,13 @@ import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
+import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(),
     SimpleBuyScreen,
-    CancelOrderConfirmationListener {
+    SimpleBuyCancelOrderBottomSheet.Host {
 
     override val model: SimpleBuyModel by inject()
     var lastState: SimpleBuyState? = null
@@ -36,6 +37,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
             model.process(SimpleBuyIntent.ConfirmOrder)
             analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CONFIRMED)
         }
+
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.CHECKOUT))
         activity.setupToolbar(R.string.checkout)
         analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_SHOWN)
@@ -64,10 +66,9 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         date.text = newState.order.quote?.formatDate()
         button_buy.isEnabled = newState.bankAccount != null && newState.order.quote != null
 
-        button_cancel.setOnClickListener {
-            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_PRESS_CANCELL)
-            showBottomSheet(SimpleBuyCancelOrderBottomSheet.newInstance(newState.selectedCryptoCurrency
-                ?: return@setOnClickListener))
+        button_cancel.setOnClickListenerDebounced {
+            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_PRESS_CANCEL)
+            showBottomSheet(SimpleBuyCancelOrderBottomSheet.newInstance())
         }
 
         when (newState.order.orderState) {
@@ -84,11 +85,15 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         showBottomSheet(ErrorSlidingBottomDialog.newInstance(activity))
     }
 
-    override fun onOrderCancelationConfirmed() {
-        model.process(SimpleBuyIntent.CancelOrder)
-        model.process(SimpleBuyIntent.ClearState)
-        navigator().exitSimpleBuyFlow()
-        analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CANCELLATION_CONFIRMED)
+    override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
+        if (cancelOrder) {
+            model.process(SimpleBuyIntent.CancelOrder)
+            model.process(SimpleBuyIntent.ClearState)
+            navigator().exitSimpleBuyFlow()
+            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CANCELLATION_CONFIRMED)
+        } else {
+            analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CANCELLATION_GO_BACK)
+        }
     }
 
     override fun onPause() {
@@ -108,8 +113,4 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 private fun Quote.formatDate(): String {
     val format = SimpleDateFormat("MMMM d, yyyy @ hh:mm aa", Locale.getDefault())
     return format.format(this.date)
-}
-
-interface CancelOrderConfirmationListener {
-    fun onOrderCancelationConfirmed()
 }
