@@ -6,8 +6,10 @@ import android.os.Bundle
 import androidx.annotation.CallSuper
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.view.View
+import com.blockchain.notifications.analytics.Analytics
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import org.koin.android.ext.android.inject
 
 abstract class SlidingModalBottomDialog : BottomSheetDialogFragment() {
 
@@ -22,6 +24,8 @@ abstract class SlidingModalBottomDialog : BottomSheetDialogFragment() {
     }
 
     protected lateinit var dialogView: View
+
+    protected val analytics: Analytics by inject()
 
     final override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dlg = super.onCreateDialog(savedInstanceState) as BottomSheetDialog

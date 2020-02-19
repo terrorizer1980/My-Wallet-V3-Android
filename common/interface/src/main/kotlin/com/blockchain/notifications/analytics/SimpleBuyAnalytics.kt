@@ -1,5 +1,7 @@
 package com.blockchain.notifications.analytics
 
+import info.blockchain.balance.CryptoCurrency
+
 enum class SimpleBuyAnalytics(override val event: String, override val params: Map<String, String> = emptyMap()) :
     AnalyticsEvent {
 
@@ -65,17 +67,17 @@ class BankDetailsViewed(currency: String) : AnalyticsEvent {
     )
 }
 
-class CustodialBalanceClicked(currency: String) : AnalyticsEvent {
+class CustodialBalanceClicked(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_trading_wallet_clicked"
     override val params: Map<String, String> = mapOf(
-        "currency" to currency
+        "currency" to cryptoCurrency.symbol
     )
 }
 
-class CustodialBalanceSendClicked(currency: String) : AnalyticsEvent {
+class CustodialBalanceSendClicked(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_trading_wallet_send"
     override val params: Map<String, String> = mapOf(
-        "currency" to currency
+        "currency" to cryptoCurrency.symbol
     )
 }
 
@@ -86,17 +88,17 @@ fun bankFieldName(field: String): AnalyticsEvent = object : AnalyticsEvent {
     )
 }
 
-class PendingTransactionShown(currency: String) : AnalyticsEvent {
+class PendingTransactionShown(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_pending_modal_shown"
     override val params: Map<String, String> = mapOf(
-        "currency" to currency
+        "currency" to cryptoCurrency.symbol
     )
 }
 
-class WithdrawScreenShown(asset: String) : AnalyticsEvent {
+class WithdrawScreenShown(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_withdrawal_screen_shown"
     override val params: Map<String, String> = mapOf(
-        "asset" to asset
+        "asset" to cryptoCurrency.symbol
     )
 }
 

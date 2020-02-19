@@ -3,7 +3,6 @@ package piuk.blockchain.android.ui.dashboard.transfer
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
-import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.WithdrawScreenShown
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
@@ -59,7 +58,6 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
     private val disposables = CompositeDisposable()
     private val uiScheduler = AndroidSchedulers.mainThread()
 
-    private val analytics: Analytics by inject()
     override val layoutResource: Int = R.layout.dialog_basic_transfer_to_wallet
 
     // Hold on to the address and crypto value; we'll need them for the API
@@ -69,7 +67,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
 
     override fun initControls(view: View) {
         with(view) {
-            analytics.logEvent(WithdrawScreenShown(cryptoCurrency.symbol))
+            analytics.logEvent(WithdrawScreenShown(cryptoCurrency))
             cta_button.setOnClickListenerDebounced { onCtaClick() }
 
             complete_title.text = getString(R.string.basic_transfer_complete_title, cryptoCurrency.symbol)

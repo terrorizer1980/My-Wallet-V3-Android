@@ -8,6 +8,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.MenuCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.extensions.exhaustive
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.CustodialBalanceClicked
+import com.blockchain.notifications.analytics.CustodialBalanceSendClicked
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.balance.formatWithUnit
@@ -31,7 +34,11 @@ data class AssetDetailItem(
 
 class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    fun bind(item: AssetDetailItem, onActionSelected: AssetActionHandler) {
+    fun bind(
+        item: AssetDetailItem,
+        onActionSelected: AssetActionHandler,
+        analytics: Analytics
+    ) {
         with(itemView) {
             asset_icon.setCoinIcon(item.tokens.asset)
             asset_name.text = resources.getString(item.tokens.asset.currencyName())
@@ -42,7 +49,7 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
                     AssetFilter.Custodial -> R.string.dashboard_asset_balance_custodial
                 }
             )
-            setOnClickListenerDebounced { doShowMenu(item, onActionSelected) }
+            setOnClickListenerDebounced { doShowMenu(item, onActionSelected, analytics) }
 
             asset_spend_locked.goneIf { item.assetFilter == AssetFilter.Wallet }
 
@@ -51,7 +58,16 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         }
     }
 
-    private fun doShowMenu(detailItem: AssetDetailItem, onActionSelected: AssetActionHandler) {
+    private fun doShowMenu(
+        detailItem: AssetDetailItem,
+        onActionSelected: AssetActionHandler,
+        analytics: Analytics
+    ) {
+        val crypto = detailItem.tokens.asset
+
+        if (detailItem.assetFilter == AssetFilter.Custodial) {
+            analytics.logEvent(CustodialBalanceClicked(crypto))
+        }
 
         PopupMenu(itemView.context, itemView.action_menu).apply {
             menuInflater.inflate(R.menu.menu_asset_actions, menu)
@@ -64,10 +80,14 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
             MenuCompat.setGroupDividerEnabled(menu, true)
 
             setOnMenuItemClickListener {
-                onActionSelected(
-                    mapMenuItemToAction(it.itemId),
-                    detailItem.assetFilter
-                )
+                val filter = detailItem.assetFilter
+                val action = mapMenuItemToAction(it.itemId)
+
+                if (filter == AssetFilter.Custodial && action == AssetAction.Send) {
+                    analytics.logEvent(CustodialBalanceSendClicked(crypto))
+                }
+
+                onActionSelected(action, filter)
                 true
             }
 
@@ -104,7 +124,8 @@ typealias AssetActionHandler = (action: AssetAction, assetFilter: AssetFilter) -
 
 internal class AssetDetailAdapter(
     private val itemList: List<AssetDetailItem>,
-    private val onActionSelected: AssetActionHandler
+    private val onActionSelected: AssetActionHandler,
+    private val analytics: Analytics
 ) : RecyclerView.Adapter<AssetDetailViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AssetDetailViewHolder =
@@ -113,6 +134,6 @@ internal class AssetDetailAdapter(
     override fun getItemCount(): Int = itemList.size
 
     override fun onBindViewHolder(holder: AssetDetailViewHolder, position: Int) {
-        holder.bind(itemList[position], onActionSelected)
+        holder.bind(itemList[position], onActionSelected, analytics)
     }
 }
