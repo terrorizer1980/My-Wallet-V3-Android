@@ -12,6 +12,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRule
 import piuk.blockchain.android.ui.dashboard.announcements.StandardAnnouncementCard
+import timber.log.Timber
 
 class SimpleBuyPendingBuyAnnouncement(
     dismissRecorder: DismissRecorder,
@@ -22,6 +23,7 @@ class SimpleBuyPendingBuyAnnouncement(
     override val dismissKey = DISMISS_KEY
 
     override fun shouldShow(): Single<Boolean> {
+        Timber.d("SB Sync: Pending buy, should show?")
         // This announcement is never dismissed, it only shows when we have a pending buy
         // which could be more than one, so we'll ignore the dismiss recorder when showing
         return queries.isSimpleBuyTransactionPending()

@@ -829,7 +829,8 @@ val applicationModule = applicationContext {
             SimpleBuySyncFactory(
                 custodialWallet = get(),
                 availabilityChecker = get(),
-                localStateAdapter = inflateAdapter
+                localStateAdapter = inflateAdapter,
+                rxBus = get()
             )
         }
 
