@@ -298,11 +298,10 @@ class NabuService(retrofit: Retrofit) {
         sessionToken.authHeader, orderId
     ).wrapErrorMessage()
 
-    @Suppress("MoveLambdaOutsideParentheses")
     fun getBalanceForAsset(
         sessionToken: NabuSessionTokenResponse,
         cryptoCurrency: CryptoCurrency
-    ): Maybe<SimpleBuyBalanceResponse> = service.getBalanceForAsset(
+    ) = service.getBalanceForAsset(
         sessionToken.authHeader, cryptoCurrency.symbol
     ).flatMapMaybe {
         when (it.code()) {
@@ -310,7 +309,7 @@ class NabuService(retrofit: Retrofit) {
             204 -> Maybe.empty()
             else -> Maybe.error(HttpException(it))
         }
-    }
+    }.wrapErrorMessage()
 
     fun transferFunds(
         sessionToken: NabuSessionTokenResponse,
