@@ -20,7 +20,6 @@ import com.blockchain.swap.nabu.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
-import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility

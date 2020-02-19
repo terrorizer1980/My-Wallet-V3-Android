@@ -2,7 +2,6 @@ package piuk.blockchain.android.ui.dashboard.sheets
 
 import android.content.Context
 import android.view.View
-import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.BankDetailsViewed
 import com.blockchain.notifications.analytics.bankFieldName
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
@@ -32,7 +31,6 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
         super.host as? Host ?: throw IllegalStateException("Host fragment is not a BankDetailsBottomSheet.Host")
     }
 
-    private val analytics: Analytics by inject()
     private val stateFactory: SimpleBuySyncFactory by inject()
     private val custodialWalletManager: CustodialWalletManager by inject()
     private val environmentConfig: EnvironmentConfig by inject()

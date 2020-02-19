@@ -154,7 +154,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
                 }
             }
 
-            asset_list.adapter = AssetDetailAdapter(itemList, ::onAssetActionSelected)
+            asset_list.adapter = AssetDetailAdapter(itemList, ::onAssetActionSelected, analytics)
         }
     }
 
