@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
+import com.blockchain.extensions.exhaustive
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.buyConfirmClicked
 import com.blockchain.notifications.analytics.cryptoChanged
@@ -40,7 +41,8 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     private var lastState: SimpleBuyState? = null
 
     override fun navigator(): SimpleBuyNavigator =
-        (activity as? SimpleBuyNavigator) ?: throw IllegalStateException("Parent must implement SimpleBuyNavigator")
+        (activity as? SimpleBuyNavigator)
+            ?: throw IllegalStateException("Parent must implement SimpleBuyNavigator")
 
     private val currencyPrefs: CurrencyPrefs by inject()
     private val fiatSymbol: String
@@ -98,11 +100,18 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         arrow.visibleIf { newState.availableCryptoCurrencies.size > 1 }
         if (newState.maxAmount != null && newState.minAmount != null) {
             input_amount.filters =
-                arrayOf(DecimalDigitsInputFilter(newState.maxIntegerDigitsForAmount(),
-                    newState.maxDecimalDigitsForAmount()))
+                arrayOf(
+                    DecimalDigitsInputFilter(
+                        newState.maxIntegerDigitsForAmount(),
+                        newState.maxDecimalDigitsForAmount()
+                    )
+                )
             up_to_amount.visible()
             up_to_amount.text =
-                getString(R.string.simple_buy_up_to_amount, newState.maxAmount!!.formatOrSymbolForZero())
+                getString(
+                    R.string.simple_buy_up_to_amount,
+                    newState.maxAmount!!.formatOrSymbolForZero()
+                )
         }
 
         newState.predefinedAmounts.takeIf {
@@ -138,25 +147,36 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         }
 
         crypto_text.takeIf { newState.availableCryptoCurrencies.size > 1 }?.setOnClickListener {
-            showBottomSheet(CryptoCurrencyChooserBottomSheet
-                .newInstance(newState.availableCryptoCurrencies))
+            showBottomSheet(
+                CryptoCurrencyChooserBottomSheet
+                    .newInstance(newState.availableCryptoCurrencies)
+            )
         }
 
         if (newState.confirmationActionRequested && newState.kycVerificationState != null) {
-            when {
-                newState.kycVerificationState.verified().not() -> {
+            when (newState.kycVerificationState) {
+                // Kyc state unknown because error, or gold docs unsubmitted
+                KycState.PENDING -> {
                     model.process(SimpleBuyIntent.ConfirmationHandled)
                     model.process(SimpleBuyIntent.KycStarted)
                     navigator().startKyc()
                     analytics.logEvent(SimpleBuyAnalytics.START_GOLD_FLOW)
                 }
-                newState.kycVerificationState.kycDataAlreadySubmitted() -> {
+                // Awaiting results state
+                KycState.IN_REVIEW,
+                KycState.UNDECIDED -> {
                     navigator().goToKycVerificationScreen()
                 }
-                else -> {
+                // Got results, kyc verification screen will show error
+                KycState.VERIFIED_BUT_NOT_ELIGIBLE,
+                KycState.FAILED -> {
+                    navigator().goToKycVerificationScreen()
+                }
+                // We have done kyc and are verified
+                KycState.VERIFIED_AND_ELIGIBLE -> {
                     navigator().goToCheckOutScreen()
                 }
-            }
+            }.exhaustive
         }
     }
 

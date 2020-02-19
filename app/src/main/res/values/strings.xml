@@ -1143,7 +1143,7 @@
 
     <!-- basic transfer complete -->
     <string name="basic_transfer_complete_title">Success! %1s Sent.</string>
-    <string name="basic_transfer_complete_body">It may take up to 1 hour for your transaction to be processed.</string>
+    <string name="basic_transfer_complete_body">It may take up to 1 hour for your transaction to be processed.</string>
     <string name="basic_transfer_complete_cta">OK</string>
 
     <!-- basic transfer error -->
