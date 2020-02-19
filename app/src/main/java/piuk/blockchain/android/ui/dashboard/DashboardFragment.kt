@@ -23,6 +23,7 @@ import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.blockstackCampaignName
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.simplebuy.SimpleBuyCancelOrderBottomSheet
+import piuk.blockchain.android.simplebuy.SimpleBuySyncEvent
 import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -78,6 +79,10 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
     private val metadataEvent by unsafeLazy {
         rxBus.register(MetadataEvent::class.java)
+    }
+
+    private val simpleBuySyncEvent by unsafeLazy {
+        rxBus.register(SimpleBuySyncEvent::class.java)
     }
 
     private var state: DashboardState? = null // Hold the 'current' display state, to enable optimising of state updates
@@ -236,6 +241,9 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
         compositeDisposable += metadataEvent.subscribe {
             model.process(RefreshAllIntent)
+        }
+
+        compositeDisposable += simpleBuySyncEvent.subscribe {
             if (announcements.enable()) {
                 announcements.checkLatest(announcementHost, compositeDisposable)
             }

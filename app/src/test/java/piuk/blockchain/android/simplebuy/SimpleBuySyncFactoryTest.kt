@@ -5,6 +5,7 @@ import com.blockchain.android.testutils.rxInit
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.OrderState
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.mock
@@ -19,6 +20,7 @@ import io.reactivex.Single
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.text.SimpleDateFormat
 import java.util.Date
 import kotlin.test.assertEquals
@@ -29,11 +31,13 @@ class SimpleBuySyncFactoryTest {
     private val remoteState: CustodialWalletManager = mock()
     private val availabilityChecker: SimpleBuyAvailability = mock()
     private val localState: SimpleBuyInflateAdapter = mock()
+    private val rxBus: RxBus = mock()
 
     private val subject = SimpleBuySyncFactory(
         custodialWallet = remoteState,
         localStateAdapter = localState,
-        availabilityChecker = availabilityChecker
+        availabilityChecker = availabilityChecker,
+        rxBus = rxBus
     )
 
     @get:Rule
@@ -736,6 +740,7 @@ class SimpleBuySyncFactoryTest {
         }
 
         verify(localState, atLeastOnce()).fetch()
+        verify(rxBus).emitEvent(any(), any())
         verifyNoMoreInteractions(localState)
     }
 
@@ -746,6 +751,7 @@ class SimpleBuySyncFactoryTest {
         }
 
         verify(localState, atLeastOnce()).fetch()
+        verify(rxBus).emitEvent(any(), any())
         verifyNoMoreInteractions(localState)
     }
 

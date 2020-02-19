@@ -120,7 +120,8 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         KycNavHostActivity.startForResult(this, CampaignType.SimpleBuy, KYC_STARTED)
     }
 
-    override fun hasMoreThanOneFragmentInTheStack(): Boolean = supportFragmentManager.fragments.size > 1
+    override fun hasMoreThanOneFragmentInTheStack(): Boolean =
+        supportFragmentManager.backStackEntryCount > 1
 
     override fun launchIntro() {
         supportFragmentManager.beginTransaction()

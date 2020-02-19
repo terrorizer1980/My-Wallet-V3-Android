@@ -55,7 +55,7 @@ class AnnouncementList(
     private val availableAnnouncements: List<AnnouncementRule>,
     private val dismissRecorder: DismissRecorder
 ) {
-    // Hack to block announcements until metadate/simple buy etc is initialised.
+    // Hack to block announcements until metadata/simple buy etc is initialised.
     // TODO: Refactor app startup so we can avoid nonsense like this
     private var isEnabled = AtomicBoolean(false)
 
@@ -72,7 +72,13 @@ class AnnouncementList(
 
         if (isEnabled.get()) {
             disposables += showNextAnnouncement(host)
-                .subscribeBy(onError = Timber::e)
+                .doOnSubscribe { Timber.d("SB Sync: Checking announcements...") }
+                .subscribeBy(
+                    onComplete = { Timber.d("SB Sync: Announcements checked") },
+                    onError = Timber::e
+                )
+        } else {
+            Timber.d("SB Sync: ... Announcements disabled")
         }
     }
 
