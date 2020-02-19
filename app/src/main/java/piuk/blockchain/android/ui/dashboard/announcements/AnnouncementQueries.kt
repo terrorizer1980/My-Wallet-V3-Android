@@ -11,6 +11,7 @@ import com.blockchain.swap.nabu.service.TierService
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.android.campaign.blockstackCampaignName
+import piuk.blockchain.android.simplebuy.SimpleBuyState
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 
@@ -65,11 +66,11 @@ class AnnouncementQueries(
 
     fun isSimpleBuyKycInProgress(): Single<Boolean> {
         // If we have a local simple buy in progress and it has the kyc unfinished state set
-        val state = sbStateFactory.currentState()
-
-        return state?.let {
-            Single.just(it.kycStartedButNotCompleted)
-        } ?: Single.just(false)
+        return Single.defer {
+            sbStateFactory.currentState()?.let {
+                Single.just(it.kycStartedButNotCompleted && !it.kycDataSubmitted())
+            } ?: Single.just(false)
+        }
     }
 
     fun isSimpleBuyTransactionPending(): Single<Boolean> {
@@ -77,3 +78,6 @@ class AnnouncementQueries(
         return Single.just((state != null) && (state.order.orderState == OrderState.AWAITING_FUNDS))
     }
 }
+
+private fun SimpleBuyState?.kycDataSubmitted(): Boolean =
+    this?.kycVerificationState?.docsSubmitted() ?: false

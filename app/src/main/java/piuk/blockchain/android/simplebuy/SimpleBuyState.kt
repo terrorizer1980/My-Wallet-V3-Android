@@ -103,11 +103,18 @@ data class SimpleBuyState(
 }
 
 enum class KycState {
-    PENDING, FAILED, IN_REVIEW, UNDECIDED, VERIFIED_AND_ELIGIBLE, VERIFIED_BUT_NOT_ELIGIBLE;
+    PENDING, /** no docs submitted for Gold. Or Gold submit was error */
+    FAILED, /** Docs processed, failed kyc. Not error state. */
+    IN_REVIEW,  /** Docs processed under manual review */
+    UNDECIDED,  /** Docs submitted, no result know from server yet */
+    VERIFIED_AND_ELIGIBLE,  /** Docs uploaded, processed and kyc passed. Eligible for simple buy */
+    VERIFIED_BUT_NOT_ELIGIBLE;  /** Docs uploaded, processed and kyc passed. User is NOT eligible for simple buy. */
 
     fun verified() = this == VERIFIED_AND_ELIGIBLE || this == VERIFIED_BUT_NOT_ELIGIBLE
 
-    fun kycDataAlreadySubmitted() = this == IN_REVIEW || this == FAILED
+    fun docsSubmittedButNotVerified() = this == IN_REVIEW || this == FAILED
+
+    fun docsSubmitted() = this != PENDING
 }
 
 enum class FlowScreen {

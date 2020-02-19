@@ -14,6 +14,7 @@ import io.reactivex.Single
 import org.amshove.kluent.mock
 import org.junit.Before
 import org.junit.Test
+import piuk.blockchain.android.simplebuy.KycState
 import piuk.blockchain.android.simplebuy.SimpleBuyOrder
 import piuk.blockchain.android.simplebuy.SimpleBuyState
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
@@ -222,11 +223,58 @@ class AnnouncementQueriesTest {
     fun `isSimpleBuyKycInProgress - local simple buy state exists and has finished kyc, return true`() {
         val state: SimpleBuyState = mock()
         whenever(state.kycStartedButNotCompleted).thenReturn(true)
+        whenever(state.kycVerificationState).thenReturn(null)
         whenever(sbSync.currentState()).thenReturn(state)
 
         subject.isSimpleBuyKycInProgress()
             .test()
             .assertValue { it }
+            .assertValueCount(1)
+            .assertComplete()
+    }
+
+    @Test
+    fun `isSimpleBuyKycInProgress - simple buy state is not finished, and kyc state is pending - as expected`() {
+        val state: SimpleBuyState = mock()
+        whenever(state.kycStartedButNotCompleted).thenReturn(true)
+        whenever(state.kycVerificationState).thenReturn(KycState.PENDING)
+        whenever(sbSync.currentState()).thenReturn(state)
+
+        subject.isSimpleBuyKycInProgress()
+            .test()
+            .assertValue { it }
+            .assertValueCount(1)
+            .assertComplete()
+    }
+
+    // Belt and braces checks: add double check that the SB state doesn't think kyc data has been submitted
+    // to patch AND-2790, 2801. This _may_ be insufficient, though. If it doesn't solve the problem, we may have to
+    // check backend kyc state ourselves...
+
+    @Test
+    fun `isSimpleBuyKycInProgress - SB state reports unfinished, but kyc docs are submitted - belt & braces case`() {
+        val state: SimpleBuyState = mock()
+        whenever(state.kycStartedButNotCompleted).thenReturn(true)
+        whenever(state.kycVerificationState).thenReturn(KycState.IN_REVIEW)
+        whenever(sbSync.currentState()).thenReturn(state)
+
+        subject.isSimpleBuyKycInProgress()
+            .test()
+            .assertValue { !it }
+            .assertValueCount(1)
+            .assertComplete()
+    }
+
+    @Test
+    fun `isSimpleBuyKycInProgress - SB state reports unfinished, but kyc docs are submitted - belt & braces case 2`() {
+        val state: SimpleBuyState = mock()
+        whenever(state.kycStartedButNotCompleted).thenReturn(true)
+        whenever(state.kycVerificationState).thenReturn(KycState.VERIFIED_AND_ELIGIBLE)
+        whenever(sbSync.currentState()).thenReturn(state)
+
+        subject.isSimpleBuyKycInProgress()
+            .test()
+            .assertValue { !it }
             .assertValueCount(1)
             .assertComplete()
     }
