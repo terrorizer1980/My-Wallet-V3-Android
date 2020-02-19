@@ -73,7 +73,6 @@ class AnnouncementQueries(
     }
 
     fun isSimpleBuyTransactionPending(): Single<Boolean> {
-        val state = sbStateFactory.currentState()
-        return Single.just((state != null) && (state.order.orderState == OrderState.AWAITING_FUNDS))
+        return Single.just(sbStateFactory.currentState()?.order?.orderState == OrderState.AWAITING_FUNDS)
     }
 }

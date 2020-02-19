@@ -10,6 +10,7 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.extensions.flatMapBy
 import timber.log.Timber
 import java.text.DecimalFormatSymbols
@@ -17,7 +18,7 @@ import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
 // Ensure that the local and remote SimpleBuy state is the same.
-// Resolution stratagy is:
+// Resolution strategy is:
 //  - check simple buy is enabled
 //  - inflate the local state, if any
 //  - fetch the remote state, if any
@@ -31,6 +32,10 @@ interface SimpleBuyPrefsStateAdapter {
     fun fetch(): SimpleBuyState?
     fun update(newState: SimpleBuyState)
     fun clear()
+}
+
+enum class SimpleBuySyncEvent {
+    SYNC_COMPLETE
 }
 
 internal class SimpleBuyInflateAdapter(
@@ -53,7 +58,8 @@ internal class SimpleBuyInflateAdapter(
 class SimpleBuySyncFactory(
     private val custodialWallet: CustodialWalletManager,
     private val availabilityChecker: SimpleBuyAvailability,
-    private val localStateAdapter: SimpleBuyPrefsStateAdapter
+    private val localStateAdapter: SimpleBuyPrefsStateAdapter,
+    private val rxBus: RxBus
 ) {
     private val isEnabled = AtomicBoolean(false)
 
@@ -61,7 +67,7 @@ class SimpleBuySyncFactory(
         checkEnabled()
             .doOnSuccess { isEnabled.set(it) }
             .flatMapCompletable {
-                Timber.e("SB Sync: Enabled == $it")
+                Timber.d("SB Sync: Enabled == $it")
                 if (!it) {
                     // TODO: Handle this better.
                     //  We want to clear local state, but it's currently blocking testing that
@@ -72,11 +78,11 @@ class SimpleBuySyncFactory(
                 } else {
                     syncStates()
                         .doOnSuccess { v ->
-                            Timber.e("SB Sync: Success")
+                            Timber.d("SB Sync: Success")
                             localStateAdapter.update(v)
                         }
                         .doOnComplete {
-                            Timber.e("SB Sync: Complete")
+                            Timber.d("SB Sync: Complete")
                             localStateAdapter.clear()
                         }
                         .ignoreElement()
@@ -84,8 +90,8 @@ class SimpleBuySyncFactory(
             }
             .observeOn(Schedulers.computation())
             .doOnError {
-                Timber.e("SB Sync: FAILED because $it")
-            }
+                Timber.d("SB Sync: FAILED because $it")
+            }.doOnTerminate { rxBus.emitEvent(SimpleBuySyncEvent::class.java, SimpleBuySyncEvent.SYNC_COMPLETE) }
 
     fun currentState(): SimpleBuyState? =
         localStateAdapter.fetch().apply {
@@ -102,7 +108,7 @@ class SimpleBuySyncFactory(
         checkEnabled()
             .doOnSuccess { isEnabled.set(it) }
             .flatMapCompletable {
-                Timber.e("SB Sync: Enabled == $it")
+                Timber.d("SB Sync: Enabled == $it")
                 if (!it) {
                     Completable.complete()
                 } else {
@@ -125,7 +131,7 @@ class SimpleBuySyncFactory(
                         )
                         .ignoreElement()
                 }
-            }
+            }.doOnTerminate { rxBus.emitEvent(SimpleBuySyncEvent::class.java, SimpleBuySyncEvent.SYNC_COMPLETE) }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun checkEnabled(): Single<Boolean> =
@@ -176,12 +182,12 @@ class SimpleBuySyncFactory(
         getRemoteForLocal(localState.id)
             .defaultIfEmpty(localState)
             .map { remoteState ->
-                Timber.e("SB Sync: local.state == ${localState.orderState}, remote.state == ${remoteState.orderState}")
+                Timber.d("SB Sync: local.state == ${localState.orderState}, remote.state == ${remoteState.orderState}")
                 if (localState.orderState < remoteState.orderState) {
-                    Timber.e("SB Sync: Take remote")
+                    Timber.d("SB Sync: Take remote")
                     remoteState
                 } else {
-                    Timber.e("SB Sync: Take local")
+                    Timber.d("SB Sync: Take local")
                     localState
                 }
             }
