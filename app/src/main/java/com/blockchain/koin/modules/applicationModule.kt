@@ -239,8 +239,7 @@ val applicationModule = applicationContext {
                 bchDataManager = get(),
                 xlmDataManager = get(),
                 paxAccount = get(),
-                transactionListStore = TransactionListStore(),
-                currencyState = get()
+                transactionListStore = TransactionListStore()
             )
         }
 

@@ -29,15 +29,15 @@ class TransactionListDataManager(
     private val bchDataManager: BchDataManager,
     private val xlmDataManager: XlmDataManager,
     private val paxAccount: Erc20Account,
-    private val transactionListStore: TransactionListStore,
-    private val currencyState: CurrencyState
+    private val transactionListStore: TransactionListStore
 ) {
     fun fetchTransactions(
+        cryptoCurrency: CryptoCurrency,
         itemAccount: ItemAccount,
-        limit: Int,
-        offset: Int
+        limit: Int = 50,
+        offset: Int = 0
     ): Single<ActivitySummaryList> =
-        when (currencyState.cryptoCurrency) {
+        when (cryptoCurrency) {
             CryptoCurrency.BTC -> fetchBtcTransactions(itemAccount, limit, offset)
             CryptoCurrency.ETHER -> getEthereumTransactions()
             CryptoCurrency.BCH -> fetchBchTransactions(itemAccount, limit, offset)

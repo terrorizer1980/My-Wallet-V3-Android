@@ -40,6 +40,7 @@ import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.old.ActivitySummaryList
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import timber.log.Timber
@@ -197,8 +198,7 @@ class TransactionsPresenter(
     @VisibleForTesting
     internal fun updateTransactionsListCompletable(account: ItemAccount): Completable {
         return Completable.defer {
-            transactionListDataManager
-                .fetchTransactions(account, 50, 0)
+            getTransactionRxSourceFor(currencyState.cryptoCurrency, account)
                 .flatMap { txs ->
                     Singles.zip(
                         getShapeShiftTxNotes(),
@@ -212,6 +212,18 @@ class TransactionsPresenter(
                         }
                 }
                 .ignoreElement()
+        }
+    }
+
+    // Temp selector method
+    private fun getTransactionRxSourceFor(crypto: CryptoCurrency, account: ItemAccount): Single<ActivitySummaryList> {
+        when(crypto) {
+            CryptoCurrency.BTC -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
+            CryptoCurrency.ETHER -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
+            CryptoCurrency.BCH -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
+            CryptoCurrency.XLM -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
+            CryptoCurrency.PAX -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
+            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         }
     }
 
