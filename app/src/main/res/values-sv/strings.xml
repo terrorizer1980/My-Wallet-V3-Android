@@ -945,11 +945,7 @@
   <string name="kyc_splash_terms_and_conditions_submit">Genom att trycka på Skicka, godkänner du Blockchains</string>
   <string name="kyc_country_selection_message_state">Varje stat har olika regler om handel med kryptokurvor.</string>
   <string name="kyc_profile_submit">Lämna</string>
-  <string name="kyc_email_didnt_see_email">Såg inte e-post? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Skicka igen</string>
   <string name="kyc_email_email_was_resent">E-posten var återigen</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Återsänd koden</string>
   <string name="kyc_phone_number_code_was_resent">Koden var återigen</string>
   <string name="kyc_phone_number_error_resending">Ett fel på att skicka kod, var vänlig försök igen</string>
   <string name="kyc_settings_swap_limit">Byt gränsen</string>

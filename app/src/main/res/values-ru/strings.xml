@@ -931,11 +931,7 @@
   <string name="kyc_splash_terms_and_conditions_submit">Нажимая «Отправить», вы соглашаетесь с Blockchain</string>
   <string name="kyc_country_selection_message_state">В каждом штате действуют разные правила по торговле криптовалютами.</string>
   <string name="kyc_profile_submit">Отправить</string>
-  <string name="kyc_email_didnt_see_email">Не видели письмо? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Отправить еще раз</string>
   <string name="kyc_email_email_was_resent">Письмо было отправлено повторно</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Отправить код повторно</string>
   <string name="kyc_phone_number_code_was_resent">Код был отправлен повторно</string>
   <string name="kyc_phone_number_error_resending">Ошибка при отправке кода, пожалуйста, попробуйте еще раз</string>
   <string name="kyc_settings_swap_limit">Лимит обмена</string>

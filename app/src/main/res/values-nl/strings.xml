@@ -929,11 +929,7 @@ Bevestig vingerafdruk om verder te gaan</string>
   <string name="kyc_splash_terms_and_conditions_submit">Door op Submit te tikken, ga je akkoord met Blockchain\'s</string>
   <string name="kyc_country_selection_message_state">Elke staat heeft verschillende regels voor het verhandelen van cryptocurrencies.</string>
   <string name="kyc_profile_submit">voorleggen</string>
-  <string name="kyc_email_didnt_see_email">E-mail niet gezien? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Opnieuw versturen</string>
   <string name="kyc_email_email_was_resent">E-mail is opnieuw verzonden</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Code nogmaals versturen</string>
   <string name="kyc_phone_number_code_was_resent">Code was opnieuw verzonden</string>
   <string name="kyc_phone_number_error_resending">Fout bij het verzenden van code. Probeer het opnieuw</string>
   <string name="kyc_settings_swap_limit">Swap Limiet</string>

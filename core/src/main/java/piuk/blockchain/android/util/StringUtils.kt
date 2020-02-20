@@ -30,8 +30,9 @@ class StringUtils(private val context: Context) {
 
     fun getStringWithMappedLinks(
         @StringRes stringId: Int,
-        linksMap: Map<String, Uri>,
-        launchActivity: Activity
+        linksMap: Map<String, Uri?>,
+        launchActivity: Activity,
+        onClick: () -> Unit = {}
     ): CharSequence {
 
         val rawText = context.getText(stringId) as SpannedString
@@ -39,17 +40,19 @@ class StringUtils(private val context: Context) {
 
         for (annotation in rawText.getSpans(0, rawText.length, android.text.Annotation::class.java)) {
             if (annotation.key == "link") {
-                linksMap[annotation.value]?.let {
-                    out.setSpan(
-                        object : ClickableSpan() {
-                            override fun onClick(widget: View?) {
-                                launchActivity.startActivity(Intent(Intent.ACTION_VIEW, it))
+                out.setSpan(
+                    object : ClickableSpan() {
+                        override fun onClick(widget: View?) {
+                            linksMap[annotation.value]?.let {
+                                launchActivity.startActivity(Intent(Intent.ACTION_VIEW,
+                                    it))
                             }
-                        },
-                        rawText.getSpanStart(annotation),
-                        rawText.getSpanEnd(annotation),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                }
+                            onClick()
+                        }
+                    },
+                    rawText.getSpanStart(annotation),
+                    rawText.getSpanEnd(annotation),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
         }
         return out

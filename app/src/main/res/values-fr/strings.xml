@@ -925,11 +925,7 @@ Commande créée</string>
   <string name="kyc_splash_terms_and_conditions_submit">En appuyant sur Envoyer, vous acceptez de Blockchain</string>
   <string name="kyc_country_selection_message_state">Chaque État a des règles différentes sur le commerce des crypto-monnaies.</string>
   <string name="kyc_profile_submit">Envoyer</string>
-  <string name="kyc_email_didnt_see_email">Vous n\'avez pas vu le courrier électronique ? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Envoyer à nouveau</string>
   <string name="kyc_email_email_was_resent">Le courriel a été renvoyé</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Renvoyer le code</string>
   <string name="kyc_phone_number_code_was_resent">Le code a été renvoyé</string>
   <string name="kyc_phone_number_error_resending">Erreur d\'envoi du code, veuillez réessayer</string>
   <string name="kyc_settings_swap_limit">Limite swap</string>
