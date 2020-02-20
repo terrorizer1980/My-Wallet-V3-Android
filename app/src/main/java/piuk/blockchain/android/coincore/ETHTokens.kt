@@ -8,20 +8,28 @@ import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
+import info.blockchain.wallet.ethereum.data.EthTransaction
+import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import piuk.blockchain.android.R
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
+import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.lang.IllegalArgumentException
+import java.math.BigInteger
 
 class ETHTokens(
     private val ethDataManager: EthDataManager,
@@ -69,14 +77,18 @@ class ETHTokens(
         exchangeRates.fetchLastPrice(CryptoCurrency.ETHER, currencyPrefs.selectedFiatCurrency)
 
     override fun historicRate(epochWhen: Long): Single<FiatValue> =
-        exchangeRates.getHistoricPrice(CryptoCurrency.ETHER,
+        exchangeRates.getHistoricPrice(
+            CryptoCurrency.ETHER,
             currencyPrefs.selectedFiatCurrency,
-            epochWhen)
+            epochWhen
+        )
 
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
-        historicRates.getHistoricPriceSeries(CryptoCurrency.ETHER,
+        historicRates.getHistoricPriceSeries(
+            CryptoCurrency.ETHER,
             currencyPrefs.selectedFiatCurrency,
-            period)
+            period
+        )
 
     private var isWalletUninitialised = true
 
@@ -97,5 +109,83 @@ class ETHTokens(
     override fun onLogoutSignal(event: AuthEvent) {
         isWalletUninitialised = true
         ethDataManager.clearEthAccountDetails()
+    }
+
+    override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
+        getTransactions(itemAccount)
+            .singleOrError()
+
+    private fun getTransactions(itemAccount: ItemAccount): Observable<ActivitySummaryList> =
+        ethDataManager.getLatestBlock()
+            .flatMapSingle { latestBlock ->
+                ethDataManager.getEthTransactions()
+                        .map {
+                        val ethFeeForPaxTransaction = it.to.equals(
+                            ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
+                            ignoreCase = true
+                        )
+                        EthActivitySummaryItem(
+                            ethDataManager.getEthResponseModel()!!,
+                            it,
+                            ethFeeForPaxTransaction,
+                            latestBlock.blockHeight
+                        )
+                    }.toList()
+                }
+
+}
+
+private class EthActivitySummaryItem(
+    private val combinedEthModel: CombinedEthModel,
+    private val ethTransaction: EthTransaction,
+    override val isFeeTransaction: Boolean,
+    private val blockHeight: Long
+) : ActivitySummaryItem() {
+
+    override val cryptoCurrency: CryptoCurrency
+        get() = CryptoCurrency.ETHER
+
+    override val direction: TransactionSummary.Direction
+        get() = when {
+            combinedEthModel.getAccounts()[0] == ethTransaction.to
+                && combinedEthModel.getAccounts()[0] ==
+                ethTransaction.from -> TransactionSummary.Direction.TRANSFERRED
+            combinedEthModel.getAccounts().contains(ethTransaction.from) -> TransactionSummary.Direction.SENT
+            else -> TransactionSummary.Direction.RECEIVED
+        }
+
+    override val timeStamp: Long
+        get() = ethTransaction.timeStamp
+
+    override val total: BigInteger
+        get() = when (direction) {
+            TransactionSummary.Direction.RECEIVED -> ethTransaction.value
+            else -> ethTransaction.value.plus(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
+        }
+
+    override val fee: Observable<BigInteger>
+        get() = Observable.just(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
+
+    override val hash: String
+        get() = ethTransaction.hash
+
+    override val inputsMap: HashMap<String, BigInteger>
+        get() = HashMap<String, BigInteger>().apply {
+            put(ethTransaction.from, ethTransaction.value)
+        }
+
+    override val outputsMap: HashMap<String, BigInteger>
+        get() = HashMap<String, BigInteger>().apply {
+            put(ethTransaction.to, ethTransaction.value)
+        }
+
+    override val confirmations: Int
+        get() = ethConfirmations(ethTransaction, blockHeight)
+
+    private fun ethConfirmations(ethTransaction: EthTransaction, blockHeight: Long): Int {
+        val blockNumber = ethTransaction.blockNumber ?: return 0
+        val blockHash = ethTransaction.blockHash ?: return 0
+
+        return if (blockNumber == 0L || blockHash == "0x") 0 else (blockHeight - blockNumber).toInt()
     }
 }

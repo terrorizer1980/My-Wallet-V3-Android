@@ -16,7 +16,7 @@ import piuk.blockchain.androidcore.utils.helperfunctions.JavaHashCode
 import java.math.BigInteger
 import kotlin.math.sign
 
-sealed class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
+abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
 
     abstract val cryptoCurrency: CryptoCurrency
     abstract val direction: TransactionSummary.Direction
@@ -95,120 +95,8 @@ sealed class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
     override operator fun compareTo(other: ActivitySummaryItem) = (other.timeStamp - timeStamp).sign
 }
 
-class EthActivitySummaryItem(
-    private val combinedEthModel: CombinedEthModel,
-    private val ethTransaction: EthTransaction,
-    override val isFeeTransaction: Boolean,
-    private val blockHeight: Long
-) : ActivitySummaryItem() {
 
-    override val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.ETHER
 
-    override val direction: TransactionSummary.Direction
-        get() = when {
-            combinedEthModel.getAccounts()[0] == ethTransaction.to
-                    && combinedEthModel.getAccounts()[0] ==
-                    ethTransaction.from -> TransactionSummary.Direction.TRANSFERRED
-            combinedEthModel.getAccounts().contains(ethTransaction.from) -> TransactionSummary.Direction.SENT
-            else -> TransactionSummary.Direction.RECEIVED
-        }
-
-    override val timeStamp: Long
-        get() = ethTransaction.timeStamp
-
-    override val total: BigInteger
-        get() = when (direction) {
-            TransactionSummary.Direction.RECEIVED -> ethTransaction.value
-            else -> ethTransaction.value.plus(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
-        }
-
-    override val fee: Observable<BigInteger>
-        get() = Observable.just(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
-
-    override val hash: String
-        get() = ethTransaction.hash
-
-    override val inputsMap: HashMap<String, BigInteger>
-        get() = HashMap<String, BigInteger>().apply {
-            put(ethTransaction.from, ethTransaction.value)
-        }
-
-    override val outputsMap: HashMap<String, BigInteger>
-        get() = HashMap<String, BigInteger>().apply {
-            put(ethTransaction.to, ethTransaction.value)
-        }
-
-    override val confirmations: Int
-        get() = ethConfirmations(ethTransaction, blockHeight)
-
-    private fun ethConfirmations(ethTransaction: EthTransaction, blockHeight: Long): Int {
-        val blockNumber = ethTransaction.blockNumber ?: return 0
-        val blockHash = ethTransaction.blockHash ?: return 0
-
-        return if (blockNumber == 0L || blockHash == "0x") 0 else (blockHeight - blockNumber).toInt()
-    }
-}
-
-class BtcActivitySummaryItem(
-    private val transactionSummary: TransactionSummary
-) : ActivitySummaryItem() {
-
-    override val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.BTC
-    override val direction: TransactionSummary.Direction
-        get() = transactionSummary.direction
-    override val timeStamp: Long
-        get() = transactionSummary.time
-    override val total: BigInteger
-        get() = transactionSummary.total
-    override val fee: Observable<BigInteger>
-        get() = Observable.just(transactionSummary.fee)
-    override val hash: String
-        get() = transactionSummary.hash
-    override val inputsMap: HashMap<String, BigInteger>
-        get() = transactionSummary.inputsMap
-    override val outputsMap: HashMap<String, BigInteger>
-        get() = transactionSummary.outputsMap
-    override val confirmations: Int
-        get() = transactionSummary.confirmations
-    override val watchOnly: Boolean
-        get() = transactionSummary.isWatchOnly
-    override val doubleSpend: Boolean
-        get() = transactionSummary.isDoubleSpend
-    override val isPending: Boolean
-        get() = transactionSummary.isPending
-}
-
-class BchActivitySummaryItem(
-    private val transactionSummary: TransactionSummary
-) : ActivitySummaryItem() {
-
-    override val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.BCH
-    override val direction: TransactionSummary.Direction
-        get() = transactionSummary.direction
-    override val timeStamp: Long
-        get() = transactionSummary.time
-    override val total: BigInteger
-        get() = transactionSummary.total
-    override val fee: Observable<BigInteger>
-        get() = Observable.just(transactionSummary.fee)
-    override val hash: String
-        get() = transactionSummary.hash
-    override val inputsMap: HashMap<String, BigInteger>
-        get() = transactionSummary.inputsMap
-    override val outputsMap: HashMap<String, BigInteger>
-        get() = transactionSummary.outputsMap
-    override val confirmations: Int
-        get() = transactionSummary.confirmations
-    override val watchOnly: Boolean
-        get() = transactionSummary.isWatchOnly
-    override val doubleSpend: Boolean
-        get() = transactionSummary.isDoubleSpend
-    override val isPending: Boolean
-        get() = transactionSummary.isPending
-}
 
 class Erc20ActivitySummaryItem(
     private val feedTransfer: FeedErc20Transfer,
@@ -248,29 +136,3 @@ class Erc20ActivitySummaryItem(
         get() = (lastBlockNumber - transfer.blockNumber).toInt()
 }
 
-class XlmActivitySummaryItem(
-    private val xlmTransaction: XlmTransaction
-) : ActivitySummaryItem() {
-    override val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.XLM
-    override val direction: TransactionSummary.Direction
-        get() = if (xlmTransaction.value > CryptoValue.ZeroXlm) {
-            TransactionSummary.Direction.RECEIVED
-        } else {
-            TransactionSummary.Direction.SENT
-        }
-    override val timeStamp: Long
-        get() = xlmTransaction.timeStamp.fromIso8601ToUtc()!!.toLocalTime().time.div(1000)
-    override val total: BigInteger
-        get() = xlmTransaction.accountDelta.amount.abs()
-    override val fee: Observable<BigInteger>
-        get() = Observable.just(xlmTransaction.fee.amount)
-    override val hash: String
-        get() = xlmTransaction.hash
-    override val inputsMap: HashMap<String, BigInteger>
-        get() = hashMapOf(xlmTransaction.from.accountId to BigInteger.ZERO)
-    override val outputsMap: HashMap<String, BigInteger>
-        get() = hashMapOf(xlmTransaction.to.accountId to total)
-    override val confirmations: Int
-        get() = CryptoCurrency.XLM.requiredConfirmations
-}

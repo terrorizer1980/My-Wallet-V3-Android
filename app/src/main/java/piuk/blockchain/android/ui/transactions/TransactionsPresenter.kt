@@ -36,6 +36,8 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import com.blockchain.swap.shapeshift.data.Trade
 import io.reactivex.rxkotlin.Singles
+import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
@@ -66,6 +68,7 @@ interface TransactionsView : MvpView {
 
 class TransactionsPresenter(
     private val exchangeRateDataManager: ExchangeRateDataManager,
+    private val assetSelect: AssetTokenLookup,
     private val transactionListDataManager: TransactionListDataManager,
     private val ethDataManager: EthDataManager,
     private val paxAccount: Erc20Account,
@@ -204,6 +207,7 @@ class TransactionsPresenter(
                         getShapeShiftTxNotes(),
                         getCoinifyTxNotes()
                     ) { ssn, cfyn -> mergeTxNotes(ssn, cfyn) }
+                        .map { it }
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnSuccess { txNotesMap -> processTxNotes(txs, txNotesMap) }
                         .doOnError {
@@ -216,16 +220,15 @@ class TransactionsPresenter(
     }
 
     // Temp selector method
-    private fun getTransactionRxSourceFor(crypto: CryptoCurrency, account: ItemAccount): Single<ActivitySummaryList> {
+    private fun getTransactionRxSourceFor(crypto: CryptoCurrency, account: ItemAccount): Single<ActivitySummaryList> =
         when(crypto) {
-            CryptoCurrency.BTC -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
-            CryptoCurrency.ETHER -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
+            CryptoCurrency.BTC -> assetSelect[crypto].fetchActivity(account)
+            CryptoCurrency.ETHER -> assetSelect[crypto].fetchActivity(account)
             CryptoCurrency.BCH -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
             CryptoCurrency.XLM -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
             CryptoCurrency.PAX -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
         }
-    }
 
     private fun mergeTxNotes(shapeshiftNotes: Map<String, String>, coinifyNotes: Map<String, String>)
         : Map<String, String> = mutableMapOf<String, String>().apply {

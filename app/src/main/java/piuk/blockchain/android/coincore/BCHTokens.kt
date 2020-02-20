@@ -8,12 +8,17 @@ import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
+import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import org.bitcoinj.core.Address
 import piuk.blockchain.android.R
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -24,6 +29,7 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import timber.log.Timber
+import java.math.BigInteger
 
 class BCHTokens(
     private val bchDataManager: BchDataManager,
@@ -103,4 +109,78 @@ class BCHTokens(
         bchDataManager.clearBchAccountDetails()
         super.onLogoutSignal(event)
     }
+
+    private fun doFetchTransactions(
+        itemAccount: ItemAccount,
+        limit: Int,
+        offset: Int
+    ): Single<ActivitySummaryList> =
+        when (itemAccount.type) {
+            ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getAllBchTransactions(limit, offset)
+            ItemAccount.TYPE.ALL_LEGACY -> getLegacyBchTransactions(limit, offset)
+            ItemAccount.TYPE.SINGLE_ACCOUNT -> getBchAccountTransactions(itemAccount.address!!, limit, offset)
+        }
+            .toSin
+
+    private fun getAllBchTransactions(
+        limit: Int,
+        offset: Int
+    ): Observable<ActivitySummaryList> =
+        bchDataManager.getWalletTransactions(limit, offset)
+            .mapList {
+                BchActivitySummaryItem(
+                    it
+                )
+            }
+
+    private fun getLegacyBchTransactions(limit: Int, offset: Int): Observable<ActivitySummaryList> =
+        bchDataManager.getImportedAddressTransactions(limit, offset)
+            .mapList {
+                BchActivitySummaryItem(
+                    it
+                )
+            }
+
+    private fun getBchAccountTransactions(
+        address: String,
+        limit: Int,
+        offset: Int
+    ): Observable<List<ActivitySummaryItem>> =
+        bchDataManager.getAddressTransactions(address, limit, offset)
+            .mapList {
+                BchActivitySummaryItem(
+                    it
+                )
+            }
+}
+
+
+class BchActivitySummaryItem(
+    private val transactionSummary: TransactionSummary
+) : ActivitySummaryItem() {
+
+    override val cryptoCurrency: CryptoCurrency
+        get() = CryptoCurrency.BCH
+    override val direction: TransactionSummary.Direction
+        get() = transactionSummary.direction
+    override val timeStamp: Long
+        get() = transactionSummary.time
+    override val total: BigInteger
+        get() = transactionSummary.total
+    override val fee: Observable<BigInteger>
+        get() = Observable.just(transactionSummary.fee)
+    override val hash: String
+        get() = transactionSummary.hash
+    override val inputsMap: HashMap<String, BigInteger>
+        get() = transactionSummary.inputsMap
+    override val outputsMap: HashMap<String, BigInteger>
+        get() = transactionSummary.outputsMap
+    override val confirmations: Int
+        get() = transactionSummary.confirmations
+    override val watchOnly: Boolean
+        get() = transactionSummary.isWatchOnly
+    override val doubleSpend: Boolean
+        get() = transactionSummary.isDoubleSpend
+    override val isPending: Boolean
+        get() = transactionSummary.isPending
 }

@@ -11,6 +11,9 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -37,7 +40,6 @@ enum class AssetAction {
 
 typealias AvailableActions = Set<AssetAction>
 
-typealias TransactionList = List<Transaction>
 
 // TODO: For account fetching/default accounts look steal the code from xxxAccountListAdapter in core
 
@@ -55,6 +57,7 @@ interface AssetTokens {
     fun historicRate(epochWhen: Long): Single<FiatValue>
     fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries>
 
+    fun fetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList>
 //    fun transactions(): Single<TransactionList>
 //    fun transactions(account: AccountReference): Single<TransactionList>
 
@@ -130,6 +133,18 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
             AssetFilter.Wallet -> true
             AssetFilter.Custodial -> isNonCustodialConfigured.get()
         }
+
+    final override fun fetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
+        doFetchActivity(itemAccount)
+            // TODO: Update and return cache?
+            .doOnError { emptyList<ActivitySummaryItem>() }
+            .subscribeOn(Schedulers.io())
+
+    protected abstract fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList>
+
+    // Temp! These are constant ATM, but may need to change this so hardcode here
+    protected val transactionFetchCount = 50
+    protected val transactionFetchOffset = 0
 }
 
 fun ExchangeRateDataManager.fetchLastPrice(

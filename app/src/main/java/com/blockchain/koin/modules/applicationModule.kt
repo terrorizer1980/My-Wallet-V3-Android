@@ -8,7 +8,6 @@ import com.blockchain.network.websocket.debugLog
 import com.blockchain.network.websocket.newBlockchainWebSocket
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
-import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.PaymentAccountMapper
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
@@ -849,6 +848,7 @@ val applicationModule = applicationContext {
         factory {
             TransactionsPresenter(
                 exchangeRateDataManager = get(),
+                assetSelect = get(),
                 transactionListDataManager = get(),
                 ethDataManager = get(),
                 paxAccount = get("pax"),
