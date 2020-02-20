@@ -11,6 +11,7 @@ import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.R
@@ -119,12 +120,15 @@ class LauncherPresenter(
                 settingsDataManager.updateFiatUnit(fiatUnitForFreshAccount())
             }
         }.flatMapSingle { settings ->
-            custodialWalletManager.isCurrencySupportedForSimpleBuy(settings.currency).zipWith(featureFlag.enabled)
-                .map { (currencySupported, simpleBuyFeatureFlagEnabled) ->
-                    val simpleBuyFlowCanBeLaunched =
-                        currencySupported && simpleBuyFeatureFlagEnabled && accessState.isNewlyCreated
-                    settings to simpleBuyFlowCanBeLaunched
-                }
+            if (!accessState.isNewlyCreated || accessState.isRestored)
+                Single.just(settings to false)
+            else {
+                custodialWalletManager.isCurrencySupportedForSimpleBuy(settings.currency).zipWith(featureFlag.enabled)
+                    .map { (currencySupported, simpleBuyFeatureFlagEnabled) ->
+                        val simpleBuyFlowCanBeLaunched = currencySupported && simpleBuyFeatureFlagEnabled
+                        settings to simpleBuyFlowCanBeLaunched
+                    }
+            }
         }
             .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }

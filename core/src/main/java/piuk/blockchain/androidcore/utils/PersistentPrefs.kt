@@ -58,6 +58,7 @@ interface PersistentPrefs :
         const val KEY_SCHEME_URL = "scheme_url"
         const val KEY_METADATA_URI = "metadata_uri"
         const val KEY_NEWLY_CREATED_WALLET = "newly_created_wallet"
+        const val KEY_RESTORED_WALLET = "restored_wallet"
         const val KEY_ENCRYPTED_PIN_CODE = "encrypted_pin_code"
         const val KEY_FINGERPRINT_ENABLED = "fingerprint_enabled"
         const val KEY_RECEIVE_SHORTCUTS_ENABLED = "receive_shortcuts_enabled"

@@ -20,6 +20,8 @@ interface AccessState {
 
     var isNewlyCreated: Boolean
 
+    var isRestored: Boolean
+
     fun startLogoutTimer()
 
     fun setLogoutActivity(logoutActivity: Class<*>)
@@ -89,6 +91,10 @@ internal class AccessStateImpl(
     override var isNewlyCreated: Boolean
         get() = prefs.getValue(PersistentPrefs.KEY_NEWLY_CREATED_WALLET, false)
         set(newlyCreated) = prefs.setValue(PersistentPrefs.KEY_NEWLY_CREATED_WALLET, newlyCreated)
+
+    override var isRestored: Boolean
+        get() = prefs.getValue(PersistentPrefs.KEY_RESTORED_WALLET, false)
+        set(isRestored) = prefs.setValue(PersistentPrefs.KEY_RESTORED_WALLET, isRestored)
 
     /**
      * Called from BaseAuthActivity#onPause()
