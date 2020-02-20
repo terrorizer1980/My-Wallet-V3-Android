@@ -931,11 +931,7 @@ Chcete-li pokračovat, pak potvrďte otisk prstu</string>
   <string name="kyc_splash_terms_and_conditions_submit">Klepnutím na tlačítko Odeslat souhlasíte s programem Blockchain</string>
   <string name="kyc_country_selection_message_state">Každý stát má různá pravidla pro obchodování s krypto-měnami.</string>
   <string name="kyc_profile_submit">Předložit</string>
-  <string name="kyc_email_didnt_see_email">Neviděli jste e-mail? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Poslat znovu</string>
   <string name="kyc_email_email_was_resent">E-mail byl odmítnut</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Znovu odeslat kód</string>
   <string name="kyc_phone_number_code_was_resent">Kód byl odmítnut</string>
   <string name="kyc_phone_number_error_resending">Chyba při odesílání kódu, zkuste to prosím znovu</string>
   <string name="kyc_settings_swap_limit">Limit výměny</string>

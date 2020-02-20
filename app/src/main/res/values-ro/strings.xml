@@ -946,11 +946,7 @@
   <string name="kyc_splash_terms_and_conditions_submit">Prin apăsarea butonului Submit, sunteți de acord cu blocarea lui Blockchain</string>
   <string name="kyc_country_selection_message_state">Fiecare stat are reguli diferite privind tranzacționarea criptocurităților.</string>
   <string name="kyc_profile_submit">A depune</string>
-  <string name="kyc_email_didnt_see_email">Nu ați văzut e-mailuri? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Trimite din nou</string>
   <string name="kyc_email_email_was_resent">E-mailul a fost respins</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Retrimite codul</string>
   <string name="kyc_phone_number_code_was_resent">Codul a fost respins</string>
   <string name="kyc_phone_number_error_resending">Eroare la trimiterea codului, încercați din nou</string>
   <string name="kyc_settings_swap_limit">Swap Limit</string>

@@ -945,11 +945,7 @@
   <string name="kyc_splash_terms_and_conditions_submit">Dengan mengetuk Hantar, anda bersetuju dengan Blockchain</string>
   <string name="kyc_country_selection_message_state">Setiap negeri mempunyai peraturan yang berlainan dalam perdagangan cryptocurrency.</string>
   <string name="kyc_profile_submit">Hantar</string>
-  <string name="kyc_email_didnt_see_email">Tidak melihat e-mel? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Hantar semula</string>
   <string name="kyc_email_email_was_resent">E-mel marah</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Sambung semula Kod</string>
   <string name="kyc_phone_number_code_was_resent">Kod itu marah</string>
   <string name="kyc_phone_number_error_resending">Ralat menghantar Kod, sila cuba lagi</string>
   <string name="kyc_settings_swap_limit">Had Pertukaran</string>

@@ -928,11 +928,7 @@ xPubのプライバシーを維持してください。あなたのxPubにアク
   <string name="kyc_splash_terms_and_conditions_submit">Submitをタップすると、Blockchain\'sに同意したことになります。</string>
   <string name="kyc_country_selection_message_state">州ごとに、暗号通貨の取引に関して異なる規則があります。</string>
   <string name="kyc_profile_submit">提出する</string>
-  <string name="kyc_email_didnt_see_email">電子メールが表示されませんでしたか？ %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">もう一度送信</string>
   <string name="kyc_email_email_was_resent">メールが再送信されました</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">コードを再送信</string>
   <string name="kyc_phone_number_code_was_resent">コードが再送信されました</string>
   <string name="kyc_phone_number_error_resending">コードの送信中にエラーが発生しました。もう一度お試しください</string>
   <string name="kyc_settings_swap_limit">スワップ制限</string>

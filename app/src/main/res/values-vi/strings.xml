@@ -928,11 +928,7 @@ Lệnh đã được tạo</string>
   <string name="kyc_splash_terms_and_conditions_submit">Bằng cách nhấn Gửi, bạn đồng ý với Blockchain</string>
   <string name="kyc_country_selection_message_state">Mỗi tiểu bang có quy tắc khác nhau về giao dịch tiền kỹ thuật số</string>
   <string name="kyc_profile_submit">Gửi</string>
-  <string name="kyc_email_didnt_see_email">Bạn không nhìn thấy email? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Gửi lại</string>
   <string name="kyc_email_email_was_resent">Email đã được gửi lại</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Gửi lại mã</string>
   <string name="kyc_phone_number_code_was_resent">Mã đã được gửi lại</string>
   <string name="kyc_phone_number_error_resending">Lỗi gửi Mã, gui lòng thử lại</string>
   <string name="kyc_settings_swap_limit">Hạn mức Trao đổi</string>

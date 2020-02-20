@@ -928,11 +928,7 @@ Auftrag erstellt</string>
   <string name="kyc_splash_terms_and_conditions_submit">Indem Sie auf Einreichen tippen, akzeptieren Sie Blockchain\'s</string>
   <string name="kyc_country_selection_message_state">Jeder Staat hat andere Regeln für den Handel mit Kryptowährungen.</string>
   <string name="kyc_profile_submit">Einreichen</string>
-  <string name="kyc_email_didnt_see_email">Haben Sie die E-Mail nicht gesehen? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Erneut senden</string>
   <string name="kyc_email_email_was_resent">E-Mail wurde erneut gesendet</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Code erneut senden</string>
   <string name="kyc_phone_number_code_was_resent">Code wurde erneut gesendet</string>
   <string name="kyc_phone_number_error_resending">Fehler beim Senden des Codes. Bitte versuche Sie es erneut.</string>
   <string name="kyc_settings_swap_limit">Swap-Limit</string>
