@@ -24,7 +24,6 @@ import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpFragment
 import com.blockchain.ui.dialog.MaterialProgressDialog
-import com.blockchain.ui.urllinks.MODULAR_TERMS_AND_CONDITIONS
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.ViewUtils
