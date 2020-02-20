@@ -14,7 +14,6 @@
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="@dimen/large_margin"
         android:layout_marginEnd="@dimen/standard_margin"
-        android:text="@string/basic_transfer_title"
         tools:text="@string/basic_transfer_title"
         android:contentDescription="@string/basic_transfer_title"/>
 
@@ -60,7 +59,6 @@
                 android:layout_marginStart="@dimen/standard_margin"
                 android:layout_marginTop="@dimen/standard_margin"
                 android:layout_marginEnd="@dimen/standard_margin"
-                android:text="$1,027.58"
                 tools:text="$1,027.58" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -71,7 +69,6 @@
                 android:layout_marginStart="@dimen/standard_margin"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="@dimen/standard_margin"
-                android:text="0.1142857 BTC"
                 tools:text="0.1142857 BTC"/>
 
             <androidx.appcompat.widget.AppCompatTextView
