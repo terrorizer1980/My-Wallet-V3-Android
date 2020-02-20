@@ -1,5 +1,6 @@
 package piuk.blockchain.android.data.datamanagers
 
+import com.blockchain.android.testutils.rxInit
 import com.blockchain.sunriver.HorizonKeyPair
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.models.XlmTransaction
@@ -17,61 +18,68 @@ import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.plugins.RxJavaPlugins
+import io.reactivex.schedulers.TestScheduler
 import junit.framework.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import piuk.blockchain.android.testutils.RxTest
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
-import piuk.blockchain.androidcore.data.transactions.TransactionListStore
-import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
-import piuk.blockchain.androidcore.data.transactions.models.Displayable
+import piuk.blockchain.android.coincore.model.BtcActivitySummaryItem
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import java.math.BigInteger
-import java.util.Arrays
-import java.util.HashMap
 import java.util.NoSuchElementException
-import junit.framework.Assert.assertNotNull
 import org.junit.Assert.assertEquals
+import org.junit.Rule
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
-import piuk.blockchain.androidcore.data.transactions.models.Erc20Displayable
+import piuk.blockchain.android.coincore.model.TransactionListStore
+import piuk.blockchain.android.coincore.model.Erc20ActivitySummaryItem
+import piuk.blockchain.android.coincore.old.TransactionListDataManager
 
-class TransactionListDataManagerTest : RxTest() {
+class TransactionListDataManagerTest {
 
-    @Mock
-    private lateinit var payloadManager: PayloadManager
-    @Mock
-    private lateinit var ethDataManager: EthDataManager
-    @Mock
-    private lateinit var bchDataManager: BchDataManager
-    @Mock
-    private lateinit var currencyState: CurrencyState
-    @Mock
-    private lateinit var xlmDataManager: XlmDataManager
-    @Mock
-    private lateinit var paxAccount: Erc20Account
+    private val payloadManager: PayloadManager = mock()
+    private val ethDataManager: EthDataManager = mock()
+    private val bchDataManager: BchDataManager = mock()
+    private val currencyState: CurrencyState = mock()
+    private val xlmDataManager: XlmDataManager = mock()
+    private val paxAccount: Erc20Account = mock()
+
     private val transactionListStore = TransactionListStore()
+
     private lateinit var subject: TransactionListDataManager
+
+    @get:Rule
+    val rxSchedulers = rxInit {
+        mainTrampoline()
+        ioTrampoline()
+        newThreadTrampoline()
+        singleTrampoline()
+        computation(testScheduler)
+        RxJavaPlugins.setErrorHandler { it.printStackTrace() }
+    }
+
+    private val testScheduler: TestScheduler = TestScheduler()
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
-
-        subject = TransactionListDataManager(payloadManager,
-            ethDataManager,
-            bchDataManager,
-            xlmDataManager,
-            paxAccount,
-            transactionListStore,
-            currencyState)
+        subject =
+            TransactionListDataManager(
+                payloadManager,
+                ethDataManager,
+                bchDataManager,
+                xlmDataManager,
+                paxAccount,
+                transactionListStore,
+                currencyState
+            )
     }
 
     @Test
@@ -94,8 +102,10 @@ class TransactionListDataManagerTest : RxTest() {
         itemAccount.accountObject = account
         itemAccount.type = ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY
         `when`(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
+
         // Act
         val testObserver = subject.fetchTransactions(itemAccount, 0, 0).test()
+
         // Assert
         verify(payloadManager).getAllTransactions(0, 0)
         testObserver.assertComplete()
@@ -219,44 +229,25 @@ class TransactionListDataManagerTest : RxTest() {
     }
 
     @Test
-    fun getTransactionList() {
-        // Arrange
-
-        // Act
-        val value = subject.getTransactionList()
-        // Assert
-        assertEquals(transactionListStore.list, value)
-        assertEquals(emptyList<Any>(), value)
-    }
-
-    @Test
     fun clearTransactionList() {
         // Arrange
-        transactionListStore.list.add(mock(Displayable::class.java))
+        transactionListStore.insertTransactions(listOf(mock(ActivitySummaryItem::class.java)))
         // Act
         subject.clearTransactionList()
         // Assert
         assertEquals(emptyList<Any>(), subject.getTransactionList())
     }
 
-    @Test
-    fun insertTransactionIntoListAndReturnSorted() {
-        // Arrange
-        val tx0 = mock(BtcDisplayable::class.java)
-        `when`(tx0.timeStamp).thenReturn(0L)
-        val tx1 = mock(BtcDisplayable::class.java)
-        `when`(tx1.timeStamp).thenReturn(500L)
-        val tx2 = mock(BtcDisplayable::class.java)
-        `when`(tx2.timeStamp).thenReturn(1000L)
-        transactionListStore.insertTransactions(Arrays.asList<Displayable>(tx1, tx0))
-        // Act
-        val value = subject.insertTransactionIntoListAndReturnSorted(tx2)
-        // Assert
-        assertNotNull(value)
-        assertEquals(tx2, value[0])
-        assertEquals(tx1, value[1])
-        assertEquals(tx0, value[2])
-    }
+    class TestActivitySummaryItem(
+        override val cryptoCurrency: CryptoCurrency = CryptoCurrency.BTC,
+        override val direction: TransactionSummary.Direction = TransactionSummary.Direction.RECEIVED,
+        override val timeStamp: Long = 0,
+        override val total: BigInteger = 0.toBigInteger(),
+        override val fee: Observable<BigInteger> = Observable.just(0.toBigInteger()),
+        override val hash: String = "",
+        override val inputsMap: Map<String, BigInteger> = emptyMap(),
+        override val outputsMap: Map<String, BigInteger> = emptyMap()
+    ) : ActivitySummaryItem()
 
     @Test
     fun getBtcBalanceAccountTagAll() {
@@ -394,13 +385,14 @@ class TransactionListDataManagerTest : RxTest() {
     fun getTxFromHashFound() {
         // Arrange
         val txHash = "TX_HASH"
-        val tx0 = mock(BtcDisplayable::class.java)
+        val tx0 = mock(BtcActivitySummaryItem::class.java)
         `when`(tx0.hash).thenReturn("")
-        val tx1 = mock(BtcDisplayable::class.java)
+        val tx1 = mock(BtcActivitySummaryItem::class.java)
         `when`(tx1.hash).thenReturn("")
-        val tx2 = mock(BtcDisplayable::class.java)
+        val tx2 = mock(BtcActivitySummaryItem::class.java)
         `when`(tx2.hash).thenReturn(txHash)
-        transactionListStore.insertTransactions(Arrays.asList<Displayable>(tx0, tx1, tx2))
+
+        transactionListStore.insertTransactions(listOf(tx0, tx1, tx2))
         // Act
         val testObserver = subject.getTxFromHash(txHash).test()
         // Assert
@@ -413,29 +405,20 @@ class TransactionListDataManagerTest : RxTest() {
     fun getTxFromHashNotFound() {
         // Arrange
         val txHash = "TX_HASH"
-        val tx0 = mock(BtcDisplayable::class.java)
+        val tx0 = mock(BtcActivitySummaryItem::class.java)
         `when`(tx0.hash).thenReturn("")
-        val tx1 = mock(BtcDisplayable::class.java)
+        val tx1 = mock(BtcActivitySummaryItem::class.java)
         `when`(tx1.hash).thenReturn("")
-        val tx2 = mock(BtcDisplayable::class.java)
+        val tx2 = mock(BtcActivitySummaryItem::class.java)
         `when`(tx2.hash).thenReturn("")
-        transactionListStore.insertTransactions(Arrays.asList<Displayable>(tx0, tx1, tx2))
+        transactionListStore.insertTransactions(listOf(tx0, tx1, tx2))
+
         // Act
         val testObserver = subject.getTxFromHash(txHash).test()
         // Assert
         testObserver.assertTerminated()
         testObserver.assertNoValues()
         testObserver.assertError(NoSuchElementException::class.java)
-    }
-
-    @Test
-    fun getTxConfirmationsMap() {
-        // Arrange
-
-        // Act
-        val result = subject.getTxConfirmationsMap()
-        // Assert
-        assertNotNull(result)
     }
 
     @Test
@@ -522,7 +505,7 @@ class TransactionListDataManagerTest : RxTest() {
         testObserver.assertNoErrors()
         testObserver.assertValue {
             it.size == 1 &&
-                    it[0] is Erc20Displayable &&
+                    it[0] is Erc20ActivitySummaryItem &&
                     it[0].cryptoCurrency == CryptoCurrency.PAX &&
                     !it[0].doubleSpend &&
                     !it[0].isFeeTransaction &&

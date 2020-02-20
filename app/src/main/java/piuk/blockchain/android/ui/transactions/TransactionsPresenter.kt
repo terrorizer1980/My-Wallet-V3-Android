@@ -11,12 +11,11 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
+import piuk.blockchain.android.coincore.old.TransactionListDataManager
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.util.StringUtils
@@ -36,10 +35,11 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import com.blockchain.swap.shapeshift.data.Trade
+import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
-import piuk.blockchain.androidcore.data.transactions.models.Displayable
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import timber.log.Timber
@@ -196,24 +196,32 @@ class TransactionsPresenter(
      */
     @VisibleForTesting
     internal fun updateTransactionsListCompletable(account: ItemAccount): Completable {
-        return Completable.fromObservable(Observable.defer {
-            transactionListDataManager.fetchTransactions(account, 50, 0)
+        return Completable.defer {
+            transactionListDataManager
+                .fetchTransactions(account, 50, 0)
                 .flatMap { txs ->
-                    Observable.zip(
-                        getShapeShiftTxNotesObservable(),
-                        getCoinifyTxNotesObservable(),
-                        mergeReduce()
-                    ).observeOn(AndroidSchedulers.mainThread())
-                        .doOnNext { txNotesMap -> processTxNotes(txs, txNotesMap) }
+                    Singles.zip(
+                        getShapeShiftTxNotes(),
+                        getCoinifyTxNotes()
+                    ) { ssn, cfyn -> mergeTxNotes(ssn, cfyn) }
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSuccess { txNotesMap -> processTxNotes(txs, txNotesMap) }
                         .doOnError {
                             Timber.e(it)
                             view?.setUiState(UiState.FAILURE)
                         }
-                    }
-        })
+                }
+                .ignoreElement()
+        }
     }
 
-    private fun processTxNotes(txs: List<Displayable>, txNotesMap: Map<String, String>) {
+    private fun mergeTxNotes(shapeshiftNotes: Map<String, String>, coinifyNotes: Map<String, String>)
+        : Map<String, String> = mutableMapOf<String, String>().apply {
+            putAll(shapeshiftNotes)
+            putAll(coinifyNotes)
+        }.toMap()
+
+    private fun processTxNotes(txs: List<ActivitySummaryItem>, txNotesMap: Map<String, String>) {
         for (tx in txs) {
         // Add shapeShift notes
             txNotesMap[tx.hash]?.let { tx.note = it }
@@ -268,11 +276,12 @@ class TransactionsPresenter(
                 )
     }
 
-    private fun getShapeShiftTxNotesObservable() =
+    private fun getShapeShiftTxNotes() =
         shapeShiftDataManager.getTradesList()
             .map { processShapeShiftTxNotes(it) }
             .doOnError { Timber.e(it) }
             .onErrorReturn { emptyMap() }
+            .singleOrError()
 
     private fun processShapeShiftTxNotes(list: List<Trade>): Map<String, String> { // TxHash -> description
         val mutableMap: MutableMap<String, String> = mutableMapOf()
@@ -288,13 +297,34 @@ class TransactionsPresenter(
         return mutableMap.toMap()
     }
 
-    private fun getCoinifyTxNotesObservable() =
+//    private fun getShapeShiftTxNotesObservable() =
+//        shapeShiftDataManager.getTradesList()
+//            .map { processShapeShiftTxNotes(it) }
+//            .doOnError { Timber.e(it) }
+//            .onErrorReturn { emptyMap() }
+//
+//    private fun processShapeShiftTxNotes(list: List<Trade>): Map<String, String> { // TxHash -> description
+//        val mutableMap: MutableMap<String, String> = mutableMapOf()
+//
+//        for (trade in list) {
+//            trade.hashIn?.let {
+//                mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_to))
+//            }
+//            trade.hashOut?.let {
+//                mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_from))
+//            }
+//        }
+//        return mutableMap.toMap()
+//    }
+
+    private fun getCoinifyTxNotes() =
         tokenSingle.flatMap {
             coinifyDataManager.getTrades(it).toList()
         }.doOnError { Timber.e(it) }
             .map { processCoinifyTxNotes(it) }
             .toObservable()
             .onErrorReturn { emptyMap() }
+            .singleOrError()
 
     private fun processCoinifyTxNotes(list: List<CoinifyTrade>): Map<String, String> { // TxId -> description
         val mutableMap: MutableMap<String, String> = mutableMapOf()
@@ -419,14 +449,6 @@ class TransactionsPresenter(
 
     private fun CryptoValue.getFiatDisplayString(): String =
         fiatExchangeRates.getFiat(this).toStringWithSymbol()
-
-    private fun <T, R> mergeReduce(): BiFunction<Map<T, R>, Map<T, R>, Map<T, R>> =
-        BiFunction { firstMap, secondMap ->
-            mutableMapOf<T, R>().apply {
-                putAll(firstMap)
-                putAll(secondMap)
-            }.toMap()
-        }
 
     internal fun areLauncherShortcutsEnabled() =
         prefs.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)

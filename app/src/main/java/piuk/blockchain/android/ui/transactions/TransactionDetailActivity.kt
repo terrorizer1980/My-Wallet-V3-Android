@@ -211,7 +211,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
                     type = "text/plain"
                 }
                 startActivity(Intent.createChooser(shareIntent, getString(R.string.transaction_detail_share_chooser)))
-                analytics.logEvent(TransactionsAnalyticsEvents.ItemShare(presenter.displayable.cryptoCurrency.symbol))
+                analytics.logEvent(TransactionsAnalyticsEvents.ItemShare(presenter.activitySummaryItem.cryptoCurrency.symbol))
                 true
             }
             else -> super.onOptionsItemSelected(item)

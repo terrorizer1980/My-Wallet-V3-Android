@@ -6,9 +6,10 @@ import org.amshove.kluent.`should equal`
 import org.amshove.kluent.`should not equal to`
 import org.amshove.kluent.`should not equal`
 import org.junit.Test
+import piuk.blockchain.androidcore.data.transactions.BtcActivitySummaryItem
 import java.math.BigInteger
 
-class DisplayableTest {
+class ActivitySummaryItemTest {
 
     @Test
     fun `ensure not equal when compared to different type`() {
@@ -26,7 +27,9 @@ class DisplayableTest {
             isPending = false
         }
 
-        val displayable1 = BtcDisplayable(transactionSummary).apply { note = "note 1" }
+        val displayable1 = BtcActivitySummaryItem(
+            transactionSummary
+        ).apply { note = "note 1" }
         val objectToCompare = Any()
 
         displayable1.toString() `should not equal to` objectToCompare.toString()
@@ -50,8 +53,12 @@ class DisplayableTest {
             isPending = false
         }
 
-        val displayable1 = BtcDisplayable(transactionSummary).apply { note = "note 1" }
-        val displayable2 = BtcDisplayable(transactionSummary).apply { note = "note 2" }
+        val displayable1 = BtcActivitySummaryItem(
+            transactionSummary
+        ).apply { note = "note 1" }
+        val displayable2 = BtcActivitySummaryItem(
+            transactionSummary
+        ).apply { note = "note 2" }
 
         displayable1.toString() `should not equal to` displayable2.toString()
         displayable1.hashCode() `should not equal to` displayable2.hashCode()
@@ -74,8 +81,12 @@ class DisplayableTest {
             isPending = false
         }
 
-        val displayable1 = BtcDisplayable(transactionSummary).apply { note = "note" }
-        val displayable2 = BtcDisplayable(transactionSummary).apply { note = "note" }
+        val displayable1 = BtcActivitySummaryItem(
+            transactionSummary
+        ).apply { note = "note" }
+        val displayable2 = BtcActivitySummaryItem(
+            transactionSummary
+        ).apply { note = "note" }
 
         displayable1.toString() `should equal to` displayable2.toString()
         displayable1.hashCode() `should equal to` displayable2.hashCode()

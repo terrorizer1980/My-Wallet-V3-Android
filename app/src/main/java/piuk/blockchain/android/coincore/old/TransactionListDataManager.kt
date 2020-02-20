@@ -1,4 +1,4 @@
-package piuk.blockchain.android.data.datamanagers
+package piuk.blockchain.android.coincore.old
 
 import com.blockchain.sunriver.XlmDataManager
 import info.blockchain.balance.CryptoCurrency
@@ -7,21 +7,21 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.android.data.datamanagers.models.XlmDisplayable
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
-import piuk.blockchain.androidcore.data.transactions.TransactionListStore
-import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
-import piuk.blockchain.androidcore.data.transactions.models.Displayable
-import piuk.blockchain.androidcore.data.transactions.models.Erc20Displayable
-import piuk.blockchain.androidcore.data.transactions.models.EthDisplayable
-import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
-import java.util.ArrayList
-import java.util.HashMap
+import piuk.blockchain.android.coincore.model.TransactionListStore
+import piuk.blockchain.android.coincore.model.BtcActivitySummaryItem
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.model.Erc20ActivitySummaryItem
+import piuk.blockchain.android.coincore.model.EthActivitySummaryItem
+import piuk.blockchain.android.coincore.model.BchActivitySummaryItem
+import piuk.blockchain.android.coincore.model.XlmActivitySummaryItem
+
+typealias ActivitySummaryList = List<ActivitySummaryItem>
 
 class TransactionListDataManager(
     private val payloadManager: PayloadManager,
@@ -36,87 +36,61 @@ class TransactionListDataManager(
         itemAccount: ItemAccount,
         limit: Int,
         offset: Int
-    ): Observable<List<Displayable>> {
-
-        val observable: Observable<List<Displayable>> = when (currencyState.cryptoCurrency) {
+    ): Single<ActivitySummaryList> =
+        when (currencyState.cryptoCurrency) {
             CryptoCurrency.BTC -> fetchBtcTransactions(itemAccount, limit, offset)
-            CryptoCurrency.ETHER -> getEthereumObservable()
+            CryptoCurrency.ETHER -> getEthereumTransactions()
             CryptoCurrency.BCH -> fetchBchTransactions(itemAccount, limit, offset)
             CryptoCurrency.XLM -> fetchXlmTransactions()
             CryptoCurrency.PAX -> getPaxTransactions().onErrorReturn { emptyList() }
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        }.doOnNext {
+            insertTransactionList(it.toMutableList())
         }
+        .map { transactionListStore.list }
+        .doOnError { emptyList<ActivitySummaryItem>() }
+        .subscribeOn(Schedulers.io())
+        .singleOrError()
 
-        return observable.doOnNext { insertTransactionList(it.toMutableList()) }
-            .map { transactionListStore.list }
-            .doOnError { emptyList<Displayable>() }
-            .subscribeOn(Schedulers.io())
-    }
-
-    private fun fetchXlmTransactions(): Observable<List<Displayable>> =
+    private fun fetchXlmTransactions(): Observable<ActivitySummaryList> =
         xlmDataManager.getTransactionList()
             .toObservable()
-            .mapList { XlmDisplayable(it) }
+            .mapList { XlmActivitySummaryItem(it) }
 
     private fun fetchBtcTransactions(
         itemAccount: ItemAccount,
         limit: Int,
         offset: Int
-    ): Observable<List<Displayable>> =
+    ): Observable<ActivitySummaryList> =
         when (itemAccount.type) {
-            ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getAllTransactionsObservable(
-                limit,
-                offset
-            )
-            ItemAccount.TYPE.ALL_LEGACY -> getLegacyObservable(limit, offset)
-            ItemAccount.TYPE.SINGLE_ACCOUNT -> getAccountObservable(
-                itemAccount.address!!,
-                limit,
-                offset
-            )
+            ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getAllBtcTransactions(limit, offset)
+            ItemAccount.TYPE.ALL_LEGACY -> getLegacyBtcTransactions(limit, offset)
+            ItemAccount.TYPE.SINGLE_ACCOUNT -> getBtcAccountTransactions(itemAccount.address!!, limit, offset)
         }
 
     private fun fetchBchTransactions(
         itemAccount: ItemAccount,
         limit: Int,
         offset: Int
-    ): Observable<List<Displayable>> =
+    ): Observable<ActivitySummaryList> =
         when (itemAccount.type) {
-            ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getBchAllTransactionsObservable(
-                limit,
-                offset
-            )
-            ItemAccount.TYPE.ALL_LEGACY -> getBchLegacyObservable(limit, offset)
-            ItemAccount.TYPE.SINGLE_ACCOUNT -> getBchAccountObservable(
-                itemAccount.address!!,
-                limit,
-                offset
-            )
+            ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getAllBchTransactions(limit, offset)
+            ItemAccount.TYPE.ALL_LEGACY -> getLegacyBchTransactions(limit, offset)
+            ItemAccount.TYPE.SINGLE_ACCOUNT -> getBchAccountTransactions(itemAccount.address!!, limit, offset)
         }
 
     /**
-     * Returns a list of [Displayable] objects generated by [getTransactionList]
+     * Returns a list of [ActivitySummaryItem] objects generated by [getTransactionList]
      *
      * @return A list of Txs sorted by date.
      */
-    fun getTransactionList(): List<Displayable> = transactionListStore.list
+    fun getTransactionList(): ActivitySummaryList = transactionListStore.list
 
     /**
      * Resets the list of Transactions.
      */
     fun clearTransactionList() {
-        transactionListStore.clearList()
-    }
-
-    /**
-     * Allows insertion of a single new [Displayable] into the main transaction list.
-     *
-     * @param transaction A new, most likely temporary [Displayable]
-     * @return An updated list of Txs sorted by date
-     */
-    fun insertTransactionIntoListAndReturnSorted(transaction: Displayable): List<Displayable> {
-        transactionListStore.insertTransactionIntoListAndSort(transaction)
-        return transactionListStore.list
+        transactionListStore.clear()
     }
 
     /**
@@ -144,25 +118,18 @@ class TransactionListDataManager(
     }
 
     /**
-     * Get a specific [Displayable] from a hash
+     * Get a specific [ActivitySummaryItem] from a hash
      *
      * @param transactionHash The hash of the Tx to be returned
      * @return An Observable object wrapping a Tx. Will call onError if not found with a
      * NullPointerException
      */
-    fun getTxFromHash(transactionHash: String): Single<Displayable> =
+    fun getTxFromHash(transactionHash: String): Single<ActivitySummaryItem> =
         Observable.fromIterable(getTransactionList())
             .filter { it.hash == transactionHash }
             .firstOrError()
 
-    /**
-     * Returns a [HashMap] where a [Displayable] hash is used as a key against
-     * the confirmation number. This is for displaying the confirmation number in the Contacts page.
-     * Please note that this is deliberately not cleared when switching accounts.
-     */
-    fun getTxConfirmationsMap(): HashMap<String, Int> = transactionListStore.txConfirmationsMap
-
-    private fun insertTransactionList(txList: MutableList<Displayable>) {
+    private fun insertTransactionList(txList: MutableList<ActivitySummaryItem>) {
         val pendingTxs = getRemainingPendingTransactionList(txList)
         clearTransactionList()
         txList.addAll(pendingTxs)
@@ -172,8 +139,8 @@ class TransactionListDataManager(
     /**
      * Gets list of transactions that have been published but delivery has not yet been confirmed.
      */
-    private fun getRemainingPendingTransactionList(newlyFetchedTxs: List<Displayable>): List<Displayable> {
-        val pendingMap = HashMap<String, Displayable>()
+    private fun getRemainingPendingTransactionList(newlyFetchedTxs: ActivitySummaryList): ActivitySummaryList {
+        val pendingMap = HashMap<String, ActivitySummaryItem>()
         transactionListStore.list
             .filter { it.isPending }
             .forEach { pendingMap[it.hash] = it }
@@ -186,39 +153,51 @@ class TransactionListDataManager(
     }
 
     private fun filterProcessed(
-        newlyFetchedTxs: List<Displayable>,
-        pendingMap: HashMap<String, Displayable>
+        newlyFetchedTxs: ActivitySummaryList,
+        pendingMap: HashMap<String, ActivitySummaryItem>
     ) {
         newlyFetchedTxs.filter { pendingMap.containsKey(it.hash) }
             .forEach { pendingMap.remove(it.hash) }
     }
 
-    private fun getAllTransactionsObservable(
+    private fun getAllBtcTransactions(
         limit: Int,
         offset: Int
-    ): Observable<List<Displayable>> =
+    ): Observable<ActivitySummaryList> =
         Observable.fromCallable {
             payloadManager.getAllTransactions(limit, offset)
-                .map { BtcDisplayable(it) }
+                .map {
+                    BtcActivitySummaryItem(
+                        it
+                    )
+                }
         }
 
-    private fun getLegacyObservable(limit: Int, offset: Int): Observable<List<Displayable>> =
+    private fun getLegacyBtcTransactions(limit: Int, offset: Int): Observable<ActivitySummaryList> =
         Observable.fromCallable {
             payloadManager.getImportedAddressesTransactions(limit, offset)
-                .map { BtcDisplayable(it) }
+                .map {
+                    BtcActivitySummaryItem(
+                        it
+                    )
+                }
         }
 
-    private fun getAccountObservable(
+    private fun getBtcAccountTransactions(
         address: String,
         limit: Int,
         offset: Int
-    ): Observable<List<Displayable>> =
+    ): Observable<List<ActivitySummaryItem>> =
         Observable.fromCallable {
             payloadManager.getAccountTransactions(address, limit, offset)
-                .map { BtcDisplayable(it) }
+                .map {
+                    BtcActivitySummaryItem(
+                        it
+                    )
+                }
         }
 
-    private fun getEthereumObservable(): Observable<List<Displayable>> =
+    private fun getEthereumTransactions(): Observable<ActivitySummaryList> =
         ethDataManager.getLatestBlock()
             .flatMap { latestBlock ->
                 ethDataManager.getEthTransactions()
@@ -226,7 +205,7 @@ class TransactionListDataManager(
                         val ethFeeForPaxTransaction =
                             it.to.equals(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
                                 ignoreCase = true)
-                        EthDisplayable(
+                        EthActivitySummaryItem(
                             ethDataManager.getEthResponseModel()!!,
                             it,
                             ethFeeForPaxTransaction,
@@ -236,7 +215,7 @@ class TransactionListDataManager(
                     .toObservable()
             }
 
-    private fun getPaxTransactions(): Observable<List<Displayable>> {
+    private fun getPaxTransactions(): Observable<ActivitySummaryList> {
         val feedTransactions =
             paxAccount.getTransactions().mapList {
                 val feeObservable = ethDataManager.getTransaction(it.transactionHash)
@@ -250,29 +229,45 @@ class TransactionListDataManager(
             ethDataManager.getLatestBlockNumber()
         ).map { (transactions, accountHash, latestBlockNumber) ->
             transactions.map { transaction ->
-                Erc20Displayable(transaction, accountHash, latestBlockNumber.number)
+                Erc20ActivitySummaryItem(
+                    transaction,
+                    accountHash,
+                    latestBlockNumber.number
+                )
             }
         }
     }
 
-    private fun getBchAllTransactionsObservable(
+    private fun getAllBchTransactions(
         limit: Int,
         offset: Int
-    ): Observable<List<Displayable>> =
+    ): Observable<ActivitySummaryList> =
         bchDataManager.getWalletTransactions(limit, offset)
-            .mapList { BchDisplayable(it) }
+            .mapList {
+                BchActivitySummaryItem(
+                    it
+                )
+            }
 
-    private fun getBchLegacyObservable(limit: Int, offset: Int): Observable<List<Displayable>> =
+    private fun getLegacyBchTransactions(limit: Int, offset: Int): Observable<ActivitySummaryList> =
         bchDataManager.getImportedAddressTransactions(limit, offset)
-            .mapList { BchDisplayable(it) }
+            .mapList {
+                BchActivitySummaryItem(
+                    it
+                )
+            }
 
-    private fun getBchAccountObservable(
+    private fun getBchAccountTransactions(
         address: String,
         limit: Int,
         offset: Int
-    ): Observable<List<Displayable>> =
+    ): Observable<List<ActivitySummaryItem>> =
         bchDataManager.getAddressTransactions(address, limit, offset)
-            .mapList { BchDisplayable(it) }
+            .mapList {
+                BchActivitySummaryItem(
+                    it
+                )
+            }
 
     private fun <T, R> Observable<List<T>>.mapList(func: (T) -> R): Observable<List<R>> {
         return flatMapIterable { list ->

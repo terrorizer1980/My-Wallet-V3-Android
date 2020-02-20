@@ -5,9 +5,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import piuk.blockchain.android.R
-import piuk.blockchain.androidcore.data.transactions.models.Displayable
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 
-internal fun Displayable.formatting() =
+internal fun ActivitySummaryItem.formatting() =
     when (direction) {
         TransactionSummary.Direction.TRANSFERRED -> transferredFormatting(
             this
@@ -31,7 +31,7 @@ internal class DisplayableFormatting(
     val valueBackground: Int
 )
 
-private fun transferredFormatting(tx: Displayable) =
+private fun transferredFormatting(tx: ActivitySummaryItem) =
     DisplayableFormatting(
         text = R.string.MOVED,
         valueBackground = getColorForConfirmations(
@@ -46,7 +46,7 @@ private fun transferredFormatting(tx: Displayable) =
         )
     )
 
-private fun receivedFormatting(tx: Displayable) =
+private fun receivedFormatting(tx: ActivitySummaryItem) =
     DisplayableFormatting(
         text = R.string.RECEIVED,
         valueBackground = getColorForConfirmations(
@@ -61,7 +61,7 @@ private fun receivedFormatting(tx: Displayable) =
         )
     )
 
-private fun sendFormatting(tx: Displayable) =
+private fun sendFormatting(tx: ActivitySummaryItem) =
     DisplayableFormatting(
         text = R.string.SENT,
         valueBackground = getColorForConfirmations(
@@ -76,7 +76,7 @@ private fun sendFormatting(tx: Displayable) =
         )
     )
 
-private fun paxFeeFormatting(tx: Displayable) =
+private fun paxFeeFormatting(tx: ActivitySummaryItem) =
     DisplayableFormatting(
         text = R.string.pax_fee,
         valueBackground = getColorForConfirmations(
@@ -92,7 +92,7 @@ private fun paxFeeFormatting(tx: Displayable) =
     )
 
 private fun getColorForConfirmations(
-    tx: Displayable,
+    tx: ActivitySummaryItem,
     @DrawableRes colorLight: Int,
     @DrawableRes colorDark: Int
 ) = if (tx.confirmations < tx.cryptoCurrency.requiredConfirmations) colorLight else colorDark

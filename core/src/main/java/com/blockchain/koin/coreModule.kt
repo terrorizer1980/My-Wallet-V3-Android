@@ -80,7 +80,6 @@ import piuk.blockchain.androidcore.data.settings.SettingsService
 import piuk.blockchain.androidcore.data.settings.applyFlag
 import piuk.blockchain.androidcore.data.settings.datastore.SettingsDataStore
 import piuk.blockchain.androidcore.data.settings.datastore.SettingsMemoryStore
-import piuk.blockchain.androidcore.data.transactions.TransactionListStore
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
 import piuk.blockchain.androidcore.utils.AESUtilWrapper
@@ -214,8 +213,6 @@ val coreModule = applicationContext {
         }
 
         factory { FeeDataManager(get(), get(), get()) }
-
-        bean { TransactionListStore() }
 
         factory { CurrencyFormatManager(get(), get(), get(), get(), get()) }
 

@@ -18,7 +18,7 @@ import io.reactivex.schedulers.TestScheduler
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
+import piuk.blockchain.android.coincore.old.TransactionListDataManager
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
@@ -45,7 +45,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import org.amshove.kluent.`should equal to`
-import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
+import piuk.blockchain.android.coincore.model.BtcActivitySummaryItem
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import java.math.BigInteger
@@ -284,7 +284,7 @@ class TransactionsPresenterTest {
         // Transaction setup
         val itemAccount = ItemAccount()
         val txHash = "TX_HASH"
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.hash).thenReturn(txHash)
         whenever(displayable.total).thenReturn(BigInteger.ZERO)
         whenever(displayable.totalDisplayableCrypto).thenReturn("0")

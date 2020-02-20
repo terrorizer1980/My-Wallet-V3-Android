@@ -8,6 +8,7 @@ import com.blockchain.network.websocket.debugLog
 import com.blockchain.network.websocket.newBlockchainWebSocket
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
+import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.PaymentAccountMapper
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
@@ -18,11 +19,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
+import piuk.blockchain.android.coincore.model.TransactionListStore
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
+import piuk.blockchain.android.coincore.old.TransactionListDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
@@ -124,6 +126,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
 import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import java.util.Locale
@@ -229,7 +232,17 @@ val applicationModule = applicationContext {
 
         factory { KycStatusHelper(get(), get(), get(), get()) }
 
-        factory { TransactionListDataManager(get(), get(), get(), get(), get(), get(), get()) }
+        factory {
+            TransactionListDataManager(
+                payloadManager = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                xlmDataManager = get(),
+                paxAccount = get(),
+                transactionListStore = TransactionListStore(),
+                currencyState = get()
+            )
+        }
 
         factory {
             FingerprintHelper(

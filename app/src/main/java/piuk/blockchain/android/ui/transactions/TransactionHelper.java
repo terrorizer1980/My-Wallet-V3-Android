@@ -6,7 +6,7 @@ import info.blockchain.wallet.payment.Payment;
 import org.apache.commons.lang3.tuple.Pair;
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
-import piuk.blockchain.androidcore.data.transactions.models.Displayable;
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class TransactionHelper {
      * @return A Pair of Maps representing the input and output of the transaction
      */
     @NonNull
-    Pair<HashMap<String, BigInteger>, HashMap<String, BigInteger>> filterNonChangeAddresses(Displayable transactionSummary) {
+    Pair<HashMap<String, BigInteger>, HashMap<String, BigInteger>> filterNonChangeAddresses(ActivitySummaryItem transactionSummary) {
 
         HashMap<String, BigInteger> inputMap = new HashMap<>();
         HashMap<String, BigInteger> outputMap = new HashMap<>();
@@ -110,7 +110,7 @@ public class TransactionHelper {
         return Pair.of(inputMap, outputMap);
     }
 
-    Pair<HashMap<String, BigInteger>, HashMap<String, BigInteger>> filterNonChangeAddressesBch(Displayable transactionSummary) {
+    Pair<HashMap<String, BigInteger>, HashMap<String, BigInteger>> filterNonChangeAddressesBch(ActivitySummaryItem transactionSummary) {
 
         HashMap<String, BigInteger> inputMap = new HashMap<>();
         HashMap<String, BigInteger> outputMap = new HashMap<>();

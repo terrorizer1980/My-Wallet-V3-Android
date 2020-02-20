@@ -20,7 +20,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
+import piuk.blockchain.android.coincore.old.TransactionListDataManager
 import piuk.blockchain.android.ui.transactions.adapter.formatting
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -28,7 +28,7 @@ import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.data.transactions.models.Displayable
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -56,22 +56,22 @@ class TransactionDetailPresenter constructor(
     private val fiatType = prefs.selectedFiatCurrency
 
     @VisibleForTesting
-    lateinit var displayable: Displayable
+    lateinit var activitySummaryItem: ActivitySummaryItem
 
     // Currently no available notes for bch
     // Only BTC and ETHER currently supported
     var transactionNote: String?
-        get() = when (displayable.cryptoCurrency) {
-            CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(displayable.hash)
-            CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[displayable.hash]
-            CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(displayable.hash)
+        get() = when (activitySummaryItem.cryptoCurrency) {
+            CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(activitySummaryItem.hash)
+            CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[activitySummaryItem.hash]
+            CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(activitySummaryItem.hash)
             else -> ""
         }
         private set(txHash) {
-            val notes: String? = when (displayable.cryptoCurrency) {
+            val notes: String? = when (activitySummaryItem.cryptoCurrency) {
                 CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(txHash!!)
-                CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[displayable.hash]
-                CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(displayable.hash)
+                CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[activitySummaryItem.hash]
+                CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(activitySummaryItem.hash)
                 else -> {
                     view?.hideDescriptionField()
                     ""
@@ -81,7 +81,7 @@ class TransactionDetailPresenter constructor(
         }
 
     val transactionHash: TransactionHash
-        get() = TransactionHash(displayable.cryptoCurrency, displayable.hash)
+        get() = TransactionHash(activitySummaryItem.cryptoCurrency, activitySummaryItem.hash)
 
     override fun onViewReady() {
         val pos = view?.positionDetailLookup() ?: -1
@@ -91,8 +91,8 @@ class TransactionDetailPresenter constructor(
             pos != -1 -> {
                 val transactionList = transactionListDataManager.getTransactionList()
                 if (pos < transactionList.size) {
-                    displayable = transactionListDataManager.getTransactionList()[pos]
-                    updateUiFromTransaction(displayable)
+                    activitySummaryItem = transactionListDataManager.getTransactionList()[pos]
+                    updateUiFromTransaction(activitySummaryItem)
                 } else {
                     view?.pageFinish()
                 }
@@ -100,7 +100,7 @@ class TransactionDetailPresenter constructor(
             txHash != null -> {
                 compositeDisposable +=
                     transactionListDataManager.getTxFromHash(txHash)
-                        .doOnSuccess { displayable = it }
+                        .doOnSuccess { activitySummaryItem = it }
                         .subscribe(
                             { this.updateUiFromTransaction(it) },
                             { view?.pageFinish() })
@@ -113,15 +113,15 @@ class TransactionDetailPresenter constructor(
     }
 
     fun updateTransactionNote(description: String) {
-        val completable: Completable = when (displayable.cryptoCurrency) {
+        val completable: Completable = when (activitySummaryItem.cryptoCurrency) {
             CryptoCurrency.BTC -> payloadDataManager.updateTransactionNotes(
-                displayable.hash,
+                activitySummaryItem.hash,
                 description
             )
-            CryptoCurrency.PAX -> ethDataManager.updateErc20TransactionNotes(displayable.hash,
+            CryptoCurrency.PAX -> ethDataManager.updateErc20TransactionNotes(activitySummaryItem.hash,
                 description)
             CryptoCurrency.ETHER -> ethDataManager.updateTransactionNotes(
-                displayable.hash,
+                activitySummaryItem.hash,
                 description
             )
             else -> throw IllegalArgumentException("Only BTC, ETHER and PAX currently supported")
@@ -137,11 +137,11 @@ class TransactionDetailPresenter constructor(
             )
     }
 
-    private fun updateUiFromTransaction(displayable: Displayable) {
-        with(displayable) {
-            view?.setTransactionType(direction, displayable.isFeeTransaction)
+    private fun updateUiFromTransaction(activitySummaryItem: ActivitySummaryItem) {
+        with(activitySummaryItem) {
+            view?.setTransactionType(direction, activitySummaryItem.isFeeTransaction)
             view?.updateFeeFieldVisibility(direction != TransactionSummary.Direction.RECEIVED &&
-                    !displayable.isFeeTransaction)
+                    !activitySummaryItem.isFeeTransaction)
             setTransactionColor(this)
             setTransactionValue(cryptoCurrency, total)
             setConfirmationStatus(cryptoCurrency, hash, confirmations.toLong())
@@ -170,14 +170,14 @@ class TransactionDetailPresenter constructor(
         }
     }
 
-    private fun handleXlmToAndFrom(displayable: Displayable) {
+    private fun handleXlmToAndFrom(activitySummaryItem: ActivitySummaryItem) {
         compositeDisposable +=
             xlmDataManager.defaultAccount()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onSuccess = { account ->
-                        var fromAddress = displayable.inputsMap.keys.first()
-                        var toAddress = displayable.outputsMap.keys.first()
+                        var fromAddress = activitySummaryItem.inputsMap.keys.first()
+                        var toAddress = activitySummaryItem.outputsMap.keys.first()
                         if (fromAddress == account.accountId) {
                             fromAddress = account.label
                         }
@@ -192,9 +192,9 @@ class TransactionDetailPresenter constructor(
                     })
     }
 
-    private fun handleEthToAndFrom(displayable: Displayable) {
-        var fromAddress = displayable.inputsMap.keys.first()
-        var toAddress = displayable.outputsMap.keys.first()
+    private fun handleEthToAndFrom(activitySummaryItem: ActivitySummaryItem) {
+        var fromAddress = activitySummaryItem.inputsMap.keys.first()
+        var toAddress = activitySummaryItem.outputsMap.keys.first()
 
         val ethAddress = ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account
         if (fromAddress == ethAddress) {
@@ -209,9 +209,9 @@ class TransactionDetailPresenter constructor(
         }
     }
 
-    private fun handlePaxToAndFrom(displayable: Displayable) {
-        var fromAddress = displayable.inputsMap.keys.first()
-        var toAddress = displayable.outputsMap.keys.first()
+    private fun handlePaxToAndFrom(activitySummaryItem: ActivitySummaryItem) {
+        var fromAddress = activitySummaryItem.inputsMap.keys.first()
+        var toAddress = activitySummaryItem.outputsMap.keys.first()
 
         val ethAddress = ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account
         if (fromAddress == ethAddress) {
@@ -226,26 +226,26 @@ class TransactionDetailPresenter constructor(
         }
     }
 
-    private fun handleBtcToAndFrom(displayable: Displayable) {
-        val (inputs, outputs) = transactionHelper.filterNonChangeAddresses(displayable)
-        setToAndFrom(displayable, inputs, outputs)
+    private fun handleBtcToAndFrom(activitySummaryItem: ActivitySummaryItem) {
+        val (inputs, outputs) = transactionHelper.filterNonChangeAddresses(activitySummaryItem)
+        setToAndFrom(activitySummaryItem, inputs, outputs)
     }
 
-    private fun handleBchToAndFrom(displayable: Displayable) {
-        val (inputs, outputs) = transactionHelper.filterNonChangeAddressesBch(displayable)
-        setToAndFrom(displayable, inputs, outputs)
+    private fun handleBchToAndFrom(activitySummaryItem: ActivitySummaryItem) {
+        val (inputs, outputs) = transactionHelper.filterNonChangeAddressesBch(activitySummaryItem)
+        setToAndFrom(activitySummaryItem, inputs, outputs)
     }
 
     private fun setToAndFrom(
-        displayable: Displayable,
+        activitySummaryItem: ActivitySummaryItem,
         inputs: HashMap<String, BigInteger?>,
         outputs: HashMap<String, BigInteger?>
     ) {
         // From Addresses
-        val fromList = getFromList(displayable.cryptoCurrency, inputs)
+        val fromList = getFromList(activitySummaryItem.cryptoCurrency, inputs)
         view?.setFromAddress(fromList)
         // To Addresses
-        val recipients = getToList(displayable.cryptoCurrency, outputs)
+        val recipients = getToList(activitySummaryItem.cryptoCurrency, outputs)
         view?.setToAddresses(recipients)
     }
 
@@ -373,19 +373,19 @@ class TransactionDetailPresenter constructor(
     }
 
     @VisibleForTesting
-    internal fun setTransactionColor(transaction: Displayable) {
+    internal fun setTransactionColor(transaction: ActivitySummaryItem) {
         view?.setTransactionColour(transaction.formatting().directionColour)
     }
 
     @VisibleForTesting
-    internal fun getTransactionValueString(currency: String, transaction: Displayable): Single<String> =
+    internal fun getTransactionValueString(currency: String, transaction: ActivitySummaryItem): Single<String> =
         exchangeRateDataManager.getHistoricPrice(
             CryptoValue(transaction.cryptoCurrency, transaction.total),
             currency,
             transaction.timeStamp
         ).map { getTransactionString(transaction, it) }
 
-    private fun getTransactionString(transaction: Displayable, value: FiatValue): String {
+    private fun getTransactionString(transaction: ActivitySummaryItem, value: FiatValue): String {
         val stringId = when (transaction.direction) {
             TransactionSummary.Direction.TRANSFERRED -> R.string.transaction_detail_value_at_time_transferred
             TransactionSummary.Direction.SENT -> R.string.transaction_detail_value_at_time_sent

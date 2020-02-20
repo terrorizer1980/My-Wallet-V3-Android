@@ -28,18 +28,18 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
+import piuk.blockchain.android.coincore.old.TransactionListDataManager
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
-import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
-import piuk.blockchain.androidcore.data.transactions.models.Displayable
-import piuk.blockchain.androidcore.data.transactions.models.Erc20Displayable
-import piuk.blockchain.androidcore.data.transactions.models.EthDisplayable
+import piuk.blockchain.android.coincore.model.BchActivitySummaryItem
+import piuk.blockchain.android.coincore.model.BtcActivitySummaryItem
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.model.Erc20ActivitySummaryItem
+import piuk.blockchain.android.coincore.model.EthActivitySummaryItem
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.math.BigInteger
@@ -61,9 +61,9 @@ class TransactionDetailPresenterTest {
     private val environmentSettings: EnvironmentConfig = mock()
     private val xlmDataManager: XlmDataManager = mock()
 
-    private val displayable1: BtcDisplayable = mock()
-    private val displayable2: BtcDisplayable = mock()
-    private val displayable3: BtcDisplayable = mock()
+    private val displayable1: BtcActivitySummaryItem = mock()
+    private val displayable2: BtcActivitySummaryItem = mock()
+    private val displayable3: BtcActivitySummaryItem = mock()
 
     @get:Rule
     val rxSchedulers = rxInit {
@@ -98,7 +98,7 @@ class TransactionDetailPresenterTest {
         whenever(view.txHashDetailLookup()).thenReturn(null)
 
         whenever(transactionListDataManager.getTransactionList())
-            .thenReturn(listOf<Displayable>(displayable1, displayable2, displayable3))
+            .thenReturn(listOf<ActivitySummaryItem>(displayable1, displayable2, displayable3))
 
         // Act
         subject.onViewReady()
@@ -165,7 +165,7 @@ class TransactionDetailPresenterTest {
 
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
         whenever(transactionListDataManager.getTransactionList())
-            .thenReturn(listOf<Displayable>(displayable1, displayable2, displayable3))
+            .thenReturn(listOf<ActivitySummaryItem>(displayable1, displayable2, displayable3))
 
         whenever(stringUtils.getString(R.string.transaction_detail_pending))
             .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
@@ -432,7 +432,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun getTransactionValueStringUsd() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
@@ -452,7 +452,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun getTransactionValueStringReceivedEth() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
@@ -471,7 +471,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun getTransactionValueStringReceivedPax() {
         // Arrange
-        val displayable: Erc20Displayable = mock()
+        val displayable: Erc20ActivitySummaryItem = mock()
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
@@ -490,7 +490,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun getTransactionValueStringTransferred() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
@@ -510,10 +510,10 @@ class TransactionDetailPresenterTest {
     @Test
     fun updateTransactionNoteBtcSuccess() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        subject.displayable = displayable
+        subject.activitySummaryItem = displayable
         whenever(payloadDataManager.updateTransactionNotes(any(), any()))
             .thenReturn(Completable.complete())
         // Act
@@ -528,10 +528,10 @@ class TransactionDetailPresenterTest {
     @Test
     fun updateTransactionNoteEthSuccess() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        subject.displayable = displayable
+        subject.activitySummaryItem = displayable
         whenever(ethDataManager.updateTransactionNotes(any(), any()))
             .thenReturn(Completable.complete())
         // Act
@@ -546,10 +546,10 @@ class TransactionDetailPresenterTest {
     @Test
     fun updateTransactionNotePaxSuccess() {
         // Arrange
-        val displayable: Erc20Displayable = mock()
+        val displayable: Erc20ActivitySummaryItem = mock()
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-        subject.displayable = displayable
+        subject.activitySummaryItem = displayable
         whenever(ethDataManager.updateErc20TransactionNotes(any(), any()))
             .thenReturn(Completable.complete())
         // Act
@@ -564,10 +564,10 @@ class TransactionDetailPresenterTest {
     @Test
     fun updateTransactionNoteFailure() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        subject.displayable = displayable
+        subject.activitySummaryItem = displayable
         whenever(payloadDataManager.updateTransactionNotes(any(), any()))
             .thenReturn(Completable.error(Throwable()))
         // Act
@@ -581,10 +581,10 @@ class TransactionDetailPresenterTest {
     @Test(expected = IllegalArgumentException::class)
     fun updateTransactionNoteBchSuccess() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BCH)
-        subject.displayable = displayable
+        subject.activitySummaryItem = displayable
         whenever(ethDataManager.updateTransactionNotes(any(), any()))
             .thenReturn(Completable.complete())
         // Act
@@ -595,10 +595,10 @@ class TransactionDetailPresenterTest {
     @Test
     fun getTransactionNoteBtc() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        subject.displayable = displayable
+        subject.activitySummaryItem = displayable
         whenever(payloadDataManager.getTransactionNotes("hash")).thenReturn("note")
         // Act
         val value = subject.transactionNote
@@ -610,10 +610,10 @@ class TransactionDetailPresenterTest {
     @Test
     fun getTransactionNoteEth() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        subject.displayable = displayable
+        subject.activitySummaryItem = displayable
         whenever(ethDataManager.getTransactionNotes("hash")).thenReturn("note")
         // Act
         val value = subject.transactionNote
@@ -625,10 +625,10 @@ class TransactionDetailPresenterTest {
     @Test
     fun getTransactionNotePax() {
         // Arrange
-        val displayable: Erc20Displayable = mock()
+        val displayable: Erc20ActivitySummaryItem = mock()
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-        subject.displayable = displayable
+        subject.activitySummaryItem = displayable
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
         // Act
         val value = subject.transactionNote
@@ -640,10 +640,10 @@ class TransactionDetailPresenterTest {
     @Test
     fun getTransactionNoteBch() {
         // Arrange
-        val displayable: BchDisplayable = mock()
+        val displayable: BchActivitySummaryItem = mock()
         whenever(displayable.hash).thenReturn("hash")
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BCH)
-        subject.displayable = displayable
+        subject.activitySummaryItem = displayable
         // Act
         val value = subject.transactionNote
         // Assert
@@ -652,7 +652,7 @@ class TransactionDetailPresenterTest {
 
     @Test
     fun `getTransactionHash Bch`() {
-        subject.displayable = mock<BchDisplayable> {
+        subject.activitySummaryItem = mock<BchActivitySummaryItem> {
             on { hash } `it returns` "hash1"
             on { cryptoCurrency } `it returns` CryptoCurrency.BCH
         }
@@ -661,7 +661,7 @@ class TransactionDetailPresenterTest {
 
     @Test
     fun `getTransactionHash Pax`() {
-        subject.displayable = mock<Erc20Displayable> {
+        subject.activitySummaryItem = mock<Erc20ActivitySummaryItem> {
             on { hash } `it returns` "hash1"
             on { cryptoCurrency } `it returns` CryptoCurrency.PAX
         }
@@ -670,7 +670,7 @@ class TransactionDetailPresenterTest {
 
     @Test
     fun `getTransactionHash Eth`() {
-        subject.displayable = mock<EthDisplayable> {
+        subject.activitySummaryItem = mock<EthActivitySummaryItem> {
             on { hash } `it returns` "hash2"
             on { cryptoCurrency } `it returns` CryptoCurrency.ETHER
         }
@@ -703,7 +703,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun setTransactionColorMove() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.confirmations).thenReturn(0)
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
@@ -717,7 +717,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun setTransactionColorMoveConfirmed() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.confirmations).thenReturn(3)
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
@@ -731,7 +731,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun setTransactionColorSent() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.confirmations).thenReturn(2)
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
@@ -745,7 +745,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun setTransactionColorSentConfirmed() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.confirmations).thenReturn(3)
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
@@ -759,7 +759,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun setTransactionColorReceived() {
         // Arrange
-        val displayable: EthDisplayable = mock()
+        val displayable: EthActivitySummaryItem = mock()
         whenever(displayable.confirmations).thenReturn(7)
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
@@ -773,7 +773,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun setTransactionColorReceivedConfirmed() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
+        val displayable: BtcActivitySummaryItem = mock()
         whenever(displayable.confirmations).thenReturn(3)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
@@ -787,7 +787,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun `fee should be hidden if transaction is a fee one`() {
         // Arrange
-        val displayable: EthDisplayable = mock()
+        val displayable: EthActivitySummaryItem = mock()
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.isFeeTransaction).thenReturn(true)
@@ -825,7 +825,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun `fee should be hidden if transaction is a receive one`() {
         // Arrange
-        val displayable: EthDisplayable = mock()
+        val displayable: EthActivitySummaryItem = mock()
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
         whenever(displayable.isFeeTransaction).thenReturn(false)
@@ -863,7 +863,7 @@ class TransactionDetailPresenterTest {
     @Test
     fun `fee should not be hidden if transaction is a sent one`() {
         // Arrange
-        val displayable: EthDisplayable = mock()
+        val displayable: EthActivitySummaryItem = mock()
         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
         whenever(displayable.hash).thenReturn("hash")
