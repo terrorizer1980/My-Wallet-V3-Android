@@ -68,17 +68,16 @@ class XLMTokens(
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
         historicRates.getHistoricPriceSeries(CryptoCurrency.XLM, currencyPrefs.selectedFiatCurrency, period)
 
-    override fun fetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
+    // Activity/transactions moved over from TransactionDataListManager.
+    // TODO Requires some reworking, but that can happen later. After the code & tests are moved and working.
+    override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
+        getTransactions()
+            .singleOrError()
+
+    private fun getTransactions(): Observable<ActivitySummaryList> =
         xlmDataManager.getTransactionList()
-            .flatMap { it.map { XlmActivitySummaryItem(it) } }
-//            .mapList {  }
-
-}
-
-private fun <T, R> Single<List<T>>.mapList(func: (T) -> R): Single<List<R>> {
-    return flatMapIterable { list ->
-        list.map { func(it) }
-    }.toList().toObservable()
+            .toObservable()
+            .mapList { XlmActivitySummaryItem(it) }
 }
 
 class XlmActivitySummaryItem(

@@ -111,11 +111,13 @@ class ETHTokens(
         ethDataManager.clearEthAccountDetails()
     }
 
+    // Activity/transactions moved over from TransactionDataListManager.
+    // TODO Requires some reworking, but that can happen later. After the code & tests are moved and working.
     override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
-        getTransactions(itemAccount)
+        getTransactions()
             .singleOrError()
 
-    private fun getTransactions(itemAccount: ItemAccount): Observable<ActivitySummaryList> =
+    private fun getTransactions(): Observable<ActivitySummaryList> =
         ethDataManager.getLatestBlock()
             .flatMapSingle { latestBlock ->
                 ethDataManager.getEthTransactions()
@@ -132,7 +134,6 @@ class ETHTokens(
                         )
                     }.toList()
                 }
-
 }
 
 private class EthActivitySummaryItem(
@@ -148,8 +149,7 @@ private class EthActivitySummaryItem(
     override val direction: TransactionSummary.Direction
         get() = when {
             combinedEthModel.getAccounts()[0] == ethTransaction.to
-                && combinedEthModel.getAccounts()[0] ==
-                ethTransaction.from -> TransactionSummary.Direction.TRANSFERRED
+                && combinedEthModel.getAccounts()[0] == ethTransaction.from -> TransactionSummary.Direction.TRANSFERRED
             combinedEthModel.getAccounts().contains(ethTransaction.from) -> TransactionSummary.Direction.SENT
             else -> TransactionSummary.Direction.RECEIVED
         }
@@ -169,15 +169,11 @@ private class EthActivitySummaryItem(
     override val hash: String
         get() = ethTransaction.hash
 
-    override val inputsMap: HashMap<String, BigInteger>
-        get() = HashMap<String, BigInteger>().apply {
-            put(ethTransaction.from, ethTransaction.value)
-        }
+    override val inputsMap: Map<String, BigInteger>
+        get() = mapOf(ethTransaction.from to ethTransaction.value)
 
-    override val outputsMap: HashMap<String, BigInteger>
-        get() = HashMap<String, BigInteger>().apply {
-            put(ethTransaction.to, ethTransaction.value)
-        }
+    override val outputsMap: Map<String, BigInteger>
+        get() = mapOf(ethTransaction.to to ethTransaction.value)
 
     override val confirmations: Int
         get() = ethConfirmations(ethTransaction, blockHeight)

@@ -1,17 +1,17 @@
 package piuk.blockchain.android.coincore
 
-import info.blockchain.api.data.Transaction
+import androidx.annotation.VisibleForTesting
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.android.coincore.old.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -40,18 +40,20 @@ enum class AssetAction {
 
 typealias AvailableActions = Set<AssetAction>
 
+// Placeholder for proper account interface. Build on AccountReference and ItemAccount
+typealias CryptoAccount = AccountReference
 
 // TODO: For account fetching/default accounts look steal the code from xxxAccountListAdapter in core
 
 interface AssetTokens {
     val asset: CryptoCurrency
 
-    fun defaultAccount(): Single<AccountReference>
+    fun defaultAccount(): Single<CryptoAccount>
     //    fun accounts(): Single<AccountsList>
     fun receiveAddress(): Single<String>
 
     fun totalBalance(filter: AssetFilter = AssetFilter.Total): Single<CryptoValue>
-    fun balance(account: AccountReference): Single<CryptoValue>
+    fun balance(account: CryptoAccount): Single<CryptoValue>
 
     fun exchangeRate(): Single<FiatValue>
     fun historicRate(epochWhen: Long): Single<FiatValue>
@@ -137,10 +139,11 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
     final override fun fetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
         doFetchActivity(itemAccount)
             // TODO: Update and return cache?
-            .doOnError { emptyList<ActivitySummaryItem>() }
+            .onErrorReturn { emptyList() }
             .subscribeOn(Schedulers.io())
 
-    protected abstract fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList>
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    abstract fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList>
 
     // Temp! These are constant ATM, but may need to change this so hardcode here
     protected val transactionFetchCount = 50
@@ -154,3 +157,9 @@ fun ExchangeRateDataManager.fetchLastPrice(
     updateTickers()
         .andThen(Single.defer { Single.just(getLastPrice(cryptoCurrency, currencyName)) })
         .map { FiatValue.fromMajor(currencyName, it.toBigDecimal(), false) }
+
+fun <T, R> Observable<List<T>>.mapList(func: (T) -> R): Observable<List<R>> {
+    return flatMapIterable { list ->
+        list.map { func(it) }
+    }.toList().toObservable()
+}

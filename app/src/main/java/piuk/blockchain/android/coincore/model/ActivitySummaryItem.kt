@@ -1,17 +1,8 @@
 package piuk.blockchain.android.coincore.model
 
-import com.blockchain.sunriver.models.XlmTransaction
-import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
-import com.blockchain.swap.nabu.extensions.toLocalTime
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.compareTo
-import info.blockchain.wallet.ethereum.data.EthTransaction
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Observable
-import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
-import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
-import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.utils.helperfunctions.JavaHashCode
 import java.math.BigInteger
 import kotlin.math.sign
@@ -94,45 +85,3 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
 
     override operator fun compareTo(other: ActivitySummaryItem) = (other.timeStamp - timeStamp).sign
 }
-
-
-
-
-class Erc20ActivitySummaryItem(
-    private val feedTransfer: FeedErc20Transfer,
-    private val accountHash: String,
-    private val lastBlockNumber: BigInteger
-) :
-    ActivitySummaryItem() {
-
-    private val transfer: Erc20Transfer
-        get() = feedTransfer.transfer
-    override val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.PAX
-    override val direction: TransactionSummary.Direction
-        get() = when {
-            transfer.isToAccount(accountHash)
-                    && transfer.isFromAccount(accountHash) -> TransactionSummary.Direction.TRANSFERRED
-            transfer.isFromAccount(accountHash) -> TransactionSummary.Direction.SENT
-            else -> TransactionSummary.Direction.RECEIVED
-        }
-    override val timeStamp: Long
-        get() = transfer.timestamp
-    override val total: BigInteger
-        get() = transfer.value
-    override val fee: Observable<BigInteger>
-        get() = feedTransfer.feeObservable
-    override val hash: String
-        get() = transfer.transactionHash
-    override val inputsMap: HashMap<String, BigInteger>
-        get() = HashMap<String, BigInteger>().apply {
-            put(transfer.from, transfer.value)
-        }
-    override val outputsMap: HashMap<String, BigInteger>
-        get() = HashMap<String, BigInteger>().apply {
-            put(transfer.to, transfer.value)
-        }
-    override val confirmations: Int
-        get() = (lastBlockNumber - transfer.blockNumber).toInt()
-}
-

@@ -46,7 +46,7 @@ class BCHTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BCH
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun defaultAccount(): Single<CryptoAccount> =
         with(bchDataManager) {
             val a = getAccountMetadataList()[getDefaultAccountPosition()]
             Single.just(a.toAccountReference())
@@ -69,7 +69,7 @@ class BCHTokens(
             .andThen(Completable.defer { updater() })
             .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
 
-    override fun balance(account: AccountReference): Single<CryptoValue> {
+    override fun balance(account: CryptoAccount): Single<CryptoValue> {
         val ref = accountReference(account)
 
         return walletInitialiser()
@@ -110,47 +110,31 @@ class BCHTokens(
         super.onLogoutSignal(event)
     }
 
-    private fun doFetchTransactions(
-        itemAccount: ItemAccount,
-        limit: Int,
-        offset: Int
-    ): Single<ActivitySummaryList> =
+    // Activity/transactions moved over from TransactionDataListManager.
+    // TODO Requires some reworking, but that can happen later. After the code & tests are moved and working.
+    override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
         when (itemAccount.type) {
-            ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getAllBchTransactions(limit, offset)
-            ItemAccount.TYPE.ALL_LEGACY -> getLegacyBchTransactions(limit, offset)
-            ItemAccount.TYPE.SINGLE_ACCOUNT -> getBchAccountTransactions(itemAccount.address!!, limit, offset)
-        }
-            .toSin
+            ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getAllTransactions()
+            ItemAccount.TYPE.ALL_LEGACY -> getLegacyTransactions()
+            ItemAccount.TYPE.SINGLE_ACCOUNT -> getAccountTransactions(itemAccount.address!!)
+        }.singleOrError()
 
-    private fun getAllBchTransactions(
-        limit: Int,
-        offset: Int
-    ): Observable<ActivitySummaryList> =
-        bchDataManager.getWalletTransactions(limit, offset)
+    private fun getAllTransactions(): Observable<ActivitySummaryList> =
+        bchDataManager.getWalletTransactions(transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(
-                    it
-                )
+                BchActivitySummaryItem(it)
             }
 
-    private fun getLegacyBchTransactions(limit: Int, offset: Int): Observable<ActivitySummaryList> =
-        bchDataManager.getImportedAddressTransactions(limit, offset)
+    private fun getLegacyTransactions(): Observable<ActivitySummaryList> =
+        bchDataManager.getImportedAddressTransactions(transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(
-                    it
-                )
+                BchActivitySummaryItem(it)
             }
 
-    private fun getBchAccountTransactions(
-        address: String,
-        limit: Int,
-        offset: Int
-    ): Observable<List<ActivitySummaryItem>> =
-        bchDataManager.getAddressTransactions(address, limit, offset)
+    private fun getAccountTransactions(address: String): Observable<List<ActivitySummaryItem>> =
+        bchDataManager.getAddressTransactions(address, transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(
-                    it
-                )
+                BchActivitySummaryItem(it)
             }
 }
 
@@ -171,9 +155,9 @@ class BchActivitySummaryItem(
         get() = Observable.just(transactionSummary.fee)
     override val hash: String
         get() = transactionSummary.hash
-    override val inputsMap: HashMap<String, BigInteger>
+    override val inputsMap: Map<String, BigInteger>
         get() = transactionSummary.inputsMap
-    override val outputsMap: HashMap<String, BigInteger>
+    override val outputsMap: Map<String, BigInteger>
         get() = transactionSummary.outputsMap
     override val confirmations: Int
         get() = transactionSummary.confirmations

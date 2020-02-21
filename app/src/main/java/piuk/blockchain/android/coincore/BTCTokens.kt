@@ -14,7 +14,6 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.android.coincore.old.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -70,13 +69,14 @@ class BTCTokens(
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
         historicRates.getHistoricPriceSeries(CryptoCurrency.BTC, currencyPrefs.selectedFiatCurrency, period)
 
+    // Activity/transactions moved over from TransactionDataListManager.
+    // TODO Requires some reworking, but that can happen later. After the code & tests are moved and working.
     override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
         when (itemAccount.type) {
             ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getAllTransactions()
             ItemAccount.TYPE.ALL_LEGACY -> getLegacyTransactions()
             ItemAccount.TYPE.SINGLE_ACCOUNT -> getAccountTransactions(itemAccount.address!!)
         }
-
 
     private fun getAllTransactions(): Single<ActivitySummaryList> =
         Single.fromCallable {
@@ -119,9 +119,9 @@ private class BtcActivitySummaryItem(
         get() = Observable.just(transactionSummary.fee)
     override val hash: String
         get() = transactionSummary.hash
-    override val inputsMap: HashMap<String, BigInteger>
+    override val inputsMap: Map<String, BigInteger>
         get() = transactionSummary.inputsMap
-    override val outputsMap: HashMap<String, BigInteger>
+    override val outputsMap: Map<String, BigInteger>
         get() = transactionSummary.outputsMap
     override val confirmations: Int
         get() = transactionSummary.confirmations

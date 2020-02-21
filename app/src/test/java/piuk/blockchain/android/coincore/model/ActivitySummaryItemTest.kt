@@ -1,95 +1,63 @@
-package piuk.blockchain.androidcore.data.transactions.models
+package piuk.blockchain.android.coincore.model
 
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary
-import org.amshove.kluent.`should equal to`
+import io.reactivex.Observable
 import org.amshove.kluent.`should equal`
-import org.amshove.kluent.`should not equal to`
 import org.amshove.kluent.`should not equal`
+
 import org.junit.Test
-import piuk.blockchain.androidcore.data.transactions.BtcActivitySummaryItem
 import java.math.BigInteger
+
+private class TestActivitySummaryItem(
+    override val cryptoCurrency: CryptoCurrency = CryptoCurrency.BTC,
+    override val direction: TransactionSummary.Direction = TransactionSummary.Direction.RECEIVED,
+    override val timeStamp: Long = 0,
+    override val total: BigInteger = 0.toBigInteger(),
+    override val fee: Observable<BigInteger> = Observable.just(0.toBigInteger()),
+    override val hash: String = "",
+    override val inputsMap: Map<String, BigInteger> = emptyMap(),
+    override val outputsMap: Map<String, BigInteger> = emptyMap()
+) : ActivitySummaryItem()
 
 class ActivitySummaryItemTest {
 
     @Test
     fun `ensure not equal when compared to different type`() {
-        val transactionSummary = TransactionSummary().apply {
-            direction = TransactionSummary.Direction.TRANSFERRED
-            time = 0L
-            total = BigInteger.TEN
-            fee = BigInteger.ONE
-            hash = "HASH"
-            inputsMap = HashMap<String, BigInteger>()
-            outputsMap = HashMap<String, BigInteger>()
-            confirmations = 10
-            isWatchOnly = false
-            isDoubleSpend = false
-            isPending = false
-        }
 
-        val displayable1 = BtcActivitySummaryItem(
-            transactionSummary
-        ).apply { note = "note 1" }
+        val activityItem = TestActivitySummaryItem()
         val objectToCompare = Any()
 
-        displayable1.toString() `should not equal to` objectToCompare.toString()
-        displayable1.hashCode() `should not equal to` objectToCompare.hashCode()
-        displayable1 `should not equal` objectToCompare
+        activityItem.toString() `should not equal` objectToCompare.toString()
+        activityItem.hashCode() `should not equal` objectToCompare.hashCode()
+        activityItem `should not equal` objectToCompare
     }
 
     @Test
     fun `ensure equals, hashCode and toString work correctly with subtly different objects`() {
-        val transactionSummary = TransactionSummary().apply {
-            direction = TransactionSummary.Direction.TRANSFERRED
-            time = 0L
-            total = BigInteger.TEN
-            fee = BigInteger.ONE
-            hash = "HASH"
-            inputsMap = HashMap<String, BigInteger>()
-            outputsMap = HashMap<String, BigInteger>()
-            confirmations = 10
-            isWatchOnly = false
-            isDoubleSpend = false
-            isPending = false
-        }
 
-        val displayable1 = BtcActivitySummaryItem(
-            transactionSummary
-        ).apply { note = "note 1" }
-        val displayable2 = BtcActivitySummaryItem(
-            transactionSummary
-        ).apply { note = "note 2" }
+         val itemOne = TestActivitySummaryItem()
+            .apply { note = "note 1" }
 
-        displayable1.toString() `should not equal to` displayable2.toString()
-        displayable1.hashCode() `should not equal to` displayable2.hashCode()
-        displayable1 `should not equal` displayable2
+        val itemTwo = TestActivitySummaryItem()
+            .apply { note = "note 2" }
+
+        itemOne.toString() `should not equal` itemTwo.toString()
+        itemOne.hashCode() `should not equal` itemTwo.hashCode()
+        itemOne `should not equal` itemTwo
     }
 
     @Test
     fun `ensure equals, hashCode and toString work correctly with identical objects`() {
-        val transactionSummary = TransactionSummary().apply {
-            direction = TransactionSummary.Direction.TRANSFERRED
-            time = 0L
-            total = BigInteger.TEN
-            fee = BigInteger.ONE
-            hash = "HASH"
-            inputsMap = HashMap<String, BigInteger>()
-            outputsMap = HashMap<String, BigInteger>()
-            confirmations = 10
-            isWatchOnly = false
-            isDoubleSpend = false
-            isPending = false
-        }
 
-        val displayable1 = BtcActivitySummaryItem(
-            transactionSummary
-        ).apply { note = "note" }
-        val displayable2 = BtcActivitySummaryItem(
-            transactionSummary
-        ).apply { note = "note" }
+        val itemOne = TestActivitySummaryItem()
+            .apply { note = "note" }
 
-        displayable1.toString() `should equal to` displayable2.toString()
-        displayable1.hashCode() `should equal to` displayable2.hashCode()
-        displayable1 `should equal` displayable2
+        val itemTwo = TestActivitySummaryItem()
+            .apply { note = "note" }
+
+        itemOne.toString() `should equal` itemTwo.toString()
+        itemOne.hashCode() `should equal` itemTwo.hashCode()
+        itemOne `should equal` itemTwo
     }
 }

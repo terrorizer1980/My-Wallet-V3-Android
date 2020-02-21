@@ -11,6 +11,8 @@ import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.stx.STXAccount
 import io.reactivex.Maybe
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -66,6 +68,12 @@ class STXTokens(
     // No supported actions at this time
     override val noncustodialActions = emptySet<AssetAction>()
     override val custodialActions = emptySet<AssetAction>()
+
+    // Activity/transactions moved over from TransactionDataListManager.
+    // TODO Requires some reworking, but that can happen later. After the code & tests are moved and working.
+    override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> {
+        TODO("not implemented")
+    }
 }
 
 private fun STXAccount.toAccountReference(): AccountReference.Stx =

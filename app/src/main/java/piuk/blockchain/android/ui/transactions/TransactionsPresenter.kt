@@ -36,13 +36,11 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import com.blockchain.swap.shapeshift.data.Trade
 import io.reactivex.rxkotlin.Singles
-import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.old.ActivitySummaryList
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import timber.log.Timber
@@ -201,7 +199,7 @@ class TransactionsPresenter(
     @VisibleForTesting
     internal fun updateTransactionsListCompletable(account: ItemAccount): Completable {
         return Completable.defer {
-            getTransactionRxSourceFor(currencyState.cryptoCurrency, account)
+            assetSelect[currencyState.cryptoCurrency].fetchActivity(account)
                 .flatMap { txs ->
                     Singles.zip(
                         getShapeShiftTxNotes(),
@@ -218,17 +216,6 @@ class TransactionsPresenter(
                 .ignoreElement()
         }
     }
-
-    // Temp selector method
-    private fun getTransactionRxSourceFor(crypto: CryptoCurrency, account: ItemAccount): Single<ActivitySummaryList> =
-        when(crypto) {
-            CryptoCurrency.BTC -> assetSelect[crypto].fetchActivity(account)
-            CryptoCurrency.ETHER -> assetSelect[crypto].fetchActivity(account)
-            CryptoCurrency.BCH -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
-            CryptoCurrency.XLM -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
-            CryptoCurrency.PAX -> transactionListDataManager.fetchTransactions(currencyState.cryptoCurrency, account)
-            CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        }
 
     private fun mergeTxNotes(shapeshiftNotes: Map<String, String>, coinifyNotes: Map<String, String>)
         : Map<String, String> = mutableMapOf<String, String>().apply {
