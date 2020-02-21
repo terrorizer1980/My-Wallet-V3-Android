@@ -106,4 +106,3 @@ class XlmActivitySummaryItem(
     override val confirmations: Int
         get() = CryptoCurrency.XLM.requiredConfirmations
 }
-

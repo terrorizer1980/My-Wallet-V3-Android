@@ -4,7 +4,6 @@ import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.toAccountReference
-import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -137,7 +136,6 @@ class BCHTokens(
                 BchActivitySummaryItem(it)
             }
 }
-
 
 class BchActivitySummaryItem(
     private val transactionSummary: TransactionSummary

@@ -36,7 +36,7 @@ class ActivitySummaryItemTest {
     @Test
     fun `ensure equals, hashCode and toString work correctly with subtly different objects`() {
 
-         val itemOne = TestActivitySummaryItem()
+        val itemOne = TestActivitySummaryItem()
             .apply { note = "note 1" }
 
         val itemTwo = TestActivitySummaryItem()

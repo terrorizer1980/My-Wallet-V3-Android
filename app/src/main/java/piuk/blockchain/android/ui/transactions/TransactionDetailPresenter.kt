@@ -56,22 +56,22 @@ class TransactionDetailPresenter constructor(
     private val fiatType = prefs.selectedFiatCurrency
 
     @VisibleForTesting
-    lateinit var activitySummaryItem: ActivitySummaryItem
+    lateinit var activityItem: ActivitySummaryItem
 
     // Currently no available notes for bch
     // Only BTC and ETHER currently supported
     var transactionNote: String?
-        get() = when (activitySummaryItem.cryptoCurrency) {
-            CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(activitySummaryItem.hash)
-            CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[activitySummaryItem.hash]
-            CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(activitySummaryItem.hash)
+        get() = when (activityItem.cryptoCurrency) {
+            CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(activityItem.hash)
+            CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[activityItem.hash]
+            CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(activityItem.hash)
             else -> ""
         }
         private set(txHash) {
-            val notes: String? = when (activitySummaryItem.cryptoCurrency) {
+            val notes: String? = when (activityItem.cryptoCurrency) {
                 CryptoCurrency.BTC -> payloadDataManager.getTransactionNotes(txHash!!)
-                CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[activitySummaryItem.hash]
-                CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(activitySummaryItem.hash)
+                CryptoCurrency.PAX -> ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[activityItem.hash]
+                CryptoCurrency.ETHER -> ethDataManager.getTransactionNotes(activityItem.hash)
                 else -> {
                     view?.hideDescriptionField()
                     ""
@@ -81,7 +81,7 @@ class TransactionDetailPresenter constructor(
         }
 
     val transactionHash: TransactionHash
-        get() = TransactionHash(activitySummaryItem.cryptoCurrency, activitySummaryItem.hash)
+        get() = TransactionHash(activityItem.cryptoCurrency, activityItem.hash)
 
     override fun onViewReady() {
         val pos = view?.positionDetailLookup() ?: -1
@@ -91,8 +91,8 @@ class TransactionDetailPresenter constructor(
             pos != -1 -> {
                 val transactionList = transactionListDataManager.getTransactionList()
                 if (pos < transactionList.size) {
-                    activitySummaryItem = transactionListDataManager.getTransactionList()[pos]
-                    updateUiFromTransaction(activitySummaryItem)
+                    activityItem = transactionListDataManager.getTransactionList()[pos]
+                    updateUiFromTransaction(activityItem)
                 } else {
                     view?.pageFinish()
                 }
@@ -100,7 +100,7 @@ class TransactionDetailPresenter constructor(
             txHash != null -> {
                 compositeDisposable +=
                     transactionListDataManager.getTxFromHash(txHash)
-                        .doOnSuccess { activitySummaryItem = it }
+                        .doOnSuccess { activityItem = it }
                         .subscribe(
                             { this.updateUiFromTransaction(it) },
                             { view?.pageFinish() })
@@ -113,15 +113,15 @@ class TransactionDetailPresenter constructor(
     }
 
     fun updateTransactionNote(description: String) {
-        val completable: Completable = when (activitySummaryItem.cryptoCurrency) {
+        val completable: Completable = when (activityItem.cryptoCurrency) {
             CryptoCurrency.BTC -> payloadDataManager.updateTransactionNotes(
-                activitySummaryItem.hash,
+                activityItem.hash,
                 description
             )
-            CryptoCurrency.PAX -> ethDataManager.updateErc20TransactionNotes(activitySummaryItem.hash,
+            CryptoCurrency.PAX -> ethDataManager.updateErc20TransactionNotes(activityItem.hash,
                 description)
             CryptoCurrency.ETHER -> ethDataManager.updateTransactionNotes(
-                activitySummaryItem.hash,
+                activityItem.hash,
                 description
             )
             else -> throw IllegalArgumentException("Only BTC, ETHER and PAX currently supported")

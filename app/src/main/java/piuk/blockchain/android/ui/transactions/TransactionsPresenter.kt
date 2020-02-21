@@ -204,7 +204,7 @@ class TransactionsPresenter(
                     Singles.zip(
                         getShapeShiftTxNotes(),
                         getCoinifyTxNotes()
-                    ) { ssn, cfyn -> mergeTxNotes(ssn, cfyn) }
+                    ) { ssTx, cyTx -> mergeTxNotes(ssTx, cyTx) }
                         .map { it }
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnSuccess { txNotesMap -> processTxNotes(txs, txNotesMap) }
@@ -217,8 +217,11 @@ class TransactionsPresenter(
         }
     }
 
-    private fun mergeTxNotes(shapeshiftNotes: Map<String, String>, coinifyNotes: Map<String, String>)
-        : Map<String, String> = mutableMapOf<String, String>().apply {
+    private fun mergeTxNotes(
+        shapeshiftNotes: Map<String, String>,
+        coinifyNotes: Map<String, String>
+    ): Map<String, String> =
+        mutableMapOf<String, String>().apply {
             putAll(shapeshiftNotes)
             putAll(coinifyNotes)
         }.toMap()
