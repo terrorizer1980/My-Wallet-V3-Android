@@ -15,7 +15,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.old.TransactionListDataManager
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.util.StringUtils
@@ -37,6 +36,7 @@ import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import com.blockchain.swap.shapeshift.data.Trade
 import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
@@ -67,7 +67,6 @@ interface TransactionsView : MvpView {
 class TransactionsPresenter(
     private val exchangeRateDataManager: ExchangeRateDataManager,
     private val assetSelect: AssetTokenLookup,
-    private val transactionListDataManager: TransactionListDataManager,
     private val ethDataManager: EthDataManager,
     private val paxAccount: Erc20Account,
     internal val payloadDataManager: PayloadDataManager,
@@ -108,6 +107,9 @@ class TransactionsPresenter(
         )
     }
 
+    private val assetTokens: AssetTokens
+        get() = assetSelect[currencyState.cryptoCurrency]
+
     override fun onViewResumed() {
         super.onViewResumed()
 
@@ -138,7 +140,7 @@ class TransactionsPresenter(
                     currencyState.isDisplayingCryptoCurrency,
                     mutableListOf()
                 )
-                transactionListDataManager.clearTransactionList()
+//                transactionListDataManager.clearTransactionList()
             }
         }
 
@@ -199,7 +201,7 @@ class TransactionsPresenter(
     @VisibleForTesting
     internal fun updateTransactionsListCompletable(account: ItemAccount): Completable {
         return Completable.defer {
-            assetSelect[currencyState.cryptoCurrency].fetchActivity(account)
+            assetTokens.fetchActivity(account)
                 .flatMap { txs ->
                     Singles.zip(
                         getShapeShiftTxNotes(),
@@ -301,26 +303,6 @@ class TransactionsPresenter(
         }
         return mutableMap.toMap()
     }
-
-//    private fun getShapeShiftTxNotesObservable() =
-//        shapeShiftDataManager.getTradesList()
-//            .map { processShapeShiftTxNotes(it) }
-//            .doOnError { Timber.e(it) }
-//            .onErrorReturn { emptyMap() }
-//
-//    private fun processShapeShiftTxNotes(list: List<Trade>): Map<String, String> { // TxHash -> description
-//        val mutableMap: MutableMap<String, String> = mutableMapOf()
-//
-//        for (trade in list) {
-//            trade.hashIn?.let {
-//                mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_to))
-//            }
-//            trade.hashOut?.let {
-//                mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_from))
-//            }
-//        }
-//        return mutableMap.toMap()
-//    }
 
     private fun getCoinifyTxNotes() =
         tokenSingle.flatMap {

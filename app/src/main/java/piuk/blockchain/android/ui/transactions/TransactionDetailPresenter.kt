@@ -20,7 +20,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.old.TransactionListDataManager
 import piuk.blockchain.android.ui.transactions.adapter.formatting
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -29,10 +28,10 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.old.ActivitySummaryList
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import timber.log.Timber
 import java.math.BigInteger
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -45,7 +44,6 @@ class TransactionDetailPresenter constructor(
     prefs: PersistentPrefs,
     private val payloadDataManager: PayloadDataManager,
     private val stringUtils: StringUtils,
-    private val transactionListDataManager: TransactionListDataManager,
     private val exchangeRateDataManager: ExchangeRateDataManager,
     private val ethDataManager: EthDataManager,
     private val bchDataManager: BchDataManager,
@@ -54,6 +52,7 @@ class TransactionDetailPresenter constructor(
 ) : BasePresenter<TransactionDetailView>() {
 
     private val fiatType = prefs.selectedFiatCurrency
+    private val transactionList: ActivitySummaryList = emptyList()
 
     @VisibleForTesting
     lateinit var activityItem: ActivitySummaryItem
@@ -87,29 +86,28 @@ class TransactionDetailPresenter constructor(
         val pos = view?.positionDetailLookup() ?: -1
         val txHash = view?.txHashDetailLookup()
 
-        when {
-            pos != -1 -> {
-                val transactionList = transactionListDataManager.getTransactionList()
-                if (pos < transactionList.size) {
-                    activityItem = transactionListDataManager.getTransactionList()[pos]
-                    updateUiFromTransaction(activityItem)
-                } else {
-                    view?.pageFinish()
-                }
-            }
-            txHash != null -> {
-                compositeDisposable +=
-                    transactionListDataManager.getTxFromHash(txHash)
-                        .doOnSuccess { activityItem = it }
-                        .subscribe(
-                            { this.updateUiFromTransaction(it) },
-                            { view?.pageFinish() })
-            }
-            else -> {
-                Timber.e("Transaction hash not found")
-                view?.pageFinish()
-            }
-        }
+//        when {
+//            pos != -1 -> {
+//                if (pos < transactionList.size) {
+//                    activityItem = transactionList[pos]
+//                    updateUiFromTransaction(activityItem)
+//                } else {
+//                    view?.pageFinish()
+//                }
+//            }
+//            txHash != null -> {
+//                compositeDisposable +=
+//                    transactionList.getTxFromHash(txHash)
+//                        .doOnSuccess { activityItem = it }
+//                        .subscribe(
+//                            { this.updateUiFromTransaction(it) },
+//                            { view?.pageFinish() })
+//            }
+//            else -> {
+//                Timber.e("Transaction hash not found")
+//                view?.pageFinish()
+//            }
+//        }
     }
 
     fun updateTransactionNote(description: String) {

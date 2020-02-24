@@ -232,8 +232,6 @@ val applicationModule = applicationContext {
 
         factory {
             TransactionListDataManager(
-                payloadManager = get(),
-                bchDataManager = get(),
                 transactionListStore = TransactionListStore()
             )
         }
@@ -572,7 +570,6 @@ val applicationModule = applicationContext {
                 prefs = get(),
                 payloadDataManager = get(),
                 stringUtils = get(),
-                transactionListDataManager = get(),
                 exchangeRateDataManager = get(),
                 bchDataManager = get(),
                 ethDataManager = get(),
@@ -845,7 +842,6 @@ val applicationModule = applicationContext {
             TransactionsPresenter(
                 exchangeRateDataManager = get(),
                 assetSelect = get(),
-                transactionListDataManager = get(),
                 ethDataManager = get(),
                 paxAccount = get("pax"),
                 payloadDataManager = get(),

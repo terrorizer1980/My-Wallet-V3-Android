@@ -14,6 +14,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.coincore.old.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
+import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -83,7 +84,12 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
         .observeOn(Schedulers.computation())
         .subscribeBy(onNext = ::onLogoutSignal)
 
+    val metadataSignal = rxBus.register(MetadataEvent.SETUP_COMPLETE::class.java)
+        .observeOn(Schedulers.computation())
+        .subscribeBy(onNext = ::onMetadataSignal)
+
     protected open fun onLogoutSignal(event: AuthEvent) {}
+    protected open fun onMetadataSignal(event: MetadataEvent) {}
 
     final override fun totalBalance(filter: AssetFilter): Single<CryptoValue> =
         when (filter) {
