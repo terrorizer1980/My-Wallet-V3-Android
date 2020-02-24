@@ -27,6 +27,7 @@ import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import timber.log.Timber
 import java.math.BigInteger
 
@@ -141,28 +142,37 @@ class BchActivitySummaryItem(
     private val transactionSummary: TransactionSummary
 ) : ActivitySummaryItem() {
 
-    override val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.BCH
+    override val cryptoCurrency = CryptoCurrency.BCH
     override val direction: TransactionSummary.Direction
         get() = transactionSummary.direction
     override val timeStamp: Long
         get() = transactionSummary.time
-    override val total: BigInteger
-        get() = transactionSummary.total
+
+    override val total: CryptoValue by unsafeLazy {
+        CryptoValue.fromMinor(CryptoCurrency.BCH, transactionSummary.total)
+    }
+
     override val fee: Observable<BigInteger>
         get() = Observable.just(transactionSummary.fee)
+
     override val hash: String
         get() = transactionSummary.hash
+
     override val inputsMap: Map<String, BigInteger>
         get() = transactionSummary.inputsMap
+
     override val outputsMap: Map<String, BigInteger>
         get() = transactionSummary.outputsMap
+
     override val confirmations: Int
         get() = transactionSummary.confirmations
+
     override val watchOnly: Boolean
         get() = transactionSummary.isWatchOnly
+
     override val doubleSpend: Boolean
         get() = transactionSummary.isDoubleSpend
+
     override val isPending: Boolean
         get() = transactionSummary.isPending
 }

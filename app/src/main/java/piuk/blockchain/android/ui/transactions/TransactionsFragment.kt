@@ -253,23 +253,23 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         layout_spinner.goneIf { !visible }
     }
 
-    override fun setUiState(uiState: Int) {
+    override fun setUiState(uiState: Int, crypto: CryptoCurrency) {
         when (uiState) {
             UiState.FAILURE,
-            UiState.EMPTY -> onEmptyState()
+            UiState.EMPTY -> onEmptyState(crypto)
             UiState.CONTENT -> onContentLoaded()
             UiState.LOADING -> onContentLoading()
         }
     }
 
-    private fun onEmptyState() {
+    private fun onEmptyState(crypto: CryptoCurrency) {
         setShowRefreshing(false)
         no_transaction_include.visible()
 
-        when (presenter.getCurrentCurrency()) {
+        when (crypto) {
             CryptoCurrency.BTC -> {
-                button_get_bitcoin.setText(R.string.onboarding_get_bitcoin)
-                button_get_bitcoin.setOnClickListener {
+                button_get_crypto.setText(R.string.onboarding_get_bitcoin)
+                button_get_crypto.setOnClickListener {
                     presenter.onGetBitcoinClicked()
                 }
                 description.setText(R.string.transaction_occur_when_bitcoin)
@@ -277,22 +277,22 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
                 non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.ETHER -> {
-                button_get_bitcoin.setText(R.string.onboarding_get_eth)
-                button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.ETHER) }
+                button_get_crypto.setText(R.string.onboarding_get_eth)
+                button_get_crypto.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.ETHER) }
                 description.setText(R.string.transaction_occur_when_eth)
                 pax_no_transactions.gone()
                 non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.BCH -> {
-                button_get_bitcoin.setText(R.string.onboarding_get_bitcoin_cash)
-                button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.BCH) }
+                button_get_crypto.setText(R.string.onboarding_get_bitcoin_cash)
+                button_get_crypto.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.BCH) }
                 description.setText(R.string.transaction_occur_when_bitcoin_cash)
                 pax_no_transactions.gone()
                 non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.XLM -> {
-                button_get_bitcoin.setText(R.string.onboarding_get_lumens)
-                button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.XLM) }
+                button_get_crypto.setText(R.string.onboarding_get_lumens)
+                button_get_crypto.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.XLM) }
                 description.setText(R.string.transaction_occur_when_lumens)
                 pax_no_transactions.gone()
                 non_pax_no_transactions_container.visible()
@@ -307,7 +307,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
                 }
             }
             else -> throw IllegalArgumentException(
-                "Cryptocurrency ${presenter.getCurrentCurrency().unit} not supported"
+                "Cryptocurrency ${crypto.symbol} not supported"
             )
         }
     }

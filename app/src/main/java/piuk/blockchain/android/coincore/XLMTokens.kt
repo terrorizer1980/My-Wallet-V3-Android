@@ -24,6 +24,7 @@ import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
 import java.math.BigInteger
 
@@ -83,26 +84,34 @@ class XLMTokens(
 class XlmActivitySummaryItem(
     private val xlmTransaction: XlmTransaction
 ) : ActivitySummaryItem() {
-    override val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.XLM
+    override val cryptoCurrency = CryptoCurrency.XLM
+
     override val direction: TransactionSummary.Direction
         get() = if (xlmTransaction.value > CryptoValue.ZeroXlm) {
             TransactionSummary.Direction.RECEIVED
         } else {
             TransactionSummary.Direction.SENT
         }
+
     override val timeStamp: Long
         get() = xlmTransaction.timeStamp.fromIso8601ToUtc()!!.toLocalTime().time.div(1000)
-    override val total: BigInteger
-        get() = xlmTransaction.accountDelta.amount.abs()
+
+    override val total: CryptoValue by unsafeLazy {
+        CryptoValue.fromMinor(CryptoCurrency.XLM, xlmTransaction.accountDelta.amount.abs())
+    }
+
     override val fee: Observable<BigInteger>
         get() = Observable.just(xlmTransaction.fee.amount)
+
     override val hash: String
         get() = xlmTransaction.hash
+
     override val inputsMap: HashMap<String, BigInteger>
         get() = hashMapOf(xlmTransaction.from.accountId to BigInteger.ZERO)
+
     override val outputsMap: HashMap<String, BigInteger>
-        get() = hashMapOf(xlmTransaction.to.accountId to total)
+        get() = hashMapOf(xlmTransaction.to.accountId to total.amount)
+
     override val confirmations: Int
         get() = CryptoCurrency.XLM.requiredConfirmations
 }

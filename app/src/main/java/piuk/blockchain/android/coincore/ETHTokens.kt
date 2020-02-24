@@ -28,6 +28,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
 import java.math.BigInteger
 
@@ -157,11 +158,14 @@ private class EthActivitySummaryItem(
     override val timeStamp: Long
         get() = ethTransaction.timeStamp
 
-    override val total: BigInteger
-        get() = when (direction) {
-            TransactionSummary.Direction.RECEIVED -> ethTransaction.value
-            else -> ethTransaction.value.plus(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
-        }
+    override val total: CryptoValue by unsafeLazy {
+        CryptoValue.fromMinor(CryptoCurrency.ETHER,
+            when (direction) {
+                TransactionSummary.Direction.RECEIVED -> ethTransaction.value
+                else -> ethTransaction.value.plus(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
+            }
+        )
+    }
 
     override val fee: Observable<BigInteger>
         get() = Observable.just(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))

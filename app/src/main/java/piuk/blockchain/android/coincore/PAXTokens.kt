@@ -24,6 +24,7 @@ import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.math.BigInteger
 
 class PAXTokens(
@@ -35,8 +36,7 @@ class PAXTokens(
     private val custodialWalletManager: CustodialWalletManager
 ) : AssetTokensBase(rxBus) {
 
-    override val asset: CryptoCurrency
-        get() = CryptoCurrency.PAX
+    override val asset = CryptoCurrency.PAX
 
     override fun defaultAccount(): Single<AccountReference> =
         Single.just(getDefaultPaxAccountRef())
@@ -112,13 +112,13 @@ class Erc20ActivitySummaryItem(
     private val feedTransfer: FeedErc20Transfer,
     private val accountHash: String,
     private val lastBlockNumber: BigInteger
-) :
-    ActivitySummaryItem() {
+) : ActivitySummaryItem() {
+
+    override val cryptoCurrency = CryptoCurrency.PAX
 
     private val transfer: Erc20Transfer
         get() = feedTransfer.transfer
-    override val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.PAX
+
     override val direction: TransactionSummary.Direction
         get() = when {
             transfer.isToAccount(accountHash)
@@ -126,14 +126,20 @@ class Erc20ActivitySummaryItem(
             transfer.isFromAccount(accountHash) -> TransactionSummary.Direction.SENT
             else -> TransactionSummary.Direction.RECEIVED
         }
+
     override val timeStamp: Long
         get() = transfer.timestamp
-    override val total: BigInteger
-        get() = transfer.value
+
+    override val total: CryptoValue by unsafeLazy {
+        CryptoValue.fromMinor(CryptoCurrency.BTC, transfer.value)
+    }
+
     override val fee: Observable<BigInteger>
         get() = feedTransfer.feeObservable
+
     override val hash: String
         get() = transfer.transactionHash
+
     override val inputsMap: Map<String, BigInteger>
         get() = mapOf(transfer.from to transfer.value)
 

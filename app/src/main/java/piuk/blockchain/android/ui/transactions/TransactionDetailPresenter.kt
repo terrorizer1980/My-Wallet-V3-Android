@@ -37,7 +37,6 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.Date
-import kotlin.collections.HashMap
 
 class TransactionDetailPresenter constructor(
     private val transactionHelper: TransactionHelper,
@@ -141,7 +140,9 @@ class TransactionDetailPresenter constructor(
             view?.updateFeeFieldVisibility(direction != TransactionSummary.Direction.RECEIVED &&
                     !activitySummaryItem.isFeeTransaction)
             setTransactionColor(this)
-            setTransactionValue(cryptoCurrency, total)
+
+            view?.setTransactionValue(total.formatWithUnit())
+
             setConfirmationStatus(cryptoCurrency, hash, confirmations.toLong())
             transactionNote = hash
             setDate(timeStamp)
@@ -225,7 +226,7 @@ class TransactionDetailPresenter constructor(
     }
 
     private fun handleBtcToAndFrom(activitySummaryItem: ActivitySummaryItem) {
-        val (inputs, outputs) = transactionHelper.filterNonChangeAddresses(activitySummaryItem)
+        val (inputs, outputs) = transactionHelper.filterNonChangeBtcAddresses(activitySummaryItem)
         setToAndFrom(activitySummaryItem, inputs, outputs)
     }
 
@@ -236,8 +237,8 @@ class TransactionDetailPresenter constructor(
 
     private fun setToAndFrom(
         activitySummaryItem: ActivitySummaryItem,
-        inputs: HashMap<String, BigInteger?>,
-        outputs: HashMap<String, BigInteger?>
+        inputs: Map<String, BigInteger?>,
+        outputs: Map<String, BigInteger?>
     ) {
         // From Addresses
         val fromList = getFromList(activitySummaryItem.cryptoCurrency, inputs)
@@ -249,7 +250,7 @@ class TransactionDetailPresenter constructor(
 
     private fun getFromList(
         currency: CryptoCurrency,
-        inputMap: HashMap<String, BigInteger?>
+        inputMap: Map<String, BigInteger?>
     ): List<TransactionDetailModel> {
         val inputs = handleTransactionMap(inputMap, currency)
         // No inputs = coinbase transaction
@@ -268,11 +269,11 @@ class TransactionDetailPresenter constructor(
 
     private fun getToList(
         currency: CryptoCurrency,
-        outputMap: HashMap<String, BigInteger?>
+        outputMap: Map<String, BigInteger?>
     ): List<TransactionDetailModel> = handleTransactionMap(outputMap, currency)
 
     private fun handleTransactionMap(
-        inputMap: HashMap<String, BigInteger?>,
+        inputMap: Map<String, BigInteger?>,
         currency: CryptoCurrency
     ): MutableList<TransactionDetailModel> {
         val inputs = mutableListOf<TransactionDetailModel>()
@@ -335,16 +336,16 @@ class TransactionDetailPresenter constructor(
             .addTo(compositeDisposable)
     }
 
-    private fun setTransactionValue(currency: CryptoCurrency, total: BigInteger) {
-        when (currency) {
-            CryptoCurrency.ETHER -> CryptoValue.etherFromWei(total)
-            CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(total)
-            CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(total)
-            CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(total)
-            CryptoCurrency.PAX -> CryptoValue.usdPaxFromMinor(total)
-            else -> throw IllegalArgumentException("$currency is not currently supported")
-        }.run { view?.setTransactionValue(this.formatWithUnit()) }
-    }
+//    private fun setTransactionValue(currency: CryptoCurrency, total: BigInteger) {
+//        when (currency) {
+//            CryptoCurrency.ETHER -> CryptoValue.etherFromWei(total)
+//            CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(total)
+//            CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(total)
+//            CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(total)
+//            CryptoCurrency.PAX -> CryptoValue.usdPaxFromMinor(total)
+//            else -> throw IllegalArgumentException("$currency is not currently supported")
+//        }.run { view?.setTransactionValue(this.formatWithUnit()) }
+//    }
 
     @VisibleForTesting
     internal fun setConfirmationStatus(cryptoCurrency: CryptoCurrency, txHash: String, confirmations: Long) {
@@ -376,10 +377,10 @@ class TransactionDetailPresenter constructor(
     }
 
     @VisibleForTesting
-    internal fun getTransactionValueString(currency: String, transaction: ActivitySummaryItem): Single<String> =
+    internal fun getTransactionValueString(fiat: String, transaction: ActivitySummaryItem): Single<String> =
         exchangeRateDataManager.getHistoricPrice(
-            CryptoValue(transaction.cryptoCurrency, transaction.total),
-            currency,
+            transaction.total,
+            fiat,
             transaction.timeStamp
         ).map { getTransactionString(transaction, it) }
 

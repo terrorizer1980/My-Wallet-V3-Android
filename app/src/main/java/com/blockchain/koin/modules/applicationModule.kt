@@ -18,6 +18,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
+import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
 import piuk.blockchain.android.coincore.model.TransactionListStore
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
@@ -838,24 +839,30 @@ val applicationModule = applicationContext {
             )
         }
 
+        bean {
+            TransactionNoteUpdater(
+                exchangeService = get(),
+                shapeShiftDataManager = get(),
+                coinifyDataManager = get(),
+                stringUtils = get()
+            )
+        }
+
         factory {
             TransactionsPresenter(
                 exchangeRateDataManager = get(),
                 assetSelect = get(),
+                transactionNotes = get(),
                 ethDataManager = get(),
                 paxAccount = get("pax"),
                 payloadDataManager = get(),
                 buyDataManager = get(),
-                stringUtils = get(),
                 prefs = get(),
                 rxBus = get(),
                 currencyState = get(),
-                shapeShiftDataManager = get(),
                 bchDataManager = get(),
                 walletAccountHelper = get(),
                 environmentSettings = get(),
-                exchangeService = get(),
-                coinifyDataManager = get(),
                 fiatExchangeRates = get()
             )
         }
