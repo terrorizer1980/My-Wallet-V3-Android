@@ -13,7 +13,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Observables
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.R
@@ -23,6 +23,7 @@ import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.math.BigInteger
@@ -101,7 +102,9 @@ class PAXTokens(
                 Erc20ActivitySummaryItem(
                     transaction,
                     accountHash,
-                    latestBlockNumber.number
+                    latestBlockNumber.number,
+                    exchangeRates,
+                    currencyPrefs.selectedFiatCurrency
                 )
             }
         }
@@ -111,7 +114,9 @@ class PAXTokens(
 class Erc20ActivitySummaryItem(
     private val feedTransfer: FeedErc20Transfer,
     private val accountHash: String,
-    private val lastBlockNumber: BigInteger
+    private val lastBlockNumber: BigInteger,
+    exchangeRates: ExchangeRateDataManager,
+    selectedFiat: String
 ) : ActivitySummaryItem() {
 
     override val cryptoCurrency = CryptoCurrency.PAX
@@ -130,9 +135,12 @@ class Erc20ActivitySummaryItem(
     override val timeStamp: Long
         get() = transfer.timestamp
 
-    override val total: CryptoValue by unsafeLazy {
+    override val totalCrypto: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.BTC, transfer.value)
     }
+
+    override val totalFiat: FiatValue =
+        totalCrypto.toFiat(exchangeRates, selectedFiat)
 
     override val fee: Observable<BigInteger>
         get() = feedTransfer.feeObservable

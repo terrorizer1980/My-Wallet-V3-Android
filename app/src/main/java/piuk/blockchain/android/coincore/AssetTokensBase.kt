@@ -12,7 +12,8 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -61,8 +62,7 @@ interface AssetTokens {
     fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries>
 
     fun fetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList>
-//    fun transactions(): Single<TransactionList>
-//    fun transactions(account: AccountReference): Single<TransactionList>
+    fun findCachedActivityItem(txHash: String): ActivitySummaryItem?
 
 //    interface PendingTransaction { }
 //    fun computeFees(priority: FeePriority, pending: PendingTransaction): Single<PendingTransaction>
@@ -87,6 +87,8 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
     val metadataSignal = rxBus.register(MetadataEvent.SETUP_COMPLETE::class.java)
         .observeOn(Schedulers.computation())
         .subscribeBy(onNext = ::onMetadataSignal)
+
+    private val txActivityCache: MutableList<ActivitySummaryItem> = mutableListOf()
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
     protected open fun onMetadataSignal(event: MetadataEvent) {}
@@ -144,9 +146,13 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
 
     final override fun fetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
         doFetchActivity(itemAccount)
-            // TODO: Update and return cache?
+            .doOnSubscribe { txActivityCache.clear() }
             .onErrorReturn { emptyList() }
             .subscribeOn(Schedulers.io())
+            .doOnSuccess { txActivityCache.addAll(it.sorted()) }
+
+    final override fun findCachedActivityItem(txHash: String): ActivitySummaryItem? =
+        txActivityCache.firstOrNull { it.hash == txHash }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     abstract fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList>

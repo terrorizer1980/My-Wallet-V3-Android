@@ -2,13 +2,14 @@ package piuk.blockchain.android.coincore.model
 
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
+import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Observable
 import piuk.blockchain.androidcore.utils.helperfunctions.JavaHashCode
 import java.math.BigInteger
 import kotlin.math.sign
 
-abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
+abstract class ActivitySummaryItem() : Comparable<ActivitySummaryItem> {
 
     abstract val cryptoCurrency: CryptoCurrency
     abstract val direction: TransactionSummary.Direction
@@ -18,20 +19,20 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
     abstract val inputsMap: Map<String, BigInteger>
     abstract val outputsMap: Map<String, BigInteger>
 
-    abstract val total: CryptoValue
+    abstract val totalCrypto: CryptoValue
+    abstract val totalFiat: FiatValue
 
     open val confirmations = 0
     open val watchOnly: Boolean = false
     open val doubleSpend: Boolean = false
     open val isFeeTransaction = false
     open val isPending: Boolean = false
-    open var totalDisplayableFiat: String? = null
     open var note: String? = null
 
     override fun toString(): String = "cryptoCurrency = $cryptoCurrency" +
             "direction  = $direction " +
             "timeStamp  = $timeStamp " +
-            "total  = ${total.toStringWithSymbol()} " +
+            "total  = ${totalCrypto.toStringWithSymbol()} " +
             "hash  = $hash " +
             "inputsMap  = $inputsMap " +
             "outputsMap  = $outputsMap " +
@@ -39,7 +40,7 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
             "watchOnly  = $watchOnly " +
             "doubleSpend  = $doubleSpend " +
             "isPending  = $isPending " +
-            "totalDisplayableFiat  = $totalDisplayableFiat " +
+            "totalDisplayableFiat  = ${totalFiat.toStringWithSymbol()} " +
             "note = $note"
 
     override fun equals(other: Any?): Boolean {
@@ -50,7 +51,7 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
         return this.cryptoCurrency == that?.cryptoCurrency &&
                 this.direction == that.direction &&
                 this.timeStamp == that.timeStamp &&
-                this.total == that.total &&
+                this.totalCrypto == that.totalCrypto &&
                 this.hash == that.hash &&
                 this.inputsMap == that.inputsMap &&
                 this.outputsMap == that.outputsMap &&
@@ -59,7 +60,7 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
                 this.doubleSpend == that.doubleSpend &&
                 this.isFeeTransaction == that.isFeeTransaction &&
                 this.isPending == that.isPending &&
-                this.totalDisplayableFiat == that.totalDisplayableFiat &&
+                this.totalFiat == that.totalFiat &&
                 this.note == that.note
     }
 
@@ -68,7 +69,7 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
         result = 31 * result + cryptoCurrency.hashCode()
         result = 31 * result + direction.hashCode()
         result = 31 * result + JavaHashCode.hashCode(timeStamp)
-        result = 31 * result + total.hashCode()
+        result = 31 * result + totalCrypto.hashCode()
         result = 31 * result + hash.hashCode()
         result = 31 * result + inputsMap.hashCode()
         result = 31 * result + outputsMap.hashCode()
@@ -76,10 +77,12 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
         result = 31 * result + JavaHashCode.hashCode(isFeeTransaction)
         result = 31 * result + JavaHashCode.hashCode(watchOnly)
         result = 31 * result + JavaHashCode.hashCode(doubleSpend)
-        result = 31 * result + (totalDisplayableFiat?.hashCode() ?: 0)
+        result = 31 * result + totalFiat.hashCode()
         result = 31 * result + (note?.hashCode() ?: 0)
         return result
     }
 
     override operator fun compareTo(other: ActivitySummaryItem) = (other.timeStamp - timeStamp).sign
 }
+
+typealias ActivitySummaryList = List<ActivitySummaryItem>

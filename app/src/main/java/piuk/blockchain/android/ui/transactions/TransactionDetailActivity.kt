@@ -51,6 +51,11 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
         onViewReady()
     }
 
+    override fun onStart() {
+        super.onStart()
+        presenter.showDetailsForTransaction(intent.cryptoCurrency, intent.txHash)
+    }
+
     private fun descriptionFieldClickListener() {
         val editText = AppCompatEditText(this).apply {
             inputType = INPUT_FIELD_FLAGS
@@ -239,12 +244,6 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
         finish()
     }
 
-    override fun txHashDetailLookup(): String? =
-        intent?.getStringExtra(TransactionsFragment.KEY_TRANSACTION_HASH)
-
-    override fun positionDetailLookup(): Int =
-        intent?.getIntExtra(TransactionsFragment.KEY_TRANSACTION_LIST_POSITION, -1) ?: -1
-
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
@@ -261,12 +260,27 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
                         InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
                 )
 
-        fun start(context: Context, args: Bundle) {
-            context.startActivity(
-                Intent(context, TransactionDetailActivity::class.java).apply {
-                    putExtras(args)
+        private const val KEY_CRYPTO = "crypto_currency"
+        private const val KEY_TRANSACTION_HASH = "tx_hash"
+
+        fun start(ctx: Context, crypto: CryptoCurrency, txHash: String) {
+            ctx.startActivity(
+                Intent(ctx, TransactionDetailActivity::class.java).apply {
+                    putExtras(
+                        Bundle().also {
+                            it.putString(KEY_CRYPTO, crypto.symbol)
+                            it.putString(KEY_TRANSACTION_HASH, txHash)
+                        }
+                    )
                 }
             )
         }
     }
+
+    private val Intent?.cryptoCurrency: CryptoCurrency
+        get() = CryptoCurrency.fromSymbol(this?.getStringExtra(KEY_CRYPTO) ?: "BTC")
+            ?: CryptoCurrency.BTC
+
+    private val Intent?.txHash: String
+        get() = this?.getStringExtra(KEY_TRANSACTION_HASH) ?: ""
 }

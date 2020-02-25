@@ -9,10 +9,6 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 interface TransactionDetailView : View {
 
-    fun txHashDetailLookup(): String?
-
-    fun positionDetailLookup(): Int
-
     fun pageFinish()
 
     fun setTransactionType(type: TransactionSummary.Direction, isFeeTransaction: Boolean)

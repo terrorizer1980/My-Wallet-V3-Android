@@ -16,7 +16,7 @@ import io.reactivex.Single
 import org.bitcoinj.core.Address
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -26,8 +26,8 @@ import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import timber.log.Timber
 import java.math.BigInteger
 
@@ -122,24 +122,26 @@ class BCHTokens(
     private fun getAllTransactions(): Observable<ActivitySummaryList> =
         bchDataManager.getWalletTransactions(transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it)
+                BchActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
             }
 
     private fun getLegacyTransactions(): Observable<ActivitySummaryList> =
         bchDataManager.getImportedAddressTransactions(transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it)
+                BchActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
             }
 
     private fun getAccountTransactions(address: String): Observable<List<ActivitySummaryItem>> =
         bchDataManager.getAddressTransactions(address, transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it)
+                BchActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
             }
 }
 
 class BchActivitySummaryItem(
-    private val transactionSummary: TransactionSummary
+    private val transactionSummary: TransactionSummary,
+    exchangeRates: ExchangeRateDataManager,
+    selectedFiat: String
 ) : ActivitySummaryItem() {
 
     override val cryptoCurrency = CryptoCurrency.BCH
@@ -148,15 +150,17 @@ class BchActivitySummaryItem(
     override val timeStamp: Long
         get() = transactionSummary.time
 
-    override val total: CryptoValue by unsafeLazy {
+    override val totalCrypto: CryptoValue =
         CryptoValue.fromMinor(CryptoCurrency.BCH, transactionSummary.total)
-    }
+
+    override val totalFiat: FiatValue =
+        totalCrypto.toFiat(exchangeRates, selectedFiat)
 
     override val fee: Observable<BigInteger>
         get() = Observable.just(transactionSummary.fee)
 
-    override val hash: String
-        get() = transactionSummary.hash
+    override val hash: String =
+        transactionSummary.hash
 
     override val inputsMap: Map<String, BigInteger>
         get() = transactionSummary.inputsMap

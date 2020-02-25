@@ -93,7 +93,7 @@ class XLMTokensTest {
         assertEquals(TransactionSummary.Direction.RECEIVED, activityItem.direction)
         assertEquals(1, activityItem.confirmations.toLong())
         assertFalse(activityItem.isFeeTransaction)
-        assertEquals(output, activityItem.total)
+        assertEquals(output, activityItem.totalCrypto.amount)
         assertEquals(
             mapOf(HORIZON_ACCOUNT_ID_2 to BigInteger.ZERO),
             activityItem.inputsMap

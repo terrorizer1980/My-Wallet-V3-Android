@@ -17,7 +17,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -27,6 +27,7 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
@@ -131,7 +132,9 @@ class ETHTokens(
                             ethDataManager.getEthResponseModel()!!,
                             it,
                             ethFeeForPaxTransaction,
-                            latestBlock.blockHeight
+                            latestBlock.blockHeight,
+                            exchangeRates,
+                            currencyPrefs.selectedFiatCurrency
                         )
                     }.toList()
                 }
@@ -141,7 +144,9 @@ private class EthActivitySummaryItem(
     private val combinedEthModel: CombinedEthModel,
     private val ethTransaction: EthTransaction,
     override val isFeeTransaction: Boolean,
-    private val blockHeight: Long
+    private val blockHeight: Long,
+    exchangeRates: ExchangeRateDataManager,
+    selectedFiat: String
 ) : ActivitySummaryItem() {
 
     override val cryptoCurrency: CryptoCurrency
@@ -158,7 +163,7 @@ private class EthActivitySummaryItem(
     override val timeStamp: Long
         get() = ethTransaction.timeStamp
 
-    override val total: CryptoValue by unsafeLazy {
+    override val totalCrypto: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.ETHER,
             when (direction) {
                 TransactionSummary.Direction.RECEIVED -> ethTransaction.value
@@ -166,6 +171,9 @@ private class EthActivitySummaryItem(
             }
         )
     }
+
+    override val totalFiat: FiatValue =
+        totalCrypto.toFiat(exchangeRates, selectedFiat)
 
     override val fee: Observable<BigInteger>
         get() = Observable.just(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))

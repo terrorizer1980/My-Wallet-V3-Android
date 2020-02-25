@@ -17,12 +17,13 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
@@ -78,11 +79,13 @@ class XLMTokens(
     private fun getTransactions(): Observable<ActivitySummaryList> =
         xlmDataManager.getTransactionList()
             .toObservable()
-            .mapList { XlmActivitySummaryItem(it) }
+            .mapList { XlmActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency) }
 }
 
 class XlmActivitySummaryItem(
-    private val xlmTransaction: XlmTransaction
+    private val xlmTransaction: XlmTransaction,
+    exchangeRates: ExchangeRateDataManager,
+    selectedFiat: String
 ) : ActivitySummaryItem() {
     override val cryptoCurrency = CryptoCurrency.XLM
 
@@ -96,9 +99,12 @@ class XlmActivitySummaryItem(
     override val timeStamp: Long
         get() = xlmTransaction.timeStamp.fromIso8601ToUtc()!!.toLocalTime().time.div(1000)
 
-    override val total: CryptoValue by unsafeLazy {
+    override val totalCrypto: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.XLM, xlmTransaction.accountDelta.amount.abs())
     }
+
+    override val totalFiat: FiatValue =
+        totalCrypto.toFiat(exchangeRates, selectedFiat)
 
     override val fee: Observable<BigInteger>
         get() = Observable.just(xlmTransaction.fee.amount)
@@ -110,7 +116,7 @@ class XlmActivitySummaryItem(
         get() = hashMapOf(xlmTransaction.from.accountId to BigInteger.ZERO)
 
     override val outputsMap: HashMap<String, BigInteger>
-        get() = hashMapOf(xlmTransaction.to.accountId to total.amount)
+        get() = hashMapOf(xlmTransaction.to.accountId to totalCrypto.amount)
 
     override val confirmations: Int
         get() = CryptoCurrency.XLM.requiredConfirmations

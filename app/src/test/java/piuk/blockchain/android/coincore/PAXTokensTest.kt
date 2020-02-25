@@ -8,6 +8,7 @@ import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.ethereum.data.EthLatestBlockNumber
 import info.blockchain.wallet.ethereum.data.EthTransaction
 import info.blockchain.wallet.multiaddress.TransactionSummary
@@ -112,7 +113,7 @@ class PAXTokensTest {
                     direction == TransactionSummary.Direction.SENT &&
                     hash == "0xfd7d583fa54bf55f6cfbfec97c0c55cc6af8c121b71addb7d06a9e1e305ae8ff" &&
                     confirmations == 3 &&
-                    total == 10000.toBigInteger() &&
+                    totalCrypto == CryptoValue.fromMinor(CryptoCurrency.PAX, 10000.toBigInteger()) &&
                     inputsMap["0x4058a004dd718babab47e14dd0d744742e5b9903"] == 10000.toBigInteger() &&
                     outputsMap["0x2ca28ffadd20474ffe2705580279a1e67cd10a29"] == 10000.toBigInteger()
                 }

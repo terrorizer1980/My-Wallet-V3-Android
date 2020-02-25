@@ -333,13 +333,9 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
 
     override fun startBuyActivity() = navigator().launchBuySell()
 
-    override fun onTransactionClicked(correctedPosition: Int, absolutePosition: Int) {
-        val bundle = Bundle()
-        bundle.putInt(KEY_TRANSACTION_LIST_POSITION, correctedPosition)
-        TransactionDetailActivity.start(activity as Context, bundle)
-        currency_header?.getCurrentlySelectedCurrency()?.symbol?.let {
-            analytics.logEvent(TransactionsAnalyticsEvents.ItemClick(it))
-        }
+    override fun onTransactionClicked(crypto: CryptoCurrency, txHash: String) {
+        TransactionDetailActivity.start(this.requireContext(), crypto, txHash)
+        analytics.logEvent(TransactionsAnalyticsEvents.ItemClick(crypto))
     }
 
     /*
@@ -360,7 +356,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
 
     companion object {
 
-        const val KEY_TRANSACTION_LIST_POSITION = "transaction_list_position"
+//        const val KEY_TRANSACTION_LIST_POSITION = "transaction_list_position"
         const val KEY_TRANSACTION_HASH = "transaction_hash"
 
         private const val ARGUMENT_BROADCASTING_PAYMENT = "broadcasting_payment"

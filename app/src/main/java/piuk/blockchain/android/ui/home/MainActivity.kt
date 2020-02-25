@@ -347,11 +347,11 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             .setMessage(R.string.confirm_currency_message)
             .setCancelable(true)
             .setPositiveButton(R.string.bitcoin_cash) { _, _ ->
-                presenter.setCryptoCurrency(CryptoCurrency.BCH)
+                presenter.cryptoCurrency = CryptoCurrency.BCH
                 startSendFragment(uri)
             }
             .setNegativeButton(R.string.bitcoin) { _, _ ->
-                presenter.setCryptoCurrency(CryptoCurrency.BTC)
+                presenter.cryptoCurrency = CryptoCurrency.BTC
                 startSendFragment(uri)
             }
             .create()
@@ -364,11 +364,11 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             .setMessage(R.string.confirm_currency_message)
             .setCancelable(true)
             .setPositiveButton(R.string.ether) { _, _ ->
-                presenter.setCryptoCurrency(CryptoCurrency.ETHER)
+                presenter.cryptoCurrency = CryptoCurrency.ETHER
                 startSendFragment(uri)
             }
             .setNegativeButton(R.string.usd_pax) { _, _ ->
-                presenter.setCryptoCurrency(CryptoCurrency.PAX)
+                presenter.cryptoCurrency = CryptoCurrency.PAX
                 startSendFragment(uri)
             }
             .create()
@@ -602,10 +602,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             .setPositiveButton(R.string.ok_cap, null)
             .setNegativeButton(R.string.view_details) { _, _ ->
                 startBalanceFragment()
-                // Show transaction detail
-                val bundle = Bundle()
-                bundle.putString(TransactionsFragment.KEY_TRANSACTION_HASH, txHash)
-                TransactionDetailActivity.start(this, bundle)
+                TransactionDetailActivity.start(this, presenter.cryptoCurrency, txHash)
             }.show()
     }
 
@@ -724,7 +721,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     override fun gotoSendFor(cryptoCurrency: CryptoCurrency) {
-        presenter.setCryptoCurrency(cryptoCurrency)
+        presenter.cryptoCurrency = cryptoCurrency
         startSendFragment(null)
     }
 
@@ -738,7 +735,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     override fun gotoReceiveFor(cryptoCurrency: CryptoCurrency) {
-        presenter.setCryptoCurrency(cryptoCurrency)
+        presenter.cryptoCurrency = cryptoCurrency
         setCurrentTabItem(ITEM_RECEIVE)
         ViewUtils.setElevation(appbar_layout, 0f)
         startReceiveFragment()
@@ -762,7 +759,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     override fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency) {
-        presenter.setCryptoCurrency(cryptoCurrency)
+        presenter.cryptoCurrency = cryptoCurrency
         bottom_navigation.currentItem = ITEM_ACTIVITY
     }
 

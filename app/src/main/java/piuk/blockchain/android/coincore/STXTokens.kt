@@ -11,7 +11,7 @@ import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.stx.STXAccount
 import io.reactivex.Maybe
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan

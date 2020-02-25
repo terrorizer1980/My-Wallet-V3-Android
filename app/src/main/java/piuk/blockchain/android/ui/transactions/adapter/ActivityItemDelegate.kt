@@ -19,7 +19,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 
-class DisplayableDelegate<in T>(
+class ActivityItemDelegate<in T>(
     activity: AppCompatActivity,
     private var showCrypto: Boolean,
     private val listClickListener: TxFeedClickListener
@@ -58,9 +58,9 @@ class DisplayableDelegate<in T>(
         } ?: viewHolder.note.gone()
 
         viewHolder.result.text = if (showCrypto) {
-            tx.total.formatWithUnit()
+            tx.totalCrypto.formatWithUnit()
         } else {
-            tx.totalDisplayableFiat
+            tx.totalFiat.toStringWithSymbol()
         }
 
         viewHolder.watchOnly.goneIf(!tx.watchOnly)
@@ -74,19 +74,12 @@ class DisplayableDelegate<in T>(
 
         // TODO: Move this click listener to the ViewHolder to avoid unnecessary object instantiation during binding
         viewHolder.itemView.setOnClickListener {
-            listClickListener.onTransactionClicked(
-                getRealTxPosition(viewHolder.adapterPosition, items), position
-            )
+            listClickListener.onTransactionClicked(tx.cryptoCurrency, tx.hash)
         }
     }
 
     fun onViewFormatUpdated(showCrypto: Boolean) {
         this.showCrypto = showCrypto
-    }
-
-    private fun getRealTxPosition(position: Int, items: List<T>): Int {
-        val diff = items.size - items.count { it is ActivitySummaryItem }
-        return position - diff
     }
 
     private class TxViewHolder internal constructor(

@@ -30,7 +30,8 @@ class TransactionHelper(
         val inputXpubList = ArrayList<String>()
 
         // Inputs / From field
-        if (tx.direction == TransactionSummary.Direction.RECEIVED && tx.inputsMap.isNotEmpty()) { // Only 1 addr for receive
+        if (tx.direction == TransactionSummary.Direction.RECEIVED && tx.inputsMap.isNotEmpty()) {
+            // Only 1 addr for receive
             val treeMap = TreeMap(tx.inputsMap)
             inputMap[treeMap.lastKey()] = treeMap.lastEntry().value
         } else {
@@ -50,13 +51,15 @@ class TransactionHelper(
                 }
             }
         }
+
         // Outputs / To field
         for (outputAddress in tx.outputsMap.keys) {
             val outputValue = tx.outputsMap[outputAddress]
-            if (payloadDataManager.isOwnHDAddress(outputAddress)) { // If output address belongs to an xpub we own - we have to check if it's change
+            if (payloadDataManager.isOwnHDAddress(outputAddress)) {
+                // If output address belongs to an xpub we own - we have to check if it's change
                 val xpub = payloadDataManager.getXpubFromAddress(outputAddress)
                 if (inputXpubList.contains(xpub)) {
-                    continue  // change back to same xpub
+                    continue // change back to same xpub
                 }
                 // Receiving to same address multiple times?
                 if (outputMap.containsKey(outputAddress)) {
@@ -65,23 +68,21 @@ class TransactionHelper(
                 } else {
                     outputMap[outputAddress] = outputValue
                 }
-            } else if (payloadDataManager.wallet!!.legacyAddressStringList.contains(
-                    outputAddress
-                )
-                || payloadDataManager.wallet!!.watchOnlyAddressStringList.contains(
-                    outputAddress
-                )
-            ) { // If output address belongs to a legacy address we own - we have to check if it's change
+            } else if (
+                payloadDataManager.wallet!!.legacyAddressStringList.contains(outputAddress) ||
+                payloadDataManager.wallet!!.watchOnlyAddressStringList.contains(outputAddress)
+            ) { // If output address belongs to a legacy address we own - we have to check if
+                // it's changes
                 // If it goes back to same address AND if it's not the total amount sent
-                // (inputs x and y could send to output y in which case y is not receiving change, but rather the total amount)
-                if (inputMap.containsKey(outputAddress) && outputValue!!.abs().compareTo(
-                        tx.total.amount
-                    ) != 0
+                // (inputs x and y could send to output y in which case y is not receiving change,
+                // but rather the total amount)
+                if (inputMap.containsKey(outputAddress) &&
+                    outputValue!!.abs().compareTo(tx.totalCrypto.amount) != 0
                 ) {
-                    continue  // change back to same input address
+                    continue // change back to same input address
                 }
                 // Output more than tx amount - change
-                if (outputValue!!.abs().compareTo(tx.total.amount) > 0) {
+                if (outputValue!!.abs() > tx.totalCrypto.amount) {
                     continue
                 }
                 outputMap[outputAddress] = outputValue
@@ -91,10 +92,7 @@ class TransactionHelper(
                 }
             }
         }
-        return Pair.of(
-            inputMap,
-            outputMap
-        )
+        return Pair.of(inputMap, outputMap)
     }
 
     fun filterNonChangeAddressesBch(
@@ -132,11 +130,14 @@ class TransactionHelper(
         for (outputAddress in tx.outputsMap.keys) {
             val outputValue = tx.outputsMap[outputAddress]
             // Skip dust output
-            if (outputValue != null && outputValue == Payment.DUST) continue
-            if (bchDataManager.isOwnAddress(outputAddress)) { // If output address belongs to an xpub we own - we have to check if it's change
+            if (outputValue != null && outputValue == Payment.DUST)
+                continue
+
+            if (bchDataManager.isOwnAddress(outputAddress)) {
+                // If output address belongs to an xpub we own - we have to check if it's change
                 val xpub = bchDataManager.getXpubFromAddress(outputAddress)
                 if (inputXpubList.contains(xpub)) {
-                    continue  // change back to same xpub
+                    continue // change back to same xpub
                 }
                 // Receiving to same address multiple times?
                 if (outputMap.containsKey(outputAddress)) {
@@ -145,19 +146,21 @@ class TransactionHelper(
                 } else {
                     outputMap[outputAddress] = outputValue
                 }
-            } else if (bchDataManager.getLegacyAddressStringList().contains(outputAddress)
-                || bchDataManager.getWatchOnlyAddressStringList().contains(outputAddress)
-            ) { // If output address belongs to a legacy address we own - we have to check if it's change
+            } else if (
+                bchDataManager.getLegacyAddressStringList().contains(outputAddress) ||
+                bchDataManager.getWatchOnlyAddressStringList().contains(outputAddress)
+            ) { // If output address belongs to a legacy address we own - we have to check if it's
+                // change
                 // If it goes back to same address AND if it's not the total amount sent
-                // (inputs x and y could send to output y in which case y is not receiving change, but rather the total amount)
-                if (inputMap.containsKey(outputAddress) && outputValue!!.abs().compareTo(
-                        tx.total.amount
-                    ) != 0
+                // (inputs x and y could send to output y in which case y is not receiving change,
+                // but rather the total amount)
+                if (inputMap.containsKey(outputAddress) &&
+                    outputValue!!.abs().compareTo(tx.totalCrypto.amount) != 0
                 ) {
-                    continue  // change back to same input address
+                    continue // change back to same input address
                 }
                 // Output more than tx amount - change
-                if (outputValue!!.abs().compareTo(tx.total.amount) > 0) {
+                if (outputValue!!.abs() > tx.totalCrypto.amount) {
                     continue
                 }
                 outputMap[outputAddress] = outputValue

@@ -24,7 +24,6 @@ import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.coincore.old.TransactionListDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
@@ -567,6 +566,7 @@ val applicationModule = applicationContext {
 
         factory {
             TransactionDetailPresenter(
+                assetLookup = get(),
                 transactionHelper = get(),
                 prefs = get(),
                 payloadDataManager = get(),
@@ -862,8 +862,7 @@ val applicationModule = applicationContext {
                 currencyState = get(),
                 bchDataManager = get(),
                 walletAccountHelper = get(),
-                environmentSettings = get(),
-                fiatExchangeRates = get()
+                environmentSettings = get()
             )
         }
 

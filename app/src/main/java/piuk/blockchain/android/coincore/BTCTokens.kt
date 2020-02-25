@@ -15,12 +15,13 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -83,7 +84,7 @@ class BTCTokens(
         Single.fromCallable {
             payloadManager.getAllTransactions(transactionFetchCount, transactionFetchOffset)
                 .map {
-                    BtcActivitySummaryItem(it)
+                    BtcActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
                 }
         }
 
@@ -91,7 +92,7 @@ class BTCTokens(
         Single.fromCallable {
             payloadManager.getImportedAddressesTransactions(transactionFetchCount, transactionFetchOffset)
                 .map {
-                    BtcActivitySummaryItem(it)
+                    BtcActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
                 }
         }
 
@@ -99,13 +100,15 @@ class BTCTokens(
         Single.fromCallable {
             payloadManager.getAccountTransactions(address, transactionFetchCount, transactionFetchOffset)
                 .map {
-                    BtcActivitySummaryItem(it)
+                    BtcActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
                 }
         }
 }
 
 private class BtcActivitySummaryItem(
-    private val transactionSummary: TransactionSummary
+    private val transactionSummary: TransactionSummary,
+    exchangeRates: ExchangeRateDataManager,
+    selectedFiat: String
 ) : ActivitySummaryItem() {
 
     override val cryptoCurrency = CryptoCurrency.BTC
@@ -116,9 +119,12 @@ private class BtcActivitySummaryItem(
     override val timeStamp: Long
         get() = transactionSummary.time
 
-    override val total: CryptoValue by unsafeLazy {
+    override val totalCrypto: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.BTC, transactionSummary.total)
     }
+
+    override val totalFiat: FiatValue =
+        totalCrypto.toFiat(exchangeRates, selectedFiat)
 
     override val fee: Observable<BigInteger>
         get() = Observable.just(transactionSummary.fee)

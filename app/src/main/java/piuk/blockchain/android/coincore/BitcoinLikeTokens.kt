@@ -40,7 +40,7 @@ abstract class BitcoinLikeTokens(rxBus: RxBus) : AssetTokensBase(rxBus) {
 
     @CallSuper
     override fun onMetadataSignal(event: MetadataEvent) {
-       Timber.d(">>>>>>> METADATA LOADED: TODO -> Init coin: ${asset.symbol}")
+        Timber.d(">>>>>>> METADATA LOADED: TODO -> Init coin: ${asset.symbol}")
     }
 
     companion object {

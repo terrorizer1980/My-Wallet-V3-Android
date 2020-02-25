@@ -4,7 +4,6 @@ import androidx.annotation.VisibleForTesting
 import com.blockchain.annotations.CommonCode
 import com.blockchain.notifications.models.NotificationPayload
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.api.Environment
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -23,13 +22,12 @@ import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
-import piuk.blockchain.android.coincore.old.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -68,7 +66,6 @@ class TransactionsPresenter(
     private val bchDataManager: BchDataManager,
     private val walletAccountHelper: WalletAccountHelper,
     private val environmentSettings: EnvironmentConfig,
-    private val fiatExchangeRates: FiatExchangeRates,
     private val transactionNotes: TransactionNoteUpdater // Move to asset token/coincore
 ) : MvpPresenter<TransactionsView>() {
 
@@ -340,9 +337,6 @@ class TransactionsPresenter(
 
     private fun getAccountAt(position: Int): Single<ItemAccount> = getAccounts()
         .map { it[if (position < 0 || position >= it.size) 0 else position] }
-
-    private fun CryptoValue.getFiatDisplayString(): String =
-        fiatExchangeRates.getFiat(this).toStringWithSymbol()
 
     internal fun areLauncherShortcutsEnabled() =
         prefs.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)

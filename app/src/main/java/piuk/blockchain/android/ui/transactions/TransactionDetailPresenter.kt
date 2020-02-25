@@ -15,11 +15,11 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
+import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.ui.transactions.adapter.formatting
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -28,7 +28,6 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.old.ActivitySummaryList
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -39,6 +38,7 @@ import java.util.Locale
 import java.util.Date
 
 class TransactionDetailPresenter constructor(
+    private val assetLookup: AssetTokenLookup,
     private val transactionHelper: TransactionHelper,
     prefs: PersistentPrefs,
     private val payloadDataManager: PayloadDataManager,
@@ -51,9 +51,8 @@ class TransactionDetailPresenter constructor(
 ) : BasePresenter<TransactionDetailView>() {
 
     private val fiatType = prefs.selectedFiatCurrency
-    private val transactionList: ActivitySummaryList = emptyList()
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     lateinit var activityItem: ActivitySummaryItem
 
     // Currently no available notes for bch
@@ -81,32 +80,18 @@ class TransactionDetailPresenter constructor(
     val transactionHash: TransactionHash
         get() = TransactionHash(activityItem.cryptoCurrency, activityItem.hash)
 
-    override fun onViewReady() {
-        val pos = view?.positionDetailLookup() ?: -1
-        val txHash = view?.txHashDetailLookup()
+    fun showDetailsForTransaction(crypto: CryptoCurrency, txHash: String) {
+        view?.let {
 
-//        when {
-//            pos != -1 -> {
-//                if (pos < transactionList.size) {
-//                    activityItem = transactionList[pos]
-//                    updateUiFromTransaction(activityItem)
-//                } else {
-//                    view?.pageFinish()
-//                }
-//            }
-//            txHash != null -> {
-//                compositeDisposable +=
-//                    transactionList.getTxFromHash(txHash)
-//                        .doOnSuccess { activityItem = it }
-//                        .subscribe(
-//                            { this.updateUiFromTransaction(it) },
-//                            { view?.pageFinish() })
-//            }
-//            else -> {
-//                Timber.e("Transaction hash not found")
-//                view?.pageFinish()
-//            }
-//        }
+            if (txHash.isEmpty()) {
+                it.pageFinish()
+            } else {
+                assetLookup[crypto].findCachedActivityItem(txHash)?.let { item ->
+                    activityItem = item
+                    updateUiFromTransaction(item)
+                } ?: it.pageFinish()
+            }
+        }
     }
 
     fun updateTransactionNote(description: String) {
@@ -134,19 +119,20 @@ class TransactionDetailPresenter constructor(
             )
     }
 
-    private fun updateUiFromTransaction(activitySummaryItem: ActivitySummaryItem) {
-        with(activitySummaryItem) {
-            view?.setTransactionType(direction, activitySummaryItem.isFeeTransaction)
-            view?.updateFeeFieldVisibility(direction != TransactionSummary.Direction.RECEIVED &&
-                    !activitySummaryItem.isFeeTransaction)
+    private fun updateUiFromTransaction(summaryItem: ActivitySummaryItem) {
+        with(summaryItem) {
+            view?.setTransactionType(direction, summaryItem.isFeeTransaction)
+            view?.updateFeeFieldVisibility(
+                direction != TransactionSummary.Direction.RECEIVED && !summaryItem.isFeeTransaction
+            )
             setTransactionColor(this)
 
-            view?.setTransactionValue(total.formatWithUnit())
+            view?.setTransactionValue(totalCrypto.formatWithUnit())
 
             setConfirmationStatus(cryptoCurrency, hash, confirmations.toLong())
             transactionNote = hash
             setDate(timeStamp)
-            setTransactionFee(cryptoCurrency, fee)
+            setTransactionFee(fee.toCryptoValue(cryptoCurrency))
 
             when (cryptoCurrency) {
                 CryptoCurrency.BTC -> handleBtcToAndFrom(this)
@@ -290,7 +276,7 @@ class TransactionDetailPresenter constructor(
                     )
             }
 
-            val transactionDetailModel = buildTransactionDetailModel(label, currency, value, currency.symbol)
+            val transactionDetailModel = buildTransactionDetailModel(label, currency, value, currency)
             inputs.add(transactionDetailModel)
         }
         return inputs
@@ -300,52 +286,32 @@ class TransactionDetailPresenter constructor(
         label: String?,
         currency: CryptoCurrency,
         value: BigInteger?,
-        unit: String
-    ): TransactionDetailModel = TransactionDetailModel(
-        label,
-        if (currency == CryptoCurrency.BTC) {
-            CryptoValue.bitcoinFromSatoshis(value ?: BigInteger.ZERO).format()
-        } else {
-            CryptoValue.bitcoinCashFromSatoshis(value ?: BigInteger.ZERO).format()
-        },
-        unit
-    ).apply {
-        if (address == MultiAddressFactory.ADDRESS_DECODE_ERROR) {
-            address = stringUtils.getString(R.string.tx_decode_error)
-            setAddressDecodeError(true)
-        }
-    }
-
-    private fun setTransactionFee(currency: CryptoCurrency, fee: Observable<BigInteger>) {
-        fee.map {
-            when (currency) {
-                CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(it)
-                CryptoCurrency.ETHER -> CryptoValue.etherFromWei(it)
-                CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(it)
-                CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(it)
-                CryptoCurrency.PAX -> CryptoValue.etherFromWei(it)
-                else -> CryptoValue.usdPaxFromMinor(it)
+        cryptoCurrency: CryptoCurrency
+    ): TransactionDetailModel =
+        TransactionDetailModel(
+            label,
+            if (currency == CryptoCurrency.BTC) {
+                CryptoValue.bitcoinFromSatoshis(value ?: BigInteger.ZERO).format()
+            } else {
+                CryptoValue.bitcoinCashFromSatoshis(value ?: BigInteger.ZERO).format()
+            },
+            cryptoCurrency.symbol
+        ).apply {
+            if (address == MultiAddressFactory.ADDRESS_DECODE_ERROR) {
+                address = stringUtils.getString(R.string.tx_decode_error)
+                setAddressDecodeError(true)
             }
         }
+
+    private fun setTransactionFee(fee: Observable<CryptoValue>) {
+        compositeDisposable += fee
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError {
                 view?.setFee("")
             }
             .subscribe { view?.setFee(it.formatWithUnit()) }
-            .addTo(compositeDisposable)
     }
-
-//    private fun setTransactionValue(currency: CryptoCurrency, total: BigInteger) {
-//        when (currency) {
-//            CryptoCurrency.ETHER -> CryptoValue.etherFromWei(total)
-//            CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(total)
-//            CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(total)
-//            CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(total)
-//            CryptoCurrency.PAX -> CryptoValue.usdPaxFromMinor(total)
-//            else -> throw IllegalArgumentException("$currency is not currently supported")
-//        }.run { view?.setTransactionValue(this.formatWithUnit()) }
-//    }
 
     @VisibleForTesting
     internal fun setConfirmationStatus(cryptoCurrency: CryptoCurrency, txHash: String, confirmations: Long) {
@@ -379,7 +345,7 @@ class TransactionDetailPresenter constructor(
     @VisibleForTesting
     internal fun getTransactionValueString(fiat: String, transaction: ActivitySummaryItem): Single<String> =
         exchangeRateDataManager.getHistoricPrice(
-            transaction.total,
+            transaction.totalCrypto,
             fiat,
             transaction.timeStamp
         ).map { getTransactionString(transaction, it) }
@@ -393,3 +359,16 @@ class TransactionDetailPresenter constructor(
         return stringUtils.getString(stringId) + value.toStringWithSymbol()
     }
 }
+
+// TEMP CODE - Move this mapping into the appropriate ActivitySummeryItem object
+private fun Observable<BigInteger>.toCryptoValue(currency: CryptoCurrency): Observable<CryptoValue> =
+    this.map {
+        when (currency) {
+                CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(it)
+                CryptoCurrency.ETHER -> CryptoValue.etherFromWei(it)
+                CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(it)
+                CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(it)
+                CryptoCurrency.PAX -> CryptoValue.etherFromWei(it)
+                else -> CryptoValue.usdPaxFromMinor(it)
+            }
+        }
