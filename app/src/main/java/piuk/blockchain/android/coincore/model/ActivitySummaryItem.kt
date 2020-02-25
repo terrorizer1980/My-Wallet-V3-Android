@@ -9,7 +9,7 @@ import piuk.blockchain.androidcore.utils.helperfunctions.JavaHashCode
 import java.math.BigInteger
 import kotlin.math.sign
 
-abstract class ActivitySummaryItem() : Comparable<ActivitySummaryItem> {
+abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
 
     abstract val cryptoCurrency: CryptoCurrency
     abstract val direction: TransactionSummary.Direction
