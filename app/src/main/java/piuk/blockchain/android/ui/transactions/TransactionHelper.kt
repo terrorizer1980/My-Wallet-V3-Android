@@ -95,9 +95,9 @@ class TransactionHelper(
         return Pair.of(inputMap, outputMap)
     }
 
-    fun filterNonChangeAddressesBch(
+    fun filterNonChangeBchAddresses(
         tx: ActivitySummaryItem
-    ): Pair<HashMap<String, BigInteger?>, HashMap<String, BigInteger?>> {
+    ): Pair<Map<String, BigInteger?>, Map<String, BigInteger?>> {
         val inputMap = HashMap<String, BigInteger?>()
         val outputMap = HashMap<String, BigInteger?>()
         val inputXpubList = ArrayList<String>()

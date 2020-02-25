@@ -138,7 +138,7 @@ class BCHTokens(
             }
 }
 
-class BchActivitySummaryItem(
+private class BchActivitySummaryItem(
     private val transactionSummary: TransactionSummary,
     exchangeRates: ExchangeRateDataManager,
     selectedFiat: String

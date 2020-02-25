@@ -19,7 +19,6 @@ import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
-import piuk.blockchain.android.coincore.model.TransactionListStore
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
 import piuk.blockchain.android.data.cache.DynamicFeeCache
@@ -229,12 +228,6 @@ val applicationModule = applicationContext {
         }
 
         factory { KycStatusHelper(get(), get(), get(), get()) }
-
-        factory {
-            TransactionListDataManager(
-                transactionListStore = TransactionListStore()
-            )
-        }
 
         factory {
             FingerprintHelper(

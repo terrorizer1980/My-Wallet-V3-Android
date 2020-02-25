@@ -217,7 +217,7 @@ class TransactionDetailPresenter constructor(
     }
 
     private fun handleBchToAndFrom(activitySummaryItem: ActivitySummaryItem) {
-        val (inputs, outputs) = transactionHelper.filterNonChangeAddressesBch(activitySummaryItem)
+        val (inputs, outputs) = transactionHelper.filterNonChangeBchAddresses(activitySummaryItem)
         setToAndFrom(activitySummaryItem, inputs, outputs)
     }
 
