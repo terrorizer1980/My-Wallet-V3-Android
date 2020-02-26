@@ -8,6 +8,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.prices.TimeInterval
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -22,6 +23,7 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
+import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -105,6 +107,7 @@ class PAXTokens(
                 Erc20ActivitySummaryItem(
                     transaction,
                     accountHash,
+                    ethDataManager,
                     latestBlockNumber.number,
                     exchangeRates,
                     currencyPrefs.selectedFiatCurrency
@@ -117,46 +120,50 @@ class PAXTokens(
 class Erc20ActivitySummaryItem(
     private val feedTransfer: FeedErc20Transfer,
     private val accountHash: String,
-    private val lastBlockNumber: BigInteger,
+    private val ethDataManager: EthDataManager,
+    lastBlockNumber: BigInteger,
     exchangeRates: ExchangeRateDataManager,
     selectedFiat: String
 ) : ActivitySummaryItem() {
 
     override val cryptoCurrency = CryptoCurrency.PAX
 
-    private val transfer: Erc20Transfer
-        get() = feedTransfer.transfer
+    private val transfer: Erc20Transfer = feedTransfer.transfer
 
-    override val direction: TransactionSummary.Direction
-        get() = when {
+    override val direction: TransactionSummary.Direction by unsafeLazy {
+        when {
             transfer.isToAccount(accountHash)
                 && transfer.isFromAccount(accountHash) -> TransactionSummary.Direction.TRANSFERRED
             transfer.isFromAccount(accountHash) -> TransactionSummary.Direction.SENT
             else -> TransactionSummary.Direction.RECEIVED
         }
+    }
 
-    override val timeStamp: Long
-        get() = transfer.timestamp
+    override val timeStamp: Long = transfer.timestamp
 
     override val totalCrypto: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.PAX, transfer.value)
     }
 
-    override val totalFiat: FiatValue =
+    override val totalFiat: FiatValue by unsafeLazy {
         totalCrypto.toFiat(exchangeRates, selectedFiat)
+    }
+
+    override val description: String?
+        get() = ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[hash]
 
     override val fee: Observable<BigInteger>
         get() = feedTransfer.feeObservable
 
-    override val hash: String
-        get() = transfer.transactionHash
+    override val hash: String = transfer.transactionHash
 
-    override val inputsMap: Map<String, BigInteger>
-        get() = mapOf(transfer.from to transfer.value)
+    override val inputsMap: Map<String, BigInteger> = mapOf(transfer.from to transfer.value)
 
-    override val outputsMap: Map<String, BigInteger>
-        get() = mapOf(transfer.to to transfer.value)
+    override val outputsMap: Map<String, BigInteger> = mapOf(transfer.to to transfer.value)
 
-    override val confirmations: Int
-        get() = (lastBlockNumber - transfer.blockNumber).toInt()
+    override val confirmations: Int = (lastBlockNumber - transfer.blockNumber).toInt()
+
+    override fun updateDescription(description: String): Completable =
+        ethDataManager.updateErc20TransactionNotes(hash, description)
+
 }

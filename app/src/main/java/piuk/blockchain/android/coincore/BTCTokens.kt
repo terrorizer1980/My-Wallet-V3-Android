@@ -84,7 +84,12 @@ class BTCTokens(
         Single.fromCallable {
             payloadManager.getAllTransactions(transactionFetchCount, transactionFetchOffset)
                 .map {
-                    BtcActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
+                    BtcActivitySummaryItem(
+                        it,
+                        payloadDataManager,
+                        exchangeRates,
+                        currencyPrefs.selectedFiatCurrency
+                    )
                 }
         }
 
@@ -92,7 +97,12 @@ class BTCTokens(
         Single.fromCallable {
             payloadManager.getImportedAddressesTransactions(transactionFetchCount, transactionFetchOffset)
                 .map {
-                    BtcActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
+                    BtcActivitySummaryItem(
+                        it,
+                        payloadDataManager,
+                        exchangeRates,
+                        currencyPrefs.selectedFiatCurrency
+                    )
                 }
         }
 
@@ -100,13 +110,19 @@ class BTCTokens(
         Single.fromCallable {
             payloadManager.getAccountTransactions(address, transactionFetchCount, transactionFetchOffset)
                 .map {
-                    BtcActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
+                    BtcActivitySummaryItem(
+                        it,
+                        payloadDataManager,
+                        exchangeRates,
+                        currencyPrefs.selectedFiatCurrency
+                    )
                 }
         }
 }
 
 private class BtcActivitySummaryItem(
     private val transactionSummary: TransactionSummary,
+    private val payloadDataManager: PayloadDataManager,
     exchangeRates: ExchangeRateDataManager,
     selectedFiat: String
 ) : ActivitySummaryItem() {
@@ -123,8 +139,12 @@ private class BtcActivitySummaryItem(
         CryptoValue.fromMinor(CryptoCurrency.BTC, transactionSummary.total)
     }
 
-    override val totalFiat: FiatValue =
+    override val totalFiat: FiatValue by unsafeLazy {
         totalCrypto.toFiat(exchangeRates, selectedFiat)
+    }
+
+    override val description: String?
+        get() = payloadDataManager.getTransactionNotes(hash)
 
     override val fee: Observable<BigInteger>
         get() = Observable.just(transactionSummary.fee)
@@ -149,4 +169,8 @@ private class BtcActivitySummaryItem(
 
     override val isPending: Boolean
         get() = transactionSummary.isPending
+
+    override fun updateDescription(description: String): Completable =
+        payloadDataManager.updateTransactionNotes(hash, description)
 }
+

@@ -4,6 +4,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
+import io.reactivex.Completable
 import io.reactivex.Observable
 import piuk.blockchain.androidcore.utils.helperfunctions.JavaHashCode
 import java.math.BigInteger
@@ -21,6 +22,8 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
 
     abstract val totalCrypto: CryptoValue
     abstract val totalFiat: FiatValue
+
+    abstract val description: String?
 
     open val confirmations = 0
     open val watchOnly: Boolean = false
@@ -83,6 +86,9 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
     }
 
     override operator fun compareTo(other: ActivitySummaryItem) = (other.timeStamp - timeStamp).sign
+
+    open fun updateDescription(description: String): Completable =
+        Completable.error(IllegalStateException("Update description not supported"))
 }
 
 typealias ActivitySummaryList = List<ActivitySummaryItem>

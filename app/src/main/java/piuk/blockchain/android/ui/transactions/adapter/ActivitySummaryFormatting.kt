@@ -20,7 +20,7 @@ internal fun ActivitySummaryItem.formatting() =
         ) else paxFeeFormatting(this)
     }
 
-internal class DisplayableFormatting(
+internal class ActivitySummaryFormatting(
     @StringRes
     val text: Int,
 
@@ -32,7 +32,7 @@ internal class DisplayableFormatting(
 )
 
 private fun transferredFormatting(tx: ActivitySummaryItem) =
-    DisplayableFormatting(
+    ActivitySummaryFormatting(
         text = R.string.MOVED,
         valueBackground = getColorForConfirmations(
             tx,
@@ -47,7 +47,7 @@ private fun transferredFormatting(tx: ActivitySummaryItem) =
     )
 
 private fun receivedFormatting(tx: ActivitySummaryItem) =
-    DisplayableFormatting(
+    ActivitySummaryFormatting(
         text = R.string.RECEIVED,
         valueBackground = getColorForConfirmations(
             tx,
@@ -62,7 +62,7 @@ private fun receivedFormatting(tx: ActivitySummaryItem) =
     )
 
 private fun sendFormatting(tx: ActivitySummaryItem) =
-    DisplayableFormatting(
+    ActivitySummaryFormatting(
         text = R.string.SENT,
         valueBackground = getColorForConfirmations(
             tx,
@@ -77,7 +77,7 @@ private fun sendFormatting(tx: ActivitySummaryItem) =
     )
 
 private fun paxFeeFormatting(tx: ActivitySummaryItem) =
-    DisplayableFormatting(
+    ActivitySummaryFormatting(
         text = R.string.pax_fee,
         valueBackground = getColorForConfirmations(
             tx,

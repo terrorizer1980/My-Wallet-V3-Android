@@ -25,7 +25,6 @@ import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
-import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -129,7 +128,7 @@ class ETHTokens(
                             ignoreCase = true
                         )
                         EthActivitySummaryItem(
-                            ethDataManager.getEthResponseModel()!!,
+                            ethDataManager,
                             it,
                             ethFeeForPaxTransaction,
                             latestBlock.blockHeight,
@@ -141,7 +140,7 @@ class ETHTokens(
 }
 
 private class EthActivitySummaryItem(
-    private val combinedEthModel: CombinedEthModel,
+    private val ethDataManager: EthDataManager,
     private val ethTransaction: EthTransaction,
     override val isFeeTransaction: Boolean,
     private val blockHeight: Long,
@@ -152,6 +151,7 @@ private class EthActivitySummaryItem(
     override val cryptoCurrency: CryptoCurrency = CryptoCurrency.ETHER
 
     override val direction: TransactionSummary.Direction by unsafeLazy {
+        val combinedEthModel = ethDataManager.getEthResponseModel()!!
         combinedEthModel.getAccounts().let {
             when {
                 it[0] == ethTransaction.to && it[0] == ethTransaction.from ->
@@ -180,6 +180,9 @@ private class EthActivitySummaryItem(
         totalCrypto.toFiat(exchangeRates, selectedFiat)
     }
 
+    override val description: String?
+        get() = ethDataManager.getTransactionNotes(hash)
+
     override val fee: Observable<BigInteger>
         get() = Observable.just(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
 
@@ -199,4 +202,7 @@ private class EthActivitySummaryItem(
 
             return if (blockNumber == 0L || blockHash == "0x") 0 else (blockHeight - blockNumber).toInt()
         }
+
+    override fun updateDescription(description: String): Completable =
+        ethDataManager.updateTransactionNotes(hash, description)
 }

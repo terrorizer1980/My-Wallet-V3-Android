@@ -1,4 +1,4 @@
-package piuk.blockchain.android.ui.transactions
+package piuk.blockchain.android.ui.transactions.mapping
 
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.payment.Payment

@@ -156,6 +156,8 @@ private class BchActivitySummaryItem(
     override val totalFiat: FiatValue =
         totalCrypto.toFiat(exchangeRates, selectedFiat)
 
+    override val description: String? = null
+
     override val fee: Observable<BigInteger>
         get() = Observable.just(transactionSummary.fee)
 

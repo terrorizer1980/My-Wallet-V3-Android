@@ -1,45 +1,34 @@
-package piuk.blockchain.android.ui.transactions
+package piuk.blockchain.android.ui.transactions.mapping
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.payload.data.Wallet
-import io.reactivex.Observable
 import org.junit.Test
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.model.TestActivitySummaryItem
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import java.math.BigInteger
 import kotlin.test.assertEquals
-
-internal class TestActivityItem(
-    override val direction: TransactionSummary.Direction,
-    override val inputsMap: Map<String, BigInteger> = emptyMap(),
-    override val outputsMap: Map<String, BigInteger> = emptyMap(),
-    override val totalCrypto: CryptoValue = CryptoValue.ZeroBtc,
-    override val cryptoCurrency: CryptoCurrency = CryptoCurrency.BTC
-) : ActivitySummaryItem() {
-    override val timeStamp: Long = 0
-    override val fee: Observable<BigInteger> = Observable.empty()
-    override val totalFiat: FiatValue = FiatValue.zero("USD")
-    override val hash: String = ""
-}
 
 class TransactionHelperTest {
     private val payloadDataManager: PayloadDataManager = mock()
     private val bchDataManager: BchDataManager = mock()
     private val payload: Wallet = mock()
 
-    private val subject: TransactionHelper = TransactionHelper(payloadDataManager, bchDataManager)
+    private val subject: TransactionHelper =
+        TransactionHelper(
+            payloadDataManager,
+            bchDataManager
+        )
 
     @Test
     fun filterNonChangeAddressesSingleInput() {
         // Arrange
-        val item = TestActivityItem(
+        val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.RECEIVED,
             inputsMap = mapOf(
                 "key" to BigInteger("1")
@@ -56,7 +45,7 @@ class TransactionHelperTest {
 
     @Test
     fun filterNonChangeReceivedAddressesMultipleInput() { // Arrange
-        val item = TestActivityItem(
+        val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.RECEIVED,
             inputsMap = mapOf(
                 "key0" to BigInteger("1"),
@@ -75,7 +64,7 @@ class TransactionHelperTest {
     @Test
     fun filterNonChangeAddressesMultipleInput() {
         // Arrange
-        val item = TestActivityItem(
+        val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
                 "key0" to BigInteger("1"),
@@ -100,7 +89,7 @@ class TransactionHelperTest {
     @Test
     fun filterNonChangeAddressesSingleInputSingleOutput() {
         // Arrange
-        val item = TestActivityItem(
+        val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
                 "key" to BigInteger("1")
@@ -126,7 +115,7 @@ class TransactionHelperTest {
     @Test
     fun filterNonChangeAddressesSingleInputMultipleOutput() {
         // Arrange
-        val item = TestActivityItem(
+        val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
                 "key0" to BigInteger("1")
@@ -161,7 +150,7 @@ class TransactionHelperTest {
     @Test
     fun filterNonChangeAddressesSingleInputSingleOutputHD() {
         // Arrange
-        val item = TestActivityItem(
+        val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
                 "key0" to BigInteger("1")
@@ -195,7 +184,7 @@ class TransactionHelperTest {
     @Test
     fun filterNonChangeAddressesMultipleInputBch() {
         // Arrange
-        val item = TestActivityItem(
+        val item = TestActivitySummaryItem(
             cryptoCurrency = CryptoCurrency.BCH,
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
@@ -221,7 +210,7 @@ class TransactionHelperTest {
     @Test
     fun filterNonChangeAddressesSingleInputSingleOutputBch() {
         // Arrange
-        val item = TestActivityItem(
+        val item = TestActivitySummaryItem(
             cryptoCurrency = CryptoCurrency.BCH,
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
@@ -246,7 +235,7 @@ class TransactionHelperTest {
     @Test
     fun filterNonChangeAddressesSingleInputMultipleOutputBch() {
         // Arrange
-        val item = TestActivityItem(
+        val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
                 "key0" to BigInteger("1")
@@ -278,7 +267,7 @@ class TransactionHelperTest {
     @Test
     fun filterNonChangeAddressesSingleInputSingleOutputHDBch() {
         // Arrange
-        val item = TestActivityItem(
+        val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
                 "key0" to BigInteger("1")

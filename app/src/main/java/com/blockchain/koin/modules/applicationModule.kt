@@ -8,6 +8,7 @@ import com.blockchain.network.websocket.debugLog
 import com.blockchain.network.websocket.newBlockchainWebSocket
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
+import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.PaymentAccountMapper
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
@@ -106,9 +107,10 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
 import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
-import piuk.blockchain.android.ui.transactions.TransactionHelper
+import piuk.blockchain.android.ui.transactions.mapping.TransactionHelper
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
 import piuk.blockchain.android.ui.transactions.TransactionsPresenter
+import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutMapper
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
@@ -124,6 +126,8 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
 import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.androidcore.data.api.EnvironmentConfig
+import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import java.util.Locale
@@ -560,15 +564,10 @@ val applicationModule = applicationContext {
         factory {
             TransactionDetailPresenter(
                 assetLookup = get(),
-                transactionHelper = get(),
+                inputOutputMapper = get(),
                 prefs = get(),
-                payloadDataManager = get(),
                 stringUtils = get(),
-                exchangeRateDataManager = get(),
-                bchDataManager = get(),
-                ethDataManager = get(),
-                environmentSettings = get(),
-                xlmDataManager = get()
+                exchangeRateDataManager = get()
             )
         }
 
@@ -878,7 +877,24 @@ val applicationModule = applicationContext {
             )
         }
 
-        factory { TransactionHelper(get(), get()) }
+        factory {
+            TransactionInOutMapper(
+                transactionHelper = get(),
+                payloadDataManager = get(),
+                stringUtils = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                xlmDataManager = get(),
+                environmentSettings = get()
+            )
+        }
+
+        factory {
+            TransactionHelper(
+                payloadDataManager = get(),
+                bchDataManager = get()
+            )
+        }
 
         factory {
             SettingsPresenter(

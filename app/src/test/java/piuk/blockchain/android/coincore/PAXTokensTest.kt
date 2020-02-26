@@ -129,3 +129,22 @@ class PAXTokensTest {
         verify(paxAccount).getTransactions()
     }
 }
+
+//@Test
+//fun getTransactionValueStringReceivedPax() {
+//    //  Arrange
+//    val displayable: Erc20ActivitySummaryItem = mock()
+//    whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
+//    whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
+//    whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
+//    whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
+//        .thenReturn(Single.just(1000.usd()))
+//    whenever(stringUtils.getString(any())).thenReturn("Value when received: ")
+//    //  Act
+//    val observer = subject.getTransactionValueString("USD", displayable).test()
+//    //  Assert
+//    verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
+//    assertEquals("Value when received: $1,000.00", observer.values()[0])
+//    observer.onComplete()
+//    observer.assertNoErrors()
+//}
