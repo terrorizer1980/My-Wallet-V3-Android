@@ -46,7 +46,7 @@ class MetadataLoader(
             Single.just(false)
         else
             metadataManager
-                .attemptMetadataSetup()
+                .attemptMetadataSetup().ignoreElements()
                 .andThen(shapeShiftCompletable())
                 .andThen(feesCompletable())
                 .observeOn(AndroidSchedulers.mainThread())

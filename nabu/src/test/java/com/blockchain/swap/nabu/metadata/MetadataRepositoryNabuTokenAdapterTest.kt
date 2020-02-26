@@ -90,9 +90,7 @@ class MetadataRepositoryNabuTokenAdapterTest {
             mock {
                 on { createNabuOfflineToken() } `it returns` Single.just(offlineToken)
             },
-            mock {
-                on { attemptMetadataSetup() } `it returns` Completable.complete()
-            }
+            mock()
         )
         // Act
         val testObserver = nabuToken.fetchNabuToken().test()
@@ -125,9 +123,7 @@ class MetadataRepositoryNabuTokenAdapterTest {
             mock {
                 on { createNabuOfflineToken() } `it returns` Single.just(offlineToken)
             },
-            mock {
-                on { attemptMetadataSetup() } `it returns` Completable.complete()
-            }
+            mock()
         )
         // Act
         val testObserver = nabuToken.fetchNabuToken().test()
@@ -156,9 +152,7 @@ class MetadataRepositoryNabuTokenAdapterTest {
             mock {
                 on { createNabuOfflineToken() } `it returns` Single.just(metadata)
             },
-            mock {
-                on { attemptMetadataSetup() } `it returns` Completable.complete()
-            }
+            mock()
         )
         // Act
         val testObserver = nabuToken.fetchNabuToken().test()
