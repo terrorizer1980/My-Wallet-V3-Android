@@ -14,6 +14,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
+import piuk.blockchain.androidcore.data.metadata.MetadataNotInitialisedException
 
 class MetadataRepositoryNabuTokenAdapter(
     private val metadataRepository: MetadataRepository,
@@ -39,19 +40,23 @@ class MetadataRepositoryNabuTokenAdapter(
         metadataRepository.loadMetadata(
             NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE,
             NabuCredentialsMetadata::class.java
-        )
-    }.retryWhen {
-        it.zipWith(Flowable.range(1, 1)).flatMap {
-            metadataManager.attemptMetadataSetup().toFlowable(BackpressureStrategy.LATEST)
+        ).retryWhen {
+            return@retryWhen it.zipWith(Flowable.range(1, 1)).flatMap { (error, _) ->
+                if (error is MetadataNotInitialisedException)
+                    metadataManager.attemptMetadataSetup().toFlowable(BackpressureStrategy.LATEST)
+                else
+                    Flowable.error(error)
+            }
         }
     }.maybeCache()
         .filter { it.isValid() }
 
-    override fun fetchNabuToken(currency: String?, action: String?): Single<NabuOfflineTokenResponse> = defer
-        .switchIfEmpty(createMetaData(currency, action))
-        .map { metadata ->
-            if (!metadata.isValid()) throw MetadataNotFoundException("Nabu Token is empty")
-            metadata.mapFromMetadata()
-        }
-        .toSingle()
+    override fun fetchNabuToken(currency: String?, action: String?): Single<NabuOfflineTokenResponse> =
+        defer
+            .switchIfEmpty(createMetaData(currency, action))
+            .map { metadata ->
+                if (!metadata.isValid()) throw MetadataNotFoundException("Nabu Token is empty")
+                metadata.mapFromMetadata()
+            }
+            .toSingle()
 }
