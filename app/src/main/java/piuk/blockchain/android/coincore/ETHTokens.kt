@@ -123,7 +123,7 @@ class ETHTokens(
         ethDataManager.getLatestBlock()
             .flatMapSingle { latestBlock ->
                 ethDataManager.getEthTransactions()
-                        .map {
+                    .map {
                         val ethFeeForPaxTransaction = it.to.equals(
                             ethDataManager.getErc20TokenData(CryptoCurrency.PAX).contractAddress,
                             ignoreCase = true
@@ -149,16 +149,20 @@ private class EthActivitySummaryItem(
     selectedFiat: String
 ) : ActivitySummaryItem() {
 
-    override val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.ETHER
+    override val cryptoCurrency: CryptoCurrency = CryptoCurrency.ETHER
 
-    override val direction: TransactionSummary.Direction
-        get() = when {
-            combinedEthModel.getAccounts()[0] == ethTransaction.to
-                && combinedEthModel.getAccounts()[0] == ethTransaction.from -> TransactionSummary.Direction.TRANSFERRED
-            combinedEthModel.getAccounts().contains(ethTransaction.from) -> TransactionSummary.Direction.SENT
-            else -> TransactionSummary.Direction.RECEIVED
+    override val direction: TransactionSummary.Direction by unsafeLazy {
+        combinedEthModel.getAccounts().let {
+            when {
+                it[0] == ethTransaction.to && it[0] == ethTransaction.from ->
+                    TransactionSummary.Direction.TRANSFERRED
+                it.contains(ethTransaction.from) ->
+                    TransactionSummary.Direction.SENT
+                else ->
+                    TransactionSummary.Direction.RECEIVED
+            }
         }
+    }
 
     override val timeStamp: Long
         get() = ethTransaction.timeStamp
@@ -172,8 +176,9 @@ private class EthActivitySummaryItem(
         )
     }
 
-    override val totalFiat: FiatValue =
+    override val totalFiat: FiatValue by unsafeLazy {
         totalCrypto.toFiat(exchangeRates, selectedFiat)
+    }
 
     override val fee: Observable<BigInteger>
         get() = Observable.just(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
@@ -188,12 +193,10 @@ private class EthActivitySummaryItem(
         get() = mapOf(ethTransaction.to to ethTransaction.value)
 
     override val confirmations: Int
-        get() = ethConfirmations(ethTransaction, blockHeight)
+        get() {
+            val blockNumber = ethTransaction.blockNumber ?: return 0
+            val blockHash = ethTransaction.blockHash ?: return 0
 
-    private fun ethConfirmations(ethTransaction: EthTransaction, blockHeight: Long): Int {
-        val blockNumber = ethTransaction.blockNumber ?: return 0
-        val blockHash = ethTransaction.blockHash ?: return 0
-
-        return if (blockNumber == 0L || blockHash == "0x") 0 else (blockHeight - blockNumber).toInt()
-    }
+            return if (blockNumber == 0L || blockHash == "0x") 0 else (blockHeight - blockNumber).toInt()
+        }
 }

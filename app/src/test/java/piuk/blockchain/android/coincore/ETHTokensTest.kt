@@ -12,6 +12,7 @@ import info.blockchain.wallet.ethereum.Erc20TokenData
 import info.blockchain.wallet.ethereum.data.EthLatestBlock
 import info.blockchain.wallet.ethereum.data.EthTransaction
 import io.reactivex.Observable
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -52,6 +53,12 @@ class ETHTokensTest {
         computationTrampoline()
     }
 
+    @Before
+    fun setup() {
+        whenever(currencyPrefs.selectedFiatCurrency).thenReturn("USD")
+        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
+    }
+
     @Test
     fun fetchTransactionsEthereum() {
         // Arrange
@@ -61,22 +68,22 @@ class ETHTokensTest {
         whenever(transaction.hash).thenReturn("hash")
 
         val ethModel: CombinedEthModel = mock()
+
         whenever(ethDataManager.getLatestBlock())
             .thenReturn(Observable.just(latestBlock))
+
         whenever(ethDataManager.getEthTransactions())
             .thenReturn(Observable.just(transaction))
+
         whenever(ethDataManager.getEthResponseModel())
             .thenReturn(ethModel)
+
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX))
             .thenReturn(Erc20TokenData.createPaxTokenData(""))
-        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
 
         val itemAccount = ItemAccount().apply {
             type = ItemAccount.TYPE.SINGLE_ACCOUNT
         }
-
-        whenever(currencyState.cryptoCurrency)
-            .thenReturn(CryptoCurrency.ETHER)
 
         subject.doFetchActivity(itemAccount)
             .test()
@@ -102,8 +109,6 @@ class ETHTokensTest {
             .thenReturn(Erc20TokenData.createPaxTokenData(""))
         whenever(ethDataManager.getEthResponseModel())
             .thenReturn(mock())
-        whenever(currencyState.cryptoCurrency)
-            .thenReturn(CryptoCurrency.ETHER)
         whenever(ethDataManager.getEthTransactions())
             .thenReturn(Observable.just(ethTransaction))
 
@@ -142,8 +147,6 @@ class ETHTokensTest {
             .thenReturn(Erc20TokenData.createPaxTokenData(""))
         whenever(ethDataManager.getEthResponseModel())
             .thenReturn(mock())
-        whenever(currencyState.cryptoCurrency)
-            .thenReturn(CryptoCurrency.ETHER)
         whenever(ethDataManager.getEthTransactions())
             .thenReturn(Observable.just(ethTransaction))
 

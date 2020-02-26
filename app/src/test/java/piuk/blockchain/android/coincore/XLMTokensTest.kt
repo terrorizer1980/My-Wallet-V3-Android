@@ -14,6 +14,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Single
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -52,12 +53,15 @@ class XLMTokensTest {
         computationTrampoline()
     }
 
+    @Before
+    fun setup() {
+        whenever(currencyPrefs.selectedFiatCurrency).thenReturn("USD")
+        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.XLM)
+    }
+
     @Test
     fun getXlmTransactionList() {
         // Arrange
-        whenever(currencyState.cryptoCurrency)
-            .thenReturn(CryptoCurrency.XLM)
-
         val output = BigInteger.valueOf(1000000L)
         val xlmTransaction = XlmTransaction(
             "2018-10-11T12:54:15Z",

@@ -12,6 +12,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.payload.data.Account
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
@@ -51,6 +52,12 @@ class BTCTokensTest {
         computationTrampoline()
     }
 
+    @Before
+    fun setup() {
+        whenever(currencyPrefs.selectedFiatCurrency).thenReturn("USD")
+        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
+    }
+
     @Test
     fun fetchTransactionsOnAccount() {
 
@@ -78,8 +85,6 @@ class BTCTokensTest {
             type = ItemAccount.TYPE.SINGLE_ACCOUNT
             address = xPub
         }
-
-        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
 
         subject.doFetchActivity(itemAccount)
             .test()
@@ -148,9 +153,6 @@ class BTCTokensTest {
             type = ItemAccount.TYPE.ALL_LEGACY
         }
 
-        whenever(currencyState.cryptoCurrency)
-            .thenReturn(CryptoCurrency.BTC)
-
         subject.doFetchActivity(itemAccount)
             .test()
             .assertComplete()
@@ -184,9 +186,6 @@ class BTCTokensTest {
             type = ItemAccount.TYPE.ALL_LEGACY
             address = xPub
         }
-
-        whenever(currencyState.cryptoCurrency)
-            .thenReturn(CryptoCurrency.BTC)
 
         subject.doFetchActivity(itemAccount)
             .test()

@@ -55,6 +55,8 @@ class PAXTokensTest {
 
     @Before
     fun setup() {
+        whenever(currencyPrefs.selectedFiatCurrency).thenReturn("USD")
+        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
         whenever(paxAccount.ethDataManager).thenReturn(ethDataManager)
     }
 
@@ -69,31 +71,36 @@ class PAXTokensTest {
             blockNumber = 7721219.toBigInteger(),
             timestamp = 1557334297
         )
-        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-        whenever(paxAccount.getTransactions()).thenReturn(
-            Observable.just(
-                listOf(
-                    erc20Transfer
-                )
-            ))
+
+        whenever(paxAccount.getTransactions()).thenReturn(Observable.just(listOf(erc20Transfer)))
+
         whenever(ethDataManager
             .getTransaction("0xfd7d583fa54bf55f6cfbfec97c0c55cc6af8c121b71addb7d06a9e1e305ae8ff"))
-            .thenReturn(Observable.just(EthTransaction().apply {
-                gasPrice = 100.toBigInteger()
-                gasUsed = 2.toBigInteger()
-            }))
+            .thenReturn(Observable.just(
+                EthTransaction().apply {
+                    gasPrice = 100.toBigInteger()
+                    gasUsed = 2.toBigInteger()
+                }
+            )
+        )
+
         whenever(paxAccount.getAccountHash())
             .thenReturn(Observable.just("0x4058a004dd718babab47e14dd0d744742e5b9903"))
+
         whenever(ethDataManager.getLatestBlockNumber())
-            .thenReturn(Observable.just(EthLatestBlockNumber().apply {
-                number = erc20Transfer.blockNumber.plus(3.toBigInteger())
-            }))
+            .thenReturn(Observable.just(
+                EthLatestBlockNumber().apply {
+                    number = erc20Transfer.blockNumber.plus(3.toBigInteger())
+                }
+            )
+        )
 
         val itemAccount = ItemAccount(
             "PAX",
             "1.0 PAX",
             null,
-            1L, null,
+            1L,
+            null,
             "AccountID"
         )
 

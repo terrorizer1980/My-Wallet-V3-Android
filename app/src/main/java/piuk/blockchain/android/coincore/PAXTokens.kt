@@ -88,8 +88,11 @@ class PAXTokens(
 
         val feedTransactions =
             paxAccount.getTransactions().mapList {
-                val feeObservable = ethDataManager.getTransaction(it.transactionHash)
-                    .map { transaction -> transaction.gasUsed * transaction.gasPrice }
+                val feeObservable = ethDataManager
+                    .getTransaction(it.transactionHash)
+                    .map { transaction ->
+                        transaction.gasUsed * transaction.gasPrice
+                    }
                 FeedErc20Transfer(it, feeObservable)
             }
 
@@ -136,7 +139,7 @@ class Erc20ActivitySummaryItem(
         get() = transfer.timestamp
 
     override val totalCrypto: CryptoValue by unsafeLazy {
-        CryptoValue.fromMinor(CryptoCurrency.BTC, transfer.value)
+        CryptoValue.fromMinor(CryptoCurrency.PAX, transfer.value)
     }
 
     override val totalFiat: FiatValue =
