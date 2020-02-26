@@ -13,6 +13,7 @@ import androidx.core.content.res.ResourcesCompat;
 import java.util.List;
 
 import piuk.blockchain.android.R;
+import piuk.blockchain.android.ui.transactions.mapping.TransactionDetailModel;
 
 public class TransactionDetailAdapter extends BaseAdapter implements SpinnerAdapter {
 
@@ -67,7 +68,7 @@ public class TransactionDetailAdapter extends BaseAdapter implements SpinnerAdap
                         + " "
                         + recipient.getDisplayUnits()));
 
-        if (recipient.hasAddressDecodeError()) {
+        if (recipient.getAddressDecodeError()) {
             viewholder.address.setTextColor(ResourcesCompat.getColor(parent.getContext().getResources(),
                     R.color.product_red_medium, parent.getContext().getTheme()));
         }
