@@ -92,7 +92,6 @@ class ETHTokensTest {
 
         verify(ethDataManager).getLatestBlock()
         verify(ethDataManager).getEthTransactions()
-        verify(ethDataManager).getEthResponseModel()
         verify(ethDataManager).getErc20TokenData(CryptoCurrency.PAX)
     }
 

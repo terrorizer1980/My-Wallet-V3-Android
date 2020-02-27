@@ -38,7 +38,7 @@ class TransactionDetailPresenterTest {
     private val prefsUtil: PersistentPrefs = mock()
     private val stringUtils: StringUtils = mock()
     private val view: TransactionDetailView = mock()
-    private val exchangeRateManager: ExchangeRateDataManager = mock(defaultAnswer = Answers.RETURNS_DEEP_STUBS)
+    private val exchangeRates: ExchangeRateDataManager = mock(defaultAnswer = Answers.RETURNS_DEEP_STUBS)
 
     private lateinit var subject: TransactionDetailPresenter
 
@@ -61,7 +61,7 @@ class TransactionDetailPresenterTest {
             inputOutputMapper = inputOutMapper,
             prefs = prefsUtil,
             stringUtils = stringUtils,
-            exchangeRateDataManager = exchangeRateManager
+            exchangeRateDataManager = exchangeRates
         )
 
         setupStringUtils()
@@ -93,11 +93,11 @@ class TransactionDetailPresenterTest {
     fun `simple activity item updates ui correctly`() {
          //  Arrange
         val item = TestActivitySummaryItem(
+            exchangeRates = exchangeRates,
             cryptoCurrency = CryptoCurrency.BTC,
             direction = TransactionSummary.Direction.TRANSFERRED,
             timeStamp = 0,
             totalCrypto = CryptoValue.bitcoinFromMajor(10),
-            totalFiat = FiatValue.zero("USD"),
             fee = Observable.just(1.toBigInteger()),
             hash = VALID_TX_HASH,
             inputsMap = mapOf("addr1" to BigInteger.valueOf(1000L)),
@@ -115,8 +115,11 @@ class TransactionDetailPresenterTest {
             )
         )
 
-        whenever(exchangeRateManager.getHistoricPrice(any<CryptoValue>(), any(), any()))
+        whenever(exchangeRates.getHistoricPrice(any<CryptoValue>(), any(), any()))
             .thenReturn(Single.just(FiatValue.fromMajor("USD", 10.toBigDecimal())))
+
+        whenever(exchangeRates.getLastPrice(any(), any()))
+            .thenReturn(10.0)
 
         //  Act
         subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)

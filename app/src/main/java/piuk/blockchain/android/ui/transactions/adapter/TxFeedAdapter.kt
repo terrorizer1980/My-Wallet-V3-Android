@@ -4,20 +4,23 @@ import androidx.appcompat.app.AppCompatActivity
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.ui.adapters.AdapterDelegatesManager
 import piuk.blockchain.android.ui.adapters.DelegationAdapter
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcoreui.utils.extensions.autoNotify
 import kotlin.properties.Delegates
 
 class TxFeedAdapter(
     activity: AppCompatActivity,
     showCrypto: Boolean,
-    listClickListener: TxFeedClickListener
+    listClickListener: TxFeedClickListener,
+    selectedFiatCurrency: String
 ) : DelegationAdapter<Any>(AdapterDelegatesManager(), emptyList()) {
 
     private val summaryDelegate =
         ActivityItemDelegate<Any>(
             activity,
             showCrypto,
-            listClickListener
+            listClickListener,
+            selectedFiatCurrency
         )
 
     init {

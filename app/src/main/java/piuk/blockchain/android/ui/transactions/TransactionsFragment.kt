@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_FAQ
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.disposables.CompositeDisposable
@@ -56,6 +57,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
 
     private var accountsAdapter: AccountsAdapter? = null
     private var txFeedAdapter: TxFeedAdapter? = null
+    private val prefs: CurrencyPrefs by inject()
 
     private val rxBus: RxBus by inject()
 
@@ -169,7 +171,8 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
             txFeedAdapter = TxFeedAdapter(
                 activity,
                 isCrypto,
-                this
+                this,
+                prefs.selectedFiatCurrency
             )
 
             recyclerview.layoutManager = LayoutManager(context!!)

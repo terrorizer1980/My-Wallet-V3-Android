@@ -26,7 +26,6 @@ import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import timber.log.Timber
 import java.math.BigInteger
@@ -122,27 +121,26 @@ class BCHTokens(
     private fun getAllTransactions(): Observable<ActivitySummaryList> =
         bchDataManager.getWalletTransactions(transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
+                BchActivitySummaryItem(it, exchangeRates)
             }
 
     private fun getLegacyTransactions(): Observable<ActivitySummaryList> =
         bchDataManager.getImportedAddressTransactions(transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
+                BchActivitySummaryItem(it, exchangeRates)
             }
 
     private fun getAccountTransactions(address: String): Observable<List<ActivitySummaryItem>> =
         bchDataManager.getAddressTransactions(address, transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency)
+                BchActivitySummaryItem(it, exchangeRates)
             }
 }
 
 private class BchActivitySummaryItem(
     private val transactionSummary: TransactionSummary,
-    exchangeRates: ExchangeRateDataManager,
-    selectedFiat: String
-) : ActivitySummaryItem() {
+    exchangeRates: ExchangeRateDataManager
+) : ActivitySummaryItem(exchangeRates) {
 
     override val cryptoCurrency = CryptoCurrency.BCH
     override val direction: TransactionSummary.Direction
@@ -152,9 +150,6 @@ private class BchActivitySummaryItem(
 
     override val totalCrypto: CryptoValue =
         CryptoValue.fromMinor(CryptoCurrency.BCH, transactionSummary.total)
-
-    override val totalFiat: FiatValue =
-        totalCrypto.toFiat(exchangeRates, selectedFiat)
 
     override val description: String? = null
 

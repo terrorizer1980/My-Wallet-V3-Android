@@ -25,7 +25,6 @@ import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.math.BigInteger
@@ -109,8 +108,7 @@ class PAXTokens(
                     accountHash,
                     ethDataManager,
                     latestBlockNumber.number,
-                    exchangeRates,
-                    currencyPrefs.selectedFiatCurrency
+                    exchangeRates
                 )
             }
         }
@@ -122,9 +120,8 @@ class Erc20ActivitySummaryItem(
     private val accountHash: String,
     private val ethDataManager: EthDataManager,
     lastBlockNumber: BigInteger,
-    exchangeRates: ExchangeRateDataManager,
-    selectedFiat: String
-) : ActivitySummaryItem() {
+    exchangeRates: ExchangeRateDataManager
+) : ActivitySummaryItem(exchangeRates) {
 
     override val cryptoCurrency = CryptoCurrency.PAX
 
@@ -143,10 +140,6 @@ class Erc20ActivitySummaryItem(
 
     override val totalCrypto: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.PAX, transfer.value)
-    }
-
-    override val totalFiat: FiatValue by unsafeLazy {
-        totalCrypto.toFiat(exchangeRates, selectedFiat)
     }
 
     override val description: String?

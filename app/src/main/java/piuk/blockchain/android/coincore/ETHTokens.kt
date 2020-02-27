@@ -26,7 +26,6 @@ import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
@@ -132,8 +131,7 @@ class ETHTokens(
                             it,
                             ethFeeForPaxTransaction,
                             latestBlock.blockHeight,
-                            exchangeRates,
-                            currencyPrefs.selectedFiatCurrency
+                            exchangeRates
                         )
                     }.toList()
                 }
@@ -144,9 +142,8 @@ private class EthActivitySummaryItem(
     private val ethTransaction: EthTransaction,
     override val isFeeTransaction: Boolean,
     private val blockHeight: Long,
-    exchangeRates: ExchangeRateDataManager,
-    selectedFiat: String
-) : ActivitySummaryItem() {
+    exchangeRates: ExchangeRateDataManager
+) : ActivitySummaryItem(exchangeRates) {
 
     override val cryptoCurrency: CryptoCurrency = CryptoCurrency.ETHER
 
@@ -174,10 +171,6 @@ private class EthActivitySummaryItem(
                 else -> ethTransaction.value.plus(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
             }
         )
-    }
-
-    override val totalFiat: FiatValue by unsafeLazy {
-        totalCrypto.toFiat(exchangeRates, selectedFiat)
     }
 
     override val description: String?

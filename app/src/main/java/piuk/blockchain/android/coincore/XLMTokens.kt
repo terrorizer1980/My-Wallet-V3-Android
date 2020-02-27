@@ -23,7 +23,6 @@ import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
@@ -79,14 +78,13 @@ class XLMTokens(
     private fun getTransactions(): Observable<ActivitySummaryList> =
         xlmDataManager.getTransactionList()
             .toObservable()
-            .mapList { XlmActivitySummaryItem(it, exchangeRates, currencyPrefs.selectedFiatCurrency) }
+            .mapList { XlmActivitySummaryItem(it, exchangeRates) }
 }
 
 class XlmActivitySummaryItem(
     private val xlmTransaction: XlmTransaction,
-    exchangeRates: ExchangeRateDataManager,
-    selectedFiat: String
-) : ActivitySummaryItem() {
+    exchangeRates: ExchangeRateDataManager
+) : ActivitySummaryItem(exchangeRates) {
     override val cryptoCurrency = CryptoCurrency.XLM
 
     override val direction: TransactionSummary.Direction
@@ -102,9 +100,6 @@ class XlmActivitySummaryItem(
     override val totalCrypto: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.XLM, xlmTransaction.accountDelta.amount.abs())
     }
-
-    override val totalFiat: FiatValue =
-        totalCrypto.toFiat(exchangeRates, selectedFiat)
 
     override val description: String? = null
 

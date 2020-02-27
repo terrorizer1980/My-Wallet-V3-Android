@@ -22,7 +22,8 @@ import piuk.blockchain.androidcoreui.utils.extensions.visible
 class ActivityItemDelegate<in T>(
     activity: AppCompatActivity,
     private var showCrypto: Boolean,
-    private val listClickListener: TxFeedClickListener
+    private val listClickListener: TxFeedClickListener,
+    private val selectedFiatCurrency: String
 ) : AdapterDelegate<T> {
 
     private val dateUtil = DateUtil(activity)
@@ -60,7 +61,8 @@ class ActivityItemDelegate<in T>(
         viewHolder.result.text = if (showCrypto) {
             tx.totalCrypto.formatWithUnit()
         } else {
-            tx.totalFiat.toStringWithSymbol()
+            tx.totalFiat(selectedFiatCurrency)
+                .toStringWithSymbol()
         }
 
         viewHolder.watchOnly.goneIf(!tx.watchOnly)

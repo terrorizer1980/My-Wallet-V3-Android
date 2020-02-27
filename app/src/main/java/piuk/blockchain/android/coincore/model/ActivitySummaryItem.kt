@@ -6,11 +6,15 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Completable
 import io.reactivex.Observable
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.utils.helperfunctions.JavaHashCode
 import java.math.BigInteger
 import kotlin.math.sign
 
-abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
+abstract class ActivitySummaryItem(
+    private val exchangeRates: ExchangeRateDataManager
+) : Comparable<ActivitySummaryItem> {
 
     abstract val cryptoCurrency: CryptoCurrency
     abstract val direction: TransactionSummary.Direction
@@ -21,7 +25,9 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
     abstract val outputsMap: Map<String, BigInteger>
 
     abstract val totalCrypto: CryptoValue
-    abstract val totalFiat: FiatValue
+
+    fun totalFiat(selectedFiat: String): FiatValue =
+        totalCrypto.toFiat(exchangeRates, selectedFiat)
 
     abstract val description: String?
 
@@ -43,7 +49,6 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
             "watchOnly  = $watchOnly " +
             "doubleSpend  = $doubleSpend " +
             "isPending  = $isPending " +
-            "totalDisplayableFiat  = ${totalFiat.toStringWithSymbol()} " +
             "note = $note"
 
     override fun equals(other: Any?): Boolean {
@@ -63,7 +68,6 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
                 this.doubleSpend == that.doubleSpend &&
                 this.isFeeTransaction == that.isFeeTransaction &&
                 this.isPending == that.isPending &&
-                this.totalFiat == that.totalFiat &&
                 this.note == that.note
     }
 
@@ -80,7 +84,6 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
         result = 31 * result + JavaHashCode.hashCode(isFeeTransaction)
         result = 31 * result + JavaHashCode.hashCode(watchOnly)
         result = 31 * result + JavaHashCode.hashCode(doubleSpend)
-        result = 31 * result + totalFiat.hashCode()
         result = 31 * result + (note?.hashCode() ?: 0)
         return result
     }

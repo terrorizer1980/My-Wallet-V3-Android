@@ -29,6 +29,7 @@ class TransactionHelperTest {
     fun filterNonChangeAddressesSingleInput() {
         // Arrange
         val item = TestActivitySummaryItem(
+            exchangeRates = mock(),
             direction = TransactionSummary.Direction.RECEIVED,
             inputsMap = mapOf(
                 "key" to BigInteger("1")

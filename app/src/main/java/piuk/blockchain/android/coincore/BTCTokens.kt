@@ -21,7 +21,6 @@ import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -87,8 +86,7 @@ class BTCTokens(
                     BtcActivitySummaryItem(
                         it,
                         payloadDataManager,
-                        exchangeRates,
-                        currencyPrefs.selectedFiatCurrency
+                        exchangeRates
                     )
                 }
         }
@@ -100,8 +98,7 @@ class BTCTokens(
                     BtcActivitySummaryItem(
                         it,
                         payloadDataManager,
-                        exchangeRates,
-                        currencyPrefs.selectedFiatCurrency
+                        exchangeRates
                     )
                 }
         }
@@ -113,8 +110,7 @@ class BTCTokens(
                     BtcActivitySummaryItem(
                         it,
                         payloadDataManager,
-                        exchangeRates,
-                        currencyPrefs.selectedFiatCurrency
+                        exchangeRates
                     )
                 }
         }
@@ -123,9 +119,8 @@ class BTCTokens(
 private class BtcActivitySummaryItem(
     private val transactionSummary: TransactionSummary,
     private val payloadDataManager: PayloadDataManager,
-    exchangeRates: ExchangeRateDataManager,
-    selectedFiat: String
-) : ActivitySummaryItem() {
+    exchangeRates: ExchangeRateDataManager
+) : ActivitySummaryItem(exchangeRates) {
 
     override val cryptoCurrency = CryptoCurrency.BTC
 
@@ -137,10 +132,6 @@ private class BtcActivitySummaryItem(
 
     override val totalCrypto: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.BTC, transactionSummary.total)
-    }
-
-    override val totalFiat: FiatValue by unsafeLazy {
-        totalCrypto.toFiat(exchangeRates, selectedFiat)
     }
 
     override val description: String?
