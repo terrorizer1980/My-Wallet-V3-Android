@@ -1004,7 +1004,8 @@ val applicationModule = applicationContext {
                 envSettings = get(),
                 featureFlag = get("ff_simple_buy"),
                 custodialWalletManager = get(),
-                currencyPrefs = get()
+                currencyPrefs = get(),
+                metadataManager = get()
             )
         }
 

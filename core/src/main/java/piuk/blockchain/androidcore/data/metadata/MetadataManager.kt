@@ -49,8 +49,6 @@ class MetadataManager(
         rxPinning.call<Optional<String>> {
             payloadDataManager.getMetadataNodeFactory()
                 .map { nodeFactory ->
-                    if (nodeFactory.metadataNode == null)
-                        throw MetadataNotInitialisedException("Metadata have not been initialised yet")
                     metadataUtils.getMetadataNode(nodeFactory.metadataNode, metadataType)
                         .metadataOptional
                 }

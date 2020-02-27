@@ -28,6 +28,7 @@ import com.blockchain.remoteconfig.FeatureFlag;
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager;
 
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
+import piuk.blockchain.androidcore.data.metadata.MetadataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
@@ -80,6 +81,8 @@ public class LauncherPresenterTest {
     private CustodialWalletManager custodialWalletManager;
     @Mock
     private CurrencyPrefs currencyPrefs;
+    @Mock
+    private MetadataManager metadataManager;
 
     @Before
     public void setUp() {
@@ -96,7 +99,8 @@ public class LauncherPresenterTest {
                 environmentConfig,
                 featureFlag,
                 currencyPrefs,
-                custodialWalletManager
+                custodialWalletManager,
+                metadataManager
         );
         subject.initView(launcherActivity);
         Mockito.when(featureFlag.getEnabled()).thenReturn(Single.just(false));

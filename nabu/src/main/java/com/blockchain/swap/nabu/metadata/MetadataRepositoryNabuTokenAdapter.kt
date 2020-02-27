@@ -8,13 +8,9 @@ import com.blockchain.rx.maybeCache
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.models.tokenresponse.mapFromMetadata
 import com.blockchain.swap.nabu.models.tokenresponse.mapToMetadata
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
-import piuk.blockchain.androidcore.data.metadata.MetadataNotInitialisedException
 
 class MetadataRepositoryNabuTokenAdapter(
     private val metadataRepository: MetadataRepository,
@@ -40,14 +36,7 @@ class MetadataRepositoryNabuTokenAdapter(
         metadataRepository.loadMetadata(
             NabuCredentialsMetadata.USER_CREDENTIALS_METADATA_NODE,
             NabuCredentialsMetadata::class.java
-        ).retryWhen {
-            return@retryWhen it.zipWith(Flowable.range(1, 1)).flatMap { (error, _) ->
-                if (error is MetadataNotInitialisedException)
-                    metadataManager.attemptMetadataSetup().toFlowable(BackpressureStrategy.LATEST)
-                else
-                    Flowable.error(error)
-            }
-        }
+        )
     }.maybeCache()
         .filter { it.isValid() }
 
