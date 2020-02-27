@@ -376,7 +376,7 @@ Non condividerlo con altre persone</string>
   <string name="forget_wallet_warning">Questo eliminerà tutti i dati del portafoglio presenti su questo dispositivo. Conferma di avere le informazioni relative al tuo portafoglio salvate da qualche parte, altrimenti ogni bitcoin presente in questo portafoglio sarà inaccessibile!!</string>
   <string name="api_fail">Impossibile collegarsi al server. Riprova più tardi</string>
   <string name="large_tx_warning">Questa è una transazione in bitcoin troppo grande. Il tuo portafoglio deve consolidare tanti piccoli pagamenti che hai ricevuto in passato. Ciò richiede un costo relativamente elevato, per avere una conferma rapida. </string>
-  <string name="go_back">Torna indietro</string>
+  <string name="cancel_order_go_back">Torna indietro</string>
   <string name="accept_higher_fee">Accetta commissioni più alte</string>
   <string name="large_tx_high_fee_warning">\"Questa operazione richiede una commissione più elevata per il consumo di dust a causa della piccola quantità di resto da restituire.\"</string>
   <string name="password_reveal_warning">Attenzione! La visione di questo testo consente di copiare la tua password negli appunti e, di conseguenza, la stessa potrà essere letta da tutte le applicazioni presenti sul tuo dispositivo. Presta attenzione anche alle persone presenti attorno a te!</string>
@@ -929,11 +929,7 @@ Conferma la tua impronta digitale per poter continuare</string>
   <string name="kyc_splash_terms_and_conditions_submit">Toccando Invia, accetti di Blockchain</string>
   <string name="kyc_country_selection_message_state">Ogni stato ha regole diverse sul trading di criptovalute.</string>
   <string name="kyc_profile_submit">Sottoscrivi</string>
-  <string name="kyc_email_didnt_see_email">Non hai visto l\'e-mail? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Invia di nuovo</string>
   <string name="kyc_email_email_was_resent">L\'email è stata inviata di nuovo</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Codice di rispedizione</string>
   <string name="kyc_phone_number_code_was_resent">Il codice è stato risentito</string>
   <string name="kyc_phone_number_error_resending">Errore nell\'invio del codice, per favore riprova</string>
   <string name="kyc_settings_swap_limit">Limite di swap</string>

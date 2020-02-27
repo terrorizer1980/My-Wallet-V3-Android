@@ -380,7 +380,7 @@
   <string name="api_fail">无法连接到服务器。请稍后再试。</string>
   <string name="large_tx_warning">这是一笔超大的比特币交易！您的钱包需要合并此前接收的很多小额支付。这将需要相对较高的手续费以便迅速进行交易确认。
     </string>
-  <string name="go_back">返回</string>
+  <string name="cancel_order_go_back">返回</string>
   <string name="accept_higher_fee">接受更高的手续费</string>
   <string name="large_tx_high_fee_warning">\"这笔交易需要更高的手续费，因为少量变化所导致的粉尘耗费将被返还。\"</string>
   <string name="password_reveal_warning">请注意！显示此文本将允许您的密码被复制到剪贴板，这将使这个设备上的所有应用都能够读取。请注意您背后隐藏的人！</string>
@@ -934,11 +934,7 @@
   <string name="kyc_splash_terms_and_conditions_submit">点击确认即表示您同意Blockchain的</string>
   <string name="kyc_country_selection_message_state">每个州对加密货币的交易都有不同的规定。</string>
   <string name="kyc_profile_submit">提交</string>
-  <string name="kyc_email_didnt_see_email">没有收到电子邮件？</string>
-  <string name="kyc_email_send_again_hyperlink">重新发送</string>
   <string name="kyc_email_email_was_resent">邮件已重新发送</string>
-  <string name="kyc_phone_didnt_see_sms">1</string>
-  <string name="kyc_phone_send_again_hyperlink">重新发送代码</string>
   <string name="kyc_phone_number_code_was_resent">代码已重新发送</string>
   <string name="kyc_phone_number_error_resending">发送代码时出错，请重试</string>
   <string name="kyc_settings_swap_limit">兑换限额</string>

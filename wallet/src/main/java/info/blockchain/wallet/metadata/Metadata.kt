@@ -31,7 +31,7 @@ class Metadata(
     private val type: Int = 0
 ) {
     var magicHash: ByteArray? = null
-    @VisibleForTesting
+        @VisibleForTesting
         set
 
     private var attempt: Short = FETCH_MAGIC_HASH_ATTEMPT_LIMIT

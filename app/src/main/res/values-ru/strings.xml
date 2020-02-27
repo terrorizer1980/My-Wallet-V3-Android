@@ -378,7 +378,7 @@
   <string name="forget_wallet_warning">Это сотрет все данные кошелька на этом устройстве. Подтвердите, что вы сохранили информацию вашего кошелька в каком-то другом месте, потому что иначе все биткойны в этом кошельке станут недоступными!!</string>
   <string name="api_fail">Невозможно подключиться к серверу. Попробуйте еще раз попозже.</string>
   <string name="large_tx_warning">Это слишком большая транзакция bitcoin. Ваш кошелек должен консолидировать много мелких платежей, которые вы получили ранее. Для быстрого подтверждения этой транзакции требуется относительно высокая комиссия.</string>
-  <string name="go_back">Назад</string>
+  <string name="cancel_order_go_back">Назад</string>
   <string name="accept_higher_fee">Принять более высокую комиссию</string>
   <string name="large_tx_high_fee_warning">\"Эта транзакция требует более высокой комиссии за поглощение незначительных сумм в связи с малым количеством выдаваемой сдачи.\"</string>
   <string name="password_reveal_warning">Соблюдайте осторожность! Раскрытие этого текста позволяет скопировать ваш пароль в буфер обмена данными, после чего пароль может быть считан любыми приложениями на вашем устройстве. Убедитесь, что никто не стоит у вас за спиной!</string>
@@ -931,11 +931,7 @@
   <string name="kyc_splash_terms_and_conditions_submit">Нажимая «Отправить», вы соглашаетесь с Blockchain</string>
   <string name="kyc_country_selection_message_state">В каждом штате действуют разные правила по торговле криптовалютами.</string>
   <string name="kyc_profile_submit">Отправить</string>
-  <string name="kyc_email_didnt_see_email">Не видели письмо? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Отправить еще раз</string>
   <string name="kyc_email_email_was_resent">Письмо было отправлено повторно</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Отправить код повторно</string>
   <string name="kyc_phone_number_code_was_resent">Код был отправлен повторно</string>
   <string name="kyc_phone_number_error_resending">Ошибка при отправке кода, пожалуйста, попробуйте еще раз</string>
   <string name="kyc_settings_swap_limit">Лимит обмена</string>

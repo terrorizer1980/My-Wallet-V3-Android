@@ -2,12 +2,15 @@ package piuk.blockchain.android.coincore
 
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.toAccountReference
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.R
 import piuk.blockchain.android.util.StringUtils
@@ -27,17 +30,27 @@ class ETHTokens(
     private val currencyPrefs: CurrencyPrefs,
     private val stringUtils: StringUtils,
     private val crashLogger: CrashLogger,
+    private val custodialWalletManager: CustodialWalletManager,
     rxBus: RxBus
 ) : AssetTokensBase(rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.ETHER
 
-    override fun defaultAccount(): Single<AccountReference> {
-        TODO("not implemented")
-    }
+    override fun defaultAccount(): Single<AccountReference> =
+        Single.just(getDefaultEthAccountRef())
 
-    override fun totalBalance(filter: BalanceFilter): Single<CryptoValue> =
+    override fun receiveAddress(): Single<String> =
+        Single.just(getDefaultEthAccountRef().receiveAddress)
+
+    private fun getDefaultEthAccountRef(): AccountReference =
+        ethDataManager.getEthWallet()?.account?.toAccountReference()
+            ?: throw Exception("No ether wallet found")
+
+    override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
+        custodialWalletManager.getBalanceForAsset(CryptoCurrency.ETHER)
+
+    override fun noncustodialBalance(): Single<CryptoValue> =
         etheriumWalletInitialiser()
             .andThen(ethDataManager.fetchEthAddress())
             .singleOrError()
@@ -56,10 +69,14 @@ class ETHTokens(
         exchangeRates.fetchLastPrice(CryptoCurrency.ETHER, currencyPrefs.selectedFiatCurrency)
 
     override fun historicRate(epochWhen: Long): Single<FiatValue> =
-        exchangeRates.getHistoricPrice(CryptoCurrency.ETHER, currencyPrefs.selectedFiatCurrency, epochWhen)
+        exchangeRates.getHistoricPrice(CryptoCurrency.ETHER,
+            currencyPrefs.selectedFiatCurrency,
+            epochWhen)
 
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
-        historicRates.getHistoricPriceSeries(CryptoCurrency.ETHER, currencyPrefs.selectedFiatCurrency, period)
+        historicRates.getHistoricPriceSeries(CryptoCurrency.ETHER,
+            currencyPrefs.selectedFiatCurrency,
+            period)
 
     private var isWalletUninitialised = true
 

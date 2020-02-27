@@ -378,7 +378,7 @@
   <string name="forget_wallet_warning">Це знищить усі дані гаманця на цьому пристрої. Будь ласка, підтвердіть, що інформацію про ваш гаманець збережено в іншому місці, в іншому випадку усі bitcoin цього гаманця стануть недоступними!!</string>
   <string name="api_fail">Неможливо з\'єднатися із сервером. Будь ласка, спробуйте пізніше.</string>
   <string name="large_tx_warning">Завищений розмір bitcoin-транзакції. Вашому гаманцю необхідно консолідувати багато менших платежів, які ви колись отримували. Для швидкого підтвердження, це вимагає відносно високої комісії.</string>
-  <string name="go_back">Повернутись</string>
+  <string name="cancel_order_go_back">Повернутись</string>
   <string name="accept_higher_fee">Прийняти вищу комісію</string>
   <string name="large_tx_high_fee_warning">\"Ця транзакція вимагає більш високу комісію через невелику кількість змін, яку буде повернуто.\"</string>
   <string name="password_reveal_warning">Будьте уважні! Розкриття цього тексту дозволяє скопіювати ваш пароль в буфер обміну, який потім зможуть зчитати всі програми на вашому пристрої. Будьте впевнені, що поруч з вами нікого немає!</string>
@@ -931,11 +931,7 @@
   <string name="kyc_splash_terms_and_conditions_submit">За допомогою натискання кнопки Надіслати ви погоджуєтесь із функцією Blockchain</string>
   <string name="kyc_country_selection_message_state">Кожна держава має різні правила торгівлі криптовалютами.</string>
   <string name="kyc_profile_submit">Надіслати</string>
-  <string name="kyc_email_didnt_see_email">Не бачили електронну пошту? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Надіслати ще раз</string>
   <string name="kyc_email_email_was_resent">Електронна пошта була надіслана</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Надіслати код повторно</string>
   <string name="kyc_phone_number_code_was_resent">Код був перепроваджений</string>
   <string name="kyc_phone_number_error_resending">Помилка надсилання коду. Повторіть спробу</string>
   <string name="kyc_settings_swap_limit">Обмін обмежень</string>

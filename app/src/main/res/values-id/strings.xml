@@ -376,7 +376,7 @@ Jangan berbagi dengan orang lain.</string>
   <string name="forget_wallet_warning">Ini akan menghapus semua data dompet pada perangkat ini. Konfirmasikan bahwa Anda telah memiliki informasi dompet yang disimpan di tempat lain jika tidak setiap bitcoin dalam dompet ini tidak akan dapat diakses!!</string>
   <string name="api_fail">Tidak dapat terhubung ke server. Harap coba lagi nanti.</string>
   <string name="large_tx_warning">Ini merupakan transaksi bitcoin yang terlalu besar. Dompet Anda perlu mengonsolidasi pembayaran yang lebih kecil yang Anda terima di masa lalu. Ini membutuhkan biaya yang relatif tinggi agar dapat dikonfirmasi dengan cepat.</string>
-  <string name="go_back">Kembali</string>
+  <string name="cancel_order_go_back">Kembali</string>
   <string name="accept_higher_fee">Terima biaya yang lebih tinggi</string>
   <string name="large_tx_high_fee_warning">\"Transaksi ini membutuhkan biaya yang lebih tinggi untuk recehan karena jumlah kecil dari kembalian untuk dikembalikan.\"</string>
   <string name="password_reveal_warning">Hati-hati! Mengungkapkan teks ini memungkinkan kata sandi Anda disalin ke clipboard, yang kemudian dapat dibaca oleh semua aplikasi pada perangkat Anda. Juga hati-hati dengan orang yang berdiri di belakang Anda!</string>
@@ -929,11 +929,7 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="kyc_splash_terms_and_conditions_submit">Dengan mengetuk Kirim, Anda setuju dengan Blockchain</string>
   <string name="kyc_country_selection_message_state">Setiap negara bagian memiliki aturan berbeda tentang perdagangan mata uang digital.</string>
   <string name="kyc_profile_submit">Menyerahkan</string>
-  <string name="kyc_email_didnt_see_email">Tidak melihat email? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Kirim lagi</string>
   <string name="kyc_email_email_was_resent">Email dibenci</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Kirim ulang Kode</string>
   <string name="kyc_phone_number_code_was_resent">Kode dibenci</string>
   <string name="kyc_phone_number_error_resending">Kesalahan mengirim Kode, silakan coba lagi</string>
   <string name="kyc_settings_swap_limit">Batas Swap</string>

@@ -377,7 +377,7 @@ Nie udostępniaj go innym.</string>
   <string name="forget_wallet_warning">W ten sposób wyczyścisz wszystkie dane portfela na tym urządzeniu. Potwierdź, że zapisałeś dane portfela w innym miejscu. W przeciwnym wypadku utracisz dostęp do wszystkich bitcoinów w tym portfelu!!</string>
   <string name="api_fail">Nie udało się połączyć z serwerem. Spróbuj ponownie później.</string>
   <string name="large_tx_warning">Ta transakcja bitcoin jest za duża. Twój portfel musi skonsolidować wiele mniejszych płatności, otrzymanych przez Ciebie w przeszłości. Wymaga to stosunkowo wysokiej opłaty w celu szybkiego potwierdzenia.</string>
-  <string name="go_back">Wróć</string>
+  <string name="cancel_order_go_back">Wróć</string>
   <string name="accept_higher_fee">Zaakceptuj wyższą opłatę</string>
   <string name="large_tx_high_fee_warning">\"Ta transakcja wymaga wyższej opłaty dla konsumpcji \"kurzu\" z powodu małej kwoty reszty.\"</string>
   <string name="password_reveal_warning">Bądź ostrożny! Ujawnienie tego tekstu umożliwi skopiowanie Twojego hasła do schowka, co z kolei zezwoli wszystkim aplikacjom na Twoim urządzeniu na jego odczytanie.  Uważaj również na wszystkie osoby za Twoimi plecami!</string>
@@ -930,11 +930,7 @@ Potwierdź odcisk palca, aby kontynuować</string>
   <string name="kyc_splash_terms_and_conditions_submit">Naciskając Prześlij, zgadzasz się na Blockchain</string>
   <string name="kyc_country_selection_message_state">Każde państwo ma inne zasady dotyczące handlu kryptowalutami.</string>
   <string name="kyc_profile_submit">Zatwierdź</string>
-  <string name="kyc_email_didnt_see_email">Nie widziałeś e-maila? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Wyślij ponownie</string>
   <string name="kyc_email_email_was_resent">E-mail został wysłany ponownie</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Wyślij ponownie kod</string>
   <string name="kyc_phone_number_code_was_resent">Kod został wysłany ponownie</string>
   <string name="kyc_phone_number_error_resending">Błąd podczas wysyłania kodu, spróbuj ponownie</string>
   <string name="kyc_settings_swap_limit">Swap Limit</string>

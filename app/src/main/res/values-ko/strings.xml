@@ -372,7 +372,7 @@
   <string name="forget_wallet_warning">이렇게 하면 장치 상 모든 지갑 데이터가 지워집니다. 지갑 정보를 다른 곳에 저장해 놓았는지 확인하세요. 아니면 이 지갑 속 비트코인에 접근할 수 없어집니다!</string>
   <string name="api_fail">서버 연결 안됨 나중에 다시 시도 해주세요.</string>
   <string name="large_tx_warning">너무 큰 비트코인 거래가 있습니다. 귀하 지갑은 이제까지 받아 온 수많은 작은 지불들을 합쳐야 합니다. 이에 대해 확인을 빨리 받으려면 비교적 높은 수수료를 내야 합니다. </string>
-  <string name="go_back">뒤로 가기</string>
+  <string name="cancel_order_go_back">뒤로 가기</string>
   <string name="accept_higher_fee">높은 수수료 승인</string>
   <string name="large_tx_high_fee_warning">\"이 거래는 작은 거스름 돈 반환으로 인한 아주 작은 금액 (dust amount) 소비를 위해 높은 수수료가 필요합니다.\"</string>
   <string name="password_reveal_warning">조심하세요! 이 텍스트를 보이게 하면 귀하 암호가 클립보드에 복사되어 귀하 장치 모든 앱에서 이 텍스트를 읽을 수 있게 됩니다. 또한 귀하 뒤에 서 있는 사람들을 의식하세요.</string>
@@ -925,11 +925,7 @@
   <string name="kyc_splash_terms_and_conditions_submit">제출을 탭하면 Blockchain \'s</string>
   <string name="kyc_country_selection_message_state">모든 주에는 cryptocurrencies 거래에 대해 다른 규칙이 있습니다.</string>
   <string name="kyc_profile_submit">제출</string>
-  <string name="kyc_email_didnt_see_email">이메일을 못 보셨나요? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">다시 보내기</string>
   <string name="kyc_email_email_was_resent">이메일이 다시 전송되었습니다.</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">코드 재전송</string>
   <string name="kyc_phone_number_code_was_resent">코드가 다시 전송되었습니다.</string>
   <string name="kyc_phone_number_error_resending">코드 전송 중 오류가 발생했습니다. 다시 시도하십시오.</string>
   <string name="kyc_settings_swap_limit">스왑 한도</string>

@@ -375,7 +375,7 @@ Pour utiliser d\'autres méthodes d\'authentification, veuillez vous connecter �
   <string name="forget_wallet_warning">Ceci effacera toutes les données du portefeuille sur cet appareil. Veuillez confirmer que vos informations du portefeuille sont sauvegardées quelque part. Dans le cas contraire, les bitcoins de ce portefeuille seront inaccessibles !</string>
   <string name="api_fail">Impossible de se connecter au serveur. Veuillez réessayer plus tard.</string>
   <string name="large_tx_warning">Cette transaction de bitcoin est trop grande. Votre portefeuille doit consolider tous les petits paiements que vous avez reçus dans le passé. Pour pouvoir être confirmés rapidement, ils nécessitent des frais de transaction relativement élevés.</string>
-  <string name="go_back">Retour</string>
+  <string name="cancel_order_go_back">Retour</string>
   <string name="accept_higher_fee">Accepter des frais plus élevés</string>
   <string name="large_tx_high_fee_warning">« Le montant des modifications à rembourser étant faible, cette transaction requière des frais plus élevés pour la consommation de montants inférieurs au montant minimal accepté par le réseau bitcoin. »</string>
   <string name="password_reveal_warning">Soyez prudent ! Si vous révélez cette phrase, votre mot de passe peut être copié dans le presse-papier et lu ensuite par toutes les applications présentes sur votre appareil. Faites également attention aux personnes qui sont près de vous !</string>
@@ -925,11 +925,7 @@ Commande créée</string>
   <string name="kyc_splash_terms_and_conditions_submit">En appuyant sur Envoyer, vous acceptez de Blockchain</string>
   <string name="kyc_country_selection_message_state">Chaque État a des règles différentes sur le commerce des crypto-monnaies.</string>
   <string name="kyc_profile_submit">Envoyer</string>
-  <string name="kyc_email_didnt_see_email">Vous n\'avez pas vu le courrier électronique ? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Envoyer à nouveau</string>
   <string name="kyc_email_email_was_resent">Le courriel a été renvoyé</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Renvoyer le code</string>
   <string name="kyc_phone_number_code_was_resent">Le code a été renvoyé</string>
   <string name="kyc_phone_number_error_resending">Erreur d\'envoi du code, veuillez réessayer</string>
   <string name="kyc_settings_swap_limit">Limite swap</string>

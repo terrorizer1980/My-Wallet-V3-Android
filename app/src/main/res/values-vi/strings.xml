@@ -375,7 +375,7 @@ Không chia sẻ với người khác.</string>
   <string name="forget_wallet_warning">Điều này sẽ xóa toàn bộ dữ liệu ví trên thiết bị. Vui lòng xác nhận thông tin ví của bạn được lưu trữ an toàn, nếu không bitcoin trong ví sẽ không thể truy cập!!</string>
   <string name="api_fail">Không thể kết nối đến máy chủ. Vui lòng thử lại sau.</string>
   <string name="large_tx_warning">Đây là một giao dịch bitcoin vượt kích cỡ. Ví của bạn cần tổng hợp nhiều thanh toán nhỏ hơn mà bạn đã nhận trong quá khứ. Điều này cần một khoản phí tương đối cao để được xác nhận nhanh chóng. </string>
-  <string name="go_back">Trở lại</string>
+  <string name="cancel_order_go_back">Trở lại</string>
   <string name="accept_higher_fee">Chấp nhận phí cao hơn</string>
   <string name="large_tx_high_fee_warning">\"Giao dịch này yêu cầu phí cao hơn vì thực hiện giao dịch với số tiền quá nhỏ.\"</string>
   <string name="password_reveal_warning">Cẩn thận! Để lộ tin nhắn này sẽ cho phép các mật khẩu của bạn được sao chép vào bộ nhớ đệm, điều này có thể bị đọc bởi toàn bộ ứng dụng trên thiết bị của bạn. Cũng nên cẩn thận với những người đứng sau bạn!</string>
@@ -928,11 +928,7 @@ Lệnh đã được tạo</string>
   <string name="kyc_splash_terms_and_conditions_submit">Bằng cách nhấn Gửi, bạn đồng ý với Blockchain</string>
   <string name="kyc_country_selection_message_state">Mỗi tiểu bang có quy tắc khác nhau về giao dịch tiền kỹ thuật số</string>
   <string name="kyc_profile_submit">Gửi</string>
-  <string name="kyc_email_didnt_see_email">Bạn không nhìn thấy email? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Gửi lại</string>
   <string name="kyc_email_email_was_resent">Email đã được gửi lại</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Gửi lại mã</string>
   <string name="kyc_phone_number_code_was_resent">Mã đã được gửi lại</string>
   <string name="kyc_phone_number_error_resending">Lỗi gửi Mã, gui lòng thử lại</string>
   <string name="kyc_settings_swap_limit">Hạn mức Trao đổi</string>

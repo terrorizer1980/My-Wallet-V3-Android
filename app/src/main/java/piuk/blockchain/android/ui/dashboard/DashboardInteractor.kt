@@ -1,8 +1,14 @@
 package piuk.blockchain.android.ui.dashboard
 
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
+import com.blockchain.preferences.SimpleBuyPrefs
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.prices.data.PriceDatum
+import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -10,12 +16,16 @@ import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.coincore.AssetTokenLookup
-import piuk.blockchain.android.coincore.BalanceFilter
+import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import timber.log.Timber
 
 class DashboardInteractor(
-    private val tokens: AssetTokenLookup
+    private val tokens: AssetTokenLookup,
+    private val payloadManager: PayloadManager,
+    private val custodialWalletManager: CustodialWalletManager,
+    private val simpleBuyPrefs: SimpleBuyPrefs,
+    private val analytics: Analytics
 ) {
     // We have a problem here, in that pax init depends on ETH init
     // Ultimately, we want to init metadata straight after decrypting (or creating) the wallet
@@ -23,7 +33,7 @@ class DashboardInteractor(
     // which is on the radar - then we can clean up the entire app init sequence.
     // But for now, we'll catch any pax init failure here, unless ETH has initialised OK. And when we
     // get a valid ETH balance, will try for a PX balance. Yeah, this is a nasty hack TODO: Fix this
-    fun refreshBalances(model: DashboardModel, balanceFilter: BalanceFilter): Disposable {
+    fun refreshBalances(model: DashboardModel, balanceFilter: AssetFilter): Disposable {
         val cd = CompositeDisposable()
         CryptoCurrency.activeCurrencies()
             .filter { it != CryptoCurrency.PAX }
@@ -88,6 +98,38 @@ class DashboardInteractor(
             onSuccess = { model.process(it) },
             onError = { Timber.e(it) }
         )
+
+    fun checkForCustodialBalance(model: DashboardModel, crypto: CryptoCurrency): Disposable? {
+        return tokens[crypto].totalBalance(AssetFilter.Custodial)
+            .subscribeBy(
+                onSuccess = { model.process(UpdateHasCustodialBalanceIntent(crypto, !it.isZero)) },
+                onError = { Timber.e(it) }
+            )
+    }
+
+    fun hasUserBackedUp(model: DashboardModel): Disposable? {
+        return Single.just(payloadManager.isWalletBackedUp)
+            .subscribeBy(
+                onSuccess = { model.process(BackupStatusUpdate(it)) },
+                onError = { Timber.e(it) }
+            )
+    }
+
+    fun cancelSimpleBuyOrder(orderId: String?): Disposable? {
+        return orderId?.let {
+            custodialWalletManager.deleteBuyOrder(it)
+                .subscribeBy(
+                    onComplete = { simpleBuyPrefs.clearState() },
+                    onError = { error ->
+                        analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_ERROR)
+                        Timber.e(error)
+                    }
+                )
+        } ?: Completable.complete()
+            .subscribeBy(
+                onComplete = { simpleBuyPrefs.clearState() }
+            )
+    }
 
     companion object {
         private const val ONE_DAY = 24 * 60 * 60L

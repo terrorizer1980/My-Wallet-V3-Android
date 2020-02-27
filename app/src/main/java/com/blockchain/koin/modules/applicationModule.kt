@@ -8,6 +8,7 @@ import com.blockchain.network.websocket.debugLog
 import com.blockchain.network.websocket.newBlockchainWebSocket
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import com.blockchain.remoteconfig.CoinSelectionRemoteConfig
+import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.PaymentAccountMapper
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
 import com.blockchain.ui.password.SecondPasswordHandler
@@ -27,6 +28,15 @@ import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrate
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
 import piuk.blockchain.android.deeplink.EmailVerificationDeepLinkHelper
 import piuk.blockchain.android.kyc.KycDeepLinkHelper
+import piuk.blockchain.android.simplebuy.EURPaymentAccountMapper
+import piuk.blockchain.android.simplebuy.GBPPaymentAccountMapper
+import piuk.blockchain.android.simplebuy.SimpleBuyAvailability
+import piuk.blockchain.android.simplebuy.SimpleBuyFlowNavigator
+import piuk.blockchain.android.simplebuy.SimpleBuyInflateAdapter
+import piuk.blockchain.android.simplebuy.SimpleBuyInteractor
+import piuk.blockchain.android.simplebuy.SimpleBuyModel
+import piuk.blockchain.android.simplebuy.SimpleBuyState
+import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.sunriver.SunriverDeepLinkHelper
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.thepit.PitLinkingImpl
@@ -63,9 +73,10 @@ import piuk.blockchain.android.ui.createwallet.CreateWalletPresenter
 import piuk.blockchain.android.ui.dashboard.DashboardInteractor
 import piuk.blockchain.android.ui.dashboard.DashboardModel
 import piuk.blockchain.android.ui.dashboard.DashboardState
-import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsViewModel
+import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsCalculator
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
+import piuk.blockchain.android.ui.home.CacheCredentialsWiper
 import piuk.blockchain.android.ui.home.MainPresenter
 import piuk.blockchain.android.ui.home.MetadataLoader
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
@@ -189,8 +200,7 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            AssetDetailsViewModel(
-                buyDataManager = get(),
+            AssetDetailsCalculator(
                 locale = get()
             )
         }
@@ -246,6 +256,18 @@ val applicationModule = applicationContext {
         }
 
         factory {
+            CacheCredentialsWiper(
+                ethDataManager = get(),
+                bchDataManager = get(),
+                payloadManager = get(),
+                walletOptionsState = get(),
+                buyConditions = get(),
+                coinifyDataManager = get(),
+                nabuDataManager = get()
+            )
+        }
+
+        factory {
             MainPresenter(
                 prefs = get(),
                 appUtil = get(),
@@ -268,9 +290,20 @@ val applicationModule = applicationContext {
                 pitLinking = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
-                crashLogger = get()
+                simpleBuySync = get(),
+                crashLogger = get(),
+                simpleBuyAvailability = get(),
+                cacheCredentialsWiper = get()
             )
         }
+
+        factory("GBP") {
+            GBPPaymentAccountMapper(stringUtils = get())
+        }.bind(PaymentAccountMapper::class)
+
+        factory("EUR") {
+            EURPaymentAccountMapper(stringUtils = get())
+        }.bind(PaymentAccountMapper::class)
 
         bean {
             CoinsWebSocketStrategy(
@@ -292,6 +325,15 @@ val applicationModule = applicationContext {
 
         factory {
             GsonBuilder().create()
+        }
+
+        factory {
+            SimpleBuyAvailability(
+                simpleBuyPrefs = get(),
+                custodialWalletManager = get(),
+                currencyPrefs = get(),
+                simpleBuyFlag = get("ff_simple_buy")
+            )
         }
 
         factory {
@@ -737,13 +779,58 @@ val applicationModule = applicationContext {
             DashboardModel(
                 initialState = DashboardState(),
                 mainScheduler = AndroidSchedulers.mainThread(),
-                interactor = get()
+                interactor = get(),
+                persistence = get()
             )
         }
 
         factory {
             DashboardInteractor(
-                tokens = get()
+                tokens = get(),
+                payloadManager = get(),
+                custodialWalletManager = get(),
+                simpleBuyPrefs = get(),
+                analytics = get()
+            )
+        }
+
+        factory {
+            SimpleBuyInteractor(
+                nabu = get(),
+                tierService = get(),
+                custodialWalletManager = get(),
+                appUtil = get()
+            )
+        }
+
+        factory {
+            SimpleBuyModel(
+                interactor = get(),
+                scheduler = AndroidSchedulers.mainThread(),
+                initialState = SimpleBuyState(),
+                prefs = get(),
+                gson = get()
+            )
+        }
+
+        factory {
+            SimpleBuyFlowNavigator(
+                simpleBuyModel = get(),
+                tierService = get()
+            )
+        }
+
+        bean {
+            val inflateAdapter = SimpleBuyInflateAdapter(
+                prefs = get(),
+                gson = get()
+            )
+
+            SimpleBuySyncFactory(
+                custodialWallet = get(),
+                availabilityChecker = get(),
+                localStateAdapter = inflateAdapter,
+                rxBus = get()
             )
         }
 
@@ -914,7 +1001,11 @@ val applicationModule = applicationContext {
                 accessState = get(),
                 settingsDataManager = get(),
                 notificationTokenManager = get(),
-                envSettings = get()
+                envSettings = get(),
+                featureFlag = get("ff_simple_buy"),
+                custodialWalletManager = get(),
+                currencyPrefs = get(),
+                metadataManager = get()
             )
         }
 

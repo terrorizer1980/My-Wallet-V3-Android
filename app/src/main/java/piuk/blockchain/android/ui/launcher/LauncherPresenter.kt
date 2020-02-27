@@ -4,10 +4,15 @@ import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
+import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.remoteconfig.FeatureFlag
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.access.AccessState
@@ -18,6 +23,7 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import java.util.Locale
 import java.util.Currency
 
@@ -29,7 +35,11 @@ class LauncherPresenter(
     private val accessState: AccessState,
     private val settingsDataManager: SettingsDataManager,
     private val notificationTokenManager: NotificationTokenManager,
-    private val envSettings: EnvironmentConfig
+    private val envSettings: EnvironmentConfig,
+    private val featureFlag: FeatureFlag,
+    private val currencyPrefs: CurrencyPrefs,
+    private val custodialWalletManager: CustodialWalletManager,
+    private val metadataManager: MetadataManager
 ) : BasePresenter<LauncherView>() {
 
     override fun onViewReady() {
@@ -111,29 +121,55 @@ class LauncherPresenter(
             } else {
                 settingsDataManager.updateFiatUnit(fiatUnitForFreshAccount())
             }
+        }.flatMapSingle { settings ->
+            if (!accessState.isNewlyCreated || accessState.isRestored)
+                Single.just(settings to false)
+            else {
+                Singles.zip(
+                    custodialWalletManager.isCurrencySupportedForSimpleBuy(settings.currency),
+                    featureFlag.enabled,
+                    metadataManager.attemptMetadataSetup().singleOrError()
+                ) { currencySupported, simpleBuyFeatureFlagEnabled, _ ->
+                    val simpleBuyFlowCanBeLaunched = currencySupported && simpleBuyFeatureFlagEnabled
+                    settings to simpleBuyFlowCanBeLaunched
+                }
+            }
         }
             .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }
-            .subscribe({ settings ->
-                startMainActivity()
-                setCurrencyUnits(settings)
-            }, {
-                view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
-                view.onRequestPin()
-            })
+            .subscribe(
+                { (settings, simpleBuyEnabled) ->
+                    setCurrencyUnits(settings)
+                    if (simpleBuyEnabled &&
+                        view?.getPageIntent()?.getBooleanExtra(AppUtil.INTENT_EXTRA_IS_AFTER_WALLET_CREATION,
+                            false) == true
+                    ) {
+                        startSimpleBuy()
+                    } else
+                        startMainActivity()
+                }, {
+                    view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
+                    view.onRequestPin()
+                })
     }
 
     private fun startMainActivity() {
         view.onStartMainActivity(deepLinkPersistence.popUriFromSharedPrefs())
     }
 
+    private fun startSimpleBuy() {
+        view.startSimpleBuy()
+    }
+
     private fun fiatUnitForFreshAccount() =
-        if (UNIT_FIAT.contains(Currency.getInstance(Locale.getDefault()).currencyCode))
-            Currency.getInstance(Locale.getDefault()).currencyCode else "USD"
+        currencyPrefs.selectedFiatCurrency
 
     private fun setCurrencyUnits(settings: Settings) {
         prefs.selectedFiatCurrency = settings.currency
     }
+
+    private fun Settings.isSimpleBuyAllowed(): Boolean =
+        listOf("EUR", "GBP").contains(currency)
 
     companion object {
         const val INTENT_EXTRA_VERIFIED = "verified"

@@ -4,6 +4,7 @@ import com.blockchain.logging.CrashLogger
 import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import info.blockchain.wallet.payload.PayloadManagerWiper
 import io.reactivex.Completable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.data.cache.DynamicFeeCache
@@ -40,12 +41,12 @@ class MetadataLoader(
     val isLoaded: Boolean
         get() = _isLoaded.get()
 
-    fun loader(): Completable =
+    fun loader(): Single<Boolean> =
         if (_isLoaded.get())
-            Completable.complete()
+            Single.just(false)
         else
             metadataManager
-                .attemptMetadataSetup()
+                .attemptMetadataSetup().ignoreElements()
                 .andThen(shapeShiftCompletable())
                 .andThen(feesCompletable())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -53,6 +54,7 @@ class MetadataLoader(
                     _isLoaded.set(true)
                     rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
                 }
+                .toSingleDefault(true)
 
     private fun shapeShiftCompletable(): Completable {
         return shapeShiftDataManager.initShapeshiftTradeData()
@@ -87,6 +89,10 @@ class MetadataLoader(
         accessState.clearPin()
         buyDataManager.wipe()
         paxAccount.clear()
+        buyDataManager.wipe()
+        shapeShiftDataManager.clearShapeShiftData()
+        paxAccount.clear()
+
         _isLoaded.set(false)
     }
 }
