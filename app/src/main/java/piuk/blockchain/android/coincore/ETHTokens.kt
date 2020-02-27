@@ -1,5 +1,6 @@
 package piuk.blockchain.android.coincore
 
+import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
@@ -137,7 +138,8 @@ class ETHTokens(
                 }
 }
 
-private class EthActivitySummaryItem(
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+class EthActivitySummaryItem(
     private val ethDataManager: EthDataManager,
     private val ethTransaction: EthTransaction,
     override val isFeeTransaction: Boolean,
@@ -182,11 +184,11 @@ private class EthActivitySummaryItem(
     override val hash: String
         get() = ethTransaction.hash
 
-    override val inputsMap: Map<String, BigInteger>
-        get() = mapOf(ethTransaction.from to ethTransaction.value)
+    override val inputsMap: Map<String, CryptoValue>
+        get() = mapOf(ethTransaction.from to CryptoValue.fromMinor(CryptoCurrency.ETHER, ethTransaction.value))
 
-    override val outputsMap: Map<String, BigInteger>
-        get() = mapOf(ethTransaction.to to ethTransaction.value)
+    override val outputsMap: Map<String, CryptoValue>
+        get() = mapOf(ethTransaction.to to CryptoValue.fromMinor(CryptoCurrency.ETHER, ethTransaction.value))
 
     override val confirmations: Int
         get() {

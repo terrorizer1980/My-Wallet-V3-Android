@@ -14,7 +14,6 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import java.math.BigInteger
 
 class TransactionInOutMapper(
     private val transactionHelper: TransactionHelper,
@@ -132,8 +131,8 @@ class TransactionInOutMapper(
 
     private fun setToAndFrom(
         cryptoCurrency: CryptoCurrency,
-        inputs: Map<String, BigInteger?>,
-        outputs: Map<String, BigInteger?>
+        inputs: Map<String, CryptoValue>,
+        outputs: Map<String, CryptoValue>
     ) = TransactionInOutDetails(
         inputs = getFromList(cryptoCurrency, inputs),
         outputs = getToList(cryptoCurrency, outputs)
@@ -141,7 +140,7 @@ class TransactionInOutMapper(
 
     private fun getFromList(
         currency: CryptoCurrency,
-        inputMap: Map<String, BigInteger?>
+        inputMap: Map<String, CryptoValue>
     ): List<TransactionDetailModel> {
         val inputs = handleTransactionMap(inputMap, currency)
         // No inputs = coinbase transaction
@@ -158,11 +157,11 @@ class TransactionInOutMapper(
 
     private fun getToList(
         currency: CryptoCurrency,
-        outputMap: Map<String, BigInteger?>
+        outputMap: Map<String, CryptoValue>
     ): List<TransactionDetailModel> = handleTransactionMap(outputMap, currency)
 
     private fun handleTransactionMap(
-        inputMap: Map<String, BigInteger?>,
+        inputMap: Map<String, CryptoValue>,
         currency: CryptoCurrency
     ): MutableList<TransactionDetailModel> {
         val inputs = mutableListOf<TransactionDetailModel>()
@@ -174,7 +173,7 @@ class TransactionInOutMapper(
                     ?: FormatsUtil.toShortCashAddress(environmentSettings.bitcoinCashNetworkParameters, key)
             }
 
-            val transactionDetailModel = buildTransactionDetailModel(label, currency, value, currency)
+            val transactionDetailModel = buildTransactionDetailModel(label, value, currency)
             inputs.add(transactionDetailModel)
         }
         return inputs
@@ -182,17 +181,12 @@ class TransactionInOutMapper(
 
     private fun buildTransactionDetailModel(
         label: String,
-        currency: CryptoCurrency,
-        value: BigInteger?,
+        value: CryptoValue,
         cryptoCurrency: CryptoCurrency
     ): TransactionDetailModel =
         TransactionDetailModel(
             label,
-            if (currency == CryptoCurrency.BTC) {
-                CryptoValue.bitcoinFromSatoshis(value ?: BigInteger.ZERO).format()
-            } else {
-                CryptoValue.bitcoinCashFromSatoshis(value ?: BigInteger.ZERO).format()
-            },
+            value.format(),
             cryptoCurrency.symbol
         ).apply {
             if (address == MultiAddressFactory.ADDRESS_DECODE_ERROR) {

@@ -1,12 +1,12 @@
 package piuk.blockchain.android.ui.transactions.mapping
 
+import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.payment.Payment
 import org.apache.commons.lang3.tuple.Pair
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import java.math.BigInteger
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.TreeMap
@@ -24,9 +24,9 @@ class TransactionHelper(
      */
     fun filterNonChangeBtcAddresses(
         tx: ActivitySummaryItem
-    ): Pair<Map<String, BigInteger?>, Map<String, BigInteger?>> {
-        val inputMap = HashMap<String, BigInteger?>()
-        val outputMap = HashMap<String, BigInteger?>()
+    ): Pair<Map<String, CryptoValue>, Map<String, CryptoValue>> {
+        val inputMap = HashMap<String, CryptoValue>()
+        val outputMap = HashMap<String, CryptoValue>()
         val inputXpubList = ArrayList<String>()
 
         // Inputs / From field
@@ -36,7 +36,7 @@ class TransactionHelper(
             inputMap[treeMap.lastKey()] = treeMap.lastEntry().value
         } else {
             for (inputAddress in tx.inputsMap.keys) {
-                val inputValue = tx.inputsMap[inputAddress]
+                val inputValue = tx.inputsMap[inputAddress] ?: CryptoValue.ZeroBtc
                 // Move or Send
                 // The address belongs to us
                 val xpub = payloadDataManager.getXpubFromAddress(inputAddress)
@@ -54,7 +54,7 @@ class TransactionHelper(
 
         // Outputs / To field
         for (outputAddress in tx.outputsMap.keys) {
-            val outputValue = tx.outputsMap[outputAddress]
+            val outputValue = tx.outputsMap[outputAddress] ?: CryptoValue.ZeroBtc
             if (payloadDataManager.isOwnHDAddress(outputAddress)) {
                 // If output address belongs to an xpub we own - we have to check if it's change
                 val xpub = payloadDataManager.getXpubFromAddress(outputAddress)
@@ -63,7 +63,7 @@ class TransactionHelper(
                 }
                 // Receiving to same address multiple times?
                 if (outputMap.containsKey(outputAddress)) {
-                    val prevAmount = outputMap[outputAddress]!!.add(outputValue)
+                    val prevAmount = outputMap[outputAddress]!! + outputValue
                     outputMap[outputAddress] = prevAmount
                 } else {
                     outputMap[outputAddress] = outputValue
@@ -71,18 +71,17 @@ class TransactionHelper(
             } else if (
                 payloadDataManager.wallet!!.legacyAddressStringList.contains(outputAddress) ||
                 payloadDataManager.wallet!!.watchOnlyAddressStringList.contains(outputAddress)
-            ) { // If output address belongs to a legacy address we own - we have to check if
-                // it's changes
+            ) { // If output address belongs to a legacy address we own - we have to check if it's change
                 // If it goes back to same address AND if it's not the total amount sent
                 // (inputs x and y could send to output y in which case y is not receiving change,
                 // but rather the total amount)
                 if (inputMap.containsKey(outputAddress) &&
-                    outputValue!!.abs().compareTo(tx.totalCrypto.amount) != 0
+                    outputValue.amount.abs().compareTo(tx.totalCrypto.amount) != 0
                 ) {
                     continue // change back to same input address
                 }
                 // Output more than tx amount - change
-                if (outputValue!!.abs() > tx.totalCrypto.amount) {
+                if (outputValue.amount.abs() > tx.totalCrypto.amount) {
                     continue
                 }
                 outputMap[outputAddress] = outputValue
@@ -97,24 +96,26 @@ class TransactionHelper(
 
     fun filterNonChangeBchAddresses(
         tx: ActivitySummaryItem
-    ): Pair<Map<String, BigInteger?>, Map<String, BigInteger?>> {
-        val inputMap = HashMap<String, BigInteger?>()
-        val outputMap = HashMap<String, BigInteger?>()
+    ): Pair<Map<String, CryptoValue>, Map<String, CryptoValue>> {
+        val inputMap = HashMap<String, CryptoValue>()
+        val outputMap = HashMap<String, CryptoValue>()
         val inputXpubList = ArrayList<String>()
         // Inputs / From field
         if (tx.direction == TransactionSummary.Direction.RECEIVED && tx.inputsMap.isNotEmpty()) {
             for ((address, value) in tx.inputsMap) {
-                if (value == Payment.DUST) continue
+                if (value.amount == Payment.DUST)
+                    continue
                 inputMap[address] = value
             }
         } else {
             for (inputAddress in tx.inputsMap.keys) {
-                val inputValue = tx.inputsMap[inputAddress]
+                val inputValue = tx.inputsMap[inputAddress] ?: CryptoValue.ZeroBch
                 // Move or Send
                 // The address belongs to us
                 val xpub = bchDataManager.getXpubFromAddress(inputAddress)
                 // Skip dust input
-                if (inputValue != null && inputValue == Payment.DUST) continue
+                if (inputValue.amount == Payment.DUST)
+                    continue
                 // Address belongs to xpub we own
                 if (xpub != null) { // Only add xpub once
                     if (!inputXpubList.contains(xpub)) {
@@ -128,9 +129,9 @@ class TransactionHelper(
         }
         // Outputs / To field
         for (outputAddress in tx.outputsMap.keys) {
-            val outputValue = tx.outputsMap[outputAddress]
+            val outputValue = tx.outputsMap[outputAddress] ?: CryptoValue.ZeroBch
             // Skip dust output
-            if (outputValue != null && outputValue == Payment.DUST)
+            if (outputValue.amount == Payment.DUST)
                 continue
 
             if (bchDataManager.isOwnAddress(outputAddress)) {
@@ -141,7 +142,7 @@ class TransactionHelper(
                 }
                 // Receiving to same address multiple times?
                 if (outputMap.containsKey(outputAddress)) {
-                    val prevAmount = outputMap[outputAddress]!!.add(outputValue)
+                    val prevAmount = outputMap[outputAddress]!! + outputValue
                     outputMap[outputAddress] = prevAmount
                 } else {
                     outputMap[outputAddress] = outputValue
@@ -155,12 +156,12 @@ class TransactionHelper(
                 // (inputs x and y could send to output y in which case y is not receiving change,
                 // but rather the total amount)
                 if (inputMap.containsKey(outputAddress) &&
-                    outputValue!!.abs().compareTo(tx.totalCrypto.amount) != 0
+                    outputValue.amount.abs().compareTo(tx.totalCrypto.amount) != 0
                 ) {
                     continue // change back to same input address
                 }
                 // Output more than tx amount - change
-                if (outputValue!!.abs() > tx.totalCrypto.amount) {
+                if (outputValue.amount.abs() > tx.totalCrypto.amount) {
                     continue
                 }
                 outputMap[outputAddress] = outputValue

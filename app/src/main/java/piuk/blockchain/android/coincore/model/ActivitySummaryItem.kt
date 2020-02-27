@@ -21,8 +21,8 @@ abstract class ActivitySummaryItem(
     abstract val timeStamp: Long
     abstract val fee: Observable<BigInteger>
     abstract val hash: String
-    abstract val inputsMap: Map<String, BigInteger>
-    abstract val outputsMap: Map<String, BigInteger>
+    abstract val inputsMap: Map<String, CryptoValue>
+    abstract val outputsMap: Map<String, CryptoValue>
 
     abstract val totalCrypto: CryptoValue
 

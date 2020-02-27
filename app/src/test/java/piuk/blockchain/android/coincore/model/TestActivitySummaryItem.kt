@@ -16,7 +16,7 @@ internal class TestActivitySummaryItem(
     override val totalCrypto: CryptoValue = CryptoValue.ZeroBtc,
     override val fee: Observable<BigInteger> = Observable.just(0.toBigInteger()),
     override val hash: String = "",
-    override val inputsMap: Map<String, BigInteger> = emptyMap(),
-    override val outputsMap: Map<String, BigInteger> = emptyMap(),
+    override val inputsMap: Map<String, CryptoValue> = emptyMap(),
+    override val outputsMap: Map<String, CryptoValue> = emptyMap(),
     override val description: String? = null
 ) : ActivitySummaryItem(exchangeRates)

@@ -1,5 +1,6 @@
 package piuk.blockchain.android.coincore
 
+import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.toAccountReference
@@ -116,7 +117,8 @@ class BTCTokens(
         }
 }
 
-private class BtcActivitySummaryItem(
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+class BtcActivitySummaryItem(
     private val transactionSummary: TransactionSummary,
     private val payloadDataManager: PayloadDataManager,
     exchangeRates: ExchangeRateDataManager
@@ -143,11 +145,17 @@ private class BtcActivitySummaryItem(
     override val hash: String
         get() = transactionSummary.hash
 
-    override val inputsMap: Map<String, BigInteger>
+    override val inputsMap: Map<String, CryptoValue>
         get() = transactionSummary.inputsMap
+            .mapValues {
+                CryptoValue.fromMinor(CryptoCurrency.BTC, it.value)
+            }
 
-    override val outputsMap: Map<String, BigInteger>
+    override val outputsMap: Map<String, CryptoValue>
         get() = transactionSummary.outputsMap
+            .mapValues {
+                CryptoValue.fromMinor(CryptoCurrency.BTC, it.value)
+            }
 
     override val confirmations: Int
         get() = transactionSummary.confirmations

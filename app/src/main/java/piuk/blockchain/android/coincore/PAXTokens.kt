@@ -1,5 +1,6 @@
 package piuk.blockchain.android.coincore
 
+import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.AccountReference
@@ -115,6 +116,7 @@ class PAXTokens(
     }
 }
 
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 class Erc20ActivitySummaryItem(
     private val feedTransfer: FeedErc20Transfer,
     private val accountHash: String,
@@ -150,9 +152,11 @@ class Erc20ActivitySummaryItem(
 
     override val hash: String = transfer.transactionHash
 
-    override val inputsMap: Map<String, BigInteger> = mapOf(transfer.from to transfer.value)
+    override val inputsMap: Map<String, CryptoValue> =
+        mapOf(transfer.from to CryptoValue.fromMinor(CryptoCurrency.PAX, transfer.value))
 
-    override val outputsMap: Map<String, BigInteger> = mapOf(transfer.to to transfer.value)
+    override val outputsMap: Map<String, CryptoValue> =
+        mapOf(transfer.to to CryptoValue.fromMinor(CryptoCurrency.PAX, transfer.value))
 
     override val confirmations: Int = (lastBlockNumber - transfer.blockNumber).toInt()
 

@@ -99,11 +99,11 @@ class XLMTokensTest {
         assertFalse(activityItem.isFeeTransaction)
         assertEquals(output, activityItem.totalCrypto.amount)
         assertEquals(
-            mapOf(HORIZON_ACCOUNT_ID_2 to BigInteger.ZERO),
+            mapOf(HORIZON_ACCOUNT_ID_2 to CryptoValue.fromMinor(CryptoCurrency.XLM, BigInteger.ZERO)),
             activityItem.inputsMap
         )
         assertEquals(
-            mapOf(HORIZON_ACCOUNT_ID_1 to output),
+            mapOf(HORIZON_ACCOUNT_ID_1 to CryptoValue.fromMinor(CryptoCurrency.XLM, output)),
             activityItem.outputsMap
         )
     }

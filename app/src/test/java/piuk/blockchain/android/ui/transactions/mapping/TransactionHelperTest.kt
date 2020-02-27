@@ -11,13 +11,18 @@ import org.junit.Test
 import piuk.blockchain.android.coincore.model.TestActivitySummaryItem
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import java.math.BigInteger
 import kotlin.test.assertEquals
 
+@Suppress("PrivatePropertyName")
 class TransactionHelperTest {
     private val payloadDataManager: PayloadDataManager = mock()
     private val bchDataManager: BchDataManager = mock()
     private val payload: Wallet = mock()
+
+    private val cryptoValBtc_1 = CryptoValue.bitcoinFromSatoshis(1)
+    private val cryptoValBtc_15 = CryptoValue.bitcoinFromSatoshis(15)
+    private val cryptoValBch_1 = CryptoValue.bitcoinCashFromSatoshis(1)
+    private val cryptoValBch_15 = CryptoValue.bitcoinCashFromSatoshis(15)
 
     private val subject: TransactionHelper =
         TransactionHelper(
@@ -32,7 +37,7 @@ class TransactionHelperTest {
             exchangeRates = mock(),
             direction = TransactionSummary.Direction.RECEIVED,
             inputsMap = mapOf(
-                "key" to BigInteger("1")
+                "key" to cryptoValBtc_1
             )
         )
 
@@ -49,8 +54,8 @@ class TransactionHelperTest {
         val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.RECEIVED,
             inputsMap = mapOf(
-                "key0" to BigInteger("1"),
-                "key1" to BigInteger("1")
+                "key0" to cryptoValBtc_1,
+                "key1" to cryptoValBtc_1
             )
         )
 
@@ -68,9 +73,9 @@ class TransactionHelperTest {
         val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
-                "key0" to BigInteger("1"),
-                "key1" to BigInteger("1"),
-                "key2" to BigInteger("1")
+                "key0" to cryptoValBtc_1,
+                "key1" to cryptoValBtc_1,
+                "key2" to cryptoValBtc_1
             )
         )
 
@@ -93,10 +98,10 @@ class TransactionHelperTest {
         val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
-                "key" to BigInteger("1")
+                "key" to cryptoValBtc_1
             ),
             outputsMap = mapOf(
-                "key" to BigInteger("1")
+                "key" to cryptoValBtc_1
             )
         )
 
@@ -119,12 +124,12 @@ class TransactionHelperTest {
         val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
-                "key0" to BigInteger("1")
+                "key0" to cryptoValBtc_1
             ),
             outputsMap = mapOf(
-                "key0" to BigInteger("1"),
-                "key1" to BigInteger("1"),
-                "key2" to BigInteger("15")
+                "key0" to cryptoValBtc_1,
+                "key1" to cryptoValBtc_1,
+                "key2" to cryptoValBtc_15
             ),
             totalCrypto = CryptoValue.bitcoinFromSatoshis(10)
         )
@@ -154,10 +159,10 @@ class TransactionHelperTest {
         val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
-                "key0" to BigInteger("1")
+                "key0" to cryptoValBtc_1
             ),
             outputsMap = mapOf(
-                "key0" to BigInteger("1")
+                "key0" to cryptoValBtc_1
             ),
             totalCrypto = CryptoValue.bitcoinFromSatoshis(10)
         )
@@ -189,9 +194,9 @@ class TransactionHelperTest {
             cryptoCurrency = CryptoCurrency.BCH,
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
-                "key0" to BigInteger("1"),
-                "key1" to BigInteger("1"),
-                "key2" to BigInteger("1")
+                "key0" to cryptoValBch_1,
+                "key1" to cryptoValBch_1,
+                "key2" to cryptoValBch_1
             )
         )
 
@@ -215,10 +220,10 @@ class TransactionHelperTest {
             cryptoCurrency = CryptoCurrency.BCH,
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
-                "key" to BigInteger("1")
+                "key" to cryptoValBch_1
             ),
             outputsMap = mapOf(
-                "key" to BigInteger("1")
+                "key" to cryptoValBch_1
             )
         )
 
@@ -239,12 +244,12 @@ class TransactionHelperTest {
         val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
-                "key0" to BigInteger("1")
+                "key0" to cryptoValBch_1
             ),
             outputsMap = mapOf(
-                "key0" to BigInteger("1"),
-                "key1" to BigInteger("1"),
-                "key2" to BigInteger("15")
+                "key0" to cryptoValBch_1,
+                "key1" to cryptoValBch_1,
+                "key2" to cryptoValBch_15
             ),
             totalCrypto = CryptoValue.bitcoinCashFromSatoshis(10)
         )
@@ -271,10 +276,10 @@ class TransactionHelperTest {
         val item = TestActivitySummaryItem(
             direction = TransactionSummary.Direction.SENT,
             inputsMap = mapOf(
-                "key0" to BigInteger("1")
+                "key0" to cryptoValBch_1
             ),
             outputsMap = mapOf(
-                "key0" to BigInteger("1")
+                "key0" to cryptoValBch_1
             ),
             totalCrypto = CryptoValue.bitcoinFromSatoshis(10)
         )

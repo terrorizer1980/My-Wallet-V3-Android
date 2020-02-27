@@ -100,8 +100,8 @@ class TransactionDetailPresenterTest {
             totalCrypto = CryptoValue.bitcoinFromMajor(10),
             fee = Observable.just(1.toBigInteger()),
             hash = VALID_TX_HASH,
-            inputsMap = mapOf("addr1" to BigInteger.valueOf(1000L)),
-            outputsMap = mapOf("addr2" to BigInteger.valueOf(2000L)),
+            inputsMap = mapOf("addr1" to CryptoValue.bitcoinFromSatoshis(1000L)),
+            outputsMap = mapOf("addr2" to CryptoValue.bitcoinFromSatoshis(2000L)),
             description = null
         )
 

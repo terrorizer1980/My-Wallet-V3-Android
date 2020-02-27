@@ -1,5 +1,6 @@
 package piuk.blockchain.android.coincore
 
+import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
@@ -137,7 +138,8 @@ class BCHTokens(
             }
 }
 
-private class BchActivitySummaryItem(
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+class BchActivitySummaryItem(
     private val transactionSummary: TransactionSummary,
     exchangeRates: ExchangeRateDataManager
 ) : ActivitySummaryItem(exchangeRates) {
@@ -159,11 +161,11 @@ private class BchActivitySummaryItem(
     override val hash: String =
         transactionSummary.hash
 
-    override val inputsMap: Map<String, BigInteger>
-        get() = transactionSummary.inputsMap
+    override val inputsMap: Map<String, CryptoValue>
+        get() = transactionSummary.inputsMap.mapValues { CryptoValue.fromMinor(CryptoCurrency.BCH, it.value) }
 
-    override val outputsMap: Map<String, BigInteger>
-        get() = transactionSummary.outputsMap
+    override val outputsMap: Map<String, CryptoValue>
+        get() = transactionSummary.outputsMap.mapValues { CryptoValue.fromMinor(CryptoCurrency.BCH, it.value) }
 
     override val confirmations: Int
         get() = transactionSummary.confirmations

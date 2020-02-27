@@ -1,5 +1,6 @@
 package piuk.blockchain.android.coincore
 
+import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.models.XlmTransaction
@@ -81,6 +82,7 @@ class XLMTokens(
             .mapList { XlmActivitySummaryItem(it, exchangeRates) }
 }
 
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 class XlmActivitySummaryItem(
     private val xlmTransaction: XlmTransaction,
     exchangeRates: ExchangeRateDataManager
@@ -109,11 +111,11 @@ class XlmActivitySummaryItem(
     override val hash: String
         get() = xlmTransaction.hash
 
-    override val inputsMap: HashMap<String, BigInteger>
-        get() = hashMapOf(xlmTransaction.from.accountId to BigInteger.ZERO)
+    override val inputsMap: HashMap<String, CryptoValue>
+        get() = hashMapOf(xlmTransaction.from.accountId to CryptoValue.ZeroXlm)
 
-    override val outputsMap: HashMap<String, BigInteger>
-        get() = hashMapOf(xlmTransaction.to.accountId to totalCrypto.amount)
+    override val outputsMap: HashMap<String, CryptoValue>
+        get() = hashMapOf(xlmTransaction.to.accountId to CryptoValue.fromMinor(CryptoCurrency.XLM, totalCrypto.amount))
 
     override val confirmations: Int
         get() = CryptoCurrency.XLM.requiredConfirmations
