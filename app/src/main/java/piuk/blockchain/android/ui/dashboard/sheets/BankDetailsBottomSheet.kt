@@ -86,10 +86,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
     }
 
     private fun renderState(view: View, state: SimpleBuyState) {
-        state.selectedCryptoCurrency?.let {
-            analytics.logEvent(PendingTransactionShown(it))
-        }
-
+        analytics.logEvent(PendingTransactionShown(state.currency))
         with(view) {
             val amount = state.order.amount
             if (amount != null) {

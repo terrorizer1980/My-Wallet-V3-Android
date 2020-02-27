@@ -89,10 +89,10 @@ fun bankFieldName(field: String): AnalyticsEvent = object : AnalyticsEvent {
     )
 }
 
-class PendingTransactionShown(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
+class PendingTransactionShown(currency: String) : AnalyticsEvent {
     override val event: String = "sb_pending_modal_shown"
     override val params: Map<String, String> = mapOf(
-        "currency" to cryptoCurrency.symbol
+        "currency" to currency
     )
 }
 
