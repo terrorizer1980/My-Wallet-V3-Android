@@ -3,7 +3,6 @@ package piuk.blockchain.android.coincore
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.testutils.usd
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
@@ -13,13 +12,10 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.payload.data.Account
-import io.reactivex.Single
-import junit.framework.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
-import piuk.blockchain.android.coincore.model.TestActivitySummaryItem
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
@@ -205,27 +201,3 @@ class BTCTokensTest {
             "d4TDJKUYLCxZskG2U7Q689CVBxs2EjJA7dyvjCzN5UYWwZbY2qVpymw"
     }
 }
-
-//@Test
-//fun getTransactionValueStringUsd() {
-//    //  Arrange
-//    val item: TestActivitySummaryItem = org.amshove.kluent.mock()
-//
-//    whenever(item.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-//    whenever(item.direction).thenReturn(TransactionSummary.Direction.SENT)
-//    whenever(item.total).thenReturn(BigInteger.valueOf(1_000L))
-//
-//    whenever(exchangeRateFactory.getHistoricPrice(value = org.amshove.kluent.any(), fiat = org.amshove.kluent.any(), timeInSeconds = org.amshove.kluent.any()))
-//        .thenReturn(Single.just(1000.usd()))
-//
-//    whenever(stringUtils.getString(org.amshove.kluent.any())).thenReturn("Value when sent: ")
-//
-//    //  Act
-//    val observer = subject.getTransactionValueString("USD", item).test()
-//
-//    //  Assert
-//    Mockito.verify(exchangeRateFactory).getHistoricPrice(value = org.amshove.kluent.any(), fiat = org.amshove.kluent.any(), timeInSeconds = org.amshove.kluent.any())
-//    Assert.assertEquals("Value when sent: $1,000.00", observer.values()[0])
-//    observer.onComplete()
-//    observer.assertNoErrors()
-//}

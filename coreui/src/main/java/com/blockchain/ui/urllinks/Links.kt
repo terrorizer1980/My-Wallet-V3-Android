@@ -54,7 +54,7 @@ const val MODULAR_TERMS_AND_CONDITIONS =
 fun makeBlockExplorerUrl(
     cryptoCurrency: CryptoCurrency,
     transactionHash: String
-) =  when (cryptoCurrency) {
+) = when (cryptoCurrency) {
     CryptoCurrency.BTC -> "https://www.blockchain.com/btc/tx/"
     CryptoCurrency.ETHER -> "https://www.blockchain.com/eth/tx/"
     CryptoCurrency.BCH -> "https://www.blockchain.com/bch/tx/"

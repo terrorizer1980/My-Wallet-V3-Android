@@ -25,7 +25,6 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import java.math.BigInteger
 
 class BTCTokens(
     private val payloadDataManager: PayloadDataManager,
@@ -172,4 +171,3 @@ class BtcActivitySummaryItem(
     override fun updateDescription(description: String): Completable =
         payloadDataManager.updateTransactionNotes(hash, description)
 }
-

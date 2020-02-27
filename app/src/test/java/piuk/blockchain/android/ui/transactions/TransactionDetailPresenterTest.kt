@@ -90,7 +90,7 @@ class TransactionDetailPresenterTest {
 
     @Test
     fun `simple activity item updates ui correctly`() {
-         //  Arrange
+        //  Arrange
         val item = TestActivitySummaryItem(
             exchangeRates = exchangeRates,
             cryptoCurrency = CryptoCurrency.BTC,
@@ -718,8 +718,8 @@ class TransactionDetailPresenterTest {
 //         verify(view).updateFeeFieldVisibility(true)
 //     }
 
-     companion object {
-         private const val VALID_TX_HASH = "valid_hash"
-         private const val INVALID_TX_HASH = "nope!"
-     }
- }
+    companion object {
+        private const val VALID_TX_HASH = "valid_hash"
+        private const val INVALID_TX_HASH = "nope!"
+    }
+}

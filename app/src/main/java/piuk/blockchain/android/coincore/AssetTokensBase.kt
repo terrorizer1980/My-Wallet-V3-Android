@@ -28,8 +28,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 enum class AssetFilter {
     Total,
     Wallet,
-    //    ColdStorage,
-//    Lockbox,
     Custodial
 }
 
@@ -157,7 +155,7 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     abstract fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList>
 
-    // Temp! These are constant ATM, but may need to change this so hardcode here
+    // These are constant ATM, but may need to change this so hardcode here
     protected val transactionFetchCount = 50
     protected val transactionFetchOffset = 0
 }

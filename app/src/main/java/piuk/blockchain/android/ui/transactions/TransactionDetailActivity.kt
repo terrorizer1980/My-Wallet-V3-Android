@@ -148,7 +148,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
     }
 
     override fun setDescription(description: String?) {
-        if(description != null) {
+        if (description != null) {
             description_layout.visible()
             description_layout_divider.visible()
             description_field.text = description
@@ -222,7 +222,9 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
         return when (item.itemId) {
             R.id.action_share -> {
                 shareIntent?.let {
-                    startActivity(Intent.createChooser(shareIntent, getString(R.string.transaction_detail_share_chooser)))
+                    startActivity(
+                        Intent.createChooser(shareIntent, getString(R.string.transaction_detail_share_chooser))
+                    )
                     analytics.logEvent(TransactionsAnalyticsEvents.ItemShare(intent.cryptoCurrency))
                 }
                 true
@@ -302,5 +304,3 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
     private val Intent?.txHash: String
         get() = this?.getStringExtra(KEY_TRANSACTION_HASH) ?: ""
 }
-
-

@@ -6,7 +6,6 @@ import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Observable
 import org.amshove.kluent.mock
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import java.math.BigInteger
 
 internal class TestActivitySummaryItem(
     exchangeRates: ExchangeRateDataManager = mock(),

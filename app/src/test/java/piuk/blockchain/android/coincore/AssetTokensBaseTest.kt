@@ -1,7 +1,6 @@
 package piuk.blockchain.android.coincore
 
 import com.blockchain.android.testutils.rxInit
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
@@ -14,7 +13,6 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
 import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.PriceSeries

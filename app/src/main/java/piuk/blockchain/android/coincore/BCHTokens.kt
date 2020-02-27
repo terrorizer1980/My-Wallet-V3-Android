@@ -29,7 +29,6 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import timber.log.Timber
-import java.math.BigInteger
 
 class BCHTokens(
     private val bchDataManager: BchDataManager,

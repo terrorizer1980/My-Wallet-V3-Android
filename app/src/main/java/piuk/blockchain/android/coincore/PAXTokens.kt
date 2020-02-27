@@ -163,5 +163,4 @@ class Erc20ActivitySummaryItem(
 
     override fun updateDescription(description: String): Completable =
         ethDataManager.updateErc20TransactionNotes(hash, description)
-
 }
