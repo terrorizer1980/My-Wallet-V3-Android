@@ -22,7 +22,6 @@ import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutMapper
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import java.math.BigInteger
 import java.util.Locale
 
 class TransactionDetailPresenter constructor(
@@ -77,7 +76,7 @@ class TransactionDetailPresenter constructor(
 
             setConfirmationStatus(cryptoCurrency, hash, confirmations)
 
-            setTransactionFee(fee.toCryptoValue(cryptoCurrency))
+            setTransactionFee(fee)
 
             compositeDisposable += inputOutputMapper.transformInputAndOutputs(this)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -140,16 +139,3 @@ class TransactionDetailPresenter constructor(
         return stringUtils.getString(stringId) + value.toStringWithSymbol()
     }
 }
-
-// TEMP CODE - Move this mapping into the appropriate ActivitySummeryItem object
-private fun Observable<BigInteger>.toCryptoValue(currency: CryptoCurrency): Observable<CryptoValue> =
-    this.map {
-        when (currency) {
-            CryptoCurrency.BTC -> CryptoValue.bitcoinFromSatoshis(it)
-            CryptoCurrency.ETHER -> CryptoValue.etherFromWei(it)
-            CryptoCurrency.BCH -> CryptoValue.bitcoinCashFromSatoshis(it)
-            CryptoCurrency.XLM -> CryptoValue.lumensFromStroop(it)
-            CryptoCurrency.PAX -> CryptoValue.etherFromWei(it)
-            else -> CryptoValue.usdPaxFromMinor(it)
-        }
-    }

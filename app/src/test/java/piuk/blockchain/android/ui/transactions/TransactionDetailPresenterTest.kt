@@ -27,7 +27,6 @@ import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutMapper
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import java.math.BigInteger
 import java.util.Locale
 
 class TransactionDetailPresenterTest {
@@ -98,7 +97,7 @@ class TransactionDetailPresenterTest {
             direction = TransactionSummary.Direction.TRANSFERRED,
             timeStamp = 0,
             totalCrypto = CryptoValue.bitcoinFromMajor(10),
-            fee = Observable.just(1.toBigInteger()),
+            fee = Observable.just(CryptoValue.bitcoinFromSatoshis(1L)),
             hash = VALID_TX_HASH,
             inputsMap = mapOf("addr1" to CryptoValue.bitcoinFromSatoshis(1000L)),
             outputsMap = mapOf("addr2" to CryptoValue.bitcoinFromSatoshis(2000L)),

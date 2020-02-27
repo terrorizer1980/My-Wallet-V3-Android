@@ -14,7 +14,7 @@ internal class TestActivitySummaryItem(
     override val direction: TransactionSummary.Direction = TransactionSummary.Direction.RECEIVED,
     override val timeStamp: Long = 0,
     override val totalCrypto: CryptoValue = CryptoValue.ZeroBtc,
-    override val fee: Observable<BigInteger> = Observable.just(0.toBigInteger()),
+    override val fee: Observable<CryptoValue> = Observable.just(CryptoValue.ZeroBtc),
     override val hash: String = "",
     override val inputsMap: Map<String, CryptoValue> = emptyMap(),
     override val outputsMap: Map<String, CryptoValue> = emptyMap(),

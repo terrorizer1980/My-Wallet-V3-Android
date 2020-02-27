@@ -147,8 +147,9 @@ class Erc20ActivitySummaryItem(
     override val description: String?
         get() = ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes[hash]
 
-    override val fee: Observable<BigInteger>
+    override val fee: Observable<CryptoValue>
         get() = feedTransfer.feeObservable
+            .map { CryptoValue.etherFromWei(it) }
 
     override val hash: String = transfer.transactionHash
 

@@ -105,8 +105,10 @@ class XlmActivitySummaryItem(
 
     override val description: String? = null
 
-    override val fee: Observable<BigInteger>
-        get() = Observable.just(xlmTransaction.fee.amount)
+    override val fee: Observable<CryptoValue>
+        get() = Observable.just(
+            CryptoValue.fromMinor(CryptoCurrency.XLM, xlmTransaction.fee.amount)
+        )
 
     override val hash: String
         get() = xlmTransaction.hash

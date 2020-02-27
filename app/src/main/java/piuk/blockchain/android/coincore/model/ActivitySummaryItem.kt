@@ -9,7 +9,6 @@ import io.reactivex.Observable
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.utils.helperfunctions.JavaHashCode
-import java.math.BigInteger
 import kotlin.math.sign
 
 abstract class ActivitySummaryItem(
@@ -19,7 +18,7 @@ abstract class ActivitySummaryItem(
     abstract val cryptoCurrency: CryptoCurrency
     abstract val direction: TransactionSummary.Direction
     abstract val timeStamp: Long
-    abstract val fee: Observable<BigInteger>
+    abstract val fee: Observable<CryptoValue>
     abstract val hash: String
     abstract val inputsMap: Map<String, CryptoValue>
     abstract val outputsMap: Map<String, CryptoValue>

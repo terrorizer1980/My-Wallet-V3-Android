@@ -139,8 +139,8 @@ class BtcActivitySummaryItem(
     override val description: String?
         get() = payloadDataManager.getTransactionNotes(hash)
 
-    override val fee: Observable<BigInteger>
-        get() = Observable.just(transactionSummary.fee)
+    override val fee: Observable<CryptoValue>
+        get() = Observable.just(CryptoValue.fromMinor(CryptoCurrency.BTC, transactionSummary.fee))
 
     override val hash: String
         get() = transactionSummary.hash

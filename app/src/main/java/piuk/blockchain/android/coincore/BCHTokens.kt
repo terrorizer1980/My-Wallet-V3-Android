@@ -155,8 +155,8 @@ class BchActivitySummaryItem(
 
     override val description: String? = null
 
-    override val fee: Observable<BigInteger>
-        get() = Observable.just(transactionSummary.fee)
+    override val fee: Observable<CryptoValue>
+        get() = Observable.just(CryptoValue.fromMinor(CryptoCurrency.BCH, transactionSummary.fee))
 
     override val hash: String =
         transactionSummary.hash

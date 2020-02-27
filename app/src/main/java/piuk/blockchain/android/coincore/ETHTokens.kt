@@ -30,7 +30,6 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
-import java.math.BigInteger
 
 class ETHTokens(
     private val ethDataManager: EthDataManager,
@@ -178,8 +177,13 @@ class EthActivitySummaryItem(
     override val description: String?
         get() = ethDataManager.getTransactionNotes(hash)
 
-    override val fee: Observable<BigInteger>
-        get() = Observable.just(ethTransaction.gasUsed.multiply(ethTransaction.gasPrice))
+    override val fee: Observable<CryptoValue>
+        get() = Observable.just(
+            CryptoValue.fromMinor(
+                CryptoCurrency.ETHER,
+                ethTransaction.gasUsed.multiply(ethTransaction.gasPrice)
+            )
+        )
 
     override val hash: String
         get() = ethTransaction.hash
