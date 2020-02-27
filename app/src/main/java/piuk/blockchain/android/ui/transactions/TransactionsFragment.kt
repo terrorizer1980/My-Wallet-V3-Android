@@ -126,11 +126,9 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         super.onResume()
 
         navigator().showNavigation()
-        compositeDisposable += event.subscribe { event ->
-            if (activity != null) {
-                recyclerview?.scrollToPosition(0)
-                presenter.requestRefresh()
-            }
+        compositeDisposable += event.subscribe {
+            recyclerview?.scrollToPosition(0)
+            presenter.requestRefresh()
         }
     }
 

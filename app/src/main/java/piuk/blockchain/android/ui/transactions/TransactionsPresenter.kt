@@ -75,22 +75,13 @@ class TransactionsPresenter(
     override fun onViewAttached() { }
     override fun onViewDetached() { }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var notificationObservable: Observable<NotificationPayload>? = null
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var authEventObservable: Observable<AuthEvent>? = null
     val exchangePaxRequested = PublishSubject.create<Unit>()
 
     private var shortcutsGenerated = false
-
-    private val updateBalanceAndTransactionsCompletable: (ItemAccount) -> Completable = {
-        Completable.concat(
-            listOf(
-                updateBalancesCompletable(),
-                updateTransactionsListCompletable(it)
-            )
-        )
-    }
 
     private val assetTokens: AssetTokens
         get() = assetSelect[currencyState.cryptoCurrency]
@@ -104,6 +95,7 @@ class TransactionsPresenter(
 
         onAccountsAdapterSetup()
         onTxFeedAdapterSetup()
+
         subscribeToEvents()
         if (environmentSettings.environment == Environment.TESTNET) {
             crypto = CryptoCurrency.BTC
@@ -133,11 +125,6 @@ class TransactionsPresenter(
         }
     }
 
-    private fun refreshAll(account: ItemAccount): Single<Boolean> =
-        getUpdateTickerCompletable()
-            .andThen(updateBalanceAndTransactionsCompletable(account))
-            .andThen(getAccounts().map { it.size > 1 })
-
     internal fun requestRefresh() {
         compositeDisposable +=
             getCurrentAccount()
@@ -145,20 +132,41 @@ class TransactionsPresenter(
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { view?.setUiState(UiState.LOADING, crypto) }
                 .doOnError { view?.setUiState(UiState.FAILURE, crypto) }
-                .doOnSuccess {
-                    view?.setDropdownVisibility(it)
-                    if (!shortcutsGenerated) {
-                        shortcutsGenerated = true
+                .subscribeBy(
+                    onSuccess = {
+                        view?.setDropdownVisibility(it)
                         refreshLauncherShortcuts()
+                        setViewType(currencyState.isDisplayingCryptoCurrency)
+                    },
+                    onError = {
+                        Timber.e(it)
                     }
-                    setViewType(currencyState.isDisplayingCryptoCurrency)
-                }
-                .doOnError { Timber.e(it) }
-                .subscribe()
+                )
     }
 
-    @VisibleForTesting
-    internal fun getUpdateTickerCompletable(): Completable = exchangeRateDataManager.updateTickers()
+    private fun refreshAll(account: ItemAccount): Single<Boolean> =
+        getUpdateTickerCompletable()
+            .andThen(updateBalanceAndTransactionsCompletable(account))
+            .andThen(getAccounts().map { it.size > 1 })
+
+    private fun getUpdateTickerCompletable(): Completable =
+        exchangeRateDataManager.updateTickers()
+
+    private val updateBalanceAndTransactionsCompletable: (ItemAccount) -> Completable = {
+        Completable.concat(
+            listOf(
+                updateBalancesCompletable(),
+                updateTransactionsListCompletable(it)
+            )
+        )
+    }
+
+    private fun refreshLauncherShortcuts() {
+        if (!shortcutsGenerated) {
+            shortcutsGenerated = true
+            view?.generateLauncherShortcuts()
+        }
+    }
 
     /**
      * API call - Fetches latest balance for selected currency and updates UI balance
@@ -320,10 +328,6 @@ class TransactionsPresenter(
                 .subscribeBy { view?.updateAccountsDataSet(it) }
     }
 
-    private fun refreshLauncherShortcuts() {
-        view?.generateLauncherShortcuts()
-    }
-
     private fun onTxFeedAdapterSetup() {
         view?.setupTxFeedAdapter(currencyState.isDisplayingCryptoCurrency)
     }
@@ -333,7 +337,8 @@ class TransactionsPresenter(
      */
     private fun getAccounts() = walletAccountHelper.getAccountItemsForOverview()
 
-    private fun getCurrentAccount(): Single<ItemAccount> = getAccountAt(view?.getCurrentAccountPosition() ?: 0)
+    private fun getCurrentAccount(): Single<ItemAccount> =
+        getAccountAt(view?.getCurrentAccountPosition() ?: 0)
 
     private fun getAccountAt(position: Int): Single<ItemAccount> = getAccounts()
         .map { it[if (position < 0 || position >= it.size) 0 else position] }
