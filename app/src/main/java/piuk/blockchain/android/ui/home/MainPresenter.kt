@@ -446,7 +446,7 @@ class MainPresenter internal constructor(
     }
 
     internal fun startSwapOrKyc(toCurrency: CryptoCurrency?, fromCurrency: CryptoCurrency?) {
-        compositeDisposable += nabuUser
+        compositeDisposable += nabuUser.observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(onError = { it.printStackTrace() }, onSuccess = { nabuUser ->
                 if (nabuUser.tiers?.current ?: 0 > 0) {
                     view?.launchSwap(
