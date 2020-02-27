@@ -74,8 +74,10 @@ class SimpleBuyInteractor(
                                 SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_BUT_NOT_ELIGIBLE)
                             }
                         }
-                    it.combinedState.isRejectedOrInReview() ->
+                    it.combinedState.isRejected() ->
                         Single.just(SimpleBuyIntent.KycStateUpdated(KycState.FAILED))
+                    it.combinedState.isInReview() ->
+                        Single.just(SimpleBuyIntent.KycStateUpdated(KycState.IN_REVIEW))
                     else -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.PENDING))
                 }
             }.onErrorReturn {
@@ -110,9 +112,11 @@ class SimpleBuyInteractor(
         }.onErrorReturn { SimpleBuyIntent.KycStateUpdated(KycState.PENDING) }
     }
 
-    private fun Kyc2TierState.isRejectedOrInReview(): Boolean =
+    private fun Kyc2TierState.isRejected(): Boolean =
         this == Kyc2TierState.Tier1Failed ||
-                this == Kyc2TierState.Tier1InReview ||
-                this == Kyc2TierState.Tier2InReview ||
                 this == Kyc2TierState.Tier2Failed
+
+    private fun Kyc2TierState.isInReview(): Boolean =
+        this == Kyc2TierState.Tier1InReview ||
+                this == Kyc2TierState.Tier2InReview
 }

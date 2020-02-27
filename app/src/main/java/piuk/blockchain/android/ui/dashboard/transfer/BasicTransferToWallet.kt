@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
+import com.blockchain.notifications.analytics.WithdrawScreenClicked
 import com.blockchain.notifications.analytics.WithdrawScreenShown
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyError
@@ -68,7 +69,11 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
     override fun initControls(view: View) {
         with(view) {
             analytics.logEvent(WithdrawScreenShown(cryptoCurrency))
-            cta_button.setOnClickListenerDebounced { onCtaClick() }
+
+            cta_button.setOnClickListenerDebounced {
+                analytics.logEvent(WithdrawScreenClicked(cryptoCurrency))
+                onCtaClick()
+            }
 
             complete_title.text = getString(R.string.basic_transfer_complete_title, cryptoCurrency.symbol)
 

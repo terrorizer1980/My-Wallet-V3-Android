@@ -23,6 +23,7 @@ import piuk.blockchain.android.R;
 import piuk.blockchain.androidcore.data.access.AccessState;
 
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.preferences.CurrencyPrefs;
 import com.blockchain.remoteconfig.FeatureFlag;
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager;
@@ -83,6 +84,8 @@ public class LauncherPresenterTest {
     private CurrencyPrefs currencyPrefs;
     @Mock
     private MetadataManager metadataManager;
+    @Mock
+    private Analytics analytics;
 
     @Before
     public void setUp() {
@@ -100,6 +103,7 @@ public class LauncherPresenterTest {
                 featureFlag,
                 currencyPrefs,
                 custodialWalletManager,
+                analytics,
                 metadataManager
         );
         subject.initView(launcherActivity);

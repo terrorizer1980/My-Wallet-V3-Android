@@ -2,7 +2,8 @@ package piuk.blockchain.android.ui.dashboard.sheets
 
 import android.content.Context
 import android.view.View
-import com.blockchain.notifications.analytics.BankDetailsViewed
+import com.blockchain.notifications.analytics.PendingTransactionShown
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.bankFieldName
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -80,12 +81,13 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
         isCancelable = false
 
         onCtaOKClick()
+        analytics.logEvent(SimpleBuyAnalytics.PENDING_TRANSFER_MODAL_CANCEL_CLICKED)
         host.startWarnCancelSimpleBuyOrder()
     }
 
     private fun renderState(view: View, state: SimpleBuyState) {
-        state.selectedCryptoCurrency?.symbol?.let {
-            analytics.logEvent(BankDetailsViewed(it))
+        state.selectedCryptoCurrency?.let {
+            analytics.logEvent(PendingTransactionShown(it))
         }
 
         with(view) {

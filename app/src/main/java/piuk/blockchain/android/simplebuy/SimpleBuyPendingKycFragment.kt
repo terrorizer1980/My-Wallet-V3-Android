@@ -26,7 +26,6 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
         super.onViewCreated(view, savedInstanceState)
         model.process(SimpleBuyIntent.FetchKycState)
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.KYC_VERIFICATION))
-        analytics.logEvent(SimpleBuyAnalytics.KYC_VERIFYING)
         continue_to_wallet.setOnClickListener {
             navigator().exitSimpleBuyFlow()
         }
@@ -36,13 +35,14 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
         kyc_progress.visibleIf { newState.kycVerificationState == KycState.PENDING }
         kyc_failed_icon.visibleIf {
             newState.kycVerificationState == KycState.FAILED ||
+                    newState.kycVerificationState == KycState.IN_REVIEW ||
                     newState.kycVerificationState == KycState.UNDECIDED ||
                     newState.kycVerificationState == KycState.VERIFIED_BUT_NOT_ELIGIBLE
         }
 
         verif_text.text = when (newState.kycVerificationState) {
             KycState.PENDING -> resources.getString(R.string.kyc_verifying_info)
-            KycState.FAILED -> resources.getString(R.string.kyc_manual_review_required)
+            KycState.IN_REVIEW, KycState.FAILED -> resources.getString(R.string.kyc_manual_review_required)
             KycState.UNDECIDED -> resources.getString(R.string.kyc_pending_review)
             KycState.VERIFIED_BUT_NOT_ELIGIBLE -> resources.getString(R.string.kyc_veriff_but_not_eligible_review)
             else -> ""
@@ -51,6 +51,7 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
         verif_time.text = when (newState.kycVerificationState) {
             KycState.PENDING -> resources.getString(R.string.kyc_verifying_time_info)
             KycState.FAILED,
+            KycState.IN_REVIEW,
             KycState.UNDECIDED -> resources.getString(R.string.kyc_verifying_manual_review_required_info)
             KycState.VERIFIED_BUT_NOT_ELIGIBLE -> resources.getString(R.string.kyc_veriff_but_not_eligible_review_info)
             else -> ""
@@ -68,6 +69,7 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
 
         kyc_failed_icon.setImageResource(
             when (newState.kycVerificationState) {
+                KycState.IN_REVIEW,
                 KycState.FAILED -> R.drawable.ic_kyc_failed_warning
                 KycState.VERIFIED_BUT_NOT_ELIGIBLE -> R.drawable.ic_kyc_approved
                 else -> R.drawable.ic_kyc_pending
@@ -76,9 +78,9 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
 
         when (newState.kycVerificationState) {
             KycState.VERIFIED_BUT_NOT_ELIGIBLE -> analytics.logEvent(SimpleBuyAnalytics.KYC_NOT_ELIGIBLE)
-            KycState.VERIFIED_AND_ELIGIBLE -> analytics.logEvent(SimpleBuyAnalytics.KYC_VERIFYING)
-            KycState.PENDING -> analytics.logEvent(SimpleBuyAnalytics.KYC_PENDING)
+            KycState.PENDING -> analytics.logEvent(SimpleBuyAnalytics.KYC_VERIFYING)
             KycState.IN_REVIEW -> analytics.logEvent(SimpleBuyAnalytics.KYC_MANUAL)
+            KycState.UNDECIDED -> analytics.logEvent(SimpleBuyAnalytics.KYC_PENDING)
             else -> {
             }
         }

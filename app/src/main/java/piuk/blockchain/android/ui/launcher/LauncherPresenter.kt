@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
@@ -39,6 +41,7 @@ class LauncherPresenter(
     private val featureFlag: FeatureFlag,
     private val currencyPrefs: CurrencyPrefs,
     private val custodialWalletManager: CustodialWalletManager,
+    private val analytics: Analytics,
     private val metadataManager: MetadataManager
 ) : BasePresenter<LauncherView>() {
 
@@ -126,7 +129,9 @@ class LauncherPresenter(
                 Single.just(settings to false)
             else {
                 Singles.zip(
-                    custodialWalletManager.isCurrencySupportedForSimpleBuy(settings.currency),
+                    custodialWalletManager.isCurrencySupportedForSimpleBuy(settings.currency).doOnSuccess {
+                        analytics.logEvent(SimpleBuyAnalytics.NOT_ELIGIBLE_FOR_FLOW)
+                    },
                     featureFlag.enabled,
                     metadataManager.attemptMetadataSetup().singleOrError()
                 ) { currencySupported, simpleBuyFeatureFlagEnabled, _ ->
