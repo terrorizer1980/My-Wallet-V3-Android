@@ -3,6 +3,7 @@ package piuk.blockchain.androidcore.data.metadata
 import com.blockchain.serialization.Saveable
 import com.google.common.base.Optional
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
+import info.blockchain.wallet.metadata.MetadataNodeFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -41,7 +42,7 @@ class MetadataManager(
     ): Completable {
         payloadDataManager.decryptHDWallet(networkParameters, secondPassword)
         return payloadDataManager.generateNodes()
-            .andThen(initMetadataNodesObservable())
+            .andThen(initMetadataNodesObservable().ignoreElements())
     }
 
     fun fetchMetadata(metadataType: Int): Observable<Optional<String>> =
@@ -51,7 +52,7 @@ class MetadataManager(
                     metadataUtils.getMetadataNode(nodeFactory.metadataNode, metadataType)
                         .metadataOptional
                 }
-            }.subscribeOn(Schedulers.io())
+        }.subscribeOn(Schedulers.io())
 
     fun saveToMetadata(data: String, metadataType: Int): Completable =
         rxPinning.call {
@@ -72,36 +73,34 @@ class MetadataManager(
                             it.metadataNode,
                             saveable.getMetadataType()
                         ).putMetadata(saveable.toJson())
-                }
-            }.subscribeOn(Schedulers.io())
-    }
+                    }
+                }.subscribeOn(Schedulers.io())
+        }
 
     /**
      * Loads or derives the stored nodes/keys from the metadata service.
      *
      * @throws InvalidCredentialsException If nodes/keys cannot be derived because wallet is double encrypted
      */
-    private fun initMetadataNodesObservable(): Completable = rxPinning.call {
-        payloadDataManager.loadNodes()
-            .map { loaded ->
-                if (!loaded) {
-                    if (payloadDataManager.isDoubleEncrypted) {
-                        throw InvalidCredentialsException("Unable to derive metadata keys, payload is double encrypted")
-                    } else {
-                        true
-                    }
+    private fun initMetadataNodesObservable(): Observable<MetadataNodeFactory> = rxPinning.call<MetadataNodeFactory> {
+        payloadDataManager.loadNodes().map { loaded ->
+            if (!loaded) {
+                if (payloadDataManager.isDoubleEncrypted) {
+                    throw InvalidCredentialsException("Unable to derive metadata keys, payload is double encrypted")
                 } else {
-                    false
+                    true
                 }
+            } else {
+                false
             }
-            .flatMap { needsGeneration ->
-                if (needsGeneration) {
-                    payloadDataManager.generateAndReturnNodes()
-                } else {
-                    payloadDataManager.getMetadataNodeFactory()
-                }
-            }.flatMapCompletable { Completable.complete() }
-    }.subscribeOn(Schedulers.io())
+        }.flatMap { needsGeneration ->
+            if (needsGeneration) {
+                payloadDataManager.generateAndReturnNodes()
+            } else {
+                payloadDataManager.getMetadataNodeFactory()
+            }
+        }.subscribeOn(Schedulers.io())
+    }
 
     companion object {
         const val METADATA_TYPE_EXCHANGE = 3

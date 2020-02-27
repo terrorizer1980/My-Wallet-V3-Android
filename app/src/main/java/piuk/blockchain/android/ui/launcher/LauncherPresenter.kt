@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.LauncherActivity
 import android.content.Intent
 import com.blockchain.notifications.NotificationTokenManager
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
@@ -11,8 +13,9 @@ import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -22,6 +25,7 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import java.util.Locale
 import java.util.Currency
 
@@ -36,7 +40,9 @@ class LauncherPresenter(
     private val envSettings: EnvironmentConfig,
     private val featureFlag: FeatureFlag,
     private val currencyPrefs: CurrencyPrefs,
-    private val custodialWalletManager: CustodialWalletManager
+    private val custodialWalletManager: CustodialWalletManager,
+    private val analytics: Analytics,
+    private val metadataManager: MetadataManager
 ) : BasePresenter<LauncherView>() {
 
     override fun onViewReady() {
@@ -119,12 +125,20 @@ class LauncherPresenter(
                 settingsDataManager.updateFiatUnit(fiatUnitForFreshAccount())
             }
         }.flatMapSingle { settings ->
-            custodialWalletManager.isCurrencySupportedForSimpleBuy(settings.currency).zipWith(featureFlag.enabled)
-                .map { (currencySupported, simpleBuyFeatureFlagEnabled) ->
-                    val simpleBuyFlowCanBeLaunched =
-                        currencySupported && simpleBuyFeatureFlagEnabled && accessState.isNewlyCreated
+            if (!accessState.isNewlyCreated || accessState.isRestored)
+                Single.just(settings to false)
+            else {
+                Singles.zip(
+                    custodialWalletManager.isCurrencySupportedForSimpleBuy(settings.currency).doOnSuccess {
+                        analytics.logEvent(SimpleBuyAnalytics.NOT_ELIGIBLE_FOR_FLOW)
+                    },
+                    featureFlag.enabled,
+                    metadataManager.attemptMetadataSetup().singleOrError()
+                ) { currencySupported, simpleBuyFeatureFlagEnabled, _ ->
+                    val simpleBuyFlowCanBeLaunched = currencySupported && simpleBuyFeatureFlagEnabled
                     settings to simpleBuyFlowCanBeLaunched
                 }
+            }
         }
             .doOnComplete { accessState.isLoggedIn = true }
             .doOnNext { notificationTokenManager.registerAuthEvent() }

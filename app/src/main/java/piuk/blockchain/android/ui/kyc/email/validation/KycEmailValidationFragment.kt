@@ -1,13 +1,14 @@
 package piuk.blockchain.android.ui.kyc.email.validation
 
+import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.blockchain.notifications.analytics.Analytics
-import piuk.blockchain.android.ui.kyc.hyperlinks.insertSingleLink
 import com.blockchain.notifications.analytics.logEvent
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
 import piuk.blockchain.android.ui.kyc.navhost.models.KycStep
@@ -23,6 +24,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpFragment
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
@@ -37,6 +39,7 @@ class KycEmailValidationFragment :
 
     private val presenter: KycEmailValidationPresenter by inject()
     private val analytics: Analytics by inject()
+    private val stringUtils: StringUtils by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private var progressDialog: MaterialProgressDialog? = null
     private val email by unsafeLazy {
@@ -67,13 +70,18 @@ class KycEmailValidationFragment :
         progressListener.incrementProgress(KycStep.EmailVerifiedPage)
         textViewEmail.text = email
 
-        textViewResend.insertSingleLink(
-            R.string.kyc_email_didnt_see_email,
-            R.string.kyc_email_send_again_hyperlink
-        ) {
+        val linksMap = mapOf<String, Uri?>(
+            "send_again" to null
+        )
 
-            resend.onNext(Unit)
-        }
+        textViewResend.text =
+            stringUtils.getStringWithMappedLinks(
+                R.string.kyc_email_did_not_see_email,
+                linksMap,
+                requireActivity()
+            ) { resend.onNext(Unit) }
+
+        textViewResend.movementMethod = LinkMovementMethod.getInstance()
 
         buttonNext.setOnClickListener {
             continueSignUp()

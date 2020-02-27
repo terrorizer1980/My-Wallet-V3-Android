@@ -136,6 +136,7 @@ class CreateWalletPresenter(
             password
         ).doOnNext {
             accessState.isNewlyCreated = true
+            accessState.isRestored = true
             prefs.setValue(PersistentPrefs.KEY_WALLET_GUID, payloadDataManager.wallet!!.guid)
             appUtil.sharedKey = payloadDataManager.wallet!!.sharedKey
         }.addToCompositeDisposable(this)

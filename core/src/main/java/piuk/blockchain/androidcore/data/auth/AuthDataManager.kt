@@ -101,7 +101,7 @@ class AuthDataManager(
             // If auth not required, emit payload
             .filter { s ->
                 s.errorBody() == null ||
-                    !s.errorBody()!!.string().contains(AUTHORIZATION_REQUIRED)
+                        !s.errorBody()!!.string().contains(AUTHORIZATION_REQUIRED)
             }
             // Return message in response
             .map { responseBodyResponse -> responseBodyResponse.body()!!.string() }
@@ -173,6 +173,7 @@ class AuthDataManager(
                  */
                 if (response.isSuccessful) {
                     accessState.isNewlyCreated = false
+                    accessState.isRestored = false
                     val decryptionKey = response.body()!!.success
 
                     return@map aesUtilWrapper.decrypt(

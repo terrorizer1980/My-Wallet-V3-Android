@@ -5,6 +5,7 @@ import info.blockchain.balance.CryptoCurrency
 enum class SimpleBuyAnalytics(override val event: String, override val params: Map<String, String> = emptyMap()) :
     AnalyticsEvent {
 
+    NOT_ELIGIBLE_FOR_FLOW("sb_not_eligible_for_flow"),
     INTRO_SCREEN_SHOW("sb_screen_shown"),
     I_WANT_TO_BUY_CRYPTO_BUTTON_CLICKED("sb_button_clicked"),
     SKIP_ALREADY_HAVE_CRYPTO("sb_button_skip"),
@@ -70,14 +71,14 @@ class BankDetailsViewed(currency: String) : AnalyticsEvent {
 class CustodialBalanceClicked(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_trading_wallet_clicked"
     override val params: Map<String, String> = mapOf(
-        "currency" to cryptoCurrency.symbol
+        "asset" to cryptoCurrency.symbol
     )
 }
 
 class CustodialBalanceSendClicked(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_trading_wallet_send"
     override val params: Map<String, String> = mapOf(
-        "currency" to cryptoCurrency.symbol
+        "asset" to cryptoCurrency.symbol
     )
 }
 
@@ -88,10 +89,10 @@ fun bankFieldName(field: String): AnalyticsEvent = object : AnalyticsEvent {
     )
 }
 
-class PendingTransactionShown(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
+class PendingTransactionShown(currency: String) : AnalyticsEvent {
     override val event: String = "sb_pending_modal_shown"
     override val params: Map<String, String> = mapOf(
-        "currency" to cryptoCurrency.symbol
+        "currency" to currency
     )
 }
 
@@ -102,9 +103,9 @@ class WithdrawScreenShown(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     )
 }
 
-class WithdrawScreenClicked(asset: String) : AnalyticsEvent {
+class WithdrawScreenClicked(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_withdrawal_screen_clicked"
     override val params: Map<String, String> = mapOf(
-        "asset" to asset
+        "asset" to cryptoCurrency.symbol
     )
 }

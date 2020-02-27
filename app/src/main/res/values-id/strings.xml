@@ -929,11 +929,7 @@ Konfirmasi sidik jari untuk melanjutkan</string>
   <string name="kyc_splash_terms_and_conditions_submit">Dengan mengetuk Kirim, Anda setuju dengan Blockchain</string>
   <string name="kyc_country_selection_message_state">Setiap negara bagian memiliki aturan berbeda tentang perdagangan mata uang digital.</string>
   <string name="kyc_profile_submit">Menyerahkan</string>
-  <string name="kyc_email_didnt_see_email">Tidak melihat email? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Kirim lagi</string>
   <string name="kyc_email_email_was_resent">Email dibenci</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Kirim ulang Kode</string>
   <string name="kyc_phone_number_code_was_resent">Kode dibenci</string>
   <string name="kyc_phone_number_error_resending">Kesalahan mengirim Kode, silakan coba lagi</string>
   <string name="kyc_settings_swap_limit">Batas Swap</string>

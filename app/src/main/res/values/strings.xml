@@ -1470,7 +1470,7 @@
     <string name="kyc_email_validation_message">We just sent you an email with further instructions.</string>
 
     <!-- Email Validation -->
-    <string name="kyc_email_didnt_see_email">Didn\'t see email? %1$s</string>
+    <string name="kyc_email_did_not_see_email">Didn\'t see email? <annotation link="send_again">Send again</annotation></string>
     <string name="kyc_email_send_again_hyperlink">Send again</string>
     <string name="kyc_email_email_was_resent">Email was resent</string>
     <string name="kyc_phone_number_title">Verify Your Device</string>
@@ -1479,8 +1479,7 @@
     <!-- Phone Number -->
     <string name="kyc_phone_number_hint_focused">Your Mobile Number</string>
     <string name="kyc_phone_number_hint_unfocused">+1 2345 678 910</string>
-    <string name="kyc_phone_didnt_see_sms">%1$s</string>
-    <string name="kyc_phone_send_again_hyperlink">Resend Code</string>
+    <string name="kyc_phone_send_again"><annotation link="resend_code">Resend Code</annotation></string>
     <string name="kyc_phone_number_error_saving_number">Error saving mobile number, please try again</string>
     <string name="kyc_phone_number_code_was_resent">Code was resent</string>
     <string name="kyc_phone_number_validation_header">Enter the code sent to</string>

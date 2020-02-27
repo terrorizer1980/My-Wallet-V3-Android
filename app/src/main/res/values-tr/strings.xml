@@ -929,11 +929,7 @@ Devam etmek için parmak izini onaylayın</string>
   <string name="kyc_splash_terms_and_conditions_submit">Gönder düğmesine dokunarak Blockchain’i kabul etmiş olursunuz.</string>
   <string name="kyc_country_selection_message_state">Her devletin kripto para ticareti konusunda farklı kuralları vardır.</string>
   <string name="kyc_profile_submit">Gönder</string>
-  <string name="kyc_email_didnt_see_email">E-posta görmedin mi? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Tekrar gönderin</string>
   <string name="kyc_email_email_was_resent">E-posta yeniden gönderildi</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Yeniden gönderme kodu</string>
   <string name="kyc_phone_number_code_was_resent">Kod tekrar gönderildi</string>
   <string name="kyc_phone_number_error_resending">Kod gönderilirken hata oluştu, lütfen tekrar deneyin</string>
   <string name="kyc_settings_swap_limit">Değişim Sınırı</string>
