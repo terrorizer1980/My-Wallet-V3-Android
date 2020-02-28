@@ -15,14 +15,15 @@ import com.blockchain.ui.password.SecondPasswordHandler
 import org.koin.android.ext.android.inject
 import piuk.blockchain.androidcoreui.ui.base.BaseDialogFragment
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.androidcore.data.currency.CurrencyState
 
 import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import piuk.blockchain.androidcoreui.utils.helperfunctions.onItemSelectedListener
-import java.util.Locale
 
 class ConfirmFundsTransferDialogFragment :
     BaseDialogFragment<ConfirmFundsTransferView, ConfirmFundsTransferPresenter>(),
@@ -30,7 +31,8 @@ class ConfirmFundsTransferDialogFragment :
 
     private val confirmFundsTransferPresenter: ConfirmFundsTransferPresenter by inject()
     private val rxBus: RxBus by inject()
-    override val locale: Locale = Locale.getDefault()
+    private val currencyState: CurrencyState by inject()
+    private val exchangeRates: ExchangeRateDataManager by inject()
 
     private val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
@@ -41,7 +43,9 @@ class ConfirmFundsTransferDialogFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        dialog.apply { setCancelable(true) }
+        dialog.apply {
+            isCancelable = true
+        }
 
         // You'd think we could use container?.inflate(...) here, but container is null at this point
         return inflater.inflate(R.layout.dialog_transfer_funds, container, false).apply {
@@ -71,7 +75,9 @@ class ConfirmFundsTransferDialogFragment :
             requireContext(),
             R.layout.spinner_item,
             presenter.getReceiveToList(),
-            true
+            true,
+            currencyState,
+            exchangeRates
         ).apply { setDropDownViewResource(R.layout.spinner_dropdown) }
         spinner_destination.adapter = receiveToAdapter
         spinner_destination.onItemSelectedListener =

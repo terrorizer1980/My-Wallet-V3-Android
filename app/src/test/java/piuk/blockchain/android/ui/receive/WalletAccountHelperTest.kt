@@ -241,7 +241,7 @@ class WalletAccountHelperTest {
         givenCryptoCurrency(CryptoCurrency.BTC)
         whenever(payloadManager.getAddressBalance(address)).thenReturn(BigInteger.TEN)
         // Act
-        val result = subject.getLegacyAddresses()
+        val result = subject.getLegacyBtcAddresses()
         // Assert
         verify(payloadManager, atLeastOnce()).payload
         result.size `should equal` 1

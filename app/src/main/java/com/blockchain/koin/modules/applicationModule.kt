@@ -210,19 +210,22 @@ val applicationModule = applicationContext {
             WalletAccountHelper(
                 payloadManager = get(),
                 stringUtils = get(),
-                currencyState = get(),
                 ethDataManager = get(),
                 bchDataManager = get(),
                 xlmDataManager = get(),
                 environmentSettings = get(),
-                exchangeRates = get(),
                 paxAccount = get("pax"),
                 crashLogger = get()
             )
         }
 
-        factory { WalletAccountHelperAccountListingAdapter(get()) }
-            .bind(AccountListing::class)
+        factory {
+            WalletAccountHelperAccountListingAdapter(
+                walletAccountHelper = get(),
+                currencyState = get(),
+                exchangeRates = get()
+            )
+        }.bind(AccountListing::class)
 
         factory {
             SecondPasswordHandlerDialog(get(), get()) as SecondPasswordHandler

@@ -103,7 +103,7 @@ class WalletAccountHelperAccountListingAdapterTest {
     fun `BTC imported (legacy) addresses`() {
         val account = mock<LegacyAddress>()
         val walletAccountHelper = mock<WalletAccountHelper> {
-            on { getLegacyAddresses() } `it returns` listOf(
+            on { getLegacyBtcAddresses() } `it returns` listOf(
                 ItemAccount().apply {
                     label = "My address"
                     address = "mhPgaJ366MXe7SNGeaCBBsWAhkM2JfB5Cm"
@@ -149,7 +149,7 @@ class WalletAccountHelperAccountListingAdapterTest {
             on { isWatchOnly } `it returns` true
         }
         val walletAccountHelper = mock<WalletAccountHelper> {
-            on { getLegacyAddresses() } `it returns` listOf(
+            on { getLegacyBtcAddresses() } `it returns` listOf(
                 ItemAccount().apply {
                     accountObject = account
                 })
@@ -167,7 +167,7 @@ class WalletAccountHelperAccountListingAdapterTest {
             on { isWatchOnly } `it returns` false
         }
         val walletAccountHelper = mock<WalletAccountHelper> {
-            on { getLegacyAddresses() } `it returns` listOf(
+            on { getLegacyBtcAddresses() } `it returns` listOf(
                 ItemAccount().apply {
                     accountObject = account
                 })
@@ -183,7 +183,7 @@ class WalletAccountHelperAccountListingAdapterTest {
     fun `BTC imported (legacy) addresses - null address when not a legacy`() {
         val account = mock<JsonSerializableAccount>()
         val walletAccountHelper = mock<WalletAccountHelper> {
-            on { getLegacyAddresses() } `it returns` listOf(
+            on { getLegacyBtcAddresses() } `it returns` listOf(
                 ItemAccount().apply {
                     address = "mwfJF7GdsShHBtLCAhWUjymTwAwtf1E5LE"
                     accountObject = account

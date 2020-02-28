@@ -460,7 +460,8 @@ class BitcoinCashSendStrategy(
             nabuToken.fetchNabuToken()
         }.flatMap {
             nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.BCH.symbol)
-        }.applySchedulers().doOnSubscribe {
+        }.applySchedulers()
+            .doOnSubscribe {
             view?.updateReceivingHintAndAccountDropDowns(
                 CryptoCurrency.BCH,
                 getAddressList().size,
@@ -498,7 +499,7 @@ class BitcoinCashSendStrategy(
     private fun getAddressList(): List<ItemAccount> = walletAccountHelper.getAccountItems(CryptoCurrency.BCH)
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
-        val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount() ?: return
+        val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount(CryptoCurrency.BCH) ?: return
         view?.updateSendingAddress(accountItem.label ?: accountItem.address!!)
         pendingTransaction.sendingObject = accountItem
     }

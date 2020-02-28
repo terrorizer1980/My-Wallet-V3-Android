@@ -8,8 +8,6 @@ import java.util.Locale
 
 interface ConfirmFundsTransferView : View {
 
-    val locale: Locale
-
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
 
     fun updateFromLabel(label: String)

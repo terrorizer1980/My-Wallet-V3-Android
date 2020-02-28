@@ -322,7 +322,7 @@ class TransactionsPresenter(
 
     private fun refreshViewHeaders(account: ItemAccount) {
         view?.updateSelectedCurrency(crypto)
-        view?.updateBalanceHeader(account.displayBalance ?: "")
+//        view?.updateBalanceHeader(account.displayBalance ?: "")
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -341,7 +341,7 @@ class TransactionsPresenter(
      * Get accounts based on selected currency. Mutable list necessary for adapter. This needs fixing.
      */
     private fun getAccounts() =
-        walletAccountHelper.getAccountItemsForOverview()
+        walletAccountHelper.getAccountItemsForOverview(crypto)
 
     private fun getCurrentAccount(): Single<ItemAccount> =
         getAccountAt(view?.getCurrentAccountPosition() ?: 0)

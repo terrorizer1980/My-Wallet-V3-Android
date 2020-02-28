@@ -894,7 +894,7 @@ class AccountEditPresenter constructor(
                 pendingTransaction.apply {
                     sendingObject = ItemAccount(
                         label,
-                        sweepAmount.toString(),
+                        CryptoValue.fromMinor(cryptoCurrency, sweepAmount),
                         "",
                         sweepAmount.toLong(),
                         legacyAddress,
@@ -902,7 +902,7 @@ class AccountEditPresenter constructor(
                     )
                     receivingObject = ItemAccount(
                         defaultAccount.label,
-                        "",
+                        null,
                         "",
                         sweepAmount.toLong(),
                         defaultAccount,

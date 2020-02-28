@@ -1,6 +1,10 @@
 package piuk.blockchain.android.ui.account
 
 import com.blockchain.serialization.JsonSerializableAccount
+import info.blockchain.balance.CryptoValue
+import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 
 class ItemAccount {
 
@@ -9,9 +13,9 @@ class ItemAccount {
     }
 
     var label: String? = null
-    var displayBalance: String? = null
+    var displayBalance: CryptoValue? = null
     var tag: String? = null
-    var absoluteBalance: Long? = null
+//    var absoluteBalance: Long? = null
 
     // Ultimately this is used to sign txs
     var accountObject: JsonSerializableAccount? = null
@@ -24,24 +28,14 @@ class ItemAccount {
         // Empty constructor for serialization
     }
 
-    override fun toString(): String {
-        return "ItemAccount(label=$label, " +
-            "displayBalance=$displayBalance, " +
-            "tag=$tag, " +
-            "absoluteBalance=$absoluteBalance, " +
-            "accountObject=$accountObject, " +
-            "address=$address, " +
-            "type=$type)"
-    }
-
     @JvmOverloads
     constructor(
         label: String?,
-        displayBalance: String?,
-        tag: String?,
+        displayBalance: CryptoValue?,
+        tag: String? = null,
         absoluteBalance: Long?,
         accountObject: JsonSerializableAccount? = null,
-        address: String?,
+        address: String? = null,
         type: TYPE = TYPE.SINGLE_ACCOUNT
     ) {
         this.label = label
@@ -57,3 +51,10 @@ class ItemAccount {
         this.label = label
     }
 }
+
+fun ItemAccount.formatDisplayBalance(currencyState: CurrencyState, exchangeRates: ExchangeRateDataManager) =
+    if(currencyState.displayMode == CurrencyState.DisplayMode.Fiat) {
+        displayBalance?.toFiat(exchangeRates, currencyState.fiatUnit)
+    } else {
+        displayBalance
+    }?.toStringWithSymbol() ?: ""

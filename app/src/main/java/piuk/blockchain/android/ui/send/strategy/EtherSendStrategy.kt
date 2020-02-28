@@ -347,7 +347,7 @@ class EtherSendStrategy(
     override fun clearReceivingObject() {}
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
-        val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount() ?: return
+        val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount(CryptoCurrency.ETHER) ?: return
         view?.updateSendingAddress(accountItem.label ?: accountItem.address!!)
         pendingTransaction.sendingObject = accountItem
     }

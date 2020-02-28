@@ -539,7 +539,7 @@ class BitcoinSendStrategy(
     private fun getAddressList(): List<ItemAccount> = walletAccountHelper.getAccountItems(CryptoCurrency.BTC)
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
-        val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount() ?: return
+        val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount(CryptoCurrency.BTC) ?: return
         view?.updateSendingAddress(accountItem.label ?: accountItem.address!!)
         pendingTransaction.sendingObject = accountItem
     }
