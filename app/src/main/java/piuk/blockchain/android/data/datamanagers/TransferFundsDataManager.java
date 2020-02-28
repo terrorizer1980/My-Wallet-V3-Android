@@ -100,9 +100,8 @@ public class TransferFundsDataManager {
 
                         pendingSpend.setSendingObject(new ItemAccount(
                                 legacyAddress.getLabel(),
-                                "",
-                                "",
                                 null,
+                                "",
                                 legacyAddress,
                                 legacyAddress.getAddress())
                         );
