@@ -62,12 +62,12 @@ class SimpleBuyInteractor(
             SimpleBuyIntent.QuoteUpdated(it)
         }
 
-    fun pollForKycState(): Single<SimpleBuyIntent.KycStateUpdated> =
+    fun pollForKycState(fiatCurrency: String): Single<SimpleBuyIntent.KycStateUpdated> =
         tierService.tiers()
             .flatMap {
                 when {
                     it.combinedState == Kyc2TierState.Tier2Approved ->
-                        custodialWalletManager.isEligibleForSimpleBuy().map { eligible ->
+                        custodialWalletManager.isEligibleForSimpleBuy(fiatCurrency).map { eligible ->
                             if (eligible) {
                                 SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_AND_ELIGIBLE)
                             } else {
@@ -94,17 +94,18 @@ class SimpleBuyInteractor(
                 }
             }
 
-    fun checkTierLevel(): Single<SimpleBuyIntent.KycStateUpdated> {
+    fun checkTierLevel(fiatCurrency: String): Single<SimpleBuyIntent.KycStateUpdated> {
 
         return tierService.tiers().flatMap {
             when (it.combinedState) {
-                Kyc2TierState.Tier2Approved -> custodialWalletManager.isEligibleForSimpleBuy().map { eligible ->
-                    if (eligible) {
-                        SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_AND_ELIGIBLE)
-                    } else {
-                        SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_BUT_NOT_ELIGIBLE)
+                Kyc2TierState.Tier2Approved -> custodialWalletManager.isEligibleForSimpleBuy(fiatCurrency)
+                    .map { eligible ->
+                        if (eligible) {
+                            SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_AND_ELIGIBLE)
+                        } else {
+                            SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_BUT_NOT_ELIGIBLE)
+                        }
                     }
-                }
                 Kyc2TierState.Tier2Failed -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.FAILED))
                 Kyc2TierState.Tier2InPending -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.IN_REVIEW))
                 else -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.PENDING))
