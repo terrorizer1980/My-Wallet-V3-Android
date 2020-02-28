@@ -82,12 +82,8 @@ class EtherSendStrategy(
     override fun onPitAddressSelected() {
         pitAccount?.let {
             pendingTransaction.receivingObject = ItemAccount(
-                it.label,
-                null,
-                null,
-                null,
-                null,
-                it.address
+                label = it.label,
+                address = it.address
             )
             pendingTransaction.receivingAddress = it.address
             view?.updateReceivingAddress(it.label)

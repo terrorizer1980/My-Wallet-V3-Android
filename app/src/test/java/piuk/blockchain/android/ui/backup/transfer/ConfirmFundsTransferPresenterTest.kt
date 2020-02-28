@@ -38,7 +38,6 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.math.BigDecimal
 import java.util.Arrays
-import java.util.Locale
 
 class ConfirmFundsTransferPresenterTest {
 
@@ -67,8 +66,6 @@ class ConfirmFundsTransferPresenterTest {
             currencyFormatManager
         )
         subject.initView(view)
-
-        whenever(view.locale).thenReturn(Locale.US)
     }
 
     @Test

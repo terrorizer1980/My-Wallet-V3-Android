@@ -86,13 +86,12 @@ class WalletAccountHelper(
         return list.filterNot { it.isArchived }
             .map {
                 ItemAccount(
-                    it.label,
-                    CryptoValue.fromMinor(CryptoCurrency.BTC, payloadManager.getAddressBalance(it.xpub)),
-                    null,
-                    getAccountBtcAbsoluteBalance(it).toLong(),
-                    it,
-                    it.xpub
-                ).apply { type = ItemAccount.TYPE.SINGLE_ACCOUNT }
+                    label = it.label,
+                    balance = CryptoValue.fromMinor(CryptoCurrency.BTC, payloadManager.getAddressBalance(it.xpub)),
+                    accountObject = it,
+                    address = it.xpub,
+                    type = ItemAccount.TYPE.SINGLE_ACCOUNT
+                )
             }
     }
 
@@ -106,13 +105,12 @@ class WalletAccountHelper(
         .filterNot { it.isArchived }
         .map {
             ItemAccount(
-                it.label,
-                CryptoValue.fromMinor(CryptoCurrency.BCH, payloadManager.getAddressBalance(it.xpub)),
-                null,
-                getAccountBchAbsoluteBalance(it).toLong(),
-                it,
-                it.xpub
-            ).apply { type = ItemAccount.TYPE.SINGLE_ACCOUNT }
+                label = it.label,
+                balance = CryptoValue.fromMinor(CryptoCurrency.BCH, payloadManager.getAddressBalance(it.xpub)),
+                accountObject = it,
+                address = it.xpub,
+                type = ItemAccount.TYPE.SINGLE_ACCOUNT
+            )
         }
 
     /**
@@ -127,12 +125,11 @@ class WalletAccountHelper(
         return list.filterNot { it.tag == LegacyAddress.ARCHIVED_ADDRESS }
             .map {
                 ItemAccount(
-                    makeLabel(it),
-                    getBtcAddressBalance(it),
-                    checkTag(it),
-                    getAddressAbsoluteBalance(it).toLong(),
-                    it,
-                    it.address
+                    label = makeLabel(it),
+                    balance = CryptoValue.fromMinor(CryptoCurrency.BTC, getAddressAbsoluteBalance(it)),
+                    tag = checkTag(it),
+                    accountObject = it,
+                    address = it.address
                 )
             }
     }
@@ -148,39 +145,39 @@ class WalletAccountHelper(
 
         // Skip archived address
         return list.filterNot { it.tag == LegacyAddress.ARCHIVED_ADDRESS }
-            .filterNot { bchDataManager.getAddressBalance(it.address).compareTo(BigInteger.ZERO) == 0 }
-            .map {
+            .filterNot {
+                bchDataManager.getAddressBalance(it.address).compareTo(BigInteger.ZERO) == 0
+            }.map {
                 val cashAddress = Address.fromBase58(
                     environmentSettings.bitcoinCashNetworkParameters,
                     it.address
                 ).toCashAddress().removeBchUri()
 
                 ItemAccount(
-                    makeLabel(it),
-                    getBchAddressBalance(it),
-                    checkTag(it),
-                    getAddressAbsoluteBalance(it).toLong(),
-                    it,
-                    cashAddress
+                    label = makeLabel(it),
+                    balance = CryptoValue.fromMinor(CryptoCurrency.BCH, getBchAddressAbsoluteBalance(it)),
+                    tag = checkTag(it),
+                    accountObject = it,
+                    address = cashAddress
                 )
             }
     }
 
     // If address has no label, we'll display address
-    private fun makeLabel(address: LegacyAddress): String? {
+    private fun makeLabel(address: LegacyAddress): String {
         var labelOrAddress: String? = address.label
         if (labelOrAddress == null || labelOrAddress.trim { it <= ' ' }.isEmpty()) {
             labelOrAddress = address.address
         }
-        return labelOrAddress
+        return labelOrAddress ?: ""
     }
 
     // Watch-only tag - we'll ask for xpriv scan when spending from
-    private fun checkTag(address: LegacyAddress): String? =
+    private fun checkTag(address: LegacyAddress): String =
         if(address.isWatchOnly) {
             stringUtils.getString(R.string.watch_only)
         } else {
-            null
+            ""
         }
 
     /**
@@ -190,13 +187,13 @@ class WalletAccountHelper(
      * @return Returns a list of [ItemAccount] objects
      */
     fun getAddressBookEntries() = payloadManager.payload?.addressBook?.map {
+        val address = it.address ?: ""
         ItemAccount(
-            if (it.label.isNullOrEmpty()) it.address else it.label,
+            if (it.label.isNullOrEmpty()) address else it.label,
             null,
             stringUtils.getString(R.string.address_book_label),
             null,
-            null,
-            it.address
+            address
         )
     } ?: emptyList()
 
@@ -228,12 +225,6 @@ class WalletAccountHelper(
     private fun getAccountBchAbsoluteBalance(account: GenericMetadataAccount) =
         bchDataManager.getAddressBalance(account.xpub)
 
-    private fun getBtcAccountBalance(account: Account): CryptoValue =
-        CryptoValue.bitcoinFromSatoshis(payloadManager.getAddressBalance(account.xpub))
-
-    private fun getAccountBalanceBch(account: GenericMetadataAccount): CryptoValue =
-        CryptoValue.bitcoinCashFromSatoshis(getAccountBchAbsoluteBalance(account))
-
     private fun getAddressAbsoluteBalance(legacyAddress: LegacyAddress) =
         payloadManager.getAddressBalance(legacyAddress.address)
 
@@ -242,14 +233,6 @@ class WalletAccountHelper(
      */
     private fun getBchAddressAbsoluteBalance(legacyAddress: LegacyAddress) =
         bchDataManager.getAddressBalance(legacyAddress.address)
-
-    private fun getBtcAddressBalance(legacyAddress: LegacyAddress): CryptoValue {
-        return CryptoValue
-            .fromMinor(CryptoCurrency.BTC, getAddressAbsoluteBalance(legacyAddress))
-    }
-
-    private fun getBchAddressBalance(legacyAddress: LegacyAddress): CryptoValue =
-        CryptoValue.fromMinor(CryptoCurrency.BCH, getBchAddressAbsoluteBalance(legacyAddress))
 
     private fun getDefaultOrFirstFundedBtcAccount(): ItemAccount? {
         val hdWallet = payloadManager.payload?.hdWallets?.get(0)
@@ -265,12 +248,10 @@ class WalletAccountHelper(
             }
 
         return ItemAccount(
-            account.label,
-            getBtcAccountBalance(account),
-            null,
-            getAccountBtcAbsoluteBalance(account).toLong(),
-            account,
-            account.xpub
+            label = account.label,
+            balance = CryptoValue.fromMinor(CryptoCurrency.BTC, payloadManager.getAddressBalance(account.xpub)),
+            accountObject = account,
+            address = account.xpub
         )
     }
 
@@ -286,12 +267,10 @@ class WalletAccountHelper(
             }
 
         return ItemAccount(
-            account.label,
-            getAccountBalanceBch(account),
-            null,
-            getAccountBchAbsoluteBalance(account).toLong(),
-            account,
-            account.xpub
+            label = account.label,
+            balance = CryptoValue.fromMinor(CryptoCurrency.BCH, getAccountBchAbsoluteBalance(account)),
+            accountObject = account,
+            address = account.xpub
         )
     }
 
@@ -305,12 +284,10 @@ class WalletAccountHelper(
             null
         } else {
             ItemAccount(
-                ethAccount.label,
-                balance,
-                null,
-                0,
-                ethAccount,
-                ethAccount.address
+                label = ethAccount.label ?: "",
+                balance = balance,
+                accountObject = ethAccount,
+                address = ethAccount.address
             )
         }
     }
@@ -325,12 +302,10 @@ class WalletAccountHelper(
             null
         } else {
             ItemAccount(
-                ethAccount.label,
-                balance,
-                null,
-                0,
-                ethAccount,
-                ethAccount.address
+                label = ethAccount.label,
+                balance = balance,
+                accountObject = ethAccount,
+                address = ethAccount.address
             )
         }
     }
@@ -340,12 +315,10 @@ class WalletAccountHelper(
             .zipWith(xlmDataManager.getBalance())
             .map { (account, balance) ->
                 ItemAccount(
-                    account.label,
-                    balance,
-                    null,
-                    balance.amount.toLong(),
-                    null,
-                    account.accountId
+                    label = account.label,
+                    balance = balance,
+                    accountObject = null,
+                    address = account.accountId
                 )
             }
 
@@ -380,7 +353,7 @@ class WalletAccountHelper(
             addAll(accounts)
 
             // Create consolidated "Imported Addresses"
-            if (!legacyAddresses.isEmpty()) {
+            if (legacyAddresses.isNotEmpty()) {
                 add(getBchImportedAddressesAccountItem())
             }
         }
@@ -408,45 +381,41 @@ class WalletAccountHelper(
     private fun getBtcWalletAccountItem(): ItemAccount {
         val bigIntBalance = payloadManager.walletBalance
 
-        return ItemAccount().apply {
-            label = stringUtils.getString(R.string.all_accounts)
-            absoluteBalance = bigIntBalance.toLong()
-            displayBalance = CryptoValue.fromMinor(CryptoCurrency.BTC, bigIntBalance)
+        return ItemAccount(
+            label = stringUtils.getString(R.string.all_accounts),
+            balance = CryptoValue.fromMinor(CryptoCurrency.BTC, bigIntBalance),
             type = ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY
-        }
+        )
     }
 
     private fun getBchWalletAccountItem(): ItemAccount {
         val bigIntBalance = bchDataManager.getWalletBalance()
 
-        return ItemAccount().apply {
-            label = stringUtils.getString(R.string.bch_all_accounts)
-            absoluteBalance = bigIntBalance.toLong()
-            displayBalance = CryptoValue.fromMinor(CryptoCurrency.BCH, bigIntBalance)
+        return ItemAccount(
+            label = stringUtils.getString(R.string.bch_all_accounts),
+            balance = CryptoValue.fromMinor(CryptoCurrency.BCH, bigIntBalance),
             type = ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY
-        }
+        )
     }
 
     private fun getBtcImportedAddressesAccountItem(): ItemAccount {
         val bigIntBalance = payloadManager.importedAddressesBalance
 
-        return ItemAccount().apply {
-            label = stringUtils.getString(R.string.imported_addresses)
-            absoluteBalance = bigIntBalance.toLong()
-            displayBalance = CryptoValue.fromMinor(CryptoCurrency.BTC, bigIntBalance)
+        return ItemAccount(
+            label = stringUtils.getString(R.string.imported_addresses),
+            balance = CryptoValue.fromMinor(CryptoCurrency.BTC, bigIntBalance),
             type = ItemAccount.TYPE.ALL_LEGACY
-        }
+        )
     }
 
     private fun getBchImportedAddressesAccountItem(): ItemAccount {
         val bigIntBalance = bchDataManager.getImportedAddressBalance()
 
-        return ItemAccount().apply {
-            label = stringUtils.getString(R.string.bch_imported_addresses)
-            absoluteBalance = bigIntBalance.toLong()
-            displayBalance = CryptoValue.fromMinor(CryptoCurrency.BCH, bigIntBalance)
+        return ItemAccount(
+            label = stringUtils.getString(R.string.bch_imported_addresses),
+            balance = CryptoValue.fromMinor(CryptoCurrency.BCH, bigIntBalance),
             type = ItemAccount.TYPE.ALL_LEGACY
-        }
+        )
     }
 
     // /////////////////////////////////////////////////////////////////////////

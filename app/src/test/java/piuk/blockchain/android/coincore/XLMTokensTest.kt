@@ -6,6 +6,7 @@ import com.blockchain.sunriver.HorizonKeyPair
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.models.XlmTransaction
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.testutils.lumens
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.verify
@@ -76,11 +77,9 @@ class XLMTokensTest {
             .thenReturn(Single.just(listOf(xlmTransaction)))
 
         val itemAccount = ItemAccount(
-            "XLM",
-            "1.0 XLM",
-            null,
-            1L, null,
-            "AccountID"
+            label = "XLM",
+            balance = 1.0.lumens(),
+            address = "AccountID"
         )
 
         // Act

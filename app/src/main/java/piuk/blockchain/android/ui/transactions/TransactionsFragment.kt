@@ -36,7 +36,9 @@ import piuk.blockchain.android.ui.home.HomeScreenMvpFragment
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
+import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.UiState
@@ -60,6 +62,8 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     private var accountsAdapter: AccountsAdapter? = null
     private var txFeedAdapter: TxFeedAdapter? = null
     private val prefs: CurrencyPrefs by inject()
+    private val currencyState: CurrencyState by inject()
+    private val exchangeRates: ExchangeRateDataManager by inject()
 
     private val rxBus: RxBus by inject()
 
@@ -69,7 +73,6 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     private val accountSelectedListener =
         onItemSelectedListener {
             Timber.e(">ACTIVITY: Account selected fired")
-//            currency_header?.close()
             presenter.onAccountSelected(it)
             recyclerview.smoothScrollToPosition(0)
         }
@@ -157,9 +160,11 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         Timber.e(">ACTIVITY: Setup accounts adapter")
         if (accountsAdapter == null) {
             accountsAdapter = AccountsAdapter(
-                context,
+                requireContext(),
                 R.layout.spinner_balance_header,
-                accountsList
+                accountsList,
+                currencyState,
+                exchangeRates
             ).apply { setDropDownViewResource(R.layout.item_balance_account_dropdown) }
         }
 
@@ -344,7 +349,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     override fun startBuyActivity() = navigator().launchBuySell()
 
     override fun onTransactionClicked(crypto: CryptoCurrency, txHash: String) {
-        TransactionDetailActivity.start(this.requireContext(), crypto, txHash)
+        TransactionDetailActivity.start(requireContext(), crypto, txHash)
         analytics.logEvent(TransactionsAnalyticsEvents.ItemClick(crypto))
     }
 

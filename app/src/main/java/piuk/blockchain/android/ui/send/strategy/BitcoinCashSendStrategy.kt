@@ -95,12 +95,8 @@ class BitcoinCashSendStrategy(
     override fun onPitAddressSelected() {
         pitAccount?.let {
             pendingTransaction.receivingObject = ItemAccount(
-                it.label,
-                null,
-                null,
-                null,
-                null,
-                it.address
+                label = it.label,
+                address = it.address
             )
             pendingTransaction.receivingAddress = it.address
             view?.updateReceivingAddress(it.label)
@@ -775,7 +771,6 @@ class BitcoinCashSendStrategy(
                 environmentSettings.bitcoinNetworkParameters
             ).toString()
         ) {
-
             // Create copy, otherwise pass by ref will override private key in wallet payload
             pendingTransaction.sendingObject!!.accountObject = LegacyAddress().apply {
                 setPrivateKeyFromBytes(key.privKeyBytes)
@@ -812,12 +807,9 @@ class BitcoinCashSendStrategy(
         }
 
         pendingTransaction.sendingObject = ItemAccount(
-            label,
-            null,
-            null,
-            null,
-            legacyAddress,
-            legacyAddress.address
+            label = label,
+            accountObject = legacyAddress,
+            address = legacyAddress.address
         )
 
         view?.updateSendingAddress(label)
@@ -831,12 +823,9 @@ class BitcoinCashSendStrategy(
         }
 
         pendingTransaction.sendingObject = ItemAccount(
-            label,
-            null,
-            null,
-            null,
-            account,
-            account.xpub
+            label = label,
+            accountObject = account,
+            address = account.xpub
         )
 
         view?.updateSendingAddress(label)
@@ -865,12 +854,9 @@ class BitcoinCashSendStrategy(
         }
 
         pendingTransaction.receivingObject = ItemAccount(
-            label,
-            null,
-            null,
-            null,
-            legacyAddress,
-            cashAddress
+            label = label,
+            accountObject = legacyAddress,
+            address = cashAddress
         )
         pendingTransaction.receivingAddress = cashAddress
 
@@ -890,12 +876,9 @@ class BitcoinCashSendStrategy(
         }
 
         pendingTransaction.receivingObject = ItemAccount(
-            label,
-            null,
-            null,
-            null,
-            account,
-            account.xpub
+            label = label,
+            accountObject = account,
+            address = account.xpub
         )
 
         view?.updateReceivingAddress(label)

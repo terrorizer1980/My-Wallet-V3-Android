@@ -6,55 +6,24 @@ import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 
-class ItemAccount {
-
+data class ItemAccount @JvmOverloads constructor(
+    val label: String = "",
+    val balance: CryptoValue? = null,
+    val tag: String = "",
+    // Ultimately this is used to sign txs
+    var accountObject: JsonSerializableAccount? = null,
+    // Address/Xpub to fetch balance/tx list
+    val address: String = "",
+    val type: TYPE = TYPE.SINGLE_ACCOUNT
+) {
     enum class TYPE {
         ALL_ACCOUNTS_AND_LEGACY, ALL_LEGACY, SINGLE_ACCOUNT
-    }
-
-    var label: String? = null
-    var displayBalance: CryptoValue? = null
-    var tag: String? = null
-//    var absoluteBalance: Long? = null
-
-    // Ultimately this is used to sign txs
-    var accountObject: JsonSerializableAccount? = null
-
-    // Address/Xpub to fetch balance/tx list
-    var address: String? = null
-    var type: TYPE = TYPE.SINGLE_ACCOUNT
-
-    constructor() {
-        // Empty constructor for serialization
-    }
-
-    @JvmOverloads
-    constructor(
-        label: String?,
-        displayBalance: CryptoValue?,
-        tag: String? = null,
-        absoluteBalance: Long?,
-        accountObject: JsonSerializableAccount? = null,
-        address: String? = null,
-        type: TYPE = TYPE.SINGLE_ACCOUNT
-    ) {
-        this.label = label
-        this.displayBalance = displayBalance
-        this.tag = tag
-        this.absoluteBalance = absoluteBalance
-        this.address = address
-        this.accountObject = accountObject
-        this.type = type
-    }
-
-    constructor(label: String?) {
-        this.label = label
     }
 }
 
 fun ItemAccount.formatDisplayBalance(currencyState: CurrencyState, exchangeRates: ExchangeRateDataManager) =
     if(currencyState.displayMode == CurrencyState.DisplayMode.Fiat) {
-        displayBalance?.toFiat(exchangeRates, currencyState.fiatUnit)
+        balance?.toFiat(exchangeRates, currencyState.fiatUnit)
     } else {
-        displayBalance
+        balance
     }?.toStringWithSymbol() ?: ""

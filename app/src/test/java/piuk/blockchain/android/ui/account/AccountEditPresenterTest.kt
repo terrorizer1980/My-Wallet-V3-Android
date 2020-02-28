@@ -178,10 +178,13 @@ class AccountEditPresenterTest {
             putExtra(EXTRA_CRYPTOCURRENCY, CryptoCurrency.BTC)
         }
         whenever(view.activityIntent).thenReturn(intent)
-        val legacyAddress = LegacyAddress()
-        legacyAddress.address = ""
-        legacyAddress.label = ""
+
+        val legacyAddress = LegacyAddress().apply {
+            address = ""
+            label = ""
+        }
         subject.legacyAddress = legacyAddress
+
         val sweepableCoins = Pair.of(BigInteger.ONE, BigInteger.TEN)
         whenever(dynamicFeeCache.btcFeeOptions!!.regularFee).thenReturn(100L)
         whenever(payloadDataManager.defaultAccount).thenReturn(mock())
@@ -307,7 +310,7 @@ class AccountEditPresenterTest {
         val pendingTransaction = PendingTransaction().apply {
             bigIntAmount = BigInteger("1")
             bigIntFee = BigInteger("1")
-            sendingObject = ItemAccount("", "", "", null, legacyAddress, null)
+            sendingObject = ItemAccount(accountObject = legacyAddress)
             unspentOutputBundle = SpendableUnspentOutputs()
             receivingAddress = ""
         }
@@ -345,7 +348,7 @@ class AccountEditPresenterTest {
         pendingTransaction.bigIntAmount = BigInteger("1")
         pendingTransaction.bigIntFee = BigInteger("1")
         val legacyAddress = LegacyAddress()
-        pendingTransaction.sendingObject = ItemAccount("", "", "", null, legacyAddress, null)
+        pendingTransaction.sendingObject = ItemAccount(accountObject = legacyAddress)
         pendingTransaction.unspentOutputBundle = SpendableUnspentOutputs()
         val mockPayload: Wallet = mock(defaultAnswer = RETURNS_DEEP_STUBS)
         whenever(mockPayload.isDoubleEncryption).thenReturn(false)
@@ -378,7 +381,7 @@ class AccountEditPresenterTest {
         pendingTransaction.bigIntAmount = BigInteger("1")
         pendingTransaction.bigIntFee = BigInteger("1")
         val legacyAddress = LegacyAddress()
-        pendingTransaction.sendingObject = ItemAccount("", "", "", null, legacyAddress, null)
+        pendingTransaction.sendingObject = ItemAccount(accountObject = legacyAddress)
         val mockPayload: Wallet = mock(defaultAnswer = RETURNS_DEEP_STUBS)
         whenever(mockPayload.isDoubleEncryption).thenReturn(true)
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)

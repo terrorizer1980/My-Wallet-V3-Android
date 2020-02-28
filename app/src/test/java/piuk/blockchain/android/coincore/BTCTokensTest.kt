@@ -80,11 +80,11 @@ class BTCTokensTest {
         whenever(payloadManager.getAccountTransactions(any(), any(), any()))
             .thenReturn(transactionSummaries)
 
-        val itemAccount = ItemAccount().apply {
-            accountObject = account
-            type = ItemAccount.TYPE.SINGLE_ACCOUNT
+        val itemAccount = ItemAccount(
+            accountObject = account,
+            type = ItemAccount.TYPE.SINGLE_ACCOUNT,
             address = xPub
-        }
+        )
 
         subject.doFetchActivity(itemAccount)
             .test()
@@ -114,10 +114,10 @@ class BTCTokensTest {
         whenever(payloadManager.getAllTransactions(any(), any()))
             .thenReturn(transactionSummaries)
 
-        val itemAccount = ItemAccount().apply {
-            accountObject = account
+        val itemAccount = ItemAccount(
+            accountObject = account,
             type = ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY
-        }
+        )
 
         whenever(currencyState.cryptoCurrency)
             .thenReturn(CryptoCurrency.BTC)
@@ -148,10 +148,10 @@ class BTCTokensTest {
         whenever(payloadManager.getImportedAddressesTransactions(any(), any()))
             .thenReturn(transactionSummaries)
 
-        val itemAccount = ItemAccount().apply {
-            accountObject = account
+        val itemAccount = ItemAccount(
+            accountObject = account,
             type = ItemAccount.TYPE.ALL_LEGACY
-        }
+        )
 
         subject.doFetchActivity(itemAccount)
             .test()
@@ -181,11 +181,11 @@ class BTCTokensTest {
         whenever(payloadManager.getImportedAddressesTransactions(any(), any()))
             .thenReturn(transactionSummaries)
 
-        val itemAccount = ItemAccount().apply {
-            accountObject = account
-            type = ItemAccount.TYPE.ALL_LEGACY
+        val itemAccount = ItemAccount(
+            accountObject = account,
+            type = ItemAccount.TYPE.ALL_LEGACY,
             address = xPub
-        }
+        )
 
         subject.doFetchActivity(itemAccount)
             .test()

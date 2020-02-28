@@ -28,15 +28,14 @@ import org.bitcoinj.params.BitcoinMainNetParams
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
-import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import java.math.BigInteger
 import java.util.Locale
 
@@ -45,12 +44,10 @@ class WalletAccountHelperTest {
     private lateinit var subject: WalletAccountHelper
     private val payloadManager: PayloadManager = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private val stringUtils: StringUtils = mock()
-    private val currencyState: CurrencyState = mock()
     private val ethDataManager: EthDataManager = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private val bchDataManager: BchDataManager = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private val xlmDataManager: XlmDataManager = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private val environmentSettings: EnvironmentConfig = mock()
-    private val fiatExchangeRates: FiatExchangeRates = mock()
     private val paxAccount: Erc20Account = mock()
     private val crashLogger: CrashLogger = mock()
 
@@ -61,13 +58,11 @@ class WalletAccountHelperTest {
         subject = WalletAccountHelper(
             payloadManager,
             stringUtils,
-            currencyState,
             ethDataManager,
             paxAccount,
             bchDataManager,
             xlmDataManager,
             environmentSettings,
-            fiatExchangeRates,
             crashLogger
         )
 
@@ -75,6 +70,9 @@ class WalletAccountHelperTest {
             .thenReturn(BitcoinCashMainNetParams.get())
         whenever(environmentSettings.bitcoinNetworkParameters)
             .thenReturn(BitcoinMainNetParams.get())
+
+        whenever(stringUtils.getString(R.string.watch_only)).thenReturn("watch only")
+        whenever(stringUtils.getString(R.string.address_book_label)).thenReturn("address book")
     }
 
     @Test
@@ -93,7 +91,7 @@ class WalletAccountHelperTest {
         }
         whenever(payloadManager.payload?.hdWallets?.get(0)?.accounts).thenReturn(listOf(account))
         whenever(payloadManager.payload?.legacyAddressList).thenReturn(mutableListOf(legacyAddress))
-        givenCryptoCurrency(CryptoCurrency.BTC)
+
         whenever(payloadManager.getAddressBalance(xPub)).thenReturn(1.2.bitcoin().amount)
         whenever(payloadManager.getAddressBalance(address)).thenReturn(2.3.bitcoin().amount)
         // Act
@@ -102,9 +100,9 @@ class WalletAccountHelperTest {
         verify(payloadManager, atLeastOnce()).payload
         result.size `should be` 2
         result[0].accountObject `should be` account
-        result[0].displayBalance `should equal` "1.2 BTC"
+        result[0].balance `should equal` 1.2.bitcoin()
         result[1].accountObject `should be` legacyAddress
-        result[1].displayBalance `should equal` "2.3 BTC"
+        result[1].balance `should equal` 2.3.bitcoin()
     }
 
     @Test
@@ -125,7 +123,7 @@ class WalletAccountHelperTest {
         whenever(bchDataManager.getActiveAccounts()).thenReturn(listOf(account))
         whenever(bchDataManager.getAddressBalance(address)).thenReturn(5.1.bitcoinCash().amount)
         whenever(payloadManager.payload?.legacyAddressList).thenReturn(mutableListOf(legacyAddress))
-        givenCryptoCurrency(CryptoCurrency.BCH)
+
         whenever(bchDataManager.getAddressBalance(xPub)).thenReturn(20.1.bitcoinCash().amount)
         // Act
         val result = subject.getAccountItemsSingleTest(CryptoCurrency.BCH)
@@ -135,9 +133,9 @@ class WalletAccountHelperTest {
         verify(bchDataManager, atLeastOnce()).getAddressBalance(address)
         result.size `should be` 2
         result[0].accountObject `should be` account
-        result[0].displayBalance `should equal` "20.1 BCH"
+        result[0].balance `should equal` 20.1.bitcoinCash()
         result[1].accountObject `should be` legacyAddress
-        result[1].displayBalance `should equal` "5.1 BCH"
+        result[1].balance `should equal` 5.1.bitcoinCash()
     }
 
     @Test
@@ -152,7 +150,7 @@ class WalletAccountHelperTest {
         }
         whenever(payloadManager.payload?.hdWallets?.get(0)?.accounts)
             .thenReturn(mutableListOf(archivedAccount, account))
-        givenCryptoCurrency(CryptoCurrency.BTC)
+
         whenever(payloadManager.getAddressBalance(xPub)).thenReturn(BigInteger.TEN)
         // Act
         val result = subject.getAccountItemsSingleTest(CryptoCurrency.BTC)
@@ -160,7 +158,7 @@ class WalletAccountHelperTest {
         verify(payloadManager, atLeastOnce()).payload
         result.size `should equal` 1
         result[0].accountObject `should be` account
-        result[0].displayBalance `should equal` "0.0000001 BTC"
+        result[0].balance `should equal` 0.0000001.bitcoin()
     }
 
     @Test
@@ -175,7 +173,7 @@ class WalletAccountHelperTest {
         }
         whenever(bchDataManager.getActiveAccounts())
             .thenReturn(mutableListOf(archivedAccount, account))
-        givenCryptoCurrency(CryptoCurrency.BCH)
+
         whenever(bchDataManager.getAddressBalance(xPub)).thenReturn(BigInteger.TEN)
         // Act
         val result = subject.getAccountItemsSingleTest(CryptoCurrency.BCH)
@@ -183,7 +181,7 @@ class WalletAccountHelperTest {
         verify(bchDataManager).getActiveAccounts()
         result.size `should equal` 1
         result[0].accountObject `should be` account
-        result[0].displayBalance `should equal` "0.0000001 BCH"
+        result[0].balance `should equal` 0.0000001.bitcoinCash()
     }
 
     @Test
@@ -191,7 +189,7 @@ class WalletAccountHelperTest {
         // Arrange
         val ethAccount: EthereumAccount = mock()
         val combinedEthModel: CombinedEthModel = mock()
-        givenCryptoCurrency(CryptoCurrency.ETHER)
+
         whenever(ethDataManager.getEthWallet()?.account).thenReturn(ethAccount)
         whenever(ethAccount.address).thenReturn("address")
         whenever(ethDataManager.getEthResponseModel()).thenReturn(combinedEthModel)
@@ -202,13 +200,12 @@ class WalletAccountHelperTest {
         verify(ethDataManager, atLeastOnce()).getEthWallet()
         result.size `should be` 1
         result[0].accountObject `should equal` ethAccount
-        result[0].displayBalance `should equal` "99.1 ETH"
+        result[0].balance `should equal` 99.1.ether()
     }
 
     @Test
     fun `getAccountItems when currency is XLM should return one account`() {
         // Arrange
-        givenCryptoCurrency(CryptoCurrency.XLM)
         whenever(xlmDataManager.defaultAccount()) `it returns`
                 Single.just(
                     AccountReference.Xlm(
@@ -218,13 +215,13 @@ class WalletAccountHelperTest {
                 )
         whenever(xlmDataManager.getBalance()) `it returns` Single.just(123.lumens())
         // Act
-        val result = subject.accountItems(currencyState.cryptoCurrency)
+        val result = subject.accountItems(CryptoCurrency.XLM)
             .test().values().single()
+
         // Assert
         result.size `should be` 1
         result[0].label `should equal` "My Xlm account"
-        result[0].displayBalance `should equal` "123.0 XLM"
-        result[0].absoluteBalance `should equal` 123.lumens().amount.toLong()
+        result[0].balance `should equal` 123.lumens()
     }
 
     @Test
@@ -238,15 +235,17 @@ class WalletAccountHelperTest {
         }
         whenever(payloadManager.payload?.legacyAddressList)
             .thenReturn(mutableListOf(archivedAddress, legacyAddress))
-        givenCryptoCurrency(CryptoCurrency.BTC)
+
         whenever(payloadManager.getAddressBalance(address)).thenReturn(BigInteger.TEN)
+
         // Act
         val result = subject.getLegacyBtcAddresses()
+
         // Assert
         verify(payloadManager, atLeastOnce()).payload
         result.size `should equal` 1
         result[0].accountObject `should be` legacyAddress
-        result[0].displayBalance `should equal` "0.0000001 BTC"
+        result[0].balance `should equal` 0.0000001.bitcoin()
     }
 
     @Test
@@ -269,11 +268,6 @@ class WalletAccountHelperTest {
         val result = subject.getAddressBookEntries()
         // Assert
         result.size `should equal` 0
-    }
-
-    private fun givenCryptoCurrency(cryptoCurrency: CryptoCurrency) {
-        whenever(currencyState.displayMode) `it returns` CurrencyState.DisplayMode.Crypto
-        whenever(currencyState.cryptoCurrency) `it returns` cryptoCurrency
     }
 }
 
