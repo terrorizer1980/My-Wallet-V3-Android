@@ -54,8 +54,8 @@ class CustodialWalletManagerSwitcher(
     override fun getBankAccountDetails(currency: String): Single<BankAccount> =
         proxy.getBankAccountDetails(currency)
 
-    override fun isEligibleForSimpleBuy(): Single<Boolean> =
-        proxy.isEligibleForSimpleBuy()
+    override fun isEligibleForSimpleBuy(fiatCurrency: String): Single<Boolean> =
+        proxy.isEligibleForSimpleBuy(fiatCurrency)
 
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
         proxy.getBalanceForAsset(crypto)

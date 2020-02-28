@@ -51,7 +51,7 @@ interface CustodialWalletManager {
         currency: String
     ): Single<BankAccount>
 
-    fun isEligibleForSimpleBuy(): Single<Boolean>
+    fun isEligibleForSimpleBuy(fiatCurrency: String): Single<Boolean>
 
     fun isCurrencySupportedForSimpleBuy(
         currency: String
