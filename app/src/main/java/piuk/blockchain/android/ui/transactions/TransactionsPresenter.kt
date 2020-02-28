@@ -37,7 +37,7 @@ import timber.log.Timber
 interface TransactionsView : MvpView {
     fun setupAccountsAdapter(accountsList: List<ItemAccount>)
     fun setupTxFeedAdapter(isCrypto: Boolean)
-    fun updateTransactionDataSet(isCrypto: Boolean, displayObjects: List<Any>)
+    fun updateTransactionDataSet(isCrypto: Boolean, txItems: ActivitySummaryList)
     fun updateAccountsDataSet(accountsList: List<ItemAccount>)
     fun updateSelectedCurrency(cryptoCurrency: CryptoCurrency)
     fun updateBalanceHeader(balance: String)
@@ -72,7 +72,10 @@ class TransactionsPresenter(
     override val alwaysDisableScreenshots: Boolean = false
     override val enableLogoutTimer: Boolean = false
 
-    override fun onViewAttached() { }
+    override fun onViewAttached() {
+        setViewType(currencyState.isDisplayingCryptoCurrency)
+    }
+
     override fun onViewDetached() { }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -116,7 +119,7 @@ class TransactionsPresenter(
     private fun subscribeToEvents() {
         authEventObservable = rxBus.register(AuthEvent::class.java).apply {
             subscribe {
-                view?.updateTransactionDataSet(currencyState.isDisplayingCryptoCurrency, mutableListOf())
+                view?.updateTransactionDataSet(currencyState.isDisplayingCryptoCurrency, listOf())
             }
         }
 
@@ -180,7 +183,9 @@ class TransactionsPresenter(
             CryptoCurrency.XLM -> Completable.complete()
             CryptoCurrency.PAX -> paxAccount.fetchAddressCompletable()
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        }
+        }.doOnError {
+            Timber.e("TRANSACTIONS: Failed to get balance: $it")
+        }.onErrorComplete()
 
     /**
      * API call - Fetches latest transactions for selected currency and account, and updates UI tx list
@@ -216,6 +221,7 @@ class TransactionsPresenter(
     Currency selected from dropdown
      */
     internal fun onCurrencySelected(cryptoCurrency: CryptoCurrency) {
+        Timber.e(">PRESENTER: On Currency Selected")
         // Set new currency state
         crypto = cryptoCurrency
 
@@ -278,7 +284,7 @@ class TransactionsPresenter(
             getAccountAt(position)
                 .doOnSubscribe { view?.setUiState(UiState.LOADING, crypto) }
                 .flatMapCompletable {
-                    updateBalanceAndTransactionsCompletable(it)
+                    updateBalanceAndTransactionsCompletable(it) // Here is the second load!
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnComplete {
                             refreshViewHeaders(it)
@@ -314,8 +320,7 @@ class TransactionsPresenter(
      */
     internal fun onBalanceClick() = setViewType(!currencyState.isDisplayingCryptoCurrency)
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun refreshViewHeaders(account: ItemAccount) {
+    private fun refreshViewHeaders(account: ItemAccount) {
         view?.updateSelectedCurrency(crypto)
         view?.updateBalanceHeader(account.displayBalance ?: "")
     }
@@ -335,7 +340,8 @@ class TransactionsPresenter(
     /**
      * Get accounts based on selected currency. Mutable list necessary for adapter. This needs fixing.
      */
-    private fun getAccounts() = walletAccountHelper.getAccountItemsForOverview()
+    private fun getAccounts() =
+        walletAccountHelper.getAccountItemsForOverview()
 
     private fun getCurrentAccount(): Single<ItemAccount> =
         getAccountAt(view?.getCurrentAccountPosition() ?: 0)

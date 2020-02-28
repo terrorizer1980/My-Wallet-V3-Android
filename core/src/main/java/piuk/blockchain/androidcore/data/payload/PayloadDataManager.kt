@@ -24,6 +24,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcore.utils.rxjava.IgnorableDefaultObserver
+import timber.log.Timber
 import java.io.UnsupportedEncodingException
 import java.math.BigInteger
 import java.util.ArrayList
@@ -551,7 +552,12 @@ class PayloadDataManager(
      */
     fun getMetadataNodeFactory(): Observable<MetadataNodeFactory> =
         if (payloadManager.metadataNodeFactory == null) {
-            loadNodes().map { payloadManager.metadataNodeFactory }
+            loadNodes().map {
+//                if (!it) {
+//                    Timber.e(">> METADATA: Could not loadNodes()")
+//                }
+                payloadManager.metadataNodeFactory
+            }
         } else {
             Observable.just(payloadManager.metadataNodeFactory)
         }

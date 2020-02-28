@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.layout_pax_no_transactions.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.transactions.adapter.AccountsAdapter
 import piuk.blockchain.android.ui.transactions.adapter.TxFeedAdapter
@@ -46,6 +47,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.onItemSelectedListener
+import timber.log.Timber
 
 @Suppress("MemberVisibilityCanPrivate")
 class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, TransactionsPresenter>(),
@@ -64,9 +66,10 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     private var spacerDecoration: BottomSpacerDecoration? = null
     private val compositeDisposable = CompositeDisposable()
 
-    private val itemSelectedListener =
+    private val accountSelectedListener =
         onItemSelectedListener {
-            currency_header?.close()
+            Timber.e(">ACTIVITY: Account selected fired")
+//            currency_header?.close()
             presenter.onAccountSelected(it)
             recyclerview.smoothScrollToPosition(0)
         }
@@ -106,7 +109,10 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
             presenter.onBalanceClick()
             currency_header?.close()
         }
-        currency_header.setSelectionListener { presenter.onCurrencySelected(it) }
+
+        currency_header.setSelectionListener {
+            presenter.onCurrencySelected(it)
+        }
 
         link_what_is_pax.setOnClickListener {
             calloutToExternalSupportLinkDlg(activity, URL_BLOCKCHAIN_PAX_FAQ)
@@ -128,6 +134,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         navigator().showNavigation()
         compositeDisposable += event.subscribe {
             recyclerview?.scrollToPosition(0)
+            Timber.e(">ACTIVITY: On resume - request refresh")
             presenter.requestRefresh()
         }
     }
@@ -147,6 +154,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     }
 
     override fun setupAccountsAdapter(accountsList: List<ItemAccount>) {
+        Timber.e(">ACTIVITY: Setup accounts adapter")
         if (accountsAdapter == null) {
             accountsAdapter = AccountsAdapter(
                 context,
@@ -157,7 +165,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
 
         accounts_spinner.apply {
             adapter = accountsAdapter
-            onItemSelectedListener = itemSelectedListener
+            onItemSelectedListener = accountSelectedListener
             setOnTouchListener { _, event ->
                 event.action == MotionEvent.ACTION_UP && (activity as MainActivity).drawerOpen
             }
@@ -185,19 +193,21 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         if (accountsAdapter?.isNotEmpty == true) {
             accounts_spinner.apply {
                 onItemSelectedListener = null
+                Timber.e(">ACTIVITY: Select default account")
                 setSelection(0, false)
-                onItemSelectedListener = itemSelectedListener
+                onItemSelectedListener = accountSelectedListener
             }
         }
     }
 
     override fun updateAccountsDataSet(accountsList: List<ItemAccount>) {
+        Timber.e(">ACTIVITY: Update accounts dataset")
         accountsAdapter?.updateAccountList(accountsList)
     }
 
-    override fun updateTransactionDataSet(isCrypto: Boolean, displayObjects: List<Any>) {
+    override fun updateTransactionDataSet(isCrypto: Boolean, txItems: ActivitySummaryList) {
         setupTxFeedAdapter(isCrypto)
-        txFeedAdapter!!.items = displayObjects
+        txFeedAdapter!!.items = txItems
         addBottomNavigationBarSpace()
     }
 
@@ -316,13 +326,12 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     private fun onContentLoaded() {
         setShowRefreshing(false)
         no_transaction_include.gone()
-        recyclerview.adapter = txFeedAdapter
     }
 
     private fun onContentLoading() {
         textview_balance.text = ""
         setShowRefreshing(true)
-        recyclerview.adapter = null
+        txFeedAdapter?.items = emptyList()
     }
 
     // Called back by presenter.onGetBitcoinClicked() if buy/sell is not available
@@ -342,23 +351,22 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     /*
     Toggle between fiat - crypto currency
      */
-    override fun onValueClicked(isBtc: Boolean) {
-        presenter.setViewType(isBtc)
+    override fun onValueClicked(isCrypto: Boolean) {
+        presenter.setViewType(isCrypto)
     }
 
     override fun updateSelectedCurrency(cryptoCurrency: CryptoCurrency) {
+        Timber.e(">ACTIVITY: Update selected currency")
         currency_header?.setCurrentlySelectedCurrency(cryptoCurrency)
     }
 
     override fun startSwapOrKyc(targetCurrency: CryptoCurrency) =
         navigator().launchSwapOrKyc(targetCurrency = targetCurrency)
 
-    override fun getCurrentAccountPosition() = accounts_spinner.selectedItemPosition
+    override fun getCurrentAccountPosition() =
+        accounts_spinner.selectedItemPosition
 
     companion object {
-
-//        const val KEY_TRANSACTION_LIST_POSITION = "transaction_list_position"
-        const val KEY_TRANSACTION_HASH = "transaction_hash"
 
         private const val ARGUMENT_BROADCASTING_PAYMENT = "broadcasting_payment"
 
