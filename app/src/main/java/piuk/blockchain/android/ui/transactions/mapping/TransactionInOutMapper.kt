@@ -115,8 +115,6 @@ class TransactionInOutMapper(
             )
         }
 
-    // ----------------------------------------------------------------------------------------------------------------
-
     private fun handleBtcToAndFrom(activitySummaryItem: ActivitySummaryItem) =
         Single.fromCallable {
             val (inputs, outputs) = transactionHelper.filterNonChangeBtcAddresses(activitySummaryItem)

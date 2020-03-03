@@ -68,8 +68,8 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
 
     private val accountSelectedListener =
         onItemSelectedListener {
-            Timber.e(">ACTIVITY: Account selected fired")
-//            currency_header?.close()
+            Timber.d(">ACTIVITY: Account selected fired")
+
             presenter.onAccountSelected(it)
             recyclerview.smoothScrollToPosition(0)
         }
@@ -134,7 +134,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         navigator().showNavigation()
         compositeDisposable += event.subscribe {
             recyclerview?.scrollToPosition(0)
-            Timber.e(">ACTIVITY: On resume - request refresh")
+            Timber.d(">ACTIVITY: On resume - request refresh")
             presenter.requestRefresh()
         }
     }
@@ -154,7 +154,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     }
 
     override fun setupAccountsAdapter(accountsList: List<ItemAccount>) {
-        Timber.e(">ACTIVITY: Setup accounts adapter")
+        Timber.d(">ACTIVITY: Setup accounts adapter")
         if (accountsAdapter == null) {
             accountsAdapter = AccountsAdapter(
                 context,
@@ -201,7 +201,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     }
 
     override fun updateAccountsDataSet(accountsList: List<ItemAccount>) {
-        Timber.e(">ACTIVITY: Update accounts dataset")
+        Timber.d(">ACTIVITY: Update accounts dataset")
         accountsAdapter?.updateAccountList(accountsList)
     }
 
@@ -356,7 +356,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     }
 
     override fun updateSelectedCurrency(cryptoCurrency: CryptoCurrency) {
-        Timber.e(">ACTIVITY: Update selected currency")
+        Timber.d(">ACTIVITY: Update selected currency")
         currency_header?.setCurrentlySelectedCurrency(cryptoCurrency)
     }
 

@@ -55,38 +55,4 @@ class AssetTokensBaseTest {
             .assertNoErrors()
             .assertValue { it.isEmpty() }
     }
-
-    //    @Test
-//    fun getTxFromHashFound() {
-//
-//        val txHash = "TX_HASH"
-//        val tx0 = TestActivitySummaryItem(hash = "")
-//        val tx1 = TestActivitySummaryItem(hash = "")
-//        val tx2 = TestActivitySummaryItem(hash = txHash)
-//
-//        transactionListStore.insertTransactions(listOf(tx0, tx1, tx2))
-//
-//        subject.getTxFromHash(txHash)
-//            .test()
-//            .assertComplete()
-//            .assertNoErrors()
-//            .assertValue(tx2)
-//    }
-//
-//    @Test
-//    fun getTxFromHashNotFound() {
-//
-//        val txHash = "TX_HASH"
-//        val tx0 = TestActivitySummaryItem(hash = "")
-//        val tx1 = TestActivitySummaryItem(hash = "")
-//        val tx2 = TestActivitySummaryItem(hash = "")
-//        transactionListStore.insertTransactions(listOf(tx0, tx1, tx2))
-//
-//        // Act
-//        val testObserver = subject.getTxFromHash(txHash).test()
-//        // Assert
-//        testObserver.assertTerminated()
-//        testObserver.assertNoValues()
-//        testObserver.assertError(NoSuchElementException::class.java)
-//    }
 }
