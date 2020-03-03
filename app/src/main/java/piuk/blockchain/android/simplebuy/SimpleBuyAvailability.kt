@@ -17,9 +17,11 @@ class SimpleBuyAvailability(
     fun isAvailable(): Single<Boolean> {
         val hasStartedAtLeastOnce = simpleBuyPrefs.flowStartedAtLeastOnce()
 
-        val eligibleAvailabilityCheck = custodialWalletManager.isEligibleForSimpleBuy().map {
-            it || hasStartedAtLeastOnce
-        }.onErrorReturn { false }
+        val eligibleAvailabilityCheck = custodialWalletManager
+            .isEligibleForSimpleBuy(currencyPrefs.selectedFiatCurrency)
+            .map {
+                it || hasStartedAtLeastOnce
+            }.onErrorReturn { false }
 
         return custodialWalletManager.isCurrencySupportedForSimpleBuy(currencyPrefs.selectedFiatCurrency)
             .onErrorReturn { false }

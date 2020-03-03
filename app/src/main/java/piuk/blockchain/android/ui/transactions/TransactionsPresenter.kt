@@ -216,12 +216,11 @@ class TransactionsPresenter(
 
         view?.updateTransactionDataSet(currencyState.isDisplayingCryptoCurrency, txs)
     }
-
     /*
     Currency selected from dropdown
      */
     internal fun onCurrencySelected(cryptoCurrency: CryptoCurrency) {
-        Timber.e(">PRESENTER: On Currency Selected")
+        Timber.d(">PRESENTER: On Currency Selected")
         // Set new currency state
         crypto = cryptoCurrency
 
