@@ -27,3 +27,15 @@ fun ItemAccount.formatDisplayBalance(currencyState: CurrencyState, exchangeRates
     } else {
         balance
     }?.toStringWithSymbol() ?: ""
+
+//@Deprecated("Use Display mode overload")
+//private fun getBalanceString(showCrypto: Boolean, balance: CryptoValue): String {
+//    val money = if (showCrypto) balance else balance.toFiat(exchangeRates)
+//    return money.toStringWithSymbol()
+//}
+//
+//private fun CryptoValue.toBalanceString() =
+//    when (currencyState.displayMode) {
+//        CurrencyState.DisplayMode.Crypto -> this
+//        CurrencyState.DisplayMode.Fiat -> this.toFiat(exchangeRates)
+//    }.toStringWithSymbol()

@@ -60,6 +60,7 @@ public class TransferFundsDataManagerTest extends RxTest {
         LegacyAddress legacyAddress1 = new LegacyAddress();
         legacyAddress1.setAddress("address");
         legacyAddress1.setPrivateKey("");
+
         List<LegacyAddress> legacyAddresses = Arrays.asList(legacyAddress1, legacyAddress1, legacyAddress1);
         when(dynamicFeeCache.getBtcFeeOptions().getRegularFee()).thenReturn(1L);
         when(payloadDataManager.getWallet().getLegacyAddressList()).thenReturn(legacyAddresses);

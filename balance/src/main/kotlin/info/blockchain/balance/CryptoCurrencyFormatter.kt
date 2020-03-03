@@ -94,7 +94,7 @@ private fun String.toWebZero() = if (this == "0.0" || this == "0,0" || this == "
 
 private fun createCryptoDecimalFormat(locale: Locale, maxDigits: Int) =
     (NumberFormat.getInstance(locale) as DecimalFormat).apply {
-        minimumFractionDigits = 1
+        minimumFractionDigits = 0
         maximumFractionDigits = maxDigits
         roundingMode = RoundingMode.DOWN
     }

@@ -21,6 +21,7 @@ import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import java.util.Locale
 
 class WalletAccountHelperAccountListingAdapterTest {
 
@@ -29,6 +30,7 @@ class WalletAccountHelperAccountListingAdapterTest {
 
     @Before
     fun setup() {
+        Locale.setDefault(Locale.US)
         whenever(currencyState.displayMode).thenReturn(CurrencyState.DisplayMode.Crypto)
     }
 

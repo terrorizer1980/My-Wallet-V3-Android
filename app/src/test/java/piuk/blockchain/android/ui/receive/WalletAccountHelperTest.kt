@@ -29,7 +29,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
@@ -95,7 +94,13 @@ class WalletAccountHelperTest {
         whenever(payloadManager.getAddressBalance(xPub)).thenReturn(1.2.bitcoin().amount)
         whenever(payloadManager.getAddressBalance(address)).thenReturn(2.3.bitcoin().amount)
         // Act
-        val result = subject.getAccountItemsSingleTest(CryptoCurrency.BTC)
+        val result = subject.accountItems(CryptoCurrency.BTC)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .values()
+            .single()
+
         // Assert
         verify(payloadManager, atLeastOnce()).payload
         result.size `should be` 2
@@ -123,10 +128,16 @@ class WalletAccountHelperTest {
         whenever(bchDataManager.getActiveAccounts()).thenReturn(listOf(account))
         whenever(bchDataManager.getAddressBalance(address)).thenReturn(5.1.bitcoinCash().amount)
         whenever(payloadManager.payload?.legacyAddressList).thenReturn(mutableListOf(legacyAddress))
-
         whenever(bchDataManager.getAddressBalance(xPub)).thenReturn(20.1.bitcoinCash().amount)
+
         // Act
-        val result = subject.getAccountItemsSingleTest(CryptoCurrency.BCH)
+        val result = subject.accountItems(CryptoCurrency.BCH)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .values()
+            .single()
+
         // Assert
         verify(payloadManager, atLeastOnce()).payload
         verify(bchDataManager).getActiveAccounts()
@@ -153,7 +164,13 @@ class WalletAccountHelperTest {
 
         whenever(payloadManager.getAddressBalance(xPub)).thenReturn(BigInteger.TEN)
         // Act
-        val result = subject.getAccountItemsSingleTest(CryptoCurrency.BTC)
+        val result = subject.accountItems(CryptoCurrency.BTC)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .values()
+            .single()
+
         // Assert
         verify(payloadManager, atLeastOnce()).payload
         result.size `should equal` 1
@@ -175,8 +192,15 @@ class WalletAccountHelperTest {
             .thenReturn(mutableListOf(archivedAccount, account))
 
         whenever(bchDataManager.getAddressBalance(xPub)).thenReturn(BigInteger.TEN)
+
         // Act
-        val result = subject.getAccountItemsSingleTest(CryptoCurrency.BCH)
+        val result = subject.accountItems(CryptoCurrency.BCH)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .values()
+            .single()
+
         // Assert
         verify(bchDataManager).getActiveAccounts()
         result.size `should equal` 1
@@ -194,8 +218,15 @@ class WalletAccountHelperTest {
         whenever(ethAccount.address).thenReturn("address")
         whenever(ethDataManager.getEthResponseModel()).thenReturn(combinedEthModel)
         whenever(combinedEthModel.getTotalBalance()).thenReturn(99.1.ether().amount)
+
         // Act
-        val result = subject.getAccountItemsSingleTest(CryptoCurrency.ETHER)
+        val result = subject.accountItems(CryptoCurrency.ETHER)
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+            .values()
+            .single()
+
         // Assert
         verify(ethDataManager, atLeastOnce()).getEthWallet()
         result.size `should be` 1
@@ -271,5 +302,3 @@ class WalletAccountHelperTest {
     }
 }
 
-private fun WalletAccountHelper.getAccountItemsSingleTest(cryptoCurrency: CryptoCurrency): List<ItemAccount> =
-    accountItems(cryptoCurrency).test().values().single()

@@ -106,7 +106,7 @@ class WalletAccountHelper(
         .map {
             ItemAccount(
                 label = it.label,
-                balance = CryptoValue.fromMinor(CryptoCurrency.BCH, payloadManager.getAddressBalance(it.xpub)),
+                balance = CryptoValue.fromMinor(CryptoCurrency.BCH, bchDataManager.getAddressBalance(it.xpub)),
                 accountObject = it,
                 address = it.xpub,
                 type = ItemAccount.TYPE.SINGLE_ACCOUNT

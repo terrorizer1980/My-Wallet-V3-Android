@@ -43,7 +43,7 @@ class WalletAccountHelperAccountListingAdapter(
 
     private fun mapAccountSummary(itemAccount: ItemAccount): AccountChooserItem =
         AccountChooserItem.AccountSummary(
-            label = itemAccount.label ?: "",
+            label = itemAccount.label,
             displayBalance = itemAccount.formatDisplayBalance(currencyState, exchangeRates),
             accountObject = itemAccount.accountObject
         )
@@ -52,8 +52,8 @@ class WalletAccountHelperAccountListingAdapter(
         val legacyAddress = itemAccount.accountObject as? LegacyAddress
 
         return AccountChooserItem.LegacyAddress(
-            label = itemAccount.label ?: "",
-            address = legacyAddress?.address,
+            label = itemAccount.label,
+            address = if (legacyAddress == null) null else itemAccount.address,
             displayBalance = itemAccount.formatDisplayBalance(currencyState, exchangeRates),
             isWatchOnly = legacyAddress?.isWatchOnly ?: true,
             accountObject = itemAccount.accountObject
