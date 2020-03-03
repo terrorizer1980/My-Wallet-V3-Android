@@ -50,7 +50,7 @@ class WalletAccountHelperAccountListingAdapterTest {
             .accountList(CryptoCurrency.BTC)
             .assertSingleAccountSummary {
                 label `should equal` "Acc1"
-                displayBalance `should equal` "123 BTC"
+                displayBalance `should equal` "123.0 BTC"
                 accountObject `should be` account
             }
     }
@@ -71,7 +71,7 @@ class WalletAccountHelperAccountListingAdapterTest {
             .accountList(CryptoCurrency.BCH)
             .assertSingleAccountSummary {
                 label `should equal` "Acc2"
-                displayBalance `should equal` "456 BCH"
+                displayBalance `should equal` "456.0 BCH"
                 accountObject `should be` account
             }
     }
@@ -92,7 +92,7 @@ class WalletAccountHelperAccountListingAdapterTest {
             .accountList(CryptoCurrency.ETHER)
             .assertSingleAccountSummary {
                 label `should equal` "Acc3"
-                displayBalance `should equal` "99 ETH"
+                displayBalance `should equal` "99.0 ETH"
                 accountObject `should be` account
             }
     }
@@ -115,7 +115,7 @@ class WalletAccountHelperAccountListingAdapterTest {
             .accountList(CryptoCurrency.XLM)
             .assertSingleAccountSummary {
                 label `should equal` "Acc4"
-                displayBalance `should equal` "99 XLM"
+                displayBalance `should equal` "99.0 XLM"
                 accountObject `should be` account
             }
     }
@@ -138,7 +138,7 @@ class WalletAccountHelperAccountListingAdapterTest {
             .assertSingleLegacyAddress {
                 label `should equal` "My address"
                 address `should equal` "mhPgaJ366MXe7SNGeaCBBsWAhkM2JfB5Cm"
-                displayBalance `should equal` "7 BTC"
+                displayBalance `should equal` "7.0 BTC"
                 accountObject `should be` account
             }
     }
@@ -161,7 +161,7 @@ class WalletAccountHelperAccountListingAdapterTest {
             .assertSingleLegacyAddress {
                 label `should equal` "My address 2"
                 address `should equal` "mpE7PuLdFQaKfHsFSFqM9FbTvLczB3j1QV"
-                displayBalance `should equal` "8 BCH"
+                displayBalance `should equal` "8.0 BCH"
                 accountObject `should be` account
             }
     }
