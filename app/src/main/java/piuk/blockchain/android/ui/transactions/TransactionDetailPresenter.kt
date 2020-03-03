@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.transactions
 
-import androidx.annotation.VisibleForTesting
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -110,8 +109,7 @@ class TransactionDetailPresenter constructor(
             .subscribe { view?.setFee(it.formatWithUnit()) }
     }
 
-    @VisibleForTesting
-    internal fun setConfirmationStatus(cryptoCurrency: CryptoCurrency, txHash: String, confirmations: Int) {
+    private fun setConfirmationStatus(cryptoCurrency: CryptoCurrency, txHash: String, confirmations: Int) {
         if (confirmations >= cryptoCurrency.requiredConfirmations) {
             view?.setStatus(cryptoCurrency, stringUtils.getString(R.string.transaction_detail_confirmed), txHash)
         } else {
@@ -122,8 +120,7 @@ class TransactionDetailPresenter constructor(
         }
     }
 
-    @VisibleForTesting
-    internal fun getTransactionValueString(fiat: String, transaction: ActivitySummaryItem): Single<String> =
+    private fun getTransactionValueString(fiat: String, transaction: ActivitySummaryItem): Single<String> =
         exchangeRateDataManager.getHistoricPrice(
             transaction.totalCrypto,
             fiat,
