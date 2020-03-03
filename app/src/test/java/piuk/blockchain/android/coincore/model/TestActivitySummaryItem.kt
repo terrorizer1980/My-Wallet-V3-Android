@@ -17,5 +17,6 @@ internal class TestActivitySummaryItem(
     override val hash: String = "",
     override val inputsMap: Map<String, CryptoValue> = emptyMap(),
     override val outputsMap: Map<String, CryptoValue> = emptyMap(),
-    override val description: String? = null
+    override val description: String? = null,
+    override val confirmations: Int = 0
 ) : ActivitySummaryItem(exchangeRates)

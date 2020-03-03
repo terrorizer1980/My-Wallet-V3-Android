@@ -145,163 +145,6 @@ class TransactionDetailPresenterTest {
         verifyNoMoreInteractions(view)
     }
 
-//    @Test
-//     fun onViewReadyTransactionFoundViaHashEthereum() {
-//         //  Arrange
-//         whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-//         whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.SENT)
-//         whenever(displayable1.hash).thenReturn("hash")
-//         whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
-//         whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(3000000000L)))
-//         val maps = HashMap<String, BigInteger>()
-//         maps[""] = BigInteger.TEN
-//         whenever(displayable1.inputsMap).thenReturn(maps)
-//         whenever(displayable1.outputsMap).thenReturn(maps)
-//
-//         whenever(view.txHashDetailLookup()).thenReturn("hash")
-//
-//         whenever(transactionListDataManager.getTxFromHash("hash")).thenReturn(Single.just(displayable1))
-//         whenever(stringUtils.getString(R.string.transaction_detail_pending))
-//             .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-//         whenever(stringUtils.getString(R.string.eth_default_account_label))
-//             .thenReturn("My Ethereum Wallet")
-//
-//         val inputs = HashMap<String, BigInteger>()
-//         val outputs = HashMap<String, BigInteger>()
-//         inputs["addr1"] = BigInteger.valueOf(1000L)
-//         outputs["addr2"] = BigInteger.valueOf(2000L)
-//         val pair = Pair.of(inputs, outputs)
-//         whenever(transactionHelper.filterNonChangeAddresses(any())).thenReturn(pair)
-//         whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-//             .thenReturn(Single.just(1000.usd()))
-//         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
-//             .thenReturn("Value when sent: ")
-//         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-//         whenever(ethDataManager.getTransactionNotes("hash")).thenReturn("note")
-//
-//         //  Act
-//         subject.onViewReady()
-//
-//         //  Assert
-//         verify(view).txHashDetailLookup()
-//
-//         verify(view).setStatus(CryptoCurrency.ETHER, "Pending (0/12 Confirmations)", "hash")
-//         verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
-//         verify(view).setTransactionColour(R.color.product_red_sent_50)
-//         verify(view).setDescription(any())
-//         verify(view).setDate(any())
-//         verify(view).setToAddresses(any())
-//         verify(view).setFromAddress(any())
-//         verify(view).setFee(any())
-//         verify(view).setTransactionValue(any())
-//         verify(view).setTransactionValueFiat(any())
-//         verify(view).onDataLoaded()
-//         verify(view).updateFeeFieldVisibility(any())
-//         verify(view).setIsDoubleSpend(any())
-//         verifyNoMoreInteractions(view)
-//     }
-//
-//     @Test
-//     fun `onViewReady transaction found via hash xlm`() {
-//         //  Arrange
-//         whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.XLM)
-//         whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.SENT)
-//         whenever(displayable1.hash).thenReturn("hash")
-//         whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
-//         whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(396684365L)))
-//         val maps = HashMap<String, BigInteger>()
-//         maps[""] = BigInteger.TEN
-//         whenever(displayable1.inputsMap).thenReturn(maps)
-//         whenever(displayable1.outputsMap).thenReturn(maps)
-//
-//
-//         whenever(view.txHashDetailLookup()).thenReturn("hash")
-//
-//         whenever(transactionListDataManager.getTxFromHash("hash"))
-//             .thenReturn(Single.just(displayable1))
-//         whenever(stringUtils.getString(R.string.transaction_detail_pending))
-//             .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-//         whenever(stringUtils.getString(R.string.xlm_default_account_label))
-//             .thenReturn("My Lumens Wallet")
-//         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
-//             .thenReturn("Value when sent: ")
-//         whenever(xlmDataManager.defaultAccount())
-//             .thenReturn(Single.just(AccountReference.Xlm("My Lumens Wallet", "Account ID")))
-//         whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-//             .thenReturn(Single.just(1000.usd()))
-//
-//         //  Act
-//         subject.onViewReady()
-//
-//         //  Assert
-//
-//         verify(view).txHashDetailLookup()
-//         verify(view).setStatus(CryptoCurrency.XLM, "Pending (0/1 Confirmations)", "hash")
-//         verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
-//         verify(view).setTransactionColour(R.color.product_red_sent_50)
-//         verify(view).setDescription(any())
-//         verify(view).setDate(any())
-//         verify(view).setToAddresses(any())
-//         verify(view).setFromAddress(any())
-//         verify(view, atLeastOnce()).setFee("39.6684365 XLM")
-//         verify(view).hideDescriptionField()
-//         verify(view).setTransactionValue(any())
-//         verify(view).setTransactionValueFiat(any())
-//         verify(view).updateFeeFieldVisibility(any())
-//         verify(view).onDataLoaded()
-//         verify(view).setIsDoubleSpend(any())
-//         verifyNoMoreInteractions(view)
-//     }
-//
-//     @Test
-//     fun `onViewReady transaction found via hash pax`() {
-//         //  Arrange
-//         whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-//         whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.SENT)
-//         whenever(displayable1.hash).thenReturn("hash")
-//         whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
-//         whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
-//         val maps = HashMap<String, BigInteger>()
-//         maps[""] = BigInteger.TEN
-//         whenever(displayable1.inputsMap).thenReturn(maps)
-//         whenever(displayable1.outputsMap).thenReturn(maps)
-//
-//
-//         whenever(view.txHashDetailLookup()).thenReturn("hash")
-//
-//         whenever(transactionListDataManager.getTxFromHash("hash"))
-//             .thenReturn(Single.just(displayable1))
-//         whenever(stringUtils.getString(R.string.transaction_detail_pending))
-//             .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-//         whenever(stringUtils.getString(R.string.pax_default_account_label))
-//             .thenReturn("My Usd pax Wallet")
-//         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
-//             .thenReturn("Value when sent: ")
-//         whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-//         whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-//             .thenReturn(Single.just(1000.usd()))
-//         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
-//
-//         //  Act
-//         subject.onViewReady()
-//         //  Assert
-//
-//         verify(view).txHashDetailLookup()
-//         verify(view).setStatus(CryptoCurrency.PAX, "Pending (0/12 Confirmations)", "hash")
-//         verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
-//         verify(view).setTransactionColour(R.color.product_red_sent_50)
-//         verify(view).setDescription(any())
-//         verify(view).setDate(any())
-//         verify(view).setToAddresses(any())
-//         verify(view).setFromAddress(any())
-//         verify(view).setFee("0.00000154 ETH")
-//         verify(view).setTransactionValue(any())
-//         verify(view).setTransactionValueFiat(any())
-//         verify(view).updateFeeFieldVisibility(any())
-//         verify(view).onDataLoaded()
-//         verify(view).setIsDoubleSpend(any())
-//         verifyNoMoreInteractions(view)
-//     }
 //
 //
 //     @Test
@@ -468,33 +311,6 @@ class TransactionDetailPresenterTest {
 //     }
 //
 //     @Test
-//     fun `getTransactionHash Bch`() {
-//         subject.activitySummaryItem = mock<BchActivitySummaryItem> {
-//             on { hash } `it returns` "hash1"
-//             on { cryptoCurrency } `it returns` CryptoCurrency.BCH
-//         }
-//         subject.transactionHash `should equal` TransactionHash(CryptoCurrency.BCH, "hash1")
-//     }
-//
-//     @Test
-//     fun `getTransactionHash Pax`() {
-//         subject.activitySummaryItem = mock<Erc20ActivitySummaryItem> {
-//             on { hash } `it returns` "hash1"
-//             on { cryptoCurrency } `it returns` CryptoCurrency.PAX
-//         }
-//         subject.transactionHash `should equal` TransactionHash(CryptoCurrency.PAX, "hash1")
-//     }
-//
-//     @Test
-//     fun `getTransactionHash Eth`() {
-//         subject.activitySummaryItem = mock<EthActivitySummaryItem> {
-//             on { hash } `it returns` "hash2"
-//             on { cryptoCurrency } `it returns` CryptoCurrency.ETHER
-//         }
-//         subject.transactionHash `should equal` TransactionHash(CryptoCurrency.ETHER, "hash2")
-//     }
-
-//     @Test
 //     fun setTransactionStatusNoConfirmations() {
 //         //  Arrange
 //         whenever(stringUtils.getString(R.string.transaction_detail_pending))
@@ -547,65 +363,90 @@ class TransactionDetailPresenterTest {
 //         verifyNoMoreInteractions(view)
 //     }
 //
-//     @Test
-//     fun setTransactionColorSent() {
-//         //  Arrange
-//         val displayable: TestActivitySummaryItem = mock()
-//         whenever(displayable.confirmations).thenReturn(2)
-//         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-//         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
-//         //  Act
-//         subject.setTransactionColor(displayable)
-//         //  Assert
-//         verify(view).setTransactionColour(R.color.product_red_sent_50)
-//         verifyNoMoreInteractions(view)
-//     }
-//
-//     @Test
-//     fun setTransactionColorSentConfirmed() {
-//         //  Arrange
-//         val displayable: TestActivitySummaryItem = mock()
-//         whenever(displayable.confirmations).thenReturn(3)
-//         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-//         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
-//         //  Act
-//         subject.setTransactionColor(displayable)
-//         //  Assert
-//         verify(view).setTransactionColour(R.color.product_red_sent)
-//         verifyNoMoreInteractions(view)
-//     }
-//
-//     @Test
-//     fun setTransactionColorReceived() {
-//         //  Arrange
-//         val item: TestActivitySummaryItem = mock()
-//         whenever(item.confirmations).thenReturn(7)
-//         whenever(item.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-//         whenever(item.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
-//
-//
-//         //  Act
-//         subject.setTransactionColor(displayable)
-//
-//         //  Assert
-//         verify(view).setTransactionColour(R.color.product_green_received_50)
-//         verifyNoMoreInteractions(view)
-//     }
-//
-//     @Test
-//     fun setTransactionColorReceivedConfirmed() {
-//         //  Arrange
-//         val displayable: TestActivitySummaryItem = mock()
-//         whenever(displayable.confirmations).thenReturn(3)
-//         whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
-//         whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-//         //  Act
-//         subject.setTransactionColor(displayable)
-//         //  Assert
-//         verify(view).setTransactionColour(R.color.product_green_received)
-//         verifyNoMoreInteractions(view)
-//     }
-//
+    @Test
+    fun setTransactionColorSent() {
+        //  Arrange
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.BTC,
+            direction = TransactionSummary.Direction.SENT,
+            confirmations = 2
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
+        //  Act
+        subject.showDetailsForTransaction(CryptoCurrency.BTC, VALID_TX_HASH)
+
+        //  Assert
+        verify(view).setTransactionColour(R.color.product_red_sent_50)
+    }
+
+    @Test
+    fun setTransactionColorSentConfirmed() {
+        // Arrange
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.BTC,
+            direction = TransactionSummary.Direction.SENT,
+            confirmations = 3
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
+        // Act
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
+
+        // Assert
+        verify(view).setTransactionColour(R.color.product_red_sent)
+    }
+
+    @Test
+    fun setTransactionColorReceived() {
+        // Arrange
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.ETHER,
+            direction = TransactionSummary.Direction.RECEIVED,
+            confirmations = 7
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
+        // Act
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
+
+        // Assert
+        verify(view).setTransactionColour(R.color.product_green_received_50)
+    }
+
+    @Test
+    fun setTransactionColorReceivedConfirmed() {
+        //  Arrange
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.BTC,
+            direction = TransactionSummary.Direction.RECEIVED,
+            confirmations = 3
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
+        //  Act
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
+
+        //  Assert
+        verify(view).setTransactionColour(R.color.product_green_received)
+    }
+
 //     @Test
 //     fun `fee should be hidden if transaction is a fee one`() {
 //         //  Arrange
