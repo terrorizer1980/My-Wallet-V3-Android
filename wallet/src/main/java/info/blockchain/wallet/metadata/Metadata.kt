@@ -2,7 +2,6 @@ package info.blockchain.wallet.metadata
 
 import com.google.common.annotations.VisibleForTesting
 import com.google.common.base.Optional
-
 import info.blockchain.wallet.BlockchainFramework
 import info.blockchain.wallet.api.PersistentUrls
 import info.blockchain.wallet.crypto.AESUtil
@@ -10,7 +9,6 @@ import info.blockchain.wallet.exceptions.MetadataException
 import info.blockchain.wallet.metadata.data.MetadataBody
 import info.blockchain.wallet.util.FormatsUtil
 import info.blockchain.wallet.util.MetadataUtil
-
 import org.bitcoinj.core.ECKey
 import org.bitcoinj.core.Sha256Hash
 import org.bitcoinj.crypto.DeterministicKey
@@ -18,7 +16,6 @@ import org.json.JSONException
 import org.spongycastle.crypto.InvalidCipherTextException
 import org.spongycastle.util.encoders.Base64
 import org.spongycastle.util.encoders.Hex
-
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 

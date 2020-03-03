@@ -2,16 +2,17 @@ package info.blockchain.wallet.metadata;
 
 import info.blockchain.wallet.api.PersistentUrls;
 import info.blockchain.wallet.crypto.AESUtil;
+import info.blockchain.wallet.exceptions.MetadataException;
 import info.blockchain.wallet.metadata.data.RemoteMetadataNodes;
 import info.blockchain.wallet.util.MetadataUtil;
 
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.crypto.DeterministicKey;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-
 /**
  * Restores derived metadata nodes from a metadata node derived from user credentials.
  * This is to avoid repeatedly asking user for second password.
@@ -26,10 +27,21 @@ public class MetadataNodeFactory {
 
     public MetadataNodeFactory(String guid, String sharedKey, String walletPassword) throws Exception {
         this.secondPwNode = deriveSecondPasswordNode(guid, sharedKey, walletPassword);
-
         this.secondPwNodeLegacy = deriveSecondPasswordNodeLegacy(guid, sharedKey, walletPassword);
+    }
+
+    public void deletePwNodeLegacy() {
         deleteMetadataFromNode(secondPwNodeLegacy);
     }
+
+    public void fetchMagicFowSecondPwNode() throws IOException, MetadataException {
+        secondPwNode.fetchMagic();
+    }
+
+    public void fetchMagicFowSecondPwNodeLegacy() throws IOException, MetadataException {
+        secondPwNodeLegacy.fetchMagic();
+    }
+
 
     public boolean isMetadataUsable() {
         try {
@@ -92,10 +104,7 @@ public class MetadataNodeFactory {
         byte[] enc = AESUtil.stringToKey(password + sharedkey, 5000);
 
         final String address = key.toAddress(PersistentUrls.getInstance().getBitcoinParams()).toString();
-        Metadata metadata = new Metadata(address, key, enc, true, -1);  // TODO -1? WTF
-        metadata.fetchMagic();
-
-        return metadata;
+        return new Metadata(address, key, enc, true, -1);  // TODO -1? WTF
     }
 
     private Metadata deriveSecondPasswordNode(String guid, String sharedkey, String password) throws Exception {
@@ -109,15 +118,12 @@ public class MetadataNodeFactory {
         ECKey key = ECKey.fromPrivate(bi);
 
         final String address = key.toAddress(PersistentUrls.getInstance().getBitcoinParams()).toString();
-        Metadata metadata = new Metadata(address, key, key.getPrivKeyBytes(), true, -1);
-        metadata.fetchMagic();
-
-        return metadata;
+        return new Metadata(address, key, key.getPrivKeyBytes(), true, -1);
     }
 
     boolean isLegacySecondPwNodeAvailable() {
         try {
-            return  secondPwNodeLegacy.getMetadata() != null;
+            return secondPwNodeLegacy.getMetadata() != null;
         } catch (Exception e) {
             return false;
         }

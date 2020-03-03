@@ -25,4 +25,10 @@ interface LauncherView : View {
     fun onReEnterPassword()
 
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
+
+    fun showMetadataNodeFailure()
+
+    fun showSecondPasswordDialog()
+
+    fun updateProgressVisibility(show: Boolean)
 }

@@ -4,7 +4,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.text.InputType
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.AppCompatEditText
+import kotlinx.android.synthetic.main.activity_launcher.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.simplebuy.SimpleBuyActivity
@@ -14,7 +17,9 @@ import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.start.LandingActivity
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletActivity
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
+import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.toast
+import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
 import timber.log.Timber
 
 class LauncherActivity : BaseMvpActivity<LauncherView, LauncherPresenter>(), LauncherView {
@@ -74,6 +79,46 @@ class LauncherActivity : BaseMvpActivity<LauncherView, LauncherPresenter>(), Lau
     }
 
     override fun showToast(message: Int, toastType: String) = toast(message, toastType)
+
+    override fun showMetadataNodeFailure() {
+        if (!isFinishing) {
+            AlertDialog.Builder(this, R.style.AlertDialogStyle)
+                .setTitle(R.string.app_name)
+                .setMessage(R.string.metadata_load_failure)
+                .setPositiveButton(R.string.retry) { _, _ -> presenter.onViewReady() }
+                .setNegativeButton(R.string.exit) { _, _ -> presenter.clearLoginState() }
+                .setCancelable(false)
+                .create()
+                .show()
+        }
+    }
+
+    override fun showSecondPasswordDialog() {
+        val editText = AppCompatEditText(this)
+        editText.setHint(R.string.password)
+        editText.inputType =
+            InputType.TYPE_CLASS_TEXT or
+                    InputType.TYPE_TEXT_VARIATION_PASSWORD or
+                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+
+        val frameLayout = ViewUtils.getAlertDialogPaddedView(this, editText)
+
+        AlertDialog.Builder(this, R.style.AlertDialogStyle)
+            .setTitle(R.string.second_password_dlg_title)
+            .setMessage(R.string.eth_second_password_prompt)
+            .setView(frameLayout)
+            .setCancelable(false)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                ViewUtils.hideKeyboard(this)
+                presenter.decryptAndSetupMetadata(editText.text.toString())
+            }
+            .create()
+            .show()
+    }
+
+    override fun updateProgressVisibility(show: Boolean) {
+        progress.visibleIf { show }
+    }
 
     private fun startSingleActivity(clazz: Class<*>, extras: Bundle?, uri: Uri? = null) {
         val intent = Intent(this, clazz).apply {
