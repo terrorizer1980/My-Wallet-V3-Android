@@ -99,7 +99,7 @@ class SimpleBuyModelTest {
 
     @Test
     fun `update kyc state shall make interactor poll for kyc state and update the state accordingly`() {
-        whenever(interactor.pollForKycState())
+        whenever(interactor.pollForKycState("USD"))
             .thenReturn(Single.just(SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_AND_ELIGIBLE)))
         val testObserver = model.state.test()
         model.process(SimpleBuyIntent.FetchKycState)
