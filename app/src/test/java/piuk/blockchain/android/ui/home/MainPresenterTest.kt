@@ -37,19 +37,16 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.android.util.AppUtil
 
 class MainPresenterTest {
 
     private lateinit var subject: MainPresenter
 
     private val view: MainView = mock()
-
     private val prefs: PersistentPrefs = mock()
-    private val appUtil: AppUtil = mock()
     private val accessState: AccessState = mock()
     private val payloadDataManager: PayloadDataManager = mock()
-    private val metadataLoader: MetadataLoader = mock()
+    private val credentialsWiper: CredentialsWiper = mock()
     private val buyDataManager: BuyDataManager = mock()
     private val exchangeRateFactory: ExchangeRateDataManager = mock()
     private val currencyState: CurrencyState = mock()
@@ -96,9 +93,8 @@ class MainPresenterTest {
     fun setUp() {
         subject = MainPresenter(
             prefs = prefs,
-            appUtil = appUtil,
             accessState = accessState,
-            metadataLoader = metadataLoader,
+            credentialsWiper = credentialsWiper,
             payloadDataManager = payloadDataManager,
             buyDataManager = buyDataManager,
             exchangeRateFactory = exchangeRateFactory,

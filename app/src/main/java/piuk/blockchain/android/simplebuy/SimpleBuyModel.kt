@@ -49,7 +49,7 @@ class SimpleBuyModel(
                         onError = { process(SimpleBuyIntent.ErrorIntent()) })
                 }
             }
-            is SimpleBuyIntent.FetchKycState -> interactor.pollForKycState().subscribeBy(
+            is SimpleBuyIntent.FetchKycState -> interactor.pollForKycState(previousState.currency).subscribeBy(
                 onSuccess = { process(it) },
                 onError = { /*never fails. will return SimpleBuyIntent.KycStateUpdated(KycState.FAILED)*/ }
             )
@@ -60,7 +60,7 @@ class SimpleBuyModel(
                 onSuccess = { process(it) },
                 onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )
-            is SimpleBuyIntent.BuyButtonClicked -> interactor.checkTierLevel().subscribeBy(
+            is SimpleBuyIntent.BuyButtonClicked -> interactor.checkTierLevel(previousState.currency).subscribeBy(
                 onSuccess = { process(it) },
                 onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )

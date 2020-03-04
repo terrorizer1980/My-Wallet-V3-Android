@@ -136,7 +136,7 @@ class StubCustodialWalletManager : CustodialWalletManager {
 
         ))
 
-    override fun isEligibleForSimpleBuy(): Single<Boolean> =
+    override fun isEligibleForSimpleBuy(fiatCurrency: String): Single<Boolean> =
         Single.just(true)
 
     override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =

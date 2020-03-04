@@ -106,9 +106,9 @@ class LiveCustodialWalletManager(
                 ?: throw IllegalStateException("Not valid Account returned")
         }
 
-    override fun isEligibleForSimpleBuy(): Single<Boolean> =
+    override fun isEligibleForSimpleBuy(fiatCurrency: String): Single<Boolean> =
         authenticator.authenticate {
-            nabuService.isEligibleForSimpleBuy(it)
+            nabuService.isEligibleForSimpleBuy(it, fiatCurrency)
         }.map {
             it.eligible
         }.onErrorReturn {

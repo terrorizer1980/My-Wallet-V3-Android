@@ -212,7 +212,10 @@ internal interface Nabu {
     ): Single<BankAccountResponse>
 
     @GET(NABU_SIMPLE_BUY_ELIGIBILITY)
-    fun isEligibleForSimpleBuy(@Header("authorization") authorization: String): Single<SimpleBuyEligibility>
+    fun isEligibleForSimpleBuy(
+        @Header("authorization") authorization: String,
+        @Query("fiatCurrency") fiatCurrency: String
+    ): Single<SimpleBuyEligibility>
 
     @POST(NABU_SIMPLE_BUY_ORDERS)
     fun createOrder(

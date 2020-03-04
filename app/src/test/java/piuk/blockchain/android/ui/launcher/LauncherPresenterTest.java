@@ -3,10 +3,8 @@ package piuk.blockchain.android.ui.launcher;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.data.Wallet;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,18 +13,18 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import piuk.blockchain.android.BlockchainTestApplication;
 import piuk.blockchain.android.R;
 import piuk.blockchain.androidcore.data.access.AccessState;
-
+import com.blockchain.logging.CrashLogger;
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.preferences.CurrencyPrefs;
 import com.blockchain.remoteconfig.FeatureFlag;
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager;
-
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
 import piuk.blockchain.androidcore.data.metadata.MetadataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
@@ -34,7 +32,6 @@ import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
 import piuk.blockchain.android.util.AppUtil;
 import piuk.blockchain.androidcore.utils.PersistentPrefs;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -83,6 +80,12 @@ public class LauncherPresenterTest {
     private CurrencyPrefs currencyPrefs;
     @Mock
     private MetadataManager metadataManager;
+    @Mock
+    private Analytics analytics;
+    @Mock
+    private CrashLogger crashLogger;
+    @Mock
+    private Prerequisites prerequisites;
 
     @Before
     public void setUp() {
@@ -100,7 +103,9 @@ public class LauncherPresenterTest {
                 featureFlag,
                 currencyPrefs,
                 custodialWalletManager,
-                metadataManager
+                analytics,
+                prerequisites,
+                crashLogger
         );
         subject.initView(launcherActivity);
         Mockito.when(featureFlag.getEnabled()).thenReturn(Single.just(false));
@@ -122,14 +127,15 @@ public class LauncherPresenterTest {
         when(prefsUtil.isLoggedOut()).thenReturn(false);
         when(appUtil.isSane()).thenReturn(true);
         when(payloadDataManager.getWallet()).thenReturn(wallet);
+        when(prerequisites.initMetadataAndRelatedPrerequisites()).thenReturn(Completable.complete());
+        Settings mockSettings = mock(Settings.class);
+        when(prerequisites.initSettings(any(), any())).thenReturn(Observable.just(mockSettings));
         when(wallet.isUpgraded()).thenReturn(true);
         when(accessState.isLoggedIn()).thenReturn(true);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
         when(wallet.getGuid()).thenReturn(guid);
         when(wallet.getSharedKey()).thenReturn(sharedKey);
-        Settings mockSettings = mock(Settings.class);
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
         when(mockSettings.isEmailVerified()).thenReturn(true);
         when(mockSettings.getCurrency()).thenReturn("USD");
         // Act
@@ -157,9 +163,12 @@ public class LauncherPresenterTest {
         when(accessState.isLoggedIn()).thenReturn(true);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
+        when(prerequisites.initMetadataAndRelatedPrerequisites()).thenReturn(Completable.complete());
+        Settings mockSettings = mock(Settings.class);
+        when(prerequisites.initSettings(any(), any())).thenReturn(Observable.error(new Throwable()));
         when(wallet.getGuid()).thenReturn(guid);
         when(wallet.getSharedKey()).thenReturn(sharedKey);
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.error(new Throwable()));
+
         // Act
         subject.onViewReady();
         // Assert
@@ -189,10 +198,11 @@ public class LauncherPresenterTest {
         when(accessState.isLoggedIn()).thenReturn(true);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
+        when(prerequisites.initMetadataAndRelatedPrerequisites()).thenReturn(Completable.complete());
+        Settings mockSettings = mock(Settings.class);
+        when(prerequisites.initSettings(any(), any())).thenReturn(Observable.just(mockSettings));
         when(wallet.getGuid()).thenReturn(guid);
         when(wallet.getSharedKey()).thenReturn(sharedKey);
-        Settings mockSettings = mock(Settings.class);
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
         when(mockSettings.isEmailVerified()).thenReturn(true);
         when(mockSettings.getCurrency()).thenReturn("USD");
         // Act
@@ -242,10 +252,11 @@ public class LauncherPresenterTest {
         when(accessState.isLoggedIn()).thenReturn(true);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
+        when(prerequisites.initMetadataAndRelatedPrerequisites()).thenReturn(Completable.complete());
+        Settings mockSettings = mock(Settings.class);
+        when(prerequisites.initSettings(any(), any())).thenReturn(Observable.just(mockSettings));
         when(wallet.getGuid()).thenReturn(guid);
         when(wallet.getSharedKey()).thenReturn(sharedKey);
-        Settings mockSettings = mock(Settings.class);
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
         when(mockSettings.isEmailVerified()).thenReturn(true);
         when(mockSettings.getCurrency()).thenReturn("USD");
         // Act

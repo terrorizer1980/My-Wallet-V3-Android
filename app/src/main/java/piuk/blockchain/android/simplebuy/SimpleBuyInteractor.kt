@@ -62,20 +62,22 @@ class SimpleBuyInteractor(
             SimpleBuyIntent.QuoteUpdated(it)
         }
 
-    fun pollForKycState(): Single<SimpleBuyIntent.KycStateUpdated> =
+    fun pollForKycState(fiatCurrency: String): Single<SimpleBuyIntent.KycStateUpdated> =
         tierService.tiers()
             .flatMap {
                 when {
                     it.combinedState == Kyc2TierState.Tier2Approved ->
-                        custodialWalletManager.isEligibleForSimpleBuy().map { eligible ->
+                        custodialWalletManager.isEligibleForSimpleBuy(fiatCurrency).map { eligible ->
                             if (eligible) {
                                 SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_AND_ELIGIBLE)
                             } else {
                                 SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_BUT_NOT_ELIGIBLE)
                             }
                         }
-                    it.combinedState.isRejectedOrInReview() ->
+                    it.combinedState.isRejected() ->
                         Single.just(SimpleBuyIntent.KycStateUpdated(KycState.FAILED))
+                    it.combinedState.isInReview() ->
+                        Single.just(SimpleBuyIntent.KycStateUpdated(KycState.IN_REVIEW))
                     else -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.PENDING))
                 }
             }.onErrorReturn {
@@ -92,17 +94,18 @@ class SimpleBuyInteractor(
                 }
             }
 
-    fun checkTierLevel(): Single<SimpleBuyIntent.KycStateUpdated> {
+    fun checkTierLevel(fiatCurrency: String): Single<SimpleBuyIntent.KycStateUpdated> {
 
         return tierService.tiers().flatMap {
             when (it.combinedState) {
-                Kyc2TierState.Tier2Approved -> custodialWalletManager.isEligibleForSimpleBuy().map { eligible ->
-                    if (eligible) {
-                        SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_AND_ELIGIBLE)
-                    } else {
-                        SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_BUT_NOT_ELIGIBLE)
+                Kyc2TierState.Tier2Approved -> custodialWalletManager.isEligibleForSimpleBuy(fiatCurrency)
+                    .map { eligible ->
+                        if (eligible) {
+                            SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_AND_ELIGIBLE)
+                        } else {
+                            SimpleBuyIntent.KycStateUpdated(KycState.VERIFIED_BUT_NOT_ELIGIBLE)
+                        }
                     }
-                }
                 Kyc2TierState.Tier2Failed -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.FAILED))
                 Kyc2TierState.Tier2InPending -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.IN_REVIEW))
                 else -> Single.just(SimpleBuyIntent.KycStateUpdated(KycState.PENDING))
@@ -110,9 +113,11 @@ class SimpleBuyInteractor(
         }.onErrorReturn { SimpleBuyIntent.KycStateUpdated(KycState.PENDING) }
     }
 
-    private fun Kyc2TierState.isRejectedOrInReview(): Boolean =
+    private fun Kyc2TierState.isRejected(): Boolean =
         this == Kyc2TierState.Tier1Failed ||
-                this == Kyc2TierState.Tier1InReview ||
-                this == Kyc2TierState.Tier2InReview ||
                 this == Kyc2TierState.Tier2Failed
+
+    private fun Kyc2TierState.isInReview(): Boolean =
+        this == Kyc2TierState.Tier1InReview ||
+                this == Kyc2TierState.Tier2InReview
 }

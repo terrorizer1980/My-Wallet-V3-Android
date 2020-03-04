@@ -5,14 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutManager
 import android.os.Bundle
-import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.FIND_VIEWS_WITH_TEXT
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
@@ -59,6 +57,8 @@ import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.inject
@@ -93,6 +93,10 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         internal set
 
     private var handlingResult = false
+
+    private val _refreshAnnouncements = PublishSubject.create<Unit>()
+    val refreshAnnouncements: Observable<Unit>
+        get() = _refreshAnnouncements
 
     private var activityResultAction: () -> Unit = {}
 
@@ -518,19 +522,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         startActivity(intent)
     }
 
-    override fun showMetadataNodeFailure() {
-        if (!isFinishing) {
-            AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                .setTitle(R.string.app_name)
-                .setMessage(R.string.metadata_load_failure)
-                .setPositiveButton(R.string.retry) { _, _ -> presenter.initMetadataElements() }
-                .setNegativeButton(R.string.exit) { _, _ -> presenter.clearLoginState() }
-                .setCancelable(false)
-                .create()
-                .show()
-        }
-    }
-
     override fun kickToLauncherPage() {
         startSingleActivity(LauncherActivity::class.java)
     }
@@ -663,29 +654,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         }
     }
 
-    override fun showSecondPasswordDialog() {
-        val editText = AppCompatEditText(this)
-        editText.setHint(R.string.password)
-        editText.inputType =
-            InputType.TYPE_CLASS_TEXT or
-                    InputType.TYPE_TEXT_VARIATION_PASSWORD or
-                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-
-        val frameLayout = ViewUtils.getAlertDialogPaddedView(this, editText)
-
-        AlertDialog.Builder(this, R.style.AlertDialogStyle)
-            .setTitle(R.string.second_password_dlg_title)
-            .setMessage(R.string.eth_second_password_prompt)
-            .setView(frameLayout)
-            .setCancelable(false)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                ViewUtils.hideKeyboard(this)
-                presenter.decryptAndSetupMetadata(editText.text.toString())
-            }
-            .create()
-            .show()
-    }
-
     override fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
         ToastCustom.makeText(this, getString(message), ToastCustom.LENGTH_SHORT, toastType)
     }
@@ -779,6 +747,10 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         val fragment = TransactionsFragment.newInstance(true)
         replaceContentFragment(fragment)
         toolbar_general.title = ""
+    }
+
+    override fun refreshAnnouncements() {
+        _refreshAnnouncements.onNext(Unit)
     }
 
     override fun launchKycIntro() {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,29 +13,29 @@
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="@dimen/large_margin"
         android:layout_marginEnd="@dimen/standard_margin"
-        tools:text="@string/basic_transfer_title"
-        android:contentDescription="@string/basic_transfer_title"/>
+        android:contentDescription="@string/basic_transfer_title"
+        tools:text="@string/basic_transfer_title" />
 
     <FrameLayout
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:layout_gravity="center"
         android:layout_marginStart="@dimen/standard_margin"
-        android:layout_marginEnd="@dimen/standard_margin"
-        android:importantForAccessibility="no"
         android:layout_marginTop="40dp"
-        android:layout_gravity="center">
+        android:layout_marginEnd="@dimen/standard_margin"
+        android:importantForAccessibility="no">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:srcCompat="@drawable/vector_bitcoin_cash_colored"/>
+            tools:srcCompat="@drawable/vector_bitcoin_cash_colored" />
 
         <ProgressBar
             android:id="@+id/progress"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
     </FrameLayout>
 
@@ -69,7 +68,7 @@
                 android:layout_marginStart="@dimen/standard_margin"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="@dimen/standard_margin"
-                tools:text="0.1142857 BTC"/>
+                tools:text="0.1142857 BTC" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/body_text"
@@ -77,10 +76,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/huge_margin"
-                android:layout_marginEnd="@dimen/huge_margin"
                 android:layout_marginTop="@dimen/large_margin"
-                android:text="@string/basic_transfer_body"
-                android:contentDescription="@string/basic_transfer_body" />
+                android:layout_marginEnd="@dimen/huge_margin"
+                android:contentDescription="@string/basic_transfer_body"
+                android:text="@string/basic_transfer_body" />
 
         </LinearLayout>
 
@@ -97,8 +96,8 @@
                 android:layout_marginStart="@dimen/standard_margin"
                 android:layout_marginTop="@dimen/large_margin"
                 android:layout_marginEnd="@dimen/standard_margin"
-                tools:text="@string/basic_transfer_complete_title"
-                android:contentDescription="@string/basic_transfer_complete_title"/>
+                android:contentDescription="@string/basic_transfer_complete_title"
+                tools:text="@string/basic_transfer_complete_title" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/complete_message"
@@ -106,10 +105,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/huge_margin"
-                android:layout_marginEnd="@dimen/huge_margin"
                 android:layout_marginTop="@dimen/small_margin"
-                android:text="@string/basic_transfer_complete_body"
-                android:contentDescription="@string/basic_transfer_complete_body"/>
+                android:layout_marginEnd="@dimen/huge_margin"
+                android:contentDescription="@string/basic_transfer_complete_body"
+                android:text="@string/basic_transfer_complete_body" />
 
         </LinearLayout>
     </ViewSwitcher>
@@ -121,6 +120,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/standard_margin"
         android:contentDescription="@string/btn_ok"
-        android:text="@string/basic_transfer_cta"/>
+        android:text="@string/basic_transfer_cta" />
 
 </LinearLayout>

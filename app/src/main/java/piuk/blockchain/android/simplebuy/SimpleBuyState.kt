@@ -103,7 +103,7 @@ data class SimpleBuyState(
 }
 
 enum class KycState {
-    PENDING, /** no docs submitted for Gold. Or Gold submit was error. Or kyc backend query returned an error  */
+    PENDING, /** Docs submitted for Gold and state is pending. Or kyc backend query returned an error  */
     FAILED, /** Docs processed, failed kyc. Not error state. */
     IN_REVIEW, /** Docs processed under manual review */
     UNDECIDED, /** Docs submitted, no result know from server yet */
