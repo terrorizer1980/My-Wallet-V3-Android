@@ -3,6 +3,7 @@ package piuk.blockchain.android.coincore
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.testutils.usdPax
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.verify
@@ -96,12 +97,9 @@ class PAXTokensTest {
         )
 
         val itemAccount = ItemAccount(
-            "PAX",
-            "1.0 PAX",
-            null,
-            1L,
-            null,
-            "AccountID"
+            label = "PAX",
+            balance = 1.0.usdPax(),
+            address = "AccountID"
         )
 
         subject.doFetchActivity(itemAccount)

@@ -2,17 +2,22 @@ package piuk.blockchain.android.ui.transactions
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.notifications.models.NotificationPayload
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
-import info.blockchain.wallet.api.Environment
+import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
@@ -26,6 +31,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcoreui.ui.base.UiState
 
 class TransactionsPresenterTest {
 
@@ -34,6 +40,8 @@ class TransactionsPresenterTest {
 
     private val exchangeRateDataManager: ExchangeRateDataManager = mock()
     private val assetSelect: AssetTokenLookup = mock()
+    private val assetTokens: AssetTokens = mock()
+
     private val ethDataManager: EthDataManager = mock()
     private val paxAccount: Erc20Account = mock()
     private val payloadDataManager: PayloadDataManager = mock()
@@ -73,24 +81,9 @@ class TransactionsPresenterTest {
         whenever(rxBus.register(NotificationPayload::class.java)).thenReturn(Observable.empty())
         whenever(rxBus.register(AuthEvent::class.java)).thenReturn(Observable.empty())
 
+        whenever(assetSelect[any()]).thenReturn(assetTokens)
+
         subject.attachView(view)
-    }
-
-    @Test
-    fun onViewReady() {
-        //  Arrange
-        whenever(environmentSettings.environment).thenReturn(Environment.PRODUCTION)
-
-        val account: ItemAccount = mock()
-        whenever(walletAccountHelper.getAccountItemsForOverview()).thenReturn(Single.just(mutableListOf(account)))
-        whenever(currencyState.isDisplayingCryptoCurrency).thenReturn(true)
-
-        //  Act
-        subject.onViewResumed()
-
-        //  Assert
-        verify(view).setupAccountsAdapter(mutableListOf(account))
-        verify(view).setupTxFeedAdapter(true)
     }
 
     @Test
@@ -109,45 +102,42 @@ class TransactionsPresenterTest {
         verify(rxBus).unregister(AuthEvent::class.java, authEventObservable)
     }
 
-//     @Test
-//     fun requestRefresh() {
-//         //  Arrange
-// 
-//         //  getCurrentAccount()
-//         whenever(view.getCurrentAccountPosition()).thenReturn(0)
-//         val account: ItemAccount = mock()
-//         whenever(walletAccountHelper.getAccountItemsForOverview()).thenReturn(Single.just(mutableListOf(account)))
-//         whenever(account.displayBalance).thenReturn("0.052 BTC")
-// 
-//         whenever(exchangeRateFactory.updateTickers()).thenReturn(Completable.complete())
-//         whenever(bchDataManager.refreshMetadataCompletable()).thenReturn(Completable.complete())
-//         whenever(ethDataManager.fetchEthAddress()).thenReturn(Observable.empty())
-//         whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-//         whenever(payloadDataManager.updateAllBalances()).thenReturn(Completable.complete())
-//         whenever(transactionListDataManager.fetchTransactions(any(), any(), any()))
-//             .thenReturn(Observable.empty())
-// 
-//         whenever(currencyState.isDisplayingCryptoCurrency).thenReturn(true)
-// 
-//         whenever(swipeToReceiveHelper.storeAll())
-//             .thenReturn(Completable.complete())
-//         //  Act
-//         subject.requestRefresh()
-// 
-//         //  Assert
-//         verify(view).setUiState(UiState.LOADING)
-//         verify(view).updateSelectedCurrency(CryptoCurrency.BTC)
-//         verify(view).updateBalanceHeader("0.052 BTC")
-//         verify(view).updateAccountsDataSet(mutableListOf(account))
-//         verify(view).generateLauncherShortcuts()
-//         verify(view).updateTransactionValueType(true)
-//     }
-// 
+    @Test
+    fun requestRefresh() {
+        //  Arrange
+        whenever(view.getCurrentAccountPosition()).thenReturn(0)
+
+        val account: ItemAccount = mock {
+            on { balance } itReturns CryptoValue.fromMinor(CryptoCurrency.BTC, 0.052.toBigDecimal())
+        }
+        whenever(walletAccountHelper.getAccountItemsForOverview(CryptoCurrency.BTC))
+            .thenReturn(Single.just(mutableListOf(account)))
+
+        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
+        whenever(payloadDataManager.updateAllBalances()).thenReturn(Completable.complete())
+        whenever(exchangeRateDataManager.updateTickers()).thenReturn(Completable.complete())
+
+        whenever(assetTokens.fetchActivity(account)).thenReturn(Single.just(emptyList()))
+        whenever(transactionNotes.updateWithNotes(any())).thenReturn(Single.just(emptyList()))
+
+        whenever(currencyState.isDisplayingCryptoCurrency).thenReturn(true)
+
+        //  Act
+        subject.requestRefresh()
+
+        //  Assert
+        verify(view).setUiState(UiState.LOADING, CryptoCurrency.BTC)
+        verify(view).updateSelectedCurrency(CryptoCurrency.BTC)
+        verify(view).updateBalanceHeader(any())
+        verify(view).updateAccountsDataSet(mutableListOf(account))
+        verify(view).updateTransactionValueType(true)
+    }
 
     @Test
     fun `onGetBitcoinClicked canBuy returns true`() {
         //  Arrange
-        whenever(buyDataManager.canBuy).thenReturn(Single.just(true))
+        whenever(buyDataManager.canBuy)
+            .thenReturn(Single.just(true))
 
         //  Act
         subject.onGetBitcoinClicked()
