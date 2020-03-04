@@ -47,7 +47,7 @@
                 android:textSize="14sp" />
 
             <Button
-                android:id="@+id/button_get_bitcoin"
+                android:id="@+id/button_get_crypto"
                 style="@style/CtaButton.Blue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

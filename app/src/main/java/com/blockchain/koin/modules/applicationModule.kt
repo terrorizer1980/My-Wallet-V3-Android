@@ -18,11 +18,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
+import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
@@ -107,9 +107,10 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
 import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
-import piuk.blockchain.android.ui.transactions.TransactionHelper
+import piuk.blockchain.android.ui.transactions.mapping.TransactionHelper
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
 import piuk.blockchain.android.ui.transactions.TransactionsPresenter
+import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutMapper
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
@@ -229,8 +230,6 @@ val applicationModule = applicationContext {
         }
 
         factory { KycStatusHelper(get(), get(), get(), get()) }
-
-        factory { TransactionListDataManager(get(), get(), get(), get(), get(), get(), get()) }
 
         factory {
             FingerprintHelper(
@@ -556,16 +555,11 @@ val applicationModule = applicationContext {
 
         factory {
             TransactionDetailPresenter(
-                transactionHelper = get(),
+                assetLookup = get(),
+                inputOutputMapper = get(),
                 prefs = get(),
-                payloadDataManager = get(),
                 stringUtils = get(),
-                transactionListDataManager = get(),
-                exchangeRateDataManager = get(),
-                bchDataManager = get(),
-                ethDataManager = get(),
-                environmentSettings = get(),
-                xlmDataManager = get()
+                exchangeRateDataManager = get()
             )
         }
 
@@ -828,25 +822,29 @@ val applicationModule = applicationContext {
             )
         }
 
+        bean {
+            TransactionNoteUpdater(
+                exchangeService = get(),
+                shapeShiftDataManager = get(),
+                coinifyDataManager = get(),
+                stringUtils = get()
+            )
+        }
+
         factory {
             TransactionsPresenter(
                 exchangeRateDataManager = get(),
-                transactionListDataManager = get(),
+                assetSelect = get(),
+                transactionNotes = get(),
                 ethDataManager = get(),
                 paxAccount = get("pax"),
                 payloadDataManager = get(),
                 buyDataManager = get(),
-                stringUtils = get(),
-                prefs = get(),
                 rxBus = get(),
                 currencyState = get(),
-                shapeShiftDataManager = get(),
                 bchDataManager = get(),
                 walletAccountHelper = get(),
-                environmentSettings = get(),
-                exchangeService = get(),
-                coinifyDataManager = get(),
-                fiatExchangeRates = get()
+                environmentSettings = get()
             )
         }
 
@@ -869,7 +867,24 @@ val applicationModule = applicationContext {
             )
         }
 
-        factory { TransactionHelper(get(), get()) }
+        factory {
+            TransactionInOutMapper(
+                transactionHelper = get(),
+                payloadDataManager = get(),
+                stringUtils = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                xlmDataManager = get(),
+                environmentSettings = get()
+            )
+        }
+
+        factory {
+            TransactionHelper(
+                payloadDataManager = get(),
+                bchDataManager = get()
+            )
+        }
 
         factory {
             SettingsPresenter(

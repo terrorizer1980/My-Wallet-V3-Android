@@ -4,26 +4,17 @@ import androidx.annotation.VisibleForTesting
 import com.blockchain.annotations.CommonCode
 import com.blockchain.notifications.models.NotificationPayload
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.formatWithUnit
 import info.blockchain.wallet.api.Environment
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import piuk.blockchain.android.R
-import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
-import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
-import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
-import piuk.blockchain.androidbuysell.models.coinify.BlockchainDetails
-import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
@@ -31,33 +22,30 @@ import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import com.blockchain.swap.shapeshift.ShapeShiftDataManager
-import com.blockchain.swap.shapeshift.data.Trade
+import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.android.coincore.AssetTokens
+import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
-import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
-import piuk.blockchain.androidcore.data.transactions.models.Displayable
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import timber.log.Timber
 
 interface TransactionsView : MvpView {
     fun setupAccountsAdapter(accountsList: List<ItemAccount>)
     fun setupTxFeedAdapter(isCrypto: Boolean)
-    fun updateTransactionDataSet(isCrypto: Boolean, displayObjects: List<Any>)
+    fun updateTransactionDataSet(isCrypto: Boolean, txItems: ActivitySummaryList)
     fun updateAccountsDataSet(accountsList: List<ItemAccount>)
     fun updateSelectedCurrency(cryptoCurrency: CryptoCurrency)
     fun updateBalanceHeader(balance: String)
     fun selectDefaultAccount()
-    fun setUiState(@UiState.UiStateDef uiState: Int)
+    fun setUiState(@UiState.UiStateDef uiState: Int, crypto: CryptoCurrency)
     fun updateTransactionValueType(showCrypto: Boolean)
     fun startReceiveFragmentBtc()
     fun startBuyActivity()
     fun getCurrentAccountPosition(): Int?
-    fun generateLauncherShortcuts()
     fun startSwapOrKyc(targetCurrency: CryptoCurrency)
     fun setDropdownVisibility(visible: Boolean)
     fun disableCurrencyHeader()
@@ -65,22 +53,17 @@ interface TransactionsView : MvpView {
 
 class TransactionsPresenter(
     private val exchangeRateDataManager: ExchangeRateDataManager,
-    private val transactionListDataManager: TransactionListDataManager,
+    private val assetSelect: AssetTokenLookup,
     private val ethDataManager: EthDataManager,
     private val paxAccount: Erc20Account,
-    internal val payloadDataManager: PayloadDataManager,
+    private val payloadDataManager: PayloadDataManager,
     private val buyDataManager: BuyDataManager,
-    private val stringUtils: StringUtils,
-    private val prefs: PersistentPrefs,
     private val rxBus: RxBus,
     private val currencyState: CurrencyState,
-    private val shapeShiftDataManager: ShapeShiftDataManager,
     private val bchDataManager: BchDataManager,
     private val walletAccountHelper: WalletAccountHelper,
     private val environmentSettings: EnvironmentConfig,
-    private val exchangeService: ExchangeService,
-    private val coinifyDataManager: CoinifyDataManager,
-    private val fiatExchangeRates: FiatExchangeRates
+    private val transactionNotes: TransactionNoteUpdater // Move to asset token/coincore
 ) : MvpPresenter<TransactionsView>() {
 
     override val alwaysDisableScreenshots: Boolean = false
@@ -89,36 +72,36 @@ class TransactionsPresenter(
     override fun onViewAttached() { }
     override fun onViewDetached() { }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var notificationObservable: Observable<NotificationPayload>? = null
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var authEventObservable: Observable<AuthEvent>? = null
     val exchangePaxRequested = PublishSubject.create<Unit>()
 
-    private var shortcutsGenerated = false
+    private val assetTokens: AssetTokens
+        get() = assetSelect[currencyState.cryptoCurrency]
 
-    private val updateBalanceAndTransactionsCompletable: (ItemAccount) -> Completable = {
-        Completable.concat(
-            listOf(
-                updateBalancesCompletable(),
-                updateTransactionsListCompletable(it)
-            )
-        )
-    }
+    private var crypto: CryptoCurrency
+        get() = currencyState.cryptoCurrency
+        set(v) { currencyState.cryptoCurrency = v }
 
     override fun onViewResumed() {
         super.onViewResumed()
 
+        subscribeToEvents()
+
+        setViewType(currencyState.isDisplayingCryptoCurrency)
+
         onAccountsAdapterSetup()
         onTxFeedAdapterSetup()
-        subscribeToEvents()
+
         if (environmentSettings.environment == Environment.TESTNET) {
-            currencyState.cryptoCurrency = CryptoCurrency.BTC
+            crypto = CryptoCurrency.BTC
             view?.disableCurrencyHeader()
         }
 
         compositeDisposable += exchangePaxRequested.subscribe {
-            view?.startSwapOrKyc(currencyState.cryptoCurrency)
+            view?.startSwapOrKyc(crypto)
         }
     }
 
@@ -131,12 +114,7 @@ class TransactionsPresenter(
     private fun subscribeToEvents() {
         authEventObservable = rxBus.register(AuthEvent::class.java).apply {
             subscribe {
-                // Clear tx feed
-                view?.updateTransactionDataSet(
-                    currencyState.isDisplayingCryptoCurrency,
-                    mutableListOf()
-                )
-                transactionListDataManager.clearTransactionList()
+                view?.updateTransactionDataSet(currencyState.isDisplayingCryptoCurrency, listOf())
             }
         }
 
@@ -145,101 +123,90 @@ class TransactionsPresenter(
         }
     }
 
-    private fun refreshAll(account: ItemAccount): Single<Boolean> =
-        getUpdateTickerCompletable()
-            .andThen(updateBalanceAndTransactionsCompletable(account))
-            .andThen(getAccounts().map { it.size > 1 })
-
     internal fun requestRefresh() {
         compositeDisposable +=
             getCurrentAccount()
                 .flatMap { refreshAll(it) }
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { view?.setUiState(UiState.LOADING) }
-                .doOnError { view?.setUiState(UiState.FAILURE) }
-                .doOnSuccess {
-                    view?.setDropdownVisibility(it)
-                    if (!shortcutsGenerated) {
-                        shortcutsGenerated = true
-                        refreshLauncherShortcuts()
+                .doOnSubscribe { view?.setUiState(UiState.LOADING, crypto) }
+                .doOnError { view?.setUiState(UiState.FAILURE, crypto) }
+                .subscribeBy(
+                    onSuccess = {
+                        view?.setDropdownVisibility(it)
+                        setViewType(currencyState.isDisplayingCryptoCurrency)
+                    },
+                    onError = {
+                        Timber.e(it)
                     }
-                    setViewType(currencyState.isDisplayingCryptoCurrency)
-                }
-                .doOnError { Timber.e(it) }
-                .subscribe()
+                )
     }
 
-    private val tokenSingle: Single<String>
-        get() = exchangeService.getExchangeMetaData()
-            .singleOrError()
-            .map { it.coinify?.token ?: "" }
+    private fun refreshAll(account: ItemAccount): Single<Boolean> =
+        getUpdateTickerCompletable()
+            .andThen(updateBalanceAndTransactionsCompletable(account))
+            .andThen(getAccounts().map { it.size > 1 })
 
-    @VisibleForTesting
-    internal fun getUpdateTickerCompletable(): Completable = exchangeRateDataManager.updateTickers()
+    private fun getUpdateTickerCompletable(): Completable =
+        exchangeRateDataManager.updateTickers()
+
+    private val updateBalanceAndTransactionsCompletable: (ItemAccount) -> Completable = {
+        Completable.concat(
+            listOf(
+                updateBalancesCompletable(),
+                updateTransactionsListCompletable(it)
+            )
+        )
+    }
 
     /**
      * API call - Fetches latest balance for selected currency and updates UI balance
      */
-    @VisibleForTesting
-    internal fun updateBalancesCompletable() =
-        when (currencyState.cryptoCurrency) {
+    private fun updateBalancesCompletable() =
+        when (crypto) {
             CryptoCurrency.BTC -> payloadDataManager.updateAllBalances()
             CryptoCurrency.ETHER -> ethDataManager.fetchEthAddressCompletable()
             CryptoCurrency.BCH -> bchDataManager.updateAllBalances()
             CryptoCurrency.XLM -> Completable.complete()
             CryptoCurrency.PAX -> paxAccount.fetchAddressCompletable()
             CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-        }
+        }.doOnError {
+            Timber.e("TRANSACTIONS: Failed to get balance: $it")
+        }.onErrorComplete()
 
     /**
      * API call - Fetches latest transactions for selected currency and account, and updates UI tx list
      */
-    @VisibleForTesting
-    internal fun updateTransactionsListCompletable(account: ItemAccount): Completable {
-        return Completable.fromObservable(Observable.defer {
-            transactionListDataManager.fetchTransactions(account, 50, 0)
-                .flatMap { txs ->
-                    Observable.zip(
-                        getShapeShiftTxNotesObservable(),
-                        getCoinifyTxNotesObservable(),
-                        mergeReduce()
-                    ).observeOn(AndroidSchedulers.mainThread())
-                        .doOnNext { txNotesMap -> processTxNotes(txs, txNotesMap) }
-                        .doOnError {
-                            Timber.e(it)
-                            view?.setUiState(UiState.FAILURE)
-                        }
+    private fun updateTransactionsListCompletable(account: ItemAccount): Completable {
+        return Completable.defer {
+            assetTokens.fetchActivity(account)
+                .flatMap { txs -> transactionNotes.updateWithNotes(txs)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSuccess {
+                        updateUiTxList(it)
                     }
-        })
+                    .doOnError {
+                        Timber.e(it)
+                        view?.setUiState(UiState.FAILURE, crypto)
+                    }
+                }
+                .ignoreElement()
+        }
     }
 
-    private fun processTxNotes(txs: List<Displayable>, txNotesMap: Map<String, String>) {
-        for (tx in txs) {
-        // Add shapeShift notes
-            txNotesMap[tx.hash]?.let { tx.note = it }
-
-            val cryptoValue = CryptoValue(currencyState.cryptoCurrency, tx.total)
-            tx.totalDisplayableCrypto = cryptoValue.formatWithUnit()
-            tx.totalDisplayableFiat = cryptoValue.getFiatDisplayString()
-        }
-
+    private fun updateUiTxList(txs: ActivitySummaryList) {
         when {
-            txs.isEmpty() -> view?.setUiState(UiState.EMPTY)
-            else -> view?.setUiState(UiState.CONTENT)
+            txs.isEmpty() -> view?.setUiState(UiState.EMPTY, crypto)
+            else -> view?.setUiState(UiState.CONTENT, crypto)
         }
 
-        view?.updateTransactionDataSet(
-            currencyState.isDisplayingCryptoCurrency,
-            txs
-        )
+        view?.updateTransactionDataSet(currencyState.isDisplayingCryptoCurrency, txs)
     }
 
-    /*
-    Currency selected from dropdown
-     */
+    /* Currency selected from dropdown */
     internal fun onCurrencySelected(cryptoCurrency: CryptoCurrency) {
+        Timber.d(">PRESENTER: On Currency Selected")
         // Set new currency state
-        currencyState.cryptoCurrency = cryptoCurrency
+        crypto = cryptoCurrency
 
         // Select default account for this currency
         compositeDisposable +=
@@ -254,13 +221,13 @@ class TransactionsPresenter(
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
-                    view?.setUiState(UiState.LOADING)
+                    view?.setUiState(UiState.LOADING, crypto)
                     refreshAccountDataSet()
                 }
                 .subscribeBy(
                     onError = {
                         Timber.e(it)
-                        view?.setUiState(UiState.FAILURE)
+                        view?.setUiState(UiState.FAILURE, crypto)
                     },
                     onComplete = {
                         view?.selectDefaultAccount()
@@ -268,67 +235,21 @@ class TransactionsPresenter(
                 )
     }
 
-    private fun getShapeShiftTxNotesObservable() =
-        shapeShiftDataManager.getTradesList()
-            .map { processShapeShiftTxNotes(it) }
-            .doOnError { Timber.e(it) }
-            .onErrorReturn { emptyMap() }
-
-    private fun processShapeShiftTxNotes(list: List<Trade>): Map<String, String> { // TxHash -> description
-        val mutableMap: MutableMap<String, String> = mutableMapOf()
-
-        for (trade in list) {
-            trade.hashIn?.let {
-                mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_to))
-            }
-            trade.hashOut?.let {
-                mutableMap.put(it, stringUtils.getString(R.string.morph_deposit_from))
-            }
-        }
-        return mutableMap.toMap()
-    }
-
-    private fun getCoinifyTxNotesObservable() =
-        tokenSingle.flatMap {
-            coinifyDataManager.getTrades(it).toList()
-        }.doOnError { Timber.e(it) }
-            .map { processCoinifyTxNotes(it) }
-            .toObservable()
-            .onErrorReturn { emptyMap() }
-
-    private fun processCoinifyTxNotes(list: List<CoinifyTrade>): Map<String, String> { // TxId -> description
-        val mutableMap: MutableMap<String, String> = mutableMapOf()
-        for (trade in list) {
-            val transfer = if (trade.isSellTransaction()) {
-                trade.transferIn.details as BlockchainDetails
-            } else {
-                trade.transferOut.details as BlockchainDetails
-            }
-            transfer.eventData?.txId?.let {
-                mutableMap.put(
-                    it,
-                    stringUtils.getFormattedString(
-                        R.string.buy_sell_transaction_list_label,
-                        trade.id
-                    )
-                )
-            }
-        }
-        return mutableMap.toMap()
-    }
-
     @CommonCode("This can be moved elsewhere, so other 'get BTC' actions can make the same call")
     internal fun onGetBitcoinClicked() {
         compositeDisposable +=
             buyDataManager.canBuy
-                .subscribe(
-                    {
+                .subscribeBy(
+                    onSuccess = {
                         if (it) {
                             view?.startBuyActivity()
                         } else {
                             view?.startReceiveFragmentBtc()
                         }
-                    }, { Timber.e(it) }
+                    },
+                    onError = {
+                        Timber.e(it)
+                    }
                 )
     }
 
@@ -347,9 +268,9 @@ class TransactionsPresenter(
     internal fun onAccountSelected(position: Int) {
         compositeDisposable +=
             getAccountAt(position)
-                .doOnSubscribe { view?.setUiState(UiState.LOADING) }
+                .doOnSubscribe { view?.setUiState(UiState.LOADING, crypto) }
                 .flatMapCompletable {
-                    updateBalanceAndTransactionsCompletable(it)
+                    updateBalanceAndTransactionsCompletable(it) // Here is the second load!
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnComplete {
                             refreshViewHeaders(it)
@@ -357,7 +278,7 @@ class TransactionsPresenter(
                         }
                 }
                 .doOnError { Timber.e(it) }
-                .subscribeBy(onError = { view?.setUiState(UiState.FAILURE) })
+                .subscribeBy(onError = { view?.setUiState(UiState.FAILURE, crypto) })
     }
 
     /*
@@ -385,22 +306,16 @@ class TransactionsPresenter(
      */
     internal fun onBalanceClick() = setViewType(!currencyState.isDisplayingCryptoCurrency)
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun refreshViewHeaders(account: ItemAccount) {
-        view?.updateSelectedCurrency(currencyState.cryptoCurrency)
+    private fun refreshViewHeaders(account: ItemAccount) {
+        view?.updateSelectedCurrency(crypto)
         view?.updateBalanceHeader(account.displayBalance ?: "")
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun refreshAccountDataSet() {
+    private fun refreshAccountDataSet() {
         compositeDisposable +=
             getAccounts()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy { view?.updateAccountsDataSet(it) }
-    }
-
-    private fun refreshLauncherShortcuts() {
-        view?.generateLauncherShortcuts()
     }
 
     private fun onTxFeedAdapterSetup() {
@@ -410,26 +325,12 @@ class TransactionsPresenter(
     /**
      * Get accounts based on selected currency. Mutable list necessary for adapter. This needs fixing.
      */
-    private fun getAccounts() = walletAccountHelper.getAccountItemsForOverview()
+    private fun getAccounts() =
+        walletAccountHelper.getAccountItemsForOverview()
 
-    private fun getCurrentAccount(): Single<ItemAccount> = getAccountAt(view?.getCurrentAccountPosition() ?: 0)
+    private fun getCurrentAccount(): Single<ItemAccount> =
+        getAccountAt(view?.getCurrentAccountPosition() ?: 0)
 
     private fun getAccountAt(position: Int): Single<ItemAccount> = getAccounts()
         .map { it[if (position < 0 || position >= it.size) 0 else position] }
-
-    private fun CryptoValue.getFiatDisplayString(): String =
-        fiatExchangeRates.getFiat(this).toStringWithSymbol()
-
-    private fun <T, R> mergeReduce(): BiFunction<Map<T, R>, Map<T, R>, Map<T, R>> =
-        BiFunction { firstMap, secondMap ->
-            mutableMapOf<T, R>().apply {
-                putAll(firstMap)
-                putAll(secondMap)
-            }.toMap()
-        }
-
-    internal fun areLauncherShortcutsEnabled() =
-        prefs.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
-
-    internal fun getCurrentCurrency() = currencyState.cryptoCurrency
 }

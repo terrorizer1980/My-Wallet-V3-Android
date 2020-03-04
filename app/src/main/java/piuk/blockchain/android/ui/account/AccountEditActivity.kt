@@ -1,13 +1,11 @@
 package piuk.blockchain.android.ui.account
 
 import android.Manifest
-import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ShortcutManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.annotation.StringRes
@@ -29,7 +27,6 @@ import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import info.blockchain.balance.CryptoCurrency
-import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
@@ -39,7 +36,6 @@ import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
@@ -59,7 +55,6 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
 
     @Suppress("MemberVisibilityCanBePrivate")
     private val accountEditPresenter: AccountEditPresenter by inject()
-    private val payloadDataManager: PayloadDataManager by inject()
     private val appUtil: AppUtil by inject()
     private val analytics: Analytics by inject()
     private val rxBus: RxBus by inject()
@@ -342,17 +337,8 @@ class AccountEditActivity : BaseMvpActivity<AccountEditView, AccountEditPresente
         }
     }
 
-    @SuppressLint("NewApi")
     override fun updateAppShortcuts() {
-        if (AndroidUtils.is25orHigher() && presenter.areLauncherShortcutsEnabled()) {
-            val launcherShortcutHelper = LauncherShortcutHelper(
-                this,
-                payloadDataManager,
-                getSystemService(ShortcutManager::class.java)
-            )
-
-            launcherShortcutHelper.generateReceiveShortcuts()
-        }
+        LauncherShortcutHelper(this).generateReceiveShortcuts()
     }
 
     override fun createPresenter() = accountEditPresenter

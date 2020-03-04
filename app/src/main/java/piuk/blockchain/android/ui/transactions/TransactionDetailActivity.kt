@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.transactions
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,17 +17,22 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.res.ResourcesCompat
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
+import com.blockchain.ui.urllinks.makeBlockExplorerUrl
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.multiaddress.TransactionSummary.Direction
 import kotlinx.android.synthetic.main.activity_transaction_details.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.transactions.mapping.TransactionDetailModel
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.visible
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Locale
 
@@ -35,6 +41,8 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
 
     private val transactionDetailPresenter: TransactionDetailPresenter by inject()
     private val analytics: Analytics by inject()
+
+    private var shareIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,33 +54,12 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
 
         edit_icon.setOnClickListener { description_field.performClick() }
 
-        description_field.setOnClickListener { descriptionFieldClickListener() }
-
         onViewReady()
     }
 
-    private fun descriptionFieldClickListener() {
-        val editText = AppCompatEditText(this).apply {
-            inputType = INPUT_FIELD_FLAGS
-
-            val maxLength = 256
-            val fArray = arrayOfNulls<InputFilter>(1)
-            fArray[0] = InputFilter.LengthFilter(maxLength)
-            filters = fArray
-            setText(presenter.transactionNote)
-            setSelection(text?.length ?: 0)
-            contentDescription = resources.getString(R.string.edit_transaction_hint)
-        }
-
-        AlertDialog.Builder(this, R.style.AlertDialogStyle)
-            .setTitle(R.string.app_name)
-            .setView(ViewUtils.getAlertDialogPaddedView(this, editText))
-            .setNegativeButton(android.R.string.cancel, null)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                presenter.updateTransactionNote(editText.text.toString())
-                setDescription(editText.text.toString())
-            }
-            .show()
+    override fun onStart() {
+        super.onStart()
+        presenter.showDetailsForTransaction(intent.cryptoCurrency, intent.txHash)
     }
 
     override fun setTransactionType(type: Direction, isFeeTransaction: Boolean) {
@@ -96,29 +83,48 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
         loading_layout.gone()
     }
 
-    override fun setTransactionColour(@ColorRes colour: Int) {
-        transaction_amount.setTextColor(ResourcesCompat.getColor(resources, colour, theme))
-        transaction_type.setTextColor(ResourcesCompat.getColor(resources, colour, theme))
-    }
-
     override fun setTransactionNote(note: String?) {
         if (!note.isNullOrEmpty()) {
             transaction_note.text = note
             transaction_note_layout.visible()
+
+            description_field.setOnClickListener {
+                descriptionFieldClickListener(note)
+            }
         }
+    }
+
+    private fun descriptionFieldClickListener(note: String) {
+        val editText = AppCompatEditText(this).apply {
+            inputType = INPUT_FIELD_FLAGS
+            filters = arrayOf(InputFilter.LengthFilter(MAX_NOTE_LENGTH))
+            setText(note)
+            setSelection(note.length)
+            contentDescription = resources.getString(R.string.edit_transaction_hint)
+        }
+
+        AlertDialog.Builder(this, R.style.AlertDialogStyle)
+            .setTitle(R.string.app_name)
+            .setView(ViewUtils.getAlertDialogPaddedView(this, editText))
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                presenter.updateTransactionNote(editText.text.toString())
+                setDescription(editText.text.toString())
+            }
+            .show()
     }
 
     override fun updateFeeFieldVisibility(isVisible: Boolean) {
         transaction_fee.goneIf(!isVisible)
     }
 
-    override fun hideDescriptionField() {
-        description_layout.gone()
-        description_layout_divider.gone()
+    override fun setTransactionColour(@ColorRes colour: Int) {
+        transaction_amount.setTextColor(ResourcesCompat.getColor(resources, colour, theme))
+        transaction_type.setTextColor(ResourcesCompat.getColor(resources, colour, theme))
     }
 
-    override fun setTransactionValue(value: String?) {
-        transaction_amount.text = value
+    override fun setTransactionValue(value: CryptoValue) {
+        transaction_amount.text = value.toStringWithSymbol()
     }
 
     override fun setTransactionValueFiat(fiat: String?) {
@@ -129,32 +135,34 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
         if (addresses.size == 1) {
             to_address.text = addresses[0].address
 
-            if (addresses[0].hasAddressDecodeError()) {
+            if (addresses[0].addressDecodeError) {
                 to_address.setTextColor(ResourcesCompat.getColor(resources, R.color.product_red_medium, theme))
             }
         } else {
             to_address.text = String.format(Locale.getDefault(), "%1s Recipients", addresses.size)
             to_address.setOnClickListener { to_spinner.performClick() }
             to_spinner.visible()
-            val adapter = TransactionDetailAdapter(ArrayList(addresses))
-            to_spinner.adapter = adapter
+            to_spinner.adapter = TransactionDetailAdapter(addresses)
             to_spinner.onItemSelectedListener = null
         }
     }
 
-    override fun setDate(date: String?) {
-        txt_date.text = date
-    }
-
     override fun setDescription(description: String?) {
-        description_field.text = description
+        if (description != null) {
+            description_layout.visible()
+            description_layout_divider.visible()
+            description_field.text = description
+        } else {
+            description_layout.gone()
+            description_layout_divider.gone()
+        }
     }
 
     override fun setFromAddress(addresses: List<TransactionDetailModel>) {
         if (addresses.size == 1) {
             from_address.text = addresses[0].address
 
-            if (addresses[0].hasAddressDecodeError()) {
+            if (addresses[0].addressDecodeError) {
                 from_address.setTextColor(ResourcesCompat.getColor(resources, R.color.product_red_medium, theme))
             }
         } else {
@@ -170,7 +178,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
     override fun setStatus(
         cryptoCurrency: CryptoCurrency,
         status: String?,
-        hash: String?
+        hash: String
     ) {
         txt_status.text = status
 
@@ -188,11 +196,19 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
             else -> { }
         }
 
+        val explorerUri = makeBlockExplorerUrl(cryptoCurrency, hash)
         button_verify.setOnClickListener {
-            val viewIntent = Intent(Intent.ACTION_VIEW)
-            viewIntent.data = Uri.parse(presenter.transactionHash.explorerUrl)
-            startActivity(viewIntent)
+            Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(explorerUri)
+                startActivity(this)
+            }
             analytics.logEvent(TransactionsAnalyticsEvents.ViewOnWeb(cryptoCurrency.symbol))
+        }
+
+        shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, explorerUri)
+            type = "text/plain"
         }
     }
 
@@ -205,13 +221,12 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_share -> {
-                val shareIntent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, presenter.transactionHash.explorerUrl)
-                    type = "text/plain"
+                shareIntent?.let {
+                    startActivity(
+                        Intent.createChooser(shareIntent, getString(R.string.transaction_detail_share_chooser))
+                    )
+                    analytics.logEvent(TransactionsAnalyticsEvents.ItemShare(intent.cryptoCurrency))
                 }
-                startActivity(Intent.createChooser(shareIntent, getString(R.string.transaction_detail_share_chooser)))
-                analytics.logEvent(TransactionsAnalyticsEvents.ItemShare(presenter.displayable.cryptoCurrency.symbol))
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -233,15 +248,19 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
             String.format(Locale.getDefault(), getString(R.string.transaction_detail_fee), fee)
     }
 
+    @SuppressLint("SetTextI18n")
+    override fun setDate(datetimeMillis: Long) {
+        val dateFormat = SimpleDateFormat.getDateInstance(DateFormat.LONG)
+        val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        val dateText = dateFormat.format(datetimeMillis)
+        val timeText = timeFormat.format(datetimeMillis)
+
+        txt_date.text = "$dateText @ $timeText"
+    }
+
     override fun pageFinish() {
         finish()
     }
-
-    override fun txHashDetailLookup(): String? =
-        intent?.getStringExtra(TransactionsFragment.KEY_TRANSACTION_HASH)
-
-    override fun positionDetailLookup(): Int =
-        intent?.getIntExtra(TransactionsFragment.KEY_TRANSACTION_LIST_POSITION, -1) ?: -1
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
@@ -253,18 +272,35 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
     override fun getView() = this
 
     companion object {
+        private const val MAX_NOTE_LENGTH = 255
+
         private const val INPUT_FIELD_FLAGS: Int = (
                 InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
                         InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE or
                         InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
                 )
 
-        fun start(context: Context, args: Bundle) {
-            context.startActivity(
-                Intent(context, TransactionDetailActivity::class.java).apply {
-                    putExtras(args)
+        private const val KEY_CRYPTO = "crypto_currency"
+        private const val KEY_TRANSACTION_HASH = "tx_hash"
+
+        fun start(ctx: Context, crypto: CryptoCurrency, txHash: String) {
+            ctx.startActivity(
+                Intent(ctx, TransactionDetailActivity::class.java).apply {
+                    putExtras(
+                        Bundle().also {
+                            it.putString(KEY_CRYPTO, crypto.symbol)
+                            it.putString(KEY_TRANSACTION_HASH, txHash)
+                        }
+                    )
                 }
             )
         }
     }
+
+    private val Intent?.cryptoCurrency: CryptoCurrency
+        get() = CryptoCurrency.fromSymbol(this?.getStringExtra(KEY_CRYPTO) ?: "BTC")
+            ?: CryptoCurrency.BTC
+
+    private val Intent?.txHash: String
+        get() = this?.getStringExtra(KEY_TRANSACTION_HASH) ?: ""
 }

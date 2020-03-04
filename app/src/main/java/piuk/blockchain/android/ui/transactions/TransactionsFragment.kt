@@ -1,9 +1,6 @@
 package piuk.blockchain.android.ui.transactions
 
-import android.annotation.TargetApi
 import android.content.Context
-import android.content.pm.ShortcutManager
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -12,6 +9,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_FAQ
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.disposables.CompositeDisposable
@@ -24,6 +22,7 @@ import kotlinx.android.synthetic.main.layout_pax_no_transactions.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.transactions.adapter.AccountsAdapter
 import piuk.blockchain.android.ui.transactions.adapter.TxFeedAdapter
@@ -38,13 +37,13 @@ import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.UiState
-import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.onItemSelectedListener
+import timber.log.Timber
 
 @Suppress("MemberVisibilityCanPrivate")
 class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, TransactionsPresenter>(),
@@ -56,15 +55,17 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
 
     private var accountsAdapter: AccountsAdapter? = null
     private var txFeedAdapter: TxFeedAdapter? = null
+    private val prefs: CurrencyPrefs by inject()
 
     private val rxBus: RxBus by inject()
 
     private var spacerDecoration: BottomSpacerDecoration? = null
     private val compositeDisposable = CompositeDisposable()
 
-    private val itemSelectedListener =
+    private val accountSelectedListener =
         onItemSelectedListener {
-            currency_header?.close()
+            Timber.d(">ACTIVITY: Account selected fired")
+
             presenter.onAccountSelected(it)
             recyclerview.smoothScrollToPosition(0)
         }
@@ -104,7 +105,10 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
             presenter.onBalanceClick()
             currency_header?.close()
         }
-        currency_header.setSelectionListener { presenter.onCurrencySelected(it) }
+
+        currency_header.setSelectionListener {
+            presenter.onCurrencySelected(it)
+        }
 
         link_what_is_pax.setOnClickListener {
             calloutToExternalSupportLinkDlg(activity, URL_BLOCKCHAIN_PAX_FAQ)
@@ -124,11 +128,10 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         super.onResume()
 
         navigator().showNavigation()
-        compositeDisposable += event.subscribe { event ->
-            if (activity != null) {
-                recyclerview?.scrollToPosition(0)
-                presenter.requestRefresh()
-            }
+        compositeDisposable += event.subscribe {
+            recyclerview?.scrollToPosition(0)
+            Timber.d(">ACTIVITY: On resume - request refresh")
+            presenter.requestRefresh()
         }
     }
 
@@ -147,6 +150,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     }
 
     override fun setupAccountsAdapter(accountsList: List<ItemAccount>) {
+        Timber.d(">ACTIVITY: Setup accounts adapter")
         if (accountsAdapter == null) {
             accountsAdapter = AccountsAdapter(
                 context,
@@ -157,11 +161,13 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
 
         accounts_spinner.apply {
             adapter = accountsAdapter
-            onItemSelectedListener = itemSelectedListener
+            onItemSelectedListener = accountSelectedListener
             setOnTouchListener { _, event ->
                 event.action == MotionEvent.ACTION_UP && (activity as MainActivity).drawerOpen
             }
         }
+
+        LauncherShortcutHelper(activity).generateReceiveShortcuts()
     }
 
     override fun setupTxFeedAdapter(isCrypto: Boolean) {
@@ -169,7 +175,8 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
             txFeedAdapter = TxFeedAdapter(
                 activity,
                 isCrypto,
-                this
+                this,
+                prefs.selectedFiatCurrency
             )
 
             recyclerview.layoutManager = LayoutManager(context!!)
@@ -184,19 +191,21 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         if (accountsAdapter?.isNotEmpty == true) {
             accounts_spinner.apply {
                 onItemSelectedListener = null
+                Timber.e(">ACTIVITY: Select default account")
                 setSelection(0, false)
-                onItemSelectedListener = itemSelectedListener
+                onItemSelectedListener = accountSelectedListener
             }
         }
     }
 
     override fun updateAccountsDataSet(accountsList: List<ItemAccount>) {
+        Timber.d(">ACTIVITY: Update accounts dataset")
         accountsAdapter?.updateAccountList(accountsList)
     }
 
-    override fun updateTransactionDataSet(isCrypto: Boolean, displayObjects: List<Any>) {
+    override fun updateTransactionDataSet(isCrypto: Boolean, txItems: ActivitySummaryList) {
         setupTxFeedAdapter(isCrypto)
-        txFeedAdapter!!.items = displayObjects
+        txFeedAdapter!!.items = txItems
         addBottomNavigationBarSpace()
     }
 
@@ -217,21 +226,15 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         }
     }
 
-    /**
-     * Updates launcher shortcuts with latest receive address
-     */
-    @TargetApi(Build.VERSION_CODES.M)
-    override fun generateLauncherShortcuts() {
-        if (AndroidUtils.is25orHigher() && presenter.areLauncherShortcutsEnabled()) {
-            val launcherShortcutHelper = LauncherShortcutHelper(
-                activity,
-                presenter.payloadDataManager,
-                activity.getSystemService(ShortcutManager::class.java)
-            )
-
-            launcherShortcutHelper.generateReceiveShortcuts()
-        }
-    }
+//    /**
+//     * Updates launcher shortcuts with latest receive address
+//     */
+//    @TargetApi(Build.VERSION_CODES.M)
+//    override fun generateLauncherShortcuts() {
+//        if (AndroidUtils.is25orHigher() && presenter.areLauncherShortcutsEnabled()) {
+//            val launcherShortcutHelper =
+//        }
+//    }
 
     override fun updateTransactionValueType(showCrypto: Boolean) {
         txFeedAdapter?.onViewFormatUpdated(showCrypto)
@@ -253,23 +256,23 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         layout_spinner.goneIf { !visible }
     }
 
-    override fun setUiState(uiState: Int) {
+    override fun setUiState(uiState: Int, crypto: CryptoCurrency) {
         when (uiState) {
             UiState.FAILURE,
-            UiState.EMPTY -> onEmptyState()
+            UiState.EMPTY -> onEmptyState(crypto)
             UiState.CONTENT -> onContentLoaded()
             UiState.LOADING -> onContentLoading()
         }
     }
 
-    private fun onEmptyState() {
+    private fun onEmptyState(crypto: CryptoCurrency) {
         setShowRefreshing(false)
         no_transaction_include.visible()
 
-        when (presenter.getCurrentCurrency()) {
+        when (crypto) {
             CryptoCurrency.BTC -> {
-                button_get_bitcoin.setText(R.string.onboarding_get_bitcoin)
-                button_get_bitcoin.setOnClickListener {
+                button_get_crypto.setText(R.string.onboarding_get_bitcoin)
+                button_get_crypto.setOnClickListener {
                     presenter.onGetBitcoinClicked()
                 }
                 description.setText(R.string.transaction_occur_when_bitcoin)
@@ -277,22 +280,22 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
                 non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.ETHER -> {
-                button_get_bitcoin.setText(R.string.onboarding_get_eth)
-                button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.ETHER) }
+                button_get_crypto.setText(R.string.onboarding_get_eth)
+                button_get_crypto.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.ETHER) }
                 description.setText(R.string.transaction_occur_when_eth)
                 pax_no_transactions.gone()
                 non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.BCH -> {
-                button_get_bitcoin.setText(R.string.onboarding_get_bitcoin_cash)
-                button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.BCH) }
+                button_get_crypto.setText(R.string.onboarding_get_bitcoin_cash)
+                button_get_crypto.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.BCH) }
                 description.setText(R.string.transaction_occur_when_bitcoin_cash)
                 pax_no_transactions.gone()
                 non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.XLM -> {
-                button_get_bitcoin.setText(R.string.onboarding_get_lumens)
-                button_get_bitcoin.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.XLM) }
+                button_get_crypto.setText(R.string.onboarding_get_lumens)
+                button_get_crypto.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.XLM) }
                 description.setText(R.string.transaction_occur_when_lumens)
                 pax_no_transactions.gone()
                 non_pax_no_transactions_container.visible()
@@ -307,7 +310,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
                 }
             }
             else -> throw IllegalArgumentException(
-                "Cryptocurrency ${presenter.getCurrentCurrency().unit} not supported"
+                "Cryptocurrency ${crypto.symbol} not supported"
             )
         }
     }
@@ -315,13 +318,12 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     private fun onContentLoaded() {
         setShowRefreshing(false)
         no_transaction_include.gone()
-        recyclerview.adapter = txFeedAdapter
     }
 
     private fun onContentLoading() {
         textview_balance.text = ""
         setShowRefreshing(true)
-        recyclerview.adapter = null
+        txFeedAdapter?.items = emptyList()
     }
 
     // Called back by presenter.onGetBitcoinClicked() if buy/sell is not available
@@ -333,35 +335,30 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
 
     override fun startBuyActivity() = navigator().launchBuySell()
 
-    override fun onTransactionClicked(correctedPosition: Int, absolutePosition: Int) {
-        val bundle = Bundle()
-        bundle.putInt(KEY_TRANSACTION_LIST_POSITION, correctedPosition)
-        TransactionDetailActivity.start(activity as Context, bundle)
-        currency_header?.getCurrentlySelectedCurrency()?.symbol?.let {
-            analytics.logEvent(TransactionsAnalyticsEvents.ItemClick(it))
-        }
+    override fun onTransactionClicked(crypto: CryptoCurrency, txHash: String) {
+        TransactionDetailActivity.start(this.requireContext(), crypto, txHash)
+        analytics.logEvent(TransactionsAnalyticsEvents.ItemClick(crypto))
     }
 
     /*
     Toggle between fiat - crypto currency
      */
-    override fun onValueClicked(isBtc: Boolean) {
-        presenter.setViewType(isBtc)
+    override fun onValueClicked(isCrypto: Boolean) {
+        presenter.setViewType(isCrypto)
     }
 
     override fun updateSelectedCurrency(cryptoCurrency: CryptoCurrency) {
+        Timber.d(">ACTIVITY: Update selected currency")
         currency_header?.setCurrentlySelectedCurrency(cryptoCurrency)
     }
 
     override fun startSwapOrKyc(targetCurrency: CryptoCurrency) =
         navigator().launchSwapOrKyc(targetCurrency = targetCurrency)
 
-    override fun getCurrentAccountPosition() = accounts_spinner.selectedItemPosition
+    override fun getCurrentAccountPosition() =
+        accounts_spinner.selectedItemPosition
 
     companion object {
-
-        const val KEY_TRANSACTION_LIST_POSITION = "transaction_list_position"
-        const val KEY_TRANSACTION_HASH = "transaction_hash"
 
         private const val ARGUMENT_BROADCASTING_PAYMENT = "broadcasting_payment"
 

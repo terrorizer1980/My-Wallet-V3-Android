@@ -1,5 +1,7 @@
 package com.blockchain.ui.urllinks
 
+import info.blockchain.balance.CryptoCurrency
+
 const val URL_BLOCKCHAIN_SUPPORT_PORTAL =
     "https://support.blockchain.com/"
 
@@ -48,3 +50,15 @@ const val STX_STACKS_LEARN_MORE =
 
 const val MODULAR_TERMS_AND_CONDITIONS =
     "https://exchange.blockchain.com/legal#modulr"
+
+fun makeBlockExplorerUrl(
+    cryptoCurrency: CryptoCurrency,
+    transactionHash: String
+) = when (cryptoCurrency) {
+    CryptoCurrency.BTC -> "https://www.blockchain.com/btc/tx/"
+    CryptoCurrency.ETHER -> "https://www.blockchain.com/eth/tx/"
+    CryptoCurrency.BCH -> "https://www.blockchain.com/bch/tx/"
+    CryptoCurrency.XLM -> "https://stellarchain.io/tx/"
+    CryptoCurrency.PAX -> "https://www.blockchain.com/eth/tx/"
+    CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+} + transactionHash

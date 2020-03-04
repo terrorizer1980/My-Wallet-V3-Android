@@ -8,13 +8,13 @@ import org.amshove.kluent.`should equal`
 import org.junit.Test
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.transactions.adapter.formatting
-import piuk.blockchain.androidcore.data.transactions.models.Displayable
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 
-class DisplayableFormattingTest {
+class ActivitySummaryItemFormattingTest {
 
     @Test
     fun `sent text`() {
-        mock<Displayable> {
+        mock<ActivitySummaryItem> {
             on { direction } `it returns` TransactionSummary.Direction.SENT
             on { cryptoCurrency } `it returns` CryptoCurrency.BTC
             on { confirmations } `it returns` CryptoCurrency.BTC.requiredConfirmations
@@ -25,7 +25,7 @@ class DisplayableFormattingTest {
 
     @Test
     fun `received text`() {
-        mock<Displayable> {
+        mock<ActivitySummaryItem> {
             on { direction } `it returns` TransactionSummary.Direction.SENT
             on { cryptoCurrency } `it returns` CryptoCurrency.BCH
             on { confirmations } `it returns` CryptoCurrency.BCH.requiredConfirmations
@@ -36,7 +36,7 @@ class DisplayableFormattingTest {
 
     @Test
     fun `transferred text`() {
-        mock<Displayable> {
+        mock<ActivitySummaryItem> {
             on { direction } `it returns` TransactionSummary.Direction.TRANSFERRED
             on { cryptoCurrency } `it returns` CryptoCurrency.ETHER
             on { confirmations } `it returns` CryptoCurrency.ETHER.requiredConfirmations
@@ -47,7 +47,7 @@ class DisplayableFormattingTest {
 
     @Test
     fun `after send confirmed, should be red sent colour`() {
-        mock<Displayable> {
+        mock<ActivitySummaryItem> {
             on { direction } `it returns` TransactionSummary.Direction.SENT
             on { cryptoCurrency } `it returns` CryptoCurrency.BTC
             on { confirmations } `it returns` CryptoCurrency.BTC.requiredConfirmations
@@ -59,7 +59,7 @@ class DisplayableFormattingTest {
 
     @Test
     fun `before send confirmed, should be half red sent colour`() {
-        mock<Displayable> {
+        mock<ActivitySummaryItem> {
             on { direction } `it returns` TransactionSummary.Direction.SENT
             on { cryptoCurrency } `it returns` CryptoCurrency.BTC
             on { confirmations } `it returns` CryptoCurrency.BTC.requiredConfirmations - 1
@@ -71,7 +71,7 @@ class DisplayableFormattingTest {
 
     @Test
     fun `after received confirmed, should be green received colour`() {
-        mock<Displayable> {
+        mock<ActivitySummaryItem> {
             on { direction } `it returns` TransactionSummary.Direction.RECEIVED
             on { cryptoCurrency } `it returns` CryptoCurrency.ETHER
             on { confirmations } `it returns` CryptoCurrency.ETHER.requiredConfirmations
@@ -83,7 +83,7 @@ class DisplayableFormattingTest {
 
     @Test
     fun `before received confirmed, should be half green received colour`() {
-        mock<Displayable> {
+        mock<ActivitySummaryItem> {
             on { direction } `it returns` TransactionSummary.Direction.RECEIVED
             on { cryptoCurrency } `it returns` CryptoCurrency.ETHER
             on { confirmations } `it returns` CryptoCurrency.ETHER.requiredConfirmations - 1
@@ -95,7 +95,7 @@ class DisplayableFormattingTest {
 
     @Test
     fun `after transfer confirmed, should be gray transferred colour`() {
-        mock<Displayable> {
+        mock<ActivitySummaryItem> {
             on { direction } `it returns` TransactionSummary.Direction.TRANSFERRED
             on { cryptoCurrency } `it returns` CryptoCurrency.BCH
             on { confirmations } `it returns` CryptoCurrency.BCH.requiredConfirmations
@@ -107,7 +107,7 @@ class DisplayableFormattingTest {
 
     @Test
     fun `before transfer confirmed, should be half gray transferred colour`() {
-        mock<Displayable> {
+        mock<ActivitySummaryItem> {
             on { direction } `it returns` TransactionSummary.Direction.TRANSFERRED
             on { cryptoCurrency } `it returns` CryptoCurrency.BCH
             on { confirmations } `it returns` CryptoCurrency.BCH.requiredConfirmations - 1

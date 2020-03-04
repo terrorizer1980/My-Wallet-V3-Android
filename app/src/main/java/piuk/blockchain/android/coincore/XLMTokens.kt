@@ -1,20 +1,31 @@
 package piuk.blockchain.android.coincore
 
+import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.sunriver.XlmDataManager
+import com.blockchain.sunriver.models.XlmTransaction
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
+import com.blockchain.swap.nabu.extensions.toLocalTime
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
+import info.blockchain.balance.compareTo
+import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
 
 class XLMTokens(
@@ -57,4 +68,56 @@ class XLMTokens(
 
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
         historicRates.getHistoricPriceSeries(CryptoCurrency.XLM, currencyPrefs.selectedFiatCurrency, period)
+
+    // Activity/transactions moved over from TransactionDataListManager.
+    // TODO Requires some reworking, but that can happen later. After the code & tests are moved and working.
+    override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
+        getTransactions()
+            .singleOrError()
+
+    private fun getTransactions(): Observable<ActivitySummaryList> =
+        xlmDataManager.getTransactionList()
+            .toObservable()
+            .mapList { XlmActivitySummaryItem(it, exchangeRates) }
+}
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+class XlmActivitySummaryItem(
+    private val xlmTransaction: XlmTransaction,
+    exchangeRates: ExchangeRateDataManager
+) : ActivitySummaryItem(exchangeRates) {
+    override val cryptoCurrency = CryptoCurrency.XLM
+
+    override val direction: TransactionSummary.Direction
+        get() = if (xlmTransaction.value > CryptoValue.ZeroXlm) {
+            TransactionSummary.Direction.RECEIVED
+        } else {
+            TransactionSummary.Direction.SENT
+        }
+
+    override val timeStamp: Long
+        get() = xlmTransaction.timeStamp.fromIso8601ToUtc()!!.toLocalTime().time.div(1000)
+
+    override val totalCrypto: CryptoValue by unsafeLazy {
+        CryptoValue.fromMinor(CryptoCurrency.XLM, xlmTransaction.accountDelta.amount.abs())
+    }
+
+    override val description: String? = null
+
+    override val fee: Observable<CryptoValue>
+        get() = Observable.just(
+            CryptoValue.fromMinor(CryptoCurrency.XLM, xlmTransaction.fee.amount)
+        )
+
+    override val hash: String
+        get() = xlmTransaction.hash
+
+    override val inputsMap: HashMap<String, CryptoValue>
+        get() = hashMapOf(xlmTransaction.from.accountId to CryptoValue.ZeroXlm)
+
+    override val outputsMap: HashMap<String, CryptoValue>
+        get() = hashMapOf(xlmTransaction.to.accountId to CryptoValue.fromMinor(CryptoCurrency.XLM, totalCrypto.amount))
+
+    override val confirmations: Int
+        get() = CryptoCurrency.XLM.requiredConfirmations
 }

@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.transactions.adapter
 
 import androidx.appcompat.app.AppCompatActivity
+import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.ui.adapters.AdapterDelegatesManager
 import piuk.blockchain.android.ui.adapters.DelegationAdapter
 import piuk.blockchain.androidcoreui.utils.extensions.autoNotify
@@ -9,14 +10,16 @@ import kotlin.properties.Delegates
 class TxFeedAdapter(
     activity: AppCompatActivity,
     showCrypto: Boolean,
-    listClickListener: TxFeedClickListener
+    listClickListener: TxFeedClickListener,
+    selectedFiatCurrency: String
 ) : DelegationAdapter<Any>(AdapterDelegatesManager(), emptyList()) {
 
     private val summaryDelegate =
-        DisplayableDelegate<Any>(
+        ActivityItemDelegate<Any>(
             activity,
             showCrypto,
-            listClickListener
+            listClickListener,
+            selectedFiatCurrency
         )
 
     init {
@@ -50,8 +53,6 @@ class TxFeedAdapter(
 }
 
 interface TxFeedClickListener {
-
-    fun onTransactionClicked(correctedPosition: Int, absolutePosition: Int)
-
-    fun onValueClicked(isBtc: Boolean)
+    fun onTransactionClicked(crypto: CryptoCurrency, txHash: String)
+    fun onValueClicked(isCrypto: Boolean)
 }

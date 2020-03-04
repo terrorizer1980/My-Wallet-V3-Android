@@ -5,9 +5,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import piuk.blockchain.android.R
-import piuk.blockchain.androidcore.data.transactions.models.Displayable
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 
-internal fun Displayable.formatting() =
+internal fun ActivitySummaryItem.formatting() =
     when (direction) {
         TransactionSummary.Direction.TRANSFERRED -> transferredFormatting(
             this
@@ -20,7 +20,7 @@ internal fun Displayable.formatting() =
         ) else paxFeeFormatting(this)
     }
 
-internal class DisplayableFormatting(
+internal class ActivitySummaryFormatting(
     @StringRes
     val text: Int,
 
@@ -31,8 +31,8 @@ internal class DisplayableFormatting(
     val valueBackground: Int
 )
 
-private fun transferredFormatting(tx: Displayable) =
-    DisplayableFormatting(
+private fun transferredFormatting(tx: ActivitySummaryItem) =
+    ActivitySummaryFormatting(
         text = R.string.MOVED,
         valueBackground = getColorForConfirmations(
             tx,
@@ -46,8 +46,8 @@ private fun transferredFormatting(tx: Displayable) =
         )
     )
 
-private fun receivedFormatting(tx: Displayable) =
-    DisplayableFormatting(
+private fun receivedFormatting(tx: ActivitySummaryItem) =
+    ActivitySummaryFormatting(
         text = R.string.RECEIVED,
         valueBackground = getColorForConfirmations(
             tx,
@@ -61,8 +61,8 @@ private fun receivedFormatting(tx: Displayable) =
         )
     )
 
-private fun sendFormatting(tx: Displayable) =
-    DisplayableFormatting(
+private fun sendFormatting(tx: ActivitySummaryItem) =
+    ActivitySummaryFormatting(
         text = R.string.SENT,
         valueBackground = getColorForConfirmations(
             tx,
@@ -76,8 +76,8 @@ private fun sendFormatting(tx: Displayable) =
         )
     )
 
-private fun paxFeeFormatting(tx: Displayable) =
-    DisplayableFormatting(
+private fun paxFeeFormatting(tx: ActivitySummaryItem) =
+    ActivitySummaryFormatting(
         text = R.string.pax_fee,
         valueBackground = getColorForConfirmations(
             tx,
@@ -92,7 +92,7 @@ private fun paxFeeFormatting(tx: Displayable) =
     )
 
 private fun getColorForConfirmations(
-    tx: Displayable,
+    tx: ActivitySummaryItem,
     @DrawableRes colorLight: Int,
     @DrawableRes colorDark: Int
 ) = if (tx.confirmations < tx.cryptoCurrency.requiredConfirmations) colorLight else colorDark

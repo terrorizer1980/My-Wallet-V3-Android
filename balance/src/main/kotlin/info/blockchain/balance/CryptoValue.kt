@@ -82,8 +82,13 @@ data class CryptoValue(
 
         fun fromMinor(
             currency: CryptoCurrency,
-            major: BigDecimal
-        ) = CryptoValue(currency, major.toBigInteger())
+            minor: BigDecimal
+        ) = CryptoValue(currency, minor.toBigInteger())
+
+        fun fromMinor(
+            currency: CryptoCurrency,
+            minor: BigInteger
+        ) = CryptoValue(currency, minor)
 
         fun min(a: CryptoValue, b: CryptoValue) = if (a <= b) a else b
 
