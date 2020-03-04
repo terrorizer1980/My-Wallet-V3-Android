@@ -7,8 +7,6 @@ import info.blockchain.wallet.payload.data.LegacyAddress
 import info.blockchain.wallet.payment.Payment
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
-import org.apache.commons.lang3.tuple.Triple
-import org.bitcoinj.core.ECKey
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.rxjava.RxUtil
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -19,11 +17,12 @@ import piuk.blockchain.androidcore.utils.rxjava.IgnorableDefaultObserver
 import java.math.BigInteger
 import java.util.ArrayList
 
-//public data class TransferableFundTransactionList(
-//        val pendingTransactions: PendingTransaction
-//        val totalToSend: Long,
-//        val totalFee Long
-//        )
+data class TransferableFundTransactionList(
+    val pendingTransactions: List<PendingTransaction>,
+    val totalToSend: BigInteger,
+    val totalFee: BigInteger
+)
+
 class TransferFundsDataManager(
     private val payloadDataManager: PayloadDataManager,
     private val sendDataManager: SendDataManager,
@@ -39,20 +38,21 @@ class TransferFundsDataManager(
      * @return Returns a Map which bundles together the List of [PendingTransaction] objects,
      * as well as a Pair which contains the total to send and the total fees, in that order.
      */
-    fun getTransferableFundTransactionList(addressToReceiveIndex: Int): Observable<Triple<List<PendingTransaction>, Long, Long>> {
+    fun getTransferableFundTransactionList(
+        addressToReceiveIndex: Int
+    ): Observable<TransferableFundTransactionList> {
         return Observable.fromCallable {
             val suggestedFeePerKb =
                 BigInteger.valueOf(dynamicFeeCache.btcFeeOptions!!.regularFee * 1000)
-            val pendingTransactionList: MutableList<PendingTransaction> =
-                ArrayList()
-            val legacyAddresses =
-                payloadDataManager.wallet!!.legacyAddressList
-            var totalToSend = 0L
-            var totalFee = 0L
+            val pendingTransactionList: MutableList<PendingTransaction> = ArrayList()
+            val legacyAddresses = payloadDataManager.wallet!!.legacyAddressList
+
+            var totalToSend = 0.toBigInteger()
+            var totalFee = 0.toBigInteger()
+
             for (legacyAddress in legacyAddresses) {
                 if (!legacyAddress.isWatchOnly
-                    && payloadDataManager.getAddressBalance(legacyAddress.address)
-                        .compareTo(BigInteger.ZERO) > 0
+                    && payloadDataManager.getAddressBalance(legacyAddress.address) > BigInteger.ZERO
                 ) {
                     val unspentOutputs =
                         sendDataManager.getUnspentBtcOutputs(legacyAddress.address)
@@ -69,7 +69,7 @@ class TransferFundsDataManager(
                         )
                     val sweepAmount = sweepableCoins.left
                     // Don't sweep if there are still unconfirmed funds in address
-                    if (unspentOutputs.notice == null && sweepAmount.compareTo(Payment.DUST) > 0) {
+                    if (unspentOutputs.notice == null && sweepAmount > Payment.DUST) {
                         val pendingSpend = PendingTransaction()
                         pendingSpend.unspentOutputBundle =
                             sendDataManager.getSpendableCoins(
@@ -93,13 +93,13 @@ class TransferFundsDataManager(
                             pendingSpend.unspentOutputBundle!!.absoluteFee
                         pendingSpend.bigIntAmount = sweepAmount
                         pendingSpend.addressToReceiveIndex = addressToReceiveIndex
-                        totalToSend += pendingSpend.bigIntAmount.longValue()
-                        totalFee += pendingSpend.bigIntFee.longValue()
+                        totalToSend += pendingSpend.bigIntAmount
+                        totalFee += pendingSpend.bigIntFee
                         pendingTransactionList.add(pendingSpend)
                     }
                 }
             }
-            Triple.of<List<PendingTransaction>, Long, Long>(
+            TransferableFundTransactionList(
                 pendingTransactionList,
                 totalToSend,
                 totalFee
@@ -117,7 +117,7 @@ class TransferFundsDataManager(
      * @return Returns a Triple object which bundles together the List of [PendingTransaction]
      * objects, as well as the total to send and the total fees, in that order.
      */
-    val transferableFundTransactionListForDefaultAccount: Observable<Triple<List<PendingTransaction>, Long, Long>>
+    val transferableFundTransactionListForDefaultAccount: Observable<TransferableFundTransactionList>
         get() = getTransferableFundTransactionList(payloadDataManager.defaultAccountIndex)
 
     /**
@@ -150,9 +150,10 @@ class TransferFundsDataManager(
                 val receivingAddress =
                     payloadDataManager.getNextReceiveAddress(pendingTransaction.addressToReceiveIndex)
                         .blockingFirst()
-                val keys: MutableList<ECKey?> =
-                    ArrayList()
-                keys.add(payloadDataManager.getAddressECKey(legacyAddress, secondPassword))
+
+                val ecKey = payloadDataManager.getAddressECKey(legacyAddress, secondPassword)
+                val keys = mutableListOf(ecKey!!)
+
                 sendDataManager.submitBtcPayment(
                     pendingTransaction.unspentOutputBundle!!,
                     keys,
@@ -169,12 +170,14 @@ class TransferFundsDataManager(
                             // Increment index on receive chain
                             val account =
                                 payloadDataManager.wallet
-                                    .getHdWallets()[0]
-                                    .accounts[pendingTransaction.addressToReceiveIndex]
-                            payloadDataManager.incrementReceiveAddress(account)
+                                    ?.hdWallets?.get(0)
+                                    ?.accounts?.get(pendingTransaction.addressToReceiveIndex)
+                            payloadDataManager.incrementReceiveAddress(account!!)
                             // Update Balances temporarily rather than wait for sync
                             val spentAmount: Long =
-                                pendingTransaction.bigIntAmount.longValue() + pendingTransaction.bigIntFee.longValue()
+                                pendingTransaction.bigIntAmount.toLong() +
+                                    pendingTransaction.bigIntFee.toLong()
+
                             payloadDataManager.subtractAmountFromAddressBalance(
                                 legacyAddress.address,
                                 spentAmount

@@ -471,7 +471,8 @@ val applicationModule = applicationContext {
                 fundsDataManager = get(),
                 payloadDataManager = get(),
                 stringUtils = get(),
-                currencyFormatManager = get()
+                exchangeRates = get(),
+                currencyState = get()
             )
         }
 
@@ -590,15 +591,13 @@ val applicationModule = applicationContext {
                 payloadDataManager = get(),
                 currencyState = get(),
                 prefs = get(),
-                exchangeRateFactory = get(),
+                exchangeRates = get(),
                 stringUtils = get(),
                 sendDataManager = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
                 privateKeyFactory = get(),
                 environmentSettings = get(),
-                currencyFormatter = get(),
-                exchangeRates = get(),
                 coinSelectionRemoteConfig = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
@@ -742,17 +741,17 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 currencyState = get(),
                 analytics = get(),
-                currencyFormatManager = get(),
+                exchangeRates = get(),
                 coinsWebSocketStrategy = get()
             )
         }
 
         factory {
             TransferFundsDataManager(
-                /* payloadDataManager */ get(),
-                /* sendDataManager */ get(),
-                /* dynamicFeeCache */ get(),
-                /* coinSelectionRemoteConfig */ get()
+                payloadDataManager = get(),
+                sendDataManager = get(),
+                dynamicFeeCache = get(),
+                coinSelectionRemoteConfig = get()
             )
         }
 

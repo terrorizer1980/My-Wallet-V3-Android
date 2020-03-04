@@ -2,7 +2,10 @@ package piuk.blockchain.android.ui.backup.transfer
 
 import android.annotation.SuppressLint
 import androidx.annotation.VisibleForTesting
+import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.payload.data.LegacyAddress
+import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -10,10 +13,12 @@ import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.PendingTransaction
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
+import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.events.PayloadSyncedEvent
 import piuk.blockchain.androidcore.data.events.PaymentFailedEvent
 import piuk.blockchain.androidcore.data.events.PaymentSentEvent
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -22,13 +27,13 @@ class ConfirmFundsTransferPresenter(
     private val walletAccountHelper: WalletAccountHelper,
     private val fundsDataManager: TransferFundsDataManager,
     private val payloadDataManager: PayloadDataManager,
-    private val stringUtils: StringUtils
-//    private val currencyFormatManager: CurrencyFormatManager
+    private val stringUtils: StringUtils,
+    private val currencyState: CurrencyState,
+    private val exchangeRates: ExchangeRateDataManager
 ) : BasePresenter<ConfirmFundsTransferView>() {
 
     @VisibleForTesting
-    internal var pendingTransactions: MutableList<PendingTransaction> =
-        mutableListOf()
+    internal val pendingTransactions: MutableList<PendingTransaction> = mutableListOf()
 
     override fun onViewReady() {
         updateToAddress(payloadDataManager.defaultAccountIndex)
@@ -87,7 +92,7 @@ class ConfirmFundsTransferPresenter(
     )
 
     @VisibleForTesting
-    internal fun updateUi(totalToSend: Long, totalFee: Long) {
+    internal fun updateUi(totalToSend: CryptoValue, totalFee: CryptoValue) {
         view.updateFromLabel(
             stringUtils.getQuantityString(
                 R.plurals.transfer_label_plural,
@@ -95,17 +100,14 @@ class ConfirmFundsTransferPresenter(
             )
         )
 
-        val fiatAmount = currencyFormatManager.getFormattedFiatValueFromSelectedCoinValueWithSymbol(
-            totalToSend.toBigDecimal()
-        )
-        val fiatFee =
-            currencyFormatManager.getFormattedFiatValueFromSelectedCoinValueWithSymbol(totalFee.toBigDecimal())
+        val fiatAmount = totalToSend.toFiat(exchangeRates, currencyState.fiatUnit).toStringWithSymbol()
+        val fiatFee = totalFee.toFiat(exchangeRates, currencyState.fiatUnit).toStringWithSymbol()
 
         view.updateTransferAmountBtc(
-            currencyFormatManager.getFormattedSelectedCoinValueWithUnit(totalToSend.toBigInteger())
+            totalToSend.toStringWithSymbol()
         )
         view.updateTransferAmountFiat(fiatAmount)
-        view.updateFeeAmountBtc(currencyFormatManager.getFormattedSelectedCoinValueWithUnit(totalFee.toBigInteger()))
+        view.updateFeeAmountBtc(totalFee.toStringWithSymbol())
         view.updateFeeAmountFiat(fiatFee)
         view.setPaymentButtonEnabled(true)
 
@@ -138,12 +140,19 @@ class ConfirmFundsTransferPresenter(
         fundsDataManager.getTransferableFundTransactionList(indexOfReceiveAccount)
             .doOnSubscribe { view.setPaymentButtonEnabled(false) }
             .addToCompositeDisposable(this)
-            .subscribe({ triple ->
-                pendingTransactions = triple.left
-                updateUi(triple.middle, triple.right)
-            }, {
-                view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
-                view.dismissDialog()
-            })
+            .subscribeBy(
+                onNext = { (pendingList, totalToSend, totalFee) ->
+                    pendingTransactions.clear()
+                    pendingTransactions.addAll(pendingList)
+                    updateUi(
+                        CryptoValue(CryptoCurrency.BTC, totalToSend),
+                        CryptoValue(CryptoCurrency.BTC, totalFee)
+                    )
+                },
+                onError = {
+                    view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
+                    view.dismissDialog()
+                }
+            )
     }
 }

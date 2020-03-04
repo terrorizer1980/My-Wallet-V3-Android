@@ -10,6 +10,7 @@ import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
+import java.math.BigDecimal
 import java.math.RoundingMode
 
 /**
@@ -51,15 +52,15 @@ class ExchangeRateDataManager(
 //        return getLastPrice(CryptoCurrency.BTC, fiatUnit).toBigDecimal() * btc
 //    }
 //
-//    @Deprecated("Use CryptoValue.toFiat")
-//    fun getFiatFromBch(bch: BigDecimal, fiatUnit: String): BigDecimal {
-//        return getLastPrice(CryptoCurrency.BCH, fiatUnit).toBigDecimal() * bch
-//    }
-//
-//    @Deprecated("Use CryptoValue.toFiat")
-//    fun getFiatFromEth(eth: BigDecimal, fiatUnit: String): BigDecimal {
-//        return getLastPrice(CryptoCurrency.ETHER, fiatUnit).toBigDecimal() * eth
-//    }
+    @Deprecated("Use CryptoValue.toFiat")
+    fun getFiatFromBch(bch: BigDecimal, fiatUnit: String): BigDecimal {
+        return getLastPrice(CryptoCurrency.BCH, fiatUnit).toBigDecimal() * bch
+    }
+
+    @Deprecated("Use CryptoValue.toFiat")
+    fun getFiatFromEth(eth: BigDecimal, fiatUnit: String): BigDecimal {
+        return getLastPrice(CryptoCurrency.ETHER, fiatUnit).toBigDecimal() * eth
+    }
 }
 
 fun CryptoValue.toFiat(exchangeRateDataManager: ExchangeRateDataManager, fiatUnit: String) =

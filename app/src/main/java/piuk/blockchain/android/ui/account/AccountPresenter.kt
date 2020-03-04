@@ -27,7 +27,6 @@ import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.util.LabelUtil
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -35,6 +34,8 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcoreui.utils.logging.AddressType
 import piuk.blockchain.androidcoreui.utils.logging.CreateAccountEvent
 import piuk.blockchain.androidcoreui.utils.logging.ImportEvent
@@ -55,7 +56,7 @@ class AccountPresenter internal constructor(
     private val currencyState: CurrencyState,
     private val analytics: Analytics,
     private val coinsWebSocketStrategy: CoinsWebSocketStrategy,
-    private val currencyFormatManager: CurrencyFormatManager
+    private val exchangeRates: ExchangeRateDataManager
 ) : BasePresenter<AccountView>() {
 
     internal var doubleEncryptionPassword: String? = null
@@ -100,12 +101,11 @@ class AccountPresenter internal constructor(
             .doAfterTerminate { view.dismissProgressDialog() }
             .doOnError { Timber.e(it) }
             .subscribe(
-                { triple ->
-                    if (payloadDataManager.wallet!!.isUpgraded && triple.left.isNotEmpty()) {
+                { (pendingList, _, _) ->
+                    if (payloadDataManager.wallet!!.isUpgraded && pendingList.isNotEmpty()) {
                         view.onSetTransferLegacyFundsMenuItemVisible(true)
 
-                        if ((prefs.getValue(KEY_WARN_TRANSFER_ALL, true) ||
-                                    !isAutoPopup) &&
+                        if ((prefs.getValue(KEY_WARN_TRANSFER_ALL, true) || !isAutoPopup) &&
                             showWarningDialog
                         ) {
                             view.onShowTransferableLegacyFundsWarning(isAutoPopup)
@@ -467,7 +467,7 @@ class AccountPresenter internal constructor(
             accountsAndImportedList.add(
                 AccountItem(
                     AccountItem.TYPE_LEGACY_SUMMARY,
-                    getBchDisplayBalance(total.toLong())
+                    getBchDisplayBalance(total)
                 )
             )
         }
@@ -504,17 +504,16 @@ class AccountPresenter internal constructor(
         return getUiString(amount)
     }
 
-//    private fun getBchDisplayBalance(amount: Long): String {
-//        return getUiString(amount)
-//    }
+    private fun getBchDisplayBalance(amount: BigInteger): String {
+        return getUiString(CryptoValue.fromMinor(CryptoCurrency.BCH, amount))
+    }
 
     private fun getUiString(amount: CryptoValue) =
-        when (currencyState.displayMode) {
-            CurrencyState.DisplayMode.Crypto ->
-                amount.toStringWithSymbol()
-            CurrencyState.DisplayMode.Fiat ->
-                currencyFormatManager.getFormattedFiatValueFromSelectedCoinValueWithSymbol(amount.toBigDecimal())
-        }
+        if (currencyState.displayMode == CurrencyState.DisplayMode.Fiat) {
+            amount.toFiat(exchangeRates, currencyState.fiatUnit)
+        } else {
+            amount
+        }.toStringWithSymbol()
 
     private fun getBalanceFromBtcAddress(address: String) =
         CryptoValue.fromMinor(CryptoCurrency.BTC, payloadDataManager.getAddressBalance(address))

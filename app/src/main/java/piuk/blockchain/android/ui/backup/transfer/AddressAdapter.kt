@@ -37,12 +37,12 @@ class AddressAdapter(
         val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_address, parent, false)
 
         getItem(position)?.let {
-            if (it.tag.isNullOrEmpty()) {
+            if (it.tag.isEmpty()) {
                 view.tvTag.gone()
             } else {
-                view.tvTag.text = it.tag ?: ""
+                view.tvTag.text = it.tag
             }
-            view.tvLabel.text = it.label ?: ""
+            view.tvLabel.text = it.label
             view.tvBalance.text = it.formatDisplayBalance(currencyState, exchangeRates)
         }
 
