@@ -846,7 +846,6 @@ val applicationModule = applicationContext {
                 paxAccount = get("pax"),
                 payloadDataManager = get(),
                 buyDataManager = get(),
-                prefs = get(),
                 rxBus = get(),
                 currencyState = get(),
                 bchDataManager = get(),
