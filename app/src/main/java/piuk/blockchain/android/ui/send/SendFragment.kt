@@ -30,6 +30,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.Spinner
+import androidx.annotation.CallSuper
 import androidx.appcompat.widget.AppCompatEditText
 import piuk.blockchain.android.util.errorIcon
 import com.blockchain.koin.injectActivity
@@ -168,7 +169,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
         setCustomKeypad()
         setupCurrencyHeader()
 
-        handleIncomingArguments()
+//        handleIncomingArguments()
 
         setupSendingView()
         setupTransferReceiveView()
@@ -201,6 +202,14 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
 
         amountContainer.currencyFiat.text = currencyState.fiatUnit
 
+//        onViewReady()
+    }
+
+    @CallSuper
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        handleIncomingArguments()
         onViewReady()
     }
 
