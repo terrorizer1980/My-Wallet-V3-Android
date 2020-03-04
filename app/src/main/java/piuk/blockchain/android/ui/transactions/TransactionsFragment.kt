@@ -12,6 +12,7 @@ import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_FAQ
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.fragment_balance.*
@@ -334,8 +335,8 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     // Called back by presenter.onGetBitcoinClicked() if buy/sell is not available
     override fun startReceiveFragmentBtc() = navigator().gotoReceiveFor(CryptoCurrency.BTC)
 
-    override fun updateBalanceHeader(balance: String) {
-        textview_balance.text = balance
+    override fun updateBalanceHeader(balance: CryptoValue) {
+        textview_balance.text = balance.toStringWithSymbol()
     }
 
     override fun startBuyActivity() = navigator().launchBuySell()

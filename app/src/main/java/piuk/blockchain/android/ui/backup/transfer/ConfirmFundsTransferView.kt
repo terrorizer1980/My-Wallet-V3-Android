@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import java.util.Locale
 
 interface ConfirmFundsTransferView : View {
 

@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.blockchain.annotations.CommonCode
 import com.blockchain.notifications.models.NotificationPayload
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.api.Environment
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -39,7 +40,7 @@ interface TransactionsView : MvpView {
     fun updateTransactionDataSet(isCrypto: Boolean, txItems: ActivitySummaryList)
     fun updateAccountsDataSet(accountsList: List<ItemAccount>)
     fun updateSelectedCurrency(cryptoCurrency: CryptoCurrency)
-    fun updateBalanceHeader(balance: String)
+    fun updateBalanceHeader(balance: CryptoValue)
     fun selectDefaultAccount()
     fun setUiState(@UiState.UiStateDef uiState: Int, crypto: CryptoCurrency)
     fun updateTransactionValueType(showCrypto: Boolean)
@@ -308,7 +309,7 @@ class TransactionsPresenter(
 
     private fun refreshViewHeaders(account: ItemAccount) {
         view?.updateSelectedCurrency(crypto)
-//        view?.updateBalanceHeader(account.displayBalance ?: "")
+        view?.updateBalanceHeader(account.balance ?: CryptoValue(crypto, 0.toBigInteger()))
     }
 
     private fun refreshAccountDataSet() {

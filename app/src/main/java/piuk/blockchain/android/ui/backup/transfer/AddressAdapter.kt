@@ -28,7 +28,7 @@ class AddressAdapter(
         val view = LayoutInflater.from(context).inflate(R.layout.spinner_item, parent)
 
         if (showText) {
-            view.text.text =  getItem(position)?.label ?: ""
+            view.text.text = getItem(position)?.label ?: ""
         }
         return view
     }

@@ -301,4 +301,3 @@ class WalletAccountHelperTest {
         result.size `should equal` 0
     }
 }
-

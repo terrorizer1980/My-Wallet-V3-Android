@@ -22,7 +22,7 @@ data class ItemAccount @JvmOverloads constructor(
 }
 
 fun ItemAccount.formatDisplayBalance(currencyState: CurrencyState, exchangeRates: ExchangeRateDataManager) =
-    if(currencyState.displayMode == CurrencyState.DisplayMode.Fiat) {
+    if (currencyState.displayMode == CurrencyState.DisplayMode.Fiat) {
         balance?.toFiat(exchangeRates, currencyState.fiatUnit)
     } else {
         balance

@@ -174,7 +174,7 @@ class WalletAccountHelper(
 
     // Watch-only tag - we'll ask for xpriv scan when spending from
     private fun checkTag(address: LegacyAddress): String =
-        if(address.isWatchOnly) {
+        if (address.isWatchOnly) {
             stringUtils.getString(R.string.watch_only)
         } else {
             ""

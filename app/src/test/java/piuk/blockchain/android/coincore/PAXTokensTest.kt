@@ -99,7 +99,7 @@ class PAXTokensTest {
         val itemAccount = ItemAccount(
             label = "PAX",
             balance = 1.0.usdPax(),
-            address ="AccountID"
+            address = "AccountID"
         )
 
         subject.doFetchActivity(itemAccount)
