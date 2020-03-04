@@ -10,7 +10,6 @@ import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
-import java.math.BigDecimal
 import java.math.RoundingMode
 
 /**
@@ -32,8 +31,8 @@ class ExchangeRateDataManager(
     fun getLastPrice(cryptoCurrency: CryptoCurrency, currencyName: String) =
         exchangeRateDataStore.getLastPrice(cryptoCurrency, currencyName)
 
-    fun getLastPriceOfFiat(targetCurrency: String, sourceCurrency: String) =
-        exchangeRateDataStore.getFiatLastPrice(targetCurrency = targetCurrency, sourceCurrency = sourceCurrency)
+    fun getLastPriceOfFiat(targetFiat: String, sourceFiat: String) =
+        exchangeRateDataStore.getFiatLastPrice(targetFiat = targetFiat, sourceFiat = sourceFiat)
 
     fun getHistoricPrice(value: CryptoValue, fiat: String, timeInSeconds: Long): Single<FiatValue> =
         exchangeRateDataStore.getHistoricPrice(value.currency, fiat, timeInSeconds)
@@ -47,20 +46,20 @@ class ExchangeRateDataManager(
 
     fun getCurrencyLabels() = exchangeRateDataStore.getCurrencyLabels()
 
-    @Deprecated("Use CryptoValue.toFiat")
-    fun getFiatFromBtc(btc: BigDecimal, fiatUnit: String): BigDecimal {
-        return getLastPrice(CryptoCurrency.BTC, fiatUnit).toBigDecimal() * btc
-    }
-
-    @Deprecated("Use CryptoValue.toFiat")
-    fun getFiatFromBch(bch: BigDecimal, fiatUnit: String): BigDecimal {
-        return getLastPrice(CryptoCurrency.BCH, fiatUnit).toBigDecimal() * bch
-    }
-
-    @Deprecated("Use CryptoValue.toFiat")
-    fun getFiatFromEth(eth: BigDecimal, fiatUnit: String): BigDecimal {
-        return getLastPrice(CryptoCurrency.ETHER, fiatUnit).toBigDecimal() * eth
-    }
+//    @Deprecated("Use CryptoValue.toFiat")
+//    fun getFiatFromBtc(btc: BigDecimal, fiatUnit: String): BigDecimal {
+//        return getLastPrice(CryptoCurrency.BTC, fiatUnit).toBigDecimal() * btc
+//    }
+//
+//    @Deprecated("Use CryptoValue.toFiat")
+//    fun getFiatFromBch(bch: BigDecimal, fiatUnit: String): BigDecimal {
+//        return getLastPrice(CryptoCurrency.BCH, fiatUnit).toBigDecimal() * bch
+//    }
+//
+//    @Deprecated("Use CryptoValue.toFiat")
+//    fun getFiatFromEth(eth: BigDecimal, fiatUnit: String): BigDecimal {
+//        return getLastPrice(CryptoCurrency.ETHER, fiatUnit).toBigDecimal() * eth
+//    }
 }
 
 fun CryptoValue.toFiat(exchangeRateDataManager: ExchangeRateDataManager, fiatUnit: String) =
@@ -69,10 +68,13 @@ fun CryptoValue.toFiat(exchangeRateDataManager: ExchangeRateDataManager, fiatUni
         exchangeRateDataManager.getLastPrice(currency, fiatUnit).toBigDecimal() * toBigDecimal()
     )
 
-fun FiatValue.toFiatWithCurrency(exchangeRateDataManager: ExchangeRateDataManager, targetCurrency: String) =
-    FiatValue.fromMajor(targetCurrency,
-        exchangeRateDataManager.getLastPriceOfFiat(sourceCurrency =
-        this.currencyCode, targetCurrency = targetCurrency
+fun FiatValue.toFiatWithCurrency(
+    exchangeRateDataManager: ExchangeRateDataManager,
+    targetCurrency: String
+) = FiatValue.fromMajor(targetCurrency,
+        exchangeRateDataManager.getLastPriceOfFiat(
+            sourceFiat = this.currencyCode,
+            targetFiat = targetCurrency
         ).toBigDecimal() * toBigDecimal()
     )
 

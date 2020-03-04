@@ -205,8 +205,8 @@ class ExchangeRateDataManagerTest {
         targetCurrency: String,
         exchangeRate: Double
     ) {
-        whenever(exchangeRateDataStore.getFiatLastPrice(targetCurrency = targetCurrency,
-            sourceCurrency = sourceCurrency)).thenReturn(exchangeRate)
+        whenever(exchangeRateDataStore.getFiatLastPrice(targetFiat = targetCurrency,
+            sourceFiat = sourceCurrency)).thenReturn(exchangeRate)
     }
 
     private fun givenHistoricExchangeRate(

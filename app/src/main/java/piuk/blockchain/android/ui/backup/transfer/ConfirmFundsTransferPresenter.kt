@@ -22,8 +22,8 @@ class ConfirmFundsTransferPresenter(
     private val walletAccountHelper: WalletAccountHelper,
     private val fundsDataManager: TransferFundsDataManager,
     private val payloadDataManager: PayloadDataManager,
-    private val stringUtils: StringUtils,
-    private val currencyFormatManager: CurrencyFormatManager
+    private val stringUtils: StringUtils
+//    private val currencyFormatManager: CurrencyFormatManager
 ) : BasePresenter<ConfirmFundsTransferView>() {
 
     @VisibleForTesting

@@ -101,102 +101,101 @@ class CurrencyFormatManager(
     fun getFiatSymbol(currencyCode: String): String =
         currencyFormatUtil.getFiatSymbol(currencyCode, locale)
 
-    private fun getFiatValueFromSelectedCoin(
-        coinValue: BigDecimal,
-        convertEthDenomination: ETHDenomination? = null,
-        convertBtcDenomination: BTCDenomination? = null
-    ): BigDecimal {
-        return if (convertEthDenomination != null) {
-            when (currencyState.cryptoCurrency) {
-                CryptoCurrency.ETHER -> getFiatValueFromEth(coinValue, convertEthDenomination)
-                else -> throw IllegalArgumentException("${currencyState.cryptoCurrency} denomination not supported.")
-            }
-        } else {
-            when (currencyState.cryptoCurrency) {
-                CryptoCurrency.BTC -> getFiatValueFromBtc(coinValue, convertBtcDenomination)
-                CryptoCurrency.BCH -> getFiatValueFromBch(coinValue, convertBtcDenomination)
-                CryptoCurrency.ETHER ->
-                    throw IllegalArgumentException("${currencyState.cryptoCurrency} denomination not supported.")
-                CryptoCurrency.XLM -> throw IllegalArgumentException("XLM formatting should be done via CryptoValue.")
-                CryptoCurrency.PAX -> throw IllegalArgumentException("PAX formatting should be done via CryptoValue.")
-                CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            }.exhaustive
-        }
-    }
+//    private fun getFiatValueFromSelectedCoin(
+//        coinValue: BigDecimal,
+//        convertEthDenomination: ETHDenomination? = null,
+//        convertBtcDenomination: BTCDenomination? = null
+//    ): BigDecimal {
+//        return if (convertEthDenomination != null) {
+//            when (currencyState.cryptoCurrency) {
+//                CryptoCurrency.ETHER -> getFiatValueFromEth(coinValue, convertEthDenomination)
+//                else -> throw IllegalArgumentException("${currencyState.cryptoCurrency} denomination not supported.")
+//            }
+//        } else {
+//            when (currencyState.cryptoCurrency) {
+//                CryptoCurrency.BTC -> getFiatValueFromBtc(coinValue, convertBtcDenomination)
+//                CryptoCurrency.BCH -> getFiatValueFromBch(coinValue, convertBtcDenomination)
+//                CryptoCurrency.ETHER -> throw IllegalArgumentException("${currencyState.cryptoCurrency} denomination not supported.")
+//                CryptoCurrency.XLM -> throw IllegalArgumentException("XLM formatting should be done via CryptoValue.")
+//                CryptoCurrency.PAX -> throw IllegalArgumentException("PAX formatting should be done via CryptoValue.")
+//                CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+//            }.exhaustive
+//        }
+//    }
 
-    private fun getFiatValueFromBtc(
-        coinValue: BigDecimal,
-        convertBtcDenomination: BTCDenomination? = BTCDenomination.SATOSHI
-    ): BigDecimal {
-        val fiatUnit = fiatCountryCode
+//    private fun getFiatValueFromBtc(
+//        coinValue: BigDecimal,
+//        convertBtcDenomination: BTCDenomination? = BTCDenomination.SATOSHI
+//    ): BigDecimal {
+//        val fiatUnit = fiatCountryCode
+//
+//        val sanitizedDenomination = when (convertBtcDenomination) {
+//            BTCDenomination.BTC -> coinValue
+//            else -> coinValue.divide(BTC_DEC.toBigDecimal(), 8, RoundingMode.HALF_UP)
+//        }
+//        return exchangeRateDataManager.getFiatFromBtc(sanitizedDenomination, fiatUnit)
+//    }
+//
+//    private fun getFiatValueFromBch(
+//        coinValue: BigDecimal,
+//        convertBtcDenomination: BTCDenomination? = BTCDenomination.SATOSHI
+//    ): BigDecimal {
+//        val fiatUnit = fiatCountryCode
+//
+//        val sanitizedDenomination = when (convertBtcDenomination) {
+//            BTCDenomination.BTC -> coinValue
+//            else -> coinValue.divide(BTC_DEC.toBigDecimal(), 8, RoundingMode.HALF_UP)
+//        }
+//        return exchangeRateDataManager.getFiatFromBch(sanitizedDenomination, fiatUnit)
+//    }
 
-        val sanitizedDenomination = when (convertBtcDenomination) {
-            BTCDenomination.BTC -> coinValue
-            else -> coinValue.divide(BTC_DEC.toBigDecimal(), 8, RoundingMode.HALF_UP)
-        }
-        return exchangeRateDataManager.getFiatFromBtc(sanitizedDenomination, fiatUnit)
-    }
+//    private fun getFiatValueFromEth(
+//        coinValue: BigDecimal,
+//        convertEthDenomination: ETHDenomination?
+//    ): BigDecimal {
+//        val fiatUnit = fiatCountryCode
+//
+//        val sanitizedDenomination = when (convertEthDenomination) {
+//            ETHDenomination.ETH -> coinValue
+//            else -> coinValue.divide(ETH_DEC.toBigDecimal(), 18, RoundingMode.HALF_UP)
+//        }
+//        return exchangeRateDataManager.getFiatFromEth(sanitizedDenomination, fiatUnit)
+//    }
 
-    private fun getFiatValueFromBch(
-        coinValue: BigDecimal,
-        convertBtcDenomination: BTCDenomination? = BTCDenomination.SATOSHI
-    ): BigDecimal {
-        val fiatUnit = fiatCountryCode
-
-        val sanitizedDenomination = when (convertBtcDenomination) {
-            BTCDenomination.BTC -> coinValue
-            else -> coinValue.divide(BTC_DEC.toBigDecimal(), 8, RoundingMode.HALF_UP)
-        }
-        return exchangeRateDataManager.getFiatFromBch(sanitizedDenomination, fiatUnit)
-    }
-
-    private fun getFiatValueFromEth(
-        coinValue: BigDecimal,
-        convertEthDenomination: ETHDenomination?
-    ): BigDecimal {
-        val fiatUnit = fiatCountryCode
-
-        val sanitizedDenomination = when (convertEthDenomination) {
-            ETHDenomination.ETH -> coinValue
-            else -> coinValue.divide(ETH_DEC.toBigDecimal(), 18, RoundingMode.HALF_UP)
-        }
-        return exchangeRateDataManager.getFiatFromEth(sanitizedDenomination, fiatUnit)
-    }
-
-    // Uses the global currencyState.cryptoCurrency internally, which breaks when working
-    // with multiple currencies - ie pax and eth fees.
-    fun getFormattedFiatValueFromSelectedCoinValue(
-        coinValue: BigDecimal,
-        convertEthDenomination: ETHDenomination? = null,
-        convertBtcDenomination: BTCDenomination? = null
-    ): String {
-        val fiatUnit = fiatCountryCode
-        val fiatBalance = getFiatValueFromSelectedCoin(
-            coinValue,
-            convertEthDenomination,
-            convertBtcDenomination
-        )
-        return currencyFormatUtil.formatFiat(FiatValue.fromMajor(fiatUnit, fiatBalance))
-    }
-
-    fun getFormattedFiatValueFromSelectedCoinValueWithSymbol(
-        coinValue: BigDecimal,
-        convertEthDenomination: ETHDenomination? = null,
-        convertBtcDenomination: BTCDenomination? = null
-    ): String {
-        val fiatUnit = fiatCountryCode
-        val fiatBalance = getFiatValueFromSelectedCoin(
-            coinValue,
-            convertEthDenomination,
-            convertBtcDenomination
-        )
-        return currencyFormatUtil.formatFiatWithSymbol(
-            FiatValue.fromMajor(
-                fiatUnit,
-                fiatBalance.toDouble().toBigDecimal()
-            ), locale
-        )
-    }
+//    // Uses the global currencyState.cryptoCurrency internally, which breaks when working
+//    // with multiple currencies - ie pax and eth fees.
+//    fun getFormattedFiatValueFromSelectedCoinValue(
+//        coinValue: BigDecimal,
+//        convertEthDenomination: ETHDenomination? = null,
+//        convertBtcDenomination: BTCDenomination? = null
+//    ): String {
+//        val fiatUnit = fiatCountryCode
+//        val fiatBalance = getFiatValueFromSelectedCoin(
+//            coinValue,
+//            convertEthDenomination,
+//            convertBtcDenomination
+//        )
+//        return currencyFormatUtil.formatFiat(FiatValue.fromMajor(fiatUnit, fiatBalance))
+//    }
+//
+//    fun getFormattedFiatValueFromSelectedCoinValueWithSymbol(
+//        coinValue: BigDecimal,
+//        convertEthDenomination: ETHDenomination? = null,
+//        convertBtcDenomination: BTCDenomination? = null
+//    ): String {
+//        val fiatUnit = fiatCountryCode
+//        val fiatBalance = getFiatValueFromSelectedCoin(
+//            coinValue,
+//            convertEthDenomination,
+//            convertBtcDenomination
+//        )
+//        return currencyFormatUtil.formatFiatWithSymbol(
+//            FiatValue.fromMajor(
+//                fiatUnit,
+//                fiatBalance.toDouble().toBigDecimal()
+//            ), locale
+//        )
+//    }
 
     /**
      * Accepts a [Double] value in fiat currency and returns a [String] formatted to the region

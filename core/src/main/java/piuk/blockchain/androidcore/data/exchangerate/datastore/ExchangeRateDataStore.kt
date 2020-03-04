@@ -37,6 +37,7 @@ class ExchangeRateDataStore(
 
     fun getLastPrice(cryptoCurrency: CryptoCurrency, currencyName: String): Double {
         var currency = currencyName
+
         if (currency.isEmpty()) {
             currency = "USD"
         }
@@ -62,9 +63,9 @@ class ExchangeRateDataStore(
         return lastPrice ?: lastKnown
     }
 
-    fun getFiatLastPrice(targetCurrency: String, sourceCurrency: String): Double {
-        val targetCurrencyPrice = CryptoCurrency.BTC.tickerData()?.get(targetCurrency)?.price ?: return 0.0
-        val sourceCurrencyPrice = CryptoCurrency.BTC.tickerData()?.get(sourceCurrency)?.price ?: return 0.0
+    fun getFiatLastPrice(targetFiat: String, sourceFiat: String): Double {
+        val targetCurrencyPrice = CryptoCurrency.BTC.tickerData()?.get(targetFiat)?.price ?: return 0.0
+        val sourceCurrencyPrice = CryptoCurrency.BTC.tickerData()?.get(sourceFiat)?.price ?: return 0.0
         return targetCurrencyPrice.div(sourceCurrencyPrice)
     }
 

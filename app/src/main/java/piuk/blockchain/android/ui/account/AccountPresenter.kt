@@ -6,6 +6,7 @@ import com.blockchain.notifications.analytics.AddressAnalytics
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.WalletAnalytics
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.BitcoinCashWallet
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.coin.GenericMetadataAccount
@@ -503,23 +504,23 @@ class AccountPresenter internal constructor(
         return getUiString(amount)
     }
 
-    private fun getBchDisplayBalance(amount: Long): String {
-        return getUiString(amount)
-    }
+//    private fun getBchDisplayBalance(amount: Long): String {
+//        return getUiString(amount)
+//    }
 
-    private fun getUiString(amount: Long) =
+    private fun getUiString(amount: CryptoValue) =
         when (currencyState.displayMode) {
             CurrencyState.DisplayMode.Crypto ->
-                currencyFormatManager.getFormattedSelectedCoinValueWithUnit(amount.toBigInteger())
+                amount.toStringWithSymbol()
             CurrencyState.DisplayMode.Fiat ->
                 currencyFormatManager.getFormattedFiatValueFromSelectedCoinValueWithSymbol(amount.toBigDecimal())
         }
 
-    private fun getBalanceFromBtcAddress(address: String): Long =
-        payloadDataManager.getAddressBalance(address).toLong()
+    private fun getBalanceFromBtcAddress(address: String) =
+        CryptoValue.fromMinor(CryptoCurrency.BTC, payloadDataManager.getAddressBalance(address))
 
-    private fun getBalanceFromBchAddress(address: String): Long =
-        bchDataManager.getAddressBalance(address).toLong()
+    private fun getBalanceFromBchAddress(address: String) =
+        CryptoValue.fromMinor(CryptoCurrency.BCH, bchDataManager.getAddressBalance(address))
 
     fun getDisplayableCurrencies(): Set<CryptoCurrency> =
         CryptoCurrency.values()
