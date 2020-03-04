@@ -10,7 +10,6 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.extensions.flatMapBy
 import timber.log.Timber
 import java.text.DecimalFormatSymbols
@@ -58,8 +57,7 @@ internal class SimpleBuyInflateAdapter(
 class SimpleBuySyncFactory(
     private val custodialWallet: CustodialWalletManager,
     private val availabilityChecker: SimpleBuyAvailability,
-    private val localStateAdapter: SimpleBuyPrefsStateAdapter,
-    private val rxBus: RxBus
+    private val localStateAdapter: SimpleBuyPrefsStateAdapter
 ) {
     private val isEnabled = AtomicBoolean(false)
 
@@ -91,7 +89,7 @@ class SimpleBuySyncFactory(
             .observeOn(Schedulers.computation())
             .doOnError {
                 Timber.d("SB Sync: FAILED because $it")
-            }.doOnTerminate { rxBus.emitEvent(SimpleBuySyncEvent::class.java, SimpleBuySyncEvent.SYNC_COMPLETE) }
+            }
 
     fun currentState(): SimpleBuyState? =
         localStateAdapter.fetch().apply {
@@ -103,7 +101,7 @@ class SimpleBuySyncFactory(
     }
 
     fun lightweightSync(): Completable =
-        // If we have a local state in awaiting funds, check the server and clear it if the backend has transitioned
+    // If we have a local state in awaiting funds, check the server and clear it if the backend has transitioned
         // to any completed state (pending, cancelled, finished, failed)
         checkEnabled()
             .doOnSuccess { isEnabled.set(it) }
@@ -131,7 +129,7 @@ class SimpleBuySyncFactory(
                         )
                         .ignoreElement()
                 }
-            }.doOnTerminate { rxBus.emitEvent(SimpleBuySyncEvent::class.java, SimpleBuySyncEvent.SYNC_COMPLETE) }
+            }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun checkEnabled(): Single<Boolean> =

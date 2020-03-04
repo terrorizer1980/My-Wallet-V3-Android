@@ -1,22 +1,49 @@
 package piuk.blockchain.android.coincore.activity
 
+import com.blockchain.android.testutils.rxInit
+import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Observable
-import org.junit.Assert.*
+import org.amshove.kluent.itReturns
+import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.coincore.model.TestActivitySummaryItem
-import piuk.blockchain.android.ui.account.ItemAccount
+import piuk.blockchain.android.util.StringUtils
+import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
+import piuk.blockchain.androidbuysell.models.CoinifyData
+import piuk.blockchain.androidbuysell.models.ExchangeData
+import piuk.blockchain.androidbuysell.models.coinify.BlockchainDetails
+import piuk.blockchain.androidbuysell.models.coinify.CoinifyTrade
+import piuk.blockchain.androidbuysell.models.coinify.EventData
+import piuk.blockchain.androidbuysell.models.coinify.Transfer
+import piuk.blockchain.androidbuysell.services.ExchangeService
 
 class TransactionNoteUpdaterTest {
 
+    private val exchangeService: ExchangeService = mock()
+    private val shapeShiftDataManager: ShapeShiftDataManager = mock()
+    private val coinifyDataManager: CoinifyDataManager = mock()
+    private val stringUtils: StringUtils = mock()
+
+    private val subject = TransactionNoteUpdater(
+        exchangeService = exchangeService,
+        shapeShiftDataManager = shapeShiftDataManager,
+        coinifyDataManager = coinifyDataManager,
+        stringUtils = stringUtils
+    )
+
+    @get:Rule
+    val rxSchedulers = rxInit {
+        mainTrampoline()
+        ioTrampoline()
+        computationTrampoline()
+    }
 
     @Test
     fun `update transactions list with coinify labels`() {
         //  Arrange
-        //  Transaction setup
-        val itemAccount = ItemAccount()
         val txHash = "TX_HASH"
         val item = TestActivitySummaryItem(
             hash = txHash
@@ -31,38 +58,26 @@ class TransactionNoteUpdaterTest {
         whenever(exchangeService.getExchangeMetaData()).thenReturn(Observable.just(exchangeData))
 
         //  Coinify trade setup
-        val coinifyTrade: CoinifyTrade = mock()
         val tradeId = 12345
-        whenever(coinifyTrade.id).thenReturn(tradeId)
-        whenever(coinifyTrade.isSellTransaction()).thenReturn(false)
-        val transferOut: Transfer = mock()
-        whenever(coinifyTrade.transferOut).thenReturn(transferOut)
-        val details = BlockchainDetails("", null, EventData(txHash, ""))
-        whenever(transferOut.details).thenReturn(details)
+        val theTransferOut: Transfer = mock {
+            on { details } itReturns BlockchainDetails("", null, EventData(txHash, ""))
+        }
+
+        val coinifyTrade: CoinifyTrade = mock {
+            on { id } itReturns tradeId
+            on { isSellTransaction() } itReturns false
+            on { transferOut } itReturns theTransferOut
+        }
+
         whenever(coinifyDataManager.getTrades(token)).thenReturn(Observable.just(coinifyTrade))
-        //  ShapeShift
         whenever(shapeShiftDataManager.getTradesList()).thenReturn(Observable.just(emptyList()))
-        //  Utils
-        whenever(stringUtils.getFormattedString(any(), any())).thenReturn(tradeId.toString())
-        whenever(currencyState.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(currencyFormatManager.getFormattedBtcValueWithUnit(any(), any())).thenReturn("")
-        whenever(
-            currencyFormatManager.getFormattedFiatValueFromSelectedCoinValueWithSymbol(
-                any(),
-                any(),
-                isNull()
-            )
-        ).thenReturn("")
-        whenever(fiatExchangeRates.getFiat(any())).thenReturn(10.gbp())
-        whenever(swipeToReceiveHelper.storeAll())
-            .thenReturn(Completable.complete())
+
         //  Act
-        val testObserver = subject.updateTransactionsListCompletable(itemAccount).test()
-        //  Assert
-        testObserver.assertComplete()
-        testObserver.assertNoErrors()
-        verify(view).updateTransactionDataSet(any(), any())
-        verify(displayable).note = tradeId.toString()
+        subject.updateWithNotes(listOf(item))
+            .test()
+            .assertComplete()
+            .assertNoErrors()
+
         verify(exchangeService).getExchangeMetaData()
         verify(coinifyDataManager).getTrades(token)
     }
