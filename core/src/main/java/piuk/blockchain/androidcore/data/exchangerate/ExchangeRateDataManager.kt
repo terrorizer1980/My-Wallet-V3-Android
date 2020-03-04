@@ -47,11 +47,6 @@ class ExchangeRateDataManager(
 
     fun getCurrencyLabels() = exchangeRateDataStore.getCurrencyLabels()
 
-//    @Deprecated("Use CryptoValue.toFiat")
-//    fun getFiatFromBtc(btc: BigDecimal, fiatUnit: String): BigDecimal {
-//        return getLastPrice(CryptoCurrency.BTC, fiatUnit).toBigDecimal() * btc
-//    }
-//
     @Deprecated("Use CryptoValue.toFiat")
     fun getFiatFromBch(bch: BigDecimal, fiatUnit: String): BigDecimal {
         return getLastPrice(CryptoCurrency.BCH, fiatUnit).toBigDecimal() * bch
@@ -101,7 +96,7 @@ fun FiatValue.toCryptoOrNull(exchangeRateDataManager: ExchangeRateDataManager, c
  * Exchange rates for a single fiat currency.
  * Saves passing around a fiat currency string, or looking up the users preferred currency.
  */
-
+@Deprecated("We don't need 5 ways to do it. One will suffice. Use ExchangeRateDataManager")
 class FiatExchangeRates constructor(
     internal val exchangeRates: ExchangeRateDataManager,
     internal val fiatUnit: String

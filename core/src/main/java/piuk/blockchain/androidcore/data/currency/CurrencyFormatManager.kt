@@ -123,19 +123,6 @@ class CurrencyFormatManager(
         }
     }
 
-//    private fun getFiatValueFromBtc(
-//        coinValue: BigDecimal,
-//        convertBtcDenomination: BTCDenomination? = BTCDenomination.SATOSHI
-//    ): BigDecimal {
-//        val fiatUnit = fiatCountryCode
-//
-//        val sanitizedDenomination = when (convertBtcDenomination) {
-//            BTCDenomination.BTC -> coinValue
-//            else -> coinValue.divide(BTC_DEC.toBigDecimal(), 8, RoundingMode.HALF_UP)
-//        }
-//        return exchangeRateDataManager.getFiatFromBtc(sanitizedDenomination, fiatUnit)
-//    }
-//
     private fun getFiatValueFromBch(
         coinValue: BigDecimal,
         convertBtcDenomination: BTCDenomination? = BTCDenomination.SATOSHI
@@ -176,25 +163,6 @@ class CurrencyFormatManager(
             convertBtcDenomination
         )
         return currencyFormatUtil.formatFiat(FiatValue.fromMajor(fiatUnit, fiatBalance))
-    }
-
-    fun getFormattedFiatValueFromSelectedCoinValueWithSymbol(
-        coinValue: BigDecimal,
-        convertEthDenomination: ETHDenomination? = null,
-        convertBtcDenomination: BTCDenomination? = null
-    ): String {
-        val fiatUnit = fiatCountryCode
-        val fiatBalance = getFiatValueFromSelectedCoin(
-            coinValue,
-            convertEthDenomination,
-            convertBtcDenomination
-        )
-        return currencyFormatUtil.formatFiatWithSymbol(
-            FiatValue.fromMajor(
-                fiatUnit,
-                fiatBalance.toDouble().toBigDecimal()
-            ), locale
-        )
     }
 
     /**
