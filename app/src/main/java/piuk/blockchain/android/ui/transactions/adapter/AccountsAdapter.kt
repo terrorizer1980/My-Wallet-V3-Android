@@ -5,10 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.databinding.DataBindingUtil
+import kotlinx.android.synthetic.main.item_balance_account_dropdown.view.*
+import kotlinx.android.synthetic.main.spinner_balance_header.view.*
 import piuk.blockchain.android.R
-import piuk.blockchain.android.databinding.ItemBalanceAccountDropdownBinding
-import piuk.blockchain.android.databinding.SpinnerBalanceHeaderBinding
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.account.formatDisplayBalance
 import piuk.blockchain.androidcore.data.currency.CurrencyState
@@ -24,48 +23,33 @@ class AccountsAdapter(
 
     override fun getDropDownView(
         position: Int,
-        convertView: View,
+        convertView: View?,
         parent: ViewGroup
-    ): View {
-        return getCustomView(position, parent, true)
-    }
+    ) = getCustomView(position, parent, true)
 
     override fun getView(
         position: Int,
-        convertView: View,
+        convertView: View?,
         parent: ViewGroup
-    ): View {
-        return getCustomView(position, parent, false)
-    }
+    ) = getCustomView(position, parent, false)
 
     private fun getCustomView(
         position: Int,
         parent: ViewGroup,
         isDropdownView: Boolean
     ): View {
+        val item = getItem(position)!!
+        val inflater = LayoutInflater.from(context)
+
         return if (isDropdownView) {
-            val binding =
-                DataBindingUtil.inflate<ItemBalanceAccountDropdownBinding>(
-                    LayoutInflater.from(context),
-                    R.layout.item_balance_account_dropdown,
-                    parent,
-                    false
-                )
-            val item = getItem(position)
-            binding.accountName.text = item!!.label
-            binding.balance.text = item.formatDisplayBalance(currencyState, exchangeRates)
-            binding.root
+            inflater.inflate(R.layout.item_balance_account_dropdown, parent, false).apply {
+                account_name.text = item.label
+                balance.text = item.formatDisplayBalance(currencyState, exchangeRates)
+            }
         } else {
-            val binding =
-                DataBindingUtil.inflate<SpinnerBalanceHeaderBinding>(
-                    LayoutInflater.from(context),
-                    R.layout.spinner_balance_header,
-                    parent,
-                    false
-                )
-            val item = getItem(position)
-            binding.text.text = item!!.label
-            binding.root
+            inflater.inflate(R.layout.spinner_balance_header, parent, false).apply {
+                text.text = item.label
+            }
         }
     }
 
@@ -77,8 +61,4 @@ class AccountsAdapter(
 
     val isNotEmpty: Boolean
         get() = accountList.isNotEmpty()
-
-    fun showSpinner(): Boolean {
-        return accountList.size > 1
-    }
 }
