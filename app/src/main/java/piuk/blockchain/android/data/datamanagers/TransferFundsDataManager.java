@@ -98,11 +98,15 @@ public class TransferFundsDataManager {
                                         newCoinSelectionEnabled)
                         );
 
+                        String label = legacyAddress.getLabel();
+                        if(label == null) {
+                            label = "";
+                        }
+
                         pendingSpend.setSendingObject(new ItemAccount(
-                                legacyAddress.getLabel(),
-                                "",
-                                "",
+                                label,
                                 null,
+                                "",
                                 legacyAddress,
                                 legacyAddress.getAddress())
                         );

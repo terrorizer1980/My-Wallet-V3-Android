@@ -881,8 +881,8 @@ class AccountEditPresenter constructor(
                 )
                 val sweepAmount = sweepableCoins.left
 
-                var label: String? = legacyAddress.label
-                if (label.isNullOrEmpty()) {
+                var label: String = legacyAddress.label
+                if (label.isEmpty()) {
                     label = legacyAddress.address
                 }
 
@@ -890,20 +890,14 @@ class AccountEditPresenter constructor(
                 val defaultAccount = payloadDataManager.defaultAccount
                 pendingTransaction.apply {
                     sendingObject = ItemAccount(
-                        label,
-                        sweepAmount.toString(),
-                        "",
-                        sweepAmount.toLong(),
-                        legacyAddress,
-                        legacyAddress.address
+                        label = label,
+                        balance = CryptoValue.fromMinor(cryptoCurrency, sweepAmount),
+                        accountObject = legacyAddress,
+                        address = legacyAddress.address
                     )
                     receivingObject = ItemAccount(
-                        defaultAccount.label,
-                        "",
-                        "",
-                        sweepAmount.toLong(),
-                        defaultAccount,
-                        null
+                        label = defaultAccount.label ?: "",
+                        accountObject = defaultAccount
                     )
                     unspentOutputBundle = sendDataManager.getSpendableCoins(
                         unspentOutputs,

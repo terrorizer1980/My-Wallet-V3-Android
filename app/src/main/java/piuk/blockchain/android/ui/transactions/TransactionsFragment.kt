@@ -12,6 +12,7 @@ import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_PAX_FAQ
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.fragment_balance.*
@@ -33,7 +34,9 @@ import piuk.blockchain.android.ui.home.HomeScreenMvpFragment
 import piuk.blockchain.android.ui.home.MainActivity
 import piuk.blockchain.android.ui.shortcuts.LauncherShortcutHelper
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
+import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.events.ActionEvent
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.UiState
@@ -56,6 +59,8 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     private var accountsAdapter: AccountsAdapter? = null
     private var txFeedAdapter: TxFeedAdapter? = null
     private val prefs: CurrencyPrefs by inject()
+    private val currencyState: CurrencyState by inject()
+    private val exchangeRates: ExchangeRateDataManager by inject()
 
     private val rxBus: RxBus by inject()
 
@@ -65,7 +70,6 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     private val accountSelectedListener =
         onItemSelectedListener {
             Timber.d(">ACTIVITY: Account selected fired")
-
             presenter.onAccountSelected(it)
             recyclerview.smoothScrollToPosition(0)
         }
@@ -153,9 +157,11 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         Timber.d(">ACTIVITY: Setup accounts adapter")
         if (accountsAdapter == null) {
             accountsAdapter = AccountsAdapter(
-                context,
+                requireContext(),
                 R.layout.spinner_balance_header,
-                accountsList
+                accountsList,
+                currencyState,
+                exchangeRates
             ).apply { setDropDownViewResource(R.layout.item_balance_account_dropdown) }
         }
 
@@ -329,14 +335,14 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
     // Called back by presenter.onGetBitcoinClicked() if buy/sell is not available
     override fun startReceiveFragmentBtc() = navigator().gotoReceiveFor(CryptoCurrency.BTC)
 
-    override fun updateBalanceHeader(balance: String) {
-        textview_balance.text = balance
+    override fun updateBalanceHeader(balance: CryptoValue) {
+        textview_balance.text = balance.toStringWithSymbol()
     }
 
     override fun startBuyActivity() = navigator().launchBuySell()
 
     override fun onTransactionClicked(crypto: CryptoCurrency, txHash: String) {
-        TransactionDetailActivity.start(this.requireContext(), crypto, txHash)
+        TransactionDetailActivity.start(requireContext(), crypto, txHash)
         analytics.logEvent(TransactionsAnalyticsEvents.ItemClick(crypto))
     }
 

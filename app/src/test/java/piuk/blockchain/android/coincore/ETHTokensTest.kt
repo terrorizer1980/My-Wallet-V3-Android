@@ -3,6 +3,7 @@ package piuk.blockchain.android.coincore
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.testutils.ether
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.verify
@@ -81,9 +82,9 @@ class ETHTokensTest {
         whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX))
             .thenReturn(Erc20TokenData.createPaxTokenData(""))
 
-        val itemAccount = ItemAccount().apply {
+        val itemAccount = ItemAccount(
             type = ItemAccount.TYPE.SINGLE_ACCOUNT
-        }
+        )
 
         subject.doFetchActivity(itemAccount)
             .test()
@@ -112,12 +113,9 @@ class ETHTokensTest {
             .thenReturn(Observable.just(ethTransaction))
 
         val itemAccount = ItemAccount(
-            "ETH",
-            "1.0 ETH",
-            null,
-            1L,
-            null,
-            "AccountID"
+            label = "ETH",
+            balance = 1.0.ether(),
+            address = "AccountID"
         )
 
         subject.doFetchActivity(itemAccount)
@@ -150,12 +148,9 @@ class ETHTokensTest {
             .thenReturn(Observable.just(ethTransaction))
 
         val itemAccount = ItemAccount(
-            "ETH",
-            "1.0 ETH",
-            null,
-            1L,
-            null,
-            "AccountID"
+            label = "ETH",
+            balance = 1.0.ether(),
+            address = "AccountID"
         )
 
         subject.doFetchActivity(itemAccount)

@@ -1,37 +1,56 @@
 package piuk.blockchain.android.ui.chooser
 
 import com.blockchain.serialization.JsonSerializableAccount
+import com.blockchain.testutils.bitcoin
+import com.blockchain.testutils.bitcoinCash
+import com.blockchain.testutils.ether
+import com.blockchain.testutils.lumens
 import com.blockchain.ui.chooser.AccountChooserItem
 import com.blockchain.ui.chooser.AccountListing
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Single
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
+import org.junit.Before
 import org.junit.Test
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
+import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import java.util.Locale
 
 class WalletAccountHelperAccountListingAdapterTest {
+
+    private val currencyState: CurrencyState = mock()
+    private val exchangeRates: ExchangeRateDataManager = mock()
+
+    @Before
+    fun setup() {
+        Locale.setDefault(Locale.US)
+        whenever(currencyState.displayMode).thenReturn(CurrencyState.DisplayMode.Crypto)
+    }
 
     @Test
     fun `BTC accounts`() {
         val account = mock<JsonSerializableAccount>()
         val walletAccountHelper = mock<WalletAccountHelper> {
             on { getHdAccounts() } `it returns` listOf(
-                ItemAccount().apply {
-                    label = "Acc1"
-                    displayBalance = "123 BTC"
+                ItemAccount(
+                    label = "Acc1",
+                    balance = 123.bitcoin(),
                     accountObject = account
-                })
+                )
+            )
         }
         givenAccountListing(walletAccountHelper)
             .accountList(CryptoCurrency.BTC)
             .assertSingleAccountSummary {
                 label `should equal` "Acc1"
-                displayBalance `should equal` "123 BTC"
+                displayBalance `should equal` "123.0 BTC"
                 accountObject `should be` account
             }
     }
@@ -41,17 +60,18 @@ class WalletAccountHelperAccountListingAdapterTest {
         val account = mock<JsonSerializableAccount>()
         val walletAccountHelper = mock<WalletAccountHelper> {
             on { getHdBchAccounts() } `it returns` listOf(
-                ItemAccount().apply {
-                    label = "Acc2"
-                    displayBalance = "456 BCH"
+                ItemAccount(
+                    label = "Acc2",
+                    balance = 456.bitcoinCash(),
                     accountObject = account
-                })
+                )
+            )
         }
         givenAccountListing(walletAccountHelper)
             .accountList(CryptoCurrency.BCH)
             .assertSingleAccountSummary {
                 label `should equal` "Acc2"
-                displayBalance `should equal` "456 BCH"
+                displayBalance `should equal` "456.0 BCH"
                 accountObject `should be` account
             }
     }
@@ -61,17 +81,18 @@ class WalletAccountHelperAccountListingAdapterTest {
         val account = mock<JsonSerializableAccount>()
         val walletAccountHelper = mock<WalletAccountHelper> {
             on { getEthAccount() } `it returns` listOf(
-                ItemAccount().apply {
-                    label = "Acc3"
-                    displayBalance = "99 ETH"
+                ItemAccount(
+                    label = "Acc3",
+                    balance = 99.ether(),
                     accountObject = account
-                })
+                )
+            )
         }
         givenAccountListing(walletAccountHelper)
             .accountList(CryptoCurrency.ETHER)
             .assertSingleAccountSummary {
                 label `should equal` "Acc3"
-                displayBalance `should equal` "99 ETH"
+                displayBalance `should equal` "99.0 ETH"
                 accountObject `should be` account
             }
     }
@@ -82,11 +103,11 @@ class WalletAccountHelperAccountListingAdapterTest {
         val walletAccountHelper = mock<WalletAccountHelper> {
             on { getXlmAccount() } `it returns` Single.just(
                 listOf(
-                    ItemAccount().apply {
-                        label = "Acc4"
-                        displayBalance = "99 XLM"
+                    ItemAccount(
+                        label = "Acc4",
+                        balance = 99.lumens(),
                         accountObject = account
-                    }
+                    )
                 )
             )
         }
@@ -94,7 +115,7 @@ class WalletAccountHelperAccountListingAdapterTest {
             .accountList(CryptoCurrency.XLM)
             .assertSingleAccountSummary {
                 label `should equal` "Acc4"
-                displayBalance `should equal` "99 XLM"
+                displayBalance `should equal` "99.0 XLM"
                 accountObject `should be` account
             }
     }
@@ -103,20 +124,21 @@ class WalletAccountHelperAccountListingAdapterTest {
     fun `BTC imported (legacy) addresses`() {
         val account = mock<LegacyAddress>()
         val walletAccountHelper = mock<WalletAccountHelper> {
-            on { getLegacyAddresses() } `it returns` listOf(
-                ItemAccount().apply {
-                    label = "My address"
-                    address = "mhPgaJ366MXe7SNGeaCBBsWAhkM2JfB5Cm"
-                    displayBalance = "7 BTC"
+            on { getLegacyBtcAddresses() } `it returns` listOf(
+                ItemAccount(
+                    label = "My address",
+                    address = "mhPgaJ366MXe7SNGeaCBBsWAhkM2JfB5Cm",
+                    balance = 7.bitcoin(),
                     accountObject = account
-                })
+                )
+            )
         }
         givenAccountListing(walletAccountHelper)
             .importedList(CryptoCurrency.BTC)
             .assertSingleLegacyAddress {
                 label `should equal` "My address"
                 address `should equal` "mhPgaJ366MXe7SNGeaCBBsWAhkM2JfB5Cm"
-                displayBalance `should equal` "7 BTC"
+                displayBalance `should equal` "7.0 BTC"
                 accountObject `should be` account
             }
     }
@@ -126,19 +148,20 @@ class WalletAccountHelperAccountListingAdapterTest {
         val account = mock<LegacyAddress>()
         val walletAccountHelper = mock<WalletAccountHelper> {
             on { getLegacyBchAddresses() } `it returns` listOf(
-                ItemAccount().apply {
-                    label = "My address 2"
-                    address = "mpE7PuLdFQaKfHsFSFqM9FbTvLczB3j1QV"
-                    displayBalance = "8 BCH"
+                ItemAccount(
+                    label = "My address 2",
+                    address = "mpE7PuLdFQaKfHsFSFqM9FbTvLczB3j1QV",
+                    balance = 8.bitcoinCash(),
                     accountObject = account
-                })
+                )
+            )
         }
         givenAccountListing(walletAccountHelper)
             .importedList(CryptoCurrency.BCH)
             .assertSingleLegacyAddress {
                 label `should equal` "My address 2"
                 address `should equal` "mpE7PuLdFQaKfHsFSFqM9FbTvLczB3j1QV"
-                displayBalance `should equal` "8 BCH"
+                displayBalance `should equal` "8.0 BCH"
                 accountObject `should be` account
             }
     }
@@ -149,10 +172,11 @@ class WalletAccountHelperAccountListingAdapterTest {
             on { isWatchOnly } `it returns` true
         }
         val walletAccountHelper = mock<WalletAccountHelper> {
-            on { getLegacyAddresses() } `it returns` listOf(
-                ItemAccount().apply {
+            on { getLegacyBtcAddresses() } `it returns` listOf(
+                ItemAccount(
                     accountObject = account
-                })
+                )
+            )
         }
         givenAccountListing(walletAccountHelper)
             .importedList(CryptoCurrency.BTC)
@@ -167,7 +191,7 @@ class WalletAccountHelperAccountListingAdapterTest {
             on { isWatchOnly } `it returns` false
         }
         val walletAccountHelper = mock<WalletAccountHelper> {
-            on { getLegacyAddresses() } `it returns` listOf(
+            on { getLegacyBtcAddresses() } `it returns` listOf(
                 ItemAccount().apply {
                     accountObject = account
                 })
@@ -183,11 +207,12 @@ class WalletAccountHelperAccountListingAdapterTest {
     fun `BTC imported (legacy) addresses - null address when not a legacy`() {
         val account = mock<JsonSerializableAccount>()
         val walletAccountHelper = mock<WalletAccountHelper> {
-            on { getLegacyAddresses() } `it returns` listOf(
-                ItemAccount().apply {
-                    address = "mwfJF7GdsShHBtLCAhWUjymTwAwtf1E5LE"
+            on { getLegacyBtcAddresses() } `it returns` listOf(
+                ItemAccount(
+                    address = "mwfJF7GdsShHBtLCAhWUjymTwAwtf1E5LE",
                     accountObject = account
-                })
+                )
+            )
         }
         givenAccountListing(walletAccountHelper)
             .importedList(CryptoCurrency.BTC)
@@ -200,18 +225,24 @@ class WalletAccountHelperAccountListingAdapterTest {
     fun `ETH imported`() {
         givenAccountListing(mock())
             .importedList(CryptoCurrency.ETHER)
-            .test().values().single() `should equal` emptyList()
+            .test()
+            .values().single() `should equal` emptyList()
     }
 
     @Test
     fun `XLM imported`() {
         givenAccountListing(mock())
             .importedList(CryptoCurrency.XLM)
-            .test().values().single() `should equal` emptyList()
+            .test()
+            .values().single() `should equal` emptyList()
     }
 
     private fun givenAccountListing(walletAccountHelper: WalletAccountHelper): AccountListing =
-        WalletAccountHelperAccountListingAdapter(walletAccountHelper)
+        WalletAccountHelperAccountListingAdapter(
+            walletAccountHelper,
+            currencyState,
+            exchangeRates
+        )
 }
 
 private fun Single<List<AccountChooserItem>>.assertSingleAccountSummary(
