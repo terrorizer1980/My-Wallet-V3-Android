@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
+import java.lang.IllegalStateException
 import java.util.Currency
 import java.util.Locale
 
@@ -80,8 +81,14 @@ class PrefsUtil(
         set(fiat) = setValue(KEY_SELECTED_FIAT, fiat)
 
     private fun defaultCurrency(): String =
-        if (UNIT_FIAT.contains(Currency.getInstance(Locale.getDefault()).currencyCode))
-            Currency.getInstance(Locale.getDefault()).currencyCode else DEFAULT_FIAT_CURRENCY
+        // Android has been know to return non-ISO3166 locale codes. Esp on cheap Chinese phones (Meizu m5u!)
+        // Fallback to the default DEFAULT_FIAT_CURRENCY in these cases
+        try {
+            val localeFiat = Currency.getInstance(Locale.getDefault()).currencyCode
+            if (UNIT_FIAT.contains(localeFiat)) localeFiat else DEFAULT_FIAT_CURRENCY
+        } catch(e: IllegalStateException) {
+            DEFAULT_FIAT_CURRENCY
+        }
 
     override var selectedCryptoCurrency: CryptoCurrency
         get() =
