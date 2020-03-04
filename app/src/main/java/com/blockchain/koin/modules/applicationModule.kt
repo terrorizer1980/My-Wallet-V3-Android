@@ -78,9 +78,10 @@ import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
 import piuk.blockchain.android.ui.home.CacheCredentialsWiper
 import piuk.blockchain.android.ui.home.MainPresenter
-import piuk.blockchain.android.ui.home.MetadataLoader
+import piuk.blockchain.android.ui.home.CredentialsWiper
 import piuk.blockchain.android.ui.launcher.DeepLinkPersistence
 import piuk.blockchain.android.ui.launcher.LauncherPresenter
+import piuk.blockchain.android.ui.launcher.Prerequisites
 import piuk.blockchain.android.ui.onboarding.OnboardingPresenter
 import piuk.blockchain.android.ui.pairingcode.PairingCodePresenter
 import piuk.blockchain.android.ui.receive.ReceivePresenter
@@ -242,18 +243,13 @@ val applicationModule = applicationContext {
         }
 
         bean {
-            MetadataLoader(
-                metadataManager = get(),
+            CredentialsWiper(
                 payloadManagerWiper = get(),
                 paxAccount = get(),
                 buyDataManager = get(),
                 shapeShiftDataManager = get(),
-                dynamicFeeCache = get(),
-                feeDataManager = get(),
                 accessState = get(),
-                appUtil = get(),
-                rxBus = get(),
-                crashLogger = get()
+                appUtil = get()
             )
         }
 
@@ -272,9 +268,8 @@ val applicationModule = applicationContext {
         factory {
             MainPresenter(
                 prefs = get(),
-                appUtil = get(),
                 accessState = get(),
-                metadataLoader = get(),
+                credentialsWiper = get(),
                 payloadDataManager = get(),
                 coinifyDataManager = get(),
                 buyDataManager = get(),
@@ -826,8 +821,7 @@ val applicationModule = applicationContext {
             SimpleBuySyncFactory(
                 custodialWallet = get(),
                 availabilityChecker = get(),
-                localStateAdapter = inflateAdapter,
-                rxBus = get()
+                localStateAdapter = inflateAdapter
             )
         }
 
@@ -849,7 +843,6 @@ val applicationModule = applicationContext {
                 paxAccount = get("pax"),
                 payloadDataManager = get(),
                 buyDataManager = get(),
-                prefs = get(),
                 rxBus = get(),
                 currencyState = get(),
                 bchDataManager = get(),
@@ -1024,8 +1017,23 @@ val applicationModule = applicationContext {
                 featureFlag = get("ff_simple_buy"),
                 custodialWalletManager = get(),
                 currencyPrefs = get(),
+                analytics = get(),
+                crashLogger = get(),
+                prerequisites = get()
+            )
+        }
+
+        factory {
+            Prerequisites(
                 metadataManager = get(),
-                analytics = get()
+                environmentSettings = get(),
+                settingsDataManager = get(),
+                shapeShiftDataManager = get(),
+                crashLogger = get(),
+                dynamicFeeCache = get(),
+                feeDataManager = get(),
+                simpleBuySync = get(),
+                rxBus = get()
             )
         }
 

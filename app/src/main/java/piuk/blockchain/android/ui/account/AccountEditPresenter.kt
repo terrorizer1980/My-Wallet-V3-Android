@@ -204,9 +204,6 @@ class AccountEditPresenter constructor(
         view.hideMerchantCopy()
     }
 
-    internal fun areLauncherShortcutsEnabled(): Boolean =
-        prefs.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
-
     private fun setDefault(isDefault: Boolean) {
         if (isDefault) {
             with(accountModel) {

@@ -13,6 +13,7 @@ import com.blockchain.extensions.exhaustive
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import info.blockchain.balance.CryptoCurrency
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.fragment_dashboard.*
@@ -23,7 +24,6 @@ import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.blockstackCampaignName
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.simplebuy.SimpleBuyCancelOrderBottomSheet
-import piuk.blockchain.android.simplebuy.SimpleBuySyncEvent
 import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -38,7 +38,6 @@ import piuk.blockchain.android.ui.dashboard.sheets.CustodyWalletIntroSheet
 import piuk.blockchain.android.ui.dashboard.sheets.BankDetailsBottomSheet
 import piuk.blockchain.android.ui.dashboard.sheets.ForceBackupForSendSheet
 import piuk.blockchain.android.ui.home.MainActivity
-import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.lang.IllegalStateException
@@ -75,14 +74,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
     private val actionEvent by unsafeLazy {
         rxBus.register(ActionEvent::class.java)
-    }
-
-    private val metadataEvent by unsafeLazy {
-        rxBus.register(MetadataEvent::class.java)
-    }
-
-    private val simpleBuySyncEvent by unsafeLazy {
-        rxBus.register(SimpleBuySyncEvent::class.java)
     }
 
     private var state: DashboardState? = null // Hold the 'current' display state, to enable optimising of state updates
@@ -238,19 +229,16 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     override fun onResume() {
         super.onResume()
         setupToolbar()
-
-        compositeDisposable += metadataEvent.subscribe {
-            model.process(RefreshAllIntent)
-        }
-
-        compositeDisposable += simpleBuySyncEvent.subscribe {
-            if (announcements.enable()) {
-                announcements.checkLatest(announcementHost, compositeDisposable)
-            }
-        }
-
         compositeDisposable += actionEvent.subscribe {
             model.process(RefreshAllIntent)
+        }
+
+        (activity as? MainActivity)?.let {
+            compositeDisposable += it.refreshAnnouncements.observeOn(AndroidSchedulers.mainThread()).subscribe {
+                if (announcements.enable()) {
+                    announcements.checkLatest(announcementHost, compositeDisposable)
+                }
+            }
         }
 
         announcements.checkLatest(announcementHost, compositeDisposable)
@@ -261,8 +249,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     override fun onPause() {
         compositeDisposable.clear()
         rxBus.unregister(ActionEvent::class.java, actionEvent)
-        rxBus.unregister(MetadataEvent::class.java, actionEvent)
-
         super.onPause()
     }
 

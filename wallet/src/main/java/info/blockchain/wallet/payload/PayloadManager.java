@@ -682,6 +682,10 @@ public class PayloadManager {
         if (metadataNodeFactory == null) {
             metadataNodeFactory = new MetadataNodeFactory(walletBaseBody.getWalletBody().getGuid(),
                     walletBaseBody.getWalletBody().getSharedKey(), password);
+
+            metadataNodeFactory.fetchMagicFowSecondPwNode();
+            metadataNodeFactory.fetchMagicFowSecondPwNodeLegacy();
+            metadataNodeFactory.deletePwNodeLegacy();
         }
         return metadataNodeFactory.isMetadataUsable();
     }

@@ -30,7 +30,6 @@ import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
 import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import timber.log.Timber
 
@@ -47,7 +46,6 @@ interface TransactionsView : MvpView {
     fun startReceiveFragmentBtc()
     fun startBuyActivity()
     fun getCurrentAccountPosition(): Int?
-    fun generateLauncherShortcuts()
     fun startSwapOrKyc(targetCurrency: CryptoCurrency)
     fun setDropdownVisibility(visible: Boolean)
     fun disableCurrencyHeader()
@@ -58,9 +56,8 @@ class TransactionsPresenter(
     private val assetSelect: AssetTokenLookup,
     private val ethDataManager: EthDataManager,
     private val paxAccount: Erc20Account,
-    internal val payloadDataManager: PayloadDataManager,
+    private val payloadDataManager: PayloadDataManager,
     private val buyDataManager: BuyDataManager,
-    private val prefs: PersistentPrefs,
     private val rxBus: RxBus,
     private val currencyState: CurrencyState,
     private val bchDataManager: BchDataManager,
@@ -72,10 +69,7 @@ class TransactionsPresenter(
     override val alwaysDisableScreenshots: Boolean = false
     override val enableLogoutTimer: Boolean = false
 
-    override fun onViewAttached() {
-        setViewType(currencyState.isDisplayingCryptoCurrency)
-    }
-
+    override fun onViewAttached() { }
     override fun onViewDetached() { }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -83,8 +77,6 @@ class TransactionsPresenter(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var authEventObservable: Observable<AuthEvent>? = null
     val exchangePaxRequested = PublishSubject.create<Unit>()
-
-    private var shortcutsGenerated = false
 
     private val assetTokens: AssetTokens
         get() = assetSelect[currencyState.cryptoCurrency]
@@ -96,10 +88,13 @@ class TransactionsPresenter(
     override fun onViewResumed() {
         super.onViewResumed()
 
+        subscribeToEvents()
+
+        setViewType(currencyState.isDisplayingCryptoCurrency)
+
         onAccountsAdapterSetup()
         onTxFeedAdapterSetup()
 
-        subscribeToEvents()
         if (environmentSettings.environment == Environment.TESTNET) {
             crypto = CryptoCurrency.BTC
             view?.disableCurrencyHeader()
@@ -138,7 +133,6 @@ class TransactionsPresenter(
                 .subscribeBy(
                     onSuccess = {
                         view?.setDropdownVisibility(it)
-                        refreshLauncherShortcuts()
                         setViewType(currencyState.isDisplayingCryptoCurrency)
                     },
                     onError = {
@@ -164,18 +158,10 @@ class TransactionsPresenter(
         )
     }
 
-    private fun refreshLauncherShortcuts() {
-        if (!shortcutsGenerated) {
-            shortcutsGenerated = true
-            view?.generateLauncherShortcuts()
-        }
-    }
-
     /**
      * API call - Fetches latest balance for selected currency and updates UI balance
      */
-    @VisibleForTesting
-    internal fun updateBalancesCompletable() =
+    private fun updateBalancesCompletable() =
         when (crypto) {
             CryptoCurrency.BTC -> payloadDataManager.updateAllBalances()
             CryptoCurrency.ETHER -> ethDataManager.fetchEthAddressCompletable()
@@ -190,8 +176,7 @@ class TransactionsPresenter(
     /**
      * API call - Fetches latest transactions for selected currency and account, and updates UI tx list
      */
-    @VisibleForTesting
-    internal fun updateTransactionsListCompletable(account: ItemAccount): Completable {
+    private fun updateTransactionsListCompletable(account: ItemAccount): Completable {
         return Completable.defer {
             assetTokens.fetchActivity(account)
                 .flatMap { txs -> transactionNotes.updateWithNotes(txs)
@@ -216,9 +201,8 @@ class TransactionsPresenter(
 
         view?.updateTransactionDataSet(currencyState.isDisplayingCryptoCurrency, txs)
     }
-    /*
-    Currency selected from dropdown
-     */
+
+    /* Currency selected from dropdown */
     internal fun onCurrencySelected(cryptoCurrency: CryptoCurrency) {
         Timber.d(">PRESENTER: On Currency Selected")
         // Set new currency state
@@ -255,14 +239,17 @@ class TransactionsPresenter(
     internal fun onGetBitcoinClicked() {
         compositeDisposable +=
             buyDataManager.canBuy
-                .subscribe(
-                    {
+                .subscribeBy(
+                    onSuccess = {
                         if (it) {
                             view?.startBuyActivity()
                         } else {
                             view?.startReceiveFragmentBtc()
                         }
-                    }, { Timber.e(it) }
+                    },
+                    onError = {
+                        Timber.e(it)
+                    }
                 )
     }
 
@@ -324,8 +311,7 @@ class TransactionsPresenter(
 //        view?.updateBalanceHeader(account.displayBalance ?: "")
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun refreshAccountDataSet() {
+    private fun refreshAccountDataSet() {
         compositeDisposable +=
             getAccounts()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -347,7 +333,4 @@ class TransactionsPresenter(
 
     private fun getAccountAt(position: Int): Single<ItemAccount> = getAccounts()
         .map { it[if (position < 0 || position >= it.size) 0 else position] }
-
-    internal fun areLauncherShortcutsEnabled() =
-        prefs.getValue(PersistentPrefs.KEY_RECEIVE_SHORTCUTS_ENABLED, true)
 }

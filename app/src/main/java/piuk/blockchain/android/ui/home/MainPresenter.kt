@@ -19,8 +19,6 @@ import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.Environment
-import info.blockchain.wallet.exceptions.HDWalletException
-import info.blockchain.wallet.exceptions.InvalidCredentialsException
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
@@ -36,7 +34,6 @@ import piuk.blockchain.android.simplebuy.SimpleBuyAvailability
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.sunriver.CampaignLinkState
 import piuk.blockchain.android.thepit.PitLinking
-import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.services.ExchangeService
@@ -52,7 +49,6 @@ import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.SecondPasswordEvent
 import timber.log.Timber
@@ -64,17 +60,16 @@ interface MainView : MvpView, HomeNavigator {
 
     fun onHandleInput(strUri: String)
     fun startBalanceFragment()
+    fun refreshAnnouncements()
     fun kickToLauncherPage()
     fun showProgressDialog(@StringRes message: Int)
     fun hideProgressDialog()
     fun clearAllDynamicShortcuts()
-    fun showMetadataNodeFailure()
     fun setBuySellEnabled(enabled: Boolean, useWebView: Boolean)
     fun setPitEnabled(enabled: Boolean)
     fun setSimpleBuyEnabled(enabled: Boolean)
     fun showTradeCompleteMsg(txHash: String)
     fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails)
-    fun showSecondPasswordDialog()
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
     fun showHomebrewDebugMenu()
     fun enableSwapButton(isEnabled: Boolean)
@@ -88,9 +83,8 @@ interface MainView : MvpView, HomeNavigator {
 
 class MainPresenter internal constructor(
     private val prefs: PersistentPrefs,
-    private val appUtil: AppUtil,
     private val accessState: AccessState,
-    private val metadataLoader: MetadataLoader,
+    private val credentialsWiper: CredentialsWiper,
     private val payloadDataManager: PayloadDataManager,
     private val buyDataManager: BuyDataManager,
     private val exchangeRateFactory: ExchangeRateDataManager,
@@ -140,7 +134,7 @@ class MainPresenter internal constructor(
 
             checkLockboxAvailability()
 
-            initMetadataElements()
+            lightSimpleBuySync()
 
             doPushNotifications()
 
@@ -209,15 +203,8 @@ class MainPresenter internal constructor(
         }
     }
 
-    internal fun initMetadataElements() {
-        compositeDisposable += metadataLoader.loader()
-            .flatMapCompletable { firstLoad ->
-                if (firstLoad) {
-                    simpleBuySync.performSync()
-                } else {
-                    simpleBuySync.lightweightSync()
-                }
-            }
+    private fun lightSimpleBuySync() {
+        compositeDisposable += simpleBuySync.lightweightSync()
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
                 view?.showProgressDialog(R.string.please_wait)
@@ -230,6 +217,7 @@ class MainPresenter internal constructor(
                     prefs.removeValue(PersistentPrefs.KEY_SCHEME_URL)
                     view?.onHandleInput(strUri)
                 }
+                view?.refreshAnnouncements()
             }
             .subscribeBy(
                 onComplete = {
@@ -240,16 +228,7 @@ class MainPresenter internal constructor(
                     checkForPendingLinks()
                 },
                 onError = { throwable ->
-                    if (throwable is InvalidCredentialsException || throwable is HDWalletException) {
-                        if (payloadDataManager.isDoubleEncrypted) {
-                            // Wallet double encrypted and needs to be decrypted to set up ether wallet, contacts etc
-                            view?.showSecondPasswordDialog()
-                        } else {
-                            logException(throwable)
-                        }
-                    } else {
-                        logException(throwable)
-                    }
+                    logException(throwable)
                 }
             )
     }
@@ -364,12 +343,11 @@ class MainPresenter internal constructor(
 
     private fun logException(throwable: Throwable) {
         crashLogger.logException(throwable)
-        view?.showMetadataNodeFailure()
     }
 
     internal fun unPair() {
         view?.clearAllDynamicShortcuts()
-        metadataLoader.unload()
+        credentialsWiper.unload()
         cacheCredentialsWiper.wipe()
     }
 
@@ -415,21 +393,6 @@ class MainPresenter internal constructor(
                 .subscribeBy({
                     Timber.e(it)
                 }) { view?.showTradeCompleteMsg(it) }
-    }
-
-    internal fun decryptAndSetupMetadata(secondPassword: String) {
-        if (!payloadDataManager.validateSecondPassword(secondPassword)) {
-            view?.showToast(R.string.invalid_password, ToastCustom.TYPE_ERROR)
-            view?.showSecondPasswordDialog()
-        } else {
-            compositeDisposable += metadataManager.decryptAndSetupMetadata(
-                environmentSettings.bitcoinNetworkParameters,
-                secondPassword
-            ).subscribeBy(
-                onError = { it.printStackTrace() },
-                onComplete = { appUtil.restartApp(LauncherActivity::class.java) }
-            )
-        }
     }
 
     internal fun routeToBuySell() {

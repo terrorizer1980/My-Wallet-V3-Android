@@ -1,9 +1,6 @@
 package piuk.blockchain.android.ui.transactions
 
-import android.annotation.TargetApi
 import android.content.Context
-import android.content.pm.ShortcutManager
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -42,7 +39,6 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.UiState
-import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
@@ -175,6 +171,8 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
                 event.action == MotionEvent.ACTION_UP && (activity as MainActivity).drawerOpen
             }
         }
+
+        LauncherShortcutHelper(activity).generateReceiveShortcuts()
     }
 
     override fun setupTxFeedAdapter(isCrypto: Boolean) {
@@ -233,21 +231,15 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
         }
     }
 
-    /**
-     * Updates launcher shortcuts with latest receive address
-     */
-    @TargetApi(Build.VERSION_CODES.M)
-    override fun generateLauncherShortcuts() {
-        if (AndroidUtils.is25orHigher() && presenter.areLauncherShortcutsEnabled()) {
-            val launcherShortcutHelper = LauncherShortcutHelper(
-                activity,
-                presenter.payloadDataManager,
-                activity.getSystemService(ShortcutManager::class.java)
-            )
-
-            launcherShortcutHelper.generateReceiveShortcuts()
-        }
-    }
+//    /**
+//     * Updates launcher shortcuts with latest receive address
+//     */
+//    @TargetApi(Build.VERSION_CODES.M)
+//    override fun generateLauncherShortcuts() {
+//        if (AndroidUtils.is25orHigher() && presenter.areLauncherShortcutsEnabled()) {
+//            val launcherShortcutHelper =
+//        }
+//    }
 
     override fun updateTransactionValueType(showCrypto: Boolean) {
         txFeedAdapter?.onViewFormatUpdated(showCrypto)
