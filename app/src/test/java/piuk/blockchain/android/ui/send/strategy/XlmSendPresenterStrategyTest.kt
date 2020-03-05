@@ -127,7 +127,8 @@ class XlmSendPresenterStrategyTest {
             nabuDataManager = nabuDataManager,
             stringUtils = stringUtils,
             analytics = mock(),
-            pitLinking = pitLinked
+            pitLinking = pitLinked,
+            prefs = mock()
         ).apply {
             attachView(view)
         }.onCurrencySelected()
@@ -162,7 +163,8 @@ class XlmSendPresenterStrategyTest {
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            stringUtils = stringUtils
+            stringUtils = stringUtils,
+            prefs = mock()
         ).apply {
             attachView(view)
             onCurrencySelected()
@@ -198,7 +200,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
         }.selectDefaultOrFirstFundedSendingAccount()
@@ -248,7 +251,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -315,7 +319,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -369,7 +374,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -425,7 +431,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -481,7 +488,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -549,7 +557,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -612,7 +621,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -667,7 +677,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             processURIScanAddress("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4")
@@ -702,7 +713,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             processURIScanAddress(
@@ -758,7 +770,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             processURIScanAddress(
@@ -846,7 +859,8 @@ class XlmSendPresenterStrategyTest {
             nabuToken,
             pitLinked,
             mock(),
-            nabuDataManager
+            nabuDataManager,
+            mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -901,7 +915,8 @@ class XlmSendPresenterStrategyTest {
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -945,7 +960,8 @@ class XlmSendPresenterStrategyTest {
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -989,7 +1005,8 @@ class XlmSendPresenterStrategyTest {
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -1035,7 +1052,8 @@ class XlmSendPresenterStrategyTest {
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -1088,7 +1106,8 @@ class XlmSendPresenterStrategyTest {
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = mock()
         ).apply {
             attachView(view)
             onViewReady()
@@ -1135,7 +1154,8 @@ class XlmSendPresenterStrategyTest {
             nabuDataManager = nabuDataManager,
             pitLinking = pitUnLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = mock()
         ).apply {
             attachView(view)
             onViewReady()

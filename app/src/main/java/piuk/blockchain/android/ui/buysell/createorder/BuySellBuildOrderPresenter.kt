@@ -539,8 +539,7 @@ class BuySellBuildOrderPresenter(
             .doOnSubscribe { view.renderSpinnerStatus(SpinnerStatus.Loading) }
             .flatMapObservable { token ->
                 Observable.zip(
-                    coinifyDataManager.getTrader(token)
-                        .toObservable(),
+                    coinifyDataManager.getTrader(token).toObservable(),
                     inMediumSingle.toObservable(),
                     BiFunction<Trader, Medium, Pair<Trader, Medium>> { trader, inMedium ->
                         return@BiFunction trader to inMedium
@@ -575,18 +574,14 @@ class BuySellBuildOrderPresenter(
                             outFixedFee = topPaymentMethod.outFixedFees.btc
 
                             minimumInAmount = if (view.orderType == OrderType.Sell) {
-                                topPaymentMethod
-                                    .minimumInAmounts.getLimitsForCurrency("btc")
+                                topPaymentMethod.minimumInAmounts.getLimitsForCurrency("btc")
                             } else {
                                 findMinimumBuyAmountBasedOnPaymentMethods(paymentMethods, selectedCurrency)
                             }
                             maximumInAmounts = if (view.orderType == OrderType.Sell) {
-                                topPaymentMethod
-                                    .limitInAmounts.getLimitsForCurrency("btc")
+                                topPaymentMethod.limitInAmounts.getLimitsForCurrency("btc")
                             } else {
-                                topPaymentMethod
-                                    .limitInAmounts.getLimitsForCurrency(
-                                    selectedCurrency)
+                                topPaymentMethod.limitInAmounts.getLimitsForCurrency(selectedCurrency)
                             }
                         }
                         .doOnNext { checkIfCanTrade(it.firstAvailable(inMedium, view.orderType)) }
@@ -693,12 +688,16 @@ class BuySellBuildOrderPresenter(
     }
 
     private fun checkIfCanTrade(paymentMethod: PaymentMethod) {
-        compositeDisposable += checkCountryAvailability().subscribeBy(onError = {
-            view.setButtonEnabled(false)
-            view.isCountrySupported(false)
-        }, onSuccess = {
-            onSupportedCountriesRetrieved(paymentMethod, it)
-        })
+        compositeDisposable += checkCountryAvailability()
+            .subscribeBy(
+                onError = {
+                    view.setButtonEnabled(false)
+                    view.isCountrySupported(false)
+                },
+                onSuccess = {
+                    onSupportedCountriesRetrieved(paymentMethod, it)
+                }
+            )
     }
 
     private fun onSupportedCountriesRetrieved(paymentMethod: PaymentMethod, countrySupported: Boolean) {
@@ -816,10 +815,10 @@ class BuySellBuildOrderPresenter(
             getUnspentApiResponseBtc(xPub),
             coinSelectionRemoteConfig.enabled.toObservable()
         )
-            .map { (unspentOutputs, newCoinSelectionEnabled) ->
-                getSuggestedAbsoluteFee(unspentOutputs, amountToSend, feePerKb, newCoinSelectionEnabled)
-            }
-            .singleOrError()
+        .map { (unspentOutputs, newCoinSelectionEnabled) ->
+            getSuggestedAbsoluteFee(unspentOutputs, amountToSend, feePerKb, newCoinSelectionEnabled)
+        }
+        .singleOrError()
 
     private fun getSuggestedAbsoluteFee(
         coins: UnspentOutputs,

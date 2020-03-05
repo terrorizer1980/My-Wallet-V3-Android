@@ -83,7 +83,7 @@ internal class NabuCoinifyAccountService(
                 payloadDataManager.guid,
                 payloadDataManager.sharedKey,
                 user.email,
-                currencyPrefs.fiatCurrency,
+                currencyPrefs.selectedFiatCurrency,
                 countryCode,
                 partnerId
             )

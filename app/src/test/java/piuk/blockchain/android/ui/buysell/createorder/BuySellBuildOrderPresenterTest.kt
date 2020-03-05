@@ -12,6 +12,7 @@ import com.nhaarman.mockito_kotlin.verify
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.amshove.kluent.`it returns`
+import org.amshove.kluent.itReturns
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.ui.buysell.createorder.models.OrderType
@@ -62,8 +63,16 @@ class BuySellBuildOrderPresenterTest {
         val presenter =
             BuySellBuildOrderPresenter(
                 coinifyDataManager = mock {
-                    on { getTrader(any()) } `it returns` Single.just(Trader(1, "USD", "",
-                        mock(), traderLevel()))
+                    on { getTrader(any()) } itReturns
+                        Single.just(
+                            Trader(
+                                id = 1,
+                                defaultCurrency = "USD",
+                                email = "",
+                                profile = mock(),
+                                level = traderLevel()
+                            )
+                        )
                     on { getKycReviews(any()) } `it returns` Single.just(listOf(KycResponse(1,
                         ReviewState.Completed,
                         "",
@@ -85,9 +94,6 @@ class BuySellBuildOrderPresenterTest {
                         coinify = CoinifyData(1, "testToken")
                     })
                 },
-                currencyFormatManager = mock {
-                    on { getFormattedFiatValueWithSymbol(any(), any(), any()) } `it returns` ""
-                },
                 feeDataManager = mock {
                     on { btcFeeOptions } `it returns` Observable.just(mock())
                 },
@@ -102,7 +108,8 @@ class BuySellBuildOrderPresenterTest {
                         ""))
                 },
                 stringUtils = mock(),
-                coinSelectionRemoteConfig = mock())
+                coinSelectionRemoteConfig = mock()
+            )
 
         presenter.initView(view)
         presenter.onViewReady()
@@ -141,9 +148,6 @@ class BuySellBuildOrderPresenterTest {
                         coinify = CoinifyData(1, "testToken")
                     })
                 },
-                currencyFormatManager = mock {
-                    on { getFormattedFiatValueWithSymbol(any(), any(), any()) } `it returns` ""
-                },
                 feeDataManager = mock {
                     on { btcFeeOptions } `it returns` Observable.just(mock())
                 },
@@ -158,7 +162,8 @@ class BuySellBuildOrderPresenterTest {
                         ""))
                 },
                 stringUtils = mock(),
-                coinSelectionRemoteConfig = mock())
+                coinSelectionRemoteConfig = mock()
+            )
 
         presenter.initView(view)
         presenter.onViewReady()
@@ -193,9 +198,6 @@ class BuySellBuildOrderPresenterTest {
                     on { getExchangeMetaData() } `it returns` Observable.just(ExchangeData().apply {
                         coinify = CoinifyData(1, "testToken")
                     })
-                },
-                currencyFormatManager = mock {
-                    on { getFormattedFiatValueWithSymbol(any(), any(), any()) } `it returns` ""
                 },
                 feeDataManager = mock {
                     on { btcFeeOptions } `it returns` Observable.just(mock())
