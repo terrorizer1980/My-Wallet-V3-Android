@@ -34,7 +34,6 @@ import piuk.blockchain.androidbuysell.services.ExchangeService
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import info.blockchain.balance.FiatValue
 import io.reactivex.rxkotlin.plusAssign
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatUtil
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.utils.extensions.toSerialisedString
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -49,8 +48,7 @@ class CoinifyOverviewPresenter(
     private val exchangeService: ExchangeService,
     private val coinifyDataManager: CoinifyDataManager,
     private val metadataManager: MetadataManager,
-    private val stringUtils: StringUtils,
-    private val currencyFormatUtil: CurrencyFormatUtil
+    private val stringUtils: StringUtils
 ) : BasePresenter<CoinifyOverviewView>() {
 
     // Display States
@@ -235,10 +233,8 @@ class CoinifyOverviewPresenter(
                         .setScale(2, RoundingMode.UP).toPlainString()
                     val currency = trade.transferIn.currency.toUpperCase()
 
-                    var dateString =
-                        subscription.endTime?.fromIso8601ToUtc()?.toFormattedString(
-                            view.locale
-                        )
+                    var dateString = subscription.endTime?.fromIso8601ToUtc()?.toFormattedString()
+
                     if (dateString != null) {
                         dateString += "${stringUtils.getString(R.string.buy_sell_recurring_order_duration_until)} " +
                                 "$dateString"
@@ -267,12 +263,10 @@ class CoinifyOverviewPresenter(
 
     private fun getAwaitingFundsModel(coinifyTrade: CoinifyTrade): AwaitingFundsModel {
         val (referenceText, account, bank, holder, _, _) = coinifyTrade.transferIn.details as BankDetails
-        val formattedAmount = currencyFormatUtil.formatFiatWithSymbol(
-            FiatValue.fromMajor(
+        val formattedAmount = FiatValue.fromMajor(
                 coinifyTrade.transferIn.currency,
                 coinifyTrade.transferIn.sendAmount.toBigDecimal()
-            ), view.locale
-        )
+            ).toStringWithSymbol()
 
         return AwaitingFundsModel(
             coinifyTrade.id,
@@ -294,13 +288,11 @@ class CoinifyOverviewPresenter(
         ).subscribeBy(
             onSuccess = { (kycReviews, sellLimits) ->
                 if (kycReviews.kycUnverified()) {
-                    val limitString =
-                        currencyFormatUtil.formatFiatWithSymbol(
-                            FiatValue.fromMajor(
+                    val limitString = FiatValue.fromMajor(
                                 sellLimits.second,
                                 sellLimits.first.toBigDecimal()
-                            ), view.locale
-                        )
+                            ).toStringWithSymbol()
+
                     val statusCard: KycStatus? = when {
                         // Unlikely to see this result - after supplying docs status will be pending
                         // otherwise we will go straight to overview
@@ -478,7 +470,7 @@ class CoinifyOverviewPresenter(
         val timeZone = calendar.timeZone
         val offset = timeZone.getOffset(time.time)
         val offsetTime = time.time + offset
-        val dateString = Date(offsetTime).toFormattedString(view.locale)
+        val dateString = Date(offsetTime).toFormattedString()
         // Amounts
         val sent = coinifyTrade.transferIn.receiveAmount
         val sentWithFee = coinifyTrade.transferIn.sendAmount
@@ -508,33 +500,27 @@ class CoinifyOverviewPresenter(
             detailAmount = "$receivedWithFee $receiveCurrency"
             // Exchange rate (always in fiat)
             val exchangeRate = sent / received
-            exchangeRateString = currencyFormatUtil.formatFiatWithSymbol(
-                FiatValue.fromMajor(
-                    sendCurrency,
-                    exchangeRate.toBigDecimal()
-                ), view.locale
-            )
+            exchangeRateString = FiatValue.fromMajor(
+                sendCurrency,
+                exchangeRate.toBigDecimal()
+            ).toStringWithSymbol()
+
             // Fiat in
-            amountString =
-                currencyFormatUtil.formatFiatWithSymbol(
-                    FiatValue.fromMajor(
-                        sendCurrency,
-                        sent.toBigDecimal()
-                    ), view.locale
-                )
-            paymentFeeString =
-                currencyFormatUtil.formatFiatWithSymbol(
-                    FiatValue.fromMajor(
-                        sendCurrency,
-                        paymentFee.toDouble().toBigDecimal()
-                    ), view.locale
-                )
-            totalString = currencyFormatUtil.formatFiatWithSymbol(
-                FiatValue.fromMajor(
-                    sendCurrency,
-                    sentWithFee.toBigDecimal()
-                ), view.locale
-            )
+            amountString = FiatValue.fromMajor(
+                sendCurrency,
+                sent.toBigDecimal()
+            ).toStringWithSymbol()
+
+            paymentFeeString = FiatValue.fromMajor(
+                sendCurrency,
+                paymentFee.toDouble().toBigDecimal()
+            ).toStringWithSymbol()
+
+            totalString = FiatValue.fromMajor(
+                sendCurrency,
+                sentWithFee.toBigDecimal()
+            ).toStringWithSymbol()
+
             // Received/Sold title
             receiveTitleString = getReceiveTitleString(
                 isEndState,
@@ -544,22 +530,19 @@ class CoinifyOverviewPresenter(
             )
         } else {
             // Fiat out (from Coinify's perspective)
-            headlineAmount =
-                currencyFormatUtil.formatFiatWithSymbol(
-                    FiatValue.fromMajor(
-                        receiveCurrency,
-                        (received - sellPaymentFee).toBigDecimal()
-                    ), view.locale
-                )
+            headlineAmount = FiatValue.fromMajor(
+                receiveCurrency,
+                (received - sellPaymentFee).toBigDecimal()
+            ).toStringWithSymbol()
+
             detailAmount = "$sent $sendCurrency"
             // Exchange rate (always in fiat)
             val exchangeRate = received / sentWithFee
-            exchangeRateString = currencyFormatUtil.formatFiatWithSymbol(
-                FiatValue.fromMajor(
+            exchangeRateString = FiatValue.fromMajor(
                     receiveCurrency,
                     exchangeRate.toBigDecimal()
-                ), view.locale
-            )
+                ).toStringWithSymbol()
+
             // Crypto in
             paymentFeeString = "Not rendered"
             totalString = "Not rendered"

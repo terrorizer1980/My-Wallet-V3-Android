@@ -251,7 +251,6 @@ class CurrencyFormatManager(
     }
     // endregion
 
-
     /**
      * Returns amount of wei from ether amount.
      *

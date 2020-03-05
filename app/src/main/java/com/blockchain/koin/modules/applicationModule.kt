@@ -407,8 +407,7 @@ val applicationModule = applicationContext {
                 coinifyDataManager = get(),
                 exchangeService = get(),
                 stringUtils = get(),
-                metadataManager = get(),
-                currencyFormatUtil = get()
+                metadataManager = get()
             )
         }
 
@@ -424,8 +423,7 @@ val applicationModule = applicationContext {
                 exchangeService = get(),
                 coinifyDataManager = get(),
                 metadataManager = get(),
-                stringUtils = get(),
-                currencyFormatUtil = get()
+                stringUtils = get()
             )
         }
 
