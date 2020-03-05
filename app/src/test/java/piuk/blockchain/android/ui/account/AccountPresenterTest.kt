@@ -170,9 +170,8 @@ class AccountPresenterTest {
     @Test
     fun checkTransferableLegacyFundsNoFundsAvailable() {
         // Arrange
-        // Arrange
         val result = TransferableFundTransactionList(
-            pendingTransactions = listOf(PendingTransaction()),
+            pendingTransactions = emptyList(),
             totalToSend = 1.toBigInteger(),
             totalFee = 2.toBigInteger()
         )
@@ -199,7 +198,7 @@ class AccountPresenterTest {
         whenever(fundsDataManager.transferableFundTransactionListForDefaultAccount)
             .thenReturn(Observable.error(Throwable()))
         // Act
-        subject.checkTransferableLegacyFunds(true, true)
+        subject.checkTransferableLegacyFunds(isAutoPopup = true, showWarningDialog = true)
         // Assert
         verify(activity).onSetTransferLegacyFundsMenuItemVisible(false)
         verify(activity).dismissProgressDialog()

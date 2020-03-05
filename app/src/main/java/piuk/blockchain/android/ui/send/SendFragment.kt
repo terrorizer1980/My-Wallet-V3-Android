@@ -169,8 +169,6 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
         setCustomKeypad()
         setupCurrencyHeader()
 
-//        handleIncomingArguments()
-
         setupSendingView()
         setupTransferReceiveView()
         setupCryptoTextField()
@@ -201,8 +199,6 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
         }
 
         amountContainer.currencyFiat.text = currencyState.fiatUnit
-
-//        onViewReady()
     }
 
     @CallSuper

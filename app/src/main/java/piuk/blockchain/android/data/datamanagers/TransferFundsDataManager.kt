@@ -51,8 +51,8 @@ class TransferFundsDataManager(
             var totalFee = 0.toBigInteger()
 
             for (legacyAddress in legacyAddresses) {
-                if (!legacyAddress.isWatchOnly
-                    && payloadDataManager.getAddressBalance(legacyAddress.address) > BigInteger.ZERO
+                if (!legacyAddress.isWatchOnly &&
+                    payloadDataManager.getAddressBalance(legacyAddress.address) > BigInteger.ZERO
                 ) {
                     val unspentOutputs =
                         sendDataManager.getUnspentBtcOutputs(legacyAddress.address)
@@ -126,7 +126,7 @@ class TransferFundsDataManager(
      * PendingTransactions have been finished successfully.
      *
      * @param pendingTransactions A list of [PendingTransaction] objects
-     * @param secondPassword      The double encryption password if necessary
+     * @param secondPassword The double encryption password if necessary
      * @return An [<]
      */
     fun sendPayment(

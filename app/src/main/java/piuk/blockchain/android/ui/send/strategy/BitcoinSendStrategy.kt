@@ -467,7 +467,6 @@ class BitcoinSendStrategy(
             fiatUnit = fiatCurrency
             fiatSymbol = Currency.getInstance(fiatCurrency).symbol
 
-
             isLargeTransaction = isLargeTransaction()
             btcSuggestedFee = suggestedFee.toStringWithoutSymbol()
             cryptoTotal = total.toStringWithoutSymbol()
@@ -974,7 +973,6 @@ class BitcoinSendStrategy(
                 relativeFee > SendModel.LARGE_TX_PERCENTAGE
     }
 }
-
 
 private fun getSatoshisFromText(text: String?, decimalSeparator: String): BigInteger {
     if (text == null || text.isEmpty()) return BigInteger.ZERO

@@ -115,7 +115,8 @@ class CurrencyFormatManager(
             when (currencyState.cryptoCurrency) {
                 CryptoCurrency.BTC -> throw IllegalArgumentException("BTC formatting should be done via CryptoValue.")
                 CryptoCurrency.BCH -> getFiatValueFromBch(coinValue, convertBtcDenomination)
-                CryptoCurrency.ETHER -> throw IllegalArgumentException("${currencyState.cryptoCurrency} denomination not supported.")
+                CryptoCurrency.ETHER ->
+                    throw IllegalArgumentException("${currencyState.cryptoCurrency} denomination not supported.")
                 CryptoCurrency.XLM -> throw IllegalArgumentException("XLM formatting should be done via CryptoValue.")
                 CryptoCurrency.PAX -> throw IllegalArgumentException("PAX formatting should be done via CryptoValue.")
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")

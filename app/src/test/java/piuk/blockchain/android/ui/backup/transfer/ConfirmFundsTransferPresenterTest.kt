@@ -79,7 +79,7 @@ class ConfirmFundsTransferPresenterTest {
             totalFee = 10000.toBigInteger()
         )
 
-        whenever(transferFundsDataManager.transferableFundTransactionListForDefaultAccount)
+        whenever(transferFundsDataManager.getTransferableFundTransactionList(0))
             .thenReturn(Observable.just(result))
 
         // Act
