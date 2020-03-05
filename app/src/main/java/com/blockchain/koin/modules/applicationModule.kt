@@ -620,7 +620,6 @@ val applicationModule = applicationContext {
                 privateKeyFactory = get(),
                 environmentSettings = get(),
                 bchDataManager = get(),
-                currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),

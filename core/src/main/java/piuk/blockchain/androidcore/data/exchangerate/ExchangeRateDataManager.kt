@@ -48,11 +48,6 @@ class ExchangeRateDataManager(
     fun getCurrencyLabels() = exchangeRateDataStore.getCurrencyLabels()
 
     @Deprecated("Use CryptoValue.toFiat")
-    fun getFiatFromBch(bch: BigDecimal, fiatUnit: String): BigDecimal {
-        return getLastPrice(CryptoCurrency.BCH, fiatUnit).toBigDecimal() * bch
-    }
-
-    @Deprecated("Use CryptoValue.toFiat")
     fun getFiatFromEth(eth: BigDecimal, fiatUnit: String): BigDecimal {
         return getLastPrice(CryptoCurrency.ETHER, fiatUnit).toBigDecimal() * eth
     }

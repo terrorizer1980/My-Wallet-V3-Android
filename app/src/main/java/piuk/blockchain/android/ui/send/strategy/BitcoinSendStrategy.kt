@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.send.strategy
 
 import android.annotation.SuppressLint
+import com.blockchain.annotations.CommonCode
 import com.google.android.material.snackbar.Snackbar
 import com.blockchain.swap.nabu.models.nabu.NabuApiException
 import com.blockchain.swap.nabu.models.nabu.NabuErrorCodes
@@ -973,6 +974,7 @@ class BitcoinSendStrategy(
     }
 }
 
+@CommonCode("Also in BitcoinCashSendStrategy")
 private fun getSatoshisFromText(text: String?, decimalSeparator: String): BigInteger {
     if (text == null || text.isEmpty()) return BigInteger.ZERO
 

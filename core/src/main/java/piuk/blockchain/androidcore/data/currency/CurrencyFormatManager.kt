@@ -1,7 +1,6 @@
 package piuk.blockchain.androidcore.data.currency
 
 import androidx.annotation.VisibleForTesting
-import com.blockchain.extensions.exhaustive
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -103,8 +102,7 @@ class CurrencyFormatManager(
 
     private fun getFiatValueFromSelectedCoin(
         coinValue: BigDecimal,
-        convertEthDenomination: ETHDenomination? = null,
-        convertBtcDenomination: BTCDenomination? = null
+        convertEthDenomination: ETHDenomination? = null
     ): BigDecimal {
         return if (convertEthDenomination != null) {
             when (currencyState.cryptoCurrency) {
@@ -112,29 +110,8 @@ class CurrencyFormatManager(
                 else -> throw IllegalArgumentException("${currencyState.cryptoCurrency} denomination not supported.")
             }
         } else {
-            when (currencyState.cryptoCurrency) {
-                CryptoCurrency.BTC -> throw IllegalArgumentException("BTC formatting should be done via CryptoValue.")
-                CryptoCurrency.BCH -> getFiatValueFromBch(coinValue, convertBtcDenomination)
-                CryptoCurrency.ETHER ->
-                    throw IllegalArgumentException("${currencyState.cryptoCurrency} denomination not supported.")
-                CryptoCurrency.XLM -> throw IllegalArgumentException("XLM formatting should be done via CryptoValue.")
-                CryptoCurrency.PAX -> throw IllegalArgumentException("PAX formatting should be done via CryptoValue.")
-                CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
-            }.exhaustive
+            throw IllegalArgumentException("Formatting should be done via CryptoValue.")
         }
-    }
-
-    private fun getFiatValueFromBch(
-        coinValue: BigDecimal,
-        convertBtcDenomination: BTCDenomination? = BTCDenomination.SATOSHI
-    ): BigDecimal {
-        val fiatUnit = fiatCountryCode
-
-        val sanitizedDenomination = when (convertBtcDenomination) {
-            BTCDenomination.BTC -> coinValue
-            else -> coinValue.divide(BTC_DEC.toBigDecimal(), 8, RoundingMode.HALF_UP)
-        }
-        return exchangeRateDataManager.getFiatFromBch(sanitizedDenomination, fiatUnit)
     }
 
     private fun getFiatValueFromEth(
@@ -154,14 +131,12 @@ class CurrencyFormatManager(
     // with multiple currencies - ie pax and eth fees.
     fun getFormattedFiatValueFromSelectedCoinValue(
         coinValue: BigDecimal,
-        convertEthDenomination: ETHDenomination? = null,
-        convertBtcDenomination: BTCDenomination? = null
+        convertEthDenomination: ETHDenomination? = null
     ): String {
         val fiatUnit = fiatCountryCode
         val fiatBalance = getFiatValueFromSelectedCoin(
             coinValue,
-            convertEthDenomination,
-            convertBtcDenomination
+            convertEthDenomination
         )
         return currencyFormatUtil.formatFiat(FiatValue.fromMajor(fiatUnit, fiatBalance))
     }
@@ -276,38 +251,6 @@ class CurrencyFormatManager(
     }
     // endregion
 
-    // region Convert methods
-    /**
-     * Returns btc amount from satoshis.
-     *
-     * @return btc, mbtc or bits relative to what is set in monetaryUtil
-     */
-    fun getTextFromSatoshis(satoshis: BigInteger, decimalSeparator: String): String {
-        var displayAmount = getFormattedSelectedCoinValue(satoshis)
-        displayAmount = displayAmount.replace(".", decimalSeparator)
-        return displayAmount
-    }
-
-    /**
-     * Returns amount of satoshis from btc amount. This could be btc, mbtc or bits.
-     *
-     * @return satoshis
-     */
-    fun getSatoshisFromText(text: String?, decimalSeparator: String): BigInteger {
-        if (text == null || text.isEmpty()) return BigInteger.ZERO
-
-        val amountToSend = stripSeparator(text, decimalSeparator)
-
-        val amount = try {
-            java.lang.Double.parseDouble(amountToSend)
-        } catch (e: NumberFormatException) {
-            0.0
-        }
-
-        return BigDecimal.valueOf(amount)
-            .multiply(BigDecimal.valueOf(100000000))
-            .toBigInteger()
-    }
 
     /**
      * Returns amount of wei from ether amount.

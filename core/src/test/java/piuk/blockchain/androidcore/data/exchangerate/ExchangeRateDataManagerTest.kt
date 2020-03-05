@@ -60,24 +60,6 @@ class ExchangeRateDataManagerTest {
     }
 
     @Test
-    fun getFiatFromBch() {
-
-        // Arrange
-        val exchangeRate = 5000.0
-        val satoshis = 10L
-        whenever(exchangeRateDataStore.getLastPrice(CryptoCurrency.BCH, "USD")).thenReturn(exchangeRate)
-
-        // Act
-        val result = subject.getFiatFromBch(BigDecimal.valueOf(satoshis), "USD")
-
-        // Assert
-        assertEquals(
-            BigDecimal.valueOf(exchangeRate).multiply(BigDecimal.valueOf(satoshis)),
-            result
-        )
-    }
-
-    @Test
     fun getHistoricPrice() {
         givenHistoricExchangeRate(CryptoCurrency.BTC, "USD", 100L, 8100.37.toBigDecimal())
         subject.getHistoricPrice(1.bitcoin(), "USD", 100L)
