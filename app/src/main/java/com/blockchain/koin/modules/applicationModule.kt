@@ -983,7 +983,7 @@ val applicationModule = applicationContext {
                 dynamicFeeCache = get(),
                 environmentSettings = get(),
                 analytics = get(),
-                currencyFormatManager = get(),
+                exchangeRates = get(),
                 coinSelectionRemoteConfig = get()
             )
         }

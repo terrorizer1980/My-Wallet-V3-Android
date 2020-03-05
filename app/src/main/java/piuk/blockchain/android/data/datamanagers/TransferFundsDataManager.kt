@@ -7,13 +7,15 @@ import info.blockchain.wallet.payload.data.LegacyAddress
 import info.blockchain.wallet.payment.Payment
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.data.cache.DynamicFeeCache
-import piuk.blockchain.android.data.rxjava.RxUtil
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.send.PendingTransaction
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.payments.SendDataManager
 import piuk.blockchain.androidcore.utils.rxjava.IgnorableDefaultObserver
+import timber.log.Timber
 import java.math.BigInteger
 import java.util.ArrayList
 
@@ -105,9 +107,9 @@ class TransferFundsDataManager(
                 totalFee
             )
         }
-            .compose(
-                RxUtil.applySchedulersToObservable()
-            )
+        .doOnError(Timber::e)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
     }
 
     /**
@@ -134,7 +136,9 @@ class TransferFundsDataManager(
         secondPassword: String?
     ): Observable<String> {
         return getPaymentObservable(pendingTransactions, secondPassword)
-            .compose(RxUtil.applySchedulersToObservable())
+            .doOnError(Timber::e)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     private fun getPaymentObservable(

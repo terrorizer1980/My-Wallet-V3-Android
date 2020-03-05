@@ -50,7 +50,7 @@ import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.payments.SendDataManager
@@ -77,7 +77,7 @@ class AccountEditPresenterTest {
     private val privateKeyFactory: PrivateKeyFactory = mock()
     private val environmentSettings: EnvironmentConfig = mock()
     private val dynamicFeeCache: DynamicFeeCache = mock(defaultAnswer = Answers.RETURNS_DEEP_STUBS)
-    private val currencyFormatManager: CurrencyFormatManager = mock()
+    private val exchangeRates: ExchangeRateDataManager = mock()
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig = mock()
 
     @Before
@@ -96,7 +96,7 @@ class AccountEditPresenterTest {
             dynamicFeeCache,
             environmentSettings,
             mock(),
-            currencyFormatManager,
+            exchangeRates,
             coinSelectionRemoteConfig
         )
         subject.initView(view)
@@ -214,13 +214,7 @@ class AccountEditPresenterTest {
         whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
         whenever(sendDataManager.estimateSize(anyInt(), anyInt())).thenReturn(1337)
 
-        whenever(currencyFormatManager.getFormattedSelectedCoinValue(any()))
-            .thenReturn("")
-
-        whenever(currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(any(), eq(null), eq(null)))
-            .thenReturn("")
-
-        whenever(currencyFormatManager.getFiatSymbol(any())).thenReturn("")
+        whenever(exchangeRates.getLastPrice(any(), any())).thenReturn(1.0)
 
         // Act
         subject.onClickTransferFunds()

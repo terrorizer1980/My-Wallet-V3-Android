@@ -48,8 +48,9 @@ import piuk.blockchain.android.util.LabelUtil
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.events.PayloadSyncedEvent
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.payments.SendDataManager
@@ -60,6 +61,7 @@ import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.math.BigInteger
+import java.util.Currency
 
 // TODO: This page is pretty nasty and could do with a proper refactor
 class AccountEditPresenter constructor(
@@ -74,7 +76,7 @@ class AccountEditPresenter constructor(
     private val dynamicFeeCache: DynamicFeeCache,
     private val environmentSettings: EnvironmentConfig,
     private val analytics: Analytics,
-    private val currencyFormatManager: CurrencyFormatManager,
+    private val exchangeRates: ExchangeRateDataManager,
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig
 ) : BasePresenter<AccountEditView>() {
 
@@ -306,48 +308,49 @@ class AccountEditPresenter constructor(
     internal fun transferFundsClickable(): Boolean = accountModel.transferFundsClickable
 
     private fun getTransactionDetailsForDisplay(pendingTransaction: PendingTransaction): PaymentConfirmationDetails {
-        val details = PaymentConfirmationDetails()
-        details.fromLabel = pendingTransaction.sendingObject?.label ?: ""
 
-        if (pendingTransaction.receivingObject != null &&
-            pendingTransaction.receivingObject?.label != null &&
-            !pendingTransaction.receivingObject?.label.isNullOrEmpty()
-        ) {
-            details.toLabel = pendingTransaction.receivingObject?.label ?: ""
+//        val destination = if (pendingTransaction.receivingObject != null &&
+//            pendingTransaction.receivingObject?.label != null &&
+//            !pendingTransaction.receivingObject?.label.isNullOrEmpty()
+//        ) {
+//            pendingTransaction.receivingObject?.label ?: ""
+//        } else {
+//            pendingTransaction.receivingAddress
+//        }
+
+        val destination = if (pendingTransaction.receivingObject?.label?.isEmpty() == true) {
+            pendingTransaction.receivingAddress
         } else {
-            details.toLabel = pendingTransaction.receivingAddress
+            pendingTransaction.receivingObject?.label ?: ""
         }
 
-        val fiatUnit = prefs.selectedFiatCurrency
-        val btcUnit = CryptoCurrency.BTC.name
+        val fiatCurrency = prefs.selectedFiatCurrency
 
-        with(details) {
-            cryptoAmount = currencyFormatManager.getFormattedSelectedCoinValue(pendingTransaction.bigIntAmount)
-            cryptoFee = currencyFormatManager.getFormattedSelectedCoinValue(pendingTransaction.bigIntFee)
-            btcSuggestedFee = currencyFormatManager.getFormattedSelectedCoinValue(pendingTransaction.bigIntFee)
-            cryptoUnit = btcUnit
-            this.fiatUnit = fiatUnit
+        val amount = CryptoValue.fromMinor(CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
+        val fee = CryptoValue.fromMinor(CryptoCurrency.BTC, pendingTransaction.bigIntFee)
+        val total = amount + fee
 
-            cryptoTotal = currencyFormatManager.getFormattedSelectedCoinValue(
-                pendingTransaction.bigIntAmount + pendingTransaction.bigIntFee
-            )
+        return PaymentConfirmationDetails().apply {
 
-            fiatFee = currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(
-                pendingTransaction.bigIntFee.toBigDecimal()
-            )
-            fiatAmount = currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(
-                pendingTransaction.bigIntAmount.toBigDecimal()
-            )
+            fromLabel = pendingTransaction.sendingObject?.label ?: ""
+            toLabel = destination
 
-            val totalFiat = pendingTransaction.bigIntAmount.add(pendingTransaction.bigIntFee)
-            fiatTotal = currencyFormatManager.getFormattedFiatValueFromSelectedCoinValue(totalFiat.toBigDecimal())
+            cryptoUnit = CryptoCurrency.BTC.name
+            fiatUnit = fiatCurrency
+            fiatSymbol = Currency.getInstance(fiatCurrency).symbol
 
-            fiatSymbol = currencyFormatManager.getFiatSymbol(fiatUnit)
+            cryptoTotal = total.toStringWithoutSymbol()
+            cryptoAmount = amount.toStringWithoutSymbol()
+            cryptoFee = fee.toStringWithoutSymbol()
+            btcSuggestedFee = fee.toStringWithoutSymbol()
+
+            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
+            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
+            fiatTotal = total.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
+
             isLargeTransaction = isLargeTransaction(pendingTransaction)
-            hasConsumedAmounts = pendingTransaction.unspentOutputBundle!!.consumedAmount
-                .compareTo(BigInteger.ZERO) == 1
+            hasConsumedAmounts = pendingTransaction.unspentOutputBundle!!.consumedAmount.compareTo(BigInteger.ZERO) == 1
         }
-        return details
     }
 
     private fun isLargeTransaction(pendingTransaction: PendingTransaction): Boolean {

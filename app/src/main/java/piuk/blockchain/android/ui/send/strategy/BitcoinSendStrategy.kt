@@ -461,14 +461,12 @@ class BitcoinSendStrategy(
 
         return PaymentConfirmationDetails().apply {
             fromLabel = pendingTransaction.sendingObject?.label ?: ""
-            toLabel = pendingTransaction.displayableReceivingLabel?.removeBchUri() ?: ""
+            toLabel = pendingTransaction.displayableReceivingLabel ?: ""
 
             cryptoUnit = CryptoCurrency.BTC.symbol
             fiatUnit = fiatCurrency
             fiatSymbol = Currency.getInstance(fiatCurrency).symbol
 
-            isLargeTransaction = isLargeTransaction()
-            btcSuggestedFee = suggestedFee.toStringWithoutSymbol()
             cryptoTotal = total.toStringWithoutSymbol()
             cryptoAmount = amount.toStringWithoutSymbol()
             cryptoFee = fee.toStringWithoutSymbol()
@@ -476,6 +474,9 @@ class BitcoinSendStrategy(
             fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
             fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
             fiatTotal = total.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
+
+            isLargeTransaction = isLargeTransaction()
+            btcSuggestedFee = suggestedFee.toStringWithoutSymbol()
         }
     }
 
@@ -529,7 +530,7 @@ class BitcoinSendStrategy(
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
         val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount(CryptoCurrency.BTC) ?: return
-        view?.updateSendingAddress(accountItem.label ?: accountItem.address!!)
+        view?.updateSendingAddress(accountItem.label)
         pendingTransaction.sendingObject = accountItem
     }
 
@@ -897,8 +898,6 @@ class BitcoinSendStrategy(
         view?.updateSendingAddress(label)
         calculateSpendableAmounts(false, view?.lastEnteredCryptoAmount())
     }
-
-    private fun String.removeBchUri(): String = this.replace("bitcoincash:", "")
 
     private fun isValidBitcoinAmount(bAmount: BigInteger?): Boolean {
         if (bAmount == null) {
