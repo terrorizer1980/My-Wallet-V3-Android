@@ -61,7 +61,6 @@ import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.math.BigInteger
-import java.util.Currency
 
 // TODO: This page is pretty nasty and could do with a proper refactor
 class AccountEditPresenter constructor(
@@ -337,7 +336,6 @@ class AccountEditPresenter constructor(
 
             cryptoUnit = CryptoCurrency.BTC.name
             fiatUnit = fiatCurrency
-            fiatSymbol = Currency.getInstance(fiatCurrency).symbol
 
             cryptoTotal = total.toStringWithoutSymbol()
             cryptoAmount = amount.toStringWithoutSymbol()

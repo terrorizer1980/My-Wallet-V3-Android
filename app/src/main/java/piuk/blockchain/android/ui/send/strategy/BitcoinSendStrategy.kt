@@ -66,7 +66,6 @@ import timber.log.Timber
 import java.io.UnsupportedEncodingException
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.util.Currency
 import java.util.concurrent.TimeUnit
 
 interface BitPayProtocol {
@@ -91,7 +90,6 @@ class BitcoinSendStrategy(
     private val feeDataManager: FeeDataManager,
     private val privateKeyFactory: PrivateKeyFactory,
     private val environmentSettings: EnvironmentConfig,
-    private val prefs: PersistentPrefs,
     private val pitLinking: PitLinking,
     private val coinSelectionRemoteConfig: CoinSelectionRemoteConfig,
     private val nabuDataManager: NabuDataManager,
@@ -99,8 +97,9 @@ class BitcoinSendStrategy(
     private val bitPayDataManager: BitPayDataManager,
     private val analytics: Analytics,
     private val envSettings: EnvironmentConfig,
+    private val prefs: PersistentPrefs,
     currencyState: CurrencyState
-) : SendStrategy<SendView>(currencyState), BitPayProtocol {
+) : SendStrategy<SendView>(currencyState, prefs), BitPayProtocol {
 
     override fun onViewAttached() {}
     override fun onViewDetached() {}
@@ -110,10 +109,6 @@ class BitcoinSendStrategy(
 
     private var pitAccount: PitAccount? = null
     override var isBitpayPaymentRequest: Boolean = false
-
-    private val fiatCurrency: String by unsafeLazy {
-        prefs.selectedFiatCurrency
-    }
 
     override fun onPitAddressSelected() {
         pitAccount?.let {
@@ -466,7 +461,6 @@ class BitcoinSendStrategy(
 
             cryptoUnit = CryptoCurrency.BTC.symbol
             fiatUnit = fiatCurrency
-            fiatSymbol = Currency.getInstance(fiatCurrency).symbol
 
             cryptoTotal = total.toStringWithoutSymbol()
             cryptoAmount = amount.toStringWithoutSymbol()

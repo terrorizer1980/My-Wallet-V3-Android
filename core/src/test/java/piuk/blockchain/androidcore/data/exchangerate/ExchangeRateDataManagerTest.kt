@@ -20,7 +20,6 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.math.BigDecimal
 import java.util.Locale
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class ExchangeRateDataManagerTest {
 
@@ -38,24 +37,6 @@ class ExchangeRateDataManagerTest {
         subject = ExchangeRateDataManager(
             exchangeRateDataStore,
             rxBus
-        )
-    }
-
-    @Test
-    fun getFiatFromEth() {
-
-        // Arrange
-        val exchangeRate = 5000.0
-        val satoshis = 10L
-        whenever(exchangeRateDataStore.getLastPrice(CryptoCurrency.ETHER, "USD")).thenReturn(exchangeRate)
-
-        // Act
-        val result = subject.getFiatFromEth(BigDecimal.valueOf(satoshis), "USD")
-
-        // Assert
-        assertEquals(
-            BigDecimal.valueOf(exchangeRate).multiply(BigDecimal.valueOf(satoshis)),
-            result
         )
     }
 

@@ -50,8 +50,6 @@ import piuk.blockchain.androidbuysell.models.coinify.ReviewState
 import piuk.blockchain.androidbuysell.models.coinify.TradeInProgress
 import piuk.blockchain.androidbuysell.models.coinify.Trader
 import piuk.blockchain.androidbuysell.services.ExchangeService
-import piuk.blockchain.androidcore.data.currency.BTCDenomination
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -76,7 +74,6 @@ class BuySellBuildOrderPresenter(
     private val sendDataManager: SendDataManager,
     private val payloadDataManager: PayloadDataManager,
     private val exchangeService: ExchangeService,
-    private val currencyFormatManager: CurrencyFormatManager,
     private val feeDataManager: FeeDataManager,
     private val dynamicFeeCache: DynamicFeeCache,
     private val exchangeRateDataManager: ExchangeRateDataManager,
@@ -283,28 +280,25 @@ class BuySellBuildOrderPresenter(
         val quote = BuyConfirmationDisplayModel(
             currencyToSend = currencyToSend,
             currencyToReceive = currencyToReceive,
-            amountToSend = currencyFormatManager.getFormattedFiatValueWithSymbol(
-                amountToSend,
+            amountToSend = FiatValue.fromMajor(
                 currencyToSend,
-                view.locale
-            ),
+                amountToSend.toBigDecimal()
+            ).toStringWithSymbol(),
             amountToReceive = amountToReceive,
             orderFee = outFixedFee.unaryMinus()
                 .toBigDecimal()
                 .setScale(8, RoundingMode.UP)
                 .sanitise(),
-            paymentFee = currencyFormatManager.getFormattedFiatValueWithSymbol(
-                paymentFeeBuy.toDouble(),
+            paymentFee = FiatValue.fromMajor(
                 currencyToSend,
-                view.locale
-            ),
+                paymentFeeBuy
+            ).toStringWithSymbol(),
             totalAmountToReceiveFormatted =
             (amountToReceive.toBigDecimal() - outFixedFee.absoluteValue.toBigDecimal()).sanitise(),
-            totalCostFormatted = currencyFormatManager.getFormattedFiatValueWithSymbol(
-                (amountToSend.toBigDecimal() + paymentFeeBuy).toDouble(),
+            totalCostFormatted = FiatValue.fromMajor(
                 currencyToSend,
-                view.locale
-            ),
+                (amountToSend.toBigDecimal() + paymentFeeBuy)
+            ).toStringWithSymbol(),
             // Include the original quote to avoid converting directions back again
             originalQuote = ParcelableQuote.fromQuote(lastQuote),
             isHigherThanCardLimit = amountToSend.toBigDecimal() > getLocalisedCardLimit(),
@@ -363,20 +357,18 @@ class BuySellBuildOrderPresenter(
                         networkFee = fee.sanitise(),
                         accountIndex = payloadDataManager.accounts.indexOf(account),
                         originalQuote = ParcelableQuote.fromQuote(lastQuote),
-                        totalAmountToReceiveFormatted = currencyFormatManager.getFormattedFiatValueWithSymbol(
-                            amountToReceive - paymentFeeSell.toDouble(),
+                        totalAmountToReceiveFormatted = FiatValue.fromMajor(
                             currencyToReceive,
-                            view.locale
-                        ),
+                            amountToReceive.toBigDecimal() - paymentFeeSell
+                        ).toStringWithSymbol(),
                         totalCostFormatted = totalCost,
                         amountInSatoshis = satoshis,
                         feePerKb = BigInteger.valueOf(feeOptions!!.priorityFee * 1000),
                         absoluteFeeInSatoshis = it.second,
-                        paymentFee = currencyFormatManager.getFormattedFiatValueWithSymbol(
-                            paymentFeeSell.toDouble(),
+                        paymentFee = FiatValue.fromMajor(
                             currencyToReceive,
-                            view.locale
-                        )
+                            paymentFeeSell
+                        ).toStringWithSymbol()
                     )
 
                     if (noAccounts) {
@@ -451,11 +443,11 @@ class BuySellBuildOrderPresenter(
         val currency = if (quote.isBtcBase()) quote.quoteCurrency else quote.baseCurrency
         val numerator = if (quote.isBtcBase()) quote.quoteAmount.absoluteValue else quote.baseAmount.absoluteValue
         val denominator = if (quote.isBtcBase()) quote.baseAmount.absoluteValue else quote.quoteAmount.absoluteValue
-        currencyFormatManager.getFormattedFiatValueWithSymbol(
-            numerator / denominator,
+
+        FiatValue.fromMajor(
             currency,
-            view.locale
-        ).run { view.renderExchangeRate(ExchangeRateStatus.Data("@ $this")) }
+            (numerator / denominator).toBigDecimal()
+        ).toStringWithSymbol().run { view.renderExchangeRate(ExchangeRateStatus.Data("@ $this")) }
     }
 
     private fun compareToLimits(quote: Quote) {
@@ -630,8 +622,7 @@ class BuySellBuildOrderPresenter(
     }
 
     private fun updateReceiveAmount(quoteAmount: Double) {
-        val formatted = currencyFormatManager
-            .getFormattedBchValue(BigDecimal.valueOf(quoteAmount), BTCDenomination.BTC)
+        val formatted = CryptoValue.bitcoinCashFromMajor(quoteAmount.toBigDecimal()).toStringWithoutSymbol()
         view.updateReceiveAmount(formatted)
     }
 
@@ -767,11 +758,10 @@ class BuySellBuildOrderPresenter(
         coinifyDataManager.getQuote(token, amount, "BTC", currency)
             .doOnSuccess {
                 val valueWithSymbol =
-                    currencyFormatManager.getFormattedFiatValueWithSymbol(
-                        it.quoteAmount.absoluteValue,
+                    FiatValue.fromMajor(
                         it.quoteCurrency,
-                        view.locale
-                    )
+                        it.quoteAmount.absoluteValue.toBigDecimal()
+                    ).toStringWithSymbol()
 
                 view.renderExchangeRate(ExchangeRateStatus.Data("@ $valueWithSymbol"))
             }

@@ -10,7 +10,6 @@ import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
-import java.math.BigDecimal
 import java.math.RoundingMode
 
 /**
@@ -22,7 +21,6 @@ class ExchangeRateDataManager(
     private val exchangeRateDataStore: ExchangeRateDataStore,
     rxBus: RxBus
 ) {
-
     private val rxPinning = RxPinning(rxBus)
 
     fun updateTickers(): Completable =
@@ -46,11 +44,6 @@ class ExchangeRateDataManager(
             .subscribeOn(Schedulers.io())
 
     fun getCurrencyLabels() = exchangeRateDataStore.getCurrencyLabels()
-
-    @Deprecated("Use CryptoValue.toFiat")
-    fun getFiatFromEth(eth: BigDecimal, fiatUnit: String): BigDecimal {
-        return getLastPrice(CryptoCurrency.ETHER, fiatUnit).toBigDecimal() * eth
-    }
 }
 
 fun CryptoValue.toFiat(exchangeRateDataManager: ExchangeRateDataManager, fiatUnit: String) =

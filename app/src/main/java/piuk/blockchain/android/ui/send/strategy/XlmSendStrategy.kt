@@ -9,6 +9,7 @@ import com.blockchain.swap.nabu.models.nabu.NabuErrorCodes
 import com.blockchain.swap.nabu.models.nabu.State
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.SendAnalytics
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.serialization.JsonSerializableAccount
 import com.blockchain.sunriver.XlmDataManager
@@ -58,8 +59,9 @@ class XlmSendStrategy(
     private val nabuToken: NabuToken,
     private val pitLinking: PitLinking,
     private val analytics: Analytics,
-    private val nabuDataManager: NabuDataManager
-) : SendStrategy<SendView>(currencyState) {
+    private val nabuDataManager: NabuDataManager,
+    prefs: CurrencyPrefs
+) : SendStrategy<SendView>(currencyState, prefs) {
 
     override fun onViewAttached() { }
     override fun onViewDetached() { }

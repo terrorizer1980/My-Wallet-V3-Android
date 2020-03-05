@@ -31,7 +31,6 @@ data class SendConfirmationDetails(
             it.cryptoTotal = total.toStringWithoutSymbol()
 
             it.fiatUnit = fiatAmount.currencyCode
-            it.fiatSymbol = fiatAmount.symbol()
             it.fiatAmount = fiatAmount.toStringWithoutSymbol()
             it.fiatFee = fiatFees.toStringWithoutSymbol()
             it.fiatTotal = fiatTotal.toStringWithoutSymbol()

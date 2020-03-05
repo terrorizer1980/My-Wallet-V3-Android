@@ -314,7 +314,6 @@ val applicationModule = applicationContext {
                 bchDataManager = get(),
                 rxBus = get(),
                 prefs = get(),
-                currencyFormatManager = get(),
                 appUtil = get(),
                 accessState = get()
             )
@@ -345,7 +344,6 @@ val applicationModule = applicationContext {
                 sendDataManager = get(),
                 exchangeService = get(),
                 stringUtils = get(),
-                currencyFormatManager = get(),
                 exchangeRateDataManager = get(),
                 feeDataManager = get(),
                 dynamicFeeCache = get(),
@@ -638,15 +636,14 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
-                currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                currencyPrefs = get(),
                 nabuToken = get(),
                 nabuDataManager = get(),
                 pitLinking = get(),
-                analytics = get()
+                analytics = get(),
+                prefs = get()
             )
         }
 
@@ -669,7 +666,8 @@ val applicationModule = applicationContext {
                 nabuDataManager = get(),
                 nabuToken = get(),
                 pitLinking = get(),
-                analytics = get()
+                analytics = get(),
+                prefs = get()
             )
         }
 
@@ -682,15 +680,14 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
-                currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                currencyPrefs = get(),
                 nabuToken = get(),
                 nabuDataManager = get(),
                 pitLinking = get(),
-                analytics = get()
+                analytics = get(),
+                prefs = get()
             )
         }
 
@@ -899,7 +896,6 @@ val applicationModule = applicationContext {
                 /* swipeToReceiveHelper = */ get(),
                 /* notificationTokenManager = */ get(),
                 /* exchangeRateDataManager = */ get(),
-                /* currencyFormatManager = */ get(),
                 /* kycStatusHelper = */ get(),
                 /* pitLinking = */ get(),
                 /* analytics = */ get(),

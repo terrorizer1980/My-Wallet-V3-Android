@@ -47,13 +47,13 @@ import piuk.blockchain.android.ui.buysell.payment.bank.accountoverview.BankAccou
 import piuk.blockchain.android.ui.buysell.payment.bank.addaccount.AddBankAccountActivity
 import piuk.blockchain.android.util.extensions.MemorySafeSubscription
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
-import piuk.blockchain.androidcore.data.currency.toSafeDouble
 import piuk.blockchain.androidcore.utils.extensions.toKotlinObject
 import piuk.blockchain.androidcore.utils.helperfunctions.InvalidatableLazy
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.androidcore.utils.extensions.toSafeDouble
 import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.disableSoftKeyboard

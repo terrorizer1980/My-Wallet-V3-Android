@@ -15,12 +15,6 @@ class CurrencyState(private val prefs: CurrencyPrefs) {
     enum class DisplayMode {
         Crypto,
         Fiat;
-
-        fun toggle() =
-            when (this) {
-                Crypto -> Fiat
-                Fiat -> Crypto
-            }
     }
 
     var displayMode = DisplayMode.Crypto
