@@ -20,6 +20,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
+import piuk.blockchain.android.util.assetName
 import piuk.blockchain.android.util.drawableResFilled
 import piuk.blockchain.androidcoreui.utils.DecimalDigitsInputFilter
 import piuk.blockchain.androidcoreui.utils.extensions.gone
@@ -94,7 +95,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
 
         newState.selectedCryptoCurrency?.let {
             crypto_icon.setImageResource(it.drawableResFilled())
-            crypto_text.text = it.unit
+            crypto_text.setText(it.assetName())
             activity.setupToolbar(resources.getString(R.string.simple_buy_token, it.symbol))
         }
         arrow.visibleIf { newState.availableCryptoCurrencies.size > 1 }

@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.view_expanding_currency_header.view.*
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.util.assetName
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
@@ -118,10 +119,8 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
 
     fun setCurrentlySelectedCurrency(cryptoCurrency: CryptoCurrency) {
         selectedCurrency = cryptoCurrency
-        updateCurrencyUi(selectedCurrency.coinIconWhite(), selectedCurrency.unit)
+        updateCurrencyUi(selectedCurrency)
     }
-
-    fun getCurrentlySelectedCurrency() = selectedCurrency
 
     fun hide(cryptoCurrency: CryptoCurrency) {
         textView(cryptoCurrency)?.gone()
@@ -182,11 +181,13 @@ class ExpandableCurrencyHeader @JvmOverloads constructor(
         content_frame.startAnimation(animation)
     }
 
-    private fun updateCurrencyUi(@DrawableRes leftDrawable: Int, title: String) {
+    private fun updateCurrencyUi(asset: CryptoCurrency) {
         textview_selected_currency.run {
+            val title = resources.getString(asset.assetName())
             text = title.toUpperCase()
+
             setCompoundDrawablesWithIntrinsicBounds(
-                AppCompatResources.getDrawable(context, leftDrawable),
+                AppCompatResources.getDrawable(context, asset.coinIconWhite()),
                 null,
                 arrowDrawable,
                 null

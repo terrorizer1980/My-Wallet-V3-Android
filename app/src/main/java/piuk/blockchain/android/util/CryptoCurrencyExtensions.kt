@@ -1,6 +1,7 @@
 package piuk.blockchain.android.util
 
 import android.content.Context
+import android.content.res.Resources
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -67,7 +68,7 @@ fun CryptoCurrency.errorIcon(): Int =
     }
 
 @StringRes
-fun CryptoCurrency.currencyName() =
+fun CryptoCurrency.assetName() =
     when (this) {
         CryptoCurrency.BTC -> R.string.bitcoin
         CryptoCurrency.ETHER -> R.string.ethereum
@@ -76,3 +77,6 @@ fun CryptoCurrency.currencyName() =
         CryptoCurrency.PAX -> R.string.usd_pax
         CryptoCurrency.STX -> R.string.stacks
     }
+
+fun CryptoCurrency.assetName(resources: Resources) =
+    resources.getString(this.assetName())

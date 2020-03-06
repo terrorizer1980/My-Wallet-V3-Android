@@ -2,15 +2,13 @@ package info.blockchain.balance
 
 enum class CryptoCurrency(
     val symbol: String,
-    val unit: String,
-    val dp: Int,           // max decimal places
+    val dp: Int,           // max decimal places; ie the quanta of this asset
     val userDp: Int,       // user decimal places
     val requiredConfirmations: Int,
     private val featureFlags: Long
 ) {
     BTC(
         symbol = "BTC",
-        unit = "Bitcoin",
         dp = 8,
         userDp = 8,
         requiredConfirmations = 3,
@@ -21,7 +19,6 @@ enum class CryptoCurrency(
     ),
     ETHER(
         symbol = "ETH",
-        unit = "Ether",
         dp = 18,
         userDp = 8,
         requiredConfirmations = 12,
@@ -30,7 +27,6 @@ enum class CryptoCurrency(
     ),
     BCH(
         symbol = "BCH",
-        unit = "Bitcoin Cash",
         dp = 8,
         userDp = 8,
         requiredConfirmations = 3,
@@ -40,7 +36,6 @@ enum class CryptoCurrency(
     ),
     XLM(
         symbol = "XLM",
-        unit = "Stellar",
         dp = 7,
         userDp = 7,
         requiredConfirmations = 1,
@@ -49,7 +44,6 @@ enum class CryptoCurrency(
     ),
     PAX(
         symbol = "PAX",
-        unit = "USD PAX",
         dp = 18,
         userDp = 8,
         requiredConfirmations = 12, // Same as ETHER
@@ -58,7 +52,6 @@ enum class CryptoCurrency(
     ),
     STX(
         symbol = "STX",
-        unit = "Stacks",
         dp = 7,
         userDp = 7,
         requiredConfirmations = 12,
