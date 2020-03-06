@@ -30,9 +30,9 @@ class CustodialWalletManagerSwitcher(
 
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
-        currency: String
+        fiatCurrency: String
     ): Single<SimpleBuyPairs> =
-        proxy.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, currency)
+        proxy.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, fiatCurrency)
 
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
         proxy.getQuote(action, crypto, amount)
@@ -60,8 +60,8 @@ class CustodialWalletManagerSwitcher(
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
         proxy.getBalanceForAsset(crypto)
 
-    override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
-        proxy.isCurrencySupportedForSimpleBuy(currency)
+    override fun isCurrencySupportedForSimpleBuy(fiatCurrency: String): Single<Boolean> =
+        proxy.isCurrencySupportedForSimpleBuy(fiatCurrency)
 
     override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
         proxy.getOutstandingBuyOrders()

@@ -4,7 +4,6 @@ import androidx.annotation.VisibleForTesting
 import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.swap.common.trade.MorphTradeDataHistoryList
 import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
-import info.blockchain.balance.formatWithUnit
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -54,10 +53,10 @@ class TradeHistoryPresenter(
         currency = this.quote.pair.to.symbol,
         price = this.quote.fiatValue?.toStringWithSymbol(view.locale) ?: "",
         pair = this.quote.pair.pairCode,
-        quantity = this.quote.withdrawalAmount.formatWithUnit(view.locale),
+        quantity = this.quote.withdrawalAmount.toStringWithSymbol(view.locale),
         createdAt = dateUtil.formatted(this.timestamp),
-        depositQuantity = this.quote.depositAmount.formatWithUnit(view.locale),
-        fee = this.quote.minerFee.formatWithUnit(view.locale)
+        depositQuantity = this.quote.depositAmount.toStringWithSymbol(view.locale),
+        fee = this.quote.minerFee.toStringWithSymbol(view.locale)
     )
 }
 

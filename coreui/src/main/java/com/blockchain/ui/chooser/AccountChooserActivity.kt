@@ -159,7 +159,7 @@ class AccountChooserActivity : BaseMvpActivity<AccountChooserView, AccountChoose
             }
         }
 
-        fun getSelectedRawAccount(data: Intent): JsonSerializableAccount {
+        private fun getSelectedRawAccount(data: Intent): JsonSerializableAccount {
             val clazz =
                 Class.forName(data.getStringExtra(EXTRA_SELECTED_OBJECT_TYPE))
 

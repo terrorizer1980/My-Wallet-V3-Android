@@ -25,7 +25,7 @@ class StubCustodialWalletManager : CustodialWalletManager {
 
     override fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
-        currency: String
+        fiatCurrency: String
     ): Single<SimpleBuyPairs> =
         Single.just(
             SimpleBuyPairs(
@@ -139,7 +139,7 @@ class StubCustodialWalletManager : CustodialWalletManager {
     override fun isEligibleForSimpleBuy(fiatCurrency: String): Single<Boolean> =
         Single.just(true)
 
-    override fun isCurrencySupportedForSimpleBuy(currency: String): Single<Boolean> =
+    override fun isCurrencySupportedForSimpleBuy(fiatCurrency: String): Single<Boolean> =
         Single.just(true)
 
     override fun getBalanceForAsset(

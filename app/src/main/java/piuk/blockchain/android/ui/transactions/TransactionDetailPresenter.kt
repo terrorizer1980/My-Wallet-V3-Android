@@ -3,7 +3,6 @@ package piuk.blockchain.android.ui.transactions
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
-import info.blockchain.balance.formatWithUnit
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -106,7 +105,7 @@ class TransactionDetailPresenter constructor(
             .doOnError {
                 view?.setFee("")
             }
-            .subscribe { view?.setFee(it.formatWithUnit()) }
+            .subscribe { view?.setFee(it.toStringWithSymbol()) }
     }
 
     private fun setConfirmationStatus(cryptoCurrency: CryptoCurrency, txHash: String, confirmations: Int) {

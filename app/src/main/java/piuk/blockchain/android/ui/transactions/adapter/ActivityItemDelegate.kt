@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import info.blockchain.balance.formatWithUnit
 import kotlinx.android.synthetic.main.item_transaction.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
@@ -59,7 +58,7 @@ class ActivityItemDelegate<in T>(
         } ?: viewHolder.note.gone()
 
         viewHolder.result.text = if (showCrypto) {
-            tx.totalCrypto.formatWithUnit()
+            tx.totalCrypto.toStringWithSymbol()
         } else {
             tx.totalFiat(selectedFiatCurrency)
                 .toStringWithSymbol()

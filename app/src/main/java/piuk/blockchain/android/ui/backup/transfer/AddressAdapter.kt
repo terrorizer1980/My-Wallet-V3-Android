@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.spinner_item.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.account.formatDisplayBalance
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 
@@ -37,12 +37,12 @@ class AddressAdapter(
         val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_address, parent, false)
 
         getItem(position)?.let {
-            if (it.tag.isNullOrEmpty()) {
+            if (it.tag.isEmpty()) {
                 view.tvTag.gone()
             } else {
-                view.tvTag.text = it.tag ?: ""
+                view.tvTag.text = it.tag
             }
-            view.tvLabel.text = it.label ?: ""
+            view.tvLabel.text = it.label
             view.tvBalance.text = it.formatDisplayBalance(currencyState, exchangeRates)
         }
 

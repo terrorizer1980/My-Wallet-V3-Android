@@ -22,7 +22,7 @@ fun String.tryParseBigDecimal(locale: Locale = Locale.getDefault()) =
  * Parses a string as a [BigDecimal].
  * Ignores all non-digit and non-separator characters.
  */
-fun String.parseBigDecimal(locale: Locale): BigDecimal {
+fun String.parseBigDecimal(locale: Locale = Locale.getDefault()): BigDecimal {
     val format = NumberFormat.getNumberInstance(locale)
     if (format is DecimalFormat) {
         format.isParseBigDecimal = true

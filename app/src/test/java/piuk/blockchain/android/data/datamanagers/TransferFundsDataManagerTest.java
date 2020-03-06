@@ -76,7 +76,7 @@ public class TransferFundsDataManagerTest extends RxTest {
         when(sendDataManager.getMaximumAvailable(CryptoCurrency.BTC, unspentOutputs, BigInteger.valueOf(1_000L), useNewCoinSelection))
                 .thenReturn(Pair.of(BigInteger.valueOf(1_000_000L), BigInteger.TEN));
         // Act
-        TestObserver<Triple<List<PendingTransaction>, Long, Long>> testObserver =
+        TestObserver<TransferableFundTransactionList> testObserver =
                 subject.getTransferableFundTransactionListForDefaultAccount().test();
         // Assert
         testObserver.assertComplete();

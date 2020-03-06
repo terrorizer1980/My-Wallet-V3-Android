@@ -1,7 +1,9 @@
 package piuk.blockchain.android.ui.account
 
 import android.os.Parcelable
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
+import java.util.Currency
 
 @Parcelize
 data class PaymentConfirmationDetails(
@@ -16,7 +18,6 @@ data class PaymentConfirmationDetails(
     var cryptoTotal: String = "",
     var fiatTotal: String = "",
     var btcSuggestedFee: String = "",
-    var fiatSymbol: String = "",
     var isLargeTransaction: Boolean = false,
     var hasConsumedAmounts: Boolean = false,
     var showCryptoTotal: Boolean = true,
@@ -24,6 +25,10 @@ data class PaymentConfirmationDetails(
     var warningSubtext: String = ""
 ) : Parcelable {
 
+    val fiatSymbol: String
+        get() = Currency.getInstance(fiatUnit).symbol
+
+    @IgnoredOnParcel
     var cryptoFeeUnit: String = ""
         get() = if (field.isEmpty()) cryptoUnit else field
 

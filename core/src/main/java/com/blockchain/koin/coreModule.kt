@@ -50,15 +50,11 @@ import piuk.blockchain.androidcore.data.access.LogoutTimer
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.auth.AuthService
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataStore
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatUtil
-import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.datastores.Erc20DataStore
 import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateService
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
@@ -205,16 +201,7 @@ val coreModule = applicationContext {
 
         bean { ExchangeRateDataStore(get(), get()) }
 
-        factory {
-            FiatExchangeRates(
-                exchangeRates = get(),
-                currencyPrefs = get()
-            )
-        }
-
         factory { FeeDataManager(get(), get(), get()) }
-
-        factory { CurrencyFormatManager(get(), get(), get(), get(), get()) }
 
         factory {
             AuthDataManager(
@@ -269,10 +256,6 @@ val coreModule = applicationContext {
         .bind(ThePitLinkingPrefs::class)
         .bind(SimpleBuyPrefs::class)
         .bind(WalletStatus::class)
-
-    factory { CurrencyFormatUtil() }
-
-    bean { CurrencyState(get()) }
 
     factory { PaymentService(get(), get(), get()) }
 

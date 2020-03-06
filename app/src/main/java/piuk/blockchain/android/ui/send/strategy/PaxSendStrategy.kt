@@ -34,12 +34,11 @@ import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -58,17 +57,16 @@ class PaxSendStrategy(
     private val paxAccount: Erc20Account,
     private val dynamicFeeCache: DynamicFeeCache,
     private val feeDataManager: FeeDataManager,
-    private val currencyFormatter: CurrencyFormatManager,
-    private val exchangeRates: FiatExchangeRates,
+    private val exchangeRates: ExchangeRateDataManager,
     private val stringUtils: StringUtils,
-    private val currencyPrefs: CurrencyPrefs,
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
     private val pitLinking: PitLinking,
     private val analytics: Analytics,
+    prefs: CurrencyPrefs,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
-) : SendStrategy<SendView>(currencyState) {
+) : SendStrategy<SendView>(currencyState, prefs) {
 
     override fun onViewAttached() { }
     override fun onViewDetached() { }
@@ -291,14 +289,13 @@ class PaxSendStrategy(
             cryptoUnit = CryptoCurrency.PAX.symbol
             cryptoFeeUnit = CryptoCurrency.ETHER.symbol
 
-            fiatUnit = currencyPrefs.selectedFiatCurrency
-            fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode)
+            fiatUnit = fiatCurrency
 
             val paxValue = CryptoValue.usdPaxFromMinor(pendingTx.amountPax)
             var paxAmount = paxValue.toBigDecimal()
             paxAmount = paxAmount.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
 
-            val fiatValue = paxValue.toFiat(exchangeRates)
+            val fiatValue = paxValue.toFiat(exchangeRates, fiatCurrency)
             cryptoAmount = paxAmount.toString()
             fiatAmount = fiatValue.toStringWithoutSymbol()
 
@@ -307,7 +304,7 @@ class PaxSendStrategy(
 
             cryptoFee = ethFeeValue.toString()
 
-            val fiatFeeValue = CryptoValue.etherFromWei(pendingTx.feeEth).toFiat(exchangeRates)
+            val fiatFeeValue = CryptoValue.etherFromWei(pendingTx.feeEth).toFiat(exchangeRates, fiatCurrency)
 
             fiatFee = fiatFeeValue.toStringWithoutSymbol()
 
@@ -362,7 +359,7 @@ class PaxSendStrategy(
         absoluteSuggestedFee = fee
 
         val cryptoValue = CryptoValue(CryptoCurrency.ETHER, absoluteSuggestedFee)
-        view?.updateFeeAmount(cryptoValue, cryptoValue.toFiat(exchangeRates))
+        view?.updateFeeAmount(cryptoValue, cryptoValue.toFiat(exchangeRates, fiatCurrency))
     }
 
     override fun onCryptoTextChange(cryptoText: String) {
@@ -455,15 +452,11 @@ class PaxSendStrategy(
             view?.updateCryptoAmount(cryptoValue)
             pendingTx.amountPax = availablePax
         } else {
-            // TODO: Not wei, but pax-minor. Since we share dp, we can use this
-            pendingTx.amountPax = currencyFormatter.getWeiFromText(
-                amountToSendSanitised,
-                getDefaultDecimalSeparator()
-            )
+            pendingTx.amountPax = getPaxMinorFromText(amountToSendSanitised, getDefaultDecimalSeparator())
         }
 
         // Format for display
-        val number = currencyFormatter.getFormattedValueWithUnit(cryptoValue)
+        val number = cryptoValue.toStringWithSymbol()
         view?.updateMaxAvailable("${stringUtils.getString(R.string.max_available)} $number")
 
         // No dust in Ethereum
@@ -556,3 +549,15 @@ private data class PendingPaxTx(
 ) {
     fun isValidAmount(): Boolean = amountPax > BigInteger.ZERO
 }
+
+private fun getPaxMinorFromText(text: String?, decimalSeparator: String): BigInteger {
+    if (text == null || text.isEmpty()) return BigInteger.ZERO
+
+    val amountToSend = stripSeparator(text, decimalSeparator)
+    return Convert.toWei(amountToSend, Convert.Unit.ETHER).toBigInteger()
+}
+
+private fun stripSeparator(text: String, decimalSeparator: String) =
+    text.trim { it <= ' ' }
+        .replace(" ", "")
+        .replace(decimalSeparator, ".")

@@ -34,12 +34,10 @@ import piuk.blockchain.android.ui.send.PendingTransaction
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
-import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.currency.ETHDenomination
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -50,7 +48,6 @@ import timber.log.Timber
 import java.lang.IllegalStateException
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.math.RoundingMode
 import java.util.concurrent.TimeUnit
 
 class EtherSendStrategy(
@@ -60,16 +57,15 @@ class EtherSendStrategy(
     private val stringUtils: StringUtils,
     private val dynamicFeeCache: DynamicFeeCache,
     private val feeDataManager: FeeDataManager,
-    private val currencyFormatter: CurrencyFormatManager,
-    private val exchangeRates: FiatExchangeRates,
-    private val currencyPrefs: CurrencyPrefs,
+    private val exchangeRates: ExchangeRateDataManager,
     private val nabuDataManager: NabuDataManager,
     private val nabuToken: NabuToken,
     private val pitLinking: PitLinking,
     private val analytics: Analytics,
+    prefs: CurrencyPrefs,
     currencyState: CurrencyState,
     environmentConfig: EnvironmentConfig
-) : SendStrategy<SendView>(currencyState) {
+) : SendStrategy<SendView>(currencyState, prefs) {
 
     override fun onViewAttached() { }
     override fun onViewDetached() { }
@@ -305,38 +301,24 @@ class EtherSendStrategy(
     private fun getConfirmationDetails(): PaymentConfirmationDetails {
         val pendingTransaction = pendingTransaction
 
+        val amount = CryptoValue.fromMinor(CryptoCurrency.ETHER, pendingTransaction.bigIntAmount)
+        val fee = CryptoValue.fromMinor(CryptoCurrency.ETHER, pendingTransaction.bigIntFee)
+        val total = amount + fee
+
         return PaymentConfirmationDetails().apply {
             fromLabel = pendingTransaction.sendingObject!!.label ?: ""
             toLabel = pendingTransaction.displayableReceivingLabel ?: throw IllegalStateException("No receive label")
 
             cryptoUnit = CryptoCurrency.ETHER.symbol
-            fiatUnit = currencyPrefs.selectedFiatCurrency
-            fiatSymbol = currencyFormatter.getFiatSymbol(currencyFormatter.fiatCountryCode)
+            fiatUnit = fiatCurrency
 
-            var ethAmount = Convert.fromWei(pendingTransaction.bigIntAmount.toString(), Convert.Unit.ETHER)
-            var ethFee = Convert.fromWei(pendingTransaction.bigIntFee.toString(), Convert.Unit.ETHER)
+            cryptoAmount = amount.toStringWithoutSymbol()
+            cryptoFee = fee.toStringWithoutSymbol()
+            cryptoTotal = total.toStringWithoutSymbol()
 
-            ethAmount = ethAmount.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
-            ethFee = ethFee.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
-
-            val ethTotal = ethAmount.add(ethFee)
-
-            cryptoAmount = ethAmount.toString()
-            cryptoFee = ethFee.toString()
-            cryptoTotal = ethTotal.toString()
-
-            fiatFee = currencyFormatter.getFormattedFiatValueFromSelectedCoinValue(
-                coinValue = ethFee,
-                convertEthDenomination = ETHDenomination.ETH
-            )
-            fiatAmount = currencyFormatter.getFormattedFiatValueFromSelectedCoinValue(
-                coinValue = ethAmount,
-                convertEthDenomination = ETHDenomination.ETH
-            )
-            fiatTotal = currencyFormatter.getFormattedFiatValueFromSelectedCoinValue(
-                coinValue = ethTotal,
-                convertEthDenomination = ETHDenomination.ETH
-            )
+            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
+            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
+            fiatTotal = total.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
         }
     }
 
@@ -375,7 +357,7 @@ class EtherSendStrategy(
         absoluteSuggestedFee = fee
 
         val cryptoValue = CryptoValue(CryptoCurrency.ETHER, absoluteSuggestedFee)
-        view?.updateFeeAmount(cryptoValue, cryptoValue.toFiat(exchangeRates))
+        view?.updateFeeAmount(cryptoValue, cryptoValue.toFiat(exchangeRates, fiatCurrency))
     }
 
     override fun onCryptoTextChange(cryptoText: String) {
@@ -440,22 +422,17 @@ class EtherSendStrategy(
         maxAvailable = maxAvailable.max(BigInteger.ZERO)
 
         val availableEth = Convert.fromWei(maxAvailable.toString(), Convert.Unit.ETHER)
-        val cryptoValue = CryptoValue.etherFromMajor(availableEth ?: BigDecimal.ZERO)
+        val cryptoValue = CryptoValue.fromMajor(CryptoCurrency.ETHER, availableEth ?: BigDecimal.ZERO)
 
         if (spendAll) {
             view?.updateCryptoAmount(cryptoValue)
             pendingTransaction.bigIntAmount = availableEth.toBigInteger()
         } else {
-            pendingTransaction.bigIntAmount =
-                currencyFormatter.getWeiFromText(
-                    amountToSendSanitised,
-                    getDefaultDecimalSeparator()
-                )
+            pendingTransaction.bigIntAmount = getWeiFromText(amountToSendSanitised, getDefaultDecimalSeparator())
         }
 
         // Format for display
-        val number = currencyFormatter.getFormattedValueWithUnit(cryptoValue)
-        view?.updateMaxAvailable("${stringUtils.getString(R.string.max_available)} $number")
+        view?.updateMaxAvailable("${stringUtils.getString(R.string.max_available)} ${cryptoValue.toStringWithSymbol()}")
 
         // No dust in Ethereum
         if (maxAvailable <= BigInteger.ZERO) {
@@ -545,3 +522,15 @@ class EtherSendStrategy(
                 Pair(!hasUnconfirmed, errorMessage)
             }
 }
+
+private fun getWeiFromText(text: String?, decimalSeparator: String): BigInteger {
+    if (text == null || text.isEmpty()) return BigInteger.ZERO
+
+    val amountToSend = stripSeparator(text, decimalSeparator)
+    return Convert.toWei(amountToSend, Convert.Unit.ETHER).toBigInteger()
+}
+
+private fun stripSeparator(text: String, decimalSeparator: String) =
+    text.trim { it <= ' ' }
+        .replace(" ", "")
+        .replace(decimalSeparator, ".")

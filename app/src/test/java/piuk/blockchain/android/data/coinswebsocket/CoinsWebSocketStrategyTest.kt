@@ -107,7 +107,6 @@ class CoinsWebSocketStrategyTest {
         stringUtils = stringUtils,
         gson = Gson(),
         erc20Account = erc20Account,
-        currencyFormatManager = mock(),
         bchDataManager = bchDataManager,
         payloadDataManager = payloadDataManager,
         accessState = mock(),

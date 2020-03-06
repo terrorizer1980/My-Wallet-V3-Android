@@ -6,7 +6,6 @@ import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.swap.common.trade.MorphTradeDataManager
 import com.blockchain.swap.common.trade.MorphTradeStatus
 import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.formatWithUnit
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
@@ -106,13 +105,13 @@ class TradeDetailPresenter(
     private fun updateDeposit(depositAmount: CryptoValue) {
         val label =
             resources.getString(R.string.morph_deposit_title, depositAmount.currency.unit)
-        view.updateDeposit(label, depositAmount.formatWithUnit())
+        view.updateDeposit(label, depositAmount.toStringWithSymbol())
     }
 
     private fun updateReceive(receiveAmount: CryptoValue) {
         val label =
             resources.getString(R.string.morph_receive_title, receiveAmount.currency.unit)
-        view.updateReceive(label, receiveAmount.formatWithUnit())
+        view.updateReceive(label, receiveAmount.toStringWithSymbol())
     }
 
     private fun updateExchangeRate(
@@ -133,7 +132,7 @@ class TradeDetailPresenter(
     }
 
     private fun updateTransactionFee(transactionFee: CryptoValue) {
-        view.updateTransactionFee(transactionFee.formatWithUnit())
+        view.updateTransactionFee(transactionFee.toStringWithSymbol())
     }
 
     private fun updateOrderId(displayString: String) {

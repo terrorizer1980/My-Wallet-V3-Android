@@ -77,6 +77,12 @@ data class FiatValue private constructor(
     override fun equals(other: Any?): Boolean =
         (other is FiatValue) && (other.currencyCode == currencyCode) && (other.value.compareTo(value) == 0)
 
+    override fun hashCode(): Int {
+        var result = currencyCode.hashCode()
+        result = 31 * result + value.hashCode()
+        return result
+    }
+
     companion object {
 
         fun fromMinor(currencyCode: String, minor: Long) =

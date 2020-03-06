@@ -1,4 +1,4 @@
-package piuk.blockchain.androidcore.data.currency
+package piuk.blockchain.android.data.currency
 
 import com.blockchain.annotations.BurnCandidate
 import com.blockchain.preferences.CurrencyPrefs
@@ -15,12 +15,6 @@ class CurrencyState(private val prefs: CurrencyPrefs) {
     enum class DisplayMode {
         Crypto,
         Fiat;
-
-        fun toggle() =
-            when (this) {
-                Crypto -> Fiat
-                Fiat -> Crypto
-            }
     }
 
     var displayMode = DisplayMode.Crypto

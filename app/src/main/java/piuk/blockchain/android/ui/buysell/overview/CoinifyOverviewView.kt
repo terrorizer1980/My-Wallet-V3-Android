@@ -5,11 +5,8 @@ import piuk.blockchain.android.ui.buysell.details.models.AwaitingFundsModel
 import piuk.blockchain.android.ui.buysell.details.models.BuySellDetailsModel
 import piuk.blockchain.android.ui.buysell.details.models.RecurringTradeDisplayModel
 import piuk.blockchain.androidcoreui.ui.base.View
-import java.util.Locale
 
 interface CoinifyOverviewView : View {
-
-    val locale: Locale
 
     fun renderViewState(state: OverViewState)
 

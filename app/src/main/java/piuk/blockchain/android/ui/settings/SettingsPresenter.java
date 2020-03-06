@@ -28,7 +28,6 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper;
 import piuk.blockchain.android.util.StringUtils;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.EmailSyncUpdater;
@@ -53,7 +52,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     private final SwipeToReceiveHelper swipeToReceiveHelper;
     private final NotificationTokenManager notificationTokenManager;
     private final ExchangeRateDataManager exchangeRateDataManager;
-    private final CurrencyFormatManager currencyFormatManager;
     private final KycStatusHelper kycStatusHelper;
     @VisibleForTesting
     Settings settings;
@@ -76,7 +74,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             SwipeToReceiveHelper swipeToReceiveHelper,
             NotificationTokenManager notificationTokenManager,
             ExchangeRateDataManager exchangeRateDataManager,
-            CurrencyFormatManager currencyFormatManager,
             KycStatusHelper kycStatusHelper,
             PitLinking pitLinking,
             Analytics analytics,
@@ -94,7 +91,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         this.swipeToReceiveHelper = swipeToReceiveHelper;
         this.notificationTokenManager = notificationTokenManager;
         this.exchangeRateDataManager = exchangeRateDataManager;
-        this.currencyFormatManager = currencyFormatManager;
         this.kycStatusHelper = kycStatusHelper;
         this.pitLinking = pitLinking;
         this.analytics = analytics;
@@ -569,7 +565,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                                     if (prefs.getSelectedFiatCurrency().equals(fiatUnit))
                                         analytics.logEvent(AnalyticsEvents.ChangeFiatCurrency);
                                     prefs.setSelectedFiatCurrency(fiatUnit);
-                                    currencyFormatManager.invalidateFiatCode();
                                     this.settings = settings;
                                     analytics.logEvent(SettingsAnalyticsEvents.CurrencyChanged.INSTANCE);
                                 },
