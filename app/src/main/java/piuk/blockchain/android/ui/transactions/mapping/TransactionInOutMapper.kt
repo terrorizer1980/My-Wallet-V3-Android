@@ -3,7 +3,6 @@ package piuk.blockchain.android.ui.transactions.mapping
 import com.blockchain.sunriver.XlmDataManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.format
 import info.blockchain.wallet.multiaddress.MultiAddressFactory
 import info.blockchain.wallet.util.FormatsUtil
 import io.reactivex.Single
@@ -184,7 +183,7 @@ class TransactionInOutMapper(
     ): TransactionDetailModel =
         TransactionDetailModel(
             label,
-            value.format(),
+            value.toStringWithoutSymbol(),
             cryptoCurrency.symbol
         ).apply {
             if (address == MultiAddressFactory.ADDRESS_DECODE_ERROR) {

@@ -19,13 +19,13 @@ enum class FormatPrecision {
     Full
 }
 
-fun CryptoValue.format(
+internal fun CryptoValue.format(
     locale: Locale = Locale.getDefault(),
     precision: FormatPrecision = FormatPrecision.Short
 ): String =
     getFormatter(locale).format(this, precision)
 
-fun CryptoValue.formatWithUnit(
+internal fun CryptoValue.formatWithUnit(
     locale: Locale = Locale.getDefault(),
     precision: FormatPrecision = FormatPrecision.Short
 ) =
@@ -36,7 +36,7 @@ private val formatterMap: MutableMap<Locale, CryptoCurrencyFormatter> = Concurre
 private fun getFormatter(locale: Locale) =
     formatterMap.getOrPut(locale) { CryptoCurrencyFormatter(locale) }
 
-class CryptoCurrencyFormatter(locale: Locale) {
+internal class CryptoCurrencyFormatter(locale: Locale) {
     private val btcFormat = createCryptoDecimalFormat(locale, CryptoCurrency.BTC.dp)
     private val bchFormat = createCryptoDecimalFormat(locale, CryptoCurrency.BCH.dp)
     private val ethFormat = createCryptoDecimalFormat(locale, CryptoCurrency.ETHER.dp)

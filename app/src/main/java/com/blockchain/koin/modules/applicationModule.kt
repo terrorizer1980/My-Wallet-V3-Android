@@ -126,6 +126,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
 import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
 import java.util.Locale
@@ -148,6 +149,8 @@ val applicationModule = applicationContext {
     factory { get<Context>().resources }
 
     factory { Locale.getDefault() }
+
+    bean { CurrencyState(prefs = get()) }
 
     bean { CurrentContextAccess() }
 

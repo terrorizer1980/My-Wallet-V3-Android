@@ -9,7 +9,6 @@ import com.blockchain.sunriver.isValidXlmQr
 import com.blockchain.sunriver.toUri
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
-import info.blockchain.balance.format
 import info.blockchain.balance.withMajorValueOrZero
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.coin.GenericMetadataAccount
@@ -349,7 +348,7 @@ class ReceivePresenter(
         view?.updateBtcTextField(
             FiatValue.fromMajorOrZero(fiatUnit, fiat)
                 .toCrypto(fiatExchangeRates, currencyState.cryptoCurrency)
-                .format()
+                .toStringWithoutSymbol()
         )
     }
 

@@ -5,7 +5,6 @@ import com.blockchain.network.websocket.WebSocket
 import com.google.gson.Gson
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.formatWithUnit
 import info.blockchain.wallet.ethereum.Erc20TokenData
 import info.blockchain.wallet.exceptions.DecryptionException
 import info.blockchain.wallet.multiaddress.TransactionSummary
@@ -258,7 +257,7 @@ class CoinsWebSocketStrategy(
 
             val title = stringUtils.getString(R.string.app_name)
             val marquee = stringUtils.getString(R.string.received_usd_pax) + " " +
-                    CryptoValue.usdPaxFromMinor(tokenTransaction.value).formatWithUnit()
+                    CryptoValue.usdPaxFromMinor(tokenTransaction.value).toStringWithSymbol()
             val text =
                 marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) +
                         " " + tokenTransaction.from

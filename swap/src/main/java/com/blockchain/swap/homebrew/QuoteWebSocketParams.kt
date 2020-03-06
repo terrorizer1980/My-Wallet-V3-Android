@@ -2,7 +2,6 @@ package com.blockchain.swap.homebrew
 
 import com.blockchain.swap.common.quote.ExchangeQuoteRequest
 import com.blockchain.serialization.JsonSerializable
-import info.blockchain.balance.format
 import io.reactivex.Observable
 import java.util.Locale
 
@@ -27,7 +26,7 @@ internal fun ExchangeQuoteRequest.mapToSocketParameters() =
         is ExchangeQuoteRequest.Selling ->
             QuoteWebSocketParams(
                 pair = pair.pairCodeUpper,
-                volume = offering.format(Locale.US).removeComma(),
+                volume = offering.toStringWithoutSymbol(Locale.US).removeComma(),
                 fiatCurrency = indicativeFiatSymbol,
                 fix = "base"
             )
@@ -41,7 +40,7 @@ internal fun ExchangeQuoteRequest.mapToSocketParameters() =
         is ExchangeQuoteRequest.Buying ->
             QuoteWebSocketParams(
                 pair = pair.pairCodeUpper,
-                volume = wanted.format(Locale.US).removeComma(),
+                volume = wanted.toStringWithoutSymbol(Locale.US).removeComma(),
                 fiatCurrency = indicativeFiatSymbol,
                 fix = "counter"
             )

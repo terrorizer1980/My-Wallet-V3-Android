@@ -27,7 +27,6 @@ import com.blockchain.ui.password.SecondPasswordHandler
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
-import info.blockchain.balance.formatWithUnit
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -124,9 +123,9 @@ class ExchangeConfirmationFragment :
     private fun renderUi(viewModel: ExchangeConfirmationViewModel) {
         with(viewModel) {
             from_amount.setBackgroundResource(sending.currency.colorRes())
-            from_amount.text = sending.formatWithUnit(locale)
+            from_amount.text = sending.toStringWithSymbol(locale)
 
-            val receivingCryptoValue = receiving.formatWithUnit(locale)
+            val receivingCryptoValue = receiving.toStringWithSymbol(locale)
             to_amount.setBackgroundResource(receiving.currency.colorRes())
             if (to_amount.text.isNullOrEmpty().not() && receivingCryptoValue != to_amount.text.toString()) {
                 analytics.logEvent(SwapAnalyticsEvents.SwapExchangeReceiveChange)
@@ -145,7 +144,7 @@ class ExchangeConfirmationFragment :
     }
 
     override fun updateFee(cryptoValue: CryptoValue) {
-        fees_value.text = cryptoValue.formatWithUnit()
+        fees_value.text = cryptoValue.toStringWithSymbol()
     }
 
     override fun showSecondPasswordDialog() {

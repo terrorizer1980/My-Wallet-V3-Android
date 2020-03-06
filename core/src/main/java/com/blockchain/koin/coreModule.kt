@@ -50,7 +50,6 @@ import piuk.blockchain.androidcore.data.access.LogoutTimer
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.auth.AuthService
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataStore
-import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.datastores.Erc20DataStore
 import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
@@ -265,8 +264,6 @@ val coreModule = applicationContext {
         .bind(ThePitLinkingPrefs::class)
         .bind(SimpleBuyPrefs::class)
         .bind(WalletStatus::class)
-
-    bean { CurrencyState(get()) }
 
     factory { PaymentService(get(), get(), get()) }
 

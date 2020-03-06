@@ -422,7 +422,7 @@ class EtherSendStrategy(
         maxAvailable = maxAvailable.max(BigInteger.ZERO)
 
         val availableEth = Convert.fromWei(maxAvailable.toString(), Convert.Unit.ETHER)
-        val cryptoValue = CryptoValue.etherFromMajor(availableEth ?: BigDecimal.ZERO)
+        val cryptoValue = CryptoValue.fromMajor(CryptoCurrency.ETHER, availableEth ?: BigDecimal.ZERO)
 
         if (spendAll) {
             view?.updateCryptoAmount(cryptoValue)
