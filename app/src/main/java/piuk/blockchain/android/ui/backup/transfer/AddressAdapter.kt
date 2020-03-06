@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.spinner_item.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.account.formatDisplayBalance
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 

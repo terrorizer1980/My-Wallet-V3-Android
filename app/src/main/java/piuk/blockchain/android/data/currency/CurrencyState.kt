@@ -1,4 +1,4 @@
-package piuk.blockchain.androidcore.data.currency
+package piuk.blockchain.android.data.currency
 
 import com.blockchain.annotations.BurnCandidate
 import com.blockchain.preferences.CurrencyPrefs

@@ -39,7 +39,7 @@ import piuk.blockchain.android.ui.account.PitAccount
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.SendConfirmationDetails
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager

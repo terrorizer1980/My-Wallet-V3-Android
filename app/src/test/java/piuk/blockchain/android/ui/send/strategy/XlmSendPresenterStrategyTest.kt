@@ -43,7 +43,7 @@ import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.SendConfirmationDetails
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import java.util.concurrent.TimeUnit

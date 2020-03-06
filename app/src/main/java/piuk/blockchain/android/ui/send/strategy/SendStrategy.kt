@@ -10,7 +10,7 @@ import info.blockchain.wallet.api.data.FeeOptions
 import io.reactivex.Observable
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.send.SendView
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import java.math.BigInteger
