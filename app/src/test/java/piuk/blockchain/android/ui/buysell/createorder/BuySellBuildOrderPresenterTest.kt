@@ -29,6 +29,7 @@ import piuk.blockchain.androidbuysell.models.coinify.Limits
 import piuk.blockchain.androidbuysell.models.coinify.Medium
 import piuk.blockchain.androidbuysell.models.coinify.MinimumInAmounts
 import piuk.blockchain.androidbuysell.models.coinify.PaymentMethod
+import piuk.blockchain.androidbuysell.models.coinify.Quote
 import piuk.blockchain.androidbuysell.models.coinify.ReviewState
 import piuk.blockchain.androidbuysell.models.coinify.Trader
 
@@ -39,7 +40,7 @@ class BuySellBuildOrderPresenterTest {
     }
 
     private fun traderLevel(): Level =
-        Level(1, "Test", "USD", 1.0,
+        Level(1, "Test", TEST_CURRENCY, 1.0,
             Limits(CardLimits(LimitValues(1.0, 100.0)), BankLimits(LimitValues(10.0, 1000.0),
                 LimitValues(10.0, 1000.0))))
 
@@ -49,6 +50,10 @@ class BuySellBuildOrderPresenterTest {
 
     private val userWithOutState: NabuUser = mock {
         on { address } `it returns` Address("", "", "", "", "", "EE")
+    }
+
+    private val quote: Quote = mock {
+        on { quoteCurrency } itReturns TEST_CURRENCY
     }
 
     @get:Rule
@@ -67,7 +72,7 @@ class BuySellBuildOrderPresenterTest {
                         Single.just(
                             Trader(
                                 id = 1,
-                                defaultCurrency = "USD",
+                                defaultCurrency = TEST_CURRENCY,
                                 email = "",
                                 profile = mock(),
                                 level = traderLevel()
@@ -80,7 +85,7 @@ class BuySellBuildOrderPresenterTest {
                         "",
                         "",
                         "")))
-                    on { getQuote(any(), any(), any(), any()) } `it returns` Single.just(mock())
+                    on { getQuote(any(), any(), any(), any()) } itReturns Single.just(quote)
                     on { getPaymentMethods(any(), anyOrNull(), anyOrNull()) } `it returns` Observable.just(listOf(
                         cardPaymentMethod(), transferPaymentMethod()
                     ))
@@ -125,7 +130,7 @@ class BuySellBuildOrderPresenterTest {
         val presenter =
             BuySellBuildOrderPresenter(
                 coinifyDataManager = mock {
-                    on { getTrader(any()) } `it returns` Single.just(Trader(1, "USD", "",
+                    on { getTrader(any()) } `it returns` Single.just(Trader(1, TEST_CURRENCY, "",
                         mock(), traderLevel()))
                     on { getKycReviews(any()) } `it returns` Single.just(listOf(KycResponse(1,
                         ReviewState.Completed,
@@ -134,7 +139,7 @@ class BuySellBuildOrderPresenterTest {
                         "",
                         "",
                         "")))
-                    on { getQuote(any(), any(), any(), any()) } `it returns` Single.just(mock())
+                    on { getQuote(any(), any(), any(), any()) } `it returns` Single.just(quote)
                     on { getPaymentMethods(any(), anyOrNull(), anyOrNull()) } `it returns` Observable.just(listOf(
                         cardPaymentMethod(), transferPaymentMethod()
                     ))
@@ -176,7 +181,7 @@ class BuySellBuildOrderPresenterTest {
         val presenter =
             BuySellBuildOrderPresenter(
                 coinifyDataManager = mock {
-                    on { getTrader(any()) } `it returns` Single.just(Trader(1, "USD", "",
+                    on { getTrader(any()) } `it returns` Single.just(Trader(1, TEST_CURRENCY, "",
                         mock(), traderLevel()))
                     on { getKycReviews(any()) } `it returns` Single.just(listOf(KycResponse(1,
                         ReviewState.Completed,
@@ -185,7 +190,7 @@ class BuySellBuildOrderPresenterTest {
                         "",
                         "",
                         "")))
-                    on { getQuote(any(), any(), any(), any()) } `it returns` Single.just(mock())
+                    on { getQuote(any(), any(), any(), any()) } `it returns` Single.just(quote)
                     on { getPaymentMethods(any(), anyOrNull(), anyOrNull()) } `it returns` Observable.just(listOf(
                         cardPaymentMethod(), transferPaymentMethod()
                     ))
@@ -225,7 +230,7 @@ class BuySellBuildOrderPresenterTest {
             inMedium = Medium.Card,
             outMedium = Medium.Blockchain,
             name = "",
-            inCurrencies = listOf("USD"),
+            inCurrencies = listOf(TEST_CURRENCY),
             inCurrency = null,
             outCurrencies = listOf(),
             outCurrency = "",
@@ -241,7 +246,7 @@ class BuySellBuildOrderPresenterTest {
             inMedium = Medium.Bank,
             outMedium = Medium.Blockchain,
             name = "",
-            inCurrencies = listOf("USD"),
+            inCurrencies = listOf(TEST_CURRENCY),
             inCurrency = null,
             outCurrencies = listOf(),
             outCurrency = "",
@@ -251,4 +256,8 @@ class BuySellBuildOrderPresenterTest {
             inFixedFees = mock(), inPercentageFee = 1.0, outFixedFees = mock(),
             outPercentageFee = 1.0, canTrade = true, cannotTradeReasons = null
         )
+
+    companion object {
+        private const val TEST_CURRENCY = "USD"
+    }
 }

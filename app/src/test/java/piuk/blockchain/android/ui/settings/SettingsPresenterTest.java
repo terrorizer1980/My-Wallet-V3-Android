@@ -29,7 +29,6 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper;
 import piuk.blockchain.android.util.StringUtils;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.Email;
@@ -83,8 +82,6 @@ public class SettingsPresenterTest extends RxTest {
     @Mock
     private ExchangeRateDataManager exchangeRateDataManager;
     @Mock
-    private CurrencyFormatManager currencyFormatManager;
-    @Mock
     private KycStatusHelper kycStatusHelper;
     @Mock
     private EmailSyncUpdater emailSyncUpdater;
@@ -113,7 +110,6 @@ public class SettingsPresenterTest extends RxTest {
                 swipeToReceiveHelper,
                 notificationTokenManager,
                 exchangeRateDataManager,
-                currencyFormatManager,
                 kycStatusHelper,
                 pitLinking,
                 analytics,

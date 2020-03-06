@@ -4,7 +4,7 @@ import java.text.NumberFormat
 import java.text.ParseException
 import java.util.Locale
 
-fun String.toSafeDouble(locale: Locale): Double = try {
+fun String.toSafeDouble(locale: Locale = Locale.getDefault()): Double = try {
     var amount = this
     if (amount.isEmpty()) amount = "0"
     NumberFormat.getInstance(locale).parse(amount).toDouble()
@@ -12,7 +12,7 @@ fun String.toSafeDouble(locale: Locale): Double = try {
     0.0
 }
 
-fun String.toSafeLong(locale: Locale): Long = try {
+fun String.toSafeLong(locale: Locale = Locale.getDefault()): Long = try {
     var amount = this
     if (amount.isEmpty()) amount = "0"
     Math.round(NumberFormat.getInstance(locale).parse(amount).toDouble() * 1e8)

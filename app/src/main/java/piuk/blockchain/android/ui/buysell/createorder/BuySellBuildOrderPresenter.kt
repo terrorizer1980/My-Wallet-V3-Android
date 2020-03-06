@@ -65,6 +65,7 @@ import java.math.BigInteger
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
 import kotlin.properties.Delegates
@@ -97,6 +98,7 @@ class BuySellBuildOrderPresenter(
     var selectedCurrency: String by Delegates.observable("EUR") { _, old, new ->
         if (old != new) initialiseUi(); subscribeToSubjects()
     }
+
     private var latestQuote: Quote? = null
     private var latestLoadedLimits: LimitInAmounts? = null
     private var feeOptions: FeeOptions? = null
@@ -120,13 +122,6 @@ class BuySellBuildOrderPresenter(
 
     private var canTradeWithCard = false
     private var canTradeWithBank = false
-
-    private val fiatFormat by unsafeLazy {
-        (NumberFormat.getInstance(view.locale) as DecimalFormat).apply {
-            maximumFractionDigits = 2
-            minimumFractionDigits = 2
-        }
-    }
 
     private val emptyQuote
         get() = Quote(null, selectedCurrency, "BTC", 0.0, 0.0, "", "")
@@ -280,10 +275,7 @@ class BuySellBuildOrderPresenter(
         val quote = BuyConfirmationDisplayModel(
             currencyToSend = currencyToSend,
             currencyToReceive = currencyToReceive,
-            amountToSend = FiatValue.fromMajor(
-                currencyToSend,
-                amountToSend.toBigDecimal()
-            ).toStringWithSymbol(),
+            amountToSend = renderFiatString(currencyToSend, amountToSend.toBigDecimal()),
             amountToReceive = amountToReceive,
             orderFee = outFixedFee.unaryMinus()
                 .toBigDecimal()
@@ -357,18 +349,18 @@ class BuySellBuildOrderPresenter(
                         networkFee = fee.sanitise(),
                         accountIndex = payloadDataManager.accounts.indexOf(account),
                         originalQuote = ParcelableQuote.fromQuote(lastQuote),
-                        totalAmountToReceiveFormatted = FiatValue.fromMajor(
+                        totalAmountToReceiveFormatted = renderFiatString(
                             currencyToReceive,
                             amountToReceive.toBigDecimal() - paymentFeeSell
-                        ).toStringWithSymbol(),
+                        ),
                         totalCostFormatted = totalCost,
                         amountInSatoshis = satoshis,
                         feePerKb = BigInteger.valueOf(feeOptions!!.priorityFee * 1000),
                         absoluteFeeInSatoshis = it.second,
-                        paymentFee = FiatValue.fromMajor(
+                        paymentFee = renderFiatString(
                             currencyToReceive,
                             paymentFeeSell
-                        ).toStringWithSymbol()
+                        )
                     )
 
                     if (noAccounts) {
@@ -444,10 +436,10 @@ class BuySellBuildOrderPresenter(
         val numerator = if (quote.isBtcBase()) quote.quoteAmount.absoluteValue else quote.baseAmount.absoluteValue
         val denominator = if (quote.isBtcBase()) quote.baseAmount.absoluteValue else quote.quoteAmount.absoluteValue
 
-        FiatValue.fromMajor(
+        renderFiatString(
             currency,
             (numerator / denominator).toBigDecimal()
-        ).toStringWithSymbol().run { view.renderExchangeRate(ExchangeRateStatus.Data("@ $this")) }
+        ).run { view.renderExchangeRate(ExchangeRateStatus.Data("@ $this")) }
     }
 
     private fun compareToLimits(quote: Quote) {
@@ -469,36 +461,25 @@ class BuySellBuildOrderPresenter(
             view.setButtonEnabled(false)
             view.renderLimitStatus(
                 LimitStatus.ErrorTooLow(
-                    R.string.buy_sell_amount_too_low,
-                    "${fiatFormat.format(minimumInAmount)} $selectedCurrency"
-                )
+                    R.string.buy_sell_amount_too_low, renderMaxInAmount())
             )
             // Attempting to buy more than allowed via Bank
         } else if (orderType == OrderType.Buy && amountToSend > maximumInAmounts.toBigDecimal()) {
             view.setButtonEnabled(false)
             view.renderLimitStatus(
-                LimitStatus.ErrorTooHigh(
-                    R.string.buy_sell_remaining_buy_limit,
-                    "${fiatFormat.format(maximumInAmounts)} $selectedCurrency"
-                )
+                LimitStatus.ErrorTooHigh(R.string.buy_sell_remaining_buy_limit, renderMaxInAmount())
             )
             // Attempting to buy more than allowed via Card
         } else if (orderType == OrderType.BuyCard && amountToSend > maximumInAmounts.toBigDecimal()) {
             view.setButtonEnabled(false)
             view.renderLimitStatus(
-                LimitStatus.ErrorTooHigh(
-                    R.string.buy_sell_remaining_buy_limit,
-                    "${fiatFormat.format(maximumInAmounts)} $selectedCurrency"
-                )
+                LimitStatus.ErrorTooHigh(R.string.buy_sell_remaining_buy_limit, renderMaxInAmount())
             )
             // Attempting to sell more than allowed
         } else if (isSell && amountToSend > maximumInAmounts.toBigDecimal()) {
             view.setButtonEnabled(false)
             view.renderLimitStatus(
-                LimitStatus.ErrorTooHigh(
-                    R.string.buy_sell_remaining_sell_limit,
-                    "${fiatFormat.format(maximumInAmounts)} $selectedCurrency"
-                )
+                LimitStatus.ErrorTooHigh(R.string.buy_sell_remaining_sell_limit, renderMaxInAmount())
             )
             // Attempting to sell less than allowed
         } else if (isSell && amountToSend < minimumInAmount.toBigDecimal()) {
@@ -622,8 +603,7 @@ class BuySellBuildOrderPresenter(
     }
 
     private fun updateSendAmount(quoteAmount: Double) {
-        val formatted = FiatValue.fromMajor(selectedCurrency, quoteAmount.toBigDecimal())
-            .toStringWithSymbol(view.locale)
+        val formatted = renderFiatString(selectedCurrency, quoteAmount.toBigDecimal())
         view.updateSendAmount(formatted)
     }
 
@@ -674,9 +654,9 @@ class BuySellBuildOrderPresenter(
                 }
                 "$max BTC"
             }
-            OrderType.BuyCard, OrderType.BuyBank, OrderType.Buy -> "${fiatFormat.format(
-                maximumInAmounts
-            )} $selectedCurrency"
+            OrderType.BuyCard,
+            OrderType.BuyBank,
+            OrderType.Buy -> renderMaxInAmount()
         }
 
         val descriptionString = when (view.orderType) {
@@ -756,12 +736,10 @@ class BuySellBuildOrderPresenter(
     private fun getExchangeRate(token: String, amount: Double, currency: String): Single<Quote> =
         coinifyDataManager.getQuote(token, amount, "BTC", currency)
             .doOnSuccess {
-                val valueWithSymbol =
-                    FiatValue.fromMajor(
+                val valueWithSymbol = renderFiatString(
                         it.quoteCurrency,
                         it.quoteAmount.absoluteValue.toBigDecimal()
-                    ).toStringWithSymbol()
-
+                    )
                 view.renderExchangeRate(ExchangeRateStatus.Data("@ $valueWithSymbol"))
             }
             .doOnError { view.renderExchangeRate(ExchangeRateStatus.Failed) }
@@ -773,7 +751,7 @@ class BuySellBuildOrderPresenter(
         // Here we kill any quotes in flight already, as they take up to ten seconds to fulfill
         .doOnNext { compositeDisposable.clear() }
         // Strip out localised information for predictable formatting
-        .map { it.sanitiseEmptyNumber().parseBigDecimal(view.locale) }
+        .map { it.sanitiseEmptyNumber().parseBigDecimal() }
         // Logging
         .doOnError(Timber::wtf)
         // Return zero if empty or some other error
@@ -867,7 +845,6 @@ class BuySellBuildOrderPresenter(
             Observable.error(Throwable("No funds - skipping call to unspent API"))
         }
     }
-    // endregion
 
     private fun logAddToCart(
         currency: String,
@@ -915,6 +892,22 @@ class BuySellBuildOrderPresenter(
         data class ErrorTooHigh(val textResourceId: Int, val limit: String) : LimitStatus()
         object Failure : LimitStatus()
     }
+
+    private fun renderFiatString(fiatCurrency: String, value: BigDecimal) =
+        FiatValue.fromMajor(
+            fiatCurrency,
+            value
+        ).toStringWithSymbol()
+
+    private val decimalFormat by unsafeLazy {
+        (NumberFormat.getInstance(Locale.getDefault()) as DecimalFormat).apply {
+            maximumFractionDigits = 2
+            minimumFractionDigits = 2
+        }
+    }
+
+    private fun renderMaxInAmount(): String =
+        "${decimalFormat.format(minimumInAmount)} $selectedCurrency"
 }
 
 private fun List<PaymentMethod>.firstAvailable(inMedium: Medium, orderType: OrderType): PaymentMethod {
