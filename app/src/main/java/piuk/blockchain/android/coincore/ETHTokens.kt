@@ -96,7 +96,7 @@ class ETHTokens(
         if (isWalletUninitialised) {
             ethDataManager.initEthereumWallet(
                 stringUtils.getString(R.string.eth_default_account_label),
-                stringUtils.getString(R.string.pax_default_account_label)
+                stringUtils.getString(R.string.pax_default_account_label_1)
             ).doOnError { throwable ->
                 crashLogger.logException(throwable, "Failed to load ETH wallet")
             }.doOnComplete {

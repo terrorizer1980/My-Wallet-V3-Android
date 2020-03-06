@@ -591,7 +591,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
                 CryptoCurrency.ETHER -> R.string.eth_to_field_helper
                 CryptoCurrency.BCH -> R.string.bch_to_field_helper
                 CryptoCurrency.XLM -> R.string.xlm_to_field_helper
-                CryptoCurrency.PAX -> R.string.pax_to_field_helper
+                CryptoCurrency.PAX -> R.string.pax_to_field_helper_1
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
             }
         } else {
@@ -600,7 +600,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
                 CryptoCurrency.ETHER -> R.string.eth_to_field_helper_no_dropdown
                 CryptoCurrency.BCH -> R.string.bch_to_field_helper_no_dropdown
                 CryptoCurrency.XLM -> R.string.xlm_to_field_helper_no_dropdown
-                CryptoCurrency.PAX -> R.string.pax_to_field_helper_no_dropdown
+                CryptoCurrency.PAX -> R.string.pax_to_field_helper_no_dropdown_1
                 CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
             }
         }
@@ -1336,7 +1336,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
         )
 
         val body = stringUtils.getStringWithMappedLinks(
-            R.string.pax_need_more_eth_error_body,
+            R.string.pax_need_more_eth_error_body_1,
             linksMap,
             requireActivity()
         )

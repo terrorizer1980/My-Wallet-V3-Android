@@ -10,7 +10,7 @@ internal class ResourceDefaultLabels(
 
     override fun get(cryptoCurrency: CryptoCurrency): String =
         when (cryptoCurrency) {
-            CryptoCurrency.BTC -> resources.getString(R.string.default_wallet_name)
+            CryptoCurrency.BTC -> resources.getString(R.string.btc_default_wallet_name)
             CryptoCurrency.ETHER -> resources.getString(R.string.eth_default_account_label)
             CryptoCurrency.BCH -> resources.getString(R.string.bch_default_account_label)
             CryptoCurrency.XLM -> resources.getString(R.string.xlm_default_account_label)

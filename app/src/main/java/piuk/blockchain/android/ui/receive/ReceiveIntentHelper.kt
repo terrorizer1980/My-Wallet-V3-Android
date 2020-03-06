@@ -165,10 +165,10 @@ class ReceiveIntentHelper(private val context: Context, private val appUtil: App
 
     private fun Intent.setupIntentForEmailPax(uri: String) {
         val address = uri.removePrefix("ethereum:")
-        val body = String.format(context.getString(R.string.email_request_body_pax), address)
+        val body = String.format(context.getString(R.string.email_request_body_pax_1), address)
 
         putExtra(Intent.EXTRA_TEXT, body)
-        putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.email_request_subject_pax))
+        putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.email_request_subject_pax_1))
     }
 
     private fun Intent.setupIntentForEmailXlm(payment: StellarPayment) {

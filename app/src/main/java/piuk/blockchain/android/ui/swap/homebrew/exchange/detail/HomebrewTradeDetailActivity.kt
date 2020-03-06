@@ -165,7 +165,7 @@ class HomebrewTradeDetailActivity : BaseAuthActivity() {
             getString(R.string.morph_success_for_first_gold_pax_trade_title)
 
         val description = if (!firstGoldPaxTrade) "" else
-            getString(R.string.morph_success_for_first_gold_pax_trade_description)
+            getString(R.string.morph_success_for_first_gold_pax_trade_description_1)
 
         val exchangeStartedDialog = ErrorBottomDialog.newInstance(
             ErrorBottomDialog.Content(

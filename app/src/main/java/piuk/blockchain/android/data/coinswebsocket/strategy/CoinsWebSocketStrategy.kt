@@ -256,7 +256,7 @@ class CoinsWebSocketStrategy(
             val tokenTransaction = ethResponse.tokenTransfer
 
             val title = stringUtils.getString(R.string.app_name)
-            val marquee = stringUtils.getString(R.string.received_usd_pax) + " " +
+            val marquee = stringUtils.getString(R.string.received_usd_pax_1) + " " +
                     CryptoValue.usdPaxFromMinor(tokenTransaction.value).toStringWithSymbol()
             val text =
                 marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) +

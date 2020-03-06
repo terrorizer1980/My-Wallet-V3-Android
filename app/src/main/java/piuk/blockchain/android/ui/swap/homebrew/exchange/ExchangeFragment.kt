@@ -323,7 +323,7 @@ internal class ExchangeFragment : Fragment() {
                 )
 
                 val body = stringUtils.getStringWithMappedLinks(
-                    R.string.pax_need_more_eth_error_body,
+                    R.string.pax_need_more_eth_error_body_1,
                     linksMap,
                     requireActivity()
                 )

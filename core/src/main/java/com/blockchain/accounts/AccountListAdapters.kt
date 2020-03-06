@@ -47,7 +47,7 @@ internal class PaxAccountListAdapter(private val ethDataManager: EthDataManager,
         Single.just(defaultAccountReference())
 
     override fun defaultAccountReference() =
-        AccountReference.Pax(stringUtils.getString(R.string.pax_default_account_label),
+        AccountReference.Pax(stringUtils.getString(R.string.pax_default_account_label_1),
             ethDataManager.getEthWallet()?.account?.address
                 ?: throw Exception("No ether wallet found"), "")
 

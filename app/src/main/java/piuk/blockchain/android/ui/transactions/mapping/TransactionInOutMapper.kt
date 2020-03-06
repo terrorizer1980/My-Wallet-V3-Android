@@ -94,10 +94,10 @@ class TransactionInOutMapper(
 
             val ethAddress = ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account
             if (fromAddress == ethAddress) {
-                fromAddress = stringUtils.getString(R.string.pax_default_account_label)
+                fromAddress = stringUtils.getString(R.string.pax_default_account_label_1)
             }
             if (toAddress == ethAddress) {
-                toAddress = stringUtils.getString(R.string.pax_default_account_label)
+                toAddress = stringUtils.getString(R.string.pax_default_account_label_1)
             }
 
             TransactionInOutDetails(

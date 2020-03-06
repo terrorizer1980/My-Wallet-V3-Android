@@ -68,7 +68,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
                 Direction.TRANSFERRED -> resources.getString(R.string.MOVED)
                 Direction.RECEIVED -> resources.getString(R.string.RECEIVED)
                 Direction.SENT -> if (isFeeTransaction)
-                    resources.getString(R.string.pax_fee)
+                    resources.getString(R.string.pax_fee_1)
                 else
                     resources.getString(R.string.SENT)
             }

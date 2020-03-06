@@ -371,7 +371,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                 presenter.cryptoCurrency = CryptoCurrency.ETHER
                 startSendFragment(uri)
             }
-            .setNegativeButton(R.string.usd_pax) { _, _ ->
+            .setNegativeButton(R.string.usd_pax_1) { _, _ ->
                 presenter.cryptoCurrency = CryptoCurrency.PAX
                 startSendFragment(uri)
             }

@@ -88,7 +88,7 @@ class PaxSendStrategy(
         view?.updateReceivingAddress("")
     }
 
-    private val walletName = stringUtils.getString(R.string.pax_wallet_name)
+    private val walletName = stringUtils.getString(R.string.pax_wallet_name_1)
 
     override fun onCurrencySelected() {
         currencyState.cryptoCurrency = CryptoCurrency.PAX
@@ -474,7 +474,7 @@ class PaxSendStrategy(
 
     private fun validateTransaction(): Observable<Pair<Boolean, Int>> {
         return if (pendingTx.receivingAddress.isEmpty()) {
-            Observable.just(Pair(false, R.string.pax_invalid_address))
+            Observable.just(Pair(false, R.string.pax_invalid_address_1))
         } else {
             ethDataManager.getIfContract(pendingTx.receivingAddress)
                 .map { isContract ->
@@ -488,7 +488,7 @@ class PaxSendStrategy(
                     } else {
                         // Validate address
                         if (!FormatsUtil.isValidEthereumAddress(pendingTx.receivingAddress)) {
-                            errorMessage = R.string.pax_invalid_address
+                            errorMessage = R.string.pax_invalid_address_1
                             validated = false
                         }
 
