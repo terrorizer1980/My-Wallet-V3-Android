@@ -77,6 +77,3 @@ fun CryptoCurrency.assetName() =
         CryptoCurrency.PAX -> R.string.usd_pax
         CryptoCurrency.STX -> R.string.stacks
     }
-
-fun CryptoCurrency.assetName(resources: Resources) =
-    resources.getString(this.assetName())
