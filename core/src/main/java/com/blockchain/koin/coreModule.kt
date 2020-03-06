@@ -55,7 +55,6 @@ import piuk.blockchain.androidcore.data.ethereum.EthereumAccountWrapper
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateService
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.datastore.ExchangeRateDataStore
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
@@ -201,13 +200,6 @@ val coreModule = applicationContext {
         factory { ExchangeRateDataManager(get(), get()) }
 
         bean { ExchangeRateDataStore(get(), get()) }
-
-        factory {
-            FiatExchangeRates(
-                exchangeRates = get(),
-                currencyPrefs = get()
-            )
-        }
 
         factory { FeeDataManager(get(), get(), get()) }
 

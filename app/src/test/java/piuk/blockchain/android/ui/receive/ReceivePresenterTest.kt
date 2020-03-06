@@ -5,9 +5,7 @@ import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.toUri
 import com.blockchain.testutils.after
 import com.blockchain.testutils.before
-import com.blockchain.testutils.bitcoin
-import com.blockchain.testutils.gbp
-import com.blockchain.testutils.usd
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.balance.AccountReference
@@ -24,6 +22,7 @@ import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal to`
 import org.amshove.kluent.`should equal`
+import org.amshove.kluent.itReturns
 import org.bitcoinj.params.BitcoinCashMainNetParams
 import org.junit.Before
 import org.junit.Rule
@@ -44,7 +43,7 @@ import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
@@ -64,9 +63,10 @@ class ReceivePresenterTest {
     private val xlmDataManager: XlmDataManager = mock()
     private val environmentSettings: EnvironmentConfig = mock()
     private val currencyState: CurrencyState = mock {
-        on { cryptoCurrency } `it returns` CryptoCurrency.BTC
+        on { cryptoCurrency } itReturns CryptoCurrency.BTC
+        on { fiatUnit } itReturns "USD"
     }
-    private val fiatExchangeRates: FiatExchangeRates = mock()
+    private val exchangeRates: ExchangeRateDataManager = mock()
 
     @Before
     fun setUp() {
@@ -82,7 +82,7 @@ class ReceivePresenterTest {
             xlmDataManager,
             environmentSettings,
             currencyState,
-            fiatExchangeRates
+            exchangeRates
         )
         subject.attachView(activity)
     }
@@ -699,21 +699,10 @@ class ReceivePresenterTest {
     }
 
     @Test
-    fun updateFiatTextField() {
-        // Arrange
-        whenever(fiatExchangeRates.getFiat(1.bitcoin())) `it returns` 2.usd()
-        // Act
-        subject.updateFiatTextField("1.0")
-        // Assert
-        verify(activity).updateFiatTextField("2.00")
-        verifyNoMoreInteractions(activity)
-    }
-
-    @Test
     fun updateBtcTextField() {
         // Arrange
         whenever(prefsUtil.selectedFiatCurrency) `it returns` "GBP"
-        whenever(fiatExchangeRates.getCrypto(2.gbp(), CryptoCurrency.BTC)) `it returns` 0.5.bitcoin()
+        whenever(exchangeRates.getLastPrice(any(), any())).thenReturn(4.0)
         // Act
         subject.updateBtcTextField("2.0")
         // Assert

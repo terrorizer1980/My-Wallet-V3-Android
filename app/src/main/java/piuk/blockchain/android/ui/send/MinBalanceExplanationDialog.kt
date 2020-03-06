@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import com.blockchain.account.DefaultAccountDataManager
+import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoValue
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -19,7 +20,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcoreui.utils.extensions.invisible
 import piuk.blockchain.androidcoreui.utils.extensions.visible
@@ -29,11 +30,12 @@ class MinBalanceExplanationDialog : DialogFragment() {
     private val compositeDisposable = CompositeDisposable()
 
     init {
-        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.FullscreenDialog)
+        setStyle(STYLE_NO_FRAME, R.style.FullscreenDialog)
     }
 
     private val xlmDefaultAccountManager: DefaultAccountDataManager by inject()
-    private val exchangeRates: FiatExchangeRates by inject()
+    private val prefs: CurrencyPrefs by inject()
+    private val exchangeRates: ExchangeRateDataManager by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -109,7 +111,8 @@ class MinBalanceExplanationDialog : DialogFragment() {
 
     private fun formatWithFiat(
         cryptoValue: CryptoValue
-    ) = "${cryptoValue.toStringWithSymbol()} (${cryptoValue.toFiat(this.exchangeRates).toStringWithSymbol()})"
+    ) = cryptoValue.toStringWithSymbol() + " " +
+        cryptoValue.toFiat(exchangeRates, prefs.selectedFiatCurrency).toStringWithSymbol()
 }
 
 private class Values(val min: CryptoValue, val balance: CryptoValue, val fee: CryptoValue) {

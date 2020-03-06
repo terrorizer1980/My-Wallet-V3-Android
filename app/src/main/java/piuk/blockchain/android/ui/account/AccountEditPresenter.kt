@@ -308,15 +308,6 @@ class AccountEditPresenter constructor(
 
     private fun getTransactionDetailsForDisplay(pendingTransaction: PendingTransaction): PaymentConfirmationDetails {
 
-//        val destination = if (pendingTransaction.receivingObject != null &&
-//            pendingTransaction.receivingObject?.label != null &&
-//            !pendingTransaction.receivingObject?.label.isNullOrEmpty()
-//        ) {
-//            pendingTransaction.receivingObject?.label ?: ""
-//        } else {
-//            pendingTransaction.receivingAddress
-//        }
-
         val destination = if (pendingTransaction.receivingObject?.label?.isEmpty() == true) {
             pendingTransaction.receivingAddress
         } else {

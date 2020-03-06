@@ -664,7 +664,7 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 walletOptionsDataManager = get(),
                 xlmTransactionSender = get(),
-                fiatExchangeRates = get(),
+                exchangeRates = get(),
                 sendFundsResultLocalizer = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
@@ -862,7 +862,7 @@ val applicationModule = applicationContext {
                 xlmDataManager = get(),
                 environmentSettings = get(),
                 currencyState = get(),
-                fiatExchangeRates = get()
+                exchangeRates = get()
             )
         }
 

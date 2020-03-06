@@ -4,7 +4,6 @@ import com.blockchain.preferences.CurrencyPrefs
 import com.nhaarman.mockito_kotlin.mock
 import org.amshove.kluent.`should be`
 import org.junit.Test
-import piuk.blockchain.android.data.currency.CurrencyState
 
 class CurrencyStateTest {
 

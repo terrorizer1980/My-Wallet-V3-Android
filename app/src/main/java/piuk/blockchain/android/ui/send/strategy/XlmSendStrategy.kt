@@ -40,7 +40,7 @@ import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.SendConfirmationDetails
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
@@ -53,7 +53,7 @@ class XlmSendStrategy(
     private val xlmFeesFetcher: XlmFeesFetcher,
     private val xlmTransactionSender: TransactionSender,
     private val walletOptionsDataManager: WalletOptionsDataManager,
-    private val fiatExchangeRates: FiatExchangeRates,
+    private val exchangeRates: ExchangeRateDataManager,
     private val sendFundsResultLocalizer: SendFundsResultLocalizer,
     private val stringUtils: StringUtils,
     private val nabuToken: NabuToken,
@@ -150,8 +150,8 @@ class XlmSendStrategy(
                 SendConfirmationDetails(
                     sendDetails = sendDetails,
                     fees = fees,
-                    fiatAmount = sendDetails.value.toFiat(fiatExchangeRates),
-                    fiatFees = fees.toFiat(fiatExchangeRates)
+                    fiatAmount = sendDetails.value.toFiat(exchangeRates, currencyState.fiatUnit),
+                    fiatFees = fees.toFiat(exchangeRates, currencyState.fiatUnit)
                 )
             }
 
@@ -210,7 +210,7 @@ class XlmSendStrategy(
 
     override fun processURIScanAddress(address: String) {
         val (public, cryptoValue, memo) = address.fromStellarUri()
-        val fiatValue = cryptoValue.toFiat(fiatExchangeRates)
+        val fiatValue = cryptoValue.toFiat(exchangeRates, currencyState.fiatUnit)
         view?.updateCryptoAmount(cryptoValue)
         view?.updateFiatAmount(fiatValue)
         cryptoTextSubject.onNext(cryptoValue)
@@ -237,7 +237,7 @@ class XlmSendStrategy(
         compositeDisposable += xlmFeesFetcher.operationFee(FeeType.Regular)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onSuccess = { view?.updateFeeAmount(it, it.toFiat(fiatExchangeRates)) },
+                onSuccess = { view?.updateFeeAmount(it, it.toFiat(exchangeRates, currencyState.fiatUnit)) },
                 onError = { Timber.e(it) }
             )
     }
@@ -281,9 +281,12 @@ class XlmSendStrategy(
 
         compositeDisposable += confirmationDetails
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(onError = { Timber.e(it) }) { details ->
-                view?.showPaymentDetails(details)
-            }
+            .subscribeBy(
+                onError = { Timber.e(it) },
+                onNext = { details ->
+                    view?.showPaymentDetails(details)
+                }
+            )
 
         compositeDisposable += memoIsRequired
             .subscribe {

@@ -29,7 +29,7 @@ import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toCrypto
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -67,7 +67,7 @@ class ReceivePresenter(
     private val xlmDataManager: XlmDataManager,
     private val environmentSettings: EnvironmentConfig,
     private val currencyState: CurrencyState,
-    private val fiatExchangeRates: FiatExchangeRates
+    private val exchangeRates: ExchangeRateDataManager
 ) : MvpPresenter<ReceiveView>() {
 
     override val alwaysDisableScreenshots = false
@@ -339,7 +339,7 @@ class ReceivePresenter(
     internal fun updateFiatTextField(bitcoin: String) {
         view?.updateFiatTextField(
             currencyState.cryptoCurrency.withMajorValueOrZero(bitcoin)
-                .toFiat(fiatExchangeRates)
+                .toFiat(exchangeRates, currencyState.fiatUnit)
                 .toStringWithoutSymbol()
         )
     }
@@ -347,7 +347,7 @@ class ReceivePresenter(
     internal fun updateBtcTextField(fiat: String) {
         view?.updateBtcTextField(
             FiatValue.fromMajorOrZero(fiatUnit, fiat)
-                .toCrypto(fiatExchangeRates, currencyState.cryptoCurrency)
+                .toCrypto(exchangeRates, currencyState.cryptoCurrency)
                 .toStringWithoutSymbol()
         )
     }

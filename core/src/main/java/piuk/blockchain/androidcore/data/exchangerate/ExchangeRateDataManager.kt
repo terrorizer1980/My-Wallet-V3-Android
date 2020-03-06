@@ -1,6 +1,5 @@
 package piuk.blockchain.androidcore.data.exchangerate
 
-import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -79,27 +78,3 @@ fun FiatValue.toCryptoOrNull(exchangeRateDataManager: ExchangeRateDataManager, c
             )
         }
     }
-
-/**
- * Exchange rates for a single fiat currency.
- * Saves passing around a fiat currency string, or looking up the users preferred currency.
- */
-@Deprecated("We don't need 5 ways to do it. One will suffice. Use ExchangeRateDataManager")
-class FiatExchangeRates constructor(
-    internal val exchangeRates: ExchangeRateDataManager,
-    internal val fiatUnit: String
-) {
-    constructor(exchangeRates: ExchangeRateDataManager, currencyPrefs: CurrencyPrefs) :
-            this(exchangeRates, currencyPrefs.selectedFiatCurrency)
-
-    fun getFiat(cryptoValue: CryptoValue): FiatValue = cryptoValue.toFiat(exchangeRates, fiatUnit)
-
-    fun getCrypto(fiatValue: FiatValue, cryptoCurrency: CryptoCurrency): CryptoValue =
-        fiatValue.toCrypto(exchangeRates, cryptoCurrency)
-}
-
-fun CryptoValue.toFiat(liveFiatExchangeRates: FiatExchangeRates) =
-    liveFiatExchangeRates.getFiat(this)
-
-fun FiatValue.toCrypto(liveFiatExchangeRates: FiatExchangeRates, cryptoCurrency: CryptoCurrency) =
-    liveFiatExchangeRates.getCrypto(this, cryptoCurrency)

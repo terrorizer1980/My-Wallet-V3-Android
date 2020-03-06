@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.account
 
 import android.os.Parcelable
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 import java.util.Currency
 
@@ -27,6 +28,7 @@ data class PaymentConfirmationDetails(
     val fiatSymbol: String
         get() = Currency.getInstance(fiatUnit).symbol
 
+    @IgnoredOnParcel
     var cryptoFeeUnit: String = ""
         get() = if (field.isEmpty()) cryptoUnit else field
 
