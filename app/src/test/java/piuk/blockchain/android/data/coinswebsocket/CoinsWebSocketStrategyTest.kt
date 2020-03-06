@@ -157,8 +157,8 @@ class CoinsWebSocketStrategyTest {
         verify(ethDataManager, never()).fetchEthAddress()
         verify(erc20Account).fetchAddressCompletable()
         verify(messagesSocketHandler).triggerNotification("Blockchain",
-            "Received USD PAX 1.21 PAX",
-            "Received USD PAX 1.21 PAX from 0x4058a004dd718babab47e14dd0d744742e5b9903")
+            "Received USD Digital 1.21 USD-D",
+            "Received USD Digital 1.21 USD-D from 0x4058a004dd718babab47e14dd0d744742e5b9903")
         verify(messagesSocketHandler).sendBroadcast(any())
     }
 

@@ -850,7 +850,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                 analyticsEvent = IntroTourAnalyticsEvent.IntroPortfolioViewedAnalytics,
                 msgIcon = R.drawable.ic_vector_toolbar_home,
                 msgTitle = R.string.tour_step_one_title,
-                msgBody = R.string.tour_step_one_body,
+                msgBody = R.string.tour_step_one_body_1,
                 msgButton = R.string.tour_step_one_btn
             ),
             IntroTourStep(

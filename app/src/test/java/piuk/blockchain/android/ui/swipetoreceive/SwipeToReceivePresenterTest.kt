@@ -14,9 +14,7 @@ import org.mockito.Mockito.anyInt
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
-import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcoreui.ui.base.UiState
 
 class SwipeToReceivePresenterTest {
@@ -25,7 +23,6 @@ class SwipeToReceivePresenterTest {
     private val activity: SwipeToReceiveView = mock()
     private val swipeToReceiveHelper: SwipeToReceiveHelper = mock()
     private val qrCodeDataManager: QrCodeDataManager = mock()
-    private val stringUtils: StringUtils = mock()
 
     @get:Rule
     val initSchedulers = rxInit {
@@ -46,16 +43,11 @@ class SwipeToReceivePresenterTest {
         whenever(swipeToReceiveHelper.getNextAvailableBitcoinAddressSingle())
             .thenReturn(Single.just(""))
         whenever(swipeToReceiveHelper.getBitcoinAccountName()).thenReturn("Bitcoin account")
-        whenever(
-            stringUtils.getFormattedString(
-                R.string.swipe_to_receive_request,
-                CryptoCurrency.BTC.unit
-            )
-        ).thenReturn("BTC")
+
         // Act
         subject.onViewReady()
         // Assert
-        verify(activity).displayCoinType("Bitcoin")
+        verify(activity).displayCoinType(CryptoCurrency.BTC)
         verify(activity).displayReceiveAccount("Bitcoin account")
         verify(activity).setUiState(UiState.LOADING)
         verify(activity).setUiState(UiState.EMPTY)
@@ -69,17 +61,12 @@ class SwipeToReceivePresenterTest {
         whenever(swipeToReceiveHelper.getBitcoinAccountName()).thenReturn("Account")
         whenever(swipeToReceiveHelper.getNextAvailableBitcoinAddressSingle())
             .thenReturn(Single.just(""))
-        whenever(
-            stringUtils.getFormattedString(
-                R.string.swipe_to_receive_request,
-                CryptoCurrency.BTC.unit
-            )
-        ).thenReturn("BTC")
+
         // Act
         subject.onViewReady()
         // Assert
         verify(activity).setUiState(UiState.LOADING)
-        verify(activity).displayCoinType("Bitcoin")
+        verify(activity).displayCoinType(CryptoCurrency.BTC)
         verify(activity).displayReceiveAccount("Account")
         verify(activity).setUiState(UiState.FAILURE)
     }
@@ -93,8 +80,6 @@ class SwipeToReceivePresenterTest {
         whenever(swipeToReceiveHelper.getBitcoinAccountName()).thenReturn("Account")
         whenever(swipeToReceiveHelper.getNextAvailableBitcoinAddressSingle())
             .thenReturn(Single.just("addr0"))
-        whenever(stringUtils.getFormattedString(R.string.swipe_to_receive_request, CryptoCurrency.BTC.unit))
-            .thenReturn("BTC")
         whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt())).thenReturn(Observable.just(bitmap))
 
         // Act
@@ -103,7 +88,7 @@ class SwipeToReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(activity).setUiState(UiState.LOADING)
-        verify(activity).displayCoinType("Bitcoin")
+        verify(activity).displayCoinType(CryptoCurrency.BTC)
         verify(activity).displayReceiveAccount("Account")
         verify(activity).displayQrCode(bitmap)
         verify(activity).setUiState(UiState.CONTENT)
@@ -120,8 +105,6 @@ class SwipeToReceivePresenterTest {
         whenever(swipeToReceiveHelper.getEthReceiveAddress()).thenReturn(address)
         whenever(swipeToReceiveHelper.getEthAccountName()).thenReturn("Account")
         whenever(swipeToReceiveHelper.getEthReceiveAddressSingle()).thenReturn(Single.just(address))
-        whenever(stringUtils.getFormattedString(R.string.swipe_to_receive_request, CryptoCurrency.ETHER.unit))
-            .thenReturn("ETH")
         whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt())).thenReturn(Observable.just(bitmap))
 
         // Act
@@ -131,7 +114,7 @@ class SwipeToReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(activity).setUiState(UiState.LOADING)
-        verify(activity).displayCoinType("Ether")
+        verify(activity).displayCoinType(CryptoCurrency.ETHER)
         verify(activity).displayReceiveAccount("Account")
         verify(activity).displayQrCode(bitmap)
         verify(activity).setUiState(UiState.CONTENT)
@@ -148,8 +131,6 @@ class SwipeToReceivePresenterTest {
         whenever(swipeToReceiveHelper.getBitcoinCashReceiveAddresses()).thenReturn(addresses)
         whenever(swipeToReceiveHelper.getBitcoinCashAccountName()).thenReturn("Account")
         whenever(swipeToReceiveHelper.getNextAvailableBitcoinCashAddressSingle()).thenReturn(Single.just("addr0"))
-        whenever(stringUtils.getFormattedString(R.string.swipe_to_receive_request, CryptoCurrency.BCH.unit))
-            .thenReturn("BCH")
         whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt())).thenReturn(Observable.just(bitmap))
 
         // Act
@@ -159,7 +140,7 @@ class SwipeToReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(activity).setUiState(UiState.LOADING)
-        verify(activity).displayCoinType("Bitcoin Cash")
+        verify(activity).displayCoinType(CryptoCurrency.BCH)
         verify(activity).displayReceiveAccount("Account")
         verify(activity).displayQrCode(bitmap)
         verify(activity).setUiState(UiState.CONTENT)
@@ -175,8 +156,6 @@ class SwipeToReceivePresenterTest {
         whenever(swipeToReceiveHelper.getXlmReceiveAddress()).thenReturn(uri)
         whenever(swipeToReceiveHelper.getXlmAccountName()).thenReturn("Account")
         whenever(swipeToReceiveHelper.getXlmReceiveAddressSingle()).thenReturn(Single.just(uri))
-        whenever(stringUtils.getFormattedString(R.string.swipe_to_receive_request, CryptoCurrency.XLM.unit))
-            .thenReturn("XLM")
         whenever(qrCodeDataManager.generateQrCode(anyString(), anyInt()))
             .thenReturn(Observable.just(bitmap))
 
@@ -187,7 +166,7 @@ class SwipeToReceivePresenterTest {
         verify(qrCodeDataManager).generateQrCode(anyString(), anyInt())
         verifyNoMoreInteractions(qrCodeDataManager)
         verify(activity).setUiState(UiState.LOADING)
-        verify(activity).displayCoinType("Stellar")
+        verify(activity).displayCoinType(CryptoCurrency.XLM)
         verify(activity).displayReceiveAccount("Account")
         verify(activity).displayQrCode(bitmap)
         verify(activity).setUiState(UiState.CONTENT)

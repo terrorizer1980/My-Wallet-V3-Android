@@ -42,7 +42,7 @@
     <string name="done">Done</string>
     <string name="btn_close">Close</string>
     <string name="SENT">Sent</string>
-    <string name="pax_fee_1">USD Digital FEE</string>
+    <string name="pax_fee_1">USD-D FEE</string>
     <string name="sending">Sending</string>
     <string name="RECEIVED">Received</string>
     <string name="receiving">Receiving</string>
@@ -567,7 +567,7 @@
     <string name="email_request_subject_xlm">Xlm payment request</string>
     <string name="email_request_body_btc">Please send %1$s BTC to the Bitcoin address %2$s.</string>
     <string name="email_request_body_eth">Please send ETH to the Ether address %1$s.</string>
-    <string name="email_request_body_pax_1">Please send USD Digital to the USD Digital address %1$s.</string>
+    <string name="email_request_body_pax_1">Please send USD-D to the USD Digital address %1$s.</string>
     <string name="email_request_body_bch">Please send BCH to the Bitcoin Cash address %1$s.</string>
     <string name="email_request_body_xlm">Please send XLM to the Stellar address %1$s.</string>
     <string name="email_request_body_fallback">attached</string>
@@ -803,9 +803,9 @@
     </string>
 
     <!-- PAX/ERC 20 -->
-    <string name="pax_to_field_helper_no_dropdown_1">Enter USD Digital/ETH address</string>
-    <string name="pax_to_field_helper_1">Enter USD Digital/ETH address or select</string>
-    <string name="pax_invalid_address_1">Invalid USD Digital address</string>
+    <string name="pax_to_field_helper_no_dropdown_1">Enter USD-D/ETH address</string>
+    <string name="pax_to_field_helper_1">Enter USD-D/ETH address or select</string>
+    <string name="pax_invalid_address_1">Invalid USD-D address</string>
 
     <!-- DASHBOARD -->
     <string name="dashboard_title">Dashboard</string>
@@ -875,8 +875,8 @@
     <string name="stablecoin_announcement_introducing_title">Digital US Dollars</string>
 
     <!--STABLECOIN-->
-    <string name="stablecoin_announcement_introducing_description">Introducing USD PAX, a safe and stable crypto asset you can use to store value. 1 PAX = 1 USD.</string>
-    <string name="stablecoin_announcement_introducing_link">Get USD PAX</string>
+    <string name="stablecoin_announcement_introducing_description_1">Introducing USD Digital, a safe and stable crypto asset you can use to store value. 1 USD-D = 1 USD.</string>
+    <string name="stablecoin_announcement_introducing_link_1">Get USD Digital</string>
 
     <!-- Airdrop Program Card -->
     <string name="pax_no_transactions_message_1">Your USD Digital transactions will show up here once you
@@ -937,7 +937,7 @@
     <string name="morph_success_for_first_gold_pax_trade_title">Your Exchange has been started!</string>
 
     <string name="morph_success_for_first_gold_pax_trade_description_1">Even better, since you need
-        ETH to make USD Digital trades, we just airdropped enough ETH into your Wallet to cover your
+        ETH to make USD-D trades, we just airdropped enough ETH into your Wallet to cover your
         first 3 transactions\n🙌
     </string>
     <string name="morph_success_dlg_button">View Order Details</string>
@@ -1051,7 +1051,7 @@
     <string name="swap_intro_description_page_two">Access competitive crypto prices right at your fingertips.</string>
     <string name="swap_intro_description_page_three">All Swap trades are confirmed and settled directly on-chain.</string>
     <string name="swap_intro_description_page_four">With Swap your crypto is safe, secure, and your keys are always intact.</string>
-    <string name="swap_intro_description_page_five">Introducing Digital Dollars (USD PAX) to de-risk your crypto investment or lock-in gains.</string>
+    <string name="swap_intro_description_page_five_1">Introducing Digital Dollars (USD-D) to de-risk your crypto investment or lock-in gains.</string>
     <string name="swap_intro_get_started">Get Started</string>
 
     <!-- intro tour -->
@@ -1641,7 +1641,7 @@
     <string name="veriff_identify">Veriff Identify</string>
 
     <string name="tour_step_one_title">View Your Portfolio</string>
-    <string name="tour_step_one_body">Keep track of your crypto balances from your Wallet\'s dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and USD PAX.</string>
+    <string name="tour_step_one_body_1">Keep track of your crypto balances from your Wallet\'s dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and USD Digital.</string>
 
     <string name="tour_step_one_btn">Next</string>
     <string name="tour_step_two_title">Send</string>
@@ -1686,7 +1686,7 @@
     <string name="need_some_help">Need some help?</string>
 
     <!--More eth needed-->
-    <string name="pax_need_more_eth_error_body_1">You\'ll need ETH to send your USD Digital</string>
+    <string name="pax_need_more_eth_error_body_1">You\'ll need ETH to send your USD-D</string>
     <string name="pax_need_more_eth_error_title">More ETH Needed</string>
 
     <!-- send -->
@@ -1813,4 +1813,12 @@
     <string name="iban">IBAN</string>
     <string name="estonia">Estonia</string>
     <string name="lets_setup_wallet">Let’s get your wallet set up. You can quickly buy crypto now or do this later.</string>
+
+    <string name="btc_default_wallet_name">My Bitcoin Wallet</string>
+    <string name="bch_default_account_label">My Bitcoin Cash Wallet</string>
+    <string name="eth_default_account_label">My Ether Wallet</string>
+    <string name="xlm_default_account_label">My Stellar Wallet</string>
+    <string name="pax_default_account_label_1">My USD Digital Wallet</string>
+    <string name="exchange_default_account_label">My Exchange %1$s Address</string>
+
 </resources>

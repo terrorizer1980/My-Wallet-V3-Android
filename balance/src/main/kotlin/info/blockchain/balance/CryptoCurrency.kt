@@ -43,7 +43,7 @@ enum class CryptoCurrency(
             CryptoCurrency.PRICE_CHARTING
     ),
     PAX(
-        symbol = "PAX",
+        symbol = "USD-D",
         dp = 18,
         userDp = 8,
         requiredConfirmations = 12, // Same as ETHER

@@ -3,13 +3,6 @@
 package com.blockchain.koin
 
 import android.preference.PreferenceManager
-import com.blockchain.accounts.AccountList
-import com.blockchain.accounts.AsyncAllAccountList
-import com.blockchain.accounts.AsyncAllAccountListImplementation
-import com.blockchain.accounts.BchAccountListAdapter
-import com.blockchain.accounts.BtcAccountListAdapter
-import com.blockchain.accounts.EthAccountListAdapter
-import com.blockchain.accounts.PaxAccountListAdapter
 import com.blockchain.datamanagers.AccountLookup
 import com.blockchain.datamanagers.AddressResolver
 import com.blockchain.datamanagers.DataManagerPayloadDecrypt
@@ -34,12 +27,9 @@ import com.blockchain.preferences.ThePitLinkingPrefs
 import com.blockchain.preferences.WalletStatus
 import com.blockchain.sunriver.XlmHorizonUrlFetcher
 import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
-import com.blockchain.wallet.DefaultLabels
-import com.blockchain.wallet.ResourceDefaultLabels
 import com.blockchain.wallet.SeedAccess
 import com.blockchain.wallet.SeedAccessWithoutPrompt
 import info.blockchain.api.blockexplorer.BlockExplorer
-import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.util.PrivateKeyFactory
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.util.RootUtil
@@ -161,23 +151,6 @@ val coreModule = applicationContext {
             get<TransactionExecutorWithoutFees>("Priority") as MaximumSpendableCalculator
         }
 
-        factory("BTC") { BtcAccountListAdapter(get()) }.bind(AccountList::class)
-        factory("BCH") { BchAccountListAdapter(get()) }.bind(AccountList::class)
-        factory("ETH") { EthAccountListAdapter(get()) }.bind(AccountList::class)
-        factory("PAX") { PaxAccountListAdapter(get(), get()) }.bind(AccountList::class)
-
-        factory {
-            AsyncAllAccountListImplementation(
-                mapOf(
-                    CryptoCurrency.BTC to get("BTC"),
-                    CryptoCurrency.ETHER to get("ETH"),
-                    CryptoCurrency.BCH to get("BCH"),
-                    CryptoCurrency.XLM to get("XLM"),
-                    CryptoCurrency.PAX to get("PAX")
-                )
-            )
-        }.bind(AsyncAllAccountList::class)
-
         bean { EthDataStore() }
 
         bean { Erc20DataStore() }
@@ -291,6 +264,4 @@ val coreModule = applicationContext {
     }
 
     factory { AESUtilWrapper() }
-
-    factory { ResourceDefaultLabels(get()) as DefaultLabels }
 }

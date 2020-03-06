@@ -1,5 +1,7 @@
-package com.blockchain.accounts
+package piuk.blockchain.android.accounts
 
+import com.blockchain.accounts.AccountList
+import com.blockchain.accounts.AsyncAllAccountList
 import com.nhaarman.mockito_kotlin.mock
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency

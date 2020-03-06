@@ -14,11 +14,11 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Observables
+import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.android.coincore.model.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.androidcore.R
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
@@ -51,7 +51,7 @@ class PAXTokens(
         val paxAddress = paxAccount.ethDataManager.getEthWallet()?.account?.address
             ?: throw Exception("No ether wallet found")
 
-        val label = stringUtils.getString(R.string.pax_default_account_label)
+        val label = stringUtils.getString(R.string.pax_default_account_label_1)
 
         return AccountReference.Pax(label, paxAddress, "")
     }

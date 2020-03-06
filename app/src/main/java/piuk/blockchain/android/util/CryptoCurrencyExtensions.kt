@@ -1,6 +1,7 @@
 package piuk.blockchain.android.util
 
 import android.content.Context
+import android.content.res.Resources
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -8,6 +9,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.R
 
@@ -76,3 +78,22 @@ fun CryptoCurrency.assetName() =
         CryptoCurrency.PAX -> R.string.usd_pax_1
         CryptoCurrency.STX -> R.string.stacks_1
     }
+
+@StringRes
+fun CryptoCurrency.defaultWalletLabel(): Int =
+    when (this) {
+        CryptoCurrency.BTC -> R.string.btc_default_wallet_name
+        CryptoCurrency.ETHER -> R.string.eth_default_account_label
+        CryptoCurrency.BCH -> R.string.bch_default_account_label
+        CryptoCurrency.XLM -> R.string.xlm_default_account_label
+        CryptoCurrency.PAX -> R.string.pax_default_account_label_1
+        CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+    }
+
+internal class ResourceDefaultLabels(
+    private val resources: Resources
+) : DefaultLabels {
+
+    override fun get(cryptoCurrency: CryptoCurrency): String =
+        resources.getString(cryptoCurrency.defaultWalletLabel())
+}

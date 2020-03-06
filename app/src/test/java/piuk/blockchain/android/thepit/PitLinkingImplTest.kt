@@ -163,7 +163,7 @@ class PitLinkingImplTest {
         Assert.assertEquals(map["BCH"], BCH_ACCOUNT_ADDRESS)
         Assert.assertEquals(map["ETH"], ETH_ACCOUNT_ADDRESS)
         Assert.assertEquals(map["XLM"], XLM_ACCOUNT_ADDRESS)
-        Assert.assertEquals(map["PAX"], ETH_ACCOUNT_ADDRESS)
+        Assert.assertEquals(map["USD-D"], ETH_ACCOUNT_ADDRESS)
 
         verifyNoMoreInteractions(nabu)
     }
@@ -196,7 +196,7 @@ class PitLinkingImplTest {
         Assert.assertEquals(map["BCH"], null)
         Assert.assertEquals(map["ETH"], ETH_ACCOUNT_ADDRESS)
         Assert.assertEquals(map["XLM"], XLM_ACCOUNT_ADDRESS)
-        Assert.assertEquals(map["PAX"], ETH_ACCOUNT_ADDRESS)
+        Assert.assertEquals(map["USD-D"], ETH_ACCOUNT_ADDRESS)
 
         verifyNoMoreInteractions(nabu)
     }
