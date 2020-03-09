@@ -139,7 +139,6 @@ import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.android.util.ResourceDefaultLabels
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
-import java.util.Locale
 
 val applicationModule = applicationContext {
 
@@ -157,8 +156,6 @@ val applicationModule = applicationContext {
     }
 
     factory { get<Context>().resources }
-
-//    factory { Locale.getDefault() }
 
     bean { CurrencyState(prefs = get()) }
 
