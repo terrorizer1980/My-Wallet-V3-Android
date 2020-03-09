@@ -3,7 +3,6 @@ package com.blockchain.swap.homebrew
 import com.blockchain.swap.common.quote.ExchangeQuoteRequest
 import com.blockchain.serialization.JsonSerializable
 import io.reactivex.Observable
-import java.util.Locale
 
 data class QuoteWebSocketParams(
     val pair: String,

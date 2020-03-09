@@ -284,7 +284,7 @@ class WalletAccountHelper(
             null
         } else {
             ItemAccount(
-                label = ethAccount.label ?: "",
+                label = ethAccount.label,
                 balance = balance,
                 accountObject = ethAccount,
                 address = ethAccount.address

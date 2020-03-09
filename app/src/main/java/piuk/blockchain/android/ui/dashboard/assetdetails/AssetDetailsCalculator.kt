@@ -14,12 +14,11 @@ import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.androidcore.data.charts.TimeSpan
-import java.util.Locale
 
 typealias BalancePair = Pair<CryptoValue, FiatValue>
 typealias BalanceMap = Map<AssetFilter, BalancePair>
 
-class AssetDetailsCalculator() {
+class AssetDetailsCalculator {
     // input
     val token = BehaviorRelay.create<AssetTokens>()
     val timeSpan = BehaviorRelay.createDefault<TimeSpan>(TimeSpan.MONTH)
