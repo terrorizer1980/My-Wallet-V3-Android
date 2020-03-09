@@ -144,7 +144,7 @@ class PaxSendStrategy(
     private fun resetAccountList() {
         compositeDisposable += pitLinking.isPitLinked().filter { it }.flatMapSingle { nabuToken.fetchNabuToken() }
             .flatMap {
-                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.PAX.symbol)
+                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.PAX)
             }.applySchedulers().doOnSubscribe {
                 view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX, 1, false)
             }.subscribeBy(onError = {
@@ -153,8 +153,13 @@ class PaxSendStrategy(
                     view?.show2FANotAvailableError()
                 }
             }) {
-                pitAccount = PitAccount(stringUtils.getFormattedString(R.string.exchange_default_account_label,
-                    CryptoCurrency.PAX.symbol), it.address)
+                pitAccount = PitAccount(
+                    stringUtils.getFormattedString(
+                        R.string.exchange_default_account_label,
+                        CryptoCurrency.PAX.displayTicker
+                    ),
+                    it.address
+                )
                 view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.PAX,
                     1,
                     it.state == State.ACTIVE && it.address.isNotEmpty()) { view?.fillOrClearAddress() }
@@ -205,7 +210,10 @@ class PaxSendStrategy(
                     payloadDataManager.decryptHDWallet(networkParameters, verifiedSecondPassword)
                 }
 
-                val ecKey = EthereumAccount.deriveECKey(payloadDataManager.wallet!!.hdWallets[0].masterKey, 0)
+                val ecKey = EthereumAccount.deriveECKey(
+                    payloadDataManager.wallet!!.hdWallets[0].masterKey,
+                    0
+                )
                 return@flatMap ethDataManager.signEthTransaction(it, ecKey)
             }
             .flatMap { ethDataManager.pushEthTx(it) }
@@ -221,14 +229,14 @@ class PaxSendStrategy(
                 {
                     logPaymentSentEvent(true, CryptoCurrency.PAX, pendingTx.amountPax)
 
-                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.PAX.toString()))
+                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.PAX))
                     handleSuccessfulPayment(it)
                 },
                 {
                     Timber.e(it)
                     logPaymentSentEvent(false, CryptoCurrency.PAX, pendingTx.amountPax)
                     view?.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
-                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.PAX.toString()))
+                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.PAX))
                 }
             )
     }
@@ -282,35 +290,27 @@ class PaxSendStrategy(
     private fun getConfirmationDetails(): PaymentConfirmationDetails {
         val tx = pendingTx
 
-        return PaymentConfirmationDetails().apply {
-            fromLabel = tx.sendingAccountLabel
-            toLabel = tx.receivingAddress
+        val paxValue = CryptoValue.usdPaxFromMinor(pendingTx.amountPax)
+        var paxAmount = paxValue.toBigDecimal()
+        paxAmount = paxAmount.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
+        val fiatValue = paxValue.toFiat(exchangeRates, fiatCurrency)
+        var ethFeeValue = Convert.fromWei(pendingTx.feeEth.toString(), Convert.Unit.ETHER)
+        ethFeeValue = ethFeeValue.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
+        val fiatFeeValue = CryptoValue.etherFromWei(pendingTx.feeEth).toFiat(exchangeRates, fiatCurrency)
 
-            cryptoUnit = CryptoCurrency.PAX.symbol
-            cryptoFeeUnit = CryptoCurrency.ETHER.symbol
-
-            fiatUnit = fiatCurrency
-
-            val paxValue = CryptoValue.usdPaxFromMinor(pendingTx.amountPax)
-            var paxAmount = paxValue.toBigDecimal()
-            paxAmount = paxAmount.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
-
-            val fiatValue = paxValue.toFiat(exchangeRates, fiatCurrency)
-            cryptoAmount = paxAmount.toString()
-            fiatAmount = fiatValue.toStringWithoutSymbol()
-
-            var ethFeeValue = Convert.fromWei(pendingTx.feeEth.toString(), Convert.Unit.ETHER)
-            ethFeeValue = ethFeeValue.setScale(8, RoundingMode.HALF_UP).stripTrailingZeros()
-
-            cryptoFee = ethFeeValue.toString()
-
-            val fiatFeeValue = CryptoValue.etherFromWei(pendingTx.feeEth).toFiat(exchangeRates, fiatCurrency)
-
-            fiatFee = fiatFeeValue.toStringWithoutSymbol()
-
-            showCryptoTotal = false
-
+        return PaymentConfirmationDetails(
+            fromLabel = tx.sendingAccountLabel,
+            toLabel = tx.receivingAddress,
+            crypto = CryptoCurrency.PAX,
+            cryptoAmount = paxAmount.toString(),
+            fiatAmount = fiatValue.toStringWithoutSymbol(),
+            fiatUnit = fiatCurrency,
+            cryptoFee = ethFeeValue.toString(),
+            fiatFee = fiatFeeValue.toStringWithoutSymbol(),
+            showCryptoTotal = false,
             fiatTotal = (fiatFeeValue + fiatValue).toStringWithoutSymbol()
+        ).apply {
+            cryptoFeeUnit = CryptoCurrency.ETHER.displayTicker
         }
     }
 

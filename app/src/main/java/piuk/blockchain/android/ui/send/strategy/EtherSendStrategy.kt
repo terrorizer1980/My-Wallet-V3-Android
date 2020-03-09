@@ -155,7 +155,7 @@ class EtherSendStrategy(
         compositeDisposable += pitLinking.isPitLinked().filter { it }
             .flatMapSingle { nabuToken.fetchNabuToken() }
             .flatMap {
-                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.ETHER.symbol)
+                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.ETHER)
             }.applySchedulers().doOnSubscribe {
                 view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.ETHER, 1, false)
             }.subscribeBy(onError = {
@@ -164,8 +164,12 @@ class EtherSendStrategy(
                     it is NabuApiException && it.getErrorCode() == NabuErrorCodes.Bad2fa
                 ) { view?.show2FANotAvailableError() }
             }) {
-                pitAccount = PitAccount(stringUtils.getFormattedString(R.string.exchange_default_account_label,
-                    CryptoCurrency.ETHER.symbol), it.address)
+                pitAccount = PitAccount(
+                    stringUtils.getFormattedString(
+                        R.string.exchange_default_account_label, CryptoCurrency.ETHER.displayTicker
+                    ),
+                    it.address
+                )
                 view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.ETHER,
                     1,
                     it.state == State.ACTIVE && it.address.isNotEmpty()
@@ -222,7 +226,9 @@ class EtherSendStrategy(
                     payloadDataManager.decryptHDWallet(networkParameters, verifiedSecondPassword)
                 }
 
-                val ecKey = EthereumAccount.deriveECKey(payloadDataManager.wallet!!.hdWallets[0].masterKey, 0)
+                val ecKey = EthereumAccount.deriveECKey(
+                    payloadDataManager.wallet!!.hdWallets[0].masterKey, 0
+                )
                 return@flatMap ethDataManager.signEthTransaction(it, ecKey)
             }
             .flatMap { ethDataManager.pushEthTx(it) }
@@ -239,7 +245,7 @@ class EtherSendStrategy(
             .subscribe(
                 {
                     logPaymentSentEvent(true, CryptoCurrency.ETHER, pendingTransaction.bigIntAmount)
-                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.ETHER.toString()))
+                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.ETHER))
                     // handleSuccessfulPayment(...) clears PendingTransaction object
                     handleSuccessfulPayment(it)
                 },
@@ -247,7 +253,7 @@ class EtherSendStrategy(
                     Timber.e(it)
                     logPaymentSentEvent(false, CryptoCurrency.ETHER, pendingTransaction.bigIntAmount)
                     view?.showSnackbar(R.string.transaction_failed, Snackbar.LENGTH_LONG)
-                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.ETHER.toString()))
+                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.ETHER))
                 }
             )
     }
@@ -305,28 +311,25 @@ class EtherSendStrategy(
         val fee = CryptoValue.fromMinor(CryptoCurrency.ETHER, pendingTransaction.bigIntFee)
         val total = amount + fee
 
-        return PaymentConfirmationDetails().apply {
-            fromLabel = pendingTransaction.sendingObject!!.label ?: ""
-            toLabel = pendingTransaction.displayableReceivingLabel ?: throw IllegalStateException("No receive label")
-
-            cryptoUnit = CryptoCurrency.ETHER.symbol
-            fiatUnit = fiatCurrency
-
-            cryptoAmount = amount.toStringWithoutSymbol()
-            cryptoFee = fee.toStringWithoutSymbol()
-            cryptoTotal = total.toStringWithoutSymbol()
-
-            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
-            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
+        return PaymentConfirmationDetails(
+            fromLabel = pendingTransaction.sendingObject!!.label,
+            toLabel = pendingTransaction.displayableReceivingLabel ?: throw IllegalStateException("No receive label"),
+            crypto = CryptoCurrency.ETHER,
+            fiatUnit = fiatCurrency,
+            cryptoAmount = amount.toStringWithoutSymbol(),
+            cryptoFee = fee.toStringWithoutSymbol(),
+            cryptoTotal = total.toStringWithoutSymbol(),
+            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
             fiatTotal = total.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
-        }
+        )
     }
 
     override fun clearReceivingObject() {}
 
     override fun selectDefaultOrFirstFundedSendingAccount() {
         val accountItem = walletAccountHelper.getDefaultOrFirstFundedAccount(CryptoCurrency.ETHER) ?: return
-        view?.updateSendingAddress(accountItem.label ?: accountItem.address!!)
+        view?.updateSendingAddress(accountItem.label)
         pendingTransaction.sendingObject = accountItem
     }
 

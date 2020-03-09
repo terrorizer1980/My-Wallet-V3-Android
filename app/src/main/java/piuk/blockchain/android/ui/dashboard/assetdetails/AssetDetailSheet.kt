@@ -88,7 +88,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
             configureTabs(view.chart_price_periods)
 
             assetDetailsViewModel.token.accept(token)
-            current_price_title.text = getString(R.string.dashboard_price_for_asset, cryptoCurrency.symbol)
+            current_price_title.text = getString(R.string.dashboard_price_for_asset, cryptoCurrency.displayTicker)
 
             compositeDisposable += assetDetailsViewModel.balanceMap
                 .observeOn(AndroidSchedulers.mainThread())

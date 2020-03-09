@@ -33,25 +33,25 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
 
     data class UpdatedBuyLimitsAndSupportedCryptoCurrencies(val simpleBuyPairs: SimpleBuyPairs) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState {
-            val supportedPairsAndLimits = simpleBuyPairs.pairs.filter { it.fiatCurrency == oldState.currency }
+            val supportedPairsAndLimits = simpleBuyPairs.pairs.filter { it.fiatCurrency == oldState.fiatCurrency }
 
             if (supportedPairsAndLimits.isEmpty()) {
                 return oldState.copy(errorState = ErrorState.NoAvailableCurrenciesToTrade)
             }
 
             val selectedCryptoCurrency = oldState.selectedCryptoCurrency ?: simpleBuyPairs.pairs.firstOrNull {
-                it.fiatCurrency == oldState.currency
+                it.fiatCurrency == oldState.fiatCurrency
             }?.cryptoCurrency
 
             val minValueForSelectedPair = supportedPairsAndLimits.firstOrNull { pairs ->
-                pairs.fiatCurrency == oldState.currency &&
+                pairs.fiatCurrency == oldState.fiatCurrency &&
                         pairs.cryptoCurrency == selectedCryptoCurrency
-            }?.buyLimits?.minLimit(oldState.currency)?.valueMinor
+            }?.buyLimits?.minLimit(oldState.fiatCurrency)?.valueMinor
 
             val maxValueForSelectedPair = supportedPairsAndLimits.firstOrNull { pairs ->
-                pairs.fiatCurrency == oldState.currency &&
+                pairs.fiatCurrency == oldState.fiatCurrency &&
                         pairs.cryptoCurrency == selectedCryptoCurrency
-            }?.buyLimits?.maxLimit(oldState.currency)?.valueMinor
+            }?.buyLimits?.maxLimit(oldState.fiatCurrency)?.valueMinor
 
             return oldState.copy(
                 supportedPairsAndLimits = supportedPairsAndLimits,
@@ -85,17 +85,17 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
         }
     }
 
-    data class FetchBuyLimits(val currency: String) : SimpleBuyIntent() {
-        override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState.copy(currency = currency)
+    data class FetchBuyLimits(val fiatCurrency: String) : SimpleBuyIntent() {
+        override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState.copy(fiatCurrency = fiatCurrency)
     }
 
     data class FlowCurrentScreen(val flowScreen: FlowScreen) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState = oldState.copy(currentScreen = flowScreen)
     }
 
-    data class FetchPredefinedAmounts(val currency: String) : SimpleBuyIntent() {
+    data class FetchPredefinedAmounts(val fiatCurrency: String) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(currency = currency, predefinedAmounts = emptyList())
+            oldState.copy(fiatCurrency = fiatCurrency, predefinedAmounts = emptyList())
     }
 
     object CancelOrder : SimpleBuyIntent() {

@@ -260,7 +260,7 @@ internal class ExchangeFragment : Fragment() {
     private fun displayCryptoLarge(cryptoValue: CryptoValue, fiatValue: FiatValue, decimalCursor: Int) {
         large_value.setText(
             ThreePartText("",
-                cryptoValue.formatExactly(decimalCursor) + " " + cryptoValue.symbol(),
+                cryptoValue.formatExactly(decimalCursor) + " " + cryptoValue.symbol,
                 "")
         )
 
@@ -362,7 +362,7 @@ internal class ExchangeFragment : Fragment() {
                 ExchangeMenuState.ExchangeMenuError(
                     fromCrypto.currency,
                     userTier,
-                    getString(R.string.not_enough_balance_for_coin, fromCrypto.currency.symbol),
+                    getString(R.string.not_enough_balance_for_coin, fromCrypto.currency.displayTicker),
                     getString(
                         R.string.not_enough_balance,
                         maxSpendable?.toStringWithSymbol(),
@@ -375,7 +375,7 @@ internal class ExchangeFragment : Fragment() {
                 fromCrypto.currency,
                 userTier,
                 getString(R.string.eth_in_flight_title),
-                getString(R.string.eth_in_flight_msg, fromCrypto.currency.symbol),
+                getString(R.string.eth_in_flight_msg, fromCrypto.currency.displayTicker),
                 ExchangeMenuState.ErrorType.TRANSACTION_STATE
             )
         }

@@ -202,7 +202,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
                 data = Uri.parse(explorerUri)
                 startActivity(this)
             }
-            analytics.logEvent(TransactionsAnalyticsEvents.ViewOnWeb(cryptoCurrency.symbol))
+            analytics.logEvent(TransactionsAnalyticsEvents.ViewOnWeb(cryptoCurrency))
         }
 
         shareIntent = Intent().apply {
@@ -288,7 +288,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
                 Intent(ctx, TransactionDetailActivity::class.java).apply {
                     putExtras(
                         Bundle().also {
-                            it.putString(KEY_CRYPTO, crypto.symbol)
+                            it.putString(KEY_CRYPTO, crypto.networkTicker)
                             it.putString(KEY_TRANSACTION_HASH, txHash)
                         }
                     )
@@ -298,7 +298,7 @@ class TransactionDetailActivity : BaseMvpActivity<TransactionDetailView, Transac
     }
 
     private val Intent?.cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.fromSymbol(this?.getStringExtra(KEY_CRYPTO) ?: "BTC")
+        get() = CryptoCurrency.fromNetworkTicker(this?.getStringExtra(KEY_CRYPTO) ?: "BTC")
             ?: CryptoCurrency.BTC
 
     private val Intent?.txHash: String

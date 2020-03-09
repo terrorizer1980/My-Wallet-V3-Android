@@ -19,19 +19,23 @@ class SimpleBuyModel(
 
     override fun performAction(previousState: SimpleBuyState, intent: SimpleBuyIntent): Disposable? =
         when (intent) {
-            is SimpleBuyIntent.FetchBuyLimits -> interactor.fetchBuyLimitsAndSupportedCryptoCurrencies(intent.currency)
+            is SimpleBuyIntent.FetchBuyLimits ->
+                interactor.fetchBuyLimitsAndSupportedCryptoCurrencies(intent.fiatCurrency)
+                    .subscribeBy(
+                        onSuccess = { process(it) },
+                        onError = { process(SimpleBuyIntent.ErrorIntent()) }
+                    )
+            is SimpleBuyIntent.FetchPredefinedAmounts ->
+                interactor.fetchPredefinedAmounts(intent.fiatCurrency)
+                    .subscribeBy(
+                    onSuccess = { process(it) },
+                    onError = { process(SimpleBuyIntent.ErrorIntent()) }
+                )
+            is SimpleBuyIntent.CancelOrder -> interactor.cancelOrder()
                 .subscribeBy(
                     onSuccess = { process(it) },
                     onError = { process(SimpleBuyIntent.ErrorIntent()) }
                 )
-            is SimpleBuyIntent.FetchPredefinedAmounts -> interactor.fetchPredefinedAmounts(intent.currency).subscribeBy(
-                onSuccess = { process(it) },
-                onError = { process(SimpleBuyIntent.ErrorIntent()) }
-            )
-            is SimpleBuyIntent.CancelOrder -> interactor.cancelOrder().subscribeBy(
-                onSuccess = { process(it) },
-                onError = { process(SimpleBuyIntent.ErrorIntent()) }
-            )
             is SimpleBuyIntent.ConfirmOrder -> interactor.createOrder(
                 previousState.selectedCryptoCurrency,
                 previousState.order.amount
@@ -44,15 +48,16 @@ class SimpleBuyModel(
                     process(SimpleBuyIntent.BankAccountUpdated(previousState.bankAccount))
                     null
                 } else {
-                    interactor.fetchBankAccount(previousState.currency).subscribeBy(
+                    interactor.fetchBankAccount(previousState.fiatCurrency).subscribeBy(
                         onSuccess = { process(it) },
                         onError = { process(SimpleBuyIntent.ErrorIntent()) })
                 }
             }
-            is SimpleBuyIntent.FetchKycState -> interactor.pollForKycState(previousState.currency).subscribeBy(
-                onSuccess = { process(it) },
-                onError = { /*never fails. will return SimpleBuyIntent.KycStateUpdated(KycState.FAILED)*/ }
-            )
+            is SimpleBuyIntent.FetchKycState -> interactor.pollForKycState(previousState.fiatCurrency)
+                .subscribeBy(
+                    onSuccess = { process(it) },
+                    onError = { /*never fails. will return SimpleBuyIntent.KycStateUpdated(KycState.FAILED)*/ }
+                )
             is SimpleBuyIntent.FetchQuote -> interactor.fetchQuote(
                 previousState.selectedCryptoCurrency,
                 previousState.order.amount
@@ -60,10 +65,11 @@ class SimpleBuyModel(
                 onSuccess = { process(it) },
                 onError = { process(SimpleBuyIntent.ErrorIntent()) }
             )
-            is SimpleBuyIntent.BuyButtonClicked -> interactor.checkTierLevel(previousState.currency).subscribeBy(
-                onSuccess = { process(it) },
-                onError = { process(SimpleBuyIntent.ErrorIntent()) }
-            )
+            is SimpleBuyIntent.BuyButtonClicked -> interactor.checkTierLevel(previousState.fiatCurrency)
+                .subscribeBy(
+                    onSuccess = { process(it) },
+                    onError = { process(SimpleBuyIntent.ErrorIntent()) }
+                )
             is SimpleBuyIntent.KycStateUpdated -> null
             is SimpleBuyIntent.QuoteUpdated -> null
             is SimpleBuyIntent.FlowCurrentScreen -> null

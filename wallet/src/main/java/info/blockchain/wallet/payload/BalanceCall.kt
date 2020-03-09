@@ -24,7 +24,7 @@ class BalanceCall(
             }
 
     private fun getBalanceOfAddresses(addresses: List<String>) =
-        blockExplorer.getBalance(cryptoCurrency.symbol.toLowerCase(), addresses, FilterType.RemoveUnspendable)
+        blockExplorer.getBalance(cryptoCurrency.networkTicker.toLowerCase(), addresses, FilterType.RemoveUnspendable)
 }
 
 private fun <K> Map<K, Balance>.finalBalanceMap() =

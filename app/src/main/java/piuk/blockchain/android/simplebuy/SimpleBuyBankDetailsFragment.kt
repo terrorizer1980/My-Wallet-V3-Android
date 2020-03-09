@@ -49,7 +49,7 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
             showErrorState(newState.errorState)
         }
 
-        if (newState.currency == "GBP") {
+        if (newState.fiatCurrency == "GBP") {
             val linksMap = mapOf<String, Uri>(
                 "modular_terms_and_conditions" to Uri.parse(MODULAR_TERMS_AND_CONDITIONS)
             )
@@ -64,7 +64,7 @@ class SimpleBuyBankDetailsFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
             bank_deposit_instruction.text = getString(R.string.recipient_name_must_match_eur)
         }
 
-        analytics.logEvent(BankDetailsViewed(newState.currency))
+        analytics.logEvent(BankDetailsViewed(newState.fiatCurrency))
 
         val amount = newState.order.amount
         if (newState.bankAccount != null && amount != null) {

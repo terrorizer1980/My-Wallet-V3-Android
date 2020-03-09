@@ -320,26 +320,21 @@ class AccountEditPresenter constructor(
         val fee = CryptoValue.fromMinor(CryptoCurrency.BTC, pendingTransaction.bigIntFee)
         val total = amount + fee
 
-        return PaymentConfirmationDetails().apply {
-
-            fromLabel = pendingTransaction.sendingObject?.label ?: ""
-            toLabel = destination
-
-            cryptoUnit = CryptoCurrency.BTC.name
-            fiatUnit = fiatCurrency
-
-            cryptoTotal = total.toStringWithoutSymbol()
-            cryptoAmount = amount.toStringWithoutSymbol()
-            cryptoFee = fee.toStringWithoutSymbol()
-            btcSuggestedFee = fee.toStringWithoutSymbol()
-
-            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
-            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
-            fiatTotal = total.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
-
-            isLargeTransaction = isLargeTransaction(pendingTransaction)
+        return PaymentConfirmationDetails(
+            fromLabel = pendingTransaction.sendingObject?.label ?: "",
+            toLabel = destination,
+            crypto = CryptoCurrency.BTC,
+            fiatUnit = fiatCurrency,
+            cryptoTotal = total.toStringWithoutSymbol(),
+            cryptoAmount = amount.toStringWithoutSymbol(),
+            cryptoFee = fee.toStringWithoutSymbol(),
+            btcSuggestedFee = fee.toStringWithoutSymbol(),
+            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            fiatTotal = total.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            isLargeTransaction = isLargeTransaction(pendingTransaction),
             hasConsumedAmounts = pendingTransaction.unspentOutputBundle!!.consumedAmount.compareTo(BigInteger.ZERO) == 1
-        }
+        )
     }
 
     private fun isLargeTransaction(pendingTransaction: PendingTransaction): Boolean {

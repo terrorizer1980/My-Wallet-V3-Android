@@ -18,9 +18,8 @@ data class CryptoValue(
 
     override val userDecimalPlaces: Int = currency.userDp
 
-    override val currencyCode: String = currency.symbol
-
-    override fun symbol(locale: Locale) = currencyCode
+    override val currencyCode = currency.networkTicker
+    override val symbol = currency.displayTicker
 
     override fun toStringWithSymbol(locale: Locale) = formatWithUnit(locale)
 
@@ -103,27 +102,23 @@ data class CryptoValue(
     override fun toZero(): CryptoValue = zero(currency)
 
     operator fun plus(other: CryptoValue): CryptoValue {
-        ensureCan("add", currency, other.currency)
+        ensureComparable("add", currency, other.currency)
         return CryptoValue(currency, amount + other.amount)
     }
 
     operator fun minus(other: CryptoValue): CryptoValue {
-        ensureCan("subtract", currency, other.currency)
+        ensureComparable("subtract", currency, other.currency)
         return CryptoValue(currency, amount - other.amount)
     }
 }
 
 operator fun CryptoValue.compareTo(other: CryptoValue): Int {
-    ensureComparable(currency, other.currency)
+    ensureComparable("compare", currency, other.currency)
     return amount.compareTo(other.amount)
 }
 
-private fun ensureCan(verb: String, a: CryptoCurrency, b: CryptoCurrency) {
-    if (a != b) throw ValueTypeMismatchException(verb, a.symbol, b.symbol)
-}
-
-private fun ensureComparable(a: CryptoCurrency, b: CryptoCurrency) {
-    if (a != b) throw ComparisonException(a.symbol, b.symbol)
+private fun ensureComparable(operation: String, a: CryptoCurrency, b: CryptoCurrency) {
+    if (a != b) throw ValueTypeMismatchException(operation, a.networkTicker, b.networkTicker)
 }
 
 fun CryptoCurrency.withMajorValue(majorValue: BigDecimal) = CryptoValue.fromMajor(this, majorValue)

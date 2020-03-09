@@ -40,6 +40,9 @@ data class FiatValue private constructor(
     internal val value: BigDecimal
 ) : Money {
 
+    // ALWAYS for display, so use default Locale
+    override val symbol: String = Currency.getInstance(currencyCode).getSymbol(Locale.getDefault())
+
     override val maxDecimalPlaces: Int get() = maxDecimalPlaces(currencyCode)
 
     override val isZero: Boolean get() = value.signum() == 0
@@ -69,8 +72,6 @@ data class FiatValue private constructor(
             throw ValueTypeMismatchException("subtract", currencyCode, other.currencyCode)
         return FiatValue(currencyCode, value - other.value)
     }
-
-    override fun symbol(locale: Locale): String = Currency.getInstance(currencyCode).getSymbol(locale)
 
     override fun toZero(): FiatValue = fromMajor(currencyCode, BigDecimal.ZERO)
 

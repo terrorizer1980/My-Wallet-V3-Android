@@ -86,7 +86,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
     }
 
     private fun renderState(view: View, state: SimpleBuyState) {
-        analytics.logEvent(PendingTransactionShown(state.currency))
+        analytics.logEvent(PendingTransactionShown(state.fiatCurrency))
         with(view) {
             val amount = state.order.amount
             if (amount != null) {
@@ -104,7 +104,7 @@ class BankDetailsBottomSheet : SlidingModalBottomDialog() {
                         copyListener
                     )
                 } else {
-                    disposables += custodialWalletManager.getBankAccountDetails(state.currency)
+                    disposables += custodialWalletManager.getBankAccountDetails(state.fiatCurrency)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(
                             onSuccess = {

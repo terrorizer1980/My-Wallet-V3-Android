@@ -113,7 +113,7 @@ private class AssetCardViewHolder(
             cardLayout.isEnabled = false
             setOnClickListener { }
 
-            val text = resources.getString(R.string.dashboard_asset_error, state.currency.symbol)
+            val text = resources.getString(R.string.dashboard_asset_error, state.currency.displayTicker)
             error_msg.text = text
         }
     }

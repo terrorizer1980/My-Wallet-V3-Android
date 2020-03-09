@@ -118,30 +118,30 @@ class PitLinkingImpl(
                 1
             )
         }
-        .map { Pair(CryptoCurrency.BTC.symbol, it) }
+        .map { Pair(CryptoCurrency.BTC.networkTicker, it) }
         .onErrorReturn { Pair("", "") }
     }
 
     private fun getBchReceiveAddress(): Single<Pair<String, String>> {
         val pos = bchDataManager.getDefaultAccountPosition()
         return bchDataManager.getNextReceiveAddress(pos)
-            .map { Pair(CryptoCurrency.BCH.symbol, it) }
+            .map { Pair(CryptoCurrency.BCH.networkTicker, it) }
             .singleOrError()
             .onErrorReturn { Pair("", "") }
     }
 
     private fun getEthReceiveAddress(): Single<Pair<String, String>> =
         ethDataManager.getDefaultEthAddress()
-            .map { Pair(CryptoCurrency.ETHER.symbol, it) }
+            .map { Pair(CryptoCurrency.ETHER.networkTicker, it) }
             .onErrorReturn { Pair("", "") }
 
     private fun getXlmReceiveAddress(): Single<Pair<String, String>> =
         xlmDataManager.defaultAccount()
-            .map { Pair(CryptoCurrency.XLM.symbol, it.accountId) }
+            .map { Pair(CryptoCurrency.XLM.networkTicker, it.accountId) }
             .onErrorReturn { Pair("", "") }
 
     private fun getPaxReceiveAddress(): Single<Pair<String, String>> =
         ethDataManager.getDefaultEthAddress()
-            .map { Pair(CryptoCurrency.PAX.symbol, it) }
+            .map { Pair(CryptoCurrency.PAX.networkTicker, it) }
             .onErrorReturn { Pair("", "") }
 }

@@ -52,8 +52,8 @@ enum class CoinPair(
         fun fromPairCodeOrNull(pairCode: String?): CoinPair? {
             pairCode?.split('_')?.let {
                 if (it.size == 2) {
-                    val from = CryptoCurrency.fromSymbol(it.first())
-                    val to = CryptoCurrency.fromSymbol(it.last())
+                    val from = CryptoCurrency.fromNetworkTicker(it.first())
+                    val to = CryptoCurrency.fromNetworkTicker(it.last())
                     if (from != null && to != null) {
                         return from to to
                     }

@@ -108,7 +108,7 @@ public class PriceApi implements CurrentPriceApi {
     @NotNull
     @Override
     public Single<BigDecimal> currentPrice(@NotNull CryptoCurrency base, @NotNull String quoteFiatCode) {
-        return getCurrentPriceDatum(base.getSymbol(), quoteFiatCode)
+        return getCurrentPriceDatum(base.getNetworkTicker(), quoteFiatCode)
                 .map(new Function<PriceDatum, BigDecimal>() {
                     @Override
                     public BigDecimal apply(PriceDatum priceDatum) {

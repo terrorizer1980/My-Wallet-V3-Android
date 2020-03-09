@@ -254,12 +254,12 @@ class BitcoinSendStrategy(
         val txHex = transaction.toHexHash()
 
         return bitPayDataManager.paymentVerificationRequest(invoiceId,
-            BitPaymentRequest(CryptoCurrency.BTC.symbol,
+            BitPaymentRequest(CryptoCurrency.BTC.networkTicker,
                 listOf(BitPayTransaction(txHex, transaction.messageSize)))).flatMap {
             Single.timer(3, TimeUnit.SECONDS)
         }.flatMap {
             bitPayDataManager.paymentSubmitRequest(invoiceId,
-                BitPaymentRequest(CryptoCurrency.BTC.symbol,
+                BitPaymentRequest(CryptoCurrency.BTC.networkTicker,
                     listOf(BitPayTransaction(txHex, transaction.messageSize))))
         }.map {
             transaction.hashAsString
@@ -305,10 +305,11 @@ class BitcoinSendStrategy(
                     logPaymentSentEvent(true, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
                     if (isBitpayPaymentRequest) {
                         prefs.setBitPaySuccess()
-                        analytics.logEvent(BitPayEvent.SuccessEvent(pendingTransaction.bigIntAmount,
-                            CryptoCurrency.BTC.symbol))
+                        analytics.logEvent(
+                            BitPayEvent.SuccessEvent(pendingTransaction.bigIntAmount, CryptoCurrency.BTC)
+                        )
                     }
-                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.BTC.symbol))
+                    analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.BTC))
 
                     clearBtcUnspentResponseCache()
                     view?.dismissProgressDialog()
@@ -326,7 +327,7 @@ class BitcoinSendStrategy(
                         Snackbar.LENGTH_INDEFINITE
                     )
                     logPaymentSentEvent(false, CryptoCurrency.BTC, pendingTransaction.bigIntAmount)
-                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.BTC.symbol))
+                    analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.BTC))
                     (it as? BitPayApiException)?.let { bitpayException ->
                         analytics.logEvent(BitPayEvent.FailureEvent(bitpayException.message ?: ""))
                     }
@@ -455,24 +456,20 @@ class BitcoinSendStrategy(
         val fee = CryptoValue.fromMinor(CryptoCurrency.BTC, pendingTransaction.bigIntFee)
         val suggestedFee = CryptoValue.fromMinor(CryptoCurrency.BTC, absoluteSuggestedFee)
 
-        return PaymentConfirmationDetails().apply {
-            fromLabel = pendingTransaction.sendingObject?.label ?: ""
-            toLabel = pendingTransaction.displayableReceivingLabel ?: ""
-
-            cryptoUnit = CryptoCurrency.BTC.symbol
-            fiatUnit = fiatCurrency
-
-            cryptoTotal = total.toStringWithoutSymbol()
-            cryptoAmount = amount.toStringWithoutSymbol()
-            cryptoFee = fee.toStringWithoutSymbol()
-
-            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
-            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
-            fiatTotal = total.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol()
-
-            isLargeTransaction = isLargeTransaction()
+        return PaymentConfirmationDetails(
+            fromLabel = pendingTransaction.sendingObject?.label ?: "",
+            toLabel = pendingTransaction.displayableReceivingLabel ?: "",
+            crypto = CryptoCurrency.BTC,
+            fiatUnit = fiatCurrency,
+            cryptoTotal = total.toStringWithoutSymbol(),
+            cryptoAmount = amount.toStringWithoutSymbol(),
+            cryptoFee = fee.toStringWithoutSymbol(),
+            fiatFee = fee.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            fiatAmount = amount.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            fiatTotal = total.toFiat(exchangeRates, fiatCurrency).toStringWithSymbol(),
+            isLargeTransaction = isLargeTransaction(),
             btcSuggestedFee = suggestedFee.toStringWithoutSymbol()
-        }
+        )
     }
 
     private fun resetAccountList() {
@@ -481,7 +478,7 @@ class BitcoinSendStrategy(
             .flatMapSingle {
                 nabuToken.fetchNabuToken()
             }.flatMap {
-                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.BTC.symbol)
+                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.BTC)
             }.applySchedulers()
             .doOnSubscribe {
                 view?.updateReceivingHintAndAccountDropDowns(
@@ -500,7 +497,8 @@ class BitcoinSendStrategy(
                 onSuccess = {
                     pitAccount = PitAccount(
                         stringUtils.getFormattedString(
-                            R.string.exchange_default_account_label, CryptoCurrency.BTC.symbol
+                            R.string.exchange_default_account_label,
+                            CryptoCurrency.BTC.displayTicker
                         ),
                         it.address
                     )

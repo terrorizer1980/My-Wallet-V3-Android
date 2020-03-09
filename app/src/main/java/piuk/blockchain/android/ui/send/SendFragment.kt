@@ -183,11 +183,11 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
             } else {
                 showSnackbar(R.string.check_connectivity_exit, Snackbar.LENGTH_LONG)
             }
-            analytics.logEvent(SendAnalytics.SendFormClicked(currencyState.cryptoCurrency.symbol))
+            analytics.logEvent(SendAnalytics.SendFormClicked(currencyState.cryptoCurrency))
         }
 
         max.setOnClickListener {
-            analytics.logEvent(SendAnalytics.SendSpendableBalanceClicked(currencyState.cryptoCurrency.symbol))
+            analytics.logEvent(SendAnalytics.SendSpendableBalanceClicked(currencyState.cryptoCurrency))
             presenter.onSpendMaxClicked()
         }
 
@@ -612,7 +612,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
             visible()
             setOnClickListener {
                 onPitClicked()
-                analytics.logEvent(SendAnalytics.PitButtonClicked(currencyState.cryptoCurrency.symbol))
+                analytics.logEvent(SendAnalytics.PitButtonClicked(currencyState.cryptoCurrency))
             }
         }
     }
@@ -684,7 +684,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
 
     override fun setSelectedCurrency(cryptoCurrency: CryptoCurrency) {
         currency_header.setCurrentlySelectedCurrency(cryptoCurrency)
-        amountContainer.currencyCrypto.text = cryptoCurrency.symbol
+        amountContainer.currencyCrypto.text = cryptoCurrency.displayTicker
     }
 
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
@@ -894,7 +894,7 @@ class SendFragment : HomeScreenMvpFragment<SendView, SendPresenter<SendView>>(),
             visible()
             text = message
         }
-        analytics.logEvent(SendAnalytics.SendFormErrorAppears(currencyState.cryptoCurrency.symbol))
+        analytics.logEvent(SendAnalytics.SendFormErrorAppears(currencyState.cryptoCurrency))
     }
 
     override fun clearWarning() {

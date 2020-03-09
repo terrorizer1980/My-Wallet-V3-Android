@@ -74,15 +74,17 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
 
         btn_continue.setOnClickListener {
             model.process(SimpleBuyIntent.BuyButtonClicked)
-            analytics.logEvent(buyConfirmClicked(lastState?.order?.amount?.valueMinor.toString(),
-                lastState?.currency ?: ""))
+            analytics.logEvent(buyConfirmClicked(
+                lastState?.order?.amount?.valueMinor.toString(),
+                lastState?.fiatCurrency ?: "")
+            )
         }
     }
 
     override fun onCurrencyChanged(currency: CryptoCurrency) {
         model.process(SimpleBuyIntent.NewCryptoCurrencySelected(currency))
         input_amount.clearFocus()
-        analytics.logEvent(cryptoChanged(currency.symbol))
+        analytics.logEvent(cryptoChanged(currency))
     }
 
     override fun render(newState: SimpleBuyState) {
@@ -96,7 +98,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         newState.selectedCryptoCurrency?.let {
             crypto_icon.setImageResource(it.drawableResFilled())
             crypto_text.setText(it.assetName())
-            activity.setupToolbar(resources.getString(R.string.simple_buy_token, it.symbol))
+            activity.setupToolbar(resources.getString(R.string.simple_buy_token, it.displayTicker))
         }
         arrow.visibleIf { newState.availableCryptoCurrencies.size > 1 }
         if (newState.maxAmount != null && newState.minAmount != null) {

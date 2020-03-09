@@ -124,9 +124,9 @@ class TradeDetailPresenter(
         )
         val formattedString = resources.getString(
             R.string.morph_exchange_rate_formatted,
-            pair.from.symbol,
+            pair.from.displayTicker,
             formattedExchangeRate,
-            pair.to.symbol
+            pair.to.displayTicker
         )
 
         view.updateExchangeRate(formattedString)

@@ -58,7 +58,7 @@ internal class CryptoCurrencyFormatter(locale: Locale) {
     ) =
         cryptoValue.currency.decimalFormat(precision).formatWithUnit(
             cryptoValue.toBigDecimal(),
-            cryptoValue.currency.symbol
+            cryptoValue.currency.displayTicker
         )
 
     private fun CryptoCurrency.decimalFormat(displayMode: FormatPrecision) = when (this) {

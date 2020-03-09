@@ -21,7 +21,7 @@ data class SimpleBuyState(
     val id: String? = null,
     val supportedPairsAndLimits: List<SimpleBuyPair>? = null,
     val enteredAmount: String = "", // Major units
-    val currency: String = "USD",
+    val fiatCurrency: String = "USD",
     val predefinedAmounts: List<FiatValue> = emptyList(),
     val selectedCryptoCurrency: CryptoCurrency? = null,
     val orderState: OrderState = OrderState.UNINITIALISED,
@@ -51,26 +51,26 @@ data class SimpleBuyState(
 
     @delegate:Transient
     val availableCryptoCurrencies: List<CryptoCurrency> by unsafeLazy {
-        supportedPairsAndLimits?.filter { it.fiatCurrency == currency }?.map { it.cryptoCurrency }?.distinct()
+        supportedPairsAndLimits?.filter { it.fiatCurrency == fiatCurrency }?.map { it.cryptoCurrency }?.distinct()
             ?: emptyList()
     }
 
     @delegate:Transient
     private val amount: FiatValue? by unsafeLazy {
         if (enteredAmount.isEmpty() || pattern.matcher(enteredAmount).matches().not()) null else
-            FiatValue.fromMajor(currency, enteredAmount.toBigDecimal())
+            FiatValue.fromMajor(fiatCurrency, enteredAmount.toBigDecimal())
     }
 
     @delegate:Transient
     val maxAmount: FiatValue? by unsafeLazy {
-        supportedPairsAndLimits?.find { it.cryptoCurrency == selectedCryptoCurrency && it.fiatCurrency == currency }
-            ?.buyLimits?.maxLimit(currency)
+        supportedPairsAndLimits?.find { it.cryptoCurrency == selectedCryptoCurrency && it.fiatCurrency == fiatCurrency }
+            ?.buyLimits?.maxLimit(fiatCurrency)
     }
 
     @delegate:Transient
     val minAmount: FiatValue? by unsafeLazy {
-        supportedPairsAndLimits?.find { it.cryptoCurrency == selectedCryptoCurrency && it.fiatCurrency == currency }
-            ?.buyLimits?.minLimit(currency)
+        supportedPairsAndLimits?.find { it.cryptoCurrency == selectedCryptoCurrency && it.fiatCurrency == fiatCurrency }
+            ?.buyLimits?.minLimit(fiatCurrency)
     }
 
     fun maxDecimalDigitsForAmount(): Int =

@@ -9,9 +9,12 @@ interface Money {
      * Use [symbol] for user display. This can be used by APIs etc.
      */
     val currencyCode: String
+    /**
+     * User displayable symbol
+     */
+    val symbol: String
 
     val isZero: Boolean
-
     val isPositive: Boolean
 
     val maxDecimalPlaces: Int
@@ -28,11 +31,6 @@ interface Money {
     fun toZero(): Money
 
     /**
-     * User displayable symbol
-     */
-    fun symbol(locale: Locale = Locale.getDefault()): String
-
-    /**
      * String formatted in the specified locale, or the systems default locale.
      * Includes symbol, which may appear on either side of the number.
      */
@@ -47,19 +45,19 @@ interface Money {
     /**
      * The formatted string in parts in the specified locale, or the systems default locale.
      */
-    fun toStringParts(locale: Locale = Locale.getDefault()) = toStringWithoutSymbol(locale)
-        .let {
+    fun toStringParts(locale: Locale = Locale.getDefault()) =
+        toStringWithoutSymbol(locale).let {
             val index = it.lastIndexOf(LocaleDecimalFormat[locale].decimalFormatSymbols.decimalSeparator)
             if (index != -1) {
                 Parts(
-                    symbol = symbol(locale),
+                    symbol = symbol,
                     major = it.substring(0, index),
                     minor = it.substring(index + 1),
                     majorAndMinor = it
                 )
             } else {
                 Parts(
-                    symbol = symbol(locale),
+                    symbol = symbol,
                     major = it,
                     minor = "",
                     majorAndMinor = it
@@ -76,7 +74,7 @@ interface Money {
 
     fun formatOrSymbolForZero() =
         if (isZero) {
-            symbol()
+            symbol
         } else {
             toStringWithSymbol()
         }
