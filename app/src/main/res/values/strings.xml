@@ -1075,6 +1075,10 @@
     <string name="buy_btc_card_body">Buy Bitcoin with your credit card or bank account to kickstart your crypto portfolio.</string>
     <string name="buy_btc_card_cta">Buy Bitcoin</string>
 
+    <string name="buy_crypto_card_title">Buy Crypto</string>
+    <string name="buy_crypto_card_body">We can help you buy in just a few simple steps.</string>
+    <string name="buy_crypto_card_cta">Buy Crypto Now</string>
+
     <!-- Transfer Bitcoin announcement -->
     <string name="transfer_btc_card_title">Transfer In Crypto</string>
     <string name="transfer_btc_card_body">Deposit crypto in your wallet to get started. It\'s the best way to store your crypto while keeping control of your keys.</string>

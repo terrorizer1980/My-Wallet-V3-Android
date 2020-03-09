@@ -308,6 +308,10 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         override fun finishSimpleBuySignup() {
             navigator().resumeSimpleBuyKyc()
         }
+
+        override fun startSimpleBuy() {
+            navigator().startSimpleBuy()
+        }
     }
 
     override fun startWarnCancelSimpleBuyOrder() {

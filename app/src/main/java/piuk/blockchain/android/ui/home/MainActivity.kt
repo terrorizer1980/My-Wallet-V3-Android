@@ -740,6 +740,15 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         )
     }
 
+    override fun startSimpleBuy() {
+        startActivity(
+            SimpleBuyActivity.newInstance(
+                context = this,
+                launchFromDashboard = true
+            )
+        )
+    }
+
     override fun startBalanceFragment() {
         val fragment = TransactionsFragment.newInstance(true)
         replaceContentFragment(fragment)

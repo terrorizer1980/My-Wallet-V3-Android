@@ -53,6 +53,7 @@ class BuyBitcoinAnnouncementTest {
 
         whenever(walletStatus.isWalletFunded).thenReturn(false)
         whenever(buyDataManager.canBuy).thenReturn(Single.just(true))
+        whenever(simpleBuyAvailability.isAvailable()).thenReturn(Single.just(false))
 
         subject.shouldShow()
             .test()
@@ -68,6 +69,7 @@ class BuyBitcoinAnnouncementTest {
 
         whenever(walletStatus.isWalletFunded).thenReturn(true)
         whenever(buyDataManager.canBuy).thenReturn(Single.just(true))
+        whenever(simpleBuyAvailability.isAvailable()).thenReturn(Single.just(false))
 
         subject.shouldShow()
             .test()
@@ -92,17 +94,16 @@ class BuyBitcoinAnnouncementTest {
     }
 
     @Test
-    fun `should not show, when simplebuy available`() {
+    fun `should show when simplebuy available`() {
         whenever(dismissEntry.isDismissed).thenReturn(false)
         whenever(walletStatus.isWalletFunded).thenReturn(true)
 
-        whenever(walletStatus.isWalletFunded).thenReturn(false)
-        whenever(buyDataManager.canBuy).thenReturn(Single.just(true))
+        whenever(buyDataManager.canBuy).thenReturn(Single.just(false))
         whenever(simpleBuyAvailability.isAvailable()).thenReturn(Single.just(true))
 
         subject.shouldShow()
             .test()
-            .assertValue { !it }
+            .assertValue { it }
             .assertValueCount(1)
             .assertComplete()
     }
