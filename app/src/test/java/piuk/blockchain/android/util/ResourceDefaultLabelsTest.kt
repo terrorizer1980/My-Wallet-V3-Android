@@ -12,7 +12,7 @@ import piuk.blockchain.android.R
 class ResourceDefaultLabelsTest {
 
     private val resources: Resources = mock {
-        on { getString(R.string.default_wallet_name) } `it returns` "A - BTC"
+        on { getString(R.string.btc_default_wallet_name) } `it returns` "A - BTC"
         on { getString(R.string.eth_default_account_label) } `it returns` "B - ETH"
         on { getString(R.string.bch_default_account_label) } `it returns` "C - BCH"
         on { getString(R.string.xlm_default_account_label) } `it returns` "D - XLM"

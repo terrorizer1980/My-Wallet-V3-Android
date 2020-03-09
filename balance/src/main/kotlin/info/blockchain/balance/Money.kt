@@ -34,13 +34,15 @@ interface Money {
      * String formatted in the specified locale, or the systems default locale.
      * Includes symbol, which may appear on either side of the number.
      */
-    fun toStringWithSymbol(locale: Locale = Locale.getDefault()): String
+    fun toStringWithSymbol(): String
 
     /**
      * String formatted in the specified locale, or the systems default locale.
      * Without symbol.
      */
-    fun toStringWithoutSymbol(locale: Locale = Locale.getDefault()): String
+    fun toStringWithoutSymbol(): String
+
+    fun toNetworkString(): String
 
     /**
      * The formatted string in parts in the specified locale, or the systems default locale.
@@ -100,4 +102,8 @@ operator fun Money.compareTo(other: Money): Int {
         }
         else -> throw IllegalArgumentException()
     }
+}
+
+fun String.removeComma(): String {
+    return replace(",", "")
 }

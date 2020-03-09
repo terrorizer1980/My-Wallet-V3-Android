@@ -46,7 +46,6 @@ import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.toast
 import timber.log.Timber
-import java.util.Locale
 
 class ExchangeConfirmationFragment :
     BaseMvpFragment<ExchangeConfirmationView, ExchangeConfirmationPresenter>(),
@@ -59,7 +58,6 @@ class ExchangeConfirmationFragment :
 
     private var progressDialog: MaterialProgressDialog? = null
 
-    override val locale: Locale = Locale.getDefault()
     override val exchangeViewState: Observable<ExchangeViewState> by unsafeLazy {
         exchangeModel.exchangeViewStates
             .observeOn(AndroidSchedulers.mainThread())
@@ -123,9 +121,9 @@ class ExchangeConfirmationFragment :
     private fun renderUi(viewModel: ExchangeConfirmationViewModel) {
         with(viewModel) {
             from_amount.setBackgroundResource(sending.currency.colorRes())
-            from_amount.text = sending.toStringWithSymbol(locale)
+            from_amount.text = sending.toStringWithSymbol()
 
-            val receivingCryptoValue = receiving.toStringWithSymbol(locale)
+            val receivingCryptoValue = receiving.toStringWithSymbol()
             to_amount.setBackgroundResource(receiving.currency.colorRes())
             if (to_amount.text.isNullOrEmpty().not() && receivingCryptoValue != to_amount.text.toString()) {
                 analytics.logEvent(SwapAnalyticsEvents.SwapExchangeReceiveChange)
@@ -133,7 +131,7 @@ class ExchangeConfirmationFragment :
             to_amount.text = receivingCryptoValue
 
             receive_amount.text = receivingCryptoValue
-            fiat_value.text = value.toStringWithSymbol(locale)
+            fiat_value.text = value.toStringWithSymbol()
             send_to_wallet.text = viewModel.toAccount.label
         }
     }

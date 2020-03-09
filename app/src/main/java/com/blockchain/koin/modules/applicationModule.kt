@@ -158,7 +158,7 @@ val applicationModule = applicationContext {
 
     factory { get<Context>().resources }
 
-    factory { Locale.getDefault() }
+//    factory { Locale.getDefault() }
 
     bean { CurrencyState(prefs = get()) }
 
@@ -215,9 +215,7 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            AssetDetailsCalculator(
-                locale = get()
-            )
+            AssetDetailsCalculator()
         }
 
         factory {

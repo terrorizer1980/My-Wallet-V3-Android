@@ -21,9 +21,11 @@ data class CryptoValue(
     override val currencyCode = currency.networkTicker
     override val symbol = currency.displayTicker
 
-    override fun toStringWithSymbol(locale: Locale) = formatWithUnit(locale)
+    override fun toStringWithSymbol() = formatWithUnit(Locale.getDefault())
 
-    override fun toStringWithoutSymbol(locale: Locale) = format(locale)
+    override fun toStringWithoutSymbol() = format(Locale.getDefault())
+
+    override fun toNetworkString(): String = format(Locale.US).removeComma()
 
     /**
      * Amount in the major value of the currency, Bitcoin/Ether for example.

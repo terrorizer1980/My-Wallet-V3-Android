@@ -53,13 +53,19 @@ data class FiatValue private constructor(
 
     val valueMinor: Long = value.movePointRight(maxDecimalPlaces).toLong()
 
-    override fun toStringWithSymbol(locale: Locale): String =
-        FiatFormat[Key(locale, currencyCode, includeSymbol = true)].format(value)
+    override fun toStringWithSymbol(): String =
+        FiatFormat[Key(Locale.getDefault(), currencyCode, includeSymbol = true)].format(value)
 
-    override fun toStringWithoutSymbol(locale: Locale): String =
-        FiatFormat[Key(locale, currencyCode, includeSymbol = false)]
+    override fun toStringWithoutSymbol(): String =
+        FiatFormat[Key(Locale.getDefault(), currencyCode, includeSymbol = false)]
             .format(value)
             .trim()
+
+    override fun toNetworkString(): String =
+        FiatFormat[Key(Locale.US, currencyCode, includeSymbol = false)]
+            .format(value)
+            .trim()
+            .removeComma()
 
     operator fun plus(other: FiatValue): FiatValue {
         if (currencyCode != other.currencyCode)

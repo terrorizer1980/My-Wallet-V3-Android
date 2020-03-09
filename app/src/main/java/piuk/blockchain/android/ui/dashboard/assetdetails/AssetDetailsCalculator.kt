@@ -19,7 +19,7 @@ import java.util.Locale
 typealias BalancePair = Pair<CryptoValue, FiatValue>
 typealias BalanceMap = Map<AssetFilter, BalancePair>
 
-class AssetDetailsCalculator(locale: Locale) {
+class AssetDetailsCalculator() {
     // input
     val token = BehaviorRelay.create<AssetTokens>()
     val timeSpan = BehaviorRelay.createDefault<TimeSpan>(TimeSpan.MONTH)
@@ -32,7 +32,7 @@ class AssetDetailsCalculator(locale: Locale) {
     val exchangeRate: Observable<String> = token.flatMapSingle {
         it.exchangeRate()
     }.map {
-        it.toStringWithSymbol(locale)
+        it.toStringWithSymbol()
     }.subscribeOn(Schedulers.io())
 
     val historicPrices: Observable<List<PriceDatum>> =

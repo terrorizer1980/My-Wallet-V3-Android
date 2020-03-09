@@ -74,7 +74,7 @@ class ExchangeConfirmationPresenterTest {
         )
         subject.initView(view)
 
-        whenever(view.locale).thenReturn(Locale.US)
+        Locale.setDefault(Locale.US)
     }
 
     @Test
