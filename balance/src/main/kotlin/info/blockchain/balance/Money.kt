@@ -45,9 +45,9 @@ interface Money {
     /**
      * The formatted string in parts in the specified locale, or the systems default locale.
      */
-    fun toStringParts(locale: Locale = Locale.getDefault()) =
-        toStringWithoutSymbol(locale).let {
-            val index = it.lastIndexOf(LocaleDecimalFormat[locale].decimalFormatSymbols.decimalSeparator)
+    fun toStringParts() =
+        toStringWithoutSymbol().let {
+            val index = it.lastIndexOf(LocaleDecimalFormat[Locale.getDefault()].decimalFormatSymbols.decimalSeparator)
             if (index != -1) {
                 Parts(
                     symbol = symbol,
@@ -80,11 +80,6 @@ interface Money {
         }
 }
 
-class ComparisonException(
-    lhsSymbol: String,
-    rhsSymbol: String
-) : ValueTypeMismatchException("compare", lhsSymbol, rhsSymbol)
-
 open class ValueTypeMismatchException(
     verb: String,
     lhsSymbol: String,
@@ -95,12 +90,12 @@ operator fun Money.compareTo(other: Money): Int {
     return when (this) {
         is FiatValue -> {
             compareTo(
-                other as? FiatValue ?: throw ComparisonException(currencyCode, other.currencyCode)
+                other as? FiatValue ?: throw ValueTypeMismatchException("compare", currencyCode, other.currencyCode)
             )
         }
         is CryptoValue -> {
             compareTo(
-                other as? CryptoValue ?: throw ComparisonException(currencyCode, other.currencyCode)
+                other as? CryptoValue ?: throw ValueTypeMismatchException("compare", currencyCode, other.currencyCode)
             )
         }
         else -> throw IllegalArgumentException()

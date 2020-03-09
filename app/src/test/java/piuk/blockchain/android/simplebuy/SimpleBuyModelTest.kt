@@ -64,7 +64,7 @@ class SimpleBuyModelTest {
         testObserver.assertValueAt(0, SimpleBuyState())
         testObserver.assertValueAt(1, SimpleBuyState(supportedPairsAndLimits = listOf(
             SimpleBuyPair("BTC-USD", BuyLimits(min = 100, max = 5024558))),
-            currency = "USD",
+            fiatCurrency = "USD",
             selectedCryptoCurrency = CryptoCurrency.BTC
         ))
     }

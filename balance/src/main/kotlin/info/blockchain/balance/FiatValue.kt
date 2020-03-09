@@ -114,12 +114,14 @@ data class FiatValue private constructor(
     }
 }
 
-private fun ensureComparable(a: String, b: String) {
-    if (a != b) throw ComparisonException(a, b)
+@Suppress("SameParameterValue")
+private fun ensureComparable(operation: String, currencyCodeA: String, currencyCodeB: String) {
+    if (currencyCodeA != currencyCodeB)
+        throw ValueTypeMismatchException(operation, currencyCodeA, currencyCodeB)
 }
 
 operator fun FiatValue.compareTo(b: FiatValue): Int {
-    ensureComparable(currencyCode, b.currencyCode)
+    ensureComparable("compare", currencyCode, b.currencyCode)
     return valueMinor.compareTo(b.valueMinor)
 }
 

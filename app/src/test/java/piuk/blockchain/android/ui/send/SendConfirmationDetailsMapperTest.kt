@@ -5,6 +5,7 @@ import com.blockchain.testutils.stroops
 import com.blockchain.testutils.usd
 import com.blockchain.transactions.SendDetails
 import info.blockchain.balance.AccountReference
+import info.blockchain.balance.CryptoCurrency
 import org.amshove.kluent.`should equal`
 import org.junit.Before
 import org.junit.Test
@@ -32,7 +33,7 @@ class SendConfirmationDetailsMapperTest {
         )
             .toPaymentConfirmationDetails()
             .apply {
-                this.cryptoUnit `should equal` "XLM"
+                this.crypto `should equal` CryptoCurrency.XLM
                 this.cryptoAmount `should equal` "100.1"
                 this.cryptoFee `should equal` "0.0000099"
                 this.cryptoTotal `should equal` "100.1000099"

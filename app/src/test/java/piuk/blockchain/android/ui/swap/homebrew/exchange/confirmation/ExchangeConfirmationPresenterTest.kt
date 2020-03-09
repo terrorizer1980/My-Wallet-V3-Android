@@ -69,7 +69,6 @@ class ExchangeConfirmationPresenterTest {
                 on { getString(any()) } `it returns` ""
                 on { getFormattedString(any(), any()) } `it returns` ""
             },
-            Locale.ENGLISH,
             analytics,
             diagnostics
         )

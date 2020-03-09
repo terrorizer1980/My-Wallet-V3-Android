@@ -8,8 +8,10 @@ class FiatValuePartsTest {
 
     @Test
     fun `extract GBP parts in UK`() {
+        Locale.setDefault(Locale.UK)
+
         1.2.gbp()
-            .toStringParts(Locale.UK).apply {
+            .toStringParts().apply {
                 symbol `should equal` "£"
                 major `should equal` "1"
                 minor `should equal` "20"
@@ -19,8 +21,10 @@ class FiatValuePartsTest {
 
     @Test
     fun `extract USD parts in US`() {
+        Locale.setDefault(Locale.US)
+
         9.89.usd()
-            .toStringParts(Locale.US).apply {
+            .toStringParts().apply {
                 symbol `should equal` "$"
                 major `should equal` "9"
                 minor `should equal` "89"
@@ -30,8 +34,10 @@ class FiatValuePartsTest {
 
     @Test
     fun `extract USD parts in UK`() {
+        Locale.setDefault(Locale.UK)
+
         5.86.usd()
-            .toStringParts(Locale.UK).apply {
+            .toStringParts().apply {
                 symbol `should equal` "USD"
                 major `should equal` "5"
                 minor `should equal` "86"
@@ -41,8 +47,10 @@ class FiatValuePartsTest {
 
     @Test
     fun `extract JPY parts in Japan`() {
+        Locale.setDefault(Locale.JAPAN)
+
         512.jpy()
-            .toStringParts(Locale.JAPAN).apply {
+            .toStringParts().apply {
                 symbol `should equal` "￥"
                 major `should equal` "512"
                 minor `should equal` ""
@@ -52,8 +60,10 @@ class FiatValuePartsTest {
 
     @Test
     fun `extract USD parts in France`() {
+        Locale.setDefault(Locale.FRANCE)
+
         1512.99.usd()
-            .toStringParts(Locale.FRANCE).apply {
+            .toStringParts().apply {
                 symbol `should equal` "USD"
                 major `should equal` "1 512"
                 minor `should equal` "99"
@@ -63,19 +73,23 @@ class FiatValuePartsTest {
 
     @Test
     fun `extract Euro parts in Italy`() {
+        Locale.setDefault(Locale.ITALY)
+
         2356.32.eur()
-            .toStringParts(Locale.FRANCE).apply {
+            .toStringParts().apply {
                 symbol `should equal` "€"
-                major `should equal` "2 356"
+                major `should equal` "2.356"
                 minor `should equal` "32"
-                majorAndMinor `should equal` "2 356,32"
+                majorAndMinor `should equal` "2.356,32"
             }
     }
 
     @Test
     fun `extract Euro parts in Germany`() {
+        Locale.setDefault(Locale.GERMANY)
+
         4567.98.eur()
-            .toStringParts(Locale.GERMANY).apply {
+            .toStringParts().apply {
                 symbol `should equal` "€"
                 major `should equal` "4.567"
                 minor `should equal` "98"
