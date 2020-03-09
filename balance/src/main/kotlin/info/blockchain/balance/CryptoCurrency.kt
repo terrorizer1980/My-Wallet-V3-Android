@@ -77,9 +77,6 @@ enum class CryptoCurrency(
     companion object {
         fun fromNetworkTicker(symbol: String?): CryptoCurrency? =
             values().firstOrNull { it.networkTicker.equals(symbol, ignoreCase = true) }
-//
-//        fun fromSymbolOrThrow(symbol: String?): CryptoCurrency =
-//            fromSymbol(symbol) ?: throw IllegalArgumentException("Bad currency symbol \"$symbol\"")
 
         fun activeCurrencies(): List<CryptoCurrency> = values().filter { !it.hasFeature(STUB_ASSET) }
 
