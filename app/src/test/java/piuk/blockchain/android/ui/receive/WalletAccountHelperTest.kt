@@ -216,6 +216,7 @@ class WalletAccountHelperTest {
 
         whenever(ethDataManager.getEthWallet()?.account).thenReturn(ethAccount)
         whenever(ethAccount.address).thenReturn("address")
+        whenever(ethAccount.label).thenReturn("")
         whenever(ethDataManager.getEthResponseModel()).thenReturn(combinedEthModel)
         whenever(combinedEthModel.getTotalBalance()).thenReturn(99.1.ether().amount)
 
