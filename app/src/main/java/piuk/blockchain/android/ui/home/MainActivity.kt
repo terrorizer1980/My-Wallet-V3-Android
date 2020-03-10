@@ -371,7 +371,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                 presenter.cryptoCurrency = CryptoCurrency.ETHER
                 startSendFragment(uri)
             }
-            .setNegativeButton(R.string.usd_pax) { _, _ ->
+            .setNegativeButton(R.string.usd_pax_1) { _, _ ->
                 presenter.cryptoCurrency = CryptoCurrency.PAX
                 startSendFragment(uri)
             }
@@ -859,7 +859,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                 analyticsEvent = IntroTourAnalyticsEvent.IntroPortfolioViewedAnalytics,
                 msgIcon = R.drawable.ic_vector_toolbar_home,
                 msgTitle = R.string.tour_step_one_title,
-                msgBody = R.string.tour_step_one_body,
+                msgBody = R.string.tour_step_one_body_1,
                 msgButton = R.string.tour_step_one_btn
             ),
             IntroTourStep(

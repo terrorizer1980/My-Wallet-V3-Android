@@ -33,5 +33,5 @@ data class FeeApi(private val feeEndpoints: FeeEndpoints) {
      * fee option.
      */
     val xlmFeeOptions: Observable<FeeOptions>
-        get() = feeEndpoints.getFeeOptions(CryptoCurrency.XLM.symbol.toLowerCase())
+        get() = feeEndpoints.getFeeOptions(CryptoCurrency.XLM.networkTicker.toLowerCase())
 }

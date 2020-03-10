@@ -29,7 +29,7 @@ class ConfirmPaymentPresenter : BasePresenter<ConfirmPaymentView>() {
             String.format(
                 AMOUNT_FORMAT,
                 paymentDetails.cryptoAmount,
-                paymentDetails.cryptoUnit,
+                paymentDetails.crypto.displayTicker,
                 paymentDetails.fiatSymbol,
                 paymentDetails.fiatAmount
             )
@@ -46,7 +46,7 @@ class ConfirmPaymentPresenter : BasePresenter<ConfirmPaymentView>() {
 
         if (paymentDetails.showCryptoTotal) {
             view.setTotals(
-                paymentDetails.cryptoTotal + " " + paymentDetails.cryptoUnit,
+                paymentDetails.cryptoTotal + " " + paymentDetails.crypto.displayTicker,
                 paymentDetails.fiatSymbol + paymentDetails.fiatTotal
             )
         } else {

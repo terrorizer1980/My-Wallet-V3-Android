@@ -58,10 +58,10 @@ class SwapTourFragment : Fragment() {
             0
         )
 
-        balance_title.text = getString(R.string.morph_balance_title, CryptoCurrency.BTC.symbol)
+        balance_title.text = getString(R.string.morph_balance_title, CryptoCurrency.BTC.displayTicker)
         balance_value.text = formatSpendableString()
 
-        base_rate.text = "1 ${CryptoCurrency.BTC.symbol} ="
+        base_rate.text = "1 ${CryptoCurrency.BTC.displayTicker} ="
         counter_rate.text = "48.32147365 ETH"
     }
 

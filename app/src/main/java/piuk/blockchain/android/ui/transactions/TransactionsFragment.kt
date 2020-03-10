@@ -316,7 +316,7 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
                 }
             }
             else -> throw IllegalArgumentException(
-                "Cryptocurrency ${crypto.symbol} not supported"
+                "Cryptocurrency ${crypto.networkTicker} not supported"
             )
         }
     }

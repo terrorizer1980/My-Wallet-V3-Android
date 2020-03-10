@@ -37,7 +37,7 @@ class SimpleBuyCancelOrderBottomSheet : SlidingModalBottomDialog() {
 
                 cancel_order_token.text = getString(
                     R.string.cancel_token_instruction,
-                    state.selectedCryptoCurrency.symbol
+                    state.selectedCryptoCurrency.displayTicker
                 )
                 cancel_order.setOnClickListenerDebounced {
                     dismiss()

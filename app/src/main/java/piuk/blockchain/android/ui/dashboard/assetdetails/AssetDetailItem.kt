@@ -18,7 +18,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
-import piuk.blockchain.android.util.currencyName
+import piuk.blockchain.android.util.assetName
 import piuk.blockchain.android.util.setCoinIcon
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -40,7 +40,7 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     ) {
         with(itemView) {
             asset_icon.setCoinIcon(item.tokens.asset)
-            asset_name.text = resources.getString(item.tokens.asset.currencyName())
+            asset_name.text = resources.getString(item.tokens.asset.assetName())
             asset_filter_label.setText(
                 when (item.assetFilter) {
                     AssetFilter.Total -> R.string.dashboard_asset_balance_total

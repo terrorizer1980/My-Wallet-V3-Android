@@ -1,5 +1,6 @@
 package com.blockchain.swap.homebrew
 
+import com.blockchain.annotations.CommonCode
 import com.blockchain.swap.nabu.service.Fix
 import com.blockchain.swap.nabu.service.Quote
 import com.blockchain.swap.nabu.api.CryptoAndFiat
@@ -7,8 +8,9 @@ import com.blockchain.swap.nabu.api.QuoteJson
 import com.blockchain.swap.nabu.api.Value
 import com.blockchain.serialization.JsonSerializable
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
-import info.blockchain.balance.withMajorValue
+import java.util.UnknownFormatConversionException
 
 internal data class QuoteMessageJson(
     val seqnum: Int,
@@ -44,8 +46,12 @@ private fun CryptoAndFiat.mapToQuoteValue(): Quote.Value {
     )
 }
 
+@CommonCode("Also exists in NabuMarketService. Make method on Value")
 private fun Value.toFiatValue() =
     FiatValue.fromMajor(symbol, value)
 
+@CommonCode("Also exists in NabuMarketService. Make method on Value")
 private fun Value.toCryptoValue() =
-    CryptoCurrency.fromSymbolOrThrow(symbol).withMajorValue(value)
+    CryptoValue.fromMajor(CryptoCurrency.fromNetworkTicker(symbol)
+        ?: throw UnknownFormatConversionException("Unknown Crypto currency: $symbol"),
+        value)

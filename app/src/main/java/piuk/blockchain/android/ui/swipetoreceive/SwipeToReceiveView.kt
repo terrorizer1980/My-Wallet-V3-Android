@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.swipetoreceive
 
 import android.graphics.Bitmap
+import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.androidcoreui.ui.base.UiState
 import piuk.blockchain.androidcoreui.ui.base.View
 
@@ -14,5 +15,5 @@ interface SwipeToReceiveView : View {
 
     fun setUiState(@UiState.UiStateDef uiState: Int)
 
-    fun displayCoinType(coinName: String)
+    fun displayCoinType(cryptoCurrency: CryptoCurrency)
 }

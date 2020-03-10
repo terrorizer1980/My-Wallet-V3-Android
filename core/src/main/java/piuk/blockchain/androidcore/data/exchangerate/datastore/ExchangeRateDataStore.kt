@@ -42,7 +42,7 @@ class ExchangeRateDataStore(
 
         val tickerData = cryptoCurrency.tickerData()
 
-        val prefsKey = "LAST_KNOWN_${cryptoCurrency.symbol}_VALUE_FOR_CURRENCY_$fiatCurrency"
+        val prefsKey = "LAST_KNOWN_${cryptoCurrency.networkTicker}_VALUE_FOR_CURRENCY_$fiatCurrency"
 
         val lastKnown = try {
             prefs.getValue(prefsKey, "0.0").toDouble()

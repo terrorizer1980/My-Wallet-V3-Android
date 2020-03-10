@@ -17,10 +17,10 @@ internal class TradeStatusResponseAdapter(private val tradeStatusResponse: Trade
         get() = CryptoValue.fromMajor(outgoingType, tradeStatusResponse.outgoingCoin ?: BigDecimal.ZERO)
 
     private val incomingType: CryptoCurrency
-        get() = CryptoCurrency.fromSymbol(tradeStatusResponse.incomingType) ?: CryptoCurrency.BTC
+        get() = CryptoCurrency.fromNetworkTicker(tradeStatusResponse.incomingType) ?: CryptoCurrency.BTC
 
     private val outgoingType: CryptoCurrency
-        get() = CryptoCurrency.fromSymbol(tradeStatusResponse.outgoingType) ?: CryptoCurrency.ETHER
+        get() = CryptoCurrency.fromNetworkTicker(tradeStatusResponse.outgoingType) ?: CryptoCurrency.ETHER
 
     override val status: MorphTrade.Status
         get() = tradeStatusResponse.status.map()

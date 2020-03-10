@@ -230,7 +230,7 @@ class SwipeToReceiveHelper(
 
     fun getXlmAccountName(): String = stringUtils.getString(R.string.xlm_default_account_label)
 
-    fun getPaxAccountName(): String = stringUtils.getString(R.string.pax_default_account_label)
+    fun getPaxAccountName(): String = stringUtils.getString(R.string.pax_default_account_label_1)
 
     private fun getIfSwipeEnabled(): Boolean =
         prefs.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)

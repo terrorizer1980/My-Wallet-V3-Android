@@ -50,13 +50,13 @@ class TradeHistoryPresenter(
     private fun MorphTrade.map(): Trade = Trade(
         id = this.quote.orderId,
         state = this.status,
-        currency = this.quote.pair.to.symbol,
-        price = this.quote.fiatValue?.toStringWithSymbol(view.locale) ?: "",
+        currency = this.quote.pair.to.displayTicker,
+        price = this.quote.fiatValue?.toStringWithSymbol() ?: "",
         pair = this.quote.pair.pairCode,
-        quantity = this.quote.withdrawalAmount.toStringWithSymbol(view.locale),
+        quantity = this.quote.withdrawalAmount.toStringWithSymbol(),
         createdAt = dateUtil.formatted(this.timestamp),
-        depositQuantity = this.quote.depositAmount.toStringWithSymbol(view.locale),
-        fee = this.quote.minerFee.toStringWithSymbol(view.locale)
+        depositQuantity = this.quote.depositAmount.toStringWithSymbol(),
+        fee = this.quote.minerFee.toStringWithSymbol()
     )
 }
 

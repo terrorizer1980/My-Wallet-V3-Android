@@ -9,11 +9,11 @@ sealed class TransactionsAnalyticsEvents(
 
     object TabItemClick : TransactionsAnalyticsEvents("transactions_tab_item_click")
     class ItemClick(currency: CryptoCurrency) :
-        TransactionsAnalyticsEvents("transactions_list_item_click", mapOf("asset" to currency.symbol))
+        TransactionsAnalyticsEvents("transactions_list_item_click", mapOf("asset" to currency.networkTicker))
 
     class ItemShare(currency: CryptoCurrency) :
-        TransactionsAnalyticsEvents("transactions_item_share_click", mapOf("asset" to currency.symbol))
+        TransactionsAnalyticsEvents("transactions_item_share_click", mapOf("asset" to currency.networkTicker))
 
-    class ViewOnWeb(currency: String) :
-        TransactionsAnalyticsEvents("transactions_item_web_view_click", mapOf("asset" to currency))
+    class ViewOnWeb(currency: CryptoCurrency) :
+        TransactionsAnalyticsEvents("transactions_item_web_view_click", mapOf("asset" to currency.networkTicker))
 }

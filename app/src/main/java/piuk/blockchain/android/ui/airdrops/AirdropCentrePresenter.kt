@@ -91,7 +91,7 @@ class AirdropCentrePresenter(
         return tx?.let {
             val fiat = FiatValue.fromMinor(tx.fiatCurrency, tx.fiatValue)
 
-            val cryptoCurrency = CryptoCurrency.fromSymbol(tx.withdrawalCurrency)
+            val cryptoCurrency = CryptoCurrency.fromNetworkTicker(tx.withdrawalCurrency)
                 ?: throw IllegalStateException("Unknown crypto currency: ${tx.withdrawalCurrency}")
 
             val crypto = CryptoValue.fromMinor(cryptoCurrency, tx.withdrawalQuantity.toBigDecimal())

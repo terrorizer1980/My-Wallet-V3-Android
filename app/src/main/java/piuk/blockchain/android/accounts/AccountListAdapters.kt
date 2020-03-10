@@ -1,16 +1,19 @@
-package com.blockchain.accounts
+package piuk.blockchain.android.accounts
 
+import com.blockchain.accounts.AccountList
 import com.blockchain.wallet.toAccountReference
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.AccountReferenceList
+import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Single
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.androidcore.R
+import piuk.blockchain.android.util.defaultWalletLabel
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 
-internal class BtcAccountListAdapter(private val payloadDataManager: PayloadDataManager) : AccountList {
+internal class BtcAccountListAdapter(private val payloadDataManager: PayloadDataManager) :
+    AccountList {
 
     override fun defaultAccount(): Single<AccountReference> =
         Single.just(defaultAccountReference())
@@ -24,7 +27,8 @@ internal class BtcAccountListAdapter(private val payloadDataManager: PayloadData
             .map { it.toAccountReference() })
 }
 
-internal class BchAccountListAdapter(private val bchPayloadDataManager: BchDataManager) : AccountList {
+internal class BchAccountListAdapter(private val bchPayloadDataManager: BchDataManager) :
+    AccountList {
 
     override fun defaultAccount(): Single<AccountReference> =
         Single.just(defaultAccountReference())
@@ -47,7 +51,7 @@ internal class PaxAccountListAdapter(private val ethDataManager: EthDataManager,
         Single.just(defaultAccountReference())
 
     override fun defaultAccountReference() =
-        AccountReference.Pax(stringUtils.getString(R.string.pax_default_account_label),
+        AccountReference.Pax(stringUtils.getString(CryptoCurrency.PAX.defaultWalletLabel()),
             ethDataManager.getEthWallet()?.account?.address
                 ?: throw Exception("No ether wallet found"), "")
 

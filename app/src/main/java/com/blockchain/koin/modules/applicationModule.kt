@@ -1,6 +1,9 @@
 package com.blockchain.koin.modules
 
 import android.content.Context
+import com.blockchain.accounts.AccountList
+import com.blockchain.accounts.AsyncAllAccountList
+import piuk.blockchain.android.accounts.BtcAccountListAdapter
 import com.blockchain.activities.StartSwap
 import com.blockchain.network.websocket.Options
 import com.blockchain.network.websocket.autoRetry
@@ -12,12 +15,18 @@ import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.PaymentAccountM
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
 import com.blockchain.ui.password.SecondPasswordHandler
+import com.blockchain.wallet.DefaultLabels
 import com.google.gson.GsonBuilder
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
+import piuk.blockchain.android.accounts.AsyncAllAccountListImplementation
+import piuk.blockchain.android.accounts.BchAccountListAdapter
+import piuk.blockchain.android.accounts.EthAccountListAdapter
+import piuk.blockchain.android.accounts.PaxAccountListAdapter
 import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
@@ -127,9 +136,9 @@ import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
 import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.android.util.ResourceDefaultLabels
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
-import java.util.Locale
 
 val applicationModule = applicationContext {
 
@@ -147,8 +156,6 @@ val applicationModule = applicationContext {
     }
 
     factory { get<Context>().resources }
-
-    factory { Locale.getDefault() }
 
     bean { CurrencyState(prefs = get()) }
 
@@ -205,9 +212,7 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            AssetDetailsCalculator(
-                locale = get()
-            )
+            AssetDetailsCalculator()
         }
 
         factory {
@@ -1041,6 +1046,23 @@ val applicationModule = applicationContext {
                 crashLogger = get()
             )
         }
+
+        factory("BTC") { BtcAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("BCH") { BchAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("ETH") { EthAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("PAX") { PaxAccountListAdapter(get(), get()) }.bind(AccountList::class)
+
+        factory {
+            AsyncAllAccountListImplementation(
+                mapOf(
+                    CryptoCurrency.BTC to get("BTC"),
+                    CryptoCurrency.ETHER to get("ETH"),
+                    CryptoCurrency.BCH to get("BCH"),
+                    CryptoCurrency.XLM to get("XLM"),
+                    CryptoCurrency.PAX to get("PAX")
+                )
+            )
+        }.bind(AsyncAllAccountList::class)
     }
 
     factory {
@@ -1083,4 +1105,6 @@ val applicationModule = applicationContext {
     bean {
         SSLVerifyUtil(rxBus = get(), connectionApi = get())
     }
+
+    factory { ResourceDefaultLabels(get()) as DefaultLabels }
 }

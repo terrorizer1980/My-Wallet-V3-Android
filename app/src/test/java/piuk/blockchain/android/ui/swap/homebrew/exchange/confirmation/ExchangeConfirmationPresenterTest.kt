@@ -69,13 +69,12 @@ class ExchangeConfirmationPresenterTest {
                 on { getString(any()) } `it returns` ""
                 on { getFormattedString(any(), any()) } `it returns` ""
             },
-            Locale.ENGLISH,
             analytics,
             diagnostics
         )
         subject.initView(view)
 
-        whenever(view.locale).thenReturn(Locale.US)
+        Locale.setDefault(Locale.US)
     }
 
     @Test

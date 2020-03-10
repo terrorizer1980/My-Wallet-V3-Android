@@ -20,13 +20,13 @@ enum class FormatPrecision {
 }
 
 internal fun CryptoValue.format(
-    locale: Locale = Locale.getDefault(),
+    locale: Locale,
     precision: FormatPrecision = FormatPrecision.Short
 ): String =
     getFormatter(locale).format(this, precision)
 
 internal fun CryptoValue.formatWithUnit(
-    locale: Locale = Locale.getDefault(),
+    locale: Locale,
     precision: FormatPrecision = FormatPrecision.Short
 ) =
     getFormatter(locale).formatWithUnit(this, precision)
@@ -58,7 +58,7 @@ internal class CryptoCurrencyFormatter(locale: Locale) {
     ) =
         cryptoValue.currency.decimalFormat(precision).formatWithUnit(
             cryptoValue.toBigDecimal(),
-            cryptoValue.currency.symbol
+            cryptoValue.currency.displayTicker
         )
 
     private fun CryptoCurrency.decimalFormat(displayMode: FormatPrecision) = when (this) {

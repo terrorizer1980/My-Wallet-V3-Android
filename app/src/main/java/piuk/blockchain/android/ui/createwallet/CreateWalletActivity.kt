@@ -230,7 +230,7 @@ class CreateWalletActivity : BaseMvpActivity<CreateWalletView, CreateWalletPrese
         }
     }
 
-    override fun getDefaultAccountName(): String = getString(R.string.default_wallet_name)
+    override fun getDefaultAccountName(): String = getString(R.string.btc_default_wallet_name)
 
     override fun enforceFlagSecure() = true
 

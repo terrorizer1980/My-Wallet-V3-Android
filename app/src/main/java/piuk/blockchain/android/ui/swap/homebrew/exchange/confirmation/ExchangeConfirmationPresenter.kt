@@ -44,14 +44,12 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.ui.customviews.ErrorBottomDialog
 import retrofit2.HttpException
 import timber.log.Timber
-import java.util.Locale
 
 class ExchangeConfirmationPresenter internal constructor(
     private val transactionExecutor: TransactionExecutorWithoutFees,
     private val tradeExecutionService: TradeExecutionService,
     private val payloadDecrypt: PayloadDecrypt,
     private val stringUtils: StringUtils,
-    private val locale: Locale,
     private val analytics: Analytics,
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val diagnostics: SwapDiagnostics
@@ -143,7 +141,7 @@ class ExchangeConfirmationPresenter internal constructor(
             .doOnEvent { _, _ -> view.dismissProgressDialog() }
             .doOnError { onExecuteTradeFailed(it) }
             .doOnSuccess {
-                view.onTradeSubmitted(it.toTrade(locale),
+                view.onTradeSubmitted(it.toTrade(),
                     showPaxAirdropBottomDialog && receivingAccount.cryptoCurrency == CryptoCurrency.PAX
                 )
                 analytics.logEvent(SwapAnalyticsEvents.SwapSummaryConfirmSuccess)
@@ -326,15 +324,15 @@ class ExchangeConfirmationPresenter internal constructor(
         }
 }
 
-private fun TradeTransaction.toTrade(locale: Locale): Trade {
+private fun TradeTransaction.toTrade(): Trade {
     return Trade(
         id = id,
         state = MorphTrade.Status.IN_PROGRESS,
-        currency = pair.to.symbol,
-        price = fiatValue.toStringWithSymbol(locale),
-        fee = fee.toStringWithSymbol(locale),
+        currency = pair.to.displayTicker,
+        price = fiatValue.toStringWithSymbol(),
+        fee = fee.toStringWithSymbol(),
         pair = pair.pairCode,
-        quantity = withdrawal.toStringWithSymbol(locale),
+        quantity = withdrawal.toStringWithSymbol(),
         createdAt = createdAt,
         depositQuantity = deposit.toStringWithSymbol()
     )

@@ -1,16 +1,16 @@
 package info.blockchain.balance
 
 enum class CryptoCurrency(
-    val symbol: String,
-    val unit: String,
-    val dp: Int,           // max decimal places
+    val networkTicker: String,
+    val displayTicker: String,
+    val dp: Int,           // max decimal places; ie the quanta of this asset
     val userDp: Int,       // user decimal places
     val requiredConfirmations: Int,
     private val featureFlags: Long
 ) {
     BTC(
-        symbol = "BTC",
-        unit = "Bitcoin",
+        networkTicker = "BTC",
+        displayTicker = "BTC",
         dp = 8,
         userDp = 8,
         requiredConfirmations = 3,
@@ -20,8 +20,8 @@ enum class CryptoCurrency(
 
     ),
     ETHER(
-        symbol = "ETH",
-        unit = "Ether",
+        networkTicker = "ETH",
+        displayTicker = "ETH",
         dp = 18,
         userDp = 8,
         requiredConfirmations = 12,
@@ -29,8 +29,8 @@ enum class CryptoCurrency(
             CryptoCurrency.PRICE_CHARTING
     ),
     BCH(
-        symbol = "BCH",
-        unit = "Bitcoin Cash",
+        networkTicker = "BCH",
+        displayTicker = "BCH",
         dp = 8,
         userDp = 8,
         requiredConfirmations = 3,
@@ -39,8 +39,8 @@ enum class CryptoCurrency(
                     CryptoCurrency.MULTI_WALLET
     ),
     XLM(
-        symbol = "XLM",
-        unit = "Stellar",
+        networkTicker = "XLM",
+        displayTicker = "XLM",
         dp = 7,
         userDp = 7,
         requiredConfirmations = 1,
@@ -48,8 +48,8 @@ enum class CryptoCurrency(
             CryptoCurrency.PRICE_CHARTING
     ),
     PAX(
-        symbol = "PAX",
-        unit = "USD PAX",
+        networkTicker = "PAX",
+        displayTicker = "USD-D",
         dp = 18,
         userDp = 8,
         requiredConfirmations = 12, // Same as ETHER
@@ -57,8 +57,8 @@ enum class CryptoCurrency(
             0L
     ),
     STX(
-        symbol = "STX",
-        unit = "Stacks",
+        networkTicker = "STX",
+        displayTicker = "STX",
         dp = 7,
         userDp = 7,
         requiredConfirmations = 12,
@@ -75,11 +75,8 @@ enum class CryptoCurrency(
         }
 
     companion object {
-        fun fromSymbol(symbol: String?): CryptoCurrency? =
-            values().firstOrNull { it.symbol.equals(symbol, ignoreCase = true) }
-
-        fun fromSymbolOrThrow(symbol: String?): CryptoCurrency =
-            fromSymbol(symbol) ?: throw IllegalArgumentException("Bad currency symbol \"$symbol\"")
+        fun fromNetworkTicker(symbol: String?): CryptoCurrency? =
+            values().firstOrNull { it.networkTicker.equals(symbol, ignoreCase = true) }
 
         fun activeCurrencies(): List<CryptoCurrency> = values().filter { !it.hasFeature(STUB_ASSET) }
 
