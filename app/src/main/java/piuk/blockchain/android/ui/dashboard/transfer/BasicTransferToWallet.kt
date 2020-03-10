@@ -99,7 +99,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
                     }
                 )
 
-            disposables += token.receiveAddress().zipWith(token.defaultAccount())
+            disposables += token.receiveAddress().zipWith(token.defaultAccountRef())
                 .observeOn(uiScheduler)
                 .subscribeBy(
                     onSuccess = { (address, account) ->

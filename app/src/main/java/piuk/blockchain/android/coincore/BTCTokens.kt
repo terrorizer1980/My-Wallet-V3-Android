@@ -17,6 +17,8 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.BtcCryptoAccount
+import piuk.blockchain.android.coincore.model.CryptoAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -39,8 +41,11 @@ class BTCTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BTC
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(payloadDataManager.defaultAccount.toAccountReference())
+
+    override fun defaultAccount(): Single<CryptoAccount> =
+        Single.just(BtcCryptoAccount(payloadDataManager.defaultAccount))
 
     override fun receiveAddress(): Single<String> =
         payloadDataManager.getNextReceiveAddress(payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex))

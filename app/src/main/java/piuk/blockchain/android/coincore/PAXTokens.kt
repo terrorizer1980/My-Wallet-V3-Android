@@ -16,6 +16,8 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.Observables
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.CryptoAccount
+import piuk.blockchain.android.coincore.model.PaxCryptoAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.R
@@ -24,6 +26,7 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
+import piuk.blockchain.androidcore.data.erc20.PaxAccount
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -41,8 +44,11 @@ class PAXTokens(
 
     override val asset = CryptoCurrency.PAX
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultPaxAccountRef())
+
+    override fun defaultAccount(): Single<CryptoAccount> =
+        Single.just(getNonCustodialPaxAccount())
 
     override fun receiveAddress(): Single<String> =
         Single.just(getDefaultPaxAccountRef().receiveAddress)
@@ -54,6 +60,15 @@ class PAXTokens(
         val label = stringUtils.getString(R.string.pax_default_account_label)
 
         return AccountReference.Pax(label, paxAddress, "")
+    }
+
+    private fun getNonCustodialPaxAccount(): CryptoAccount {
+        val paxAddress = paxAccount.ethDataManager.getEthWallet()?.account?.address
+            ?: throw Exception("No ether wallet found")
+
+        val label = stringUtils.getString(R.string.pax_default_account_label)
+
+        return PaxCryptoAccount(label, paxAddress)
     }
 
     override fun noncustodialBalance(): Single<CryptoValue> =

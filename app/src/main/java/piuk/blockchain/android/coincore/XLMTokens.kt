@@ -19,6 +19,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.CryptoAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -40,11 +41,15 @@ class XLMTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.XLM
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun defaultAccountRef(): Single<AccountReference> =
         xlmDataManager.defaultAccountReference()
 
+    override fun defaultAccount(): Single<CryptoAccount> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun receiveAddress(): Single<String> =
-        defaultAccount().map {
+        defaultAccountRef().map {
             it.receiveAddress
         }
 

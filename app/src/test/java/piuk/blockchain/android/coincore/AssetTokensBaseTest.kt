@@ -25,7 +25,7 @@ class AssetTokensBaseTest {
         override fun noncustodialBalance(): Single<CryptoValue> = Single.just(CryptoValue.ZeroBtc)
         override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> = Single.just(emptyList())
         override val asset: CryptoCurrency = CryptoCurrency.BTC
-        override fun defaultAccount(): Single<CryptoAccount> = Single.error(Exception("Not implemented"))
+        override fun defaultAccountRef(): Single<CryptoAccount> = Single.error(Exception("Not implemented"))
         override fun receiveAddress(): Single<String> = Single.error(Exception("Not implemented"))
         override fun balance(account: CryptoAccount): Single<CryptoValue> = Single.error(Exception("Not implemented"))
         override fun exchangeRate(): Single<FiatValue> = Single.error(Exception("Not implemented"))

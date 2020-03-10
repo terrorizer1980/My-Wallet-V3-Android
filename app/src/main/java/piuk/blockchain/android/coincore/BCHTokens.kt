@@ -5,6 +5,7 @@ import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.toAccountReference
+import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -18,6 +19,8 @@ import org.bitcoinj.core.Address
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.BchCryptoAccount
+import piuk.blockchain.android.coincore.model.CryptoAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -45,10 +48,16 @@ class BCHTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BCH
 
-    override fun defaultAccount(): Single<CryptoAccount> =
+    override fun defaultAccountRef(): Single<AccountReference> =
         with(bchDataManager) {
             val a = getAccountMetadataList()[getDefaultAccountPosition()]
             Single.just(a.toAccountReference())
+        }
+
+    override fun defaultAccount(): Single<CryptoAccount> =
+        with(bchDataManager) {
+            val a = getAccountMetadataList()[getDefaultAccountPosition()]
+            Single.just(BchCryptoAccount(a))
         }
 
     override fun receiveAddress(): Single<String> =
@@ -68,7 +77,7 @@ class BCHTokens(
             .andThen(Completable.defer { updater() })
             .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
 
-    override fun balance(account: CryptoAccount): Single<CryptoValue> {
+    override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = accountReference(account)
 
         return walletInitialiser()

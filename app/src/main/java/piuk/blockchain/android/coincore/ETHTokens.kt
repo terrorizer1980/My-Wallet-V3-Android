@@ -17,8 +17,10 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import piuk.blockchain.android.R
+import piuk.blockchain.android.coincore.eth.EthCryptoAccountNonCustodial
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.CryptoAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -45,8 +47,16 @@ class ETHTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.ETHER
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultEthAccountRef())
+
+    override fun defaultAccount(): Single<CryptoAccount> =
+        Single.fromCallable {
+            EthCryptoAccountNonCustodial(
+                this,
+                ethDataManager.getEthWallet()?.account ?: throw Exception("No ether wallet found")
+            )
+        }
 
     override fun receiveAddress(): Single<String> =
         Single.just(getDefaultEthAccountRef().receiveAddress)
@@ -117,7 +127,7 @@ class ETHTokens(
         getTransactions()
             .singleOrError()
 
-    private fun getTransactions(): Observable<ActivitySummaryList> =
+    internal fun getTransactions(): Observable<ActivitySummaryList> =
         ethDataManager.getLatestBlock()
             .flatMapSingle { latestBlock ->
                 ethDataManager.getEthTransactions()

@@ -12,6 +12,8 @@ import info.blockchain.wallet.stx.STXAccount
 import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.CryptoAccount
+import piuk.blockchain.android.coincore.model.StxCryptoAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -27,8 +29,11 @@ class STXTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.STX
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultStxAccountRef())
+
+    override fun defaultAccount(): Single<CryptoAccount> =
+        Single.just(getStxAccount())
 
     override fun receiveAddress(): Single<String> {
         TODO("not implemented")
@@ -39,6 +44,16 @@ class STXTokens(
             ?: throw IllegalStateException("Wallet not available")
 
         return hdWallets[0].stxAccount.toAccountReference()
+    }
+
+    private fun getStxAccount(): CryptoAccount {
+        val hdWallets = payloadManager.payload?.hdWallets
+            ?: throw IllegalStateException("Wallet not available")
+
+        return StxCryptoAccount(
+            label = "STX Account",
+            receiveAddress = hdWallets[0].stxAccount.bitcoinSerializedBase58Address
+        )
     }
 
     override fun custodialBalanceMaybe(): Maybe<CryptoValue> {

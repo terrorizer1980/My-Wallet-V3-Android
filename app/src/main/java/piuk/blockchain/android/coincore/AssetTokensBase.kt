@@ -14,6 +14,8 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.coincore.model.ActivitySummaryItem
 import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.model.CryptoAccount
+import piuk.blockchain.android.coincore.model.CryptoAccountsList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -41,19 +43,22 @@ enum class AssetAction {
 typealias AvailableActions = Set<AssetAction>
 
 // Placeholder for proper account interface. Build on AccountReference and ItemAccount
-typealias CryptoAccount = AccountReference
+//typealias CryptoAccount = AccountReference
 
 // TODO: For account fetching/default accounts look steal the code from xxxAccountListAdapter in core
 
 interface AssetTokens {
     val asset: CryptoCurrency
 
+    @Deprecated(replaceWith = ReplaceWith("defaultAccount"), message = "CoinCore update")
+    fun defaultAccountRef(): Single<AccountReference>
+
     fun defaultAccount(): Single<CryptoAccount>
-    //    fun accounts(): Single<AccountsList>
+//    fun accounts(): Single<CryptoAccountsList>
     fun receiveAddress(): Single<String>
 
     fun totalBalance(filter: AssetFilter = AssetFilter.Total): Single<CryptoValue>
-    fun balance(account: CryptoAccount): Single<CryptoValue>
+//    fun balance(account: AccountReference): Single<CryptoValue>
 
     fun exchangeRate(): Single<FiatValue>
     fun historicRate(epochWhen: Long): Single<FiatValue>
@@ -101,8 +106,8 @@ abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
             ) { noncustodial, custodial -> noncustodial + custodial }
         }
 
-    protected abstract fun custodialBalanceMaybe(): Maybe<CryptoValue>
-    protected abstract fun noncustodialBalance(): Single<CryptoValue>
+    internal abstract fun custodialBalanceMaybe(): Maybe<CryptoValue>
+    internal abstract fun noncustodialBalance(): Single<CryptoValue>
 
     private val isNonCustodialConfigured = AtomicBoolean(false)
 
