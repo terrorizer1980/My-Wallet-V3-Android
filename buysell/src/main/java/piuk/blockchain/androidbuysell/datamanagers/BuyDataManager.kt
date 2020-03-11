@@ -15,7 +15,6 @@ import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
-import timber.log.Timber
 
 class BuyDataManager(
     private val settingsDataManager: SettingsDataManager,

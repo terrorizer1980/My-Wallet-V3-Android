@@ -6,10 +6,8 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Completable
 import io.reactivex.Single
-import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import timber.log.Timber
 import java.lang.IllegalArgumentException
 import java.math.BigInteger
 

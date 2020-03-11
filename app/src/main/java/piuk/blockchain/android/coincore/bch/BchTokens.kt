@@ -90,7 +90,8 @@ internal class BchTokens(
         bchDataManager.getNextReceiveAddress(
             bchDataManager.getAccountMetadataList().indexOfFirst {
                 it.xpub == bchDataManager.getDefaultGenericMetadataAccount()!!.xpub
-            }).map {
+            }
+        ).map {
             val address = Address.fromBase58(environmentSettings.bitcoinCashNetworkParameters, it)
             address.toCashAddress()
         }.singleOrError()
@@ -120,22 +121,8 @@ internal class BchTokens(
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
         historicRates.getHistoricPriceSeries(CryptoCurrency.BCH, currencyPrefs.selectedFiatCurrency, period)
 
-    private var isWalletUninitialised = true
-
-//    private fun walletInitialiser() =
-//        if (isWalletUninitialised) {
-//            bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
-//                .doOnError { throwable ->
-//                    crashLogger.logException(throwable, "Failed to load bch wallet")
-//                }.doOnComplete {
-//                    isWalletUninitialised = false
-//                }
-//        } else {
-//            Completable.complete()
-//        }
-
     override fun onLogoutSignal(event: AuthEvent) {
-        if(event != AuthEvent.LOGIN) {
+        if (event != AuthEvent.LOGIN) {
             bchDataManager.clearBchAccountDetails()
         }
         super.onLogoutSignal(event)

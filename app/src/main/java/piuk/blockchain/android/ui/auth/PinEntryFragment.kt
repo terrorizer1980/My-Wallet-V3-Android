@@ -370,8 +370,7 @@ internal class PinEntryFragment
     }
 
     override fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
-        val a = activity
-        if(isNotFinishing()) {
+        if (isNotFinishing()) {
             ToastCustom.makeText(context, getString(message), ToastCustom.LENGTH_LONG, toastType)
         }
     }
@@ -386,7 +385,7 @@ internal class PinEntryFragment
                 setMessage(getString(messageId))
             }
 
-            if(isNotFinishing()) {
+            if (isNotFinishing()) {
                 show()
             }
         }

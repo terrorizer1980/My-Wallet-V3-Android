@@ -125,7 +125,7 @@ internal class EthTokens(
         )
 
     override fun onLogoutSignal(event: AuthEvent) {
-        if(event != AuthEvent.LOGIN) {
+        if (event != AuthEvent.LOGIN) {
             ethDataManager.clearEthAccountDetails()
         }
     }
