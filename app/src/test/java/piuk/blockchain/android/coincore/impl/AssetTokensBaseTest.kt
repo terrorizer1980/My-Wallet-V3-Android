@@ -10,6 +10,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import org.junit.Rule
@@ -26,7 +27,8 @@ class AssetTokensBaseTest {
 
     internal class TestAssetToken : AssetTokensBase(rxBus = spy()) {
         override val asset: CryptoCurrency = CryptoCurrency.BTC
-
+        override fun init(): Completable =
+            Completable.complete()
         override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
             Maybe.empty()
         override fun noncustodialBalance(): Single<CryptoValue> =

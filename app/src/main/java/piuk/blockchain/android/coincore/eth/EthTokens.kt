@@ -34,6 +34,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import timber.log.Timber
 import java.lang.IllegalArgumentException
 
 internal class EthTokens(
@@ -49,6 +50,24 @@ internal class EthTokens(
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.ETHER
+
+    override fun init(): Completable =
+        ethDataManager.initEthereumWallet(
+            stringUtils.getString(R.string.eth_default_account_label),
+            stringUtils.getString(R.string.pax_default_account_label_1)
+        ).doOnError { throwable ->
+            crashLogger.logException(throwable, "Coincore: Failed to load ETH wallet")
+        }
+        .andThen(Completable.defer { loadAccounts() })
+        .andThen(Completable.defer { initActivities() })
+        .doOnComplete { Timber.d("Coincore: Init ETH Complete") }
+        .doOnError { Timber.d("Coincore: Init ETH Failed") }
+
+    private fun loadAccounts(): Completable =
+        Completable.complete()
+
+    private fun initActivities(): Completable =
+        Completable.complete()
 
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultEthAccountRef())
@@ -76,8 +95,7 @@ internal class EthTokens(
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.ETHER)
 
     override fun noncustodialBalance(): Single<CryptoValue> =
-        etheriumWalletInitialiser()
-            .andThen(ethDataManager.fetchEthAddress())
+        ethDataManager.fetchEthAddress()
             .singleOrError()
             .map { CryptoValue(CryptoCurrency.ETHER, it.getTotalBalance()) }
 
@@ -85,8 +103,7 @@ internal class EthTokens(
         val ref = account as? AccountReference.Ethereum
             ?: throw IllegalArgumentException("Not an XLM Account Ref")
 
-        return etheriumWalletInitialiser()
-            .andThen(ethDataManager.getBalance(ref.address))
+        return ethDataManager.getBalance(ref.address)
             .map { CryptoValue.etherFromWei(it) }
     }
 
@@ -107,25 +124,10 @@ internal class EthTokens(
             period
         )
 
-    private var isWalletUninitialised = true
-
-    private fun etheriumWalletInitialiser() =
-        if (isWalletUninitialised) {
-            ethDataManager.initEthereumWallet(
-                stringUtils.getString(R.string.eth_default_account_label),
-                stringUtils.getString(R.string.pax_default_account_label_1)
-            ).doOnError { throwable ->
-                crashLogger.logException(throwable, "Failed to load ETH wallet")
-            }.doOnComplete {
-                isWalletUninitialised = false
-            }
-        } else {
-            Completable.complete()
-        }
-
     override fun onLogoutSignal(event: AuthEvent) {
-        isWalletUninitialised = true
-        ethDataManager.clearEthAccountDetails()
+        if(event != AuthEvent.LOGIN) {
+            ethDataManager.clearEthAccountDetails()
+        }
     }
 
     // Activity/transactions moved over from TransactionDataListManager.

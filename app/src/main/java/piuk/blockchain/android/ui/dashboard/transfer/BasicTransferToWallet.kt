@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.dialog_basic_transfer_to_wallet.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.AssetFilter
-import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.util.setCoinIcon
@@ -48,7 +48,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
             ?: throw IllegalArgumentException("No cryptoCurrency specified")
     }
 
-    private val assetSelect: AssetTokenLookup by inject()
+    private val assetSelect: Coincore by inject()
 
     private val token: AssetTokens by lazy {
         assetSelect[cryptoCurrency]

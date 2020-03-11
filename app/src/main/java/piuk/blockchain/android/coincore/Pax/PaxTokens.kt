@@ -34,6 +34,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import timber.log.Timber
 import java.math.BigInteger
 
 internal class PaxTokens(
@@ -46,6 +47,19 @@ internal class PaxTokens(
 ) : AssetTokensBase(rxBus) {
 
     override val asset = CryptoCurrency.PAX
+
+    override fun init(): Completable =
+        Completable.complete()
+            .andThen(Completable.defer { loadAccounts() })
+            .andThen(Completable.defer { initActivities() })
+            .doOnComplete { Timber.d("Coincore: Init PAX Complete") }
+            .doOnError { Timber.d("Coincore: Init PAX Failed") }
+
+    private fun loadAccounts(): Completable =
+        Completable.complete()
+
+    private fun initActivities(): Completable =
+        Completable.complete()
 
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultPaxAccountRef())

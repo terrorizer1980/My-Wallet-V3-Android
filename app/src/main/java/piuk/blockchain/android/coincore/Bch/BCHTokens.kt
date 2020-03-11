@@ -53,6 +53,23 @@ internal class BchTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BCH
 
+    override fun init(): Completable =
+        bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
+            .doOnError { throwable ->
+                crashLogger.logException(throwable, "Failed to load bch wallet")
+            }
+            .andThen(Completable.defer { updater() })
+            .andThen(Completable.defer { loadAccounts() })
+            .andThen(Completable.defer { initActivities() })
+            .doOnComplete { Timber.d("Coincore: Init BCH Complete") }
+            .doOnError { Timber.d("Coincore: Init BCH Failed") }
+
+    private fun loadAccounts(): Completable =
+        Completable.complete()
+
+    private fun initActivities(): Completable =
+        Completable.complete()
+
     override fun defaultAccountRef(): Single<AccountReference> =
         with(bchDataManager) {
             val a = getAccountMetadataList()[getDefaultAccountPosition()]
@@ -82,16 +99,12 @@ internal class BchTokens(
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.BCH)
 
     override fun noncustodialBalance(): Single<CryptoValue> =
-        walletInitialiser()
-            .andThen(Completable.defer { updater() })
-            .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
+        updater().toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
 
     override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = accountReference(account)
 
-        return walletInitialiser()
-            .andThen(Completable.defer { updater() })
-            .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }
+        return updater().toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }
     }
 
     override fun doUpdateBalances(): Completable =
@@ -109,21 +122,22 @@ internal class BchTokens(
 
     private var isWalletUninitialised = true
 
-    private fun walletInitialiser() =
-        if (isWalletUninitialised) {
-            bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
-                .doOnError { throwable ->
-                    crashLogger.logException(throwable, "Failed to load bch wallet")
-                }.doOnComplete {
-                    isWalletUninitialised = false
-                }
-        } else {
-            Completable.complete()
-        }
+//    private fun walletInitialiser() =
+//        if (isWalletUninitialised) {
+//            bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
+//                .doOnError { throwable ->
+//                    crashLogger.logException(throwable, "Failed to load bch wallet")
+//                }.doOnComplete {
+//                    isWalletUninitialised = false
+//                }
+//        } else {
+//            Completable.complete()
+//        }
 
     override fun onLogoutSignal(event: AuthEvent) {
-        isWalletUninitialised = true
-        bchDataManager.clearBchAccountDetails()
+        if(event != AuthEvent.LOGIN) {
+            bchDataManager.clearBchAccountDetails()
+        }
         super.onLogoutSignal(event)
     }
 

@@ -397,7 +397,8 @@ class MainPresenter internal constructor(
 
     internal fun routeToBuySell() {
         compositeDisposable += buyDataManager.isCoinifyAllowed
-            .subscribeBy(onError = { it.printStackTrace() },
+            .subscribeBy(
+                onError = { it.printStackTrace() },
                 onSuccess = { coinifyAllowed ->
                     if (coinifyAllowed)
                         view?.launchBuySell()

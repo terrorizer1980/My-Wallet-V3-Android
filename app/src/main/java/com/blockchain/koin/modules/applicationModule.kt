@@ -1030,6 +1030,7 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 settingsDataManager = get(),
                 shapeShiftDataManager = get(),
+                coincore = get(),
                 crashLogger = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),

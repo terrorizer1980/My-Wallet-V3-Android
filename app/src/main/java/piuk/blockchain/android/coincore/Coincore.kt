@@ -1,14 +1,16 @@
 package piuk.blockchain.android.coincore
 
 import info.blockchain.balance.CryptoCurrency
+import io.reactivex.Completable
 import piuk.blockchain.android.coincore.bch.BchTokens
 import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
 import piuk.blockchain.android.coincore.stx.StxTokens
 import piuk.blockchain.android.coincore.xlm.XlmTokens
+import timber.log.Timber
 
-class AssetTokenLookup internal constructor(
+class Coincore internal constructor(
     private val btcTokens: BtcTokens,
     private val bchTokens: BchTokens,
     private val ethTokens: EthTokens,
@@ -26,5 +28,17 @@ class AssetTokenLookup internal constructor(
             CryptoCurrency.STX -> stxTokens
         }
 
-    fun init() { /* TODO: When second password is removed, init the coin metadata here */ }
+    fun init(): Completable =
+        Completable.concat(
+            listOf(
+                Completable.defer { btcTokens.init() },
+                Completable.defer { bchTokens.init() },
+                Completable.defer { ethTokens.init() },
+                Completable.defer { paxTokens.init() },
+                Completable.defer { xlmTokens.init() },
+                Completable.defer { stxTokens.init() }
+            )
+        ).doOnError {
+            Timber.e("Coincore initialisation failed! $it")
+        }
 }

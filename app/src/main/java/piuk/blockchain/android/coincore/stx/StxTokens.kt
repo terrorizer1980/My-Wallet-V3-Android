@@ -9,6 +9,7 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.stx.STXAccount
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.AssetAction
@@ -21,6 +22,7 @@ import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import timber.log.Timber
 
 internal class StxTokens(
     rxBus: RxBus,
@@ -31,6 +33,19 @@ internal class StxTokens(
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.STX
+
+    override fun init(): Completable =
+        Completable.complete()
+            .andThen(Completable.defer { loadAccounts() })
+            .andThen(Completable.defer { initActivities() })
+            .doOnComplete { Timber.d("Coincore: Init STX Complete") }
+            .doOnError { Timber.d("Coincore: Init STX Failed") }
+
+    private fun loadAccounts(): Completable =
+        Completable.complete()
+
+    private fun initActivities(): Completable =
+        Completable.complete()
 
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultStxAccountRef())

@@ -15,6 +15,7 @@ import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
+import timber.log.Timber
 
 class BuyDataManager(
     private val settingsDataManager: SettingsDataManager,
@@ -27,7 +28,8 @@ class BuyDataManager(
     val canBuy: Single<Boolean>
         @Synchronized get() {
             initReplaySubjects()
-            return Singles.zip(isBuyRolledOut,
+            return Singles.zip(
+                isBuyRolledOut,
                 isCoinifyAllowed
             ) { isBuyRolledOut, allowCoinify ->
                 isBuyRolledOut && allowCoinify
@@ -52,12 +54,15 @@ class BuyDataManager(
      * @return An [Observable] wrapping a boolean value
      */
     val isCoinifyAllowed: Single<Boolean>
-        get() = Observables.zip(isInCoinifyCountry,
-            buyConditions.exchangeDataSource,
-            coinifyFeatureFlag.enabled.toObservable()
-        ) { coinifyCountry, exchangeData, coinifyEnabled ->
-            coinifyEnabled && (coinifyCountry || (exchangeData.coinify?.user != 0))
-        }.singleOrError()
+        @Synchronized get() {
+            initReplaySubjects()
+            return Observables.zip(isInCoinifyCountry,
+                buyConditions.exchangeDataSource,
+                coinifyFeatureFlag.enabled.toObservable()
+            ) { coinifyCountry, exchangeData, coinifyEnabled ->
+                coinifyEnabled && (coinifyCountry || (exchangeData.coinify?.user != 0))
+            }.singleOrError()
+        }
 
     /**
      * Checks whether or not a user is accessing their wallet from a SEPA country.

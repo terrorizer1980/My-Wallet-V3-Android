@@ -6,6 +6,7 @@ import info.blockchain.wallet.api.data.Settings
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.ui.home.models.MetadataEvent
@@ -14,12 +15,14 @@ import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
+import timber.log.Timber
 
 class Prerequisites(
     private val metadataManager: MetadataManager,
     private val environmentSettings: EnvironmentConfig,
     private val settingsDataManager: SettingsDataManager,
     private val shapeShiftDataManager: ShapeShiftDataManager,
+    private val coincore: Coincore,
     private val crashLogger: CrashLogger,
     private val dynamicFeeCache: DynamicFeeCache,
     private val feeDataManager: FeeDataManager,
@@ -28,9 +31,10 @@ class Prerequisites(
 ) {
     fun initMetadataAndRelatedPrerequisites(): Completable =
         metadataManager.attemptMetadataSetup().ignoreElements()
-            .andThen(shapeShiftCompletable())
-            .andThen(feesCompletable())
-            .andThen(simpleBuySync.performSync())
+            .andThen(Completable.defer { shapeShiftCompletable() })
+            .andThen(Completable.defer { feesCompletable() })
+            .andThen(Completable.defer { simpleBuySync.performSync() })
+            .andThen(Completable.defer { coincore.init() })
             .doOnComplete {
                 rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
             }.subscribeOn(Schedulers.io())
@@ -43,10 +47,10 @@ class Prerequisites(
 
     private fun shapeShiftCompletable(): Completable {
         return shapeShiftDataManager.initShapeshiftTradeData()
-            .onErrorComplete()
             .doOnError { throwable ->
                 crashLogger.logException(throwable, "Failed to load shape shift trades")
             }
+            .onErrorComplete()
     }
 
     private fun feesCompletable(): Completable =
@@ -63,6 +67,7 @@ class Prerequisites(
 
             )
             .subscribeOn(Schedulers.io())
+            .doOnComplete { Timber.d("Wave!!") }
 
     fun decryptAndSetupMetadata(secondPassword: String) = metadataManager.decryptAndSetupMetadata(
         environmentSettings.bitcoinNetworkParameters,

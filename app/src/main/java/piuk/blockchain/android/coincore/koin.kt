@@ -83,7 +83,7 @@ val coincoreModule = applicationContext {
         }
 
         bean {
-            AssetTokenLookup(
+            Coincore(
                 btcTokens = get(),
                 bchTokens = get(),
                 ethTokens = get(),

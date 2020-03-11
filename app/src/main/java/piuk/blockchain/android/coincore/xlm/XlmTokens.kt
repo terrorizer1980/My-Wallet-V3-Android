@@ -14,6 +14,7 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.balance.compareTo
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.prices.TimeInterval
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -32,6 +33,7 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import timber.log.Timber
 import java.lang.IllegalArgumentException
 
 internal class XlmTokens(
@@ -45,6 +47,19 @@ internal class XlmTokens(
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.XLM
+
+    override fun init(): Completable =
+        Completable.complete()
+            .andThen(Completable.defer { loadAccounts() })
+            .andThen(Completable.defer { initActivities() })
+            .doOnComplete { Timber.d("Coincore: Init XLM Complete") }
+            .doOnError { Timber.d("Coincore: Init XLM Failed") }
+
+    private fun loadAccounts(): Completable =
+        Completable.complete()
+
+    private fun initActivities(): Completable =
+        Completable.complete()
 
     override fun defaultAccountRef(): Single<AccountReference> =
         xlmDataManager.defaultAccountReference()

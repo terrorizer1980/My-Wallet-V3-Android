@@ -31,6 +31,7 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import timber.log.Timber
 
 internal class BtcTokens(
     private val payloadDataManager: PayloadDataManager,
@@ -44,6 +45,19 @@ internal class BtcTokens(
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BTC
+
+    override fun init(): Completable =
+        updater()
+            .andThen(Completable.defer { loadAccounts() })
+            .andThen(Completable.defer { initActivities() })
+            .doOnComplete { Timber.d("Coincore: Init BTC Complete") }
+            .doOnError { Timber.d("Coincore: Init BTC Failed") }
+
+    private fun loadAccounts(): Completable =
+        Completable.complete()
+
+    private fun initActivities(): Completable =
+        Completable.complete()
 
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(payloadDataManager.defaultAccount.toAccountReference())
@@ -89,7 +103,7 @@ internal class BtcTokens(
         when (itemAccount.type) {
             ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getAllTransactions()
             ItemAccount.TYPE.ALL_LEGACY -> getLegacyTransactions()
-            ItemAccount.TYPE.SINGLE_ACCOUNT -> getAccountTransactions(itemAccount.address!!)
+            ItemAccount.TYPE.SINGLE_ACCOUNT -> getAccountTransactions(itemAccount.address)
         }
 
     private fun getAllTransactions(): Single<ActivitySummaryList> =

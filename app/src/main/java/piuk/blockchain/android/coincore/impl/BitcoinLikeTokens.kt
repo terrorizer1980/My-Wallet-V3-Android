@@ -13,7 +13,8 @@ import timber.log.Timber
 import java.lang.IllegalArgumentException
 import java.math.BigInteger
 
-internal abstract class BitcoinLikeTokens(rxBus: RxBus) : AssetTokensBase(rxBus) {
+internal abstract class BitcoinLikeTokens(rxBus: RxBus)
+    : AssetTokensBase(rxBus) {
 
     private var lastBalanceRefresh: Long = 0
 
@@ -36,11 +37,6 @@ internal abstract class BitcoinLikeTokens(rxBus: RxBus) : AssetTokensBase(rxBus)
     @CallSuper
     override fun onLogoutSignal(event: AuthEvent) {
         lastBalanceRefresh = 0
-    }
-
-    @CallSuper
-    override fun onMetadataSignal(event: MetadataEvent) {
-        Timber.d(">>>>>>> METADATA LOADED: TODO -> Init coin: ${asset.networkTicker}")
     }
 
     companion object {

@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -17,7 +18,6 @@ import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
-import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -28,18 +28,15 @@ import java.util.concurrent.atomic.AtomicBoolean
 internal abstract class AssetTokensBase(rxBus: RxBus) :
     AssetTokens {
 
+    abstract fun init(): Completable
+
     val logoutSignal = rxBus.register(AuthEvent.UNPAIR::class.java)
         .observeOn(Schedulers.computation())
         .subscribeBy(onNext = ::onLogoutSignal)
 
-    val metadataSignal = rxBus.register(MetadataEvent.SETUP_COMPLETE::class.java)
-        .observeOn(Schedulers.computation())
-        .subscribeBy(onNext = ::onMetadataSignal)
-
     private val txActivityCache: MutableList<ActivitySummaryItem> = mutableListOf()
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
-    protected open fun onMetadataSignal(event: MetadataEvent) {}
 
     final override fun totalBalance(filter: AssetFilter): Single<CryptoValue> =
         when (filter) {

@@ -41,7 +41,9 @@ class BchDataManager(
     /**
      * Clears the currently stored BCH wallet from memory.
      */
-    fun clearBchAccountDetails() = bchDataStore.clearData()
+    fun clearBchAccountDetails() {
+        bchDataStore.clearData()
+    }
 
     /**
      * Fetches EthereumWallet stored in metadata. If metadata entry doesn't exists it will be created.

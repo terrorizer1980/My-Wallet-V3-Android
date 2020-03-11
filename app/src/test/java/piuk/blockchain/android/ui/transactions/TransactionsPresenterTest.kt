@@ -16,7 +16,7 @@ import org.amshove.kluent.itReturns
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.coincore.impl.TransactionNoteUpdater
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -39,7 +39,7 @@ class TransactionsPresenterTest {
     private val view: TransactionsView = mock()
 
     private val exchangeRateDataManager: ExchangeRateDataManager = mock()
-    private val assetSelect: AssetTokenLookup = mock()
+    private val assetSelect: Coincore = mock()
     private val assetTokens: AssetTokens = mock()
 
     private val ethDataManager: EthDataManager = mock()
