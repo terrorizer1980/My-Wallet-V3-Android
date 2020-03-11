@@ -42,7 +42,7 @@ class LiveCustodialWalletManager(
             nabuService.getSimpleBuyQuote(
                 sessionToken = it,
                 action = action,
-                currencyPair = "${crypto.symbol}-${amount.currencyCode}",
+                currencyPair = "${crypto.networkTicker}-${amount.currencyCode}",
                 amount = amount.valueMinor.toString()
             )
         }.map { quoteResponse ->
@@ -58,13 +58,13 @@ class LiveCustodialWalletManager(
             nabuService.createOrder(
                 it,
                 CustodialWalletOrder(
-                    pair = "${cryptoCurrency.symbol}-${amount.currencyCode}",
+                    pair = "${cryptoCurrency.networkTicker}-${amount.currencyCode}",
                     action = action,
                     input = OrderInput(
                         amount.currencyCode, amount.valueMinor.toString()
                     ),
                     output = OrderOutput(
-                        cryptoCurrency.symbol
+                        cryptoCurrency.networkTicker
                     )
                 )
             )
@@ -151,7 +151,7 @@ class LiveCustodialWalletManager(
                 it,
                 TransferRequest(
                     address = walletAddress,
-                    currency = amount.currency.symbol,
+                    currency = amount.currency.networkTicker,
                     amount = amount.amount.toString()
                 )
             )
@@ -181,7 +181,7 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
         pair = pair,
         fiat = FiatValue.fromMinor(inputCurrency, inputQuantity.toLongOrDefault(0)),
         crypto = CryptoValue.fromMinor(
-            CryptoCurrency.fromSymbol(outputCurrency)
+            CryptoCurrency.fromNetworkTicker(outputCurrency)
                 ?: throw UnknownFormatConversionException("Unknown Crypto currency: $outputCurrency"),
             outputQuantity.toBigDecimalOrNull() ?: BigDecimal.ZERO
         ),

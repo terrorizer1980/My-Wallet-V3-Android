@@ -1,6 +1,9 @@
 package com.blockchain.koin.modules
 
 import android.content.Context
+import com.blockchain.accounts.AccountList
+import com.blockchain.accounts.AsyncAllAccountList
+import piuk.blockchain.android.accounts.BtcAccountListAdapter
 import com.blockchain.activities.StartSwap
 import com.blockchain.network.websocket.Options
 import com.blockchain.network.websocket.autoRetry
@@ -12,17 +15,23 @@ import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.PaymentAccountM
 import com.blockchain.ui.CurrentContextAccess
 import com.blockchain.ui.chooser.AccountListing
 import com.blockchain.ui.password.SecondPasswordHandler
+import com.blockchain.wallet.DefaultLabels
 import com.google.gson.GsonBuilder
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
 import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.BuildConfig
+import piuk.blockchain.android.accounts.AsyncAllAccountListImplementation
+import piuk.blockchain.android.accounts.BchAccountListAdapter
+import piuk.blockchain.android.accounts.EthAccountListAdapter
+import piuk.blockchain.android.accounts.PaxAccountListAdapter
+import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.data.datamanagers.QrCodeDataManager
-import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrategy
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
@@ -107,9 +116,10 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
 import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
 import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
-import piuk.blockchain.android.ui.transactions.TransactionHelper
+import piuk.blockchain.android.ui.transactions.mapping.TransactionHelper
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
 import piuk.blockchain.android.ui.transactions.TransactionsPresenter
+import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutMapper
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
@@ -125,9 +135,10 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
 import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.android.util.ResourceDefaultLabels
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
-import java.util.Locale
 
 val applicationModule = applicationContext {
 
@@ -146,7 +157,7 @@ val applicationModule = applicationContext {
 
     factory { get<Context>().resources }
 
-    factory { Locale.getDefault() }
+    bean { CurrencyState(prefs = get()) }
 
     bean { CurrentContextAccess() }
 
@@ -201,36 +212,35 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            AssetDetailsCalculator(
-                locale = get()
-            )
+            AssetDetailsCalculator()
         }
 
         factory {
             WalletAccountHelper(
                 payloadManager = get(),
                 stringUtils = get(),
-                currencyState = get(),
                 ethDataManager = get(),
                 bchDataManager = get(),
                 xlmDataManager = get(),
                 environmentSettings = get(),
-                exchangeRates = get(),
                 paxAccount = get("pax"),
                 crashLogger = get()
             )
         }
 
-        factory { WalletAccountHelperAccountListingAdapter(get()) }
-            .bind(AccountListing::class)
+        factory {
+            WalletAccountHelperAccountListingAdapter(
+                walletAccountHelper = get(),
+                currencyState = get(),
+                exchangeRates = get()
+            )
+        }.bind(AccountListing::class)
 
         factory {
             SecondPasswordHandlerDialog(get(), get()) as SecondPasswordHandler
         }
 
         factory { KycStatusHelper(get(), get(), get(), get()) }
-
-        factory { TransactionListDataManager(get(), get(), get(), get(), get(), get(), get()) }
 
         factory {
             FingerprintHelper(
@@ -312,7 +322,6 @@ val applicationModule = applicationContext {
                 bchDataManager = get(),
                 rxBus = get(),
                 prefs = get(),
-                currencyFormatManager = get(),
                 appUtil = get(),
                 accessState = get()
             )
@@ -327,6 +336,7 @@ val applicationModule = applicationContext {
                 simpleBuyPrefs = get(),
                 custodialWalletManager = get(),
                 currencyPrefs = get(),
+                buyDataManager = get(),
                 simpleBuyFlag = get("ff_simple_buy")
             )
         }
@@ -343,7 +353,6 @@ val applicationModule = applicationContext {
                 sendDataManager = get(),
                 exchangeService = get(),
                 stringUtils = get(),
-                currencyFormatManager = get(),
                 exchangeRateDataManager = get(),
                 feeDataManager = get(),
                 dynamicFeeCache = get(),
@@ -405,8 +414,7 @@ val applicationModule = applicationContext {
                 coinifyDataManager = get(),
                 exchangeService = get(),
                 stringUtils = get(),
-                metadataManager = get(),
-                currencyFormatUtil = get()
+                metadataManager = get()
             )
         }
 
@@ -422,8 +430,7 @@ val applicationModule = applicationContext {
                 exchangeService = get(),
                 coinifyDataManager = get(),
                 metadataManager = get(),
-                stringUtils = get(),
-                currencyFormatUtil = get()
+                stringUtils = get()
             )
         }
 
@@ -469,7 +476,8 @@ val applicationModule = applicationContext {
                 fundsDataManager = get(),
                 payloadDataManager = get(),
                 stringUtils = get(),
-                currencyFormatManager = get()
+                exchangeRates = get(),
+                currencyState = get()
             )
         }
 
@@ -556,16 +564,11 @@ val applicationModule = applicationContext {
 
         factory {
             TransactionDetailPresenter(
-                transactionHelper = get(),
+                assetLookup = get(),
+                inputOutputMapper = get(),
                 prefs = get(),
-                payloadDataManager = get(),
                 stringUtils = get(),
-                transactionListDataManager = get(),
-                exchangeRateDataManager = get(),
-                bchDataManager = get(),
-                ethDataManager = get(),
-                environmentSettings = get(),
-                xlmDataManager = get()
+                exchangeRateDataManager = get()
             )
         }
 
@@ -593,15 +596,13 @@ val applicationModule = applicationContext {
                 payloadDataManager = get(),
                 currencyState = get(),
                 prefs = get(),
-                exchangeRateFactory = get(),
+                exchangeRates = get(),
                 stringUtils = get(),
                 sendDataManager = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
                 privateKeyFactory = get(),
                 environmentSettings = get(),
-                currencyFormatter = get(),
-                exchangeRates = get(),
                 coinSelectionRemoteConfig = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
@@ -624,7 +625,6 @@ val applicationModule = applicationContext {
                 privateKeyFactory = get(),
                 environmentSettings = get(),
                 bchDataManager = get(),
-                currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
@@ -645,15 +645,14 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
-                currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                currencyPrefs = get(),
                 nabuToken = get(),
                 nabuDataManager = get(),
                 pitLinking = get(),
-                analytics = get()
+                analytics = get(),
+                prefs = get()
             )
         }
 
@@ -671,12 +670,13 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 walletOptionsDataManager = get(),
                 xlmTransactionSender = get(),
-                fiatExchangeRates = get(),
+                exchangeRates = get(),
                 sendFundsResultLocalizer = get(),
                 nabuDataManager = get(),
                 nabuToken = get(),
                 pitLinking = get(),
-                analytics = get()
+                analytics = get(),
+                prefs = get()
             )
         }
 
@@ -689,15 +689,14 @@ val applicationModule = applicationContext {
                 stringUtils = get(),
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
-                currencyFormatter = get(),
                 exchangeRates = get(),
                 environmentConfig = get(),
                 currencyState = get(),
-                currencyPrefs = get(),
                 nabuToken = get(),
                 nabuDataManager = get(),
                 pitLinking = get(),
-                analytics = get()
+                analytics = get(),
+                prefs = get()
             )
         }
 
@@ -745,17 +744,17 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 currencyState = get(),
                 analytics = get(),
-                currencyFormatManager = get(),
+                exchangeRates = get(),
                 coinsWebSocketStrategy = get()
             )
         }
 
         factory {
             TransferFundsDataManager(
-                /* payloadDataManager */ get(),
-                /* sendDataManager */ get(),
-                /* dynamicFeeCache */ get(),
-                /* coinSelectionRemoteConfig */ get()
+                payloadDataManager = get(),
+                sendDataManager = get(),
+                dynamicFeeCache = get(),
+                coinSelectionRemoteConfig = get()
             )
         }
 
@@ -828,25 +827,29 @@ val applicationModule = applicationContext {
             )
         }
 
+        bean {
+            TransactionNoteUpdater(
+                exchangeService = get(),
+                shapeShiftDataManager = get(),
+                coinifyDataManager = get(),
+                stringUtils = get()
+            )
+        }
+
         factory {
             TransactionsPresenter(
                 exchangeRateDataManager = get(),
-                transactionListDataManager = get(),
+                assetSelect = get(),
+                transactionNotes = get(),
                 ethDataManager = get(),
                 paxAccount = get("pax"),
                 payloadDataManager = get(),
                 buyDataManager = get(),
-                stringUtils = get(),
-                prefs = get(),
                 rxBus = get(),
                 currencyState = get(),
-                shapeShiftDataManager = get(),
                 bchDataManager = get(),
                 walletAccountHelper = get(),
-                environmentSettings = get(),
-                exchangeService = get(),
-                coinifyDataManager = get(),
-                fiatExchangeRates = get()
+                environmentSettings = get()
             )
         }
 
@@ -865,11 +868,28 @@ val applicationModule = applicationContext {
                 xlmDataManager = get(),
                 environmentSettings = get(),
                 currencyState = get(),
-                fiatExchangeRates = get()
+                exchangeRates = get()
             )
         }
 
-        factory { TransactionHelper(get(), get()) }
+        factory {
+            TransactionInOutMapper(
+                transactionHelper = get(),
+                payloadDataManager = get(),
+                stringUtils = get(),
+                ethDataManager = get(),
+                bchDataManager = get(),
+                xlmDataManager = get(),
+                environmentSettings = get()
+            )
+        }
+
+        factory {
+            TransactionHelper(
+                payloadDataManager = get(),
+                bchDataManager = get()
+            )
+        }
 
         factory {
             SettingsPresenter(
@@ -885,7 +905,6 @@ val applicationModule = applicationContext {
                 /* swipeToReceiveHelper = */ get(),
                 /* notificationTokenManager = */ get(),
                 /* exchangeRateDataManager = */ get(),
-                /* currencyFormatManager = */ get(),
                 /* kycStatusHelper = */ get(),
                 /* pitLinking = */ get(),
                 /* analytics = */ get(),
@@ -966,7 +985,7 @@ val applicationModule = applicationContext {
                 dynamicFeeCache = get(),
                 environmentSettings = get(),
                 analytics = get(),
-                currencyFormatManager = get(),
+                exchangeRates = get(),
                 coinSelectionRemoteConfig = get()
             )
         }
@@ -1026,6 +1045,23 @@ val applicationModule = applicationContext {
                 crashLogger = get()
             )
         }
+
+        factory("BTC") { BtcAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("BCH") { BchAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("ETH") { EthAccountListAdapter(get()) }.bind(AccountList::class)
+        factory("PAX") { PaxAccountListAdapter(get(), get()) }.bind(AccountList::class)
+
+        factory {
+            AsyncAllAccountListImplementation(
+                mapOf(
+                    CryptoCurrency.BTC to get("BTC"),
+                    CryptoCurrency.ETHER to get("ETH"),
+                    CryptoCurrency.BCH to get("BCH"),
+                    CryptoCurrency.XLM to get("XLM"),
+                    CryptoCurrency.PAX to get("PAX")
+                )
+            )
+        }.bind(AsyncAllAccountList::class)
     }
 
     factory {
@@ -1068,4 +1104,6 @@ val applicationModule = applicationContext {
     bean {
         SSLVerifyUtil(rxBus = get(), connectionApi = get())
     }
+
+    factory { ResourceDefaultLabels(get()) as DefaultLabels }
 }

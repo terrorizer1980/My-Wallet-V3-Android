@@ -6,10 +6,10 @@ import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.swap.common.trade.MorphTradeDataManager
 import com.blockchain.swap.common.trade.MorphTradeStatus
 import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.formatWithUnit
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
+import piuk.blockchain.android.util.assetName
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -104,15 +104,15 @@ class TradeDetailPresenter(
 
     // region View Updates
     private fun updateDeposit(depositAmount: CryptoValue) {
-        val label =
-            resources.getString(R.string.morph_deposit_title, depositAmount.currency.unit)
-        view.updateDeposit(label, depositAmount.formatWithUnit())
+        val assetName = resources.getString(depositAmount.currency.assetName())
+        val label = resources.getString(R.string.morph_deposit_title, assetName)
+        view.updateDeposit(label, depositAmount.toStringWithSymbol())
     }
 
     private fun updateReceive(receiveAmount: CryptoValue) {
-        val label =
-            resources.getString(R.string.morph_receive_title, receiveAmount.currency.unit)
-        view.updateReceive(label, receiveAmount.formatWithUnit())
+        val assetName = resources.getString(receiveAmount.currency.assetName())
+        val label = resources.getString(R.string.morph_receive_title, assetName)
+        view.updateReceive(label, receiveAmount.toStringWithSymbol())
     }
 
     private fun updateExchangeRate(
@@ -124,16 +124,16 @@ class TradeDetailPresenter(
         )
         val formattedString = resources.getString(
             R.string.morph_exchange_rate_formatted,
-            pair.from.symbol,
+            pair.from.displayTicker,
             formattedExchangeRate,
-            pair.to.symbol
+            pair.to.displayTicker
         )
 
         view.updateExchangeRate(formattedString)
     }
 
     private fun updateTransactionFee(transactionFee: CryptoValue) {
-        view.updateTransactionFee(transactionFee.formatWithUnit())
+        view.updateTransactionFee(transactionFee.toStringWithSymbol())
     }
 
     private fun updateOrderId(displayString: String) {

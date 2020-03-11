@@ -28,9 +28,15 @@ class Prerequisites(
 ) {
     fun initMetadataAndRelatedPrerequisites(): Completable =
         metadataManager.attemptMetadataSetup().ignoreElements()
-            .andThen(shapeShiftCompletable())
-            .andThen(feesCompletable())
-            .andThen(simpleBuySync.performSync())
+            .andThen(shapeShiftCompletable().doOnComplete {
+                println("aaaaa s")
+            })
+            .andThen(feesCompletable().doOnComplete {
+                println("aaaaa f")
+            })
+            .andThen(Completable.defer {
+                simpleBuySync.performSync()
+            })
             .doOnComplete {
                 rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
             }.subscribeOn(Schedulers.io())

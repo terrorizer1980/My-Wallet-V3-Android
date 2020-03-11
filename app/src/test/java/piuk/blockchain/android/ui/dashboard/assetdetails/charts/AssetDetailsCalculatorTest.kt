@@ -34,7 +34,7 @@ class AssetDetailsCalculatorTest {
 
     @Before
     fun setUp() {
-        calculator = AssetDetailsCalculator(locale)
+        calculator = AssetDetailsCalculator()
     }
 
     @Test

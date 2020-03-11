@@ -13,13 +13,12 @@ import com.blockchain.notifications.analytics.CustodialBalanceClicked
 import com.blockchain.notifications.analytics.CustodialBalanceSendClicked
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
-import info.blockchain.balance.formatWithUnit
 import kotlinx.android.synthetic.main.dialog_dashboard_asset_detail_item.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.AssetTokens
-import piuk.blockchain.android.util.currencyName
+import piuk.blockchain.android.util.assetName
 import piuk.blockchain.android.util.setCoinIcon
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -41,7 +40,7 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
     ) {
         with(itemView) {
             asset_icon.setCoinIcon(item.tokens.asset)
-            asset_name.text = resources.getString(item.tokens.asset.currencyName())
+            asset_name.text = resources.getString(item.tokens.asset.assetName())
             asset_filter_label.setText(
                 when (item.assetFilter) {
                     AssetFilter.Total -> R.string.dashboard_asset_balance_total
@@ -53,7 +52,7 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
 
             asset_spend_locked.goneIf { item.assetFilter == AssetFilter.Wallet }
 
-            asset_balance_crypto.text = item.crypto.formatWithUnit()
+            asset_balance_crypto.text = item.crypto.toStringWithSymbol()
             asset_balance_fiat.text = item.fiat.toStringWithSymbol()
         }
     }

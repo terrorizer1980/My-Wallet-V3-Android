@@ -11,7 +11,7 @@ import java.util.Locale
  * @param locale The current [Locale].
  * @return A formatted [String] object.
  */
-fun Date.toFormattedString(locale: Locale): String {
+fun Date.toFormattedString(locale: Locale = Locale.getDefault()): String {
     val dateFormat = SimpleDateFormat.getDateInstance(DateFormat.LONG)
     val timeFormat = SimpleDateFormat("hh:mm a", locale)
     val dateText = dateFormat.format(this)

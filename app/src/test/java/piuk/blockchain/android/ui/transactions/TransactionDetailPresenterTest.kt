@@ -1,69 +1,45 @@
 package piuk.blockchain.android.ui.transactions
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.data.TransactionHash
-import com.blockchain.sunriver.XlmDataManager
-import com.blockchain.testutils.usd
-import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
+import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
-import info.blockchain.wallet.payload.data.Wallet
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import junit.framework.Assert.assertEquals
-import org.amshove.kluent.`it returns`
-import org.amshove.kluent.`should equal`
 import org.amshove.kluent.any
 import org.amshove.kluent.mock
-import org.apache.commons.lang3.tuple.Pair
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Answers
-import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.datamanagers.TransactionListDataManager
+import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.android.coincore.AssetTokensBase
+import piuk.blockchain.android.coincore.model.TestActivitySummaryItem
+import piuk.blockchain.android.ui.transactions.mapping.TransactionDetailModel
+import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutDetails
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
-import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.data.transactions.models.BchDisplayable
-import piuk.blockchain.androidcore.data.transactions.models.BtcDisplayable
-import piuk.blockchain.androidcore.data.transactions.models.Displayable
-import piuk.blockchain.androidcore.data.transactions.models.Erc20Displayable
-import piuk.blockchain.androidcore.data.transactions.models.EthDisplayable
+import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutMapper
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import java.math.BigInteger
-import java.util.HashMap
 import java.util.Locale
 
 class TransactionDetailPresenterTest {
 
-    private lateinit var subject: TransactionDetailPresenter
-    private val transactionHelper: TransactionHelper = mock()
+    private val assetSelect: AssetTokenLookup = mock()
+    private val assetTokens: AssetTokensBase = mock()
+    private val inputOutMapper: TransactionInOutMapper = mock()
     private val prefsUtil: PersistentPrefs = mock()
-    private val payloadDataManager: PayloadDataManager = mock()
     private val stringUtils: StringUtils = mock()
-    private val transactionListDataManager: TransactionListDataManager = mock()
     private val view: TransactionDetailView = mock()
-    private val exchangeRateFactory: ExchangeRateDataManager = mock(defaultAnswer = Answers.RETURNS_DEEP_STUBS)
-    private val ethDataManager: EthDataManager = mock(defaultAnswer = Answers.RETURNS_DEEP_STUBS)
-    private val bchDataManager: BchDataManager = mock()
-    private val environmentSettings: EnvironmentConfig = mock()
-    private val xlmDataManager: XlmDataManager = mock()
+    private val exchangeRates: ExchangeRateDataManager = mock(defaultAnswer = Answers.RETURNS_DEEP_STUBS)
 
-    private val displayable1: BtcDisplayable = mock()
-    private val displayable2: BtcDisplayable = mock()
-    private val displayable3: BtcDisplayable = mock()
+    private lateinit var subject: TransactionDetailPresenter
 
     @get:Rule
     val rxSchedulers = rxInit {
@@ -74,826 +50,346 @@ class TransactionDetailPresenterTest {
     @Before
     fun setUp() {
         whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
-
         Locale.setDefault(Locale("EN", "US"))
+
+        whenever(assetSelect[any()]).thenReturn(assetTokens)
+        whenever(assetTokens.findCachedActivityItem(INVALID_TX_HASH)).thenReturn(null)
+
         subject = TransactionDetailPresenter(
-            transactionHelper,
-            prefsUtil,
-            payloadDataManager,
-            stringUtils,
-            transactionListDataManager,
-            exchangeRateFactory,
-            ethDataManager,
-            bchDataManager,
-            environmentSettings,
-            xlmDataManager
+            assetLookup = assetSelect,
+            inputOutputMapper = inputOutMapper,
+            prefs = prefsUtil,
+            stringUtils = stringUtils,
+            exchangeRateDataManager = exchangeRates
         )
+
+        setupStringUtils()
+
         subject.initView(view)
+        subject.onViewReady()
     }
 
-    @Test
-    fun onViewReadyKeyOutOfBounds() {
-        // Arrange
-        whenever(view.positionDetailLookup()).thenReturn(4)
-        whenever(view.txHashDetailLookup()).thenReturn(null)
-
-        whenever(transactionListDataManager.getTransactionList())
-            .thenReturn(listOf<Displayable>(displayable1, displayable2, displayable3))
-
-        // Act
-        subject.onViewReady()
-
-        // Assert
-        verify(view).positionDetailLookup()
-        verify(view).txHashDetailLookup()
-        verify(view).pageFinish()
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun onViewReadyIntentPositionInvalid() {
-        // Arrange
-        whenever(view.positionDetailLookup()).thenReturn(0)
-        whenever(view.txHashDetailLookup()).thenReturn(null)
-
-        // Act
-        subject.onViewReady()
-
-        // Assert
-        verify(view).positionDetailLookup()
-        verify(view).txHashDetailLookup()
-        verify(view).pageFinish()
-        verifyNoMoreInteractions(view)
+    private fun setupStringUtils() {
+        whenever(stringUtils.getString(R.string.transaction_detail_pending))
+            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
+        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_transferred))
+            .thenReturn("Value when moved: ")
+        whenever(stringUtils.getString(R.string.transaction_detail_confirmed))
+            .thenReturn("Confirmed")
+        whenever(stringUtils.getString(R.string.pax_default_account_label_1))
+            .thenReturn("My Usd pax Wallet")
+        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
+            .thenReturn("Value when sent: ")
     }
 
     @Test
     fun onViewReadyIntentHashNotFound() {
-        // Arrange
-        val txHash = "TX_HASH"
-        whenever(view.positionDetailLookup()).thenReturn(0)
-        whenever(view.txHashDetailLookup()).thenReturn(txHash)
+        //  Arrange
 
-        whenever(transactionListDataManager.getTxFromHash(txHash)).thenReturn(Single.error(Throwable()))
+        //  Act
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, INVALID_TX_HASH)
 
-        // Act
-        subject.onViewReady()
-
-        // Assert
-        verify(view).positionDetailLookup()
-        verify(view).txHashDetailLookup()
+        //  Assert
         verify(view).pageFinish()
         verifyNoMoreInteractions(view)
     }
 
     @Test
-    fun onViewReadyTransactionFoundInList() {
-        // Arrange
-        whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
-        whenever(displayable1.hash).thenReturn("txMoved_hash")
-        whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(10000L)))
+    fun `simple activity item updates ui correctly`() {
+        //  Arrange
+        val item = TestActivitySummaryItem(
+            exchangeRates = exchangeRates,
+            cryptoCurrency = CryptoCurrency.BTC,
+            direction = TransactionSummary.Direction.TRANSFERRED,
+            timeStamp = 0,
+            totalCrypto = CryptoValue.bitcoinFromMajor(10),
+            fee = Observable.just(CryptoValue.bitcoinFromSatoshis(1L)),
+            hash = VALID_TX_HASH,
+            inputsMap = mapOf("addr1" to CryptoValue.bitcoinFromSatoshis(1000L)),
+            outputsMap = mapOf("addr2" to CryptoValue.bitcoinFromSatoshis(2000L)),
+            description = null
+        )
 
-        whenever(displayable2.hash).thenReturn("")
-        whenever(displayable3.hash).thenReturn("")
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(
+                TransactionInOutDetails(
+                    inputs = listOf(TransactionDetailModel(address = "address_1")),
+                    outputs = listOf(TransactionDetailModel(address = "address_2"))
+                )
+            )
+        )
 
-        whenever(view.positionDetailLookup()).thenReturn(0)
-        whenever(view.txHashDetailLookup()).thenReturn(null)
+        whenever(exchangeRates.getHistoricPrice(any<CryptoValue>(), any(), any()))
+            .thenReturn(Single.just(FiatValue.fromMajor("USD", 10.toBigDecimal())))
 
-        val mockPayload: Wallet = mock()
-        whenever(mockPayload.txNotes).thenReturn(HashMap())
+        whenever(exchangeRates.getLastPrice(any(), any()))
+            .thenReturn(10.0)
 
-        whenever(payloadDataManager.wallet).thenReturn(mockPayload)
-        whenever(transactionListDataManager.getTransactionList())
-            .thenReturn(listOf<Displayable>(displayable1, displayable2, displayable3))
+        //  Act
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
 
-        whenever(stringUtils.getString(R.string.transaction_detail_pending))
-            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-
-        val inputs = HashMap<String, BigInteger>()
-        val outputs = HashMap<String, BigInteger>()
-        inputs["addr1"] = BigInteger.valueOf(1000L)
-        outputs["addr2"] = BigInteger.valueOf(2000L)
-        val pair = Pair.of(inputs, outputs)
-        whenever(transactionHelper.filterNonChangeAddresses(any())).thenReturn(pair)
-        whenever(payloadDataManager.addressToLabel("addr1")).thenReturn("account1")
-        whenever(payloadDataManager.addressToLabel("addr2")).thenReturn("account2")
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_transferred))
-            .thenReturn("Value when moved: ")
-
-        // Act
-        subject.onViewReady()
-
-        // Assert
-        verify(view).positionDetailLookup()
-        verify(view).txHashDetailLookup()
-
+        //  Assert
         verify(view).setStatus(
             CryptoCurrency.BTC,
             "Pending (0/3 Confirmations)",
-            "txMoved_hash"
+            VALID_TX_HASH
         )
         verify(view).setTransactionType(TransactionSummary.Direction.TRANSFERRED, false)
-        verify(view).setTransactionColour(R.color.product_grey_transferred_50)
-        verify(view).setDescription(null)
-        verify(view).setDate(any())
-        verify(view).setToAddresses(any())
-        verify(view).setFromAddress(any())
-        verify(view).setFee("0.0001 BTC")
-        verify(view).setTransactionValue(any())
-        verify(view).setTransactionValueFiat(any())
-        verify(view).onDataLoaded()
-        verify(view).setIsDoubleSpend(any())
         verify(view).updateFeeFieldVisibility(any())
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun onViewReadyTransactionFoundViaHash() {
-        // Arrange
-        whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
-        whenever(displayable1.hash).thenReturn("txMoved_hash")
-        whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(1L)))
-
-        whenever(view.positionDetailLookup()).thenReturn(-1)
-        whenever(view.txHashDetailLookup()).thenReturn("txMoved_hash")
-
-        val mockPayload: Wallet = mock()
-        whenever(mockPayload.txNotes).thenReturn(HashMap())
-        whenever(payloadDataManager.wallet).thenReturn(mockPayload)
-        whenever(transactionListDataManager.getTxFromHash("txMoved_hash"))
-            .thenReturn(Single.just(displayable1))
-        whenever(stringUtils.getString(R.string.transaction_detail_pending))
-            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-
-        val inputs = HashMap<String, BigInteger>()
-        val outputs = HashMap<String, BigInteger>()
-        inputs["addr1"] = BigInteger.valueOf(1000L)
-        outputs["addr2"] = BigInteger.valueOf(2000L)
-        val pair = Pair.of(inputs, outputs)
-        whenever(transactionHelper.filterNonChangeAddresses(any())).thenReturn(pair)
-        whenever(payloadDataManager.addressToLabel("addr1")).thenReturn("account1")
-        whenever(payloadDataManager.addressToLabel("addr2")).thenReturn("account2")
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_transferred))
-            .thenReturn("Value when moved: ")
-
-        // Act
-        subject.onViewReady()
-
-        // Assert
-        verify(view).positionDetailLookup()
-        verify(view).txHashDetailLookup()
-        verify(view).setStatus(
-            CryptoCurrency.BTC,
-            "Pending (0/3 Confirmations)",
-            "txMoved_hash"
-        )
-        verify(view).setTransactionType(TransactionSummary.Direction.TRANSFERRED, false)
         verify(view).setTransactionColour(R.color.product_grey_transferred_50)
+        verify(view).setTransactionValue(any())
         verify(view).setDescription(null)
         verify(view).setDate(any())
-        verify(view).setToAddresses(any())
-        verify(view).setFromAddress(any())
         verify(view).setFee("0.00000001 BTC")
-        verify(view).setTransactionValue(any())
-        verify(view).setTransactionValueFiat(any())
-        verify(view).onDataLoaded()
-        verify(view).setIsDoubleSpend(any())
-        verify(view).updateFeeFieldVisibility(any())
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun onViewReadyTransactionFoundViaHashEthereum() {
-        // Arrange
-        whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.SENT)
-        whenever(displayable1.hash).thenReturn("hash")
-        whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(3000000000L)))
-        val maps = HashMap<String, BigInteger>()
-        maps[""] = BigInteger.TEN
-        whenever(displayable1.inputsMap).thenReturn(maps)
-        whenever(displayable1.outputsMap).thenReturn(maps)
-
-        whenever(view.positionDetailLookup()).thenReturn(-1)
-        whenever(view.txHashDetailLookup()).thenReturn("hash")
-
-        whenever(transactionListDataManager.getTxFromHash("hash")).thenReturn(Single.just(displayable1))
-        whenever(stringUtils.getString(R.string.transaction_detail_pending))
-            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-        whenever(stringUtils.getString(R.string.eth_default_account_label))
-            .thenReturn("My Ethereum Wallet")
-
-        val inputs = HashMap<String, BigInteger>()
-        val outputs = HashMap<String, BigInteger>()
-        inputs["addr1"] = BigInteger.valueOf(1000L)
-        outputs["addr2"] = BigInteger.valueOf(2000L)
-        val pair = Pair.of(inputs, outputs)
-        whenever(transactionHelper.filterNonChangeAddresses(any())).thenReturn(pair)
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
-            .thenReturn("Value when sent: ")
-        whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(ethDataManager.getTransactionNotes("hash")).thenReturn("note")
-
-        // Act
-        subject.onViewReady()
-
-        // Assert
-        verify(view).positionDetailLookup()
-        verify(view).txHashDetailLookup()
-
-        verify(view).setStatus(CryptoCurrency.ETHER, "Pending (0/12 Confirmations)", "hash")
-        verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
-        verify(view).setTransactionColour(R.color.product_red_sent_50)
-        verify(view).setDescription(any())
-        verify(view).setDate(any())
         verify(view).setToAddresses(any())
         verify(view).setFromAddress(any())
-        verify(view).setFee(any())
-        verify(view).setTransactionValue(any())
         verify(view).setTransactionValueFiat(any())
-        verify(view).onDataLoaded()
-        verify(view).updateFeeFieldVisibility(any())
         verify(view).setIsDoubleSpend(any())
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `onViewReady transaction found via hash xlm`() {
-        // Arrange
-        whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.XLM)
-        whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.SENT)
-        whenever(displayable1.hash).thenReturn("hash")
-        whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(396684365L)))
-        val maps = HashMap<String, BigInteger>()
-        maps[""] = BigInteger.TEN
-        whenever(displayable1.inputsMap).thenReturn(maps)
-        whenever(displayable1.outputsMap).thenReturn(maps)
-
-        whenever(view.positionDetailLookup()).thenReturn(-1)
-        whenever(view.txHashDetailLookup()).thenReturn("hash")
-
-        whenever(transactionListDataManager.getTxFromHash("hash"))
-            .thenReturn(Single.just(displayable1))
-        whenever(stringUtils.getString(R.string.transaction_detail_pending))
-            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-        whenever(stringUtils.getString(R.string.xlm_default_account_label))
-            .thenReturn("My Lumens Wallet")
-        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
-            .thenReturn("Value when sent: ")
-        whenever(xlmDataManager.defaultAccount())
-            .thenReturn(Single.just(AccountReference.Xlm("My Lumens Wallet", "Account ID")))
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-
-        // Act
-        subject.onViewReady()
-
-        // Assert
-        verify(view).positionDetailLookup()
-        verify(view).txHashDetailLookup()
-        verify(view).setStatus(CryptoCurrency.XLM, "Pending (0/1 Confirmations)", "hash")
-        verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
-        verify(view).setTransactionColour(R.color.product_red_sent_50)
-        verify(view).setDescription(any())
-        verify(view).setDate(any())
-        verify(view).setToAddresses(any())
-        verify(view).setFromAddress(any())
-        verify(view, atLeastOnce()).setFee("39.6684365 XLM")
-        verify(view).hideDescriptionField()
-        verify(view).setTransactionValue(any())
-        verify(view).setTransactionValueFiat(any())
-        verify(view).updateFeeFieldVisibility(any())
         verify(view).onDataLoaded()
-        verify(view).setIsDoubleSpend(any())
+
         verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun `onViewReady transaction found via hash pax`() {
-        // Arrange
-        whenever(displayable1.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-        whenever(displayable1.direction).thenReturn(TransactionSummary.Direction.SENT)
-        whenever(displayable1.hash).thenReturn("hash")
-        whenever(displayable1.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable1.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
-        val maps = HashMap<String, BigInteger>()
-        maps[""] = BigInteger.TEN
-        whenever(displayable1.inputsMap).thenReturn(maps)
-        whenever(displayable1.outputsMap).thenReturn(maps)
-
-        whenever(view.positionDetailLookup()).thenReturn(-1)
-        whenever(view.txHashDetailLookup()).thenReturn("hash")
-
-        whenever(transactionListDataManager.getTxFromHash("hash"))
-            .thenReturn(Single.just(displayable1))
-        whenever(stringUtils.getString(R.string.transaction_detail_pending))
-            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-        whenever(stringUtils.getString(R.string.pax_default_account_label))
-            .thenReturn("My Usd pax Wallet")
-        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
-            .thenReturn("Value when sent: ")
-        whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
-
-        // Act
-        subject.onViewReady()
-        // Assert
-        verify(view).positionDetailLookup()
-        verify(view).txHashDetailLookup()
-        verify(view).setStatus(CryptoCurrency.PAX, "Pending (0/12 Confirmations)", "hash")
-        verify(view).setTransactionType(TransactionSummary.Direction.SENT, false)
-        verify(view).setTransactionColour(R.color.product_red_sent_50)
-        verify(view).setDescription(any())
-        verify(view).setDate(any())
-        verify(view).setToAddresses(any())
-        verify(view).setFromAddress(any())
-        verify(view).setFee("0.00000154 ETH")
-        verify(view).setTransactionValue(any())
-        verify(view).setTransactionValueFiat(any())
-        verify(view).updateFeeFieldVisibility(any())
-        verify(view).onDataLoaded()
-        verify(view).setIsDoubleSpend(any())
-        verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun getTransactionValueStringUsd() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(stringUtils.getString(any())).thenReturn("Value when sent: ")
-        // Act
-        val observer = subject.getTransactionValueString("USD", displayable).test()
-
-        // Assert
-        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
-        assertEquals("Value when sent: $1,000.00", observer.values()[0])
-        observer.onComplete()
-        observer.assertNoErrors()
-    }
-
-    @Test
-    fun getTransactionValueStringReceivedEth() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(stringUtils.getString(any())).thenReturn("Value when received: ")
-        // Act
-        val observer = subject.getTransactionValueString("USD", displayable).test()
-        // Assert
-        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
-        assertEquals("Value when received: $1,000.00", observer.values()[0])
-        observer.onComplete()
-        observer.assertNoErrors()
-    }
-
-    @Test
-    fun getTransactionValueStringReceivedPax() {
-        // Arrange
-        val displayable: Erc20Displayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(stringUtils.getString(any())).thenReturn("Value when received: ")
-        // Act
-        val observer = subject.getTransactionValueString("USD", displayable).test()
-        // Assert
-        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
-        assertEquals("Value when received: $1,000.00", observer.values()[0])
-        observer.onComplete()
-        observer.assertNoErrors()
-    }
-
-    @Test
-    fun getTransactionValueStringTransferred() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(stringUtils.getString(any())).thenReturn("Value when transferred: ")
-        whenever(prefsUtil.selectedFiatCurrency).thenReturn("USD")
-        // Act
-        val observer = subject.getTransactionValueString("USD", displayable).test()
-        // Assert
-        verify(exchangeRateFactory).getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any())
-        assertEquals("Value when transferred: $1,000.00", observer.values()[0])
-        observer.onComplete()
-        observer.assertNoErrors()
-    }
-
-    @Test
-    fun updateTransactionNoteBtcSuccess() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        subject.displayable = displayable
-        whenever(payloadDataManager.updateTransactionNotes(any(), any()))
-            .thenReturn(Completable.complete())
-        // Act
-        subject.updateTransactionNote("note")
-        // Assert
-        verify(payloadDataManager).updateTransactionNotes("hash", "note")
-
-        verify(view).showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
-        verify(view).setDescription("note")
-    }
-
-    @Test
-    fun updateTransactionNoteEthSuccess() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        subject.displayable = displayable
-        whenever(ethDataManager.updateTransactionNotes(any(), any()))
-            .thenReturn(Completable.complete())
-        // Act
-        subject.updateTransactionNote("note")
-        // Assert
-        verify(ethDataManager).updateTransactionNotes("hash", "note")
-
-        verify(view).showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
-        verify(view).setDescription("note")
-    }
-
-    @Test
-    fun updateTransactionNotePaxSuccess() {
-        // Arrange
-        val displayable: Erc20Displayable = mock()
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-        subject.displayable = displayable
-        whenever(ethDataManager.updateErc20TransactionNotes(any(), any()))
-            .thenReturn(Completable.complete())
-        // Act
-        subject.updateTransactionNote("note")
-        // Assert
-        verify(ethDataManager).updateErc20TransactionNotes("hash", "note")
-
-        verify(view).showToast(R.string.remote_save_ok, ToastCustom.TYPE_OK)
-        verify(view).setDescription("note")
-    }
-
-    @Test
-    fun updateTransactionNoteFailure() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        subject.displayable = displayable
-        whenever(payloadDataManager.updateTransactionNotes(any(), any()))
-            .thenReturn(Completable.error(Throwable()))
-        // Act
-        subject.updateTransactionNote("note")
-        // Assert
-        verify(payloadDataManager).updateTransactionNotes("hash", "note")
-
-        verify(view).showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun updateTransactionNoteBchSuccess() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BCH)
-        subject.displayable = displayable
-        whenever(ethDataManager.updateTransactionNotes(any(), any()))
-            .thenReturn(Completable.complete())
-        // Act
-        subject.updateTransactionNote("note")
-        // Assert
-    }
-
-    @Test
-    fun getTransactionNoteBtc() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        subject.displayable = displayable
-        whenever(payloadDataManager.getTransactionNotes("hash")).thenReturn("note")
-        // Act
-        val value = subject.transactionNote
-        // Assert
-        assertEquals("note", value)
-        verify(payloadDataManager).getTransactionNotes("hash")
-    }
-
-    @Test
-    fun getTransactionNoteEth() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        subject.displayable = displayable
-        whenever(ethDataManager.getTransactionNotes("hash")).thenReturn("note")
-        // Act
-        val value = subject.transactionNote
-        // Assert
-        assertEquals("note", value)
-        verify(ethDataManager).getTransactionNotes("hash")
-    }
-
-    @Test
-    fun getTransactionNotePax() {
-        // Arrange
-        val displayable: Erc20Displayable = mock()
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.PAX)
-        subject.displayable = displayable
-        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
-        // Act
-        val value = subject.transactionNote
-        // Assert
-        assertEquals("note", value)
-        verify(ethDataManager.getErc20TokenData(CryptoCurrency.PAX), times(2)).txNotes
-    }
-
-    @Test
-    fun getTransactionNoteBch() {
-        // Arrange
-        val displayable: BchDisplayable = mock()
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BCH)
-        subject.displayable = displayable
-        // Act
-        val value = subject.transactionNote
-        // Assert
-        assertEquals("", value)
-    }
-
-    @Test
-    fun `getTransactionHash Bch`() {
-        subject.displayable = mock<BchDisplayable> {
-            on { hash } `it returns` "hash1"
-            on { cryptoCurrency } `it returns` CryptoCurrency.BCH
-        }
-        subject.transactionHash `should equal` TransactionHash(CryptoCurrency.BCH, "hash1")
-    }
-
-    @Test
-    fun `getTransactionHash Pax`() {
-        subject.displayable = mock<Erc20Displayable> {
-            on { hash } `it returns` "hash1"
-            on { cryptoCurrency } `it returns` CryptoCurrency.PAX
-        }
-        subject.transactionHash `should equal` TransactionHash(CryptoCurrency.PAX, "hash1")
-    }
-
-    @Test
-    fun `getTransactionHash Eth`() {
-        subject.displayable = mock<EthDisplayable> {
-            on { hash } `it returns` "hash2"
-            on { cryptoCurrency } `it returns` CryptoCurrency.ETHER
-        }
-        subject.transactionHash `should equal` TransactionHash(CryptoCurrency.ETHER, "hash2")
     }
 
     @Test
     fun setTransactionStatusNoConfirmations() {
         // Arrange
-        whenever(stringUtils.getString(R.string.transaction_detail_pending))
-            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.ETHER,
+            direction = TransactionSummary.Direction.SENT,
+            confirmations = 0,
+            hash = VALID_TX_HASH
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
         // Act
-        subject.setConfirmationStatus(CryptoCurrency.ETHER, "hash", 0)
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
+
         // Assert
-        verify(view).setStatus(CryptoCurrency.ETHER, "Pending (0/12 Confirmations)", "hash")
-        verifyNoMoreInteractions(view)
+        verify(view).setStatus(CryptoCurrency.ETHER, "Pending (0/12 Confirmations)", VALID_TX_HASH)
     }
 
     @Test
     fun setTransactionStatusConfirmed() {
         // Arrange
-        whenever(stringUtils.getString(R.string.transaction_detail_confirmed)).thenReturn("Confirmed")
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.BTC,
+            direction = TransactionSummary.Direction.SENT,
+            confirmations = 3,
+            hash = VALID_TX_HASH
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
         // Act
-        subject.setConfirmationStatus(CryptoCurrency.BTC, "hash", 3)
+        subject.showDetailsForTransaction(CryptoCurrency.BTC, VALID_TX_HASH)
+
         // Assert
-        verify(view).setStatus(CryptoCurrency.BTC, "Confirmed", "hash")
-        verifyNoMoreInteractions(view)
+        verify(view).setStatus(CryptoCurrency.BTC, "Confirmed", VALID_TX_HASH)
     }
 
     @Test
     fun setTransactionColorMove() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.confirmations).thenReturn(0)
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
-        // Act
-        subject.setTransactionColor(displayable)
-        // Assert
+        //  Arrange
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.BTC,
+            direction = TransactionSummary.Direction.TRANSFERRED,
+            confirmations = 0
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
+        //  Act
+        subject.showDetailsForTransaction(CryptoCurrency.BTC, VALID_TX_HASH)
+
+        //  Assert
         verify(view).setTransactionColour(R.color.product_grey_transferred_50)
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun setTransactionColorMoveConfirmed() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.confirmations).thenReturn(3)
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.TRANSFERRED)
-        // Act
-        subject.setTransactionColor(displayable)
-        // Assert
+        //  Arrange
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.BTC,
+            direction = TransactionSummary.Direction.TRANSFERRED,
+            confirmations = 3
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
+        //  Act
+        subject.showDetailsForTransaction(CryptoCurrency.BTC, VALID_TX_HASH)
+
+        //  Assert
         verify(view).setTransactionColour(R.color.product_grey_transferred)
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun setTransactionColorSent() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.confirmations).thenReturn(2)
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
-        // Act
-        subject.setTransactionColor(displayable)
-        // Assert
+        //  Arrange
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.BTC,
+            direction = TransactionSummary.Direction.SENT,
+            confirmations = 2
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
+        //  Act
+        subject.showDetailsForTransaction(CryptoCurrency.BTC, VALID_TX_HASH)
+
+        //  Assert
         verify(view).setTransactionColour(R.color.product_red_sent_50)
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun setTransactionColorSentConfirmed() {
         // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.confirmations).thenReturn(3)
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.BTC,
+            direction = TransactionSummary.Direction.SENT,
+            confirmations = 3
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
         // Act
-        subject.setTransactionColor(displayable)
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
+
         // Assert
         verify(view).setTransactionColour(R.color.product_red_sent)
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun setTransactionColorReceived() {
         // Arrange
-        val displayable: EthDisplayable = mock()
-        whenever(displayable.confirmations).thenReturn(7)
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.ETHER,
+            direction = TransactionSummary.Direction.RECEIVED,
+            confirmations = 7
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
         // Act
-        subject.setTransactionColor(displayable)
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
+
         // Assert
         verify(view).setTransactionColour(R.color.product_green_received_50)
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun setTransactionColorReceivedConfirmed() {
-        // Arrange
-        val displayable: BtcDisplayable = mock()
-        whenever(displayable.confirmations).thenReturn(3)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.BTC)
-        // Act
-        subject.setTransactionColor(displayable)
-        // Assert
+        //  Arrange
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.BTC,
+            direction = TransactionSummary.Direction.RECEIVED,
+            confirmations = 3
+        )
+
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
+
+        //  Act
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
+
+        //  Assert
         verify(view).setTransactionColour(R.color.product_green_received)
-        verifyNoMoreInteractions(view)
     }
 
     @Test
     fun `fee should be hidden if transaction is a fee one`() {
         // Arrange
-        val displayable: EthDisplayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
-        whenever(displayable.isFeeTransaction).thenReturn(true)
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
-        val maps = HashMap<String, BigInteger>()
-        maps[""] = BigInteger.TEN
-        whenever(displayable.inputsMap).thenReturn(maps)
-        whenever(displayable.outputsMap).thenReturn(maps)
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.ETHER,
+            direction = TransactionSummary.Direction.SENT,
+            confirmations = 7,
+            isFeeTransaction = true
+        )
 
-        whenever(view.positionDetailLookup()).thenReturn(-1)
-        whenever(view.txHashDetailLookup()).thenReturn("hash")
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
 
-        whenever(transactionListDataManager.getTxFromHash("hash"))
-            .thenReturn(Single.just(displayable))
-        whenever(stringUtils.getString(R.string.transaction_detail_pending))
-            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-        whenever(stringUtils.getString(R.string.pax_default_account_label))
-            .thenReturn("My Usd pax Wallet")
-        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
-            .thenReturn("Value when sent: ")
-        whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
 
         // Act
-        subject.onViewReady()
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
 
-        // Assert
+        //  Assert
         verify(view).updateFeeFieldVisibility(false)
     }
 
     @Test
     fun `fee should be hidden if transaction is a receive one`() {
-        // Arrange
-        val displayable: EthDisplayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.RECEIVED)
-        whenever(displayable.isFeeTransaction).thenReturn(false)
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
-        val maps = HashMap<String, BigInteger>()
-        maps[""] = BigInteger.TEN
-        whenever(displayable.inputsMap).thenReturn(maps)
-        whenever(displayable.outputsMap).thenReturn(maps)
+        //  Arrange
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.ETHER,
+            direction = TransactionSummary.Direction.RECEIVED,
+            confirmations = 7
+        )
 
-        whenever(view.positionDetailLookup()).thenReturn(-1)
-        whenever(view.txHashDetailLookup()).thenReturn("hash")
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
 
-        whenever(transactionListDataManager.getTxFromHash("hash"))
-            .thenReturn(Single.just(displayable))
-        whenever(stringUtils.getString(R.string.transaction_detail_pending))
-            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-        whenever(stringUtils.getString(R.string.pax_default_account_label))
-            .thenReturn("My Usd pax Wallet")
-        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
-            .thenReturn("Value when sent: ")
-        whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
 
-        // Act
-        subject.onViewReady()
+        //  Act
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
 
-        // Assert
+        //  Assert
         verify(view).updateFeeFieldVisibility(false)
     }
 
     @Test
     fun `fee should not be hidden if transaction is a sent one`() {
-        // Arrange
-        val displayable: EthDisplayable = mock()
-        whenever(displayable.cryptoCurrency).thenReturn(CryptoCurrency.ETHER)
-        whenever(displayable.direction).thenReturn(TransactionSummary.Direction.SENT)
-        whenever(displayable.hash).thenReturn("hash")
-        whenever(displayable.total).thenReturn(BigInteger.valueOf(1_000L))
-        whenever(displayable.fee).thenReturn(Observable.just(BigInteger.valueOf(1547644353574L)))
-        val maps = HashMap<String, BigInteger>()
-        maps[""] = BigInteger.TEN
-        whenever(displayable.inputsMap).thenReturn(maps)
-        whenever(displayable.outputsMap).thenReturn(maps)
+        //  Arrange
+        val item = TestActivitySummaryItem(
+            cryptoCurrency = CryptoCurrency.ETHER,
+            direction = TransactionSummary.Direction.SENT,
+            confirmations = 7
+        )
 
-        whenever(view.positionDetailLookup()).thenReturn(-1)
-        whenever(view.txHashDetailLookup()).thenReturn("hash")
+        whenever(assetTokens.findCachedActivityItem(VALID_TX_HASH)).thenReturn(item)
 
-        whenever(transactionListDataManager.getTxFromHash("hash"))
-            .thenReturn(Single.just(displayable))
-        whenever(stringUtils.getString(R.string.transaction_detail_pending))
-            .thenReturn("Pending (%1\$s/%2\$s Confirmations)")
-        whenever(stringUtils.getString(R.string.pax_default_account_label))
-            .thenReturn("My Usd pax Wallet")
-        whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
-            .thenReturn("Value when sent: ")
-        whenever(ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account).thenReturn("")
-        whenever(exchangeRateFactory.getHistoricPrice(value = any(), fiat = any(), timeInSeconds = any()))
-            .thenReturn(Single.just(1000.usd()))
-        whenever(ethDataManager.getErc20TokenData(CryptoCurrency.PAX).txNotes["hash"]).thenReturn("note")
+        whenever(inputOutMapper.transformInputAndOutputs(item)).thenReturn(
+            Single.just(TransactionInOutDetails(emptyList(), emptyList()))
+        )
 
-        // Act
-        subject.onViewReady()
+        //  Act
+        subject.showDetailsForTransaction(CryptoCurrency.ETHER, VALID_TX_HASH)
 
-        // Assert
+        //  Assert
         verify(view).updateFeeFieldVisibility(true)
+    }
+
+    companion object {
+        private const val VALID_TX_HASH = "valid_hash"
+        private const val INVALID_TX_HASH = "nope!"
     }
 }

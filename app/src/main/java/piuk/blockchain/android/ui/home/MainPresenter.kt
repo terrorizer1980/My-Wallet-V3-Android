@@ -39,7 +39,7 @@ import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -120,6 +120,10 @@ class MainPresenter internal constructor(
             nabuDataManager.getUser(it)
         }
 
+    internal var cryptoCurrency: CryptoCurrency
+        get() = currencyState.cryptoCurrency
+        set(v) { currencyState.cryptoCurrency = v }
+
     override fun onViewAttached() {
         if (!accessState.isLoggedIn) {
             // This should never happen, but handle the scenario anyway by starting the launcher
@@ -179,7 +183,7 @@ class MainPresenter internal constructor(
 
     internal fun doTestnetCheck() {
         if (environmentSettings.environment == Environment.TESTNET) {
-            currencyState.cryptoCurrency = CryptoCurrency.BTC
+            cryptoCurrency = CryptoCurrency.BTC
             view?.showTestnetWarning()
         }
     }
@@ -389,10 +393,6 @@ class MainPresenter internal constructor(
                 .subscribeBy({
                     Timber.e(it)
                 }) { view?.showTradeCompleteMsg(it) }
-    }
-
-    internal fun setCryptoCurrency(cryptoCurrency: CryptoCurrency) {
-        currencyState.cryptoCurrency = cryptoCurrency
     }
 
     internal fun routeToBuySell() {

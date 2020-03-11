@@ -8,6 +8,7 @@ import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.`should throw`
 import org.amshove.kluent.mock
+import org.junit.Before
 import org.junit.Test
 import org.stellar.sdk.KeyPair
 import org.stellar.sdk.responses.TransactionResponse
@@ -17,6 +18,11 @@ import org.stellar.sdk.responses.operations.PaymentOperationResponse
 import java.util.Locale
 
 class HorizonOperationMappingTest {
+
+    @Before
+    fun setup() {
+        Locale.setDefault(Locale.US)
+    }
 
     @Test
     fun `map response rejects unsupported types`() {
@@ -35,7 +41,7 @@ class HorizonOperationMappingTest {
             on { to } `it returns` KeyPair.fromAccountId(myAccount)
             on { transactionHash } `it returns` "ABCD"
             on { createdAt } `it returns` "TIME"
-            on { amount } `it returns` 50.lumens().toStringWithoutSymbol(Locale.US)
+            on { amount } `it returns` 50.lumens().toStringWithoutSymbol()
         }, myAccount, givenHorizonProxy(100))
             .apply {
                 hash `should equal` "ABCD"
@@ -56,7 +62,7 @@ class HorizonOperationMappingTest {
             on { to } `it returns` KeyPair.fromAccountId(otherAccount)
             on { transactionHash } `it returns` "ABCD"
             on { createdAt } `it returns` "TIME"
-            on { amount } `it returns` 50.lumens().toStringWithoutSymbol(Locale.US)
+            on { amount } `it returns` 50.lumens().toStringWithoutSymbol()
         }, myAccount, givenHorizonProxy(100))
             .apply {
                 hash `should equal` "ABCD"
@@ -77,7 +83,7 @@ class HorizonOperationMappingTest {
             on { account } `it returns` KeyPair.fromAccountId(myAccount)
             on { transactionHash } `it returns` "ABCD"
             on { createdAt } `it returns` "TIME"
-            on { startingBalance } `it returns` 100.lumens().toStringWithoutSymbol(Locale.US)
+            on { startingBalance } `it returns` 100.lumens().toStringWithoutSymbol()
         }, myAccount, givenHorizonProxy(100))
             .apply {
                 hash `should equal` "ABCD"
@@ -98,7 +104,7 @@ class HorizonOperationMappingTest {
             on { account } `it returns` KeyPair.fromAccountId(otherAccount)
             on { transactionHash } `it returns` "ABCD"
             on { createdAt } `it returns` "TIME"
-            on { startingBalance } `it returns` 100.lumens().toStringWithoutSymbol(Locale.US)
+            on { startingBalance } `it returns` 100.lumens().toStringWithoutSymbol()
         }, myAccount, givenHorizonProxy(100))
             .apply {
                 hash `should equal` "ABCD"

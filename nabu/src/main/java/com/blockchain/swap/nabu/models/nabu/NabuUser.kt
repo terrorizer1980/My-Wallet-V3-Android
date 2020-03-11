@@ -68,6 +68,8 @@ data class NabuUser(
         return address?.countryCode ?: throw IllegalStateException("User has no country code set")
     }
 
+    fun isCoinifyTagged() = tags?.contains("COINIFY") ?: false
+
     val isMarkedForResubmission: Boolean
         get() = resubmission != null
 

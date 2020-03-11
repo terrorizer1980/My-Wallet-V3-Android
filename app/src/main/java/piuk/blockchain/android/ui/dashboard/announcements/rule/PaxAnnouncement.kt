@@ -45,8 +45,8 @@ class PaxAnnouncement(
             dismissEntry = dismissEntry,
             dismissRule = DismissRule.CardOneTime,
             titleText = R.string.stablecoin_announcement_introducing_title,
-            bodyText = R.string.stablecoin_announcement_introducing_description,
-            ctaText = R.string.stablecoin_announcement_introducing_link,
+            bodyText = R.string.stablecoin_announcement_introducing_description_1,
+            ctaText = R.string.stablecoin_announcement_introducing_link_1,
             iconImage = R.drawable.vector_pax_colored,
             buttonColor = R.color.pax,
             dismissFunction = {

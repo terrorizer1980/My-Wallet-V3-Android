@@ -1,19 +1,24 @@
 package piuk.blockchain.android.coincore
 
+import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.toAccountReference
-import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
+import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Completable
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import io.reactivex.Single
 import org.bitcoinj.core.Address
 import piuk.blockchain.android.R
+import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -40,7 +45,7 @@ class BCHTokens(
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BCH
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun defaultAccount(): Single<CryptoAccount> =
         with(bchDataManager) {
             val a = getAccountMetadataList()[getDefaultAccountPosition()]
             Single.just(a.toAccountReference())
@@ -63,7 +68,7 @@ class BCHTokens(
             .andThen(Completable.defer { updater() })
             .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
 
-    override fun balance(account: AccountReference): Single<CryptoValue> {
+    override fun balance(account: CryptoAccount): Single<CryptoValue> {
         val ref = accountReference(account)
 
         return walletInitialiser()
@@ -103,4 +108,73 @@ class BCHTokens(
         bchDataManager.clearBchAccountDetails()
         super.onLogoutSignal(event)
     }
+
+    // Activity/transactions moved over from TransactionDataListManager.
+    // TODO Requires some reworking, but that can happen later. After the code & tests are moved and working.
+    override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
+        when (itemAccount.type) {
+            ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getAllTransactions()
+            ItemAccount.TYPE.ALL_LEGACY -> getLegacyTransactions()
+            ItemAccount.TYPE.SINGLE_ACCOUNT -> getAccountTransactions(itemAccount.address!!)
+        }.singleOrError()
+
+    private fun getAllTransactions(): Observable<ActivitySummaryList> =
+        bchDataManager.getWalletTransactions(transactionFetchCount, transactionFetchOffset)
+            .mapList {
+                BchActivitySummaryItem(it, exchangeRates)
+            }
+
+    private fun getLegacyTransactions(): Observable<ActivitySummaryList> =
+        bchDataManager.getImportedAddressTransactions(transactionFetchCount, transactionFetchOffset)
+            .mapList {
+                BchActivitySummaryItem(it, exchangeRates)
+            }
+
+    private fun getAccountTransactions(address: String): Observable<List<ActivitySummaryItem>> =
+        bchDataManager.getAddressTransactions(address, transactionFetchCount, transactionFetchOffset)
+            .mapList {
+                BchActivitySummaryItem(it, exchangeRates)
+            }
+}
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+class BchActivitySummaryItem(
+    private val transactionSummary: TransactionSummary,
+    exchangeRates: ExchangeRateDataManager
+) : ActivitySummaryItem(exchangeRates) {
+
+    override val cryptoCurrency = CryptoCurrency.BCH
+    override val direction: TransactionSummary.Direction
+        get() = transactionSummary.direction
+    override val timeStamp: Long
+        get() = transactionSummary.time
+
+    override val totalCrypto: CryptoValue =
+        CryptoValue.fromMinor(CryptoCurrency.BCH, transactionSummary.total)
+
+    override val description: String? = null
+
+    override val fee: Observable<CryptoValue>
+        get() = Observable.just(CryptoValue.fromMinor(CryptoCurrency.BCH, transactionSummary.fee))
+
+    override val hash: String =
+        transactionSummary.hash
+
+    override val inputsMap: Map<String, CryptoValue>
+        get() = transactionSummary.inputsMap.mapValues { CryptoValue.fromMinor(CryptoCurrency.BCH, it.value) }
+
+    override val outputsMap: Map<String, CryptoValue>
+        get() = transactionSummary.outputsMap.mapValues { CryptoValue.fromMinor(CryptoCurrency.BCH, it.value) }
+
+    override val confirmations: Int
+        get() = transactionSummary.confirmations
+
+    override val watchOnly: Boolean
+        get() = transactionSummary.isWatchOnly
+
+    override val doubleSpend: Boolean
+        get() = transactionSummary.isDoubleSpend
+
+    override val isPending: Boolean
+        get() = transactionSummary.isPending
 }

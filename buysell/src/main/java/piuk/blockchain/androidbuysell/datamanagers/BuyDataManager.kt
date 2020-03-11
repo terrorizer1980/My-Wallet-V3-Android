@@ -24,6 +24,7 @@ class BuyDataManager(
     private val coinifyFeatureFlag: FeatureFlag,
     private val exchangeService: ExchangeService
 ) {
+
     val canBuy: Single<Boolean>
         @Synchronized get() {
             initReplaySubjects()
@@ -52,12 +53,15 @@ class BuyDataManager(
      * @return An [Observable] wrapping a boolean value
      */
     val isCoinifyAllowed: Single<Boolean>
-        get() = Observables.zip(isInCoinifyCountry,
-            buyConditions.exchangeDataSource,
-            coinifyFeatureFlag.enabled.toObservable()
-        ) { coinifyCountry, exchangeData, coinifyEnabled ->
-            coinifyEnabled && (coinifyCountry || (exchangeData.coinify?.user != 0))
-        }.singleOrError()
+        @Synchronized get() {
+            initReplaySubjects()
+            return Observables.zip(isInCoinifyCountry,
+                buyConditions.exchangeDataSource,
+                coinifyFeatureFlag.enabled.toObservable()
+            ) { coinifyCountry, exchangeData, coinifyEnabled ->
+                coinifyEnabled && (coinifyCountry || (exchangeData.coinify?.user != 0))
+            }.singleOrError()
+        }
 
     /**
      * Checks whether or not a user is accessing their wallet from a SEPA country.

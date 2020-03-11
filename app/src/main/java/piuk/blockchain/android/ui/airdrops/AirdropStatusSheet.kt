@@ -11,7 +11,6 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.blockchain.extensions.exhaustive
 import com.blockchain.ui.urllinks.STX_STACKS_LEARN_MORE
-import info.blockchain.balance.formatWithUnit
 import kotlinx.android.synthetic.main.dialog_airdrop_status.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
@@ -137,7 +136,7 @@ class AirdropStatusSheet : SlidingModalBottomDialog(), AirdropCentreView {
     private fun renderAmount(airdrop: Airdrop) {
 
         val amount = if (airdrop.amountCrypto != null) {
-            "${airdrop.amountCrypto.formatWithUnit()} (${airdrop.amountFiat?.toStringWithSymbol()})"
+            "${airdrop.amountCrypto.toStringWithSymbol()} (${airdrop.amountFiat?.toStringWithSymbol()})"
         } else {
             ""
         }

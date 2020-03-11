@@ -3,6 +3,7 @@ package piuk.blockchain.android.ui.backup.completed
 import com.blockchain.preferences.WalletStatus
 import io.reactivex.rxkotlin.plusAssign
 import android.annotation.SuppressLint
+import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import timber.log.Timber
@@ -24,10 +25,13 @@ class BackupWalletCompletedPresenter(
     @SuppressLint("CheckResult")
     internal fun checkTransferableFunds() {
         compositeDisposable += transferFundsDataManager.transferableFundTransactionListForDefaultAccount
-            .subscribe({ triple ->
-                if (triple.left.isNotEmpty()) {
-                    view.showTransferFundsPrompt()
-                }
-            }, { Timber.e(it) })
+            .subscribeBy(
+                onNext = { (pendingList, _, _) ->
+                    if (pendingList.isNotEmpty()) {
+                        view.showTransferFundsPrompt()
+                    }
+                },
+                onError = { Timber.e(it) }
+            )
     }
 }

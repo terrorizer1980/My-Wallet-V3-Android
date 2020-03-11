@@ -46,39 +46,39 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     BANK_DETAILS_CANCEL_ERROR("sb_cancel_order_error")
 }
 
-fun buyConfirmClicked(amount: String, currency: String): AnalyticsEvent = object : AnalyticsEvent {
+fun buyConfirmClicked(amount: String, fiatCurrency: String): AnalyticsEvent = object : AnalyticsEvent {
     override val event: String = "sb_buy_form_confirm_click"
     override val params: Map<String, String> = mapOf(
         "amount" to amount,
-        "currency" to currency
+        "currency" to fiatCurrency
     )
 }
 
-fun cryptoChanged(asset: String): AnalyticsEvent = object : AnalyticsEvent {
+fun cryptoChanged(cryptoCurrency: CryptoCurrency): AnalyticsEvent = object : AnalyticsEvent {
     override val event: String = "sb_buy_form_crypto_changed"
     override val params: Map<String, String> = mapOf(
-        "asset" to asset
+        "asset" to cryptoCurrency.networkTicker
     )
 }
 
-class BankDetailsViewed(currency: String) : AnalyticsEvent {
+class BankDetailsViewed(fiatCurrency: String) : AnalyticsEvent {
     override val event: String = "sb_bank_details_shown"
     override val params: Map<String, String> = mapOf(
-        "currency" to currency
+        "currency" to fiatCurrency
     )
 }
 
 class CustodialBalanceClicked(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_trading_wallet_clicked"
     override val params: Map<String, String> = mapOf(
-        "asset" to cryptoCurrency.symbol
+        "asset" to cryptoCurrency.networkTicker
     )
 }
 
 class CustodialBalanceSendClicked(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_trading_wallet_send"
     override val params: Map<String, String> = mapOf(
-        "asset" to cryptoCurrency.symbol
+        "asset" to cryptoCurrency.networkTicker
     )
 }
 
@@ -89,23 +89,23 @@ fun bankFieldName(field: String): AnalyticsEvent = object : AnalyticsEvent {
     )
 }
 
-class PendingTransactionShown(currency: String) : AnalyticsEvent {
+class PendingTransactionShown(fiatCurrency: String) : AnalyticsEvent {
     override val event: String = "sb_pending_modal_shown"
     override val params: Map<String, String> = mapOf(
-        "currency" to currency
+        "currency" to fiatCurrency
     )
 }
 
 class WithdrawScreenShown(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_withdrawal_screen_shown"
     override val params: Map<String, String> = mapOf(
-        "asset" to cryptoCurrency.symbol
+        "asset" to cryptoCurrency.networkTicker
     )
 }
 
 class WithdrawScreenClicked(cryptoCurrency: CryptoCurrency) : AnalyticsEvent {
     override val event: String = "sb_withdrawal_screen_clicked"
     override val params: Map<String, String> = mapOf(
-        "asset" to cryptoCurrency.symbol
+        "asset" to cryptoCurrency.networkTicker
     )
 }

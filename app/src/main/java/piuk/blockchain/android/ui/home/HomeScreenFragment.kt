@@ -46,6 +46,7 @@ interface HomeNavigator {
     fun gotoReceiveFor(cryptoCurrency: CryptoCurrency)
     fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency)
     fun resumeSimpleBuyKyc()
+    fun startSimpleBuy()
 }
 
 abstract class HomeScreenMvpFragment<V : MvpView, P : MvpPresenter<V>> : MvpFragment<V, P>(), HomeScreenFragment {

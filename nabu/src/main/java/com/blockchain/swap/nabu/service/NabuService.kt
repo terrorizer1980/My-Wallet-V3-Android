@@ -303,7 +303,7 @@ class NabuService(retrofit: Retrofit) {
         sessionToken: NabuSessionTokenResponse,
         cryptoCurrency: CryptoCurrency
     ) = service.getBalanceForAsset(
-        sessionToken.authHeader, cryptoCurrency.symbol
+        sessionToken.authHeader, cryptoCurrency.networkTicker
     ).flatMapMaybe {
         when (it.code()) {
             200 -> Maybe.just(it.body())

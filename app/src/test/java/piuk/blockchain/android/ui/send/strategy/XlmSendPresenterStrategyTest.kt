@@ -28,13 +28,13 @@ import com.nhaarman.mockito_kotlin.verify
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.TestScheduler
 import org.amshove.kluent.`it returns`
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should equal`
+import org.amshove.kluent.itReturns
 import org.amshove.kluent.mock
 import org.junit.Rule
 import org.junit.Test
@@ -43,9 +43,10 @@ import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.android.ui.send.SendView
 import piuk.blockchain.android.ui.send.SendConfirmationDetails
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
+import piuk.blockchain.androidcore.utils.PersistentPrefs
 import java.util.concurrent.TimeUnit
 
 class XlmSendPresenterStrategyTest {
@@ -59,9 +60,9 @@ class XlmSendPresenterStrategyTest {
         computation(testScheduler)
     }
 
-    private fun givenXlmCurrencyState(): CurrencyState =
-        mock {
+    private val currencyState: CurrencyState = mock {
             on { cryptoCurrency } `it returns` CryptoCurrency.XLM
+            on { fiatUnit } itReturns TEST_FIAT
         }
 
     private val nabuDataManager: NabuDataManager =
@@ -69,8 +70,7 @@ class XlmSendPresenterStrategyTest {
             on {
                 fetchCryptoAddressFromThePit(any(),
                     any())
-            } `it returns` Single.just(SendToMercuryAddressResponse("123:2143", "",
-                State.ACTIVE))
+            } `it returns` Single.just(SendToMercuryAddressResponse("123:2143", "", State.ACTIVE))
         }
 
     private val pitLinked: PitLinking =
@@ -99,8 +99,13 @@ class XlmSendPresenterStrategyTest {
             on { getFormattedString(any(), any()) } `it returns` ""
         }
 
-    private fun mockExchangeRateResult(fiatValue: FiatValue): FiatExchangeRates =
-        mock { on { getFiat(any()) } `it returns` fiatValue }
+    private val exchangeRates: ExchangeRateDataManager = mock {
+        on { getLastPrice(any(), any()) } itReturns 0.5
+    }
+
+    private val prefs: PersistentPrefs = mock {
+        on { selectedFiatCurrency } itReturns TEST_FIAT
+    }
 
     @Test
     fun `on onCurrencySelected`() {
@@ -116,18 +121,19 @@ class XlmSendPresenterStrategyTest {
         }
 
         XlmSendStrategy(
-            currencyState = givenXlmCurrencyState(),
+            currencyState = currencyState,
             xlmDataManager = dataManager,
             xlmFeesFetcher = feesFetcher,
             xlmTransactionSender = mock(),
             walletOptionsDataManager = mock(),
-            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            exchangeRates = exchangeRates,
             sendFundsResultLocalizer = mock(),
             nabuToken = nabuToken,
             nabuDataManager = nabuDataManager,
             stringUtils = stringUtils,
             analytics = mock(),
-            pitLinking = pitLinked
+            pitLinking = pitLinked,
+            prefs = prefs
         ).apply {
             attachView(view)
         }.onCurrencySelected()
@@ -146,7 +152,7 @@ class XlmSendPresenterStrategyTest {
         val view = TestSendView()
 
         XlmSendStrategy(
-            currencyState = givenXlmCurrencyState(),
+            currencyState = currencyState,
             xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(AccountReference.Xlm("The Xlm account", ""))
                 on { getMaxSpendableAfterFees(FeeType.Regular) } `it returns` Single.just(150.lumens())
@@ -155,14 +161,15 @@ class XlmSendPresenterStrategyTest {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
             },
             xlmTransactionSender = mock(),
-            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            exchangeRates = exchangeRates,
             sendFundsResultLocalizer = mock(),
             walletOptionsDataManager = mock(),
             nabuToken = nabuToken,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            stringUtils = stringUtils
+            stringUtils = stringUtils,
+            prefs = prefs
         ).apply {
             attachView(view)
             onCurrencySelected()
@@ -173,37 +180,34 @@ class XlmSendPresenterStrategyTest {
 
     @Test
     fun `on selectDefaultOrFirstFundedSendingAccount, it updates the address`() {
-        val fiatFees = FiatValue.fromMinor("USD", 10)
 
         val view = TestSendView()
-        val fiatExchangeRates = mock<FiatExchangeRates>() {
-            on { getFiat(any()) } `it returns` fiatFees
-        }
 
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm("The Xlm account", "")
                 )
             },
-            mock {
-                on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
+            xlmFeesFetcher = mock {
+                on { operationFee(FeeType.Regular) } `it returns` Single.just(999.stroops())
             },
-            mock(),
-            mock(),
-            fiatExchangeRates,
-            mock(),
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            xlmTransactionSender = mock(),
+            walletOptionsDataManager = mock(),
+            exchangeRates = exchangeRates,
+            sendFundsResultLocalizer = mock(),
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
         }.selectDefaultOrFirstFundedSendingAccount()
         verify(view.mock).updateSendingAddress("The Xlm account")
-        verify(view.mock).updateFeeAmount(99.stroops(), fiatFees)
+        verify(view.mock).updateFeeAmount(999.stroops(), 0.0.usd())
     }
 
     @Test
@@ -226,8 +230,8 @@ class XlmSendPresenterStrategyTest {
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
@@ -235,20 +239,19 @@ class XlmSendPresenterStrategyTest {
                     99.lumens()
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(200.stroops())
             },
-            transactionSendDataManager, mock(),
-            mock {
-                on { getFiat(100.lumens()) } `it returns` 50.usd()
-                on { getFiat(200.stroops()) } `it returns` 0.05.usd()
-            },
-            mock(),
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            xlmTransactionSender = transactionSendDataManager,
+            walletOptionsDataManager = mock(),
+            exchangeRates = exchangeRates,
+            sendFundsResultLocalizer = mock(),
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -273,7 +276,7 @@ class XlmSendPresenterStrategyTest {
                 ),
                 fees = 200.stroops(),
                 fiatAmount = 50.usd(),
-                fiatFees = 0.05.usd()
+                fiatFees = 0.00.usd()
             )
         )
         verify(transactionSendDataManager, never()).sendFunds(any())
@@ -292,9 +295,10 @@ class XlmSendPresenterStrategyTest {
             on { dryRunSendFunds(any()) } `it returns` Single.just(result)
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
+
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
@@ -302,20 +306,21 @@ class XlmSendPresenterStrategyTest {
                     99.lumens()
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
-            transactionSendDataManager,
-            mock(),
-            mock(),
-            mock {
+            xlmTransactionSender = transactionSendDataManager,
+            walletOptionsDataManager = mock(),
+            exchangeRates = mock(),
+            sendFundsResultLocalizer = mock {
                 on { localize(result) } `it returns` "The warning"
             },
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -347,8 +352,8 @@ class XlmSendPresenterStrategyTest {
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
@@ -356,20 +361,21 @@ class XlmSendPresenterStrategyTest {
                     99.lumens()
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
-            transactionSendDataManager,
-            mock(),
-            mock(),
-            mock {
+            xlmTransactionSender = transactionSendDataManager,
+            exchangeRates = mock(),
+            walletOptionsDataManager = mock(),
+            sendFundsResultLocalizer = mock {
                 on { localize(result) } `it returns` "The warning"
             },
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -403,8 +409,8 @@ class XlmSendPresenterStrategyTest {
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
@@ -412,20 +418,21 @@ class XlmSendPresenterStrategyTest {
                     99.lumens()
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
-            transactionSendDataManager,
-            mock(),
-            mock(),
-            mock {
+            xlmTransactionSender = transactionSendDataManager,
+            walletOptionsDataManager = mock(),
+            exchangeRates = exchangeRates,
+            sendFundsResultLocalizer = mock {
                 on { localize(result) } `it returns` "The warning"
             },
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -459,8 +466,8 @@ class XlmSendPresenterStrategyTest {
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
@@ -468,20 +475,21 @@ class XlmSendPresenterStrategyTest {
                     99.lumens()
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(99.stroops())
             },
-            transactionSendDataManager,
-            mock(),
-            mock(),
-            mock {
+            xlmTransactionSender = transactionSendDataManager,
+            walletOptionsDataManager = mock(),
+            exchangeRates = mock(),
+            sendFundsResultLocalizer = mock {
                 on { localize(result) } `it returns` "The warning"
             },
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -524,8 +532,8 @@ class XlmSendPresenterStrategyTest {
             on { dryRunSendFunds(any()) } `it returns` Single.just(result)
         }
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm(
                         "The Xlm account",
@@ -536,20 +544,19 @@ class XlmSendPresenterStrategyTest {
                     200.lumens()
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(150.stroops())
             },
-            transactionSendDataManager, mock(),
-            mock {
-                on { getFiat(100.lumens()) } `it returns` 50.usd()
-                on { getFiat(150.stroops()) } `it returns` 0.05.usd()
-            },
-            mock(),
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            xlmTransactionSender = transactionSendDataManager,
+            walletOptionsDataManager = mock(),
+            exchangeRates = exchangeRates,
+            sendFundsResultLocalizer = mock(),
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -586,8 +593,8 @@ class XlmSendPresenterStrategyTest {
             on { dryRunSendFunds(any()) } `it returns` Single.error(Exception("Failure"))
         }
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm(
                         "The Xlm account",
@@ -598,21 +605,19 @@ class XlmSendPresenterStrategyTest {
                     200.lumens()
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(150.stroops())
             },
-            transactionSendDataManager,
-            mock(),
-            mock {
-                on { getFiat(100.lumens()) } `it returns` 50.usd()
-                on { getFiat(150.stroops()) } `it returns` 0.05.usd()
-            },
-            mock(),
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            xlmTransactionSender = transactionSendDataManager,
+            walletOptionsDataManager = mock(),
+            exchangeRates = exchangeRates,
+            sendFundsResultLocalizer = mock(),
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -645,8 +650,8 @@ class XlmSendPresenterStrategyTest {
     fun `handle address scan valid address`() {
         val view = TestSendView()
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm(
                         "The Xlm account",
@@ -654,20 +659,19 @@ class XlmSendPresenterStrategyTest {
                     )
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
             },
-            mock(),
-            mock(),
-            mock {
-                on { getFiat(0.lumens()) } `it returns` 0.usd()
-            },
-            mock(),
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            xlmTransactionSender = mock(),
+            walletOptionsDataManager = mock(),
+            exchangeRates = exchangeRates,
+            sendFundsResultLocalizer = mock(),
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
             processURIScanAddress("GDYULVJK2T6G7HFUC76LIBKZEMXPKGINSG6566EPWJKCLXTYVWJ7XPY4")
@@ -681,8 +685,8 @@ class XlmSendPresenterStrategyTest {
     fun `handle address scan valid uri`() {
         val view = TestSendView()
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm(
                         "The Xlm account",
@@ -690,29 +694,29 @@ class XlmSendPresenterStrategyTest {
                     )
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(1.stroops())
             },
-            mock(), mock(),
-            mock {
-                on { getFiat(120.1234567.lumens()) } `it returns` 50.usd()
-            },
-            mock(),
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            xlmTransactionSender = mock(),
+            walletOptionsDataManager = mock(),
+            exchangeRates = exchangeRates,
+            sendFundsResultLocalizer = mock(),
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
             processURIScanAddress(
                 "web+stellar:pay?destination=" +
-                        "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO&amount=" +
-                        "120.1234567&memo=skdjfasf&msg=pay%20me%20with%20lumens"
+                    "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO&amount=" +
+                    "120.1234567&memo=skdjfasf&msg=pay%20me%20with%20lumens"
             )
         }
         verify(view.mock).updateCryptoAmount(120.1234567.lumens())
-        verify(view.mock).updateFiatAmount(50.usd())
+        verify(view.mock).updateFiatAmount(60.06.usd())
         verify(view.mock).updateReceivingAddress("GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO")
     }
 
@@ -736,8 +740,8 @@ class XlmSendPresenterStrategyTest {
         }
         val xlmAccountRef = AccountReference.Xlm("The Xlm account", "")
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     xlmAccountRef
                 )
@@ -745,26 +749,25 @@ class XlmSendPresenterStrategyTest {
                     99.lumens()
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(200.stroops())
             },
-            transactionSendDataManager, mock(),
-            mock {
-                on { getFiat(120.1234567.lumens()) } `it returns` 99.usd()
-                on { getFiat(200.stroops()) } `it returns` 0.05.usd()
-            },
-            mock(),
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            xlmTransactionSender = transactionSendDataManager,
+            walletOptionsDataManager = mock(),
+            sendFundsResultLocalizer = mock(),
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs,
+            exchangeRates = exchangeRates
         ).apply {
             attachView(view)
             processURIScanAddress(
                 "web+stellar:pay?destination=" +
-                        "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO&amount=" +
-                        "120.1234567&memo=1234&memo_type=MEMO_ID&msg=pay%20me%20with%20lumens"
+                    "GCALNQQBXAPZ2WIRSDDBMSTAKCUH5SG6U76YBFLQLIXJTF7FE5AX7AOO&amount=" +
+                    "120.1234567&memo=1234&memo_type=MEMO_ID&msg=pay%20me%20with%20lumens"
             )
             verify(view.mock).displayMemo(Memo("1234", type = "id"))
             onViewReady()
@@ -784,8 +787,8 @@ class XlmSendPresenterStrategyTest {
                     memo = Memo("1234", type = "id")
                 ),
                 fees = 200.stroops(),
-                fiatAmount = 99.usd(),
-                fiatFees = 0.05.usd()
+                fiatAmount = 60.06.usd(),
+                fiatFees = 0.00.usd()
             )
         )
         verify(transactionSendDataManager, never()).sendFunds(any())
@@ -821,8 +824,8 @@ class XlmSendPresenterStrategyTest {
             on { dryRunSendFunds(any()) } `it returns` Single.just(result)
         }
         XlmSendStrategy(
-            givenXlmCurrencyState(),
-            mock {
+            currencyState = currencyState,
+            xlmDataManager = mock {
                 on { defaultAccount() } `it returns` Single.just(
                     AccountReference.Xlm(
                         "The Xlm account",
@@ -833,20 +836,19 @@ class XlmSendPresenterStrategyTest {
                     200.lumens()
                 )
             },
-            mock {
+            xlmFeesFetcher = mock {
                 on { operationFee(FeeType.Regular) } `it returns` Single.just(150.stroops())
             },
-            transactionSendDataManager, mock(),
-            mock {
-                on { getFiat(100.lumens()) } `it returns` 50.usd()
-                on { getFiat(150.stroops()) } `it returns` 0.05.usd()
-            },
-            mock(),
-            stringUtils,
-            nabuToken,
-            pitLinked,
-            mock(),
-            nabuDataManager
+            xlmTransactionSender = transactionSendDataManager,
+            walletOptionsDataManager = mock(),
+            exchangeRates = exchangeRates,
+            sendFundsResultLocalizer = mock(),
+            stringUtils = stringUtils,
+            nabuToken = nabuToken,
+            pitLinking = pitLinked,
+            analytics = mock(),
+            nabuDataManager = nabuDataManager,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -890,18 +892,19 @@ class XlmSendPresenterStrategyTest {
         }
 
         val strategy = XlmSendStrategy(
-            currencyState = mock(),
+            currencyState = currencyState,
             xlmDataManager = dataManager,
             xlmFeesFetcher = feesFetcher,
             xlmTransactionSender = mock(),
             walletOptionsDataManager = walletOptionsDataManager,
-            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            exchangeRates = exchangeRates,
             sendFundsResultLocalizer = mock(),
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -934,18 +937,19 @@ class XlmSendPresenterStrategyTest {
         }
 
         val strategy = XlmSendStrategy(
-            currencyState = mock(),
+            currencyState = currencyState,
             xlmDataManager = dataManager,
             xlmFeesFetcher = feesFetcher,
             xlmTransactionSender = mock(),
             walletOptionsDataManager = walletOptionsDataManager,
-            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            exchangeRates = exchangeRates,
             sendFundsResultLocalizer = mock(),
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -978,18 +982,19 @@ class XlmSendPresenterStrategyTest {
         }
 
         XlmSendStrategy(
-            currencyState = mock(),
+            currencyState = currencyState,
             xlmDataManager = dataManager,
             xlmFeesFetcher = feesFetcher,
             xlmTransactionSender = mock(),
             walletOptionsDataManager = walletOptionsDataManager,
-            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            exchangeRates = exchangeRates,
             sendFundsResultLocalizer = mock(),
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -1024,18 +1029,19 @@ class XlmSendPresenterStrategyTest {
         }
 
         XlmSendStrategy(
-            currencyState = mock(),
+            currencyState = currencyState,
             xlmDataManager = dataManager,
             xlmFeesFetcher = feesFetcher,
             xlmTransactionSender = mock(),
             walletOptionsDataManager = walletOptionsDataManager,
-            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            exchangeRates = exchangeRates,
             sendFundsResultLocalizer = mock(),
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -1066,10 +1072,10 @@ class XlmSendPresenterStrategyTest {
                 on {
                     fetchCryptoAddressFromThePit(any(), any())
                 } `it returns`
-                        Single.error(NabuApiException.withErrorCode(
-                            NabuErrorCodes.Bad2fa.code
-                        )
-                        )
+                    Single.error(NabuApiException.withErrorCode(
+                        NabuErrorCodes.Bad2fa.code
+                    )
+                    )
             }
 
         val feesFetcher = mock<XlmFeesFetcher> {
@@ -1077,18 +1083,19 @@ class XlmSendPresenterStrategyTest {
         }
 
         XlmSendStrategy(
-            currencyState = mock(),
+            currencyState = currencyState,
             xlmDataManager = dataManager,
             xlmFeesFetcher = feesFetcher,
             xlmTransactionSender = mock(),
             walletOptionsDataManager = walletOptionsDataManager,
-            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            exchangeRates = exchangeRates,
             sendFundsResultLocalizer = mock(),
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
@@ -1124,23 +1131,28 @@ class XlmSendPresenterStrategyTest {
         }
 
         XlmSendStrategy(
-            currencyState = mock(),
+            currencyState = currencyState,
             xlmDataManager = dataManager,
             xlmFeesFetcher = feesFetcher,
             xlmTransactionSender = mock(),
             walletOptionsDataManager = walletOptionsDataManager,
-            fiatExchangeRates = mockExchangeRateResult(FiatValue.fromMinor("USD", 10)),
+            exchangeRates = exchangeRates,
             sendFundsResultLocalizer = mock(),
             stringUtils = stringUtils,
             nabuDataManager = nabuDataManager,
             pitLinking = pitUnLinked,
             analytics = mock(),
-            nabuToken = nabuToken
+            nabuToken = nabuToken,
+            prefs = prefs
         ).apply {
             attachView(view)
             onViewReady()
         }
         verify(nabuDataManager, never()).fetchCryptoAddressFromThePit(any(), any())
+    }
+
+    companion object {
+        private const val TEST_FIAT = "USD"
     }
 }
 

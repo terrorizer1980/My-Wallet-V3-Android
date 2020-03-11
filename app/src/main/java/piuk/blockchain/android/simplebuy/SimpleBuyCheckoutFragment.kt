@@ -57,11 +57,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
             return
         }
 
-        purchase_note.text = resources.getString(R.string.purchase_note, newState.selectedCryptoCurrency?.symbol)
+        purchase_note.text = resources.getString(R.string.purchase_note, newState.selectedCryptoCurrency?.displayTicker)
         total_cost.text = newState.order.amount?.formatOrSymbolForZero()
-        button_buy.text = resources.getString(R.string.buy_crypto, newState.selectedCryptoCurrency?.symbol)
+        button_buy.text = resources.getString(R.string.buy_crypto, newState.selectedCryptoCurrency?.displayTicker)
         checkout_subtitle.text =
-            resources.getString(R.string.checkout_subtitle, newState.selectedCryptoCurrency?.symbol)
+            resources.getString(R.string.checkout_subtitle, newState.selectedCryptoCurrency?.displayTicker)
 
         date.text = newState.order.quote?.formatDate()
         button_buy.isEnabled = newState.bankAccount != null && newState.order.quote != null

@@ -13,7 +13,7 @@ class SimpleBuyStateTest {
     fun `amount is valid when entered amount is number and between limits`() {
         val state = SimpleBuyState(supportedPairsAndLimits = listOf(
             SimpleBuyPair("BTC-USD", BuyLimits(0, 10000))
-        ), enteredAmount = "99.32", currency = "USD", selectedCryptoCurrency = CryptoCurrency.BTC)
+        ), enteredAmount = "99.32", fiatCurrency = "USD", selectedCryptoCurrency = CryptoCurrency.BTC)
         assertTrue(state.isAmountValid)
     }
 
@@ -21,7 +21,7 @@ class SimpleBuyStateTest {
     fun `amount is not valid when entered amount is not between limits`() {
         val state = SimpleBuyState(supportedPairsAndLimits = listOf(
             SimpleBuyPair("BTC-USD", BuyLimits(0, 1000))
-        ), enteredAmount = "101", currency = "USD", selectedCryptoCurrency = CryptoCurrency.BTC)
+        ), enteredAmount = "101", fiatCurrency = "USD", selectedCryptoCurrency = CryptoCurrency.BTC)
         assertFalse(state.isAmountValid)
     }
 
@@ -37,7 +37,7 @@ class SimpleBuyStateTest {
     fun `amount is not valid when entered amount is empty`() {
         val state = SimpleBuyState(supportedPairsAndLimits = listOf(
             SimpleBuyPair("BTC-USD", BuyLimits(0, 1000))
-        ), enteredAmount = "", currency = "USD", selectedCryptoCurrency = CryptoCurrency.BTC)
+        ), enteredAmount = "", fiatCurrency = "USD", selectedCryptoCurrency = CryptoCurrency.BTC)
         assertFalse(state.isAmountValid)
     }
 }

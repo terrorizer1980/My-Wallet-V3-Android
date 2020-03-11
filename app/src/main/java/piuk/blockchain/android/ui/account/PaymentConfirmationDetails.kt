@@ -1,37 +1,43 @@
 package piuk.blockchain.android.ui.account
 
 import android.os.Parcelable
+import info.blockchain.balance.CryptoCurrency
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
+import java.util.Currency
 
 @Parcelize
 data class PaymentConfirmationDetails(
-    var fromLabel: String = "",
-    var toLabel: String = "",
-    var fiatUnit: String = "",
-    var cryptoUnit: String = "",
-    var cryptoAmount: String = "",
-    var fiatAmount: String = "",
-    var cryptoFee: String = "",
-    var fiatFee: String = "",
-    var cryptoTotal: String = "",
-    var fiatTotal: String = "",
-    var btcSuggestedFee: String = "",
-    var fiatSymbol: String = "",
-    var isLargeTransaction: Boolean = false,
-    var hasConsumedAmounts: Boolean = false,
-    var showCryptoTotal: Boolean = true,
-    var warningText: String = "",
-    var warningSubtext: String = ""
+    val crypto: CryptoCurrency,
+    val fromLabel: String = "",
+    val toLabel: String = "",
+    val fiatUnit: String = "",
+    val cryptoAmount: String = "",
+    val fiatAmount: String = "",
+    val cryptoFee: String = "",
+    val fiatFee: String = "",
+    val cryptoTotal: String = "",
+    val fiatTotal: String = "",
+    val btcSuggestedFee: String = "",
+    val isLargeTransaction: Boolean = false,
+    val hasConsumedAmounts: Boolean = false,
+    val showCryptoTotal: Boolean = true,
+    val warningText: String = "",
+    val warningSubtext: String = ""
 ) : Parcelable {
 
+    val fiatSymbol: String
+        get() = Currency.getInstance(fiatUnit).symbol
+
+    @IgnoredOnParcel
     var cryptoFeeUnit: String = ""
-        get() = if (field.isEmpty()) cryptoUnit else field
+        get() = if (field.isEmpty()) crypto.displayTicker else field
 
     override fun toString(): String {
         return "PaymentConfirmationDetails{" +
             "fromLabel='$fromLabel'" +
             ", toLabel='$toLabel'" +
-            ", cryptoUnit='$cryptoUnit'" +
+            ", cryptoUnit='${crypto.displayTicker}'" +
             ", fiatUnit='$fiatUnit'" +
             ", cryptoAmount='$cryptoAmount'" +
             ", fiatAmount='$fiatAmount'" +

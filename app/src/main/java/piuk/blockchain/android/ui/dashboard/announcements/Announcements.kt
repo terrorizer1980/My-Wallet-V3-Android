@@ -35,6 +35,7 @@ interface AnnouncementHost {
     fun startStxReceivedDetail()
     fun startSimpleBuyPaymentDetail()
     fun finishSimpleBuySignup()
+    fun startSimpleBuy()
 }
 
 abstract class AnnouncementRule(private val dismissRecorder: DismissRecorder) {

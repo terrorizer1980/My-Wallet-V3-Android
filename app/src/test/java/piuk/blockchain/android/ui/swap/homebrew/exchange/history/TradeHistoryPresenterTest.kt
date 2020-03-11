@@ -31,8 +31,9 @@ class TradeHistoryPresenterTest {
         subject = TradeHistoryPresenter(dataManager, dateUtil)
         subject.initView(view)
 
-        whenever(view.locale).thenReturn(Locale.UK)
         whenever(dateUtil.formatted(any())).thenReturn("DATE")
+
+        Locale.setDefault(Locale.UK)
     }
 
     @Test

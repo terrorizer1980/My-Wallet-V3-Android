@@ -6,6 +6,7 @@ import com.blockchain.notifications.analytics.AddressAnalytics
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.WalletAnalytics
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.BitcoinCashWallet
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.coin.GenericMetadataAccount
@@ -16,6 +17,8 @@ import info.blockchain.wallet.payload.data.LegacyAddress
 import info.blockchain.wallet.payload.data.isArchived
 import info.blockchain.wallet.util.FormatsUtil
 import info.blockchain.wallet.util.PrivateKeyFactory
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import org.bitcoinj.core.ECKey
 import org.bitcoinj.crypto.BIP38PrivateKey
 import piuk.blockchain.android.BuildConfig
@@ -24,16 +27,16 @@ import piuk.blockchain.android.data.coinswebsocket.strategy.CoinsWebSocketStrate
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
 import piuk.blockchain.android.util.LabelUtil
-import piuk.blockchain.android.util.extensions.addToCompositeDisposable
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.util.AppUtil
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcoreui.utils.logging.AddressType
 import piuk.blockchain.androidcoreui.utils.logging.CreateAccountEvent
 import piuk.blockchain.androidcoreui.utils.logging.ImportEvent
@@ -54,7 +57,7 @@ class AccountPresenter internal constructor(
     private val currencyState: CurrencyState,
     private val analytics: Analytics,
     private val coinsWebSocketStrategy: CoinsWebSocketStrategy,
-    private val currencyFormatManager: CurrencyFormatManager
+    private val exchangeRates: ExchangeRateDataManager
 ) : BasePresenter<AccountView>() {
 
     internal var doubleEncryptionPassword: String? = null
@@ -64,6 +67,7 @@ class AccountPresenter internal constructor(
         check(new != CryptoCurrency.ETHER) { "Ether not a supported cryptocurrency on this page" }
         onViewReady()
     }
+
     internal val accountSize: Int
         get() = when (cryptoCurrency) {
             CryptoCurrency.BTC -> getBtcAccounts().size
@@ -94,28 +98,30 @@ class AccountPresenter internal constructor(
      */
     @SuppressLint("CheckResult")
     internal fun checkTransferableLegacyFunds(isAutoPopup: Boolean, showWarningDialog: Boolean) {
-        fundsDataManager.transferableFundTransactionListForDefaultAccount
-            .addToCompositeDisposable(this)
+        compositeDisposable += fundsDataManager.transferableFundTransactionListForDefaultAccount
             .doAfterTerminate { view.dismissProgressDialog() }
             .doOnError { Timber.e(it) }
-            .subscribe(
-                { triple ->
-                    if (payloadDataManager.wallet!!.isUpgraded && triple.left.isNotEmpty()) {
-                        view.onSetTransferLegacyFundsMenuItemVisible(true)
+            .subscribeBy(
+                onNext = { (pendingList, _, _) ->
+                        if (payloadDataManager.wallet!!.isUpgraded && pendingList.isNotEmpty()) {
+                            view.onSetTransferLegacyFundsMenuItemVisible(true)
 
-                        if ((prefs.getValue(KEY_WARN_TRANSFER_ALL, true) ||
-                                    !isAutoPopup) &&
-                            showWarningDialog
-                        ) {
-                            view.onShowTransferableLegacyFundsWarning(isAutoPopup)
+                            if ((prefs.isTransferAllWarningEnabled || !isAutoPopup) && showWarningDialog) {
+                                view.onShowTransferableLegacyFundsWarning(isAutoPopup)
+                            }
+                        } else {
+                            view.onSetTransferLegacyFundsMenuItemVisible(false)
                         }
-                    } else {
-                        view.onSetTransferLegacyFundsMenuItemVisible(false)
-                    }
-                },
-                { view.onSetTransferLegacyFundsMenuItemVisible(false) }
+                    },
+                onError = {
+                    Timber.e(it)
+                    view.onSetTransferLegacyFundsMenuItemVisible(false)
+                }
             )
     }
+
+    private val PersistentPrefs.isTransferAllWarningEnabled
+        get() = getValue(KEY_WARN_TRANSFER_ALL, true)
 
     /**
      * Derive new Account from seed
@@ -129,7 +135,7 @@ class AccountPresenter internal constructor(
             return
         }
 
-        payloadDataManager.createNewAccount(accountLabel, doubleEncryptionPassword)
+        compositeDisposable += payloadDataManager.createNewAccount(accountLabel, doubleEncryptionPassword)
             .doOnNext {
                 coinsWebSocketStrategy.subscribeToXpubBtc(it.xpub)
             }
@@ -140,7 +146,6 @@ class AccountPresenter internal constructor(
                     BitcoinCashWallet.METADATA_TYPE_EXTERNAL
                 )
             }
-            .addToCompositeDisposable(this)
             .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
             .doAfterTerminate { view.dismissProgressDialog() }
             .doOnError { Timber.e(it) }
@@ -178,8 +183,7 @@ class AccountPresenter internal constructor(
      */
     @SuppressLint("CheckResult")
     internal fun updateLegacyAddress(address: LegacyAddress) {
-        payloadDataManager.updateLegacyAddress(address)
-            .addToCompositeDisposable(this)
+        compositeDisposable += payloadDataManager.updateLegacyAddress(address)
             .doOnSubscribe { view.showProgressDialog(R.string.saving_address) }
             .doOnError { Timber.e(it) }
             .doAfterTerminate { view.dismissProgressDialog() }
@@ -269,8 +273,7 @@ class AccountPresenter internal constructor(
         legacyAddress.createdTime = System.currentTimeMillis()
         legacyAddress.createdDeviceVersion = BuildConfig.VERSION_NAME
 
-        payloadDataManager.addLegacyAddress(legacyAddress)
-            .addToCompositeDisposable(this)
+        compositeDisposable += payloadDataManager.addLegacyAddress(legacyAddress)
             .doOnError { Timber.e(it) }
             .subscribe(
                 {
@@ -312,9 +315,8 @@ class AccountPresenter internal constructor(
 
     @SuppressLint("VisibleForTests", "CheckResult")
     private fun importNonBip38Address(format: String, data: String, secondPassword: String?) {
-        payloadDataManager.getKeyFromImportedData(format, data)
+        compositeDisposable += payloadDataManager.getKeyFromImportedData(format, data)
             .doOnSubscribe { view.showProgressDialog(R.string.please_wait) }
-            .addToCompositeDisposable(this)
             .doAfterTerminate { view.dismissProgressDialog() }
             .doOnError { Timber.e(it) }
             .subscribe(
@@ -329,8 +331,7 @@ class AccountPresenter internal constructor(
     internal fun handlePrivateKey(key: ECKey?, secondPassword: String?) {
         if (key != null && key.hasPrivKey()) {
             // A private key to an existing address has been scanned
-            payloadDataManager.setKeyForLegacyAddress(key, secondPassword)
-                .addToCompositeDisposable(this)
+            compositeDisposable += payloadDataManager.setKeyForLegacyAddress(key, secondPassword)
                 .doOnError { Timber.e(it) }
                 .subscribe(
                     {
@@ -466,7 +467,7 @@ class AccountPresenter internal constructor(
             accountsAndImportedList.add(
                 AccountItem(
                     AccountItem.TYPE_LEGACY_SUMMARY,
-                    getBchDisplayBalance(total.toLong())
+                    getBchDisplayBalance(total)
                 )
             )
         }
@@ -503,23 +504,22 @@ class AccountPresenter internal constructor(
         return getUiString(amount)
     }
 
-    private fun getBchDisplayBalance(amount: Long): String {
-        return getUiString(amount)
+    private fun getBchDisplayBalance(amount: BigInteger): String {
+        return getUiString(CryptoValue.fromMinor(CryptoCurrency.BCH, amount))
     }
 
-    private fun getUiString(amount: Long) =
-        when (currencyState.displayMode) {
-            CurrencyState.DisplayMode.Crypto ->
-                currencyFormatManager.getFormattedSelectedCoinValueWithUnit(amount.toBigInteger())
-            CurrencyState.DisplayMode.Fiat ->
-                currencyFormatManager.getFormattedFiatValueFromSelectedCoinValueWithSymbol(amount.toBigDecimal())
-        }
+    private fun getUiString(amount: CryptoValue) =
+        if (currencyState.displayMode == CurrencyState.DisplayMode.Fiat) {
+            amount.toFiat(exchangeRates, currencyState.fiatUnit)
+        } else {
+            amount
+        }.toStringWithSymbol()
 
-    private fun getBalanceFromBtcAddress(address: String): Long =
-        payloadDataManager.getAddressBalance(address).toLong()
+    private fun getBalanceFromBtcAddress(address: String) =
+        CryptoValue.fromMinor(CryptoCurrency.BTC, payloadDataManager.getAddressBalance(address))
 
-    private fun getBalanceFromBchAddress(address: String): Long =
-        bchDataManager.getAddressBalance(address).toLong()
+    private fun getBalanceFromBchAddress(address: String) =
+        CryptoValue.fromMinor(CryptoCurrency.BCH, bchDataManager.getAddressBalance(address))
 
     fun getDisplayableCurrencies(): Set<CryptoCurrency> =
         CryptoCurrency.values()

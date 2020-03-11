@@ -11,7 +11,6 @@ import com.blockchain.swap.nabu.datamanagers.SimpleBuyError
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.formatWithUnit
 import info.blockchain.balance.toFiat
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -75,7 +74,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
                 onCtaClick()
             }
 
-            complete_title.text = getString(R.string.basic_transfer_complete_title, cryptoCurrency.symbol)
+            complete_title.text = getString(R.string.basic_transfer_complete_title, cryptoCurrency.displayTicker)
 
             image.setCoinIcon(cryptoCurrency)
 
@@ -90,7 +89,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
                 .subscribeBy(
                     onSuccess = { (crypto, fiat) ->
                         valueToSend = crypto
-                        amount_crypto.text = crypto.formatWithUnit()
+                        amount_crypto.text = crypto.toStringWithSymbol()
                         amount_fiat.text = fiat.toStringWithSymbol()
                         checkCtaEnable()
                     },

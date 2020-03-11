@@ -68,7 +68,7 @@ val coincoreModule = applicationContext {
         bean {
             PAXTokens(
                 rxBus = get(),
-                erc20Account = get(),
+                paxAccount = get(),
                 exchangeRates = get(),
                 currencyPrefs = get(),
                 custodialWalletManager = get(),

@@ -17,8 +17,8 @@ abstract class MvpFragment<V : MvpView, P : MvpPresenter<V>> : Fragment() {
     protected abstract val view: V
 
     @CallSuper
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
         presenter.attachView(view)
     }
 

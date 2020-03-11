@@ -32,7 +32,7 @@ interface CustodialWalletManager {
 
     fun getBuyLimitsAndSupportedCryptoCurrencies(
         nabuOfflineTokenResponse: NabuOfflineTokenResponse,
-        currency: String
+        fiatCurrency: String
     ): Single<SimpleBuyPairs>
 
     fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote>
@@ -54,7 +54,7 @@ interface CustodialWalletManager {
     fun isEligibleForSimpleBuy(fiatCurrency: String): Single<Boolean>
 
     fun isCurrencySupportedForSimpleBuy(
-        currency: String
+        fiatCurrency: String
     ): Single<Boolean>
 
     fun getOutstandingBuyOrders(): Single<BuyOrderList>
@@ -88,7 +88,7 @@ data class SimpleBuyPairs(val pairs: List<SimpleBuyPair>)
 
 data class SimpleBuyPair(private val pair: String, val buyLimits: BuyLimits) {
     val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.values().first { it.symbol == pair.split("-")[0] }
+        get() = CryptoCurrency.values().first { it.networkTicker == pair.split("-")[0] }
     val fiatCurrency: String = pair.split("-")[1]
 }
 

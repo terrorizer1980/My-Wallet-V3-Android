@@ -551,7 +551,9 @@ class PayloadDataManager(
      */
     fun getMetadataNodeFactory(): Observable<MetadataNodeFactory> =
         if (payloadManager.metadataNodeFactory == null) {
-            loadNodes().map { payloadManager.metadataNodeFactory }
+            loadNodes().map {
+                payloadManager.metadataNodeFactory
+            }
         } else {
             Observable.just(payloadManager.metadataNodeFactory)
         }

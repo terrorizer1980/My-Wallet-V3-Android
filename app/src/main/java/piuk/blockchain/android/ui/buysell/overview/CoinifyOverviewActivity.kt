@@ -29,14 +29,12 @@ import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import com.blockchain.ui.dialog.MaterialProgressDialog
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.toast
-import java.util.Locale
 import kotlinx.android.synthetic.main.activity_coinify_overview.recycler_view_coinify_overview as recyclerView
 import kotlinx.android.synthetic.main.activity_coinify_overview.swipe_refresh_layout_coinify as swipeRefresh
 
 class CoinifyOverviewActivity : BaseMvpActivity<CoinifyOverviewView, CoinifyOverviewPresenter>(),
     CoinifyOverviewView {
 
-    override val locale: Locale = Locale.getDefault()
     private val presenter: CoinifyOverviewPresenter by inject()
     private var progressDialog: MaterialProgressDialog? = null
     private val adapter by unsafeLazy {

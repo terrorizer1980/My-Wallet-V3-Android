@@ -40,6 +40,9 @@ data class FiatValue private constructor(
     internal val value: BigDecimal
 ) : Money {
 
+    // ALWAYS for display, so use default Locale
+    override val symbol: String = Currency.getInstance(currencyCode).getSymbol(Locale.getDefault())
+
     override val maxDecimalPlaces: Int get() = maxDecimalPlaces(currencyCode)
 
     override val isZero: Boolean get() = value.signum() == 0
@@ -50,13 +53,19 @@ data class FiatValue private constructor(
 
     val valueMinor: Long = value.movePointRight(maxDecimalPlaces).toLong()
 
-    override fun toStringWithSymbol(locale: Locale): String =
-        FiatFormat[Key(locale, currencyCode, includeSymbol = true)].format(value)
+    override fun toStringWithSymbol(): String =
+        FiatFormat[Key(Locale.getDefault(), currencyCode, includeSymbol = true)].format(value)
 
-    override fun toStringWithoutSymbol(locale: Locale): String =
-        FiatFormat[Key(locale, currencyCode, includeSymbol = false)]
+    override fun toStringWithoutSymbol(): String =
+        FiatFormat[Key(Locale.getDefault(), currencyCode, includeSymbol = false)]
             .format(value)
             .trim()
+
+    override fun toNetworkString(): String =
+        FiatFormat[Key(Locale.US, currencyCode, includeSymbol = false)]
+            .format(value)
+            .trim()
+            .removeComma()
 
     operator fun plus(other: FiatValue): FiatValue {
         if (currencyCode != other.currencyCode)
@@ -70,12 +79,16 @@ data class FiatValue private constructor(
         return FiatValue(currencyCode, value - other.value)
     }
 
-    override fun symbol(locale: Locale): String = Currency.getInstance(currencyCode).getSymbol(locale)
-
     override fun toZero(): FiatValue = fromMajor(currencyCode, BigDecimal.ZERO)
 
     override fun equals(other: Any?): Boolean =
         (other is FiatValue) && (other.currencyCode == currencyCode) && (other.value.compareTo(value) == 0)
+
+    override fun hashCode(): Int {
+        var result = currencyCode.hashCode()
+        result = 31 * result + value.hashCode()
+        return result
+    }
 
     companion object {
 
@@ -107,12 +120,14 @@ data class FiatValue private constructor(
     }
 }
 
-private fun ensureComparable(a: String, b: String) {
-    if (a != b) throw ComparisonException(a, b)
+@Suppress("SameParameterValue")
+private fun ensureComparable(operation: String, currencyCodeA: String, currencyCodeB: String) {
+    if (currencyCodeA != currencyCodeB)
+        throw ValueTypeMismatchException(operation, currencyCodeA, currencyCodeB)
 }
 
 operator fun FiatValue.compareTo(b: FiatValue): Int {
-    ensureComparable(currencyCode, b.currencyCode)
+    ensureComparable("compare", currencyCode, b.currencyCode)
     return valueMinor.compareTo(b.valueMinor)
 }
 

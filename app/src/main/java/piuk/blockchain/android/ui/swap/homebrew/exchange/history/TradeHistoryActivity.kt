@@ -18,13 +18,10 @@ import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.visible
-import java.util.Locale
 
 class TradeHistoryActivity :
     BaseMvpActivity<TradeHistoryView, TradeHistoryPresenter>(),
     TradeHistoryView {
-
-    override val locale: Locale = Locale.getDefault()
 
     private val tradeHistoryAdapter = TradeHistoryAdapter(this::tradeClicked)
     private val analytics: Analytics by inject()

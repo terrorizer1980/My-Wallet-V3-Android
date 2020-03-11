@@ -20,6 +20,7 @@ class BuyBitcoinAnnouncement(
     private val simpleBuyAvailability: SimpleBuyAvailability
 ) : AnnouncementRule(dismissRecorder) {
 
+    private var cta: (AnnouncementHost) -> Unit = {}
     override val dismissKey = DISMISS_KEY
 
     override fun shouldShow(): Single<Boolean> {
@@ -28,8 +29,19 @@ class BuyBitcoinAnnouncement(
         }
 
         return buyDataManager.canBuy.zipWith(simpleBuyAvailability.isAvailable())
+            .doOnSuccess { (isCoinifyAvailable, simpleBuyAvailable) ->
+                if (simpleBuyAvailable) {
+                    cta = {
+                        it.startSimpleBuy()
+                    }
+                } else if (isCoinifyAvailable) {
+                    cta = {
+                        it.startBuySell()
+                    }
+                }
+            }
             .map { (canBuy, simpleBuyAvailable) ->
-                canBuy && !simpleBuyAvailable && !walletStatus.isWalletFunded
+                (canBuy && !walletStatus.isWalletFunded) || simpleBuyAvailable
             }
     }
 
@@ -39,9 +51,9 @@ class BuyBitcoinAnnouncement(
                 name = name,
                 dismissRule = DismissRule.CardPeriodic,
                 dismissEntry = dismissEntry,
-                titleText = R.string.buy_btc_card_title,
-                bodyText = R.string.buy_btc_card_body,
-                ctaText = R.string.buy_btc_card_cta,
+                titleText = R.string.buy_crypto_card_title,
+                bodyText = R.string.buy_crypto_card_body,
+                ctaText = R.string.buy_crypto_card_cta,
                 iconImage = R.drawable.ic_announce_buy_btc,
                 dismissFunction = {
                     host.dismissAnnouncementCard()

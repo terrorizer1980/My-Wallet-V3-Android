@@ -9,6 +9,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
+import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 
 class SimpleBuyAvailabilityTest {
 
@@ -16,23 +17,26 @@ class SimpleBuyAvailabilityTest {
     private val custodialWalletManager: CustodialWalletManager = mock()
     private val currencyPrefs: CurrencyPrefs = mock()
     private val simpleBuyFlag: FeatureFlag = mock()
+    private val buyDataManager: BuyDataManager = mock()
 
     private lateinit var simpleBuyAvailability: SimpleBuyAvailability
 
     @Before
     fun setup() {
-        simpleBuyAvailability = SimpleBuyAvailability(
-            simpleBuyPrefs, custodialWalletManager, currencyPrefs, simpleBuyFlag
-        )
 
         whenever(currencyPrefs.selectedFiatCurrency).thenReturn("USD")
         whenever(simpleBuyFlag.enabled).thenReturn(Single.just(true))
         whenever(simpleBuyPrefs.flowStartedAtLeastOnce()).thenReturn(true)
 
-        whenever(custodialWalletManager.isEligibleForSimpleBuy("USD"))
-            .thenReturn(Single.just(true))
+        whenever(buyDataManager.isCoinifyAllowed)
+            .thenReturn(Single.just(false))
+
         whenever(custodialWalletManager.isCurrencySupportedForSimpleBuy("USD"))
             .thenReturn(Single.just(true))
+
+        simpleBuyAvailability = SimpleBuyAvailability(
+            simpleBuyPrefs, custodialWalletManager, currencyPrefs, simpleBuyFlag, buyDataManager
+        )
     }
 
     @Test
@@ -63,15 +67,16 @@ class SimpleBuyAvailabilityTest {
     }
 
     @Test
-    fun `should not  be available when is not eligible and no local state`() {
-        whenever(custodialWalletManager.isEligibleForSimpleBuy("USD")).thenReturn(Single.just(false))
+    fun `should not  be available when is coinify tagged and no local state`() {
+        whenever(buyDataManager.isCoinifyAllowed).thenReturn(Single.just(true))
         whenever(simpleBuyPrefs.flowStartedAtLeastOnce()).thenReturn(false)
         simpleBuyAvailability.isAvailable().test().assertValueAt(0, false)
     }
 
     @Test
-    fun `should not  be available when eligibility fails and no local state exists`() {
-        whenever(custodialWalletManager.isEligibleForSimpleBuy("USD")).thenReturn(Single.error(Throwable()))
+    fun `should not  be available when user request fails and no local state exists`() {
+        whenever(buyDataManager.isCoinifyAllowed)
+            .thenReturn(Single.error(Throwable()))
         whenever(simpleBuyPrefs.flowStartedAtLeastOnce()).thenReturn(false)
 
         simpleBuyAvailability.isAvailable().test().assertValueAt(0, false)
