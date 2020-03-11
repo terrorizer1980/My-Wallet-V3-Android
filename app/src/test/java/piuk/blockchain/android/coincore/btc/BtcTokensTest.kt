@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.btc
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.CurrencyPrefs
@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.android.data.currency.CurrencyState
@@ -24,7 +25,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.math.BigInteger
 
-class BTCTokensTest {
+class BtcTokensTest {
 
     private val payloadManager: PayloadManager = mock()
     private val currencyState: CurrencyState = mock()
@@ -35,15 +36,16 @@ class BTCTokensTest {
     private val custodialWalletManager: CustodialWalletManager = mock()
     private val rxBus: RxBus = spy()
 
-    private val subject: AssetTokensBase = BTCTokens(
-        payloadDataManager = payloadDataManager,
-        exchangeRates = exchangeRates,
-        payloadManager = payloadManager,
-        historicRates = historicRates,
-        currencyPrefs = currencyPrefs,
-        custodialWalletManager = custodialWalletManager,
-        rxBus = rxBus
-    )
+    private val subject: AssetTokensBase =
+        BtcTokens(
+            payloadDataManager = payloadDataManager,
+            exchangeRates = exchangeRates,
+            payloadManager = payloadManager,
+            historicRates = historicRates,
+            currencyPrefs = currencyPrefs,
+            custodialWalletManager = custodialWalletManager,
+            rxBus = rxBus
+        )
 
     @get:Rule
     val rxSchedulers = rxInit {

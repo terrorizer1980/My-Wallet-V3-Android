@@ -8,7 +8,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.payload.data.Wallet
 import org.junit.Test
-import piuk.blockchain.android.coincore.model.TestActivitySummaryItem
+import piuk.blockchain.android.coincore.TestActivitySummaryItem
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import kotlin.test.assertEquals

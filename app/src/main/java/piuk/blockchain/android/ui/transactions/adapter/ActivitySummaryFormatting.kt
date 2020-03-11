@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 
 internal fun ActivitySummaryItem.formatting() =
     when (direction) {

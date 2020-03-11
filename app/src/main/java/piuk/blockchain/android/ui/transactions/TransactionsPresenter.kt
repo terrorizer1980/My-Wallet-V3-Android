@@ -27,8 +27,8 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.coincore.AssetTokens
-import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.impl.TransactionNoteUpdater
+import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidcoreui.ui.base.UiState

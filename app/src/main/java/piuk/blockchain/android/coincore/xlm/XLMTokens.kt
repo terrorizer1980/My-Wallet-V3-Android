@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.xlm
 
 import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.CurrencyPrefs
@@ -17,9 +17,14 @@ import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
-import piuk.blockchain.android.coincore.model.CryptoAccount
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
+import piuk.blockchain.android.coincore.impl.mapList
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.AssetFilter
+import piuk.blockchain.android.coincore.CryptoAccountGroup
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -29,7 +34,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
 
-class XLMTokens(
+internal class XlmTokens(
     rxBus: RxBus,
     private val xlmDataManager: XlmDataManager,
     private val exchangeRates: ExchangeRateDataManager,
@@ -44,8 +49,12 @@ class XLMTokens(
     override fun defaultAccountRef(): Single<AccountReference> =
         xlmDataManager.defaultAccountReference()
 
-    override fun defaultAccount(): Single<CryptoAccount> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun defaultAccount(): Single<CryptoSingleAccount> {
+        TODO("not implemented")
+    }
+
+    override fun accounts(filter: Set<AssetFilter>): Single<CryptoAccountGroup> {
+        TODO("not implemented")
     }
 
     override fun receiveAddress(): Single<String> =
@@ -83,7 +92,12 @@ class XLMTokens(
     private fun getTransactions(): Observable<ActivitySummaryList> =
         xlmDataManager.getTransactionList()
             .toObservable()
-            .mapList { XlmActivitySummaryItem(it, exchangeRates) }
+            .mapList {
+                XlmActivitySummaryItem(
+                    it,
+                    exchangeRates
+                )
+            }
 }
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

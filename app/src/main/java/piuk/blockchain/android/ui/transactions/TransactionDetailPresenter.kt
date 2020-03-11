@@ -15,7 +15,7 @@ import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.ui.transactions.adapter.formatting
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutMapper
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter

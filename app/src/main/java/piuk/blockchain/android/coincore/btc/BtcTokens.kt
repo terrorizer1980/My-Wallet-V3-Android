@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.btc
 
 import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.CurrencyPrefs
@@ -15,10 +15,14 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
-import piuk.blockchain.android.coincore.model.BtcCryptoAccount
-import piuk.blockchain.android.coincore.model.CryptoAccount
+import piuk.blockchain.android.coincore.impl.BitcoinLikeTokens
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
+import piuk.blockchain.android.coincore.impl.toCryptoSingle
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.AssetFilter
+import piuk.blockchain.android.coincore.CryptoAccountGroup
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -28,7 +32,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 
-class BTCTokens(
+internal class BtcTokens(
     private val payloadDataManager: PayloadDataManager,
     private val exchangeRates: ExchangeRateDataManager,
     private val payloadManager: PayloadManager,
@@ -44,8 +48,12 @@ class BTCTokens(
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(payloadDataManager.defaultAccount.toAccountReference())
 
-    override fun defaultAccount(): Single<CryptoAccount> =
+    override fun defaultAccount(): Single<CryptoSingleAccount> =
         Single.just(BtcCryptoAccount(payloadDataManager.defaultAccount))
+
+    override fun accounts(filter: Set<AssetFilter>): Single<CryptoAccountGroup> {
+        TODO("not implemented")
+    }
 
     override fun receiveAddress(): Single<String> =
         payloadDataManager.getNextReceiveAddress(payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex))

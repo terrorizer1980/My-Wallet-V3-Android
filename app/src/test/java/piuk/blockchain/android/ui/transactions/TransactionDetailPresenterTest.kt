@@ -19,8 +19,8 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.AssetTokenLookup
-import piuk.blockchain.android.coincore.AssetTokensBase
-import piuk.blockchain.android.coincore.model.TestActivitySummaryItem
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.TestActivitySummaryItem
 import piuk.blockchain.android.ui.transactions.mapping.TransactionDetailModel
 import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutDetails
 import piuk.blockchain.android.util.StringUtils

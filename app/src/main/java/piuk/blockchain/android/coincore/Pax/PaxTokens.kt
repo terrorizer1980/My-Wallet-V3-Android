@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.pax
 
 import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.CurrencyPrefs
@@ -15,10 +15,14 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Observables
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
-import piuk.blockchain.android.coincore.model.CryptoAccount
-import piuk.blockchain.android.coincore.model.PaxCryptoAccount
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
+import piuk.blockchain.android.coincore.impl.mapList
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.AssetFilter
+import piuk.blockchain.android.coincore.CryptoAccountGroup
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -26,14 +30,13 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
-import piuk.blockchain.androidcore.data.erc20.PaxAccount
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.math.BigInteger
 
-class PAXTokens(
+internal class PaxTokens(
     rxBus: RxBus,
     private val paxAccount: Erc20Account,
     private val exchangeRates: ExchangeRateDataManager,
@@ -47,8 +50,12 @@ class PAXTokens(
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultPaxAccountRef())
 
-    override fun defaultAccount(): Single<CryptoAccount> =
+    override fun defaultAccount(): Single<CryptoSingleAccount> =
         Single.just(getNonCustodialPaxAccount())
+
+    override fun accounts(filter: Set<AssetFilter>): Single<CryptoAccountGroup> {
+        TODO("not implemented")
+    }
 
     override fun receiveAddress(): Single<String> =
         Single.just(getDefaultPaxAccountRef().receiveAddress)
@@ -62,11 +69,11 @@ class PAXTokens(
         return AccountReference.Pax(label, paxAddress, "")
     }
 
-    private fun getNonCustodialPaxAccount(): CryptoAccount {
+    private fun getNonCustodialPaxAccount(): CryptoSingleAccount {
         val paxAddress = paxAccount.ethDataManager.getEthWallet()?.account?.address
             ?: throw Exception("No ether wallet found")
 
-        val label = stringUtils.getString(R.string.pax_default_account_label)
+        val label = stringUtils.getString(R.string.pax_default_account_label_1)
 
         return PaxCryptoAccount(label, paxAddress)
     }
@@ -119,7 +126,7 @@ class PAXTokens(
             ethDataManager.getLatestBlockNumber()
         ).map { (transactions, accountHash, latestBlockNumber) ->
             transactions.map { transaction ->
-                Erc20ActivitySummaryItem(
+                PaxActivitySummaryItem(
                     transaction,
                     accountHash,
                     ethDataManager,
@@ -132,7 +139,7 @@ class PAXTokens(
 }
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-class Erc20ActivitySummaryItem(
+class PaxActivitySummaryItem(
     private val feedTransfer: FeedErc20Transfer,
     private val accountHash: String,
     private val ethDataManager: EthDataManager,

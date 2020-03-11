@@ -18,7 +18,7 @@ import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.coincore.AssetTokenLookup
 import piuk.blockchain.android.coincore.AssetTokens
-import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
+import piuk.blockchain.android.coincore.impl.TransactionNoteUpdater
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager

@@ -1,87 +1,32 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.impl
 
 import androidx.annotation.VisibleForTesting
-import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
-import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
-import piuk.blockchain.android.coincore.model.CryptoAccount
-import piuk.blockchain.android.coincore.model.CryptoAccountsList
+import piuk.blockchain.android.coincore.AssetAction
+import piuk.blockchain.android.coincore.AssetFilter
+import piuk.blockchain.android.coincore.AssetTokens
+import piuk.blockchain.android.coincore.AvailableActions
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.home.models.MetadataEvent
 import piuk.blockchain.androidcore.data.access.AuthEvent
-import piuk.blockchain.androidcore.data.charts.PriceSeries
-import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.extensions.switchToSingleIfEmpty
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
-enum class AssetFilter {
-    Total,
-    Wallet,
-    Custodial
-}
-
-enum class AssetAction {
-    ViewActivity,
-    Send,
-    Receive,
-    Swap
-}
-
-typealias AvailableActions = Set<AssetAction>
-
-// Placeholder for proper account interface. Build on AccountReference and ItemAccount
-//typealias CryptoAccount = AccountReference
-
-// TODO: For account fetching/default accounts look steal the code from xxxAccountListAdapter in core
-
-interface AssetTokens {
-    val asset: CryptoCurrency
-
-    @Deprecated(replaceWith = ReplaceWith("defaultAccount"), message = "CoinCore update")
-    fun defaultAccountRef(): Single<AccountReference>
-
-    fun defaultAccount(): Single<CryptoAccount>
-//    fun accounts(): Single<CryptoAccountsList>
-    fun receiveAddress(): Single<String>
-
-    fun totalBalance(filter: AssetFilter = AssetFilter.Total): Single<CryptoValue>
-//    fun balance(account: AccountReference): Single<CryptoValue>
-
-    fun exchangeRate(): Single<FiatValue>
-    fun historicRate(epochWhen: Long): Single<FiatValue>
-    fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries>
-
-    fun fetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList>
-    fun findCachedActivityItem(txHash: String): ActivitySummaryItem?
-
-//    interface PendingTransaction { }
-//    fun computeFees(priority: FeePriority, pending: PendingTransaction): Single<PendingTransaction>
-//    fun validate(pending: PendingTransaction): Boolean
-//    fun execute(pending: PendingTransaction)
-
-    fun actions(filter: AssetFilter): AvailableActions
-
-    /** Has this user got a configured wallet for asset type?
-    // The balance methods will return zero for un-configured wallets - ie custodial - but we need a way
-    // to differentiate between zero and not configured, so call this in the dashboard asset view when
-    // deciding if to show custodial etc **/
-    fun hasActiveWallet(filter: AssetFilter): Boolean
-}
-
-abstract class AssetTokensBase(rxBus: RxBus) : AssetTokens {
+internal abstract class AssetTokensBase(rxBus: RxBus) :
+    AssetTokens {
 
     val logoutSignal = rxBus.register(AuthEvent.UNPAIR::class.java)
         .observeOn(Schedulers.computation())

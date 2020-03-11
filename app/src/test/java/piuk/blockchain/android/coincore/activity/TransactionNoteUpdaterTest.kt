@@ -9,7 +9,8 @@ import io.reactivex.Observable
 import org.amshove.kluent.itReturns
 import org.junit.Rule
 import org.junit.Test
-import piuk.blockchain.android.coincore.model.TestActivitySummaryItem
+import piuk.blockchain.android.coincore.impl.TransactionNoteUpdater
+import piuk.blockchain.android.coincore.TestActivitySummaryItem
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.models.CoinifyData
@@ -27,12 +28,13 @@ class TransactionNoteUpdaterTest {
     private val coinifyDataManager: CoinifyDataManager = mock()
     private val stringUtils: StringUtils = mock()
 
-    private val subject = TransactionNoteUpdater(
-        exchangeService = exchangeService,
-        shapeShiftDataManager = shapeShiftDataManager,
-        coinifyDataManager = coinifyDataManager,
-        stringUtils = stringUtils
-    )
+    private val subject =
+        TransactionNoteUpdater(
+            exchangeService = exchangeService,
+            shapeShiftDataManager = shapeShiftDataManager,
+            coinifyDataManager = coinifyDataManager,
+            stringUtils = stringUtils
+        )
 
     @get:Rule
     val rxSchedulers = rxInit {

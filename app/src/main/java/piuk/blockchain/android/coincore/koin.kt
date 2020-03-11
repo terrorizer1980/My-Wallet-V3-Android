@@ -1,13 +1,19 @@
 package piuk.blockchain.android.coincore
 
 import org.koin.dsl.module.applicationContext
+import piuk.blockchain.android.coincore.bch.BchTokens
+import piuk.blockchain.android.coincore.pax.PaxTokens
+import piuk.blockchain.android.coincore.btc.BtcTokens
+import piuk.blockchain.android.coincore.eth.EthTokens
+import piuk.blockchain.android.coincore.stx.StxTokens
+import piuk.blockchain.android.coincore.xlm.XlmTokens
 
 val coincoreModule = applicationContext {
 
     context("Payload") {
 
         bean {
-            STXTokens(
+            StxTokens(
                 rxBus = get(),
                 payloadManager = get(),
                 currencyPrefs = get(),
@@ -16,7 +22,7 @@ val coincoreModule = applicationContext {
         }
 
         bean {
-            BTCTokens(
+            BtcTokens(
                 payloadManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
@@ -28,7 +34,7 @@ val coincoreModule = applicationContext {
         }
 
         bean {
-            BCHTokens(
+            BchTokens(
                 bchDataManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
@@ -42,7 +48,7 @@ val coincoreModule = applicationContext {
         }
 
         bean {
-            XLMTokens(
+            XlmTokens(
                 rxBus = get(),
                 xlmDataManager = get(),
                 exchangeRates = get(),
@@ -53,7 +59,7 @@ val coincoreModule = applicationContext {
         }
 
         bean {
-            ETHTokens(
+            EthTokens(
                 ethDataManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
@@ -66,7 +72,7 @@ val coincoreModule = applicationContext {
         }
 
         bean {
-            PAXTokens(
+            PaxTokens(
                 rxBus = get(),
                 paxAccount = get(),
                 exchangeRates = get(),

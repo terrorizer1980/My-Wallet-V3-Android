@@ -7,7 +7,7 @@ import info.blockchain.wallet.multiaddress.MultiAddressFactory
 import info.blockchain.wallet.util.FormatsUtil
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager

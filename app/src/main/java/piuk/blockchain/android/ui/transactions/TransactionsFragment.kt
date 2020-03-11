@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.layout_pax_no_transactions.*
 import kotlinx.android.synthetic.main.view_expanding_currency_header.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.transactions.adapter.AccountsAdapter
 import piuk.blockchain.android.ui.transactions.adapter.TxFeedAdapter

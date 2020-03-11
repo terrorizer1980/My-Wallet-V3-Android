@@ -1,14 +1,20 @@
 package piuk.blockchain.android.coincore
 
 import info.blockchain.balance.CryptoCurrency
+import piuk.blockchain.android.coincore.bch.BchTokens
+import piuk.blockchain.android.coincore.pax.PaxTokens
+import piuk.blockchain.android.coincore.btc.BtcTokens
+import piuk.blockchain.android.coincore.eth.EthTokens
+import piuk.blockchain.android.coincore.stx.StxTokens
+import piuk.blockchain.android.coincore.xlm.XlmTokens
 
-class AssetTokenLookup(
-    private val btcTokens: BTCTokens,
-    private val bchTokens: BCHTokens,
-    private val ethTokens: ETHTokens,
-    private val xlmTokens: XLMTokens,
-    private val paxTokens: PAXTokens,
-    private val stxTokens: STXTokens
+class AssetTokenLookup internal constructor(
+    private val btcTokens: BtcTokens,
+    private val bchTokens: BchTokens,
+    private val ethTokens: EthTokens,
+    private val xlmTokens: XlmTokens,
+    private val paxTokens: PaxTokens,
+    private val stxTokens: StxTokens
 ) {
     operator fun get(cryptoCurrency: CryptoCurrency): AssetTokens =
         when (cryptoCurrency) {

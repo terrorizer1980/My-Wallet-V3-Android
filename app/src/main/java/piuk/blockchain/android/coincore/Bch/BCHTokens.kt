@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.bch
 
 import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
@@ -17,10 +17,15 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import org.bitcoinj.core.Address
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
-import piuk.blockchain.android.coincore.model.BchCryptoAccount
-import piuk.blockchain.android.coincore.model.CryptoAccount
+import piuk.blockchain.android.coincore.impl.BitcoinLikeTokens
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
+import piuk.blockchain.android.coincore.impl.mapList
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.AssetFilter
+import piuk.blockchain.android.coincore.CryptoAccountGroup
+import piuk.blockchain.android.coincore.CryptoSingleAccount
+import piuk.blockchain.android.coincore.impl.toCryptoSingle
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -33,7 +38,7 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import timber.log.Timber
 
-class BCHTokens(
+internal class BchTokens(
     private val bchDataManager: BchDataManager,
     private val exchangeRates: ExchangeRateDataManager,
     private val historicRates: ChartsDataManager,
@@ -54,11 +59,15 @@ class BCHTokens(
             Single.just(a.toAccountReference())
         }
 
-    override fun defaultAccount(): Single<CryptoAccount> =
+    override fun defaultAccount(): Single<CryptoSingleAccount> =
         with(bchDataManager) {
             val a = getAccountMetadataList()[getDefaultAccountPosition()]
             Single.just(BchCryptoAccount(a))
         }
+
+    override fun accounts(filter: Set<AssetFilter>): Single<CryptoAccountGroup> {
+        TODO("not implemented")
+    }
 
     override fun receiveAddress(): Single<String> =
         bchDataManager.getNextReceiveAddress(
@@ -130,19 +139,28 @@ class BCHTokens(
     private fun getAllTransactions(): Observable<ActivitySummaryList> =
         bchDataManager.getWalletTransactions(transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it, exchangeRates)
+                BchActivitySummaryItem(
+                    it,
+                    exchangeRates
+                )
             }
 
     private fun getLegacyTransactions(): Observable<ActivitySummaryList> =
         bchDataManager.getImportedAddressTransactions(transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it, exchangeRates)
+                BchActivitySummaryItem(
+                    it,
+                    exchangeRates
+                )
             }
 
     private fun getAccountTransactions(address: String): Observable<List<ActivitySummaryItem>> =
         bchDataManager.getAddressTransactions(address, transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it, exchangeRates)
+                BchActivitySummaryItem(
+                    it,
+                    exchangeRates
+                )
             }
 }
 

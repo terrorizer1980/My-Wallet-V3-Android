@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.eth
 
 import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
@@ -17,10 +17,13 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.eth.EthCryptoAccountNonCustodial
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
-import piuk.blockchain.android.coincore.model.CryptoAccount
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.AssetFilter
+import piuk.blockchain.android.coincore.CryptoAccountGroup
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -33,7 +36,7 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
 
-class ETHTokens(
+internal class EthTokens(
     private val ethDataManager: EthDataManager,
     private val exchangeRates: ExchangeRateDataManager,
     private val historicRates: ChartsDataManager,
@@ -50,13 +53,17 @@ class ETHTokens(
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultEthAccountRef())
 
-    override fun defaultAccount(): Single<CryptoAccount> =
+    override fun defaultAccount(): Single<CryptoSingleAccount> =
         Single.fromCallable {
             EthCryptoAccountNonCustodial(
                 this,
                 ethDataManager.getEthWallet()?.account ?: throw Exception("No ether wallet found")
             )
         }
+
+    override fun accounts(filter: Set<AssetFilter>): Single<CryptoAccountGroup> {
+        TODO("not implemented")
+    }
 
     override fun receiveAddress(): Single<String> =
         Single.just(getDefaultEthAccountRef().receiveAddress)

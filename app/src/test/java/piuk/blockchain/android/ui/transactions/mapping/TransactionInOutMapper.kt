@@ -23,14 +23,14 @@ package piuk.blockchain.android.ui.transactions.mapping
 // import org.mockito.Mockito.verifyNoMoreInteractions
 // import piuk.blockchain.android.R
 // import piuk.blockchain.android.coincore.AssetTokenLookup
-// import piuk.blockchain.android.coincore.AssetTokensBase
+// import piuk.blockchain.android.coincore.impl.AssetTokensBase
 // import piuk.blockchain.android.util.StringUtils
 // import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 // import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
 // import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 // import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 // import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-// import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+// import piuk.blockchain.android.coincore.ActivitySummaryItem
 // import piuk.blockchain.android.coincore.model.TestActivitySummaryItem
 // import piuk.blockchain.android.ui.transactions.mapping.TransactionHelper
 // import piuk.blockchain.androidcore.utils.PersistentPrefs

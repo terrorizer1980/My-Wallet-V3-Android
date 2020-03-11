@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore.model
+package piuk.blockchain.android.coincore
 
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.`should not equal`

@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.stx
 
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
@@ -11,15 +11,18 @@ import info.blockchain.wallet.prices.TimeInterval
 import info.blockchain.wallet.stx.STXAccount
 import io.reactivex.Maybe
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
-import piuk.blockchain.android.coincore.model.CryptoAccount
-import piuk.blockchain.android.coincore.model.StxCryptoAccount
+import piuk.blockchain.android.coincore.AssetAction
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.AssetFilter
+import piuk.blockchain.android.coincore.CryptoAccountGroup
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 
-class STXTokens(
+internal class StxTokens(
     rxBus: RxBus,
     private val payloadManager: PayloadManager,
     private val currencyPrefs: CurrencyPrefs,
@@ -32,8 +35,12 @@ class STXTokens(
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultStxAccountRef())
 
-    override fun defaultAccount(): Single<CryptoAccount> =
+    override fun defaultAccount(): Single<CryptoSingleAccount> =
         Single.just(getStxAccount())
+
+    override fun accounts(filter: Set<AssetFilter>): Single<CryptoAccountGroup> {
+        TODO("not implemented")
+    }
 
     override fun receiveAddress(): Single<String> {
         TODO("not implemented")
@@ -46,13 +53,13 @@ class STXTokens(
         return hdWallets[0].stxAccount.toAccountReference()
     }
 
-    private fun getStxAccount(): CryptoAccount {
+    private fun getStxAccount(): CryptoSingleAccount {
         val hdWallets = payloadManager.payload?.hdWallets
             ?: throw IllegalStateException("Wallet not available")
 
         return StxCryptoAccount(
             label = "STX Account",
-            receiveAddress = hdWallets[0].stxAccount.bitcoinSerializedBase58Address
+            address = hdWallets[0].stxAccount.bitcoinSerializedBase58Address
         )
     }
 

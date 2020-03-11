@@ -1,27 +1,29 @@
 package piuk.blockchain.android.coincore.eth
 
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.ethereum.EthereumAccount
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.AssetAction
-import piuk.blockchain.android.coincore.AvailableActions
-import piuk.blockchain.android.coincore.ETHTokens
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
-import piuk.blockchain.android.coincore.model.BaseCryptoAccount
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
+import piuk.blockchain.android.coincore.impl.CryptoSingleAccountNonCustodialBase
 
-internal class EthCryptoAccountCustodial {
-
+internal class EthCryptoAccountCustodial(
+    override val label: String,
+    override val custodialWalletManager: CustodialWalletManager
+) : CryptoSingleAccountCustodialBase() {
+    override val cryptoCurrency = CryptoCurrency.ETHER
 }
 
 internal class EthCryptoAccountNonCustodial(
     override val label: String,
     private val address: String,
-    private val token: ETHTokens
-) : BaseCryptoAccount() {
+    private val token: EthTokens
+) : CryptoSingleAccountNonCustodialBase() {
     override val cryptoCurrency = token.asset
 
-    constructor(asset: ETHTokens, jsonAccount: EthereumAccount)
+    constructor(asset: EthTokens, jsonAccount: EthereumAccount)
         : this(jsonAccount.label, jsonAccount.address, asset)
 
     override val balance: Single<CryptoValue>
@@ -32,15 +34,4 @@ internal class EthCryptoAccountNonCustodial(
 
     override val activity: Single<ActivitySummaryList>
         get() = token.getTransactions().singleOrError()
-
-    override val actions: AvailableActions
-        get() = availableActions
-
-
-    private val availableActions = setOf(
-        AssetAction.ViewActivity,
-        AssetAction.Send,
-        AssetAction.Receive,
-        AssetAction.Swap
-    )
 }

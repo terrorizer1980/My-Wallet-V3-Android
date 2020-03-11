@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.eth
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.CurrencyPrefs
@@ -16,6 +16,7 @@ import io.reactivex.Observable
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
@@ -25,7 +26,7 @@ import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 
-class ETHTokensTest {
+class EthTokensTest {
 
     private val ethDataManager: EthDataManager = mock()
     private val currencyState: CurrencyState = mock()
@@ -36,16 +37,17 @@ class ETHTokensTest {
     private val stringUtils: StringUtils = mock()
     private val rxBus: RxBus = spy()
 
-    private val subject: AssetTokensBase = ETHTokens(
-        ethDataManager = ethDataManager,
-        exchangeRates = exchangeRates,
-        historicRates = historicRates,
-        currencyPrefs = currencyPrefs,
-        custodialWalletManager = custodialWalletManager,
-        crashLogger = mock(),
-        stringUtils = stringUtils,
-        rxBus = rxBus
-    )
+    private val subject: AssetTokensBase =
+        EthTokens(
+            ethDataManager = ethDataManager,
+            exchangeRates = exchangeRates,
+            historicRates = historicRates,
+            currencyPrefs = currencyPrefs,
+            custodialWalletManager = custodialWalletManager,
+            crashLogger = mock(),
+            stringUtils = stringUtils,
+            rxBus = rxBus
+        )
 
     @get:Rule
     val rxSchedulers = rxInit {

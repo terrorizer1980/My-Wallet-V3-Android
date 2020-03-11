@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.xlm
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.CurrencyPrefs
@@ -18,6 +18,7 @@ import io.reactivex.Single
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.android.data.currency.CurrencyState
@@ -27,7 +28,7 @@ import java.math.BigInteger
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
-class XLMTokensTest {
+class XlmTokensTest {
 
     private val currencyState: CurrencyState = mock()
     private val exchangeRates: ExchangeRateDataManager = mock()
@@ -38,14 +39,15 @@ class XLMTokensTest {
 
     private val xlmDataManager: XlmDataManager = mock()
 
-    private val subject: AssetTokensBase = XLMTokens(
-        xlmDataManager = xlmDataManager,
-        exchangeRates = exchangeRates,
-        historicRates = historicRates,
-        currencyPrefs = currencyPrefs,
-        custodialWalletManager = custodialWalletManager,
-        rxBus = rxBus
-    )
+    private val subject: AssetTokensBase =
+        XlmTokens(
+            xlmDataManager = xlmDataManager,
+            exchangeRates = exchangeRates,
+            historicRates = historicRates,
+            currencyPrefs = currencyPrefs,
+            custodialWalletManager = custodialWalletManager,
+            rxBus = rxBus
+        )
 
     @get:Rule
     val rxSchedulers = rxInit {

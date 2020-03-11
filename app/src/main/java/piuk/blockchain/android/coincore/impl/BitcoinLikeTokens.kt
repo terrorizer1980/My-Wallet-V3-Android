@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.impl
 
 import androidx.annotation.CallSuper
 import info.blockchain.balance.AccountReference
@@ -13,7 +13,7 @@ import timber.log.Timber
 import java.lang.IllegalArgumentException
 import java.math.BigInteger
 
-abstract class BitcoinLikeTokens(rxBus: RxBus) : AssetTokensBase(rxBus) {
+internal abstract class BitcoinLikeTokens(rxBus: RxBus) : AssetTokensBase(rxBus) {
 
     private var lastBalanceRefresh: Long = 0
 
