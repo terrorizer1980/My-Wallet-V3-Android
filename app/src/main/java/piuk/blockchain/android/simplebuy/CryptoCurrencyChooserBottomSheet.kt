@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.layout_crypto_currency_chooser_item.view.*
 import kotlinx.android.synthetic.main.simple_buy_crypto_currency_chooser.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
+import piuk.blockchain.android.util.assetName
 import piuk.blockchain.android.util.drawableResFilled
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.io.Serializable
@@ -69,9 +70,11 @@ private class BottomSheetCryptoCurrenciesAdapter(private val adapterItems: List<
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = adapterItems[position]
-        holder.iconView.setImageResource(item.cryptoCurrency.drawableResFilled())
-        holder.textView.text = item.cryptoCurrency.unit
-        holder.container.setOnClickListener { item.clickAction() }
+        with(holder) {
+            iconView.setImageResource(item.cryptoCurrency.drawableResFilled())
+            textView.setText(item.cryptoCurrency.assetName())
+            container.setOnClickListener { item.clickAction() }
+        }
     }
 
     private class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -94,10 +94,10 @@ class TransactionInOutMapper(
 
             val ethAddress = ethDataManager.getEthResponseModel()!!.getAddressResponse()!!.account
             if (fromAddress == ethAddress) {
-                fromAddress = stringUtils.getString(R.string.pax_default_account_label)
+                fromAddress = stringUtils.getString(R.string.pax_default_account_label_1)
             }
             if (toAddress == ethAddress) {
-                toAddress = stringUtils.getString(R.string.pax_default_account_label)
+                toAddress = stringUtils.getString(R.string.pax_default_account_label_1)
             }
 
             TransactionInOutDetails(
@@ -145,7 +145,7 @@ class TransactionInOutMapper(
             val coinbase =
                 TransactionDetailModel(
                     address = stringUtils.getString(R.string.transaction_detail_coinbase),
-                    displayUnits = currency.symbol
+                    displayUnits = currency.displayTicker
                 )
             inputs.add(coinbase)
         }
@@ -184,7 +184,7 @@ class TransactionInOutMapper(
         TransactionDetailModel(
             label,
             value.toStringWithoutSymbol(),
-            cryptoCurrency.symbol
+            cryptoCurrency.displayTicker
         ).apply {
             if (address == MultiAddressFactory.ADDRESS_DECODE_ERROR) {
                 address = stringUtils.getString(R.string.tx_decode_error)

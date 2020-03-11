@@ -344,13 +344,13 @@ class XlmSendStrategy(
                         view?.dismissConfirmationDialog()
                     }
                     .doOnSuccess {
-                        analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.XLM.toString()))
+                        analytics.logEvent(SendAnalytics.SummarySendSuccess(CryptoCurrency.XLM))
 
                         view?.showTransactionSuccess(confirmationDetails.amount.currency)
                     }
                     .doOnError {
                         view?.showTransactionFailed()
-                        analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.XLM.toString()))
+                        analytics.logEvent(SendAnalytics.SummarySendFailure(CryptoCurrency.XLM))
                     }
                     .ignoreElement()
                     .onErrorComplete()
@@ -362,7 +362,7 @@ class XlmSendStrategy(
     private fun resetAccountList() {
         compositeDisposable += pitLinking.isPitLinked().filter { it }.flatMapSingle { nabuToken.fetchNabuToken() }
             .flatMap {
-                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.XLM.symbol)
+                nabuDataManager.fetchCryptoAddressFromThePit(it, CryptoCurrency.XLM)
             }.applySchedulers().doOnSubscribe {
                 view?.updateReceivingHintAndAccountDropDowns(CryptoCurrency.XLM, 1, false)
             }.subscribeBy(onError = {
@@ -375,7 +375,7 @@ class XlmSendStrategy(
                 pitAccount = PitAccount(
                     label = stringUtils.getFormattedString(
                         R.string.exchange_default_account_label,
-                        CryptoCurrency.XLM.symbol
+                        CryptoCurrency.XLM.displayTicker
                     ),
                     address = components[0],
                     memo = components[1]

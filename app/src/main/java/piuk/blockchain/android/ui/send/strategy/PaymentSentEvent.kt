@@ -15,10 +15,10 @@ class PaymentSentEvent : CustomEventBuilder("Payment Sent") {
         amountSent: CryptoValue
     ): PaymentSentEvent {
         val amountRange =
-            amountSent.toBigDecimal().getBoundary() + " " + amountSent.currency.symbol
+            amountSent.toBigDecimal().getBoundary() + " " + amountSent.currency.networkTicker
 
         putCustomAttribute("Amount", amountRange)
-        putCustomAttribute("Currency", amountSent.currency.symbol)
+        putCustomAttribute("Currency", amountSent.currency.networkTicker)
         return this
     }
 }

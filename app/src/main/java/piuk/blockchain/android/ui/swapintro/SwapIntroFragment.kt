@@ -59,7 +59,7 @@ class SwapIntroFragment : HomeScreenMvpFragment<SwapIntroView, SwapIntroPresente
                 getString(R.string.swap_intro_description_page_four),
                 R.drawable.icon_swap_intro_four),
             SwapIntroModel(getString(R.string.swap_intro_title_page_five),
-                getString(R.string.swap_intro_description_page_five),
+                getString(R.string.swap_intro_description_page_five_1),
                 R.drawable.icon_swap_intro_five)
         )
 

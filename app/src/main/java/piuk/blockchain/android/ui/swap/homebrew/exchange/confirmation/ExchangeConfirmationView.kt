@@ -8,11 +8,8 @@ import piuk.blockchain.android.ui.swap.homebrew.exchange.model.SwapErrorDialogCo
 import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import java.util.Locale
 
 interface ExchangeConfirmationView : View {
-
-    val locale: Locale
 
     val exchangeViewState: Observable<ExchangeViewState>
 

@@ -21,19 +21,18 @@ data class SendConfirmationDetails(
     val fiatTotal = fiatAmount + fiatFees
 
     internal fun toPaymentConfirmationDetails(): PaymentConfirmationDetails {
-        return PaymentConfirmationDetails().also {
-            it.fromLabel = from.label
-            it.toLabel = if (toLabel.isBlank()) to else toLabel
+        return PaymentConfirmationDetails(
+            fromLabel = from.label,
+            toLabel = if (toLabel.isBlank()) to else toLabel,
+            crypto = amount.currency,
+            cryptoAmount = amount.toStringWithoutSymbol(),
+            cryptoFee = fees.toStringWithoutSymbol(),
+            cryptoTotal = total.toStringWithoutSymbol(),
 
-            it.cryptoUnit = amount.symbol()
-            it.cryptoAmount = amount.toStringWithoutSymbol()
-            it.cryptoFee = fees.toStringWithoutSymbol()
-            it.cryptoTotal = total.toStringWithoutSymbol()
-
-            it.fiatUnit = fiatAmount.currencyCode
-            it.fiatAmount = fiatAmount.toStringWithoutSymbol()
-            it.fiatFee = fiatFees.toStringWithoutSymbol()
-            it.fiatTotal = fiatTotal.toStringWithoutSymbol()
-        }
+            fiatUnit = fiatAmount.currencyCode,
+            fiatAmount = fiatAmount.toStringWithoutSymbol(),
+            fiatFee = fiatFees.toStringWithoutSymbol(),
+            fiatTotal = fiatTotal.toStringWithoutSymbol()
+        )
     }
 }

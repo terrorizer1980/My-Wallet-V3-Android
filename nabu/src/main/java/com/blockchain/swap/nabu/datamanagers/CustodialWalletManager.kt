@@ -88,7 +88,7 @@ data class SimpleBuyPairs(val pairs: List<SimpleBuyPair>)
 
 data class SimpleBuyPair(private val pair: String, val buyLimits: BuyLimits) {
     val cryptoCurrency: CryptoCurrency
-        get() = CryptoCurrency.values().first { it.symbol == pair.split("-")[0] }
+        get() = CryptoCurrency.values().first { it.networkTicker == pair.split("-")[0] }
     val fiatCurrency: String = pair.split("-")[1]
 }
 

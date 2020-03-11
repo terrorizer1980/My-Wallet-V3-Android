@@ -3,31 +3,25 @@ package piuk.blockchain.android.simplebuy
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.remoteconfig.FeatureFlag
-import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import io.reactivex.Single
 import io.reactivex.rxkotlin.zipWith
+import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 
 class SimpleBuyAvailability(
     private val simpleBuyPrefs: SimpleBuyPrefs,
     private val custodialWalletManager: CustodialWalletManager,
     private val currencyPrefs: CurrencyPrefs,
     private val simpleBuyFlag: FeatureFlag,
-    nabuToken: NabuToken,
-    private val nabuDataManager: NabuDataManager
+    private val buyDataManager: BuyDataManager
 ) {
-    private val nabuUser = nabuToken
-        .fetchNabuToken()
-        .flatMap {
-            nabuDataManager.getUser(it)
-        }
 
     fun isAvailable(): Single<Boolean> {
         val hasStartedAtLeastOnce = simpleBuyPrefs.flowStartedAtLeastOnce()
 
-        val eligibleCheck = nabuUser.map {
-            !it.isCoinifyTagged() || hasStartedAtLeastOnce
+        val eligibleCheck = buyDataManager.isCoinifyAllowed
+            .map {
+            !it || hasStartedAtLeastOnce
         }.onErrorReturn { false }
 
         return custodialWalletManager.isCurrencySupportedForSimpleBuy(currencyPrefs.selectedFiatCurrency)

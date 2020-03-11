@@ -133,7 +133,7 @@ class CoinPairTest {
                 val from = it.from
                 val to = it.to
 
-                val formedPairCode = "${from.symbol}_${to.symbol}".toLowerCase()
+                val formedPairCode = "${from.networkTicker}_${to.networkTicker}".toLowerCase()
 
                 formedPairCode `should equal` it.pairCode
 

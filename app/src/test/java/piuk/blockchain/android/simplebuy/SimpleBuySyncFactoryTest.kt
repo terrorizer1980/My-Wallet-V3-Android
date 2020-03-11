@@ -69,7 +69,7 @@ class SimpleBuySyncFactoryTest {
 
         val localInput = SimpleBuyState(
             enteredAmount = "1000",
-            currency = "EUR",
+            fiatCurrency = "EUR",
             selectedCryptoCurrency = CryptoCurrency.BTC,
             orderState = OrderState.INITIALISED,
             expirationDate = Date(),
@@ -367,7 +367,7 @@ class SimpleBuySyncFactoryTest {
         val localInput = SimpleBuyState(
             id = EXPECTED_ORDER_ID,
             enteredAmount = "10000",
-            currency = "EUR",
+            fiatCurrency = "EUR",
             selectedCryptoCurrency = CryptoCurrency.BTC,
             orderState = OrderState.AWAITING_FUNDS,
             expirationDate = LAST_ORDER_DATE,
@@ -413,7 +413,7 @@ class SimpleBuySyncFactoryTest {
         val localInput = SimpleBuyState(
             id = EXPECTED_ORDER_ID,
             enteredAmount = "10000",
-            currency = "EUR",
+            fiatCurrency = "EUR",
             selectedCryptoCurrency = CryptoCurrency.BTC,
             orderState = OrderState.AWAITING_FUNDS,
             expirationDate = LAST_ORDER_DATE,
@@ -459,7 +459,7 @@ class SimpleBuySyncFactoryTest {
 
         val localInput = SimpleBuyState(
             enteredAmount = "10000",
-            currency = "EUR",
+            fiatCurrency = "EUR",
             selectedCryptoCurrency = CryptoCurrency.BTC,
             orderState = OrderState.INITIALISED,
             expirationDate = LAST_ORDER_DATE,
@@ -520,7 +520,7 @@ class SimpleBuySyncFactoryTest {
         val localInput = SimpleBuyState(
             id = EXPECTED_ORDER_ID,
             enteredAmount = "10000",
-            currency = "EUR",
+            fiatCurrency = "EUR",
             selectedCryptoCurrency = CryptoCurrency.BTC,
             orderState = OrderState.INITIALISED,
             expirationDate = LAST_ORDER_DATE,
@@ -547,7 +547,7 @@ class SimpleBuySyncFactoryTest {
         val localInput = SimpleBuyState(
             id = EXPECTED_ORDER_ID,
             enteredAmount = "100.00",
-            currency = "EUR",
+            fiatCurrency = "EUR",
             selectedCryptoCurrency = CryptoCurrency.BTC,
             orderState = OrderState.AWAITING_FUNDS,
             expirationDate = LAST_ORDER_DATE,
@@ -584,7 +584,7 @@ class SimpleBuySyncFactoryTest {
         val localInput = SimpleBuyState(
             id = EXPECTED_ORDER_ID,
             enteredAmount = "10000",
-            currency = "EUR",
+            fiatCurrency = "EUR",
             selectedCryptoCurrency = CryptoCurrency.BTC,
             orderState = OrderState.AWAITING_FUNDS,
             expirationDate = LAST_ORDER_DATE,
@@ -621,7 +621,7 @@ class SimpleBuySyncFactoryTest {
         val localInput = SimpleBuyState(
             id = EXPECTED_ORDER_ID,
             enteredAmount = "10000",
-            currency = "EUR",
+            fiatCurrency = "EUR",
             selectedCryptoCurrency = CryptoCurrency.BTC,
             orderState = OrderState.AWAITING_FUNDS,
             expirationDate = LAST_ORDER_DATE,
@@ -658,7 +658,7 @@ class SimpleBuySyncFactoryTest {
         val localInput = SimpleBuyState(
             id = EXPECTED_ORDER_ID,
             enteredAmount = "10000",
-            currency = "EUR",
+            fiatCurrency = "EUR",
             selectedCryptoCurrency = CryptoCurrency.BTC,
             orderState = OrderState.AWAITING_FUNDS,
             expirationDate = LAST_ORDER_DATE,
@@ -695,7 +695,7 @@ class SimpleBuySyncFactoryTest {
         val localInput = SimpleBuyState(
             id = EXPECTED_ORDER_ID,
             enteredAmount = "10000",
-            currency = "EUR",
+            fiatCurrency = "EUR",
             selectedCryptoCurrency = CryptoCurrency.BTC,
             orderState = OrderState.AWAITING_FUNDS,
             expirationDate = LAST_ORDER_DATE,

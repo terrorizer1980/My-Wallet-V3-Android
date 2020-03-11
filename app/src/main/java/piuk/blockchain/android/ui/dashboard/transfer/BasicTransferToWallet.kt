@@ -74,7 +74,7 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
                 onCtaClick()
             }
 
-            complete_title.text = getString(R.string.basic_transfer_complete_title, cryptoCurrency.symbol)
+            complete_title.text = getString(R.string.basic_transfer_complete_title, cryptoCurrency.displayTicker)
 
             image.setCoinIcon(cryptoCurrency)
 

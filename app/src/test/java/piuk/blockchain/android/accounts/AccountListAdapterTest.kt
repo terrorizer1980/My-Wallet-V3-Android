@@ -1,5 +1,6 @@
-package com.blockchain.accounts
+package piuk.blockchain.android.accounts
 
+import com.blockchain.accounts.AccountList
 import com.nhaarman.mockito_kotlin.mock
 import info.blockchain.wallet.coin.GenericMetadataAccount
 import info.blockchain.wallet.ethereum.EthereumAccount

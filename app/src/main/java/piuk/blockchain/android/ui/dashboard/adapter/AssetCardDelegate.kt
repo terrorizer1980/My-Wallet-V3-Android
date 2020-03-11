@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import piuk.blockchain.android.util.getColor
-import piuk.blockchain.android.util.currencyName
+import piuk.blockchain.android.util.assetName
 import piuk.blockchain.android.util.setCoinIcon
 import com.blockchain.preferences.CurrencyPrefs
 import kotlinx.android.synthetic.main.item_dashboard_asset_card.view.*
@@ -55,7 +55,7 @@ private class AssetCardViewHolder(
     internal fun bind(state: AssetState, fiatSymbol: String, onCardClicked: (CryptoCurrency) -> Unit) {
         with(itemView) {
             icon.setCoinIcon(state.currency)
-            currency.setText(state.currency.currencyName())
+            currency.setText(state.currency.assetName())
         }
 
         when {
@@ -113,7 +113,7 @@ private class AssetCardViewHolder(
             cardLayout.isEnabled = false
             setOnClickListener { }
 
-            val text = resources.getString(R.string.dashboard_asset_error, state.currency.symbol)
+            val text = resources.getString(R.string.dashboard_asset_error, state.currency.displayTicker)
             error_msg.text = text
         }
     }

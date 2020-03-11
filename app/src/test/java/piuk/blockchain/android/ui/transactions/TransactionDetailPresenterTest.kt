@@ -76,7 +76,7 @@ class TransactionDetailPresenterTest {
             .thenReturn("Value when moved: ")
         whenever(stringUtils.getString(R.string.transaction_detail_confirmed))
             .thenReturn("Confirmed")
-        whenever(stringUtils.getString(R.string.pax_default_account_label))
+        whenever(stringUtils.getString(R.string.pax_default_account_label_1))
             .thenReturn("My Usd pax Wallet")
         whenever(stringUtils.getString(R.string.transaction_detail_value_at_time_sent))
             .thenReturn("Value when sent: ")

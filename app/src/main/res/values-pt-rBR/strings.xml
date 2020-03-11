@@ -66,10 +66,6 @@
 
     <string name="password">Senha</string>
     <string name="email">E-mail</string>
-    <string name="agree_terms_of_service">Ao criar uma nova carteira, você concorda com</string>
-    <string name="blockchain_tos">Termos de Serviço da Blockchain</string>
-    <string name="create_wallet">Criar carteira</string>
-    <string name="new_wallet">Nova carteira</string>
     <string name="strength_weak">Fraca</string>
     <string name="strength_medium">Razoável</string>
     <string name="strength_strong">Forte</string>
@@ -192,7 +188,6 @@
     <string name="password_changed">Senha alterada</string>
     <string name="disable_root_warning">Desativar o aviso de dispositivos com root</string>
 
-    <string name="show_balance">Exibir Saldo</string>
     <string name="auth_failed">Erro na autorização. Tente novamente.</string>
     <string name="send_failed">Erro no envio. Tente novamente.</string>
 
@@ -455,7 +450,6 @@
     <string name="fee_options_sat_byte_hint">sat/b</string>
     <string name="fee_options_sat_byte_inline_hint">Normal: %1$s, Prioritário: %2$s</string>
 
-    <string name="receive_bitcoin">Solicitar</string>
     <string name="sending">Enviando</string>
     <string name="receiving">Recebendo</string>
     <string name="paid">Pago</string>
@@ -486,7 +480,6 @@
     <string name="dismiss">Dispensar</string>
 
     <string name="eth_default_account_label">Minha Carteira Ether</string>
-    <string name="eth_now_supporting">Agora compatível com Ether</string>
     <string name="eth_second_password_prompt">Para utilizar esse serviço, precisamos que você insira sua segunda senha. Você precisa inseri-la apenas uma vez para configurar a sua carteira Ether.</string>
     <string name="ether">Ether</string>
     <string name="bitcoin">Bitcoin</string>

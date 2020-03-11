@@ -78,7 +78,7 @@ private fun sendFormatting(tx: ActivitySummaryItem) =
 
 private fun paxFeeFormatting(tx: ActivitySummaryItem) =
     ActivitySummaryFormatting(
-        text = R.string.pax_fee,
+        text = R.string.pax_fee_1,
         valueBackground = getColorForConfirmations(
             tx,
             R.drawable.rounded_view_red_50,

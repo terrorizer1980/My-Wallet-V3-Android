@@ -55,7 +55,7 @@ class SwipeToReceivePresenter(
     )
 
     private fun onCurrencySelected(cryptoCurrency: CryptoCurrency) {
-        view.displayCoinType(cryptoCurrency.unit)
+        view.displayCoinType(cryptoCurrency)
         view.setUiState(UiState.LOADING)
 
         val accountDetails = getAccountDetailsFor(cryptoCurrency)

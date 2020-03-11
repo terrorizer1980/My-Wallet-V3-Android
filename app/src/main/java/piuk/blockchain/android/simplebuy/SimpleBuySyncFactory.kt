@@ -221,7 +221,7 @@ fun BuyOrder.toSimpleBuyState(): SimpleBuyState =
         id = id,
         enteredAmount = fiat.toStringWithoutSymbol()
             .replace(DecimalFormatSymbols(Locale.getDefault()).groupingSeparator.toString(), ""),
-        currency = fiat.currencyCode,
+        fiatCurrency = fiat.currencyCode,
         selectedCryptoCurrency = crypto.currency,
         orderState = state,
         expirationDate = expires,

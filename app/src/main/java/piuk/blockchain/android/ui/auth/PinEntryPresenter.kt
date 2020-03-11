@@ -435,7 +435,8 @@ class PinEntryPresenter(
             (payloadDataManager.getAccount(0).label == null ||
                     payloadDataManager.getAccount(0).label.isEmpty())
         ) {
-            payloadDataManager.getAccount(0).label = stringUtils.getString(R.string.default_wallet_name)
+            payloadDataManager.getAccount(0).label =
+                stringUtils.getString(R.string.btc_default_wallet_name)
         }
     }
 

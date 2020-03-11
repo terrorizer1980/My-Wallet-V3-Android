@@ -21,7 +21,6 @@ val morphUiModule = applicationContext {
                 tradeExecutionService = get(),
                 payloadDecrypt = get(),
                 stringUtils = get(),
-                locale = get(),
                 analytics = get(),
                 diagnostics = get()
             )

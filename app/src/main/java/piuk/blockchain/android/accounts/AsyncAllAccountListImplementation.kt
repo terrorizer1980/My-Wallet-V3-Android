@@ -1,5 +1,7 @@
-package com.blockchain.accounts
+package piuk.blockchain.android.accounts
 
+import com.blockchain.accounts.AccountList
+import com.blockchain.accounts.AsyncAllAccountList
 import info.blockchain.balance.AccountReferenceList
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Observable

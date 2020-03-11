@@ -83,7 +83,8 @@ class ReceivePresenter(
     fun getMaxCryptoDecimalLength() = currencyState.cryptoCurrency.dp
 
     val cryptoUnit
-        get() = currencyState.cryptoCurrency.symbol
+        get() = currencyState.cryptoCurrency.displayTicker
+
     val fiatUnit
         get() = prefs.selectedFiatCurrency
 

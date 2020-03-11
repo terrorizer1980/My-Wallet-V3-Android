@@ -70,7 +70,7 @@ internal class UpgradeWalletPresenter constructor(
     internal fun onUpgradeRequested(secondPassword: String?) {
         compositeDisposable += payloadDataManager.upgradeV2toV3(
             secondPassword,
-            stringUtils.getString(R.string.default_wallet_name))
+            stringUtils.getString(R.string.btc_default_wallet_name))
             .doOnSubscribe { view.onUpgradeStarted() }
             .doOnError { accessState.isNewlyCreated = false }
             .doOnComplete { accessState.isNewlyCreated = true }

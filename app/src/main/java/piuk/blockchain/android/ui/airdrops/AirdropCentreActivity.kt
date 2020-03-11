@@ -89,7 +89,7 @@ class StatusViewHolder(itemView: View) : AirdropViewHolder<ListItem.AirdropItem>
     fun bind(item: ListItem.AirdropItem, onClick: (String) -> Unit) {
         with(itemView) {
             icon.setCoinIcon(item.airdrop.currency)
-            currency.text = item.airdrop.currency.symbol
+            currency.text = item.airdrop.currency.displayTicker
             val formatted = DateFormat.getDateInstance(DateFormat.SHORT).format(item.airdrop.date)
             setOnClickListenerDebounced { onClick(item.airdrop.name) }
             date.text = resources.getString(

@@ -68,7 +68,7 @@ class ConfirmPaymentDialog : BaseDialogFragment<ConfirmPaymentView, ConfirmPayme
         button_change_fee.setOnClickListener { listener?.onChangeFeeClicked() }
         button_send.setOnClickListener {
             listener?.onSendClicked()
-            analytics.logEvent(SendAnalytics.SummarySendClick(paymentDetails?.cryptoUnit ?: ""))
+            analytics.logEvent(SendAnalytics.SummarySendClick(paymentDetails.crypto))
         }
 
         if (!arguments!!.getBoolean(SHOW_FEE_CHOICE, true)) {
@@ -117,8 +117,9 @@ class ConfirmPaymentDialog : BaseDialogFragment<ConfirmPaymentView, ConfirmPayme
         dismiss()
     }
 
-    override fun getPaymentDetails(): PaymentConfirmationDetails? {
+    override fun getPaymentDetails(): PaymentConfirmationDetails {
         return arguments?.getParcelable(PAYMENT_DETAILS)
+            ?: throw IllegalArgumentException("No payment details provided")
     }
 
     override fun getContactNote(): String? {
