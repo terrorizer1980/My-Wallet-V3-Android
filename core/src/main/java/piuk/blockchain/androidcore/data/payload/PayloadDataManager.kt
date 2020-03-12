@@ -3,7 +3,6 @@ package piuk.blockchain.androidcore.data.payload
 import info.blockchain.api.data.Balance
 import info.blockchain.wallet.exceptions.DecryptionException
 import info.blockchain.wallet.exceptions.HDWalletException
-import info.blockchain.wallet.metadata.MetadataNodeFactory
 import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
@@ -14,12 +13,12 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import okhttp3.ResponseBody
 import org.bitcoinj.core.ECKey
 import org.bitcoinj.core.NetworkParameters
 import org.bitcoinj.crypto.DeterministicKey
 import org.spongycastle.crypto.InvalidCipherTextException
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
+import piuk.blockchain.androidcore.data.metadata.MetadataCredentials
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.rxjava.RxPinning
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
@@ -39,6 +38,10 @@ class PayloadDataManager(
 
     private val rxPinning: RxPinning = RxPinning(rxBus)
     private val networkParameters = environmentConfig.bitcoinNetworkParameters
+    val metadataCredentials: MetadataCredentials?
+        get() = tempPassword?.let {
+            MetadataCredentials(guid, sharedKey, it)
+        }
 
     // /////////////////////////////////////////////////////////////////////////
     // CONVENIENCE METHODS AND PROPERTIES
@@ -103,8 +106,7 @@ class PayloadDataManager(
         get() = wallet!!.sharedKey
 
     val masterKey: DeterministicKey
-        get() = wallet?.hdWallets?.get(0)?.masterKey
-            ?: throw IllegalStateException("Master key not found")
+        get() = payloadManager.masterKey()
 
     // /////////////////////////////////////////////////////////////////////////
     // AUTH METHODS
@@ -542,61 +544,6 @@ class PayloadDataManager(
     // /////////////////////////////////////////////////////////////////////////
     // CONTACTS/METADATA/IWCS/CRYPTO-MATRIX METHODS
     // /////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Returns a [MetadataNodeFactory] object which allows you to access the [DeterministicKey]
-     * objects needed to initialise the Contacts service.
-     *
-     * @return An [Observable] wrapping a [MetadataNodeFactory]
-     */
-    fun getMetadataNodeFactory(): Observable<MetadataNodeFactory> =
-        if (payloadManager.metadataNodeFactory == null) {
-            loadNodes().map {
-                payloadManager.metadataNodeFactory
-            }
-        } else {
-            Observable.just(payloadManager.metadataNodeFactory)
-        }
-
-    /**
-     * Loads previously saved nodes from the Metadata service. If none are found, the [Observable] returns false.
-     *
-     * @return An [Observable] object wrapping a boolean value, representing successfully
-     * loaded nodes
-     */
-    fun loadNodes(): Observable<Boolean> =
-        rxPinning.call<Boolean> { payloadService.loadNodes() }.subscribeOn(Schedulers.io())
-
-    /**
-     * Generates the metadata and shared metadata nodes if necessary.
-     *
-     * @return A [Completable] object, ie an asynchronous void operation
-     */
-    fun generateNodes(): Completable = rxPinning.call { payloadService.generateNodes() }
-        .applySchedulers()
-
-    fun generateAndReturnNodes(): Observable<MetadataNodeFactory> =
-        rxPinning.call { payloadService.generateNodes() }
-            .andThen(getMetadataNodeFactory())
-            .applySchedulers()
-
-    /**
-     * Registers the user's MDID with the metadata service.
-     *
-     * @return An [Observable] wrapping a [ResponseBody]
-     */
-    fun registerMdid(): Observable<ResponseBody> =
-        rxPinning.call<ResponseBody> { payloadService.registerMdid() }
-            .applySchedulers()
-
-    /**
-     * Unregisters the user's MDID from the metadata service.
-     *
-     * @return An [Observable] wrapping a [ResponseBody]
-     */
-    fun unregisterMdid(): Observable<ResponseBody> =
-        rxPinning.call<ResponseBody> { payloadService.unregisterMdid() }
-            .applySchedulers()
 
     fun getAccount(accountPosition: Int): Account =
         wallet!!.hdWallets[0].getAccount(accountPosition)

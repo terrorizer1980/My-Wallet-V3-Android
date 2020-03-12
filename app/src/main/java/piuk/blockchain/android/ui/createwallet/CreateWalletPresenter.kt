@@ -82,7 +82,9 @@ class CreateWalletPresenter(
                 R.string.password_mismatch_error,
                 ToastCustom.TYPE_ERROR
             )
-            passwordStrength < 50 -> view.showWeakPasswordDialog(email, password1)
+            passwordStrength < 50 -> view.showWeakPasswordDialog(
+                email,
+                password1)
             else -> createOrRecoverWallet(email, password1)
         }
     }

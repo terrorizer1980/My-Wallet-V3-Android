@@ -28,6 +28,7 @@ import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.extensions.then
 import timber.log.Timber
 
 class BCHTokens(
@@ -65,14 +66,14 @@ class BCHTokens(
 
     override fun noncustodialBalance(): Single<CryptoValue> =
         walletInitialiser()
-            .andThen(Completable.defer { updater() })
+            .then { updater() }
             .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
 
     override fun balance(account: CryptoAccount): Single<CryptoValue> {
         val ref = accountReference(account)
 
         return walletInitialiser()
-            .andThen(Completable.defer { updater() })
+            .then { updater() }
             .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }
     }
 

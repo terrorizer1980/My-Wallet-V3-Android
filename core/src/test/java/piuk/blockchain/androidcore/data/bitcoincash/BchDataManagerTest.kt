@@ -2,7 +2,6 @@ package piuk.blockchain.androidcore.data.bitcoincash
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.wallet.DefaultLabels
-import com.google.common.base.Optional
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.mock
@@ -19,6 +18,7 @@ import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.HDWallet
 import info.blockchain.wallet.payload.data.Wallet
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import junit.framework.Assert
 import org.amshove.kluent.`it returns`
@@ -71,7 +71,7 @@ class BchDataManagerTest {
     }
 
     private fun mockAbsentMetadata() {
-        whenever(metadataManager.fetchMetadata(any())).thenReturn(Observable.just(Optional.absent()))
+        whenever(metadataManager.fetchMetadata(any())).thenReturn(Maybe.empty())
     }
 
     private fun mockSingleMetadata(): String {
@@ -81,10 +81,8 @@ class BchDataManagerTest {
         metaData.addAccount(account)
 
         whenever(metadataManager.fetchMetadata(any())).thenReturn(
-            Observable.just(
-                Optional.fromNullable(
-                    metaData.toJson()
-                )
+            Maybe.just(
+                metaData.toJson()
             )
         )
 
@@ -192,11 +190,11 @@ class BchDataManagerTest {
         mockAbsentMetadata()
 
         // Act
-        val testObserver = subject.fetchMetadata("label", 1).test()
+        val testObserver = subject.fetchMetadata("label", 1).isEmpty.test()
 
         // Assert
+        testObserver.assertValueAt(0, true)
         testObserver.assertComplete()
-        testObserver.assertValue(Optional.absent())
     }
 
     @Test
@@ -210,7 +208,7 @@ class BchDataManagerTest {
 
         // Assert
         testObserver.assertComplete()
-        Assert.assertEquals(walletJson, testObserver.values()[0].orNull()!!.toJson())
+        Assert.assertEquals(walletJson, testObserver.values()[0].toJson())
     }
 
     @Test

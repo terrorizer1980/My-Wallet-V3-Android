@@ -265,7 +265,7 @@ val applicationModule = applicationContext {
             CacheCredentialsWiper(
                 ethDataManager = get(),
                 bchDataManager = get(),
-                payloadManager = get(),
+                metadataManager = get(),
                 walletOptionsState = get(),
                 buyConditions = get(),
                 coinifyDataManager = get(),
@@ -1027,7 +1027,6 @@ val applicationModule = applicationContext {
         factory {
             Prerequisites(
                 metadataManager = get(),
-                environmentSettings = get(),
                 settingsDataManager = get(),
                 shapeShiftDataManager = get(),
                 crashLogger = get(),

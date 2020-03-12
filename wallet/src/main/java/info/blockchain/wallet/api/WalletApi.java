@@ -48,24 +48,6 @@ public class WalletApi {
                 getApiCode());
     }
 
-    public Observable<ResponseBody> registerMdid(String guid,
-                                                 String sharedKey,
-                                                 String signedGuid) {
-
-        return getExplorerInstance().postToWallet("register-mdid",
-                guid, sharedKey, signedGuid, signedGuid.length(),
-                getApiCode());
-    }
-
-    public Observable<ResponseBody> unregisterMdid(String guid,
-                                                   String sharedKey,
-                                                   String signedGuid) {
-
-        return getExplorerInstance().postToWallet("unregister-mdid",
-                guid, sharedKey, signedGuid, signedGuid.length(),
-                getApiCode());
-    }
-
     public Observable<Response<Status>> setAccess(String key, String value, String pin) {
         String hex = Hex.toHexString(value.getBytes());
         return getExplorerInstance().pinStore(key, pin, hex, "put", getApiCode());

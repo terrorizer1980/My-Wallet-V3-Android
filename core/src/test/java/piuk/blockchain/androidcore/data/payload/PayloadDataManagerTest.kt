@@ -8,7 +8,6 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.api.data.Balance
-import info.blockchain.wallet.metadata.MetadataNodeFactory
 import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
@@ -18,7 +17,6 @@ import info.blockchain.wallet.util.PrivateKeyFactory
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
-import okhttp3.ResponseBody
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.mock
 import org.amshove.kluent.shouldEqual
@@ -30,7 +28,6 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import com.blockchain.android.testutils.rxInit
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.math.BigInteger
@@ -643,91 +640,6 @@ class PayloadDataManagerTest {
         val result = subject.isOwnHDAddress(address)
         // Assert
         result shouldEqual true
-    }
-
-    @Test
-    fun loadNodes() {
-        // Arrange
-        whenever(payloadService.loadNodes()).thenReturn(Observable.just(true))
-        // Act
-        val testObserver = subject.loadNodes().test()
-        // Assert
-        verify(payloadService).loadNodes()
-        verifyNoMoreInteractions(payloadService)
-        testObserver.assertComplete()
-        testObserver.assertValue(true)
-    }
-
-    @Test
-    fun generateNodes() {
-        // Arrange
-        whenever(payloadService.generateNodes())
-            .thenReturn(Completable.complete())
-        // Act
-        val testObserver = subject.generateNodes().test()
-        // Assert
-        verify(payloadService).generateNodes()
-        verifyNoMoreInteractions(payloadService)
-        testObserver.assertComplete()
-    }
-
-    @Test
-    fun `getMetadataNodeFactory returns node`() {
-        // Arrange
-        val mockNodeFactory: MetadataNodeFactory = mock()
-        whenever(payloadManager.metadataNodeFactory).thenReturn(mockNodeFactory)
-        // Act
-        val testObserver = subject.getMetadataNodeFactory().test()
-        // Assert
-        verify(payloadManager, atLeastOnce()).metadataNodeFactory
-        verifyNoMoreInteractions(payloadManager)
-        testObserver.assertComplete()
-        testObserver.assertValue(mockNodeFactory)
-    }
-
-    @Test
-    fun `getMetadataNodeFactory null, attempt node setup`() {
-        // Arrange
-        val mockNodeFactory: MetadataNodeFactory = mock()
-        whenever(payloadManager.metadataNodeFactory)
-            .thenReturn(null)
-            .thenReturn(mockNodeFactory)
-        whenever(payloadService.loadNodes()).thenReturn(Observable.just(true))
-        // Act
-        val testObserver = subject.getMetadataNodeFactory().test()
-        // Assert
-        verify(payloadManager, atLeastOnce()).metadataNodeFactory
-        verifyNoMoreInteractions(payloadManager)
-        testObserver.assertComplete()
-        testObserver.assertValue(mockNodeFactory)
-    }
-
-    @Test
-    fun registerMdid() {
-        // Arrange
-        val responseBody = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
-        whenever(payloadService.registerMdid()).thenReturn(Observable.just(responseBody))
-        // Act
-        val testObserver = subject.registerMdid().test()
-        // Assert
-        verify(payloadService).registerMdid()
-        verifyNoMoreInteractions(payloadService)
-        testObserver.assertComplete()
-        testObserver.assertValue(responseBody)
-    }
-
-    @Test
-    fun unregisterMdid() {
-        // Arrange
-        val responseBody = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
-        whenever(payloadService.unregisterMdid()).thenReturn(Observable.just(responseBody))
-        // Act
-        val testObserver = subject.unregisterMdid().test()
-        // Assert
-        verify(payloadService).unregisterMdid()
-        verifyNoMoreInteractions(payloadService)
-        testObserver.assertComplete()
-        testObserver.assertValue(responseBody)
     }
 
     @Test

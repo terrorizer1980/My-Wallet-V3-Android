@@ -9,7 +9,6 @@ import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.ui.home.models.MetadataEvent
-import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -17,7 +16,6 @@ import piuk.blockchain.androidcore.data.settings.SettingsDataManager
 
 class Prerequisites(
     private val metadataManager: MetadataManager,
-    private val environmentSettings: EnvironmentConfig,
     private val settingsDataManager: SettingsDataManager,
     private val shapeShiftDataManager: ShapeShiftDataManager,
     private val crashLogger: CrashLogger,
@@ -26,14 +24,11 @@ class Prerequisites(
     private val simpleBuySync: SimpleBuySyncFactory,
     private val rxBus: RxBus
 ) {
+
     fun initMetadataAndRelatedPrerequisites(): Completable =
-        metadataManager.attemptMetadataSetup().ignoreElements()
-            .andThen(shapeShiftCompletable().doOnComplete {
-                println("aaaaa s")
-            })
-            .andThen(feesCompletable().doOnComplete {
-                println("aaaaa f")
-            })
+        metadataManager.attemptMetadataSetup()
+            .andThen(shapeShiftCompletable())
+            .andThen(feesCompletable())
             .andThen(Completable.defer {
                 simpleBuySync.performSync()
             })
@@ -71,7 +66,6 @@ class Prerequisites(
             .subscribeOn(Schedulers.io())
 
     fun decryptAndSetupMetadata(secondPassword: String) = metadataManager.decryptAndSetupMetadata(
-        environmentSettings.bitcoinNetworkParameters,
         secondPassword
     )
 }

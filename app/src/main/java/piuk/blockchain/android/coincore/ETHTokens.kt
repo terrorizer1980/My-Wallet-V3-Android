@@ -28,6 +28,7 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.extensions.thenSingle
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
 
@@ -60,8 +61,7 @@ class ETHTokens(
 
     override fun noncustodialBalance(): Single<CryptoValue> =
         etheriumWalletInitialiser()
-            .andThen(ethDataManager.fetchEthAddress())
-            .singleOrError()
+            .thenSingle { ethDataManager.fetchEthAddress().singleOrError() }
             .map { CryptoValue(CryptoCurrency.ETHER, it.getTotalBalance()) }
 
     override fun balance(account: AccountReference): Single<CryptoValue> {
@@ -134,7 +134,7 @@ class ETHTokens(
                             exchangeRates
                         )
                     }.toList()
-                }
+            }
 }
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
