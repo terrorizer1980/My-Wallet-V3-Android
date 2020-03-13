@@ -12,7 +12,7 @@ fun filterTokenAccounts(
     labels: DefaultLabels,
     accountList: List<CryptoSingleAccount>,
     assetFilter: AssetFilter
-) : CryptoAccountGroup =
+): CryptoAccountGroup =
         when (assetFilter) {
             AssetFilter.Total ->
                 buildAssetMasterGroup(asset, labels, accountList)
@@ -26,13 +26,12 @@ private fun buildCustodialGroup(
     asset: CryptoCurrency,
     labels: DefaultLabels,
     accountList: List<CryptoSingleAccount>
-) : CryptoAccountGroup =
+): CryptoAccountGroup =
     CryptoAccountCustodialGroup(
         asset,
         labels.getDefaultCustodialWalletLabel(asset),
         accountList.filterIsInstance<CryptoSingleAccountCustodialBase>()
     )
-
 
 private fun buildNonCustodialGroup(
     asset: CryptoCurrency,

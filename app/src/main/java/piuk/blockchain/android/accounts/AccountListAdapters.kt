@@ -13,7 +13,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 
 internal class BtcAccountListAdapter(
     private val payloadDataManager: PayloadDataManager
-): AccountList {
+) : AccountList {
 
     override fun defaultAccount(): Single<AccountReference> =
         Single.just(defaultAccountReference())

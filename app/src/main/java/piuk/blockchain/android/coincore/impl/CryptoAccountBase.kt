@@ -9,7 +9,6 @@ import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.AssetAction
-import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoAccountsList
 import piuk.blockchain.android.coincore.CryptoSingleAccount
@@ -23,8 +22,8 @@ abstract class CryptoSingleAccountBase
     protected val cryptoAsset: CryptoCurrency
         get() = cryptoCurrency!!
 
-    override val hasTransactions: Single<Boolean>
-        get() = Single.just(false)
+    override val hasTransactions: Boolean
+        get() = false
 }
 
 abstract class CryptoSingleAccountCustodialBase
@@ -53,11 +52,11 @@ abstract class CryptoSingleAccountCustodialBase
     override fun findActivityItem(txHash: String): Maybe<ActivitySummaryItem> =
         Maybe.empty()
 
-    override val hasTransactions: Single<Boolean>
-        get() = Single.just(false)
+    override val hasTransactions: Boolean
+        get() = false
 
-    override val isFunded: Single<Boolean>
-        get() = Single.just(isNonCustodialConfigured.get())
+    override val isFunded: Boolean
+        get() = isNonCustodialConfigured.get()
 
     final override val actions: AvailableActions
         get() = availableActions
@@ -83,11 +82,11 @@ abstract class CryptoSingleAccountNonCustodialBase
     override fun findActivityItem(txHash: String): Maybe<ActivitySummaryItem> =
         Maybe.empty()
 
-    override val hasTransactions: Single<Boolean>
-        get() = Single.just(false)
+    override val hasTransactions: Boolean
+        get() = false
 
-    override val isFunded: Single<Boolean>
-        get() = Single.just(false)
+    override val isFunded: Boolean
+        get() = false
 
     final override val actions: AvailableActions
         get() = availableActions
@@ -131,10 +130,10 @@ class CryptoAccountCustodialGroup(
     override val actions: AvailableActions
         get() = account.actions
 
-    override val hasTransactions: Single<Boolean>
+    override val hasTransactions: Boolean
         get() = account.hasTransactions
 
-    override val isFunded: Single<Boolean>
+    override val isFunded: Boolean
         get() = account.isFunded
 
     override fun findActivityItem(txHash: String): Maybe<ActivitySummaryItem> =
@@ -142,24 +141,50 @@ class CryptoAccountCustodialGroup(
 }
 
 class CryptoAccountCompoundGroup(
-    asset: CryptoCurrency,
+    val asset: CryptoCurrency,
     override val label: String,
     val accounts: CryptoAccountsList
 ) : CryptoAccountGroup {
-    override val cryptoCurrency: CryptoCurrency?
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-    override val balance: Single<CryptoValue>
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-    override val activity: Single<ActivitySummaryList>
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-    override val actions: AvailableActions
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-    override val hasTransactions: Single<Boolean>
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
-    override val isFunded: Single<Boolean>
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val cryptoCurrency: CryptoCurrency? = asset
 
-    override fun findActivityItem(txHash: String): Maybe<ActivitySummaryItem> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    // Produce the sum of all balances of all accounts
+    override val balance: Single<CryptoValue>
+        get() = Single.zip(
+                accounts.map { it.balance }
+            ) { t: Array<Any> ->
+                t.sumBy { it as CryptoValue }
+            }
+
+    fun <T> Array<T>.sumBy(selector: (T) -> CryptoValue): CryptoValue {
+        var sum: CryptoValue = CryptoValue.zero(asset)
+        for (element in this) {
+            sum += selector(element)
+        }
+        return sum
     }
+
+    // Al; the activities for all the accounts
+    override val activity: Single<ActivitySummaryList>
+        get() = Single.zip(
+            accounts.map { it.activity }
+        ) { t: Array<Any> ->
+            t.filterIsInstance<List<ActivitySummaryItem>>().flatten()
+        }
+
+    // The intersection of the actions for each account
+    override val actions: AvailableActions
+        get() = accounts.map { it.actions }.reduce { a, b -> a.intersect(b) }
+
+    // if _any_ of the accounts have transactions
+    override val hasTransactions: Boolean
+        get() = accounts.map { it.hasTransactions }.any { it }
+
+    // Are any of the accounts funded
+    override val isFunded: Boolean =
+        accounts.map { it.isFunded }.any { it }
+
+    // We can delegate to the asset token for this, since it holds a cache.
+    // All the assets are the same, so a call on any account will delegate
+    override fun findActivityItem(txHash: String): Maybe<ActivitySummaryItem> =
+        accounts[0].findActivityItem(txHash)
 }

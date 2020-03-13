@@ -17,8 +17,8 @@ interface CryptoAccount {
 
     val actions: AvailableActions
 
-    val hasTransactions: Single<Boolean>
-    val isFunded: Single<Boolean>
+    val hasTransactions: Boolean
+    val isFunded: Boolean
 
     fun findActivityItem(txHash: String): Maybe<ActivitySummaryItem>
 }

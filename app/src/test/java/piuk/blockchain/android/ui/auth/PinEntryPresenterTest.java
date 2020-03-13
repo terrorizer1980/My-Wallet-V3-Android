@@ -108,7 +108,6 @@ public class PinEntryPresenterTest {
         when(activity.getPinBoxList())
                 .thenReturn(Arrays.asList(mockImageView, mockImageView, mockImageView, mockImageView));
         when(stringUtils.getString(anyInt())).thenReturn("string resource");
-        when(activity.getLocale()).thenReturn(Locale.US);
 
         subject = new PinEntryPresenter(authDataManager,
                 appUtil,

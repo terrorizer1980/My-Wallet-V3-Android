@@ -37,7 +37,7 @@ class AssetTokensBaseTest {
             Single.just(emptyList())
         override fun defaultAccount(): Single<CryptoSingleAccount> =
             Single.error(Exception("Not implemented"))
-        override fun accounts(filter: Set<AssetFilter>): Single<CryptoAccountGroup> =
+        override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> =
             Single.error(Exception("Not implemented"))
         override fun defaultAccountRef(): Single<AccountReference> =
             Single.error(Exception("Not implemented"))

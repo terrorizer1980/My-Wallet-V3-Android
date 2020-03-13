@@ -3,6 +3,7 @@ package piuk.blockchain.android.coincore.btc
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.DefaultLabels
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
@@ -34,6 +35,7 @@ class BtcTokensTest {
     private val historicRates: ChartsDataManager = mock()
     private val currencyPrefs: CurrencyPrefs = mock()
     private val custodialWalletManager: CustodialWalletManager = mock()
+    private val mockLabels: DefaultLabels = mock()
     private val rxBus: RxBus = spy()
 
     private val subject: AssetTokensBase =
@@ -44,6 +46,7 @@ class BtcTokensTest {
             historicRates = historicRates,
             currencyPrefs = currencyPrefs,
             custodialWalletManager = custodialWalletManager,
+            labels = mockLabels,
             rxBus = rxBus
         )
 

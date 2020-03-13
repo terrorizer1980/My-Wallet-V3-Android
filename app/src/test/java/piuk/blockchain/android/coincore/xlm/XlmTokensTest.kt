@@ -7,6 +7,7 @@ import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.models.XlmTransaction
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.testutils.lumens
+import com.blockchain.wallet.DefaultLabels
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.verify
@@ -35,6 +36,7 @@ class XlmTokensTest {
     private val historicRates: ChartsDataManager = mock()
     private val currencyPrefs: CurrencyPrefs = mock()
     private val custodialWalletManager: CustodialWalletManager = mock()
+    private val mockLabels: DefaultLabels = mock()
     private val rxBus: RxBus = spy()
 
     private val xlmDataManager: XlmDataManager = mock()
@@ -46,6 +48,7 @@ class XlmTokensTest {
             historicRates = historicRates,
             currencyPrefs = currencyPrefs,
             custodialWalletManager = custodialWalletManager,
+            labels = mockLabels,
             rxBus = rxBus
         )
 

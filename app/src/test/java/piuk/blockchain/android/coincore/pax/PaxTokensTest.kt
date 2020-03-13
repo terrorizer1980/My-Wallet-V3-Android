@@ -4,6 +4,7 @@ import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.testutils.usdPax
+import com.blockchain.wallet.DefaultLabels
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.verify
@@ -38,6 +39,7 @@ class PaxTokensTest {
 
     private val paxAccount: Erc20Account = mock()
     private val stringUtils: StringUtils = mock()
+    private val mockLabels: DefaultLabels = mock()
 
     private val subject: AssetTokensBase =
         PaxTokens(
@@ -46,6 +48,7 @@ class PaxTokensTest {
             currencyPrefs = currencyPrefs,
             custodialWalletManager = custodialWalletManager,
             stringUtils = stringUtils,
+            labels = mockLabels,
             rxBus = rxBus
         )
 

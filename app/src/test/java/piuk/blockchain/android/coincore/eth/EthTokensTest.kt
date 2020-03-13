@@ -4,6 +4,7 @@ import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.testutils.ether
+import com.blockchain.wallet.DefaultLabels
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.verify
@@ -35,6 +36,7 @@ class EthTokensTest {
     private val currencyPrefs: CurrencyPrefs = mock()
     private val custodialWalletManager: CustodialWalletManager = mock()
     private val stringUtils: StringUtils = mock()
+    private val mockLabels: DefaultLabels = mock()
     private val rxBus: RxBus = spy()
 
     private val subject: AssetTokensBase =
@@ -46,6 +48,7 @@ class EthTokensTest {
             custodialWalletManager = custodialWalletManager,
             crashLogger = mock(),
             stringUtils = stringUtils,
+            labels = mockLabels,
             rxBus = rxBus
         )
 
