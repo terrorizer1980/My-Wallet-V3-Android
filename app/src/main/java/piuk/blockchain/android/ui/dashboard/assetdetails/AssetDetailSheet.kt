@@ -330,7 +330,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
                 this.granularity = granularity
                 valueFormatter = object : ValueFormatter() {
                     override fun getFormattedValue(value: Float): String {
-                        return dateFormat.format(Date(value.toLong()))
+                        return dateFormat.format(Date(value.toLong() * 1000))
                     }
                 }
             }
