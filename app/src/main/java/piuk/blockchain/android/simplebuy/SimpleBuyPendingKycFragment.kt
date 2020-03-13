@@ -75,8 +75,14 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
                 else -> R.drawable.ic_kyc_pending
             }
         )
+        newState.kycVerificationState?.takeIf { it != latestKycState }?.let {
+            sendStateAnalytics(it)
+        }
+        latestKycState = newState.kycVerificationState
+    }
 
-        when (newState.kycVerificationState) {
+    private fun sendStateAnalytics(state: KycState) {
+        when (state) {
             KycState.VERIFIED_BUT_NOT_ELIGIBLE -> analytics.logEvent(SimpleBuyAnalytics.KYC_NOT_ELIGIBLE)
             KycState.PENDING -> analytics.logEvent(SimpleBuyAnalytics.KYC_VERIFYING)
             KycState.IN_REVIEW -> analytics.logEvent(SimpleBuyAnalytics.KYC_MANUAL)
@@ -85,6 +91,8 @@ class SimpleBuyPendingKycFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent,
             }
         }
     }
+
+    private var latestKycState: KycState? = null
 
     override fun navigator(): SimpleBuyNavigator =
         (activity as? SimpleBuyNavigator) ?: throw IllegalStateException("Parent must implement SimpleBuyNavigator")
