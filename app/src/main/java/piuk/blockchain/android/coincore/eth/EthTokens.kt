@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.DefaultLabels
 import com.blockchain.wallet.toAccountReference
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
@@ -45,6 +46,7 @@ internal class EthTokens(
     private val stringUtils: StringUtils,
     private val crashLogger: CrashLogger,
     private val custodialWalletManager: CustodialWalletManager,
+    private val labels: DefaultLabels,
     rxBus: RxBus
 ) : AssetTokensBase(rxBus) {
 

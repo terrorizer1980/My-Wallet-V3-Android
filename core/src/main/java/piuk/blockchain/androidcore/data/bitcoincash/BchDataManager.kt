@@ -92,15 +92,6 @@ class BchDataManager(
                 }
         }.subscribeOn(Schedulers.io())
 
-    /**
-     * Refreshes bitcoin cash metadata. Useful if another platform performed any changes to wallet state.
-     * At this point metadataNodeFactory.metadata node will exist.
-     *
-     * Note that this clears the balances and transactions from [BitcoinCashWallet]
-     */
-    fun refreshMetadataCompletable(): Completable =
-        initBchWallet(defaultLabels[CryptoCurrency.BCH])
-
     fun serializeForSaving(): String = bchDataStore.bchMetadata!!.toJson()
 
     @VisibleForTesting
@@ -237,7 +228,8 @@ class BchDataManager(
                 .forEach {
                     val accountNumber = it + 1
 
-                    val newAccountLabel = "${defaultLabels[CryptoCurrency.BTC]} $accountNumber"
+                    val label = defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.BTC)
+                    val newAccountLabel = "$label $accountNumber"
                     val acc =
                         payloadDataManager.wallet!!.hdWallets[0].addAccount(newAccountLabel)
 
@@ -281,7 +273,7 @@ class BchDataManager(
             bchDataStore.bchWallet!!.addAccount()
         }
 
-        val defaultLabel = defaultLabels[CryptoCurrency.BCH]
+        val defaultLabel = defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.BCH)
         val count = bchDataStore.bchWallet!!.accountTotal
         bchDataStore.bchMetadata!!.addAccount(
             GenericMetadataAccount(

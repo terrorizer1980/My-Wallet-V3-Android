@@ -7,6 +7,7 @@ import com.blockchain.sunriver.models.XlmTransaction
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
+import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -37,12 +38,13 @@ import timber.log.Timber
 import java.lang.IllegalArgumentException
 
 internal class XlmTokens(
-    rxBus: RxBus,
     private val xlmDataManager: XlmDataManager,
     private val exchangeRates: ExchangeRateDataManager,
     private val historicRates: ChartsDataManager,
     private val currencyPrefs: CurrencyPrefs,
-    private val custodialWalletManager: CustodialWalletManager
+    private val custodialWalletManager: CustodialWalletManager,
+    private val labels: DefaultLabels,
+    rxBus: RxBus
 ) : AssetTokensBase(rxBus) {
 
     override val asset: CryptoCurrency

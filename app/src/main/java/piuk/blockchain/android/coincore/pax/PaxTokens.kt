@@ -3,6 +3,7 @@ package piuk.blockchain.android.coincore.pax
 import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -38,12 +39,13 @@ import timber.log.Timber
 import java.math.BigInteger
 
 internal class PaxTokens(
-    rxBus: RxBus,
     private val paxAccount: Erc20Account,
     private val exchangeRates: ExchangeRateDataManager,
     private val currencyPrefs: CurrencyPrefs,
     private val stringUtils: StringUtils,
-    private val custodialWalletManager: CustodialWalletManager
+    private val custodialWalletManager: CustodialWalletManager,
+    private val labels: DefaultLabels,
+    rxBus: RxBus
 ) : AssetTokensBase(rxBus) {
 
     override val asset = CryptoCurrency.PAX

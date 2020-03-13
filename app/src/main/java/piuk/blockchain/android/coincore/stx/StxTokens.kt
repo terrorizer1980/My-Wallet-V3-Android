@@ -2,6 +2,7 @@ package piuk.blockchain.android.coincore.stx
 
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -25,10 +26,11 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import timber.log.Timber
 
 internal class StxTokens(
-    rxBus: RxBus,
     private val payloadManager: PayloadManager,
     private val currencyPrefs: CurrencyPrefs,
-    private val custodialWalletManager: CustodialWalletManager
+    private val custodialWalletManager: CustodialWalletManager,
+    private val labels: DefaultLabels,
+    rxBus: RxBus
 ) : AssetTokensBase(rxBus) {
 
     override val asset: CryptoCurrency
