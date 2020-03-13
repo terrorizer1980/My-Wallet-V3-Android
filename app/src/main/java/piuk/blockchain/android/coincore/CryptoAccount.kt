@@ -36,6 +36,4 @@ interface CryptoSingleAccount : CryptoAccount {
 //    }
 }
 
-interface CryptoAccountGroup : CryptoAccount {
-    val accounts: Single<CryptoAccountsList>
-}
+interface CryptoAccountGroup : CryptoAccount

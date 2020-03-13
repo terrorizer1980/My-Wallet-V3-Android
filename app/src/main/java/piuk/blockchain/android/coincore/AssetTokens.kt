@@ -31,7 +31,7 @@ interface AssetTokens {
     val asset: CryptoCurrency
 
     fun defaultAccount(): Single<CryptoSingleAccount>
-    fun accounts(filter: Set<AssetFilter> = setOf(AssetFilter.Total)): Single<CryptoAccountGroup>
+    fun accounts(filter: AssetFilter = AssetFilter.Total): Single<CryptoAccountGroup>
 
     fun exchangeRate(): Single<FiatValue>
     fun historicRate(epochWhen: Long): Single<FiatValue>

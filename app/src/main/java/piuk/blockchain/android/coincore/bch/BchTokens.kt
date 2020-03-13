@@ -84,7 +84,7 @@ internal class BchTokens(
             Single.just(BchCryptoAccount(a))
         }
 
-    override fun accounts(filter: Set<AssetFilter>): Single<CryptoAccountGroup> {
+    override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> {
         TODO("not implemented")
     }
 

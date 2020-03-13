@@ -25,6 +25,7 @@ import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
+import piuk.blockchain.android.coincore.impl.filterTokenAccounts
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -50,6 +51,8 @@ internal class EthTokens(
     rxBus: RxBus
 ) : AssetTokensBase(rxBus) {
 
+    val accounts = mutableListOf<CryptoSingleAccount>()
+
     override val asset: CryptoCurrency
         get() = CryptoCurrency.ETHER
 
@@ -66,7 +69,13 @@ internal class EthTokens(
         .doOnError { Timber.d("Coincore: Init ETH Failed") }
 
     private fun loadAccounts(): Completable =
-        Completable.complete()
+        Completable.fromCallable {
+            with(accounts) {
+                clear()
+                add(nonCustodialAccount())
+                add(custodialAccount())
+            }
+        }
 
     private fun initActivities(): Completable =
         Completable.complete()
@@ -76,15 +85,27 @@ internal class EthTokens(
 
     override fun defaultAccount(): Single<CryptoSingleAccount> =
         Single.fromCallable {
-            EthCryptoAccountNonCustodial(
-                this,
-                ethDataManager.getEthWallet()?.account ?: throw Exception("No ether wallet found")
-            )
+            accounts.firstOrNull {
+                it is EthCryptoAccountNonCustodial
+            } ?: throw Exception("No ether wallet found")
         }
 
-    override fun accounts(filter: Set<AssetFilter>): Single<CryptoAccountGroup> {
-        TODO("not implemented")
-    }
+    private fun nonCustodialAccount(): CryptoSingleAccount =
+        EthCryptoAccountNonCustodial(
+            this,
+            ethDataManager.getEthWallet()?.account ?: throw Exception("No ether wallet found")
+        )
+
+    private fun custodialAccount(): CryptoSingleAccount =
+        EthCryptoAccountCustodial(
+            labels.getDefaultCustodialWalletLabel(asset),
+            custodialWalletManager
+        )
+
+    override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> =
+        Single.fromCallable {
+            filterTokenAccounts(asset, labels, accounts, filter)
+        }
 
     override fun receiveAddress(): Single<String> =
         Single.just(getDefaultEthAccountRef().receiveAddress)

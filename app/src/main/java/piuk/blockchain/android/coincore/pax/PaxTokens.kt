@@ -69,7 +69,7 @@ internal class PaxTokens(
     override fun defaultAccount(): Single<CryptoSingleAccount> =
         Single.just(getNonCustodialPaxAccount())
 
-    override fun accounts(filter: Set<AssetFilter>): Single<CryptoAccountGroup> {
+    override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> {
         TODO("not implemented")
     }
 

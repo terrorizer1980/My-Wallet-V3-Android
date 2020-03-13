@@ -9,6 +9,9 @@ import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.AssetAction
+import piuk.blockchain.android.coincore.CryptoAccount
+import piuk.blockchain.android.coincore.CryptoAccountGroup
+import piuk.blockchain.android.coincore.CryptoAccountsList
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.androidcore.utils.extensions.switchToSingleIfEmpty
 import timber.log.Timber
@@ -95,4 +98,68 @@ abstract class CryptoSingleAccountNonCustodialBase
         AssetAction.Receive,
         AssetAction.Swap
     )
+}
+
+// Currently only one custodial account is supported for each asset,
+// so all the methods on this can just delegate directly
+// to the (required) CryptoSingleAccountCustodialBase
+
+class CryptoAccountCustodialGroup(
+    asset: CryptoCurrency,
+    override val label: String,
+    accounts: CryptoAccountsList
+) : CryptoAccountGroup {
+
+    private val account: CryptoSingleAccountCustodialBase
+
+    init {
+        require(accounts.size == 1)
+        require(accounts[0] is CryptoSingleAccountCustodialBase)
+
+        account = accounts[0] as CryptoSingleAccountCustodialBase
+    }
+
+    override val cryptoCurrency: CryptoCurrency?
+        get() = account.cryptoCurrency
+
+    override val balance: Single<CryptoValue>
+        get() = account.balance
+
+    override val activity: Single<ActivitySummaryList>
+        get() = account.activity
+
+    override val actions: AvailableActions
+        get() = account.actions
+
+    override val hasTransactions: Single<Boolean>
+        get() = account.hasTransactions
+
+    override val isFunded: Single<Boolean>
+        get() = account.isFunded
+
+    override fun findActivityItem(txHash: String): Maybe<ActivitySummaryItem> =
+        account.findActivityItem(txHash)
+}
+
+class CryptoAccountCompoundGroup(
+    asset: CryptoCurrency,
+    override val label: String,
+    val accounts: CryptoAccountsList
+) : CryptoAccountGroup {
+    override val cryptoCurrency: CryptoCurrency?
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val balance: Single<CryptoValue>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val activity: Single<ActivitySummaryList>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val actions: AvailableActions
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val hasTransactions: Single<Boolean>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val isFunded: Single<Boolean>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun findActivityItem(txHash: String): Maybe<ActivitySummaryItem> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

@@ -99,4 +99,7 @@ internal class ResourceDefaultLabels(
         val asset = resources.getString(cryptoCurrency.assetName())
         return resources.getString(R.string.custodial_wallet_default_label, asset)
     }
+
+    override fun getAssetMasterWalletLabel(cryptoCurrency: CryptoCurrency): String =
+        resources.getString(cryptoCurrency.assetName())
 }
