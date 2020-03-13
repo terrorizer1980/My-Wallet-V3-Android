@@ -10,11 +10,9 @@ import info.blockchain.wallet.exceptions.DecryptionException;
 import info.blockchain.wallet.exceptions.EncryptionException;
 import info.blockchain.wallet.exceptions.HDWalletException;
 import info.blockchain.wallet.exceptions.InvalidCredentialsException;
-import info.blockchain.wallet.exceptions.MetadataException;
 import info.blockchain.wallet.exceptions.NoSuchAddressException;
 import info.blockchain.wallet.exceptions.ServerConnectionException;
 import info.blockchain.wallet.exceptions.UnsupportedVersionException;
-import info.blockchain.wallet.metadata.MetadataNodeFactory;
 import info.blockchain.wallet.multiaddress.MultiAddressFactory;
 import info.blockchain.wallet.multiaddress.TransactionSummary;
 import info.blockchain.wallet.pairing.Pairing;
@@ -27,13 +25,13 @@ import info.blockchain.wallet.payload.data.WalletExtensionsKt;
 import info.blockchain.wallet.payload.data.WalletWrapper;
 import info.blockchain.wallet.util.DoubleEncryptionFactory;
 import info.blockchain.wallet.util.Tools;
-import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.MnemonicException.MnemonicChecksumException;
 import org.bitcoinj.crypto.MnemonicException.MnemonicLengthException;
 import org.bitcoinj.crypto.MnemonicException.MnemonicWordException;
@@ -72,7 +70,6 @@ public class PayloadManager {
 
     private WalletBase walletBaseBody;
     private String password;
-    private MetadataNodeFactory metadataNodeFactory;
 
     private final WalletApi walletApi;
 
@@ -86,8 +83,7 @@ public class PayloadManager {
             WalletApi walletApi,
             MultiAddressFactory multiAddressFactory,
             BalanceManagerBtc balanceManagerBtc,
-            BalanceManagerBch balanceManagerBch
-    ) {
+            BalanceManagerBch balanceManagerBch) {
         this.walletApi = walletApi;
         // Bitcoin
         this.multiAddressFactory = multiAddressFactory;
@@ -111,14 +107,6 @@ public class PayloadManager {
 
     public void setTempPassword(String password) {
         this.password = password;
-    }
-
-    public MetadataNodeFactory getMetadataNodeFactory() {
-        return metadataNodeFactory;
-    }
-
-    public void clearMetadataNodeFactory() {
-        metadataNodeFactory = null;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -643,76 +631,6 @@ public class PayloadManager {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // METADATA
-    ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * This will deactivate push notifications.
-     *
-     * @param node used to sign GUID.
-     */
-    public Observable<ResponseBody> unregisterMdid(ECKey node) {
-        String signedGuid = node.signMessage(walletBaseBody.getWalletBody().getGuid());
-        return walletApi.unregisterMdid(walletBaseBody.getWalletBody().getGuid(),
-                walletBaseBody.getWalletBody().getSharedKey(),
-                signedGuid);
-    }
-
-    /**
-     * This will activate push notifications.
-     *
-     * @param node used to sign GUID.
-     */
-    public Observable<ResponseBody> registerMdid(ECKey node) {
-        String signedGuid = node.signMessage(walletBaseBody.getWalletBody().getGuid());
-        return walletApi.registerMdid(walletBaseBody.getWalletBody().getGuid(),
-                walletBaseBody.getWalletBody().getSharedKey(),
-                signedGuid);
-    }
-
-    /**
-     * Loads the metadata nodes from the metadata service. If this fails, the function returns false
-     * and they must be generated and saved using this#generateNodes(String). This allows us
-     * to generate and prompt for a second password only once.
-     *
-     * @return Returns true if the metadata nodes can be loaded from the service
-     * @throws Exception Can throw an Exception if there's an issue with the credentials or network
-     */
-    public boolean loadNodes() throws Exception {
-        if (metadataNodeFactory == null) {
-            metadataNodeFactory = new MetadataNodeFactory(walletBaseBody.getWalletBody().getGuid(),
-                    walletBaseBody.getWalletBody().getSharedKey(), password);
-
-            metadataNodeFactory.fetchMagicFowSecondPwNode();
-            metadataNodeFactory.fetchMagicFowSecondPwNodeLegacy();
-            metadataNodeFactory.deletePwNodeLegacy();
-        }
-        return metadataNodeFactory.isMetadataUsable();
-    }
-
-    /**
-     * Generates the nodes for the shared metadata service and saves them on the service. Takes an
-     * optional second password if set by the user. this#loadNodes(String, String, String)
-     * must be called first to avoid a {@link NullPointerException}.
-     *
-     * @param secondPassword An optional second password, if applicable
-     * @throws Exception Can throw a {@link DecryptionException} if the second password is wrong, or
-     *                   a generic Exception if saving the nodes fails
-     */
-    public void generateNodes() throws Exception {
-        if (walletBaseBody.getWalletBody().isDoubleEncryption()
-                && walletBaseBody.getWalletBody().getHdWallets().get(0).getMasterKey() == null) {
-            throw new HDWalletException("Wallet private key unavailable. First decrypt with second password.");
-        }
-
-        boolean success = metadataNodeFactory.saveMetadataHdNodes(
-                walletBaseBody.getWalletBody().getHdWallets().get(HD_WALLET_INDEX).getMasterKey());
-        if (!success) {
-            throw new MetadataException("All Metadata nodes might not have saved.");
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
     // MULTIADDRESS
     ///////////////////////////////////////////////////////////////////////////
 
@@ -746,6 +664,18 @@ public class PayloadManager {
         all.addAll(activeLegacy);
 
         return multiAddressFactory.getAccountTransactions(all, watchOnly, activeLegacy, null, limit, offset, 0);
+    }
+
+    public DeterministicKey masterKey() throws HDWalletException {
+        try {
+            if (walletBaseBody.getWalletBody().isDoubleEncryption()
+                    && walletBaseBody.getWalletBody().getHdWallets().get(0).getMasterKey() == null) {
+                throw new HDWalletException("Wallet private key unavailable. First decrypt with second password.");
+            }
+            return walletBaseBody.getWalletBody().getHdWallets().get(HD_WALLET_INDEX).getMasterKey();
+        } catch (HDWalletException e) {
+            throw new HDWalletException("Wallet private key unavailable. First decrypt with second password.");
+        }
     }
 
     /**
@@ -937,9 +867,9 @@ public class PayloadManager {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // BALANCE BITCOIN
-    ///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+// BALANCE BITCOIN
+///////////////////////////////////////////////////////////////////////////
 
     /**
      * Balance API - Final balance for address.
@@ -990,7 +920,8 @@ public class PayloadManager {
      * This is used to immediately update balances after a successful transaction which speeds
      * up the balance the UI reflects without the need to wait for incoming websocket notification.
      */
-    public void subtractAmountFromAddressBalance(String address, BigInteger amount) throws Exception {
+    public void subtractAmountFromAddressBalance(String address, BigInteger amount) throws
+            Exception {
         balanceManager.subtractAmountFromAddressBalance(address, amount);
     }
 

@@ -206,20 +206,10 @@ class ShapeShiftDataManager(
     @WebRequest
     @Throws(Exception::class)
     private fun fetchOrCreateShapeShiftTradeData(): Observable<Pair<ShapeShiftTrades, Boolean>> =
-        metadataManager.fetchMetadata(MetadataManager.METADATA_TYPE_SHAPE_SHIFT_EXTERNAL)
-            .map { optional ->
-
-                val json = optional.orNull()
-                var shapeShiftData = ShapeShiftTrades.load(json)
-                var needsSave = false
-
-                if (shapeShiftData == null) {
-                    shapeShiftData = ShapeShiftTrades()
-                    needsSave = true
-                }
-
-                Pair(shapeShiftData, needsSave)
-            }
+        metadataManager.fetchMetadata(MetadataManager.METADATA_TYPE_SHAPE_SHIFT_EXTERNAL).map { json ->
+            Pair(ShapeShiftTrades.load(json), false)
+        }.defaultIfEmpty(Pair(ShapeShiftTrades(), true))
+            .toObservable()
 
     fun save(): Completable {
         tradeData.run {

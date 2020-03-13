@@ -8,6 +8,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.extensions.thenSingle
 import java.lang.IllegalArgumentException
 import java.math.BigInteger
 
@@ -43,9 +44,7 @@ internal abstract class BitcoinLikeTokens(rxBus: RxBus)
 }
 
 fun Completable.toCryptoSingle(cryptoValue: CryptoCurrency, getValue: () -> BigInteger): Single<CryptoValue> {
-    return this.andThen(
-        Single.defer {
-            Single.just(CryptoValue(cryptoValue, getValue()))
-        }
-    )
+    return thenSingle {
+        Single.just(CryptoValue(cryptoValue, getValue()))
+    }
 }

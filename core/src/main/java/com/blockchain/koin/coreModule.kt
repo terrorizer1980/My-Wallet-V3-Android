@@ -30,7 +30,9 @@ import com.blockchain.sunriver.XlmTransactionTimeoutFetcher
 import com.blockchain.wallet.SeedAccess
 import com.blockchain.wallet.SeedAccessWithoutPrompt
 import info.blockchain.api.blockexplorer.BlockExplorer
+import info.blockchain.wallet.metadata.MetadataDerivation
 import info.blockchain.wallet.util.PrivateKeyFactory
+import org.bitcoinj.params.BitcoinMainNetParams
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.util.RootUtil
 import piuk.blockchain.androidcore.BuildConfig
@@ -71,7 +73,6 @@ import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsState
 import piuk.blockchain.androidcore.utils.AESUtilWrapper
 import piuk.blockchain.androidcore.utils.DeviceIdGenerator
 import piuk.blockchain.androidcore.utils.DeviceIdGeneratorImpl
-import piuk.blockchain.androidcore.utils.MetadataUtils
 import piuk.blockchain.androidcore.utils.PrefsUtil
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.UUIDGenerator
@@ -82,8 +83,6 @@ val coreModule = applicationContext {
     bean { RxBus() }
 
     factory { AuthService(get(), get()) }
-
-    factory { MetadataUtils() }
 
     factory { PrivateKeyFactory() }
 
@@ -101,7 +100,7 @@ val coreModule = applicationContext {
             .bind(SeedAccessWithoutPrompt::class)
             .bind(SeedAccess::class)
 
-        bean { MetadataManager(get(), get(), get()) }
+        bean { MetadataManager(get(), get(), MetadataDerivation(BitcoinMainNetParams.get())) }
 
         bean { MoshiMetadataRepositoryAdapter(get(), get()) as MetadataRepository }
 

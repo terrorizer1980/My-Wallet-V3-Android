@@ -24,6 +24,7 @@ class BuyDataManager(
     private val coinifyFeatureFlag: FeatureFlag,
     private val exchangeService: ExchangeService
 ) {
+
     val canBuy: Single<Boolean>
         @Synchronized get() {
             initReplaySubjects()

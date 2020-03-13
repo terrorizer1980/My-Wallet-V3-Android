@@ -3,6 +3,8 @@ package com.blockchain.koin
 import info.blockchain.wallet.api.dust.BchDustService
 import info.blockchain.wallet.api.dust.DustApi
 import info.blockchain.wallet.api.dust.DustService
+import info.blockchain.wallet.metadata.MetadataService
+import info.blockchain.wallet.metadata.MetadataInteractor
 import info.blockchain.wallet.multiaddress.MultiAddressFactory
 import info.blockchain.wallet.payload.BalanceManagerBch
 import info.blockchain.wallet.payload.BalanceManagerBtc
@@ -31,6 +33,14 @@ val walletModule = applicationContext {
     }
 
     factory { PriceApi(get(), get()) }
+
+    factory {
+        MetadataInteractor(
+            metadataService = get()
+        )
+    }
+
+    bean { get<Retrofit>("api").create(MetadataService::class.java) }
 
     bean { get<Retrofit>("api").create(PriceEndpoints::class.java) }
 

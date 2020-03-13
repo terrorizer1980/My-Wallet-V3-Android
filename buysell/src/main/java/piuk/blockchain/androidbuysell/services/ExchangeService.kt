@@ -1,12 +1,12 @@
 package piuk.blockchain.androidbuysell.services
 
 import info.blockchain.wallet.metadata.Metadata
+import info.blockchain.wallet.metadata.MetadataInteractor
 import info.blockchain.wallet.payload.PayloadManager
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.ReplaySubject
-import org.bitcoinj.crypto.DeterministicKey
 import org.spongycastle.util.encoders.Hex
 import piuk.blockchain.androidbuysell.api.CoinifyWalletService
 import piuk.blockchain.androidbuysell.models.CoinifyData
@@ -27,6 +27,8 @@ import java.util.ArrayList
 
 class ExchangeService(
     private val payloadManager: PayloadManager,
+    private val metadataInteractor: MetadataInteractor,
+    private val metadataManager: MetadataManager,
     private val rxBus: RxBus
 ) : CoinifyWalletService {
 
@@ -40,19 +42,15 @@ class ExchangeService(
     private var didStartLoad: Boolean = false
 
     fun getWebViewLoginDetails(): Observable<WebViewLoginDetails> = Observable.zip(
-        getExchangeData().flatMap { buyMetadata ->
-            Observable.fromCallable {
-                val metadata = buyMetadata.metadata
-                metadata ?: ""
-            }.applySchedulers()
-        },
-        getExchangeData().flatMap { buyMetadata ->
-            Observable.fromCallable {
-                buyMetadata.fetchMagic()
-                val magicHash = buyMetadata.magicHash
-                if (magicHash == null) "" else Hex.toHexString(magicHash)
-            }.applySchedulers()
-        },
+        getExchangeData().flatMapSingle { buyMetadata ->
+            metadataInteractor.loadRemoteMetadata(buyMetadata).defaultIfEmpty("").toSingle()
+        }.applySchedulers(),
+        getExchangeData().flatMapSingle { buyMetadata ->
+            metadataInteractor.fetchMagic(buyMetadata.address).map {
+                val magicHash = it
+                Hex.toHexString(magicHash)
+            }
+        }.applySchedulers(),
         BiFunction { externalJson, magicHash ->
             val walletJson = payloadManager.payload!!.toJson()
             val password = payloadManager.tempPassword
@@ -69,12 +67,14 @@ class ExchangeService(
             .doOnError { Timber.e(it) }
     }
 
+    /**
+     * The reason that metadataInteractor is injected here and not metadata manager,
+     * is due to code legacy that will be removed soon due to coinify elimination.
+     */
+
     private fun getPendingTradeAddresses(): Observable<String> = getExchangeData()
         .flatMap { metadata ->
-            Observable.fromCallable {
-                val exchangeData = metadata.metadata
-                exchangeData ?: ""
-            }.applySchedulers()
+            metadataInteractor.loadRemoteMetadata(metadata).defaultIfEmpty("").toObservable().applySchedulers()
         }
         .flatMapIterable { exchangeData ->
             if (exchangeData.isEmpty()) {
@@ -85,7 +85,6 @@ class ExchangeService(
                 when {
                     data.coinify != null -> trades.addAll(data.coinify?.trades ?: arrayListOf())
                 }
-
                 trades
             }
         }
@@ -100,19 +99,16 @@ class ExchangeService(
 
     fun getExchangeMetaData(): Observable<ExchangeData> =
         getExchangeData()
-        .flatMap { metadata ->
-            Observable.fromCallable {
-                val exchangeData = metadata.metadata
-                exchangeData ?: ""
-            }.applySchedulers()
-        }
-        .map { exchangeData ->
-            if (exchangeData.isEmpty()) {
-                ExchangeData()
-            } else {
-                exchangeData.toKotlinObject()
+            .flatMap { metadata ->
+                metadataInteractor.loadRemoteMetadata(metadata).defaultIfEmpty("").toObservable().applySchedulers()
             }
-        }
+            .map { exchangeData ->
+                if (exchangeData.isEmpty()) {
+                    ExchangeData()
+                } else {
+                    exchangeData.toKotlinObject()
+                }
+            }
 
     fun wipe() {
         metadataSubject = ReplaySubject.create(1)
@@ -132,26 +128,10 @@ class ExchangeService(
     }
 
     fun reloadExchangeData() {
-        val metadataNodeFactory = payloadManager.metadataNodeFactory
-
-        if (metadataNodeFactory != null) {
-            val metadataNode = metadataNodeFactory.metadataNode
-
-            if (metadataNode != null) {
-                val exchangeDataStream = getMetadata(metadataNode)
-                exchangeDataStream.subscribeWith(metadataSubject)
-            } else {
-                Timber.e("MetadataNode not generated yet. Wallet possibly double encrypted.")
+        val exchangeDataStream =
+            Observable.defer {
+                Observable.just(metadataManager.buildMetadata(MetadataManager.METADATA_TYPE_EXCHANGE))
             }
-        } else {
-            // PayloadManager likely to have been cleared at this point.
-            // TODO This avoids high velocity crash. A proper analyses why this happens would be beneficial.
-            Timber.e("ExchangeService.reloadExchangeData - MetadataNodeFactory is null.")
-        }
+        exchangeDataStream.subscribeWith(metadataSubject)
     }
-
-    private fun getMetadata(metadataHDNode: DeterministicKey): Observable<Metadata> =
-        Observable.fromCallable {
-            Metadata.Builder(metadataHDNode, MetadataManager.METADATA_TYPE_EXCHANGE).build()
-        }.applySchedulers()
 }

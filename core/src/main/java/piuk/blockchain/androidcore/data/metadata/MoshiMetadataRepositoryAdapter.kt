@@ -13,9 +13,7 @@ internal class MoshiMetadataRepositoryAdapter(
 ) : MetadataRepository {
 
     override fun <T : JsonSerializable> loadMetadata(metadataType: Int, clazz: Class<T>): Maybe<T> =
-        metadataManager.fetchMetadata(metadataType).firstElement()
-            .filter { it.isPresent }
-            .map { it.get() }
+        metadataManager.fetchMetadata(metadataType)
             .map {
                 adapter(clazz).fromJson(it) ?: throw IllegalStateException("Error parsing JSON")
             }

@@ -19,7 +19,14 @@ val buySellModule = applicationContext {
 
         bean { BuyConditions() }
 
-        bean { ExchangeService(get(), get()) }
+        bean {
+            ExchangeService(
+                payloadManager = get(),
+                metadataInteractor = get(),
+                metadataManager = get(),
+                rxBus = get()
+            )
+        }
             .bind(CoinifyWalletService::class)
     }
 

@@ -10,7 +10,6 @@ import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.data.cache.DynamicFeeCache
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.ui.home.models.MetadataEvent
-import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
@@ -19,7 +18,6 @@ import timber.log.Timber
 
 class Prerequisites(
     private val metadataManager: MetadataManager,
-    private val environmentSettings: EnvironmentConfig,
     private val settingsDataManager: SettingsDataManager,
     private val shapeShiftDataManager: ShapeShiftDataManager,
     private val coincore: Coincore,
@@ -29,8 +27,9 @@ class Prerequisites(
     private val simpleBuySync: SimpleBuySyncFactory,
     private val rxBus: RxBus
 ) {
+
     fun initMetadataAndRelatedPrerequisites(): Completable =
-        metadataManager.attemptMetadataSetup().ignoreElements()
+        metadataManager.attemptMetadataSetup()
             .andThen(Completable.defer { shapeShiftCompletable() })
             .andThen(Completable.defer { feesCompletable() })
             .andThen(Completable.defer { simpleBuySync.performSync() })
@@ -70,7 +69,6 @@ class Prerequisites(
             .doOnComplete { Timber.d("Wave!!") }
 
     fun decryptAndSetupMetadata(secondPassword: String) = metadataManager.decryptAndSetupMetadata(
-        environmentSettings.bitcoinNetworkParameters,
         secondPassword
     )
 }

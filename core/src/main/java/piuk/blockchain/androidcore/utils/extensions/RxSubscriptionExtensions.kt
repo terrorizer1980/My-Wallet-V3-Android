@@ -88,3 +88,12 @@ fun <T, R> Maybe<T>.flatMapBy(
     onError,
     onComplete
 )
+
+fun <T> Completable.thenSingle(block: () -> Single<T>): Single<T> =
+    andThen(Single.defer { block() })
+
+fun Completable.then(block: () -> Completable): Completable =
+    andThen(Completable.defer { block() })
+
+fun <T> Completable.thenMaybe(block: () -> Maybe<T>): Maybe<T> =
+    andThen(Maybe.defer { block() })

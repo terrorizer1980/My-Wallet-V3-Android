@@ -9,6 +9,8 @@ import info.blockchain.wallet.metadata.data.MetadataResponse;
 import info.blockchain.wallet.metadata.data.Trusted;
 import java.util.HashMap;
 import java.util.List;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -20,7 +22,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-public interface MetadataEndpoints {
+public interface MetadataService {
 
     ///////////////////////////////////////////////////////////////////////////
     // AUTH
@@ -93,11 +95,11 @@ public interface MetadataEndpoints {
     ///////////////////////////////////////////////////////////////////////////
 
     @PUT(MetadataUrls.METADATA + "/{addr}")
-    Call<Void> putMetadata(@Path("addr") String address, @Body MetadataBody body);
+    Completable putMetadata(@Path("addr") String address, @Body MetadataBody body);
 
     @GET(MetadataUrls.METADATA + "/{addr}")
-    Call<MetadataResponse> getMetadata(@Path("addr") String address);
+    Single<MetadataResponse> getMetadata(@Path("addr") String address);
 
     @DELETE(MetadataUrls.METADATA + "/{addr}")
-    Call<Void> deleteMetadata(@Path("addr") String address, @Query("signature") String signature);
+    Completable deleteMetadata(@Path("addr") String address, @Query("signature") String signature);
 }

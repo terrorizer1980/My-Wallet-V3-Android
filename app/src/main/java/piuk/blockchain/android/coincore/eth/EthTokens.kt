@@ -176,7 +176,7 @@ internal class EthTokens(
                             exchangeRates
                         )
                     }.toList()
-                }
+            }
 }
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

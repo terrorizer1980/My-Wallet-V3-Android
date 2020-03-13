@@ -1,17 +1,17 @@
 package piuk.blockchain.androidcore.data.metadata
 
-import com.blockchain.serialization.Saveable
-import com.google.common.base.Optional
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
+import info.blockchain.wallet.metadata.Metadata
+import info.blockchain.wallet.metadata.MetadataDerivation
+import info.blockchain.wallet.metadata.MetadataInteractor
 import info.blockchain.wallet.metadata.MetadataNodeFactory
+import info.blockchain.wallet.metadata.data.RemoteMetadataNodes
 import io.reactivex.Completable
-import io.reactivex.Observable
+import io.reactivex.Maybe
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import org.bitcoinj.core.NetworkParameters
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
-import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.data.rxjava.RxPinning
-import piuk.blockchain.androidcore.utils.MetadataUtils
+import piuk.blockchain.androidcore.utils.extensions.then
 
 /**
  * Manages metadata nodes/keys derived from a user's wallet credentials.
@@ -29,61 +29,59 @@ import piuk.blockchain.androidcore.utils.MetadataUtils
  */
 class MetadataManager(
     private val payloadDataManager: PayloadDataManager,
-    private val metadataUtils: MetadataUtils,
-    rxBus: RxBus
+    private val metadataInteractor: MetadataInteractor,
+    private val metadataDerivation: MetadataDerivation
 ) {
-    private val rxPinning = RxPinning(rxBus)
+    private val credentials: MetadataCredentials
+        get() = payloadDataManager.metadataCredentials ?: throw IllegalStateException("Wallet not initialised")
 
-    fun attemptMetadataSetup() = initMetadataNodesObservable()
+    private var _metadataNodeFactory: MetadataNodeFactory? = null
+
+    private val metadataNodeFactory: MetadataNodeFactory
+        get() = _metadataNodeFactory?.let {
+            it
+        } ?: MetadataNodeFactory(credentials.guid,
+            credentials.sharedKey,
+            credentials.password,
+            metadataDerivation).also {
+            _metadataNodeFactory = it
+        }
+
+    fun attemptMetadataSetup() = initMetadataNodes()
 
     fun decryptAndSetupMetadata(
-        networkParameters: NetworkParameters,
         secondPassword: String
     ): Completable {
-        payloadDataManager.decryptHDWallet(networkParameters, secondPassword)
-        return payloadDataManager.generateNodes()
-            .andThen(initMetadataNodesObservable().ignoreElements())
+        payloadDataManager.decryptHDWallet(secondPassword)
+        return generateNodes()
+            .then { initMetadataNodes() }
     }
 
-    fun fetchMetadata(metadataType: Int): Observable<Optional<String>> =
-        rxPinning.call<Optional<String>> {
-            payloadDataManager.getMetadataNodeFactory()
-                .map { nodeFactory ->
-                    metadataUtils.getMetadataNode(nodeFactory.metadataNode, metadataType)
-                        .metadataOptional
-                }
-        }.subscribeOn(Schedulers.io())
+    fun buildMetadata(metadataType: Int): Metadata =
+        metadataNodeFactory.metadataNode?.let {
+            Metadata.newInstance(metaDataHDNode = it, type = metadataType, metadataDerivation = metadataDerivation)
+        } ?: throw IllegalStateException("Metadata node is null")
+
+    fun fetchMetadata(metadataType: Int): Maybe<String> =
+        metadataNodeFactory.metadataNode?.let {
+            metadataInteractor.loadRemoteMetadata(Metadata.newInstance(metaDataHDNode = it,
+                type = metadataType,
+                metadataDerivation = metadataDerivation))
+        } ?: Maybe.error(IllegalStateException("Metadata node is null"))
 
     fun saveToMetadata(data: String, metadataType: Int): Completable =
-        rxPinning.call {
-            payloadDataManager.getMetadataNodeFactory()
-                .flatMapCompletable {
-                    Completable.fromCallable {
-                        metadataUtils.getMetadataNode(it.metadataNode, metadataType).putMetadata(data)
-                    }
-                }.subscribeOn(Schedulers.io())
-        }
-
-    fun saveToMetadata(saveable: Saveable): Completable =
-        rxPinning.call {
-            payloadDataManager.getMetadataNodeFactory()
-                .flatMapCompletable {
-                    Completable.fromCallable {
-                        metadataUtils.getMetadataNode(
-                            it.metadataNode,
-                            saveable.getMetadataType()
-                        ).putMetadata(saveable.toJson())
-                    }
-                }.subscribeOn(Schedulers.io())
-        }
+        metadataNodeFactory.metadataNode?.let {
+            metadataInteractor.putMetadata(data,
+                Metadata.newInstance(metaDataHDNode = it, type = metadataType, metadataDerivation = metadataDerivation))
+        } ?: Completable.error(IllegalStateException("Metadata node is null"))
 
     /**
      * Loads or derives the stored nodes/keys from the metadata service.
      *
      * @throws InvalidCredentialsException If nodes/keys cannot be derived because wallet is double encrypted
      */
-    private fun initMetadataNodesObservable(): Observable<MetadataNodeFactory> = rxPinning.call<MetadataNodeFactory> {
-        payloadDataManager.loadNodes().map { loaded ->
+    private fun initMetadataNodes(): Completable =
+        loadNodes().map { loaded ->
             if (!loaded) {
                 if (payloadDataManager.isDoubleEncrypted) {
                     throw InvalidCredentialsException("Unable to derive metadata keys, payload is double encrypted")
@@ -93,13 +91,48 @@ class MetadataManager(
             } else {
                 false
             }
-        }.flatMap { needsGeneration ->
+        }.flatMapCompletable { needsGeneration ->
             if (needsGeneration) {
-                payloadDataManager.generateAndReturnNodes()
+                generateNodes()
             } else {
-                payloadDataManager.getMetadataNodeFactory()
+                Completable.complete()
             }
         }.subscribeOn(Schedulers.io())
+
+    /**
+     * Loads the metadata nodes from the metadata service. If this fails, the function returns false
+     * and they must be generated and saved using this#generateNodes(String). This allows us
+     * to generate and prompt for a second password only once.
+     *
+     * @return Returns true if the metadata nodes can be loaded from the service
+     * @throws Exception Can throw an Exception if there's an issue with the credentials or network
+     */
+    private fun loadNodes(): Single<Boolean> =
+        metadataInteractor.loadRemoteMetadata(metadataNodeFactory.secondPwNode)
+            .map { metadata -> metadataNodeFactory.initNodes(RemoteMetadataNodes.fromJson(metadata)) }
+            .defaultIfEmpty(false)
+            .onErrorReturn { false }
+            .toSingle()
+
+    fun reset() {
+        _metadataNodeFactory = null
+    }
+
+    /**
+     * Generates the nodes for the shared metadata service and saves them on the service. Takes an
+     * optional second password if set by the user. this#loadNodes(String, String, String)
+     * must be called first to avoid a {@link NullPointerException}.
+     *
+     * @param secondPassword An optional second password, if applicable
+     * @throws Exception Can throw a {@link DecryptionException} if the second password is wrong, or
+     *                   a generic Exception if saving the nodes fails
+     */
+    private fun generateNodes(): Completable {
+        val remoteMetadataNodes = metadataNodeFactory.remoteMetadataHdNodes(payloadDataManager.masterKey)
+        return metadataInteractor.putMetadata(remoteMetadataNodes.toJson(), metadataNodeFactory.secondPwNode)
+            .doOnComplete {
+                metadataNodeFactory.initNodes(remoteMetadataNodes)
+            }
     }
 
     companion object {

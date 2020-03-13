@@ -106,7 +106,6 @@ internal class BchTokens(
 
     override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = accountReference(account)
-
         return updater().toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }
     }
 

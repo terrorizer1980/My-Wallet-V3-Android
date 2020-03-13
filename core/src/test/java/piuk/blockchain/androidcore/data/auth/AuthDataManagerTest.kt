@@ -166,7 +166,7 @@ class AuthDataManagerTest : RxTest() {
             .thenReturn(
                 Observable.just(
                     Response.error(
-                        500,
+                        403,
                         ResponseBody.create(
                             ("application/json").toMediaTypeOrNull(),
                             "{}"

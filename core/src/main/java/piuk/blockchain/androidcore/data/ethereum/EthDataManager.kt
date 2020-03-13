@@ -240,16 +240,12 @@ class EthDataManager(
      *
      * @return A [Completable] object
      */
-    fun updateTransactionNotes(hash: String, note: String): Completable = rxPinning.call {
-        if (ethDataStore.ethWallet != null) {
-            ethDataStore.ethWallet!!.let {
-                it.txNotes[hash] = note
-                return@call save()
-            }
-        } else {
-            return@call Completable.error { IllegalStateException("ETH Wallet is null") }
-        }
-    }.applySchedulers()
+    fun updateTransactionNotes(hash: String, note: String): Completable =
+        ethDataStore.ethWallet?.let {
+            it.txNotes[hash] = note
+            return@let save()
+        } ?: Completable.error { IllegalStateException("ETH Wallet is null") }
+            .applySchedulers()
 
     fun updateErc20TransactionNotes(hash: String, note: String): Completable = rxPinning.call {
         getErc20TokenData(CryptoCurrency.PAX).putTxNote(hash, note)
@@ -264,18 +260,15 @@ class EthDataManager(
      * @return An [Completable]
      */
     fun initEthereumWallet(defaultLabel: String, defaultPaxLabel: String): Completable =
-        rxPinning.call {
-            fetchOrCreateEthereumWallet(defaultLabel, defaultPaxLabel)
-                .flatMapCompletable { (wallet, needsSave) ->
-                    ethDataStore.ethWallet = wallet
-
-                    if (needsSave) {
-                        save()
-                    } else {
-                        Completable.complete()
-                    }
+        fetchOrCreateEthereumWallet(defaultLabel, defaultPaxLabel)
+            .flatMapCompletable { (wallet, needsSave) ->
+                ethDataStore.ethWallet = wallet
+                if (needsSave) {
+                    save()
+                } else {
+                    Completable.complete()
                 }
-        }.observeOn(Schedulers.io())
+            }
 
     /**
      * @param gasPriceWei Represents the fee the sender is willing to pay for gas. One unit of gas
@@ -345,16 +338,16 @@ class EthDataManager(
     }
 
     @Throws(Exception::class)
-    private fun fetchOrCreateEthereumWallet(defaultLabel: String, defaultPaxLabel: String) =
-        metadataManager.fetchMetadata(EthereumWallet.METADATA_TYPE_EXTERNAL)
-            .map { optional ->
-
-                val walletJson = optional.orNull()
+    private fun fetchOrCreateEthereumWallet(defaultLabel: String, defaultPaxLabel: String):
+            Single<Pair<EthereumWallet, Boolean>> =
+        metadataManager.fetchMetadata(EthereumWallet.METADATA_TYPE_EXTERNAL).defaultIfEmpty("")
+            .map { metadata ->
+                val walletJson = if (metadata != "") metadata else null
 
                 var ethWallet = EthereumWallet.load(walletJson)
                 var needsSave = false
 
-                if (ethWallet == null || ethWallet.account == null || !ethWallet.account.isCorrect) {
+                if (ethWallet?.account == null || !ethWallet.account.isCorrect) {
                     try {
                         val masterKey = payloadManager.payload?.hdWallets?.get(0)?.masterKey
                         ethWallet = EthereumWallet(masterKey, defaultLabel, defaultPaxLabel)
@@ -368,9 +361,8 @@ class EthDataManager(
                 if (ethWallet.updateErc20Tokens(defaultPaxLabel)) {
                     needsSave = true
                 }
-
-                Pair(ethWallet, needsSave)
-            }
+                ethWallet to needsSave
+            }.toSingle()
 
     fun save(): Completable =
         metadataManager.saveToMetadata(

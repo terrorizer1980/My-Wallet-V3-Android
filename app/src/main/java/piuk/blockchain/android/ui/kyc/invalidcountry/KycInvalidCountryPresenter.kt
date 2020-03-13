@@ -57,7 +57,8 @@ class KycInvalidCountryPresenter(
                 nabuDataManager.getAuthToken(jwt)
                     .subscribeOn(Schedulers.io())
                     .flatMap { tokenResponse ->
-                        metadataManager.saveToMetadata(tokenResponse.mapToMetadata())
+                        val nabuMetadata = tokenResponse.mapToMetadata()
+                        metadataManager.saveToMetadata(nabuMetadata.toJson(), nabuMetadata.getMetadataType())
                             .toSingle { jwt to tokenResponse }
                     }
             }
