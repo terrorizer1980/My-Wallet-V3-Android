@@ -200,8 +200,10 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
     private fun getLimitString(tier: TierJson): Int {
         val limits = tier.limits
         return when {
-            limits.annual != null -> R.string.annual_swap_limit
-            limits.daily != null -> R.string.daily_swap_limit
+            limits.annual != null -> if (tier.index == 1)
+                R.string.annual_swap_limit else R.string.annual_swap_and_buy_limit
+            limits.daily != null -> if (tier.index == 2)
+                R.string.daily_swap_limit else R.string.daily_swap_and_buy_limit
             else -> 0
         }
     }

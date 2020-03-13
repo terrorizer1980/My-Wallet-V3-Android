@@ -1621,7 +1621,9 @@
     <string name="_1_000">$1,000</string>
     <string name="_25_000">$25,000</string>
     <string name="annual_swap_limit">Annual Swap Limit</string>
+    <string name="annual_swap_and_buy_limit">Annual Swap and Buy Limit</string>
     <string name="daily_swap_limit">Daily Swap Limit</string>
+    <string name="daily_swap_and_buy_limit">Daily Swap and Buy Limit</string>
     <string name="get_free_crypto">GET FREE CRYPTO</string>
     <string name="by_completing_gold_level_you_will_be_eligible_to_participate_in_our_airdrop_program">By completing the Gold Level requirements you are automatically eligible for our airdrop program.</string>
     <string name="airdrop_learn_more_url">https://support.blockchain.com/hc/en-us/categories/360001126692-Airdrop-Program</string>
