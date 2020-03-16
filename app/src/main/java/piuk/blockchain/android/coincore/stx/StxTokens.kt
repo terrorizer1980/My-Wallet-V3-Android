@@ -17,14 +17,11 @@ import io.reactivex.Single
 import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.AssetFilter
-import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import timber.log.Timber
 
 internal class StxTokens(
     private val payloadManager: PayloadManager,
@@ -71,7 +68,7 @@ internal class StxTokens(
         val hdWallets = payloadManager.payload?.hdWallets
             ?: throw IllegalStateException("Wallet not available")
 
-        return StxCryptoAccount(
+        return StxCryptoAccountNonCustodial(
             label = "STX Account",
             address = hdWallets[0].stxAccount.bitcoinSerializedBase58Address
         )

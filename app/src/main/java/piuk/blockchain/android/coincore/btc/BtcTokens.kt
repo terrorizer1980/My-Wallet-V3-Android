@@ -22,8 +22,6 @@ import piuk.blockchain.android.coincore.impl.fetchLastPrice
 import piuk.blockchain.android.coincore.impl.toCryptoSingle
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.AssetFilter
-import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
@@ -33,7 +31,6 @@ import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import timber.log.Timber
 
 internal class BtcTokens(
     private val payloadDataManager: PayloadDataManager,
@@ -66,7 +63,7 @@ internal class BtcTokens(
         Single.just(payloadDataManager.defaultAccount.toAccountReference())
 
     override fun defaultAccount(): Single<CryptoSingleAccount> =
-        Single.just(BtcCryptoAccount(payloadDataManager.defaultAccount))
+        Single.just(BtcCryptoAccountNonCustodial(payloadDataManager.defaultAccount))
 
     override fun receiveAddress(): Single<String> =
         payloadDataManager.getNextReceiveAddress(payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex))

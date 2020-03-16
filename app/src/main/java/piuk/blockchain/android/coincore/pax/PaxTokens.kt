@@ -59,7 +59,12 @@ internal class PaxTokens(
         emptyList()
 
     override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
-        emptyList()
+        listOf(
+            PaxCryptoAccountCustodial(
+                labels.getDefaultCustodialWalletLabel(asset),
+                custodialWalletManager
+            )
+        )
 
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultPaxAccountRef())

@@ -57,7 +57,7 @@ internal class BchTokens(
         bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
             .andThen(Completable.defer { updater() })
 
-   override fun initActivities(): Completable =
+    override fun initActivities(): Completable =
         Completable.complete()
 
     override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
@@ -75,7 +75,7 @@ internal class BchTokens(
     override fun defaultAccount(): Single<CryptoSingleAccount> =
         with(bchDataManager) {
             val a = getAccountMetadataList()[getDefaultAccountPosition()]
-            Single.just(BchCryptoAccount(a))
+            Single.just(BchCryptoAccountNonCustodial(a))
         }
 
     override fun receiveAddress(): Single<String> =

@@ -72,7 +72,7 @@ internal class EthTokens(
     override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
         listOf(
             EthCryptoAccountCustodial(
-               labels.getDefaultCustodialWalletLabel(asset),
+                labels.getDefaultCustodialWalletLabel(asset),
                 custodialWalletManager
             )
         )
