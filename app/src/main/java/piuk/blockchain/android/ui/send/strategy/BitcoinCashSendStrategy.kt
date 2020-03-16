@@ -140,7 +140,7 @@ class BitcoinCashSendStrategy(
     private var feeOptions: FeeOptions? = null
     private var textChangeSubject = PublishSubject.create<String>()
     private var absoluteSuggestedFee = BigInteger.ZERO
-    private var maxAvailable = CryptoValue.ZeroBtc
+    private var maxAvailable = CryptoValue.ZeroBch
     private var verifiedSecondPassword: String? = null
 
     /**
@@ -517,7 +517,7 @@ class BitcoinCashSendStrategy(
             )
     }
 
-    override fun getFeeOptions(): FeeOptions? = dynamicFeeCache.btcFeeOptions
+    override fun getFeeOptions(): FeeOptions? = dynamicFeeCache.bchFeeOptions
 
     private fun getFeePerKbFromPriority(@FeeType.FeePriorityDef feePriorityTemp: Int): BigInteger {
         getSuggestedFee()
@@ -572,7 +572,7 @@ class BitcoinCashSendStrategy(
     }
 
     private fun updateMaxAvailable(balanceAfterFee: BigInteger) {
-        maxAvailable = CryptoValue.fromMinor(CryptoCurrency.BTC, balanceAfterFee)
+        maxAvailable = CryptoValue.fromMinor(CryptoCurrency.BCH, balanceAfterFee)
         view?.showMaxAvailable()
 
         // Format for display
