@@ -26,6 +26,7 @@ import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.extensions.switchToSingleIfEmpty
+import piuk.blockchain.androidcore.utils.extensions.then
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -48,8 +49,8 @@ internal abstract class AssetTokensBase(
             .doOnError { throwable ->
                 crashLogger.logException(throwable, "Coincore: Failed to load $asset wallet")
             }
-            .andThen(Completable.defer { loadAccounts() })
-            .andThen(Completable.defer { initActivities() })
+            .then { loadAccounts() }
+            .then { initActivities() }
             .doOnComplete { Timber.d("Coincore: Init $asset Complete") }
             .doOnError { Timber.d("Coincore: Init $asset Failed") }
 
@@ -57,15 +58,15 @@ internal abstract class AssetTokensBase(
         Completable.fromCallable {
             with(accounts) {
                 clear()
-                addAll(loadNonCustodialAccount(labels))
-                addAll(loadCustodialAccount(labels))
+                addAll(loadNonCustodialAccounts(labels))
+                addAll(loadCustodialAccounts(labels))
             }
         }
 
     abstract fun initToken(): Completable
     abstract fun initActivities(): Completable
-    abstract fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount>
-    abstract fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount>
+    abstract fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount>
+    abstract fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount>
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
 

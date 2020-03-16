@@ -23,6 +23,7 @@ import piuk.blockchain.android.coincore.impl.toCryptoSingle
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.CryptoSingleAccount
+import piuk.blockchain.android.coincore.pax.PaxCryptoAccountCustodial
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -53,11 +54,16 @@ internal class BtcTokens(
     override fun initActivities(): Completable =
         Completable.complete()
 
-    override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+    override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
         emptyList()
 
-    override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
-        emptyList()
+    override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            BtcCryptoAccountCustodial(
+                labels.getDefaultCustodialWalletLabel(asset),
+                custodialWalletManager
+            )
+        )
 
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(payloadDataManager.defaultAccount.toAccountReference())

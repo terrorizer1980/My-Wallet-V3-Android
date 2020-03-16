@@ -25,6 +25,7 @@ import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.impl.toCryptoSingle
+import piuk.blockchain.android.coincore.pax.PaxCryptoAccountCustodial
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -35,6 +36,7 @@ import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.extensions.then
 import timber.log.Timber
 
 internal class BchTokens(
@@ -55,16 +57,21 @@ internal class BchTokens(
 
     override fun initToken(): Completable =
         bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
-            .andThen(Completable.defer { updater() })
+            .then { updater() }
 
     override fun initActivities(): Completable =
         Completable.complete()
 
-    override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+    override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
         emptyList()
 
-    override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
-        emptyList()
+    override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            BchCryptoAccountCustodial(
+                labels.getDefaultCustodialWalletLabel(asset),
+                custodialWalletManager
+            )
+        )
 
     override fun defaultAccountRef(): Single<AccountReference> =
         with(bchDataManager) {

@@ -14,6 +14,7 @@ import piuk.blockchain.androidcore.data.fees.FeeDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager
+import piuk.blockchain.androidcore.utils.extensions.then
 import timber.log.Timber
 
 class Prerequisites(
@@ -30,10 +31,10 @@ class Prerequisites(
 
     fun initMetadataAndRelatedPrerequisites(): Completable =
         metadataManager.attemptMetadataSetup()
-            .andThen(Completable.defer { shapeShiftCompletable() })
-            .andThen(Completable.defer { feesCompletable() })
-            .andThen(Completable.defer { simpleBuySync.performSync() })
-            .andThen(Completable.defer { coincore.init() })
+            .then { shapeShiftCompletable() }
+            .then { feesCompletable() }
+            .then { simpleBuySync.performSync() }
+            .then { coincore.init() }
             .doOnComplete {
                 rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
             }.subscribeOn(Schedulers.io())

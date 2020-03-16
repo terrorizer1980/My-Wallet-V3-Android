@@ -55,10 +55,10 @@ internal class PaxTokens(
     override fun initActivities(): Completable =
         Completable.complete()
 
-    override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+    override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
         emptyList()
 
-    override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+    override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
         listOf(
             PaxCryptoAccountCustodial(
                 labels.getDefaultCustodialWalletLabel(asset),

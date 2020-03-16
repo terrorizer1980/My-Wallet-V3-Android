@@ -18,6 +18,7 @@ import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.CryptoSingleAccount
+import piuk.blockchain.android.coincore.pax.PaxCryptoAccountCustodial
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
@@ -38,11 +39,16 @@ internal class StxTokens(
     override fun initToken(): Completable =
         Completable.complete()
 
-    override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+    override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
         emptyList()
 
-    override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
-        emptyList()
+    override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            StxCryptoAccountCustodial(
+                labels.getDefaultCustodialWalletLabel(asset),
+                custodialWalletManager
+            )
+        )
 
     override fun initActivities(): Completable =
         Completable.complete()

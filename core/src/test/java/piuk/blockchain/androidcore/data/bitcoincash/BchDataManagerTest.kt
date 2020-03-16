@@ -140,7 +140,7 @@ class BchDataManagerTest {
         whenever(payloadDataManager.isDoubleEncrypted).thenReturn(false)
         mockSingleMetadata()
         mockRestoringSingleBchWallet("xpub")
-        whenever(defaultLabels[CryptoCurrency.BCH]).thenReturn("label")
+        whenever(defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.BCH)).thenReturn("label")
 
         // Act
         val testObserver = subject.initBchWallet("Bitcoin cash account").test()
@@ -174,7 +174,7 @@ class BchDataManagerTest {
         whenever(payloadDataManager.isDoubleEncrypted).thenReturn(true)
         mockSingleMetadata()
         mockRestoringSingleBchWallet("xpub")
-        whenever(defaultLabels[CryptoCurrency.BCH]).thenReturn("label")
+        whenever(defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.BCH)).thenReturn("label")
 
         // Act
         val testObserver = subject.initBchWallet("Bitcoin cash account").test()
@@ -391,7 +391,7 @@ class BchDataManagerTest {
         whenever(mockWallet.hdWallets).thenReturn(mutableListOf(mockHdWallet))
         whenever(payloadDataManager.wallet).thenReturn(mockWallet)
 
-        whenever(defaultLabels[CryptoCurrency.BTC]).thenReturn("BTC label")
+        whenever(defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.BTC)).thenReturn("BTC label")
 
         // Act
         val needsSync = subject.correctBtcOffsetIfNeed()

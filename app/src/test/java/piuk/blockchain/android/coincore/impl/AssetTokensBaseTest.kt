@@ -31,9 +31,9 @@ class AssetTokensBaseTest {
             Completable.complete()
         override fun initActivities(): Completable =
             Completable.complete()
-        override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
             emptyList()
-        override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
             emptyList()
         override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
             Maybe.empty()
