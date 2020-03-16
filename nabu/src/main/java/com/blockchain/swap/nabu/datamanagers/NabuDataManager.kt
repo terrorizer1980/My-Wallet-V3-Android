@@ -168,7 +168,9 @@ internal class NabuDataManagerImpl(
         }
 
     override fun getAuthToken(jwt: String, currency: String?, action: String?): Single<NabuOfflineTokenResponse> =
-        nabuService.getAuthToken(jwt, currency, action)
+        nabuService.getAuthToken(jwt, currency, action).doOnSuccess {
+            userReporter.reportUserId(it.userId)
+        }
 
     @VisibleForTesting
     internal fun getSessionToken(

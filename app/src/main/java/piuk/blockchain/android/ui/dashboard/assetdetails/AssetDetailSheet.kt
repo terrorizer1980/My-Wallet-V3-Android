@@ -52,7 +52,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
 
     private val currencyPrefs: CurrencyPrefs by inject()
     private val assetDetailsViewModel: AssetDetailsCalculator by inject()
-    private val locale: Locale by inject()
+    private val locale = Locale.getDefault()
 
     interface Host : SlidingModalBottomDialog.Host {
         fun gotoSendFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter)
