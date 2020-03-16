@@ -1,6 +1,7 @@
 package piuk.blockchain.android.coincore.impl
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.wallet.DefaultLabels
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
@@ -16,8 +17,6 @@ import io.reactivex.Single
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.AssetFilter
-import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -25,10 +24,17 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 
 class AssetTokensBaseTest {
 
-    internal class TestAssetToken : AssetTokensBase(rxBus = spy()) {
+    internal class TestAssetToken : AssetTokensBase(labels = mock(), crashLogger = mock(), rxBus = spy()) {
         override val asset: CryptoCurrency = CryptoCurrency.BTC
-        override fun init(): Completable =
+
+        override fun initToken(): Completable =
             Completable.complete()
+        override fun initActivities(): Completable =
+            Completable.complete()
+        override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+            emptyList()
+        override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+            emptyList()
         override fun custodialBalanceMaybe(): Maybe<CryptoValue> =
             Maybe.empty()
         override fun noncustodialBalance(): Single<CryptoValue> =
@@ -36,8 +42,6 @@ class AssetTokensBaseTest {
         override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> =
             Single.just(emptyList())
         override fun defaultAccount(): Single<CryptoSingleAccount> =
-            Single.error(Exception("Not implemented"))
-        override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> =
             Single.error(Exception("Not implemented"))
         override fun defaultAccountRef(): Single<AccountReference> =
             Single.error(Exception("Not implemented"))

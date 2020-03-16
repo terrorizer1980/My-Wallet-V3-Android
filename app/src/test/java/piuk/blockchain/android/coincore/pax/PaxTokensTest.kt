@@ -1,6 +1,7 @@
 package piuk.blockchain.android.coincore.pax
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.testutils.usdPax
@@ -35,6 +36,7 @@ class PaxTokensTest {
     private val exchangeRates: ExchangeRateDataManager = mock()
     private val currencyPrefs: CurrencyPrefs = mock()
     private val custodialWalletManager: CustodialWalletManager = mock()
+    private val crashLogger: CrashLogger = mock()
     private val rxBus: RxBus = spy()
 
     private val paxAccount: Erc20Account = mock()
@@ -49,6 +51,7 @@ class PaxTokensTest {
             custodialWalletManager = custodialWalletManager,
             stringUtils = stringUtils,
             labels = mockLabels,
+            crashLogger = crashLogger,
             rxBus = rxBus
         )
 

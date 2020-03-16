@@ -1,6 +1,7 @@
 package piuk.blockchain.android.coincore.xlm
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.sunriver.HorizonKeyPair
 import com.blockchain.sunriver.XlmDataManager
@@ -37,6 +38,7 @@ class XlmTokensTest {
     private val currencyPrefs: CurrencyPrefs = mock()
     private val custodialWalletManager: CustodialWalletManager = mock()
     private val mockLabels: DefaultLabels = mock()
+    private val crashLogger: CrashLogger = mock()
     private val rxBus: RxBus = spy()
 
     private val xlmDataManager: XlmDataManager = mock()
@@ -49,6 +51,7 @@ class XlmTokensTest {
             currencyPrefs = currencyPrefs,
             custodialWalletManager = custodialWalletManager,
             labels = mockLabels,
+            crashLogger = crashLogger,
             rxBus = rxBus
         )
 
