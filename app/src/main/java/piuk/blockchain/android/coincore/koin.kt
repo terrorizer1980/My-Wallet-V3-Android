@@ -18,6 +18,7 @@ val coincoreModule = applicationContext {
                 payloadManager = get(),
                 currencyPrefs = get(),
                 custodialWalletManager = get(),
+                crashLogger = get(),
                 labels = get()
             )
         }
@@ -31,6 +32,7 @@ val coincoreModule = applicationContext {
                 payloadDataManager = get(),
                 rxBus = get(),
                 custodialWalletManager = get(),
+                crashLogger = get(),
                 labels = get()
             )
         }
@@ -58,6 +60,7 @@ val coincoreModule = applicationContext {
                 historicRates = get(),
                 currencyPrefs = get(),
                 custodialWalletManager = get(),
+                crashLogger = get(),
                 labels = get()
             )
         }
@@ -84,6 +87,7 @@ val coincoreModule = applicationContext {
                 currencyPrefs = get(),
                 custodialWalletManager = get(),
                 stringUtils = get(),
+                crashLogger = get(),
                 labels = get()
             )
         }

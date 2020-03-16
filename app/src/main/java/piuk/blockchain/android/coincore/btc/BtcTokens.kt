@@ -1,6 +1,7 @@
 package piuk.blockchain.android.coincore.btc
 
 import androidx.annotation.VisibleForTesting
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.DefaultLabels
@@ -41,35 +42,31 @@ internal class BtcTokens(
     private val historicRates: ChartsDataManager,
     private val currencyPrefs: CurrencyPrefs,
     private val custodialWalletManager: CustodialWalletManager,
-    private val labels: DefaultLabels,
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
     rxBus: RxBus
-) : BitcoinLikeTokens(rxBus) {
+) : BitcoinLikeTokens(labels, crashLogger, rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BTC
 
-    override fun init(): Completable =
+    override fun initToken(): Completable =
         updater()
-            .andThen(Completable.defer { loadAccounts() })
-            .andThen(Completable.defer { initActivities() })
-            .doOnComplete { Timber.d("Coincore: Init BTC Complete") }
-            .doOnError { Timber.d("Coincore: Init BTC Failed") }
 
-    private fun loadAccounts(): Completable =
+    override fun initActivities(): Completable =
         Completable.complete()
 
-    private fun initActivities(): Completable =
-        Completable.complete()
+    override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
+
+    override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
 
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(payloadDataManager.defaultAccount.toAccountReference())
 
     override fun defaultAccount(): Single<CryptoSingleAccount> =
         Single.just(BtcCryptoAccount(payloadDataManager.defaultAccount))
-
-    override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> {
-        TODO("not implemented")
-    }
 
     override fun receiveAddress(): Single<String> =
         payloadDataManager.getNextReceiveAddress(payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex))

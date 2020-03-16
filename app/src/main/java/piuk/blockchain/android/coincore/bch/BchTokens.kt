@@ -23,8 +23,6 @@ import piuk.blockchain.android.coincore.impl.fetchLastPrice
 import piuk.blockchain.android.coincore.impl.mapList
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.AssetFilter
-import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.impl.toCryptoSingle
 import piuk.blockchain.android.ui.account.ItemAccount
@@ -45,32 +43,28 @@ internal class BchTokens(
     private val historicRates: ChartsDataManager,
     private val currencyPrefs: CurrencyPrefs,
     private val stringUtils: StringUtils,
-    private val crashLogger: CrashLogger,
     private val custodialWalletManager: CustodialWalletManager,
     private val environmentSettings: EnvironmentConfig,
-    private val labels: DefaultLabels,
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
     rxBus: RxBus
-) : BitcoinLikeTokens(rxBus) {
+) : BitcoinLikeTokens(labels, crashLogger, rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BCH
 
-    override fun init(): Completable =
+    override fun initToken(): Completable =
         bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
-            .doOnError { throwable ->
-                crashLogger.logException(throwable, "Failed to load bch wallet")
-            }
             .andThen(Completable.defer { updater() })
-            .andThen(Completable.defer { loadAccounts() })
-            .andThen(Completable.defer { initActivities() })
-            .doOnComplete { Timber.d("Coincore: Init BCH Complete") }
-            .doOnError { Timber.d("Coincore: Init BCH Failed") }
 
-    private fun loadAccounts(): Completable =
+   override fun initActivities(): Completable =
         Completable.complete()
 
-    private fun initActivities(): Completable =
-        Completable.complete()
+    override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
+
+    override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
 
     override fun defaultAccountRef(): Single<AccountReference> =
         with(bchDataManager) {
@@ -83,10 +77,6 @@ internal class BchTokens(
             val a = getAccountMetadataList()[getDefaultAccountPosition()]
             Single.just(BchCryptoAccount(a))
         }
-
-    override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> {
-        TODO("not implemented")
-    }
 
     override fun receiveAddress(): Single<String> =
         bchDataManager.getNextReceiveAddress(

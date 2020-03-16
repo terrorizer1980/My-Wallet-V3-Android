@@ -1,6 +1,8 @@
 package piuk.blockchain.android.coincore.impl
 
 import androidx.annotation.CallSuper
+import com.blockchain.logging.CrashLogger
+import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -12,8 +14,11 @@ import piuk.blockchain.androidcore.utils.extensions.thenSingle
 import java.lang.IllegalArgumentException
 import java.math.BigInteger
 
-internal abstract class BitcoinLikeTokens(rxBus: RxBus)
-    : AssetTokensBase(rxBus) {
+internal abstract class BitcoinLikeTokens(
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
+    rxBus: RxBus
+) : AssetTokensBase(labels, crashLogger, rxBus) {
 
     private var lastBalanceRefresh: Long = 0
 

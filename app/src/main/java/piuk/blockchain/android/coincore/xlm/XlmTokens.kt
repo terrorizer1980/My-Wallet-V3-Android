@@ -1,6 +1,7 @@
 package piuk.blockchain.android.coincore.xlm
 
 import androidx.annotation.VisibleForTesting
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.models.XlmTransaction
@@ -24,8 +25,6 @@ import piuk.blockchain.android.coincore.impl.fetchLastPrice
 import piuk.blockchain.android.coincore.impl.mapList
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.AssetFilter
-import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
@@ -34,7 +33,6 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import timber.log.Timber
 import java.lang.IllegalArgumentException
 
 internal class XlmTokens(
@@ -43,34 +41,30 @@ internal class XlmTokens(
     private val historicRates: ChartsDataManager,
     private val currencyPrefs: CurrencyPrefs,
     private val custodialWalletManager: CustodialWalletManager,
-    private val labels: DefaultLabels,
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
     rxBus: RxBus
-) : AssetTokensBase(rxBus) {
+) : AssetTokensBase(labels, crashLogger, rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.XLM
 
-    override fun init(): Completable =
-        Completable.complete()
-            .andThen(Completable.defer { loadAccounts() })
-            .andThen(Completable.defer { initActivities() })
-            .doOnComplete { Timber.d("Coincore: Init XLM Complete") }
-            .doOnError { Timber.d("Coincore: Init XLM Failed") }
-
-    private fun loadAccounts(): Completable =
+    override fun initToken(): Completable =
         Completable.complete()
 
-    private fun initActivities(): Completable =
+    override fun initActivities(): Completable =
         Completable.complete()
+
+    override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
+
+    override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
 
     override fun defaultAccountRef(): Single<AccountReference> =
         xlmDataManager.defaultAccountReference()
 
     override fun defaultAccount(): Single<CryptoSingleAccount> {
-        TODO("not implemented")
-    }
-
-    override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> {
         TODO("not implemented")
     }
 

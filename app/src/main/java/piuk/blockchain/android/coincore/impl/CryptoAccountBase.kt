@@ -155,7 +155,7 @@ class CryptoAccountCompoundGroup(
                 t.sumBy { it as CryptoValue }
             }
 
-    fun <T> Array<T>.sumBy(selector: (T) -> CryptoValue): CryptoValue {
+    private fun <T> Array<T>.sumBy(selector: (T) -> CryptoValue): CryptoValue {
         var sum: CryptoValue = CryptoValue.zero(asset)
         for (element in this) {
             sum += selector(element)

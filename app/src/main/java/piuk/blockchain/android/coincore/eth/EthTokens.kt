@@ -22,10 +22,7 @@ import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.coincore.impl.fetchLastPrice
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
-import piuk.blockchain.android.coincore.AssetFilter
-import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoSingleAccount
-import piuk.blockchain.android.coincore.impl.filterTokenAccounts
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -36,7 +33,6 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import timber.log.Timber
 import java.lang.IllegalArgumentException
 
 internal class EthTokens(
@@ -45,40 +41,41 @@ internal class EthTokens(
     private val historicRates: ChartsDataManager,
     private val currencyPrefs: CurrencyPrefs,
     private val stringUtils: StringUtils,
-    private val crashLogger: CrashLogger,
     private val custodialWalletManager: CustodialWalletManager,
-    private val labels: DefaultLabels,
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
     rxBus: RxBus
-) : AssetTokensBase(rxBus) {
+) : AssetTokensBase(labels, crashLogger, rxBus) {
 
     val accounts = mutableListOf<CryptoSingleAccount>()
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.ETHER
 
-    override fun init(): Completable =
+    override fun initToken(): Completable =
         ethDataManager.initEthereumWallet(
             stringUtils.getString(R.string.eth_default_account_label),
             stringUtils.getString(R.string.pax_default_account_label_1)
-        ).doOnError { throwable ->
-            crashLogger.logException(throwable, "Coincore: Failed to load ETH wallet")
-        }
-        .andThen(Completable.defer { loadAccounts() })
-        .andThen(Completable.defer { initActivities() })
-        .doOnComplete { Timber.d("Coincore: Init ETH Complete") }
-        .doOnError { Timber.d("Coincore: Init ETH Failed") }
+        )
 
-    private fun loadAccounts(): Completable =
-        Completable.fromCallable {
-            with(accounts) {
-                clear()
-                add(nonCustodialAccount())
-                add(custodialAccount())
-            }
-        }
-
-    private fun initActivities(): Completable =
+    override fun initActivities(): Completable =
         Completable.complete()
+
+    override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            EthCryptoAccountNonCustodial(
+                this,
+                ethDataManager.getEthWallet()?.account ?: throw Exception("No ether wallet found")
+            )
+        )
+
+    override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            EthCryptoAccountCustodial(
+               labels.getDefaultCustodialWalletLabel(asset),
+                custodialWalletManager
+            )
+        )
 
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultEthAccountRef())
@@ -88,23 +85,6 @@ internal class EthTokens(
             accounts.firstOrNull {
                 it is EthCryptoAccountNonCustodial
             } ?: throw Exception("No ether wallet found")
-        }
-
-    private fun nonCustodialAccount(): CryptoSingleAccount =
-        EthCryptoAccountNonCustodial(
-            this,
-            ethDataManager.getEthWallet()?.account ?: throw Exception("No ether wallet found")
-        )
-
-    private fun custodialAccount(): CryptoSingleAccount =
-        EthCryptoAccountCustodial(
-            labels.getDefaultCustodialWalletLabel(asset),
-            custodialWalletManager
-        )
-
-    override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> =
-        Single.fromCallable {
-            filterTokenAccounts(asset, labels, accounts, filter)
         }
 
     override fun receiveAddress(): Single<String> =

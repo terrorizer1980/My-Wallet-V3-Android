@@ -1,6 +1,8 @@
 package piuk.blockchain.android.coincore.impl
 
 import androidx.annotation.VisibleForTesting
+import com.blockchain.logging.CrashLogger
+import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -17,6 +19,8 @@ import piuk.blockchain.android.coincore.AssetTokens
 import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.CryptoAccountGroup
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.access.AuthEvent
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
@@ -25,18 +29,50 @@ import piuk.blockchain.androidcore.utils.extensions.switchToSingleIfEmpty
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal abstract class AssetTokensBase(rxBus: RxBus) :
-    AssetTokens {
-
-    abstract fun init(): Completable
+internal abstract class AssetTokensBase(
+    private val labels: DefaultLabels,
+    protected val crashLogger: CrashLogger,
+    rxBus: RxBus
+) : AssetTokens {
 
     val logoutSignal = rxBus.register(AuthEvent.UNPAIR::class.java)
         .observeOn(Schedulers.computation())
         .subscribeBy(onNext = ::onLogoutSignal)
 
-    private val txActivityCache: MutableList<ActivitySummaryItem> = mutableListOf()
+    private val accounts = mutableListOf<CryptoSingleAccount>()
+    private val txActivityCache = mutableListOf<ActivitySummaryItem>()
+
+    // Init token, set up accounts and fetch a few activities
+    fun init(): Completable =
+        initToken()
+            .doOnError { throwable ->
+                crashLogger.logException(throwable, "Coincore: Failed to load $asset wallet")
+            }
+            .andThen(Completable.defer { loadAccounts() })
+            .andThen(Completable.defer { initActivities() })
+            .doOnComplete { Timber.d("Coincore: Init $asset Complete") }
+            .doOnError { Timber.d("Coincore: Init $asset Failed") }
+
+    private fun loadAccounts(): Completable =
+        Completable.fromCallable {
+            with(accounts) {
+                clear()
+                addAll(loadNonCustodialAccount(labels))
+                addAll(loadCustodialAccount(labels))
+            }
+        }
+
+    abstract fun initToken(): Completable
+    abstract fun initActivities(): Completable
+    abstract fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount>
+    abstract fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount>
 
     protected open fun onLogoutSignal(event: AuthEvent) {}
+
+    final override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> =
+        Single.fromCallable {
+            filterTokenAccounts(asset, labels, accounts, filter)
+        }
 
     final override fun totalBalance(filter: AssetFilter): Single<CryptoValue> =
         when (filter) {

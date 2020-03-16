@@ -1,5 +1,6 @@
 package piuk.blockchain.android.coincore.stx
 
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.wallet.DefaultLabels
@@ -29,24 +30,24 @@ internal class StxTokens(
     private val payloadManager: PayloadManager,
     private val currencyPrefs: CurrencyPrefs,
     private val custodialWalletManager: CustodialWalletManager,
-    private val labels: DefaultLabels,
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
     rxBus: RxBus
-) : AssetTokensBase(rxBus) {
+) : AssetTokensBase(labels, crashLogger, rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.STX
 
-    override fun init(): Completable =
-        Completable.complete()
-            .andThen(Completable.defer { loadAccounts() })
-            .andThen(Completable.defer { initActivities() })
-            .doOnComplete { Timber.d("Coincore: Init STX Complete") }
-            .doOnError { Timber.d("Coincore: Init STX Failed") }
-
-    private fun loadAccounts(): Completable =
+    override fun initToken(): Completable =
         Completable.complete()
 
-    private fun initActivities(): Completable =
+    override fun loadNonCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
+
+    override fun loadCustodialAccount(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
+
+    override fun initActivities(): Completable =
         Completable.complete()
 
     override fun defaultAccountRef(): Single<AccountReference> =
@@ -54,10 +55,6 @@ internal class StxTokens(
 
     override fun defaultAccount(): Single<CryptoSingleAccount> =
         Single.just(getStxAccount())
-
-    override fun accounts(filter: AssetFilter): Single<CryptoAccountGroup> {
-        TODO("not implemented")
-    }
 
     override fun receiveAddress(): Single<String> {
         TODO("not implemented")
