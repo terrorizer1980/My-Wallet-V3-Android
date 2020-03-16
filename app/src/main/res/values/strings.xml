@@ -1539,6 +1539,7 @@
     <string name="kyc_settings_status_rejected">Failed</string>
     <string name="kyc_settings_status_verified">Verified</string>
     <string name="kyc_settings_swap_limit">Swap Limit</string>
+    <string name="kyc_settings_accounts_limit">Account Limits</string>
     <string name="kyc_settings_tier_status_locked">Locked</string>
 
     <!-- Tier status -->
