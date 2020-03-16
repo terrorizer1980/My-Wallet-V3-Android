@@ -277,31 +277,21 @@ class TransactionsFragment : HomeScreenMvpFragment<TransactionsView, Transaction
 
         when (crypto) {
             CryptoCurrency.BTC -> {
-                button_get_crypto.setText(R.string.onboarding_get_bitcoin)
-                button_get_crypto.setOnClickListener {
-                    presenter.onGetBitcoinClicked()
-                }
                 description.setText(R.string.transaction_occur_when_bitcoin)
                 pax_no_transactions.gone()
                 non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.ETHER -> {
-                button_get_crypto.setText(R.string.onboarding_get_eth)
-                button_get_crypto.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.ETHER) }
                 description.setText(R.string.transaction_occur_when_eth)
                 pax_no_transactions.gone()
                 non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.BCH -> {
-                button_get_crypto.setText(R.string.onboarding_get_bitcoin_cash)
-                button_get_crypto.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.BCH) }
                 description.setText(R.string.transaction_occur_when_bitcoin_cash)
                 pax_no_transactions.gone()
                 non_pax_no_transactions_container.visible()
             }
             CryptoCurrency.XLM -> {
-                button_get_crypto.setText(R.string.onboarding_get_lumens)
-                button_get_crypto.setOnClickListener { navigator().gotoReceiveFor(CryptoCurrency.XLM) }
                 description.setText(R.string.transaction_occur_when_lumens)
                 pax_no_transactions.gone()
                 non_pax_no_transactions_container.visible()
