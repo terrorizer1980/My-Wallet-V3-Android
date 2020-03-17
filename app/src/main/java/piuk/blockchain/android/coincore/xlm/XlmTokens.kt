@@ -1,12 +1,14 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.xlm
 
 import androidx.annotation.VisibleForTesting
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.models.XlmTransaction
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
+import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -14,11 +16,16 @@ import info.blockchain.balance.FiatValue
 import info.blockchain.balance.compareTo
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import info.blockchain.wallet.prices.TimeInterval
+import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
+import piuk.blockchain.android.coincore.impl.mapList
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -28,23 +35,46 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
 
-class XLMTokens(
-    rxBus: RxBus,
+internal class XlmTokens(
     private val xlmDataManager: XlmDataManager,
     private val exchangeRates: ExchangeRateDataManager,
     private val historicRates: ChartsDataManager,
     private val currencyPrefs: CurrencyPrefs,
-    private val custodialWalletManager: CustodialWalletManager
-) : AssetTokensBase(rxBus) {
+    private val custodialWalletManager: CustodialWalletManager,
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
+    rxBus: RxBus
+) : AssetTokensBase(labels, crashLogger, rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.XLM
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun initToken(): Completable =
+        Completable.complete()
+
+    override fun initActivities(): Completable =
+        Completable.complete()
+
+    override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
+
+    override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            XlmCryptoAccountCustodial(
+                labels.getDefaultCustodialWalletLabel(asset),
+                custodialWalletManager
+            )
+        )
+
+    override fun defaultAccountRef(): Single<AccountReference> =
         xlmDataManager.defaultAccountReference()
 
+    override fun defaultAccount(): Single<CryptoSingleAccount> {
+        TODO("not implemented")
+    }
+
     override fun receiveAddress(): Single<String> =
-        defaultAccount().map {
+        defaultAccountRef().map {
             it.receiveAddress
         }
 
@@ -78,7 +108,12 @@ class XLMTokens(
     private fun getTransactions(): Observable<ActivitySummaryList> =
         xlmDataManager.getTransactionList()
             .toObservable()
-            .mapList { XlmActivitySummaryItem(it, exchangeRates) }
+            .mapList {
+                XlmActivitySummaryItem(
+                    it,
+                    exchangeRates
+                )
+            }
 }
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

@@ -1,9 +1,11 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.pax
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.testutils.usdPax
+import com.blockchain.wallet.DefaultLabels
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.verify
@@ -17,6 +19,7 @@ import io.reactivex.Observable
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.android.data.currency.CurrencyState
@@ -26,26 +29,31 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 
-class PAXTokensTest {
+class PaxTokensTest {
 
     private val ethDataManager: EthDataManager = mock()
     private val currencyState: CurrencyState = mock()
     private val exchangeRates: ExchangeRateDataManager = mock()
     private val currencyPrefs: CurrencyPrefs = mock()
     private val custodialWalletManager: CustodialWalletManager = mock()
+    private val crashLogger: CrashLogger = mock()
     private val rxBus: RxBus = spy()
 
     private val paxAccount: Erc20Account = mock()
     private val stringUtils: StringUtils = mock()
+    private val mockLabels: DefaultLabels = mock()
 
-    private val subject: AssetTokensBase = PAXTokens(
-        paxAccount = paxAccount,
-        exchangeRates = exchangeRates,
-        currencyPrefs = currencyPrefs,
-        custodialWalletManager = custodialWalletManager,
-        stringUtils = stringUtils,
-        rxBus = rxBus
-    )
+    private val subject: AssetTokensBase =
+        PaxTokens(
+            paxAccount = paxAccount,
+            exchangeRates = exchangeRates,
+            currencyPrefs = currencyPrefs,
+            custodialWalletManager = custodialWalletManager,
+            stringUtils = stringUtils,
+            labels = mockLabels,
+            crashLogger = crashLogger,
+            rxBus = rxBus
+        )
 
     @get:Rule
     val rxSchedulers = rxInit {
@@ -109,7 +117,7 @@ class PAXTokensTest {
             .assertNoErrors()
             .assertValue {
                 it.size == 1 && it[0].run {
-                    this is Erc20ActivitySummaryItem &&
+                    this is PaxActivitySummaryItem &&
                     cryptoCurrency == CryptoCurrency.PAX &&
                     !doubleSpend &&
                     !isFeeTransaction &&

@@ -1,8 +1,10 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.pax
 
 import androidx.annotation.VisibleForTesting
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -15,8 +17,12 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Observables
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
+import piuk.blockchain.android.coincore.impl.mapList
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -30,19 +36,41 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.math.BigInteger
 
-class PAXTokens(
-    rxBus: RxBus,
+internal class PaxTokens(
     private val paxAccount: Erc20Account,
     private val exchangeRates: ExchangeRateDataManager,
     private val currencyPrefs: CurrencyPrefs,
     private val stringUtils: StringUtils,
-    private val custodialWalletManager: CustodialWalletManager
-) : AssetTokensBase(rxBus) {
+    private val custodialWalletManager: CustodialWalletManager,
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
+    rxBus: RxBus
+) : AssetTokensBase(labels, crashLogger, rxBus) {
 
     override val asset = CryptoCurrency.PAX
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun initToken(): Completable =
+        Completable.complete()
+
+    override fun initActivities(): Completable =
+        Completable.complete()
+
+    override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
+
+    override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            PaxCryptoAccountCustodial(
+                labels.getDefaultCustodialWalletLabel(asset),
+                custodialWalletManager
+            )
+        )
+
+    override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultPaxAccountRef())
+
+    override fun defaultAccount(): Single<CryptoSingleAccount> =
+        Single.just(getNonCustodialPaxAccount())
 
     override fun receiveAddress(): Single<String> =
         Single.just(getDefaultPaxAccountRef().receiveAddress)
@@ -54,6 +82,15 @@ class PAXTokens(
         val label = stringUtils.getString(R.string.pax_default_account_label_1)
 
         return AccountReference.Pax(label, paxAddress, "")
+    }
+
+    private fun getNonCustodialPaxAccount(): CryptoSingleAccount {
+        val paxAddress = paxAccount.ethDataManager.getEthWallet()?.account?.address
+            ?: throw Exception("No ether wallet found")
+
+        val label = stringUtils.getString(R.string.pax_default_account_label_1)
+
+        return PaxCryptoAccount(label, paxAddress)
     }
 
     override fun noncustodialBalance(): Single<CryptoValue> =
@@ -104,7 +141,7 @@ class PAXTokens(
             ethDataManager.getLatestBlockNumber()
         ).map { (transactions, accountHash, latestBlockNumber) ->
             transactions.map { transaction ->
-                Erc20ActivitySummaryItem(
+                PaxActivitySummaryItem(
                     transaction,
                     accountHash,
                     ethDataManager,
@@ -117,7 +154,7 @@ class PAXTokens(
 }
 
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-class Erc20ActivitySummaryItem(
+class PaxActivitySummaryItem(
     private val feedTransfer: FeedErc20Transfer,
     private val accountHash: String,
     private val ethDataManager: EthDataManager,

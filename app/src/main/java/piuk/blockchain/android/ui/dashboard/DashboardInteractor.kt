@@ -15,13 +15,13 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 import timber.log.Timber
 
 class DashboardInteractor(
-    private val tokens: AssetTokenLookup,
+    private val tokens: Coincore,
     private val payloadManager: PayloadManager,
     private val custodialWalletManager: CustodialWalletManager,
     private val simpleBuyPrefs: SimpleBuyPrefs,

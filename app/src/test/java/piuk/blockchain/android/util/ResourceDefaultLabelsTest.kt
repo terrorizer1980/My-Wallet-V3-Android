@@ -23,21 +23,21 @@ class ResourceDefaultLabelsTest {
 
     @Test
     fun `btc default label`() {
-        defaultLabels[CryptoCurrency.BTC] `should equal` "A - BTC"
+        defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.BTC) `should equal` "A - BTC"
     }
 
     @Test
     fun `ether default label`() {
-        defaultLabels[CryptoCurrency.ETHER] `should equal` "B - ETH"
+        defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.ETHER) `should equal` "B - ETH"
     }
 
     @Test
     fun `bch default label`() {
-        defaultLabels[CryptoCurrency.BCH] `should equal` "C - BCH"
+        defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.BCH) `should equal` "C - BCH"
     }
 
     @Test
     fun `xlm default label`() {
-        defaultLabels[CryptoCurrency.XLM] `should equal` "D - XLM"
+        defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.XLM) `should equal` "D - XLM"
     }
 }

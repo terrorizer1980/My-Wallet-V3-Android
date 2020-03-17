@@ -25,10 +25,10 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.AssetTokens
-import piuk.blockchain.android.coincore.activity.TransactionNoteUpdater
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.impl.TransactionNoteUpdater
+import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidcoreui.ui.base.UiState
@@ -54,7 +54,7 @@ interface TransactionsView : MvpView {
 
 class TransactionsPresenter(
     private val exchangeRateDataManager: ExchangeRateDataManager,
-    private val assetSelect: AssetTokenLookup,
+    private val assetSelect: Coincore,
     private val ethDataManager: EthDataManager,
     private val paxAccount: Erc20Account,
     private val payloadDataManager: PayloadDataManager,

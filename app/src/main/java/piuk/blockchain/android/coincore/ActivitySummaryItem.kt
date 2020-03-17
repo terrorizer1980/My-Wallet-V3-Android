@@ -1,4 +1,4 @@
-package piuk.blockchain.android.coincore.model
+package piuk.blockchain.android.coincore
 
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue

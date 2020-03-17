@@ -11,11 +11,11 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.AssetTokenLookup
+import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.ui.transactions.adapter.formatting
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutMapper
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -23,7 +23,7 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import java.util.Locale
 
 class TransactionDetailPresenter constructor(
-    private val assetLookup: AssetTokenLookup,
+    private val assetLookup: Coincore,
     private val inputOutputMapper: TransactionInOutMapper,
     private val stringUtils: StringUtils,
     private val exchangeRateDataManager: ExchangeRateDataManager,

@@ -8,7 +8,7 @@ import org.amshove.kluent.`should equal`
 import org.junit.Test
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.transactions.adapter.formatting
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 
 class ActivitySummaryItemFormattingTest {
 

@@ -1,8 +1,10 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.btc
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.DefaultLabels
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
@@ -16,6 +18,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.android.data.currency.CurrencyState
@@ -24,7 +27,7 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.math.BigInteger
 
-class BTCTokensTest {
+class BtcTokensTest {
 
     private val payloadManager: PayloadManager = mock()
     private val currencyState: CurrencyState = mock()
@@ -33,17 +36,22 @@ class BTCTokensTest {
     private val historicRates: ChartsDataManager = mock()
     private val currencyPrefs: CurrencyPrefs = mock()
     private val custodialWalletManager: CustodialWalletManager = mock()
+    private val mockLabels: DefaultLabels = mock()
+    private val crashLogger: CrashLogger = mock()
     private val rxBus: RxBus = spy()
 
-    private val subject: AssetTokensBase = BTCTokens(
-        payloadDataManager = payloadDataManager,
-        exchangeRates = exchangeRates,
-        payloadManager = payloadManager,
-        historicRates = historicRates,
-        currencyPrefs = currencyPrefs,
-        custodialWalletManager = custodialWalletManager,
-        rxBus = rxBus
-    )
+    private val subject: AssetTokensBase =
+        BtcTokens(
+            payloadDataManager = payloadDataManager,
+            exchangeRates = exchangeRates,
+            payloadManager = payloadManager,
+            historicRates = historicRates,
+            currencyPrefs = currencyPrefs,
+            custodialWalletManager = custodialWalletManager,
+            labels = mockLabels,
+            crashLogger = crashLogger,
+            rxBus = rxBus
+        )
 
     @get:Rule
     val rxSchedulers = rxInit {

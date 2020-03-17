@@ -18,9 +18,9 @@ import org.mockito.Answers
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.AssetTokenLookup
-import piuk.blockchain.android.coincore.AssetTokensBase
-import piuk.blockchain.android.coincore.model.TestActivitySummaryItem
+import piuk.blockchain.android.coincore.Coincore
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.TestActivitySummaryItem
 import piuk.blockchain.android.ui.transactions.mapping.TransactionDetailModel
 import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutDetails
 import piuk.blockchain.android.util.StringUtils
@@ -31,7 +31,7 @@ import java.util.Locale
 
 class TransactionDetailPresenterTest {
 
-    private val assetSelect: AssetTokenLookup = mock()
+    private val assetSelect: Coincore = mock()
     private val assetTokens: AssetTokensBase = mock()
     private val inputOutMapper: TransactionInOutMapper = mock()
     private val prefsUtil: PersistentPrefs = mock()

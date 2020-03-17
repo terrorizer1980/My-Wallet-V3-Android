@@ -42,7 +42,9 @@ class BchDataManager(
     /**
      * Clears the currently stored BCH wallet from memory.
      */
-    fun clearBchAccountDetails() = bchDataStore.clearData()
+    fun clearBchAccountDetails() {
+        bchDataStore.clearData()
+    }
 
     /**
      * Fetches EthereumWallet stored in metadata. If metadata entry doesn't exists it will be created.
@@ -208,7 +210,8 @@ class BchDataManager(
                 .forEach {
                     val accountNumber = it + 1
 
-                    val newAccountLabel = "${defaultLabels[CryptoCurrency.BTC]} $accountNumber"
+                    val label = defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.BTC)
+                    val newAccountLabel = "$label $accountNumber"
                     val acc =
                         payloadDataManager.wallet!!.hdWallets[0].addAccount(newAccountLabel)
 
@@ -252,7 +255,7 @@ class BchDataManager(
             bchDataStore.bchWallet!!.addAccount()
         }
 
-        val defaultLabel = defaultLabels[CryptoCurrency.BCH]
+        val defaultLabel = defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.BCH)
         val count = bchDataStore.bchWallet!!.accountTotal
         bchDataStore.bchMetadata!!.addAccount(
             GenericMetadataAccount(

@@ -28,7 +28,8 @@ class BuyDataManager(
     val canBuy: Single<Boolean>
         @Synchronized get() {
             initReplaySubjects()
-            return Singles.zip(isBuyRolledOut,
+            return Singles.zip(
+                isBuyRolledOut,
                 isCoinifyAllowed
             ) { isBuyRolledOut, allowCoinify ->
                 isBuyRolledOut && allowCoinify

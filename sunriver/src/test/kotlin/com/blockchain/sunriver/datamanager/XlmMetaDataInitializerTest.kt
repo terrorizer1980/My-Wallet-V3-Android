@@ -721,5 +721,5 @@ private fun KStubbing<MetadataRepository>.successfulSave() {
 
 private fun givenDefaultXlmLabel(defaultLabel: String): DefaultLabels =
     mock {
-        on { get(CryptoCurrency.XLM) } `it returns` defaultLabel
+        on { getDefaultNonCustodialWalletLabel(CryptoCurrency.XLM) } `it returns` defaultLabel
     }

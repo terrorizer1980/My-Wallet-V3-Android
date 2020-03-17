@@ -61,7 +61,7 @@ class XlmSendPresenterStrategyTest {
     }
 
     private val currencyState: CurrencyState = mock {
-            on { cryptoCurrency } `it returns` CryptoCurrency.XLM
+            on { cryptoCurrency } itReturns CryptoCurrency.XLM
             on { fiatUnit } itReturns TEST_FIAT
         }
 

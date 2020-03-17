@@ -1,12 +1,14 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.xlm
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.sunriver.HorizonKeyPair
 import com.blockchain.sunriver.XlmDataManager
 import com.blockchain.sunriver.models.XlmTransaction
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.testutils.lumens
+import com.blockchain.wallet.DefaultLabels
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.spy
 import com.nhaarman.mockito_kotlin.verify
@@ -18,6 +20,7 @@ import io.reactivex.Single
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.android.data.currency.CurrencyState
@@ -27,25 +30,30 @@ import java.math.BigInteger
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
-class XLMTokensTest {
+class XlmTokensTest {
 
     private val currencyState: CurrencyState = mock()
     private val exchangeRates: ExchangeRateDataManager = mock()
     private val historicRates: ChartsDataManager = mock()
     private val currencyPrefs: CurrencyPrefs = mock()
     private val custodialWalletManager: CustodialWalletManager = mock()
+    private val mockLabels: DefaultLabels = mock()
+    private val crashLogger: CrashLogger = mock()
     private val rxBus: RxBus = spy()
 
     private val xlmDataManager: XlmDataManager = mock()
 
-    private val subject: AssetTokensBase = XLMTokens(
-        xlmDataManager = xlmDataManager,
-        exchangeRates = exchangeRates,
-        historicRates = historicRates,
-        currencyPrefs = currencyPrefs,
-        custodialWalletManager = custodialWalletManager,
-        rxBus = rxBus
-    )
+    private val subject: AssetTokensBase =
+        XlmTokens(
+            xlmDataManager = xlmDataManager,
+            exchangeRates = exchangeRates,
+            historicRates = historicRates,
+            currencyPrefs = currencyPrefs,
+            custodialWalletManager = custodialWalletManager,
+            labels = mockLabels,
+            crashLogger = crashLogger,
+            rxBus = rxBus
+        )
 
     @get:Rule
     val rxSchedulers = rxInit {

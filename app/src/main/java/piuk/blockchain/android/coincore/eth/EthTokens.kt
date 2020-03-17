@@ -1,9 +1,10 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.eth
 
 import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.DefaultLabels
 import com.blockchain.wallet.toAccountReference
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
@@ -17,8 +18,11 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.impl.AssetTokensBase
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -28,26 +32,60 @@ import piuk.blockchain.androidcore.data.charts.TimeSpan
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
-import piuk.blockchain.androidcore.utils.extensions.thenSingle
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import java.lang.IllegalArgumentException
 
-class ETHTokens(
+internal class EthTokens(
     private val ethDataManager: EthDataManager,
     private val exchangeRates: ExchangeRateDataManager,
     private val historicRates: ChartsDataManager,
     private val currencyPrefs: CurrencyPrefs,
     private val stringUtils: StringUtils,
-    private val crashLogger: CrashLogger,
     private val custodialWalletManager: CustodialWalletManager,
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
     rxBus: RxBus
-) : AssetTokensBase(rxBus) {
+) : AssetTokensBase(labels, crashLogger, rxBus) {
+
+    val accounts = mutableListOf<CryptoSingleAccount>()
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.ETHER
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun initToken(): Completable =
+        ethDataManager.initEthereumWallet(
+            stringUtils.getString(R.string.eth_default_account_label),
+            stringUtils.getString(R.string.pax_default_account_label_1)
+        )
+
+    override fun initActivities(): Completable =
+        Completable.complete()
+
+    override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            EthCryptoAccountNonCustodial(
+                this,
+                ethDataManager.getEthWallet()?.account ?: throw Exception("No ether wallet found")
+            )
+        )
+
+    override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            EthCryptoAccountCustodial(
+                labels.getDefaultCustodialWalletLabel(asset),
+                custodialWalletManager
+            )
+        )
+
+    override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultEthAccountRef())
+
+    override fun defaultAccount(): Single<CryptoSingleAccount> =
+        Single.fromCallable {
+            accounts.firstOrNull {
+                it is EthCryptoAccountNonCustodial
+            } ?: throw Exception("No ether wallet found")
+        }
 
     override fun receiveAddress(): Single<String> =
         Single.just(getDefaultEthAccountRef().receiveAddress)
@@ -60,16 +98,15 @@ class ETHTokens(
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.ETHER)
 
     override fun noncustodialBalance(): Single<CryptoValue> =
-        etheriumWalletInitialiser()
-            .thenSingle { ethDataManager.fetchEthAddress().singleOrError() }
+        ethDataManager.fetchEthAddress()
+            .singleOrError()
             .map { CryptoValue(CryptoCurrency.ETHER, it.getTotalBalance()) }
 
     override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = account as? AccountReference.Ethereum
             ?: throw IllegalArgumentException("Not an XLM Account Ref")
 
-        return etheriumWalletInitialiser()
-            .andThen(ethDataManager.getBalance(ref.address))
+        return ethDataManager.getBalance(ref.address)
             .map { CryptoValue.etherFromWei(it) }
     }
 
@@ -90,25 +127,10 @@ class ETHTokens(
             period
         )
 
-    private var isWalletUninitialised = true
-
-    private fun etheriumWalletInitialiser() =
-        if (isWalletUninitialised) {
-            ethDataManager.initEthereumWallet(
-                stringUtils.getString(R.string.eth_default_account_label),
-                stringUtils.getString(R.string.pax_default_account_label_1)
-            ).doOnError { throwable ->
-                crashLogger.logException(throwable, "Failed to load ETH wallet")
-            }.doOnComplete {
-                isWalletUninitialised = false
-            }
-        } else {
-            Completable.complete()
-        }
-
     override fun onLogoutSignal(event: AuthEvent) {
-        isWalletUninitialised = true
-        ethDataManager.clearEthAccountDetails()
+        if (event != AuthEvent.LOGIN) {
+            ethDataManager.clearEthAccountDetails()
+        }
     }
 
     // Activity/transactions moved over from TransactionDataListManager.
@@ -117,7 +139,7 @@ class ETHTokens(
         getTransactions()
             .singleOrError()
 
-    private fun getTransactions(): Observable<ActivitySummaryList> =
+    internal fun getTransactions(): Observable<ActivitySummaryList> =
         ethDataManager.getLatestBlock()
             .flatMapSingle { latestBlock ->
                 ethDataManager.getEthTransactions()

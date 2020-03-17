@@ -4,5 +4,7 @@ import info.blockchain.balance.CryptoCurrency
 
 interface DefaultLabels {
 
-    operator fun get(cryptoCurrency: CryptoCurrency): String
+    fun getDefaultNonCustodialWalletLabel(cryptoCurrency: CryptoCurrency): String
+    fun getDefaultCustodialWalletLabel(cryptoCurrency: CryptoCurrency): String
+    fun getAssetMasterWalletLabel(cryptoCurrency: CryptoCurrency): String
 }

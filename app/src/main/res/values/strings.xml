@@ -1828,4 +1828,6 @@
     <string name="pax_default_account_label_1">My USD Digital Wallet</string>
     <string name="exchange_default_account_label">My Exchange %1$s Address</string>
 
+    <string name="custodial_wallet_default_label">%1s Trade Wallet</string>
+
 </resources>

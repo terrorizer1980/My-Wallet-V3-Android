@@ -1,10 +1,12 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.bch
 
 import androidx.annotation.VisibleForTesting
 import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.DefaultLabels
 import com.blockchain.wallet.toAccountReference
+import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
@@ -16,8 +18,13 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import org.bitcoinj.core.Address
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.impl.BitcoinLikeTokens
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
+import piuk.blockchain.android.coincore.impl.mapList
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.CryptoSingleAccount
+import piuk.blockchain.android.coincore.impl.toCryptoSingle
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AuthEvent
@@ -31,32 +38,58 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.extensions.then
 import timber.log.Timber
 
-class BCHTokens(
+internal class BchTokens(
     private val bchDataManager: BchDataManager,
     private val exchangeRates: ExchangeRateDataManager,
     private val historicRates: ChartsDataManager,
     private val currencyPrefs: CurrencyPrefs,
     private val stringUtils: StringUtils,
-    private val crashLogger: CrashLogger,
     private val custodialWalletManager: CustodialWalletManager,
     private val environmentSettings: EnvironmentConfig,
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
     rxBus: RxBus
-) : BitcoinLikeTokens(rxBus) {
+) : BitcoinLikeTokens(labels, crashLogger, rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BCH
 
-    override fun defaultAccount(): Single<CryptoAccount> =
+    override fun initToken(): Completable =
+        bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
+            .then { updater() }
+
+    override fun initActivities(): Completable =
+        Completable.complete()
+
+    override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
+
+    override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            BchCryptoAccountCustodial(
+                labels.getDefaultCustodialWalletLabel(asset),
+                custodialWalletManager
+            )
+        )
+
+    override fun defaultAccountRef(): Single<AccountReference> =
         with(bchDataManager) {
             val a = getAccountMetadataList()[getDefaultAccountPosition()]
             Single.just(a.toAccountReference())
+        }
+
+    override fun defaultAccount(): Single<CryptoSingleAccount> =
+        with(bchDataManager) {
+            val a = getAccountMetadataList()[getDefaultAccountPosition()]
+            Single.just(BchCryptoAccountNonCustodial(a))
         }
 
     override fun receiveAddress(): Single<String> =
         bchDataManager.getNextReceiveAddress(
             bchDataManager.getAccountMetadataList().indexOfFirst {
                 it.xpub == bchDataManager.getDefaultGenericMetadataAccount()!!.xpub
-            }).map {
+            }
+        ).map {
             val address = Address.fromBase58(environmentSettings.bitcoinCashNetworkParameters, it)
             address.toCashAddress()
         }.singleOrError()
@@ -65,16 +98,11 @@ class BCHTokens(
         custodialWalletManager.getBalanceForAsset(CryptoCurrency.BCH)
 
     override fun noncustodialBalance(): Single<CryptoValue> =
-        walletInitialiser()
-            .then { updater() }
-            .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
+        updater().toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getWalletBalance() }
 
-    override fun balance(account: CryptoAccount): Single<CryptoValue> {
+    override fun balance(account: AccountReference): Single<CryptoValue> {
         val ref = accountReference(account)
-
-        return walletInitialiser()
-            .then { updater() }
-            .toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }
+        return updater().toCryptoSingle(CryptoCurrency.BCH) { bchDataManager.getAddressBalance(ref.xpub) }
     }
 
     override fun doUpdateBalances(): Completable =
@@ -90,23 +118,10 @@ class BCHTokens(
     override fun historicRateSeries(period: TimeSpan, interval: TimeInterval): Single<PriceSeries> =
         historicRates.getHistoricPriceSeries(CryptoCurrency.BCH, currencyPrefs.selectedFiatCurrency, period)
 
-    private var isWalletUninitialised = true
-
-    private fun walletInitialiser() =
-        if (isWalletUninitialised) {
-            bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
-                .doOnError { throwable ->
-                    crashLogger.logException(throwable, "Failed to load bch wallet")
-                }.doOnComplete {
-                    isWalletUninitialised = false
-                }
-        } else {
-            Completable.complete()
-        }
-
     override fun onLogoutSignal(event: AuthEvent) {
-        isWalletUninitialised = true
-        bchDataManager.clearBchAccountDetails()
+        if (event != AuthEvent.LOGIN) {
+            bchDataManager.clearBchAccountDetails()
+        }
         super.onLogoutSignal(event)
     }
 
@@ -122,19 +137,28 @@ class BCHTokens(
     private fun getAllTransactions(): Observable<ActivitySummaryList> =
         bchDataManager.getWalletTransactions(transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it, exchangeRates)
+                BchActivitySummaryItem(
+                    it,
+                    exchangeRates
+                )
             }
 
     private fun getLegacyTransactions(): Observable<ActivitySummaryList> =
         bchDataManager.getImportedAddressTransactions(transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it, exchangeRates)
+                BchActivitySummaryItem(
+                    it,
+                    exchangeRates
+                )
             }
 
     private fun getAccountTransactions(address: String): Observable<List<ActivitySummaryItem>> =
         bchDataManager.getAddressTransactions(address, transactionFetchCount, transactionFetchOffset)
             .mapList {
-                BchActivitySummaryItem(it, exchangeRates)
+                BchActivitySummaryItem(
+                    it,
+                    exchangeRates
+                )
             }
 }
 

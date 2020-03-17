@@ -1,8 +1,10 @@
-package piuk.blockchain.android.coincore
+package piuk.blockchain.android.coincore.btc
 
 import androidx.annotation.VisibleForTesting
+import com.blockchain.logging.CrashLogger
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.wallet.DefaultLabels
 import com.blockchain.wallet.toAccountReference
 import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
@@ -15,8 +17,12 @@ import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.model.ActivitySummaryItem
-import piuk.blockchain.android.coincore.model.ActivitySummaryList
+import piuk.blockchain.android.coincore.impl.BitcoinLikeTokens
+import piuk.blockchain.android.coincore.impl.fetchLastPrice
+import piuk.blockchain.android.coincore.impl.toCryptoSingle
+import piuk.blockchain.android.coincore.ActivitySummaryItem
+import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.ChartsDataManager
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -26,21 +32,43 @@ import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 
-class BTCTokens(
+internal class BtcTokens(
     private val payloadDataManager: PayloadDataManager,
     private val exchangeRates: ExchangeRateDataManager,
     private val payloadManager: PayloadManager,
     private val historicRates: ChartsDataManager,
     private val currencyPrefs: CurrencyPrefs,
     private val custodialWalletManager: CustodialWalletManager,
+    labels: DefaultLabels,
+    crashLogger: CrashLogger,
     rxBus: RxBus
-) : BitcoinLikeTokens(rxBus) {
+) : BitcoinLikeTokens(labels, crashLogger, rxBus) {
 
     override val asset: CryptoCurrency
         get() = CryptoCurrency.BTC
 
-    override fun defaultAccount(): Single<AccountReference> =
+    override fun initToken(): Completable =
+        updater()
+
+    override fun initActivities(): Completable =
+        Completable.complete()
+
+    override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        emptyList()
+
+    override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
+        listOf(
+            BtcCryptoAccountCustodial(
+                labels.getDefaultCustodialWalletLabel(asset),
+                custodialWalletManager
+            )
+        )
+
+    override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(payloadDataManager.defaultAccount.toAccountReference())
+
+    override fun defaultAccount(): Single<CryptoSingleAccount> =
+        Single.just(BtcCryptoAccountNonCustodial(payloadDataManager.defaultAccount))
 
     override fun receiveAddress(): Single<String> =
         payloadDataManager.getNextReceiveAddress(payloadDataManager.getAccount(payloadDataManager.defaultAccountIndex))
@@ -76,7 +104,7 @@ class BTCTokens(
         when (itemAccount.type) {
             ItemAccount.TYPE.ALL_ACCOUNTS_AND_LEGACY -> getAllTransactions()
             ItemAccount.TYPE.ALL_LEGACY -> getLegacyTransactions()
-            ItemAccount.TYPE.SINGLE_ACCOUNT -> getAccountTransactions(itemAccount.address!!)
+            ItemAccount.TYPE.SINGLE_ACCOUNT -> getAccountTransactions(itemAccount.address)
         }
 
     private fun getAllTransactions(): Single<ActivitySummaryList> =
