@@ -7,14 +7,20 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import java.security.MessageDigest
 
 interface WalletReporter {
-    fun reportWalletGuid(value: String)
+    fun reportWalletGuid(walletGuid: String)
 }
 
 class AnalyticsWalletReporter(private val userAnalytics: UserAnalytics) : WalletReporter {
-    override fun reportWalletGuid(value: String) {
-        userAnalytics.logUserProperty(UserProperty(UserAnalytics.WALLET_ID,
-            String(Hex.encode(MessageDigest.getInstance("SHA-256").digest(
-                value.toByteArray(charset("UTF-8")))))))
+    override fun reportWalletGuid(walletGuid: String) {
+        val walletId = String(
+            Hex.encode(
+                MessageDigest.getInstance("SHA-256")
+                    .digest(
+                        walletGuid.toByteArray(charset("UTF-8"))
+                    )
+            )
+        ).take(36)
+        userAnalytics.logUserProperty(UserProperty(UserAnalytics.WALLET_ID, walletId))
     }
 }
 
