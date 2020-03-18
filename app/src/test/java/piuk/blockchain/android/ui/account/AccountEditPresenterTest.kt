@@ -448,7 +448,7 @@ class AccountEditPresenterTest {
         whenever(mockPayload.hdWallets[0].accounts).thenReturn(listOf(account))
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
         whenever(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.complete())
-        whenever(swipeToReceiveHelper.storeAll()).thenReturn(Completable.complete())
+        whenever(swipeToReceiveHelper.generateAddresses()).thenReturn(Completable.complete())
 
         // Act
         subject.onClickDefault(mock())

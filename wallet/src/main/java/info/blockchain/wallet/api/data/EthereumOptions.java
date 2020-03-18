@@ -20,6 +20,7 @@ public class EthereumOptions {
     @JsonProperty("lastTxFuse")
     private int lastTxFuse;
 
+
     public long getLastTxFuse() {
         return lastTxFuse;
     }

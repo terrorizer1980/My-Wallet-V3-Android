@@ -315,7 +315,7 @@ class BchDataManager(
             Observable.fromCallable { fetchAddressTransactions(address, limit, offset) }
         }.applySchedulers()
 
-    fun getWalletTransactions(limit: Int, offset: Int): Observable<List<TransactionSummary>> =
+    fun getWalletTransactions(limit: Int = 50, offset: Int = 0): Observable<List<TransactionSummary>> =
         rxPinning.call<List<TransactionSummary>> {
             Observable.fromCallable { fetchWalletTransactions(limit, offset) }
         }.applySchedulers()

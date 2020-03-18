@@ -16,8 +16,7 @@ import piuk.blockchain.androidcore.utils.extensions.switchToSingleIfEmpty
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
-abstract class CryptoSingleAccountBase
-    : CryptoSingleAccount {
+abstract class CryptoSingleAccountBase : CryptoSingleAccount {
 
     protected val cryptoAsset: CryptoCurrency
         get() = cryptoCurrency!!
@@ -26,8 +25,7 @@ abstract class CryptoSingleAccountBase
         get() = false
 }
 
-abstract class CryptoSingleAccountCustodialBase
-    : CryptoSingleAccountBase() {
+abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
 
     protected abstract val custodialWalletManager: CustodialWalletManager
 
@@ -67,8 +65,7 @@ abstract class CryptoSingleAccountCustodialBase
     )
 }
 
-abstract class CryptoSingleAccountNonCustodialBase
-    : CryptoSingleAccountBase() {
+abstract class CryptoSingleAccountNonCustodialBase : CryptoSingleAccountBase() {
 
     override val receiveAddress: Single<String>
         get() = Single.error(NotImplementedError("ReceiveAddress not implemented"))
@@ -150,10 +147,10 @@ class CryptoAccountCompoundGroup(
     // Produce the sum of all balances of all accounts
     override val balance: Single<CryptoValue>
         get() = Single.zip(
-                accounts.map { it.balance }
-            ) { t: Array<Any> ->
-                t.sumBy { it as CryptoValue }
-            }
+            accounts.map { it.balance }
+        ) { t: Array<Any> ->
+            t.sumBy { it as CryptoValue }
+        }
 
     private fun <T> Array<T>.sumBy(selector: (T) -> CryptoValue): CryptoValue {
         var sum: CryptoValue = CryptoValue.zero(asset)

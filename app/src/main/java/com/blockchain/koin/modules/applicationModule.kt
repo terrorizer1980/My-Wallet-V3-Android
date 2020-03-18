@@ -136,6 +136,7 @@ import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
 import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.android.ui.swipetoreceive.AddressGenerator
 import piuk.blockchain.android.util.ResourceDefaultLabels
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
@@ -202,7 +203,7 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 xlmDataManager = get()
             )
-        }
+        }.bind(AddressGenerator::class)
 
         factory {
             SwipeToReceivePresenter(
@@ -1034,6 +1035,9 @@ val applicationModule = applicationContext {
                 dynamicFeeCache = get(),
                 feeDataManager = get(),
                 simpleBuySync = get(),
+                walletApi = get(),
+                addressGenerator = get(),
+                payloadDataManager = get(),
                 rxBus = get()
             )
         }
