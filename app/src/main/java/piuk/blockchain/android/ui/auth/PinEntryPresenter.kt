@@ -6,6 +6,9 @@ import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import android.view.View
 import com.blockchain.logging.CrashLogger
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvent
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.crashlytics.android.answers.LoginEvent
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.api.data.UpdateType
@@ -23,6 +26,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.DialogButtonCallback
+import com.blockchain.notifications.analytics.logEvent
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
@@ -40,6 +44,7 @@ import timber.log.Timber
 import java.net.SocketTimeoutException
 
 class PinEntryPresenter(
+    private val analytics: Analytics,
     private val authDataManager: AuthDataManager,
     private val appUtil: AppUtil,
     private val prefs: PersistentPrefs,
@@ -155,6 +160,12 @@ class PinEntryPresenter(
                     view.setTitleString(R.string.create_pin)
                 }
                 return
+            }
+
+            if(userEnteredConfirmationPin == null) {
+                analytics.logEventOnce(AnalyticsEvents.WalletSignupPINFirst)
+            } else {
+                analytics.logEventOnce(AnalyticsEvents.WalletSignupPINSecond)
             }
 
             // Only show warning on first entry and if user is creating a new PIN

@@ -152,6 +152,9 @@ class PrefsUtil(
         removeValue(KEY_INTRO_TOUR_CURRENT_STAGE)
     }
 
+    override fun hasSentMetric(metricName: String) = store.contains("HAS_SENT_METRIC_$metricName")
+    override fun setMetricAsSent(metricName: String) = setValue("HAS_SENT_METRIC_$metricName", true)
+
     // Wallet Status
     override var lastBackupTime: Long
         get() = getValue(BACKUP_DATE_KEY, 0L)
