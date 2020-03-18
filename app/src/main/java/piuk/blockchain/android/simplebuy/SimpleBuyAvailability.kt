@@ -21,8 +21,8 @@ class SimpleBuyAvailability(
 
         val eligibleCheck = buyDataManager.isCoinifyAllowed
             .map {
-            !it || hasStartedAtLeastOnce
-        }.onErrorReturn { false }
+                !it || hasStartedAtLeastOnce
+            }.onErrorReturn { false }
 
         return custodialWalletManager.isCurrencySupportedForSimpleBuy(currencyPrefs.selectedFiatCurrency)
             .onErrorReturn { false }

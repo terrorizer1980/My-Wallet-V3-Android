@@ -62,7 +62,10 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         button_buy.text = resources.getString(R.string.buy_crypto, newState.selectedCryptoCurrency?.displayTicker)
         checkout_subtitle.text =
             resources.getString(R.string.checkout_subtitle, newState.selectedCryptoCurrency?.displayTicker)
-
+        estimated_amount.text = newState.quote?.estimatedAmount?.toStringWithSymbol()?.let {
+            getString(R.string.approximately_symbol, it)
+        } ?: ""
+        fees_amount.text = newState.quote?.fee?.toStringWithSymbol() ?: ""
         date.text = newState.order.quote?.formatDate()
         button_buy.isEnabled = newState.bankAccount != null && newState.order.quote != null
 

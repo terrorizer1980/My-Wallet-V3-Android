@@ -97,7 +97,7 @@ data class BuyLimits(private val min: Long, private val max: Long) {
     fun maxLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, max)
 }
 
-data class Quote(val date: Date)
+data class Quote(val date: Date, val fee: FiatValue, val estimatedAmount: CryptoValue)
 
 data class BankAccount(val details: List<BankDetail>)
 
