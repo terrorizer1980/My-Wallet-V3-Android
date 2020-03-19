@@ -56,6 +56,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     override val model: DashboardModel by inject()
 
     private val announcements: AnnouncementList by inject()
+    private val analyticsReporter: BalanceAnalyticsReporter by inject()
 
     private val theAdapter: DashboardDelegateAdapter by lazy {
         DashboardDelegateAdapter(
@@ -102,6 +103,8 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         if (this.state?.announcement != newState.announcement) {
             showAnnouncement(newState.announcement)
         }
+
+        updateAnalytics(this.state, newState)
 
         this.state = newState
     }
@@ -178,6 +181,18 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     private fun showAnnouncement(card: AnnouncementCard?) {
         displayList[IDX_CARD_ANNOUNCE] = card ?: EmptyDashboardItem()
         theAdapter.notifyItemChanged(IDX_CARD_ANNOUNCE)
+    }
+
+    private fun updateAnalytics(oldState: DashboardState?, newState: DashboardState) {
+        analyticsReporter.updateFiatTotal(newState.fiatBalance)
+
+        newState.assets.forEach { (cc, s) ->
+            val newBalance = s.cryptoBalance
+            if (newBalance != null && newBalance != oldState?.assets?.get(cc)?.cryptoBalance) {
+                analyticsReporter.gotAssetBalance(cc, newBalance) // IF we have the full set, this will fire
+            }
+        }
+        analyticsReporter
     }
 
     override fun onBackPressed(): Boolean = false
