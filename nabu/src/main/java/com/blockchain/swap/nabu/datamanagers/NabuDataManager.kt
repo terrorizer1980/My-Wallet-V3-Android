@@ -152,6 +152,7 @@ internal class NabuDataManagerImpl(
         get() = payloadDataManager.sharedKey
     private val emailSingle
         get() = settingsDataManager.getSettings()
+            .doOnNext { walletReporter.reportUserSettings(it) }
             .map { it.email }
             .singleOrError()
 

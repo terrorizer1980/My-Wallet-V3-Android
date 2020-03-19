@@ -188,7 +188,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
         newState.assets.forEach { (cc, s) ->
             val newBalance = s.cryptoBalance
-            if(newBalance != null && newBalance != oldState?.assets?.get(cc)?.cryptoBalance) {
+            if (newBalance != null && newBalance != oldState?.assets?.get(cc)?.cryptoBalance) {
                 analyticsReporter.gotAssetBalance(cc, newBalance) // IF we have the full set, this will fire
             }
         }

@@ -136,6 +136,7 @@ import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
 import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.android.ui.dashboard.BalanceAnalyticsReporter
 import piuk.blockchain.android.util.ResourceDefaultLabels
 import piuk.blockchain.androidcoreui.utils.DateUtil
 import piuk.blockchain.androidcoreui.utils.OverlayDetection
@@ -824,6 +825,12 @@ val applicationModule = applicationContext {
                 custodialWallet = get(),
                 availabilityChecker = get(),
                 localStateAdapter = inflateAdapter
+            )
+        }
+
+        factory {
+            BalanceAnalyticsReporter(
+                analytics = get()
             )
         }
 

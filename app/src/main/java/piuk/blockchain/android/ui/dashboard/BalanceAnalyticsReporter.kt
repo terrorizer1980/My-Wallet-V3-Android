@@ -17,7 +17,7 @@ class BalanceAnalyticsReporter(
 
     fun gotAssetBalance(crypto: CryptoCurrency, amount: CryptoValue) {
         collectedBalances[crypto] = amount
-        if(collectedBalances.size == assetCount) {
+        if (collectedBalances.size == assetCount) {
             sendAssetData()
             sendBalanceData()
         }
@@ -37,7 +37,7 @@ class BalanceAnalyticsReporter(
     private fun sendBalanceData() {
         val balance = totalBalance ?: return
 
-        val value = when(balance.toBigDecimal()) {
+        val value = when (balance.toBigDecimal()) {
             RANGE_1 -> BUCKET_1
             RANGE_2 -> BUCKET_2
             RANGE_3 -> BUCKET_3
