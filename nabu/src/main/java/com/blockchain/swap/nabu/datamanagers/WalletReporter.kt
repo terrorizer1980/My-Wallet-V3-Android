@@ -21,7 +21,7 @@ class AnalyticsWalletReporter(private val userAnalytics: UserAnalytics) : Wallet
                         walletGuid.toByteArray(charset("UTF-8"))
                     )
             )
-        ).take(36)
+        ).take(UserProperty.MAX_VALUE_LEN)
         userAnalytics.logUserProperty(UserProperty(UserAnalytics.WALLET_ID, walletId))
     }
 
@@ -47,7 +47,7 @@ class UniqueAnalyticsWalletReporter(
     private val prefs: PersistentPrefs
 ) : WalletReporter by walletReporter {
     override fun reportWalletGuid(walletGuid: String) {
-        val reportedKey = prefs.getValue(ANALYTICS_REPORTED_WALLET_KEY)?.take(36)
+        val reportedKey = prefs.getValue(ANALYTICS_REPORTED_WALLET_KEY)?.take(UserProperty.MAX_VALUE_LEN)
         if (reportedKey == null || reportedKey != walletGuid) {
             walletReporter.reportWalletGuid(UserAnalytics.WALLET_ID)
             prefs.setValue(ANALYTICS_REPORTED_WALLET_KEY, walletGuid)

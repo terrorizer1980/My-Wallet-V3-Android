@@ -25,4 +25,8 @@ interface AnalyticsEvent {
     val params: Map<String, String>
 }
 
-data class UserProperty(val property: String, val value: String)
+data class UserProperty(val property: String, val value: String) {
+    companion object {
+        const val MAX_VALUE_LEN = 36
+    }
+}
