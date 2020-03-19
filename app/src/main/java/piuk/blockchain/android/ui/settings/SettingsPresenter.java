@@ -382,11 +382,9 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                             .flatMapCompletable(ignored -> syncPhoneNumberWithNabu())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(() -> {
-                                /*   analytics.logEvent(KYCAnalyticsEvents.SendSmsCode.INSTANCE);*/
                                 updateNotification(Settings.NOTIFICATION_TYPE_SMS, false);
                                 getView().showDialogVerifySms();
                             }, throwable -> {
-                                /*analytics.logEvent(KYCAnalyticsEvents.PhoneVerificationSuccess.INSTANCE);*/
                                 getView().showToast(R.string.update_failed, ToastCustom.TYPE_ERROR);
                             }));
         }
