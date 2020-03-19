@@ -23,8 +23,7 @@ internal class EthCryptoAccountNonCustodial(
 ) : CryptoSingleAccountNonCustodialBase() {
     override val cryptoCurrency = token.asset
 
-    constructor(asset: EthTokens, jsonAccount: EthereumAccount)
-        : this(jsonAccount.label, jsonAccount.address, asset)
+    constructor(asset: EthTokens, jsonAccount: EthereumAccount) : this(jsonAccount.label, jsonAccount.address, asset)
 
     override val balance: Single<CryptoValue>
         get() = token.noncustodialBalance()

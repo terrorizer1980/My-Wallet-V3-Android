@@ -524,7 +524,7 @@ class AccountEditPresenter constructor(
     }
 
     private fun updateSwipeToReceiveAddresses() {
-        compositeDisposable += swipeToReceiveHelper.storeAll()
+        compositeDisposable += swipeToReceiveHelper.generateAddresses()
             .subscribeOn(Schedulers.computation())
             .subscribe(
                 { /* No-op */ },

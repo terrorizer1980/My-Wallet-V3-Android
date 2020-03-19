@@ -117,7 +117,9 @@ class StubCustodialWalletManager : CustodialWalletManager {
         )
 
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
-        Single.just(Quote(date = Date()))
+        Single.just(Quote(date = Date(),
+            fee = FiatValue.zero(amount.currencyCode),
+            estimatedAmount = CryptoValue.ZeroBtc))
 
     override fun createOrder(
         cryptoCurrency: CryptoCurrency,

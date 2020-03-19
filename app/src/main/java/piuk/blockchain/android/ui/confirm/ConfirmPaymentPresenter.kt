@@ -47,7 +47,7 @@ class ConfirmPaymentPresenter : BasePresenter<ConfirmPaymentView>() {
         if (paymentDetails.showCryptoTotal) {
             view.setTotals(
                 paymentDetails.cryptoTotal + " " + paymentDetails.crypto.displayTicker,
-                paymentDetails.fiatSymbol + paymentDetails.fiatTotal
+                paymentDetails.fiatTotal
             )
         } else {
             view.setFiatTotalOnly(paymentDetails.fiatSymbol + paymentDetails.fiatTotal)

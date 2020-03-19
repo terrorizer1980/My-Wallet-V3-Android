@@ -46,7 +46,13 @@ class LiveCustodialWalletManager(
                 amount = amount.valueMinor.toString()
             )
         }.map { quoteResponse ->
-            Quote(date = quoteResponse.time.toLocalTime())
+            val amountCrypto = CryptoValue.fromMajor(crypto,
+                (amount.valueMinor.toFloat().div(quoteResponse.rate)).toBigDecimal())
+            Quote(
+                date = quoteResponse.time.toLocalTime(),
+                fee = FiatValue.fromMinor(amount.currencyCode, quoteResponse.fee.times(amountCrypto.amount.toLong())),
+                estimatedAmount = amountCrypto
+            )
         }
 
     override fun createOrder(

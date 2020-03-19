@@ -75,6 +75,15 @@ public interface WalletExplorerEndpoints {
 
     @FormUrlEncoded
     @POST("wallet")
+    Observable<ResponseBody> submitCoinReceiveAddresses(
+            @Field("method") String method,
+            @Field("sharedKey") String sharedKey,
+            @Field("guid") String guid,
+            @Field("coin-addresses") String coinAddresses
+    );
+
+    @FormUrlEncoded
+    @POST("wallet")
     Call<ResponseBody> syncWalletCall(
             @Field("method") String method,
             @Field("guid") String guid,
@@ -82,7 +91,6 @@ public interface WalletExplorerEndpoints {
             @Field("payload") String payload,
             @Field("length") int length,
             @Field("checksum") String checksum,
-            @Field("active") String active,
             @Field("email") String email,
             @Field("device") String device,
             @Field("old_checksum") String old_checksum,

@@ -19,6 +19,5 @@ internal class BtcCryptoAccountNonCustodial(
 ) : CryptoSingleAccountNonCustodialBase() {
     override val cryptoCurrency = CryptoCurrency.BTC
 
-    constructor(jsonAccount: Account)
-        : this(jsonAccount.label, jsonAccount.xpub)
+    constructor(jsonAccount: Account) : this(jsonAccount.label, jsonAccount.xpub)
 }

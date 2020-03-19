@@ -305,7 +305,6 @@ public class PayloadManager {
         Call<ResponseBody> call = walletApi.insertWallet(
                 walletBaseBody.getWalletBody().getGuid(),
                 walletBaseBody.getWalletBody().getSharedKey(),
-                null,
                 payloadWrapper.toJson(),
                 newPayloadChecksum,
                 email,
@@ -388,7 +387,6 @@ public class PayloadManager {
         Call<ResponseBody> call = walletApi.updateWallet(
                 walletBaseBody.getWalletBody().getGuid(),
                 walletBaseBody.getWalletBody().getSharedKey(),
-                syncAddresses,
                 payloadWrapper.toJson(),
                 newPayloadChecksum,
                 oldPayloadChecksum,
