@@ -766,12 +766,12 @@ public class SettingsPresenterTest extends RxTest {
     @Test
     public void storeSwipeToReceiveAddressesSuccessful() {
         // Arrange
-        when(swipeToReceiveHelper.storeAll()).thenReturn(Completable.complete());
+        when(swipeToReceiveHelper.generateAddresses()).thenReturn(Completable.complete());
         // Act
         subject.storeSwipeToReceiveAddresses();
         getTestScheduler().triggerActions();
         // Assert
-        verify(swipeToReceiveHelper).storeAll();
+        verify(swipeToReceiveHelper).generateAddresses();
         verifyNoMoreInteractions(swipeToReceiveHelper);
         verify(activity).showProgressDialog(R.string.please_wait);
         verify(activity).hideProgressDialog();
@@ -781,12 +781,12 @@ public class SettingsPresenterTest extends RxTest {
     @Test
     public void storeSwipeToReceiveAddressesFailed() {
         // Arrange
-        when(swipeToReceiveHelper.storeAll()).thenReturn(Completable.error(new Throwable()));
+        when(swipeToReceiveHelper.generateAddresses()).thenReturn(Completable.error(new Throwable()));
         // Act
         subject.storeSwipeToReceiveAddresses();
         getTestScheduler().triggerActions();
         // Assert
-        verify(swipeToReceiveHelper).storeAll();
+        verify(swipeToReceiveHelper).generateAddresses();
         verifyNoMoreInteractions(swipeToReceiveHelper);
         verify(activity).showProgressDialog(anyInt());
         verify(activity).hideProgressDialog();

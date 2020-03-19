@@ -571,7 +571,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     void storeSwipeToReceiveAddresses() {
         getCompositeDisposable().add(
-                swipeToReceiveHelper.storeAll()
+                swipeToReceiveHelper.generateAddresses()
                         .subscribeOn(Schedulers.computation())
                         .doOnSubscribe(disposable -> getView().showProgressDialog(R.string.please_wait))
                         .doOnTerminate(() -> getView().hideProgressDialog())

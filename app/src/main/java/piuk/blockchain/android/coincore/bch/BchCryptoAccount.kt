@@ -19,6 +19,5 @@ internal class BchCryptoAccountNonCustodial(
 ) : CryptoSingleAccountNonCustodialBase() {
     override val cryptoCurrency = CryptoCurrency.BCH
 
-    constructor(jsonAccount: GenericMetadataAccount)
-        : this(jsonAccount.label, jsonAccount.xpub)
+    constructor(jsonAccount: GenericMetadataAccount) : this(jsonAccount.label, jsonAccount.xpub)
 }

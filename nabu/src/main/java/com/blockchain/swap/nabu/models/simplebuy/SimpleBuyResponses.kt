@@ -14,7 +14,13 @@ data class SimpleBuyEligibility(val eligible: Boolean)
 data class SimpleBuyCurrency(val currency: String)
 
 data class SimpleBuyQuoteResponse(
-    val time: Date
+    val time: Date,
+    val rate: Long,
+    val rateWithoutFee: Long,
+/* the  fee value is more of a feeRate (ie it is the fee per 1 unit of crypto) to get the actual
+ "fee" you'll need to multiply by amount of crypto
+ */
+    val fee: Long
 )
 
 data class BankAccountResponse(val address: String?, val agent: BankAgentResponse, val currency: String)

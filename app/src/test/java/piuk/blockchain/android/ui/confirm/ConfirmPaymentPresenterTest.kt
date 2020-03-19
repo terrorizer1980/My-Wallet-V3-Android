@@ -76,7 +76,7 @@ class ConfirmPaymentPresenterTest {
         verify(mockActivity).setToLabel(toLabel)
         verify(mockActivity).setAmount("$btcAmount $btcUnit ($$fiatAmount)")
         verify(mockActivity).setFee("$btcFee $btcUnit ($$fiatFee)")
-        verify(mockActivity).setTotals("$btcTotal $btcUnit", "$$fiatTotal")
+        verify(mockActivity).setTotals("$btcTotal $btcUnit", fiatTotal)
         verify(mockActivity).contactNote = contactNote
         verify(mockActivity).contactNoteDescription = contactNoteDescription
         verify(mockActivity).setUiState(UiState.CONTENT)

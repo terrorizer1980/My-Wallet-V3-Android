@@ -26,7 +26,7 @@ data class SimpleBuyState(
     val selectedCryptoCurrency: CryptoCurrency? = null,
     val orderState: OrderState = OrderState.UNINITIALISED,
     private val expirationDate: Date? = null,
-    private val quote: Quote? = null,
+    val quote: Quote? = null,
     val kycStartedButNotCompleted: Boolean = false,
     val kycVerificationState: KycState? = null,
     val bankAccount: BankAccount? = null,
@@ -103,12 +103,18 @@ data class SimpleBuyState(
 }
 
 enum class KycState {
-    PENDING, /** Docs submitted for Gold and state is pending. Or kyc backend query returned an error  */
-    FAILED, /** Docs processed, failed kyc. Not error state. */
-    IN_REVIEW, /** Docs processed under manual review */
-    UNDECIDED, /** Docs submitted, no result know from server yet */
-    VERIFIED_AND_ELIGIBLE, /** Docs uploaded, processed and kyc passed. Eligible for simple buy */
-    VERIFIED_BUT_NOT_ELIGIBLE; /** Docs uploaded, processed and kyc passed. User is NOT eligible for simple buy. */
+    /** Docs submitted for Gold and state is pending. Or kyc backend query returned an error  */
+    PENDING,
+    /** Docs processed, failed kyc. Not error state. */
+    FAILED,
+    /** Docs processed under manual review */
+    IN_REVIEW,
+    /** Docs submitted, no result know from server yet */
+    UNDECIDED,
+    /** Docs uploaded, processed and kyc passed. Eligible for simple buy */
+    VERIFIED_AND_ELIGIBLE,
+    /** Docs uploaded, processed and kyc passed. User is NOT eligible for simple buy. */
+    VERIFIED_BUT_NOT_ELIGIBLE;
 
     fun verified() = this == VERIFIED_AND_ELIGIBLE || this == VERIFIED_BUT_NOT_ELIGIBLE
 

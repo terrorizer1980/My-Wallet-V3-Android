@@ -57,8 +57,7 @@ import piuk.blockchain.android.ui.home.MobileNoticeDialogFragment
 import piuk.blockchain.android.ui.start.PasswordRequiredActivity
 import piuk.blockchain.android.util.AppUtil
 
-internal class PinEntryFragment
-    : BaseFragment<PinEntryView, PinEntryPresenter>(),
+internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(),
     PinEntryView {
 
     private val pinEntryPresenter: PinEntryPresenter by inject()
