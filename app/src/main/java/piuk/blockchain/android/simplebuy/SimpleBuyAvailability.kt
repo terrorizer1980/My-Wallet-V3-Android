@@ -19,7 +19,7 @@ class SimpleBuyAvailability(
     fun isAvailable(): Single<Boolean> {
         val hasStartedAtLeastOnce = simpleBuyPrefs.flowStartedAtLeastOnce()
 
-        val eligibleCheck = buyDataManager.isCoinifyAllowed
+        val eligibleCheck = buyDataManager.hasCoinifyAccount
             .map {
             !it || hasStartedAtLeastOnce
         }.onErrorReturn { false }

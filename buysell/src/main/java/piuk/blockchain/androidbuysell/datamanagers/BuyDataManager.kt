@@ -63,6 +63,17 @@ class BuyDataManager(
             }.singleOrError()
         }
 
+    val hasCoinifyAccount: Single<Boolean>
+        @Synchronized get() {
+            initReplaySubjects()
+            return Observables.zip(
+                buyConditions.exchangeDataSource,
+                coinifyFeatureFlag.enabled.toObservable()
+            ) { exchangeData, coinifyEnabled ->
+                coinifyEnabled && exchangeData.coinify?.user != 0
+            }.singleOrError()
+        }
+
     /**
      * Checks whether or not a user is accessing their wallet from a SEPA country.
      *
