@@ -70,7 +70,9 @@ class BuyDataManager(
                 buyConditions.exchangeDataSource,
                 coinifyFeatureFlag.enabled.toObservable()
             ) { exchangeData, coinifyEnabled ->
-                coinifyEnabled && exchangeData.coinify?.user != 0
+                coinifyEnabled && exchangeData.coinify?.let {
+                    it.user != 0
+                } ?: false
             }.singleOrError()
         }
 
