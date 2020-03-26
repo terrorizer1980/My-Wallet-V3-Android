@@ -361,6 +361,13 @@ class EthDataManager(
                 if (ethWallet.updateErc20Tokens(defaultPaxLabel)) {
                     needsSave = true
                 }
+
+                if (!ethWallet.account.isAddressChecksummed()) {
+                    ethWallet.account.apply {
+                        address = withChecksummedAddress()
+                    }
+                    needsSave = true
+                }
                 ethWallet to needsSave
             }.toSingle()
 
