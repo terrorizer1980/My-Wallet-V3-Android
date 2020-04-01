@@ -3,9 +3,7 @@ package info.blockchain.wallet.api
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.data.FeeOptions
 import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
 import java.util.concurrent.TimeUnit
-
 
 private val FEE_CACHE = mutableMapOf<String, FeeOptionsCacheEntry>()
 private val CACHE_TIME = TimeUnit.MINUTES.toMillis(2)
@@ -41,13 +39,13 @@ data class FeeApi(private val feeEndpoints: FeeEndpoints) {
         get() = byCache("XLM") { feeEndpoints.getFeeOptions(CryptoCurrency.XLM.networkTicker.toLowerCase()) }
 }
 
-private data class FeeOptionsCacheEntry (val fee: Observable<FeeOptions>, val timestamp: Long)
+private data class FeeOptionsCacheEntry(val fee: Observable<FeeOptions>, val timestamp: Long)
 
-private fun byCache (currency: String, loader: () -> Observable<FeeOptions>): Observable<FeeOptions> {
+private fun byCache(currency: String, loader: () -> Observable<FeeOptions>): Observable<FeeOptions> {
     val entry = FEE_CACHE[currency]
 
     val timestamp = System.currentTimeMillis()
-    return if(entry == null || (timestamp - entry.timestamp) > CACHE_TIME) {
+    return if (entry == null || (timestamp - entry.timestamp) > CACHE_TIME) {
         val newEntry = loader().cache()
         FEE_CACHE[currency] = FeeOptionsCacheEntry(newEntry, timestamp)
         newEntry
