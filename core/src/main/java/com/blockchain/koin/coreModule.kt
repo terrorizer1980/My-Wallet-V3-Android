@@ -173,7 +173,7 @@ val coreModule = applicationContext {
 
         bean { ExchangeRateDataStore(get(), get()) }
 
-        factory { FeeDataManager(get(), get(), get()) }
+        bean { FeeDataManager(get(), get(), get()) }
 
         factory {
             AuthDataManager(
