@@ -1,15 +1,13 @@
 package info.blockchain.wallet.api
 
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.wallet.api.FeeApi.Companion.cacheTime
+import info.blockchain.wallet.api.FeeApi.Companion.feeCache
 import info.blockchain.wallet.api.data.FeeOptions
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
 
-private val FEE_CACHE = mutableMapOf<String, FeeOptionsCacheEntry>()
-private val CACHE_TIME = TimeUnit.MINUTES.toMillis(2)
-
 data class FeeApi(private val feeEndpoints: FeeEndpoints) {
-
     /**
      * Returns a [FeeOptions] object for BTC which contains both a "regular" and a "priority"
      * fee option, both listed in Satoshis per byte.
@@ -37,17 +35,22 @@ data class FeeApi(private val feeEndpoints: FeeEndpoints) {
      */
     val xlmFeeOptions: Observable<FeeOptions>
         get() = byCache("XLM") { feeEndpoints.getFeeOptions(CryptoCurrency.XLM.networkTicker.toLowerCase()) }
+
+    companion object {
+        internal val feeCache = mutableMapOf<String, FeeOptionsCacheEntry>()
+        internal val cacheTime = TimeUnit.MINUTES.toMillis(2)
+    }
 }
 
-private data class FeeOptionsCacheEntry(val fee: Observable<FeeOptions>, val timestamp: Long)
+internal data class FeeOptionsCacheEntry(val fee: Observable<FeeOptions>, val timestamp: Long)
 
 private fun byCache(currency: String, loader: () -> Observable<FeeOptions>): Observable<FeeOptions> {
-    val entry = FEE_CACHE[currency]
+    val entry = feeCache[currency]
 
     val timestamp = System.currentTimeMillis()
-    return if (entry == null || (timestamp - entry.timestamp) > CACHE_TIME) {
+    return if (entry == null || (timestamp - entry.timestamp) > cacheTime) {
         val newEntry = loader().cache()
-        FEE_CACHE[currency] = FeeOptionsCacheEntry(newEntry, timestamp)
+        feeCache[currency] = FeeOptionsCacheEntry(newEntry, timestamp)
         newEntry
     } else {
         entry.fee
