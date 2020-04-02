@@ -26,6 +26,7 @@ import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.RequestAnalyticsEvents
 import com.blockchain.notifications.analytics.SendAnalytics
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_SUPPORT_PORTAL
@@ -403,6 +404,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     private fun launchSimpleBuy() {
+        analytics.logEvent(SimpleBuyAnalytics.SIMPLE_BUY_SIDE_NAV)
         startActivity(
             SimpleBuyActivity.newInstance(
                 context = this,
