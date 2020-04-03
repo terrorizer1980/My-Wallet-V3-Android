@@ -14,7 +14,7 @@ class AnalyticsImpl internal constructor(
     }
 
     override fun logEventOnce(analyticsEvent: AnalyticsEvent) {
-        if(!prefs.hasSentMetric(analyticsEvent.event)) {
+        if (!prefs.hasSentMetric(analyticsEvent.event)) {
             prefs.setMetricAsSent(analyticsEvent.event)
             logEvent(analyticsEvent)
         }

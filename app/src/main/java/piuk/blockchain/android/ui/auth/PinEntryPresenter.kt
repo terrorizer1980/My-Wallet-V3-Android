@@ -7,7 +7,6 @@ import androidx.annotation.VisibleForTesting
 import android.view.View
 import com.blockchain.logging.CrashLogger
 import com.blockchain.notifications.analytics.Analytics
-import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.crashlytics.android.answers.LoginEvent
 import info.blockchain.wallet.api.Environment
@@ -162,7 +161,7 @@ class PinEntryPresenter(
                 return
             }
 
-            if(userEnteredConfirmationPin == null) {
+            if (userEnteredConfirmationPin == null) {
                 analytics.logEventOnce(AnalyticsEvents.WalletSignupPINFirst)
             } else {
                 analytics.logEventOnce(AnalyticsEvents.WalletSignupPINSecond)
