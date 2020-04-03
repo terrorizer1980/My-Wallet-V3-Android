@@ -266,7 +266,8 @@ class PitLinkingImplTest {
 
     private fun bchManagerReturnsGoodAddress() {
         whenever(bchDataManager.getDefaultAccountPosition()).thenReturn(0)
-        whenever(bchDataManager.getNextReceiveAddress(0)).thenReturn(Observable.just(BCH_ACCOUNT_ADDRESS))
+        whenever(bchDataManager.getNextCashReceiveAddress(0))
+            .thenReturn(Observable.just(BCH_ACCOUNT_ADDRESS))
     }
 
     private fun ethManagerReturnsGoodAddress() {
@@ -289,7 +290,7 @@ class PitLinkingImplTest {
 
     private fun bchManagerFailsWhenReturningAddress() {
         whenever(bchDataManager.getDefaultAccountPosition()).thenReturn(0)
-        whenever(bchDataManager.getNextReceiveAddress(0)).thenReturn(Observable.error(Throwable("Uh-huh")))
+        whenever(bchDataManager.getNextCashReceiveAddress(0)).thenReturn(Observable.error(Throwable("Uh-huh")))
     }
 
     private fun ethManagerFailsWhenReturningAddress() {
@@ -311,7 +312,7 @@ class PitLinkingImplTest {
 
     private fun bchManagerReturnsEmptyAddress() {
         whenever(bchDataManager.getDefaultAccountPosition()).thenReturn(0)
-        whenever(bchDataManager.getNextReceiveAddress(0)).thenReturn(Observable.just(""))
+        whenever(bchDataManager.getNextCashReceiveAddress(0)).thenReturn(Observable.just(""))
     }
 
     private fun ethManagerReturnsEmptyAddress() {

@@ -6,6 +6,7 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     AnalyticsEvent {
 
     NOT_ELIGIBLE_FOR_FLOW("sb_not_eligible_for_flow"),
+    SIMPLE_BUY_SIDE_NAV("side_nav_simple_buy"),
     INTRO_SCREEN_SHOW("sb_screen_shown"),
     I_WANT_TO_BUY_CRYPTO_BUTTON_CLICKED("sb_button_clicked"),
     SKIP_ALREADY_HAVE_CRYPTO("sb_button_skip"),

@@ -16,6 +16,7 @@ import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import org.bitcoinj.core.Address
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -366,16 +367,24 @@ class BchDataManager(
     fun getReceiveAddressAtPosition(accountIndex: Int, addressIndex: Int): String? =
         bchDataStore.bchWallet?.getReceiveAddressAtPosition(accountIndex, addressIndex)
 
+    fun getNextReceiveAddress(accountIndex: Int): Observable<String> = Observable.fromCallable {
+        bchDataStore.bchWallet!!.getNextReceiveAddress(accountIndex)
+    }
+
     /**
-     * Generates a Base58 Bitcoin Cash receive address for an account at a given position. The
-     * address returned will be the next unused in the chain.
+     * Generates a Base58 Bitcoin Cash receive address for an account at a given position and then formats this address
+     * to CashAddress
+     * Example: 14yYiZ5kzWhzSr6UKbWe6AKi46SfxvYneb --> bitcoincash:qq4e5fv3mdapcmhr9rm290ywzeu94288svt60rh64g
      *
      * @param accountIndex The index of the [DeterministicAccount] you wish to generate an address from
      * @return A Bitcoin Cash receive address in Base58 format
      */
-    fun getNextReceiveAddress(accountIndex: Int): Observable<String> =
+    fun getNextCashReceiveAddress(accountIndex: Int): Observable<String> =
         Observable.fromCallable {
             bchDataStore.bchWallet!!.getNextReceiveAddress(accountIndex)
+        }.map {
+            val address = Address.fromBase58(environmentSettings.bitcoinCashNetworkParameters, it)
+            address.toCashAddress()
         }
 
     /**
