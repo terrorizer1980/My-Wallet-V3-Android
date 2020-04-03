@@ -300,7 +300,8 @@ val applicationModule = applicationContext {
                 simpleBuySync = get(),
                 crashLogger = get(),
                 simpleBuyAvailability = get(),
-                cacheCredentialsWiper = get()
+                cacheCredentialsWiper = get(),
+                analytics = get()
             )
         }
 
@@ -933,7 +934,8 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 prngFixer = get(),
                 mobileNoticeRemoteConfig = get(),
-                crashLogger = get()
+                crashLogger = get(),
+                analytics = get()
             )
         }
 

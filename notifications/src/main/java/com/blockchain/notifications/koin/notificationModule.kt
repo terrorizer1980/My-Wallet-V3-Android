@@ -34,7 +34,7 @@ val notificationModule = applicationContext {
 
     factory { DynamicLinkHandler(get()) as PendingLink }
 
-    factory { AnalyticsImpl(get()) }
+    factory { AnalyticsImpl(get(), get()) }
         .bind(Analytics::class)
 
     factory { UserAnalyticsImpl(get()) }
