@@ -22,7 +22,7 @@ class SimpleBuyAvailabilityTest {
         whenever(simpleBuyFlag.enabled).thenReturn(Single.just(true))
         whenever(simpleBuyPrefs.flowStartedAtLeastOnce()).thenReturn(true)
 
-        whenever(buyDataManager.isCoinifyAllowed)
+        whenever(buyDataManager.hasCoinifyAccount)
             .thenReturn(Single.just(false))
 
         simpleBuyAvailability = SimpleBuyAvailability(
@@ -43,14 +43,14 @@ class SimpleBuyAvailabilityTest {
 
     @Test
     fun `should not  be available when is coinify tagged and no local state`() {
-        whenever(buyDataManager.isCoinifyAllowed).thenReturn(Single.just(true))
+        whenever(buyDataManager.hasCoinifyAccount).thenReturn(Single.just(true))
         whenever(simpleBuyPrefs.flowStartedAtLeastOnce()).thenReturn(false)
         simpleBuyAvailability.isAvailable().test().assertValueAt(0, false)
     }
 
     @Test
     fun `should not  be available when user request fails and no local state exists`() {
-        whenever(buyDataManager.isCoinifyAllowed)
+        whenever(buyDataManager.hasCoinifyAccount)
             .thenReturn(Single.error(Throwable()))
         whenever(simpleBuyPrefs.flowStartedAtLeastOnce()).thenReturn(false)
 
