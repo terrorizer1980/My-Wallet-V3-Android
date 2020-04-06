@@ -28,14 +28,19 @@ class SimpleBuyInteractor(
             .map { SimpleBuyIntent.UpdatedBuyLimitsAndSupportedCryptoCurrencies(it) }
             .trackLoading(appUtil.activityIndicator)
 
+    fun fetchSupportedFiatCurrencies(): Single<SimpleBuyIntent.SupportedCurrenciesUpdated> =
+        nabu.fetchNabuToken()
+            .flatMap { custodialWalletManager.getSupportedFiatCurrencies(it) }
+            .map { SimpleBuyIntent.SupportedCurrenciesUpdated(it) }
+            .trackLoading(appUtil.activityIndicator)
+
     fun fetchPredefinedAmounts(targetCurrency: String): Single<SimpleBuyIntent.UpdatedPredefinedAmounts> =
         custodialWalletManager.getPredefinedAmounts(targetCurrency)
             .map {
                 SimpleBuyIntent.UpdatedPredefinedAmounts(it.sortedBy { value ->
                     value.valueMinor
                 })
-            }
-            .trackLoading(appUtil.activityIndicator)
+            }.trackLoading(appUtil.activityIndicator)
 
     fun cancelOrder(): Single<SimpleBuyIntent.OrderCanceled> =
         Single.just(SimpleBuyIntent.OrderCanceled)

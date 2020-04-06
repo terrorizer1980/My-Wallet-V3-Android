@@ -34,6 +34,9 @@ class CustodialWalletManagerSwitcher(
     ): Single<SimpleBuyPairs> =
         proxy.getBuyLimitsAndSupportedCryptoCurrencies(nabuOfflineTokenResponse, fiatCurrency)
 
+    override fun getSupportedFiatCurrencies(nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
+        proxy.getSupportedFiatCurrencies(nabuOfflineTokenResponse)
+
     override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
         proxy.getQuote(action, crypto, amount)
 

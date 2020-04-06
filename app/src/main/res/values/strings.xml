@@ -1768,10 +1768,13 @@
     <string name="simple_buy_deposit_my_crypto">Tour the Wallet</string>
     <string name="simple_buy_skip_text">Explore your new Blockchain Wallet.</string>
     <string name="simple_buy_skip">Skip</string>
+    <string name="simple_buy_currency_selection_header">Your local currency to store funds in that currency as funds in your Blockchain Wallet.</string>
     <string name="simple_buy_get_started">Get Started</string>
     <string name="simple_buy_what_you_want_to_buy">What would you like to buy?</string>
     <string name="simple_buy_enter_amount">Enter amount</string>
     <string name="simple_buy_buy_crypto_title">Buy Crypto</string>
+    <string name="simple_buy_select_currency">Select Your Currency</string>
+    <string name="change_currency">Change Currency</string>
     <string name="simple_buy_verify_email_instruction">We sent an email to %1$s with a verification link. Didn\'t get it? Check your spam folder.</string>
     <string name="simple_buy_error_fetching_price">Error fetching latest price.</string>
     <string name="simple_buy_up_to_amount">Up to %1$s</string>
@@ -1835,5 +1838,8 @@
     <string name="approximately_symbol">~ %1$s</string>
 
     <string name="custodial_wallet_default_label">%1s Trade Wallet</string>
+
+    <string name="currency_not_supported_title">%1s is Not Supported.</string>
+    <string name="currency_not_supported"> Currently, we don’t support buying crypto %1s is not supported</string>
 
 </resources>

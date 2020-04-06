@@ -3,6 +3,7 @@ package piuk.blockchain.android.simplebuy
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -41,18 +42,19 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
         setContentView(R.layout.activity_simple_buy)
         setSupportActionBar(toolbar_general)
         if (savedInstanceState == null) {
-            compositeDisposable += simpleBuyFlowNavigator.navigateTo(startedFromKycResume).subscribeBy {
-                when (it) {
-                    FlowScreen.INTRO -> {
-                        if (startedFromDashboard) goToBuyCryptoScreen(false) else launchIntro()
+            compositeDisposable += simpleBuyFlowNavigator.navigateTo(startedFromKycResume, startedFromDashboard)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy {
+                    when (it) {
+                        FlowScreen.INTRO -> launchIntro()
+                        FlowScreen.ENTER_AMOUNT -> goToBuyCryptoScreen(false)
+                        FlowScreen.KYC -> startKyc()
+                        FlowScreen.CURRENCY_SELECTOR -> goToCurrencySelection(false)
+                        FlowScreen.KYC_VERIFICATION -> goToKycVerificationScreen(false)
+                        FlowScreen.CHECKOUT -> goToCheckOutScreen(false)
+                        FlowScreen.BANK_DETAILS -> goToBankDetailsScreen(false)
                     }
-                    FlowScreen.ENTER_AMOUNT -> goToBuyCryptoScreen(false)
-                    FlowScreen.KYC -> startKyc()
-                    FlowScreen.KYC_VERIFICATION -> goToKycVerificationScreen(false)
-                    FlowScreen.CHECKOUT -> goToCheckOutScreen(false)
-                    FlowScreen.BANK_DETAILS -> goToBankDetailsScreen(false)
                 }
-            }
         }
     }
 
@@ -78,6 +80,19 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
             .apply {
                 if (addToBackStack) {
                     addToBackStack(SimpleBuyCryptoFragment::class.simpleName)
+                }
+            }
+            .commitAllowingStateLoss()
+    }
+
+    override fun goToCurrencySelection(addToBackStack: Boolean) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.content_frame,
+                SimpleBuySelectCurrencyFragment(),
+                SimpleBuySelectCurrencyFragment::class.simpleName)
+            .apply {
+                if (addToBackStack) {
+                    addToBackStack(SimpleBuySelectCurrencyFragment::class.simpleName)
                 }
             }
             .commitAllowingStateLoss()
@@ -125,8 +140,7 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
 
     override fun launchIntro() {
         supportFragmentManager.beginTransaction()
-            .add(R.id.content_frame,
-                SimpleBuyIntroFragment())
+            .add(R.id.content_frame, SimpleBuyIntroFragment())
             .commitAllowingStateLoss()
     }
 

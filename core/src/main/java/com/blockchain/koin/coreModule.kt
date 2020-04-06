@@ -158,7 +158,7 @@ val coreModule = applicationContext {
 
         bean { WalletOptionsState() }
 
-        bean { SettingsDataManager(get(), get(), get()) }
+        bean { SettingsDataManager(get(), get(), get(), get()) }
 
         bean { SettingsService(get()) }
 

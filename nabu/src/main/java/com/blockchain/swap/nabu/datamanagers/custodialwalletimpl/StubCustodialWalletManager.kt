@@ -190,6 +190,11 @@ class StubCustodialWalletManager : CustodialWalletManager {
             )
         )
 
+    override fun getSupportedFiatCurrencies(nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
+        Single.just(listOf(
+            "GBP", "EUR"
+        ))
+
     override fun deleteBuyOrder(orderId: String): Completable {
         return Completable.complete()
     }

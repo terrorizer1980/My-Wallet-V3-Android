@@ -18,6 +18,7 @@ interface SimpleBuyNavigator {
     fun exitSimpleBuyFlow()
     fun goToBuyCryptoScreen(addToBackStack: Boolean = true)
     fun goToCheckOutScreen(addToBackStack: Boolean = true)
+    fun goToCurrencySelection(addToBackStack: Boolean = true)
     fun goToKycVerificationScreen(addToBackStack: Boolean = true)
     fun goToBankDetailsScreen(addToBackStack: Boolean = true)
     fun startKyc()
