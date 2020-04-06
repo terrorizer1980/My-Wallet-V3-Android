@@ -20,7 +20,7 @@ class CurrencyNotSupportedBottomSheet : SlidingModalBottomDialog() {
 
     override fun initControls(view: View) {
         with(view) {
-            title.text = getString(R.string.currency_not_supported_title, currencyItem.name)
+            title.text = getString(R.string.currency_not_supported_title)
             subtitle.text = getString(R.string.currency_not_supported, currencyItem.name)
             skip.setOnClickListener {
                 (parentFragment as? ChangeCurrencyOptionHost)?.skip()

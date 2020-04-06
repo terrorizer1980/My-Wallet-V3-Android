@@ -10,8 +10,10 @@ import kotlinx.android.synthetic.main.currency_selection_item.view.*
 import piuk.blockchain.android.R
 import kotlin.properties.Delegates
 
-class CurrenciesAdapter(private val onChecked: (CurrencyItem) -> Unit) :
-    RecyclerView.Adapter<CurrenciesAdapter.CurrenciesViewHolder>() {
+class CurrenciesAdapter(
+    private val showSectionDivider: Boolean = false,
+    private val onChecked: (CurrencyItem) -> Unit
+) : RecyclerView.Adapter<CurrenciesAdapter.CurrenciesViewHolder>() {
 
     var items: List<CurrencyItem> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
         if (oldValue != newValue) {
@@ -33,11 +35,6 @@ class CurrenciesAdapter(private val onChecked: (CurrencyItem) -> Unit) :
         val cellDivider: View = itemView.cell_divider
         val sectionDivider: View = itemView.section_separator
     }
-
-    class DividerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-    private fun lastAvailableCurrencyPosition() =
-        items.indexOf(items.findLast { it.isAvailable })
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CurrenciesViewHolder {
 
@@ -73,7 +70,7 @@ class CurrenciesAdapter(private val onChecked: (CurrencyItem) -> Unit) :
             symbol.text = item.symbol
 
             when {
-                position == items.filter { it.isAvailable }.size - 1 -> {
+                position == items.filter { it.isAvailable }.size - 1 && showSectionDivider -> {
                     cellDivider.visibility = View.GONE
                     sectionDivider.visibility = View.VISIBLE
                 }

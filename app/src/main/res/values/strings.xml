@@ -1839,7 +1839,7 @@
 
     <string name="custodial_wallet_default_label">%1s Trade Wallet</string>
 
-    <string name="currency_not_supported_title">%1s is Not Supported.</string>
-    <string name="currency_not_supported"> Currently, we don’t support buying crypto %1s is not supported</string>
+    <string name="currency_not_supported_title">Your Currency is Not Supported</string>
+    <string name="currency_not_supported">Currently we don’t support buying crypto with %1s</string>
 
 </resources>

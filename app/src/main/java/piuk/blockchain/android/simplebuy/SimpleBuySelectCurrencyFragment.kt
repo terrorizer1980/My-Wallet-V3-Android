@@ -33,7 +33,7 @@ class SimpleBuySelectCurrencyFragment : MviFragment<SimpleBuyModel, SimpleBuyInt
     private val compositeDisposable = CompositeDisposable()
     private var filter: (CurrencyItem) -> Boolean = { true }
 
-    private val adapter = CurrenciesAdapter {
+    private val adapter = CurrenciesAdapter(true) {
         updateFiat(it)
     }
 

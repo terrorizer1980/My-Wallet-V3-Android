@@ -31,11 +31,12 @@ class SimpleBuyModel(
                         onSuccess = { process(it) },
                         onError = { process(SimpleBuyIntent.ErrorIntent()) }
                     )
-            is SimpleBuyIntent.FetchSupportedFiatCurrencies -> interactor.fetchSupportedFiatCurrencies()
-                .subscribeBy(
-                    onSuccess = { process(it) },
-                    onError = { process(SimpleBuyIntent.ErrorIntent()) }
-                )
+            is SimpleBuyIntent.FetchSupportedFiatCurrencies ->
+                interactor.fetchSupportedFiatCurrencies()
+                    .subscribeBy(
+                        onSuccess = { process(it) },
+                        onError = { process(SimpleBuyIntent.ErrorIntent()) }
+                    )
             is SimpleBuyIntent.CancelOrder -> interactor.cancelOrder()
                 .subscribeBy(
                     onSuccess = { process(it) },
@@ -91,6 +92,7 @@ class SimpleBuyModel(
             is SimpleBuyIntent.NewCryptoCurrencySelected -> null
             is SimpleBuyIntent.EnteredAmount -> null
             is SimpleBuyIntent.OrderCreated -> null
+            is SimpleBuyIntent.FiatCurrencyUpdated -> null
             is SimpleBuyIntent.OrderCanceled -> null
         }
 
