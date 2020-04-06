@@ -188,7 +188,7 @@ internal interface Nabu {
 
     @GET(NABU_SIMPLE_BUY_PAIRS)
     fun getSupportedSimpleBuyPairs(
-        @Query("fiatCurrency") fiatCurrency: String
+        @Query("fiatCurrency") fiatCurrency: String? = null
     ): Single<SimpleBuyPairsResp>
 
     @GET(NABU_SIMPLE_BUY_AMOUNTS)

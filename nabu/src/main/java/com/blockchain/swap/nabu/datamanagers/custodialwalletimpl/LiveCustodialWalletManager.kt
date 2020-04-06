@@ -94,6 +94,15 @@ class LiveCustodialWalletManager(
             })
         }
 
+    override fun getSupportedFiatCurrencies(nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
+        authenticator.authenticate {
+            nabuService.getSupportedCurrencies()
+        }.map {
+            it.pairs.map { pair ->
+                pair.pair.split("-")[1]
+            }.distinct()
+        }
+
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
         authenticator.authenticate {
             nabuService.getPredefinedAmounts(it, currency)

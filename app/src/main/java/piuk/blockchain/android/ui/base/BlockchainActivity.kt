@@ -25,7 +25,6 @@ import piuk.blockchain.androidcore.data.access.LogoutTimer
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
-import java.util.Locale
 
 /**
  * A base Activity for all activities which need auth timeouts & screenshot prevention
@@ -38,7 +37,6 @@ abstract class BlockchainActivity : ToolBarActivity() {
 
     val analytics: Analytics by inject()
     val appUtil: AppUtil by inject()
-    val locale: Locale by inject()
 
     protected val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 

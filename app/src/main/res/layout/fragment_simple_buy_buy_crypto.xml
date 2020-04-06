@@ -186,6 +186,23 @@
         app:layout_constraintTop_toBottomOf="@+id/input_amount"
         tools:text="$4" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fiat_currency"
+        android:layout_marginEnd="@dimen/standard_margin"
+        android:background="@drawable/simple_buy_currency_indicator_background"
+        app:layout_constraintBottom_toBottomOf="@+id/predefined_amount_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="USD"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        style="@style/Text.Standard.Centered.14"
+        android:textColor="@color/blue_600"
+        app:layout_constraintTop_toTopOf="@+id/predefined_amount_1" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_continue"
         style="@style/CtaButton.Blue"

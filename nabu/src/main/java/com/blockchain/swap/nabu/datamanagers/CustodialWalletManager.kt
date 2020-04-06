@@ -35,6 +35,10 @@ interface CustodialWalletManager {
         fiatCurrency: String
     ): Single<SimpleBuyPairs>
 
+    fun getSupportedFiatCurrencies(
+        nabuOfflineTokenResponse: NabuOfflineTokenResponse
+    ): Single<List<String>>
+
     fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote>
 
     fun createOrder(

@@ -31,6 +31,7 @@ data class SimpleBuyState(
     val kycVerificationState: KycState? = null,
     val bankAccount: BankAccount? = null,
     val currentScreen: FlowScreen = FlowScreen.INTRO,
+    val supportedFiatCurrencies: List<String> = emptyList(),
     @Transient val errorState: ErrorState? = null,
     // we use this flag to avoid navigating back and forth, reset after navigating
     @Transient val confirmationActionRequested: Boolean = false
@@ -122,7 +123,7 @@ enum class KycState {
 }
 
 enum class FlowScreen {
-    INTRO, ENTER_AMOUNT, KYC, KYC_VERIFICATION, CHECKOUT, BANK_DETAILS
+    INTRO, CURRENCY_SELECTOR, ENTER_AMOUNT, KYC, KYC_VERIFICATION, CHECKOUT, BANK_DETAILS
 }
 
 enum class InputError {

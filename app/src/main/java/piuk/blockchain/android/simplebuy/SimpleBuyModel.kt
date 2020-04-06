@@ -28,6 +28,11 @@ class SimpleBuyModel(
             is SimpleBuyIntent.FetchPredefinedAmounts ->
                 interactor.fetchPredefinedAmounts(intent.fiatCurrency)
                     .subscribeBy(
+                        onSuccess = { process(it) },
+                        onError = { process(SimpleBuyIntent.ErrorIntent()) }
+                    )
+            is SimpleBuyIntent.FetchSupportedFiatCurrencies -> interactor.fetchSupportedFiatCurrencies()
+                .subscribeBy(
                     onSuccess = { process(it) },
                     onError = { process(SimpleBuyIntent.ErrorIntent()) }
                 )
@@ -78,6 +83,7 @@ class SimpleBuyModel(
             is SimpleBuyIntent.ConfirmationHandled -> null
             is SimpleBuyIntent.BankAccountUpdated -> null
             is SimpleBuyIntent.KycCompleted -> null
+            is SimpleBuyIntent.SupportedCurrenciesUpdated -> null
             is SimpleBuyIntent.KycStarted -> null
             is SimpleBuyIntent.ErrorIntent -> null
             is SimpleBuyIntent.ClearError -> null

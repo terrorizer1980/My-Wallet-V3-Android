@@ -77,18 +77,8 @@ class PrefsUtil(
 
     // From CurrencyPrefs
     override var selectedFiatCurrency: String
-        get() = getValue(KEY_SELECTED_FIAT, defaultCurrency())
+        get() = getValue(KEY_SELECTED_FIAT, "")
         set(fiat) = setValue(KEY_SELECTED_FIAT, fiat)
-
-    private fun defaultCurrency(): String =
-        // Android has been know to return non-ISO3166 locale codes. Esp on cheap Chinese phones (Meizu m5u!)
-        // Fallback to the default DEFAULT_FIAT_CURRENCY in these cases
-        try {
-            val localeFiat = Currency.getInstance(Locale.getDefault()).currencyCode
-            if (UNIT_FIAT.contains(localeFiat)) localeFiat else DEFAULT_FIAT_CURRENCY
-        } catch (e: IllegalStateException) {
-            DEFAULT_FIAT_CURRENCY
-        }
 
     override var selectedCryptoCurrency: CryptoCurrency
         get() =
@@ -99,6 +89,14 @@ class PrefsUtil(
                 DEFAULT_CRYPTO_CURRENCY
             }
         set(crypto) = setValue(KEY_SELECTED_CRYPTO, crypto.name)
+
+    override val defaultFiatCurrency: String
+        get() = try {
+            val localeFiat = Currency.getInstance(Locale.getDefault()).currencyCode
+            if (UNIT_FIAT.contains(localeFiat)) localeFiat else DEFAULT_FIAT_CURRENCY
+        } catch (e: IllegalStateException) {
+            DEFAULT_FIAT_CURRENCY
+        }
 
     // From ThePitLinkingPrefs
     override var pitToWalletLinkId: String
