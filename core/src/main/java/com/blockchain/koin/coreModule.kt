@@ -158,7 +158,7 @@ val coreModule = applicationContext {
 
         bean { WalletOptionsState() }
 
-        bean { SettingsDataManager(get(), get(), get()) }
+        bean { SettingsDataManager(get(), get(), get(), get()) }
 
         bean { SettingsService(get()) }
 
@@ -173,7 +173,7 @@ val coreModule = applicationContext {
 
         bean { ExchangeRateDataStore(get(), get()) }
 
-        factory { FeeDataManager(get(), get(), get()) }
+        bean { FeeDataManager(get(), get(), get()) }
 
         factory {
             AuthDataManager(

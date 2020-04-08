@@ -67,17 +67,11 @@ data class NabuUser(
     fun requireCountryCode(): String {
         return address?.countryCode ?: throw IllegalStateException("User has no country code set")
     }
-
-    fun isCoinifyTagged() = tags?.contains("COINIFY") ?: false
-
     val isMarkedForResubmission: Boolean
         get() = resubmission != null
 
     val isStxAirdropRegistered: Boolean
         get() = tags?.get("BLOCKSTACK") != null
-
-    val isSimpleBuyTagged: Boolean
-        get() = tags?.get("SIMPLE_BUY") != null
 }
 
 data class Tiers(

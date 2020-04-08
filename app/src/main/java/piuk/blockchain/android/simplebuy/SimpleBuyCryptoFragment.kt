@@ -34,8 +34,7 @@ import java.util.Locale
 import java.util.Currency
 
 class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(),
-    SimpleBuyScreen,
-    CurrencyChangeListener {
+    ChangeCurrencyHost {
 
     override val model: SimpleBuyModel by inject()
 
@@ -46,8 +45,6 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
             ?: throw IllegalStateException("Parent must implement SimpleBuyNavigator")
 
     private val currencyPrefs: CurrencyPrefs by inject()
-    private val fiatSymbol: String
-        get() = Currency.getInstance(currencyPrefs.selectedFiatCurrency).getSymbol(Locale.getDefault())
 
     override fun onBackPressed(): Boolean = true
 
@@ -64,8 +61,8 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         model.process(SimpleBuyIntent.FetchBuyLimits(currencyPrefs.selectedFiatCurrency))
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.ENTER_AMOUNT))
         model.process(SimpleBuyIntent.FetchPredefinedAmounts(currencyPrefs.selectedFiatCurrency))
+        model.process(SimpleBuyIntent.FetchSupportedFiatCurrencies)
         analytics.logEvent(SimpleBuyAnalytics.BUY_FORM_SHOWN)
-        fiat_currency_symbol.text = fiatSymbol
         input_amount.addTextChangedListener(object : AfterTextChangedWatcher() {
             override fun afterTextChanged(s: Editable?) {
                 model.process(SimpleBuyIntent.EnteredAmount(s.toString()))
@@ -79,9 +76,24 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
                 lastState?.fiatCurrency ?: "")
             )
         }
+
+        fiat_currency.setOnClickListener {
+            showBottomSheet(
+                FiatCurrencyChooserBottomSheet
+                    .newInstance(lastState?.supportedFiatCurrencies ?: return@setOnClickListener)
+            )
+        }
     }
 
-    override fun onCurrencyChanged(currency: CryptoCurrency) {
+    override fun onFiatCurrencyChanged(fiatCurrency: String) {
+        if (fiatCurrency == lastState?.fiatCurrency) return
+        model.process(SimpleBuyIntent.FiatCurrencyUpdated(fiatCurrency))
+        model.process(SimpleBuyIntent.FetchBuyLimits(fiatCurrency))
+        model.process(SimpleBuyIntent.FetchPredefinedAmounts(fiatCurrency))
+        input_amount.clearFocus()
+    }
+
+    override fun onCryptoCurrencyChanged(currency: CryptoCurrency) {
         model.process(SimpleBuyIntent.NewCryptoCurrencySelected(currency))
         input_amount.clearFocus()
         analytics.logEvent(cryptoChanged(currency))
@@ -94,7 +106,9 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
             showErrorState(newState.errorState)
             return
         }
-
+        fiat_currency_symbol.text =
+            Currency.getInstance(newState.fiatCurrency).getSymbol(Locale.getDefault())
+        fiat_currency.text = newState.fiatCurrency
         newState.selectedCryptoCurrency?.let {
             crypto_icon.setImageResource(it.drawableResFilled())
             crypto_text.setText(it.assetName())
@@ -249,6 +263,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     }
 }
 
-interface CurrencyChangeListener {
-    fun onCurrencyChanged(currency: CryptoCurrency)
+interface ChangeCurrencyHost : SimpleBuyScreen {
+    fun onFiatCurrencyChanged(fiatCurrency: String)
+    fun onCryptoCurrencyChanged(currency: CryptoCurrency)
 }

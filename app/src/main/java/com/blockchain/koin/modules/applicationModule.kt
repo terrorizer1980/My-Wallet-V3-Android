@@ -337,8 +337,6 @@ val applicationModule = applicationContext {
         factory {
             SimpleBuyAvailability(
                 simpleBuyPrefs = get(),
-                custodialWalletManager = get(),
-                currencyPrefs = get(),
                 buyDataManager = get(),
                 simpleBuyFlag = get("ff_simple_buy")
             )
@@ -813,7 +811,10 @@ val applicationModule = applicationContext {
         factory {
             SimpleBuyFlowNavigator(
                 simpleBuyModel = get(),
-                tierService = get()
+                tierService = get(),
+                custodialWalletManager = get(),
+                simpleBuyPrefs = get(),
+                currencyPrefs = get()
             )
         }
 

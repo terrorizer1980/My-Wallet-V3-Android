@@ -220,7 +220,7 @@ class NabuService(retrofit: Retrofit) {
     ).wrapErrorMessage()
 
     internal fun getSupportedCurrencies(
-        fiatCurrency: String
+        fiatCurrency: String? = null
     ): Single<SimpleBuyPairsResp> =
         service.getSupportedSimpleBuyPairs(fiatCurrency).wrapErrorMessage()
 

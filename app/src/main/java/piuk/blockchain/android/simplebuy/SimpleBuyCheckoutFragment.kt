@@ -65,7 +65,6 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         estimated_amount.text = newState.quote?.estimatedAmount?.toStringWithSymbol()?.let {
             getString(R.string.approximately_symbol, it)
         } ?: ""
-        fees_amount.text = newState.quote?.fee?.toStringWithSymbol() ?: ""
         date.text = newState.order.quote?.formatDate()
         button_buy.isEnabled = newState.bankAccount != null && newState.order.quote != null
 

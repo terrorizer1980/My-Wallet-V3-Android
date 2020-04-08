@@ -41,6 +41,7 @@
 
     <color name="grey_fade_400">#6605183D</color>
 
+    <color name="blue_000">#ECF5FE</color>
     <color name="blue_100">#D8EBFD</color>
     <color name="blue_200">#BBDBFC</color>
     <color name="blue_400">#10ADE4</color>
