@@ -94,7 +94,7 @@ class PrefsUtil(
         get() = try {
             val localeFiat = Currency.getInstance(Locale.getDefault()).currencyCode
             if (UNIT_FIAT.contains(localeFiat)) localeFiat else DEFAULT_FIAT_CURRENCY
-        } catch (e: IllegalStateException) {
+        } catch (e: Exception) {
             DEFAULT_FIAT_CURRENCY
         }
 
