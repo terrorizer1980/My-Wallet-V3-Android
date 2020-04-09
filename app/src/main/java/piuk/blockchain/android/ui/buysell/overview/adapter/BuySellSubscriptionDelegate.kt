@@ -23,8 +23,7 @@ internal class BuySellSubscriptionDelegate(
     override fun onBindViewHolder(
         items: List<BuySellDisplayable>,
         position: Int,
-        holder: RecyclerView.ViewHolder,
-        payloads: List<*>
+        holder: RecyclerView.ViewHolder
     ) {
         holder as BuySellSubscriptionViewHolder
         val (displayString, subscriptionId) = items[position] as RecurringBuyOrder

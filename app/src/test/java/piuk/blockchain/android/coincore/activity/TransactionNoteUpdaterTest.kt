@@ -9,8 +9,8 @@ import io.reactivex.Observable
 import org.amshove.kluent.itReturns
 import org.junit.Rule
 import org.junit.Test
+import piuk.blockchain.android.coincore.TestNonCustodialSummaryItem
 import piuk.blockchain.android.coincore.impl.TransactionNoteUpdater
-import piuk.blockchain.android.coincore.TestActivitySummaryItem
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.models.CoinifyData
@@ -47,8 +47,8 @@ class TransactionNoteUpdaterTest {
     fun `update transactions list with coinify labels`() {
         //  Arrange
         val txHash = "TX_HASH"
-        val item = TestActivitySummaryItem(
-            hash = txHash
+        val item = TestNonCustodialSummaryItem(
+            txId = txHash
         )
 
         //  Exchange token setup

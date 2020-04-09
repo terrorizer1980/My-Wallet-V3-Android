@@ -23,8 +23,7 @@ internal class BuySellButtonDelegate(
     override fun onBindViewHolder(
         items: List<BuySellDisplayable>,
         position: Int,
-        holder: RecyclerView.ViewHolder,
-        payloads: List<*>
+        holder: RecyclerView.ViewHolder
     ) {
         holder as BuySellButtonViewHolder
         holder.bind(listener)

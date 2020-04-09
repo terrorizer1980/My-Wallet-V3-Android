@@ -26,6 +26,7 @@ import org.koin.standalone.StandAloneContext
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.campaign.campaignModule
 import piuk.blockchain.android.coincore.coincoreModule
+import piuk.blockchain.android.ui.activity.activitiesModule
 import piuk.blockchain.android.ui.dashboard.announcements.dashboardAnnouncementsModule
 import piuk.blockchain.android.ui.kyc.koin.kycUiModule
 import piuk.blockchain.android.ui.kyc.koin.kycUiNabuModule
@@ -43,6 +44,7 @@ object KoinStarter {
         application.startKoin(
             application,
             listOf(
+                activitiesModule,
                 apiInterceptorsModule,
                 apiModule,
                 appBuySellModule,

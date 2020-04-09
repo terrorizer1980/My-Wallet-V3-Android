@@ -6,7 +6,6 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.prices.TimeInterval
 import io.reactivex.Single
-import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
 
@@ -48,10 +47,7 @@ interface AssetTokens {
     @Deprecated(message = "CoinCore update")
     fun balance(account: AccountReference): Single<CryptoValue>
 
-    @Deprecated(message = "CoinCore update")
-    fun fetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList>
-    @Deprecated(message = "CoinCore update")
-    fun findCachedActivityItem(txHash: String): ActivitySummaryItem?
+    fun findCachedActivityItem(txId: String): ActivitySummaryItem?
 
     @Deprecated(message = "CoinCore update")
     fun actions(filter: AssetFilter): AvailableActions

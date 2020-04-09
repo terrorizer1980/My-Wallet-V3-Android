@@ -23,6 +23,7 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.android.campaign.blockstackCampaignName
 import piuk.blockchain.android.coincore.AssetFilter
+import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.simplebuy.SimpleBuyCancelOrderBottomSheet
 import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
@@ -364,15 +365,8 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
             AssetFilter.Custodial -> throw IllegalStateException("The Receive.Custodial action is invalid")
         }.exhaustive
 
-    override fun gotoActivityFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter) {
-        when (filter) {
-            AssetFilter.Total -> { /* TODO: Hook up the everything activity view, when we have designs */
-            }
-            AssetFilter.Wallet -> navigator().gotoTransactionsFor(cryptoCurrency)
-            AssetFilter.Custodial -> { /* TODO: Hook up the custodial activity, when we have designs */
-            }
-        }.exhaustive
-    }
+    override fun gotoActivityFor(account: CryptoAccount) =
+        navigator().gotoActivityFor(account)
 
     override fun gotoSwap(fromCryptoCurrency: CryptoCurrency, filter: AssetFilter) =
         when (filter) {

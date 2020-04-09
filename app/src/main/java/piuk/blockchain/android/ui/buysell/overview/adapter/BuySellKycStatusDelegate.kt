@@ -25,8 +25,7 @@ internal class BuySellKycStatusDelegate(
     override fun onBindViewHolder(
         items: List<BuySellDisplayable>,
         position: Int,
-        holder: RecyclerView.ViewHolder,
-        payloads: List<*>
+        holder: RecyclerView.ViewHolder
     ) {
         holder as KycInProgressViewHolder
         holder.bind(listener, items[position] as KycStatus)

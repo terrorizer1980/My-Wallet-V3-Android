@@ -64,7 +64,8 @@ data class BuyOrderResponse(
     val outputCurrency: String,
     val outputQuantity: String,
     val state: OrderStateResponse,
-    val expiresAt: Date
+    val expiresAt: Date,
+    val updatedAt: Date
 )
 
 data class TransferRequest(

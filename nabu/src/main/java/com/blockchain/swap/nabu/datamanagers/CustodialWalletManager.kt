@@ -61,16 +61,15 @@ interface CustodialWalletManager {
         fiatCurrency: String
     ): Single<Boolean>
 
-    fun getOutstandingBuyOrders(): Single<BuyOrderList>
+    fun getOutstandingBuyOrders(crypto: CryptoCurrency): Single<BuyOrderList>
+    fun getAllOutstandingBuyOrders(): Single<BuyOrderList>
+    fun getAllBuyOrdersFor(crypto: CryptoCurrency): Single<BuyOrderList>
 
     fun getBuyOrder(orderId: String): Single<BuyOrder>
 
     fun deleteBuyOrder(orderId: String): Completable
 
     fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable
-
-    // For test/dev
-    fun cancelAllPendingBuys(): Completable
 }
 
 data class BuyOrder(
@@ -79,7 +78,8 @@ data class BuyOrder(
     val fiat: FiatValue,
     val crypto: CryptoValue,
     val state: OrderState = OrderState.UNINITIALISED,
-    val expires: Date = Date()
+    val expires: Date = Date(),
+    val updated: Date = Date()
 )
 
 typealias BuyOrderList = List<BuyOrder>

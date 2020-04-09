@@ -20,8 +20,7 @@ internal class BuySellEmptyListDelegate : AdapterDelegate<BuySellDisplayable> {
     override fun onBindViewHolder(
         items: List<BuySellDisplayable>,
         position: Int,
-        holder: RecyclerView.ViewHolder,
-        payloads: List<*>
+        holder: RecyclerView.ViewHolder
     ) {
         holder as BuySellEmptyViewHolder
     }

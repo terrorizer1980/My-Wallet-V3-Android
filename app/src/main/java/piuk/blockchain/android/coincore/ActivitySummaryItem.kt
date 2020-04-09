@@ -1,32 +1,54 @@
 package piuk.blockchain.android.coincore
 
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.utils.helperfunctions.JavaHashCode
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import kotlin.math.sign
 
-abstract class ActivitySummaryItem(
-    private val exchangeRates: ExchangeRateDataManager
-) : Comparable<ActivitySummaryItem> {
+abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
+    protected abstract val exchangeRates: ExchangeRateDataManager
 
     abstract val cryptoCurrency: CryptoCurrency
-    abstract val direction: TransactionSummary.Direction
-    abstract val timeStamp: Long
-    abstract val fee: Observable<CryptoValue>
-    abstract val hash: String
-    abstract val inputsMap: Map<String, CryptoValue>
-    abstract val outputsMap: Map<String, CryptoValue>
+    abstract val txId: String
+    abstract val timeStampMs: Long
 
     abstract val totalCrypto: CryptoValue
 
     fun totalFiat(selectedFiat: String): FiatValue =
         totalCrypto.toFiat(exchangeRates, selectedFiat)
+
+    fun totalFiatWhenExecuted(selectedFiat: String): Single<FiatValue> =
+        exchangeRates.getHistoricPrice(totalCrypto, selectedFiat, timeStampMs / 1000) // API uses seconds
+
+    override operator fun compareTo(other: ActivitySummaryItem) = (other.timeStampMs - timeStampMs).sign
+}
+
+data class CustodialActivitySummaryItem(
+    override val exchangeRates: ExchangeRateDataManager,
+    override val cryptoCurrency: CryptoCurrency,
+    override val txId: String,
+    override val timeStampMs: Long,
+    override val totalCrypto: CryptoValue,
+    val status: OrderState
+) : ActivitySummaryItem()
+
+abstract class NonCustodialActivitySummaryItem : ActivitySummaryItem() {
+
+    abstract val direction: TransactionSummary.Direction
+    abstract val fee: Observable<CryptoValue>
+
+    abstract val inputsMap: Map<String, CryptoValue>
+
+    abstract val outputsMap: Map<String, CryptoValue>
 
     abstract val description: String?
 
@@ -39,9 +61,9 @@ abstract class ActivitySummaryItem(
 
     override fun toString(): String = "cryptoCurrency = $cryptoCurrency" +
             "direction  = $direction " +
-            "timeStamp  = $timeStamp " +
+            "timeStamp  = $timeStampMs " +
             "total  = ${totalCrypto.toStringWithSymbol()} " +
-            "hash  = $hash " +
+            "txId (hash)  = $txId " +
             "inputsMap  = $inputsMap " +
             "outputsMap  = $outputsMap " +
             "confirmations  = $confirmations " +
@@ -53,13 +75,13 @@ abstract class ActivitySummaryItem(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
-        val that = other as ActivitySummaryItem?
+        val that = other as NonCustodialActivitySummaryItem?
 
         return this.cryptoCurrency == that?.cryptoCurrency &&
                 this.direction == that.direction &&
-                this.timeStamp == that.timeStamp &&
+                this.timeStampMs == that.timeStampMs &&
                 this.totalCrypto == that.totalCrypto &&
-                this.hash == that.hash &&
+                this.txId == that.txId &&
                 this.inputsMap == that.inputsMap &&
                 this.outputsMap == that.outputsMap &&
                 this.confirmations == that.confirmations &&
@@ -74,9 +96,9 @@ abstract class ActivitySummaryItem(
         var result = 17
         result = 31 * result + cryptoCurrency.hashCode()
         result = 31 * result + direction.hashCode()
-        result = 31 * result + JavaHashCode.hashCode(timeStamp)
+        result = 31 * result + JavaHashCode.hashCode(timeStampMs)
         result = 31 * result + totalCrypto.hashCode()
-        result = 31 * result + hash.hashCode()
+        result = 31 * result + txId.hashCode()
         result = 31 * result + inputsMap.hashCode()
         result = 31 * result + outputsMap.hashCode()
         result = 31 * result + JavaHashCode.hashCode(confirmations)
@@ -87,10 +109,12 @@ abstract class ActivitySummaryItem(
         return result
     }
 
-    override operator fun compareTo(other: ActivitySummaryItem) = (other.timeStamp - timeStamp).sign
-
     open fun updateDescription(description: String): Completable =
         Completable.error(IllegalStateException("Update description not supported"))
+
+    val isConfirmed: Boolean by unsafeLazy {
+        confirmations >= cryptoCurrency.requiredConfirmations
+    }
 }
 
 typealias ActivitySummaryList = List<ActivitySummaryItem>

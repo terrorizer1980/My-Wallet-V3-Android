@@ -56,7 +56,8 @@ class BuyDataManager(
     val isCoinifyAllowed: Single<Boolean>
         @Synchronized get() {
             initReplaySubjects()
-            return Observables.zip(isInCoinifyCountry,
+            return Observables.zip(
+                isInCoinifyCountry,
                 buyConditions.exchangeDataSource,
                 coinifyFeatureFlag.enabled.toObservable()
             ) { coinifyCountry, exchangeData, coinifyEnabled ->
