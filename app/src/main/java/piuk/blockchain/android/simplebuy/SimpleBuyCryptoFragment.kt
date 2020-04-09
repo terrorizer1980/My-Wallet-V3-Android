@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import com.blockchain.extensions.exhaustive
+import com.blockchain.notifications.analytics.CurrencyChangedFromBuyForm
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.buyConfirmClicked
 import com.blockchain.notifications.analytics.cryptoChanged
@@ -90,6 +91,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         model.process(SimpleBuyIntent.FiatCurrencyUpdated(fiatCurrency))
         model.process(SimpleBuyIntent.FetchBuyLimits(fiatCurrency))
         model.process(SimpleBuyIntent.FetchPredefinedAmounts(fiatCurrency))
+        analytics.logEvent(CurrencyChangedFromBuyForm(fiatCurrency))
         input_amount.clearFocus()
     }
 
