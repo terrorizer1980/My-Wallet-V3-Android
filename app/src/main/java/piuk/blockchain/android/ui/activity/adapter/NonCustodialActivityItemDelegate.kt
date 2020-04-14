@@ -14,7 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import kotlinx.android.synthetic.main.dialog_activitiex_tx_item.view.*
+import kotlinx.android.synthetic.main.dialog_activities_tx_item.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
@@ -35,7 +35,7 @@ class NonCustodialActivityItemDelegate<in T>(
         items[position] is NonCustodialActivitySummaryItem
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        NonCustodialActivityItemViewHolder(parent.inflate(R.layout.dialog_activitiex_tx_item))
+        NonCustodialActivityItemViewHolder(parent.inflate(R.layout.dialog_activities_tx_item))
 
     override fun onBindViewHolder(
         items: List<T>,
