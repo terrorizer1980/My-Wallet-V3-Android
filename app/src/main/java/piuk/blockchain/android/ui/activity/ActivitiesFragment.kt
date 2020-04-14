@@ -35,7 +35,9 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 
 class ActivitiesFragment
@@ -70,6 +72,8 @@ class ActivitiesFragment
     @UiThread
     override fun render(newState: ActivitiesState) {
 
+        switchView(newState)
+
         swipe.isRefreshing = newState.isLoading
 
         renderAccountDetails(newState)
@@ -82,6 +86,16 @@ class ActivitiesFragment
         }
 
         this.state = newState
+    }
+
+    private fun switchView(newState: ActivitiesState) {
+        if(newState.activityList.isEmpty()) {
+            content_layout.gone()
+            empty_view.visible()
+        } else {
+            content_layout.visible()
+            empty_view.gone()
+        }
     }
 
     private fun renderAccountDetails(newState: ActivitiesState) {
