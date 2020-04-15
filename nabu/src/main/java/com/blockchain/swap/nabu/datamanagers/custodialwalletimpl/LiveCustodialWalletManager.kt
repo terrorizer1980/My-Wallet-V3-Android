@@ -16,7 +16,6 @@ import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
-import com.blockchain.swap.nabu.models.simplebuy.OrderStateResponse
 import com.blockchain.swap.nabu.models.simplebuy.TransferRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.swap.nabu.service.NabuService
@@ -139,7 +138,7 @@ class LiveCustodialWalletManager(
         authenticator.authenticate {
             nabuService.getOutstandingBuyOrders(it)
         }.map {
-            it.map { order -> order.toBuyOrder() }
+            it.map { order -> order.toBuyOrder() }.filter { order -> order.state != OrderState.UNKNOWN }
         }
 
     override fun getBuyOrder(orderId: String): Single<BuyOrder> =
@@ -179,15 +178,16 @@ class LiveCustodialWalletManager(
     }
 }
 
-private fun OrderStateResponse.toLocalState(): OrderState =
+private fun String.toLocalState(): OrderState =
     when (this) {
-        OrderStateResponse.PENDING_DEPOSIT -> OrderState.AWAITING_FUNDS
-        OrderStateResponse.FINISHED -> OrderState.FINISHED
-        OrderStateResponse.PENDING_EXECUTION,
-        OrderStateResponse.DEPOSIT_MATCHED -> OrderState.PENDING_EXECUTION
-        OrderStateResponse.FAILED,
-        OrderStateResponse.EXPIRED -> OrderState.FAILED
-        OrderStateResponse.CANCELED -> OrderState.CANCELED
+        BuyOrderResponse.PENDING_DEPOSIT -> OrderState.AWAITING_FUNDS
+        BuyOrderResponse.FINISHED -> OrderState.FINISHED
+        BuyOrderResponse.PENDING_EXECUTION,
+        BuyOrderResponse.DEPOSIT_MATCHED -> OrderState.PENDING_EXECUTION
+        BuyOrderResponse.FAILED,
+        BuyOrderResponse.EXPIRED -> OrderState.FAILED
+        BuyOrderResponse.CANCELED -> OrderState.CANCELED
+        else -> OrderState.UNKNOWN
     }
 
 private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
