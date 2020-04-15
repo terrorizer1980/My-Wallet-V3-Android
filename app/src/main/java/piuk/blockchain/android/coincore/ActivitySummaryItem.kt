@@ -38,6 +38,7 @@ data class CustodialActivitySummaryItem(
     override val txId: String,
     override val timeStampMs: Long,
     override val totalCrypto: CryptoValue,
+    val fundedFiat: FiatValue,
     val status: OrderState
 ) : ActivitySummaryItem()
 

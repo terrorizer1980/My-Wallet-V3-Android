@@ -87,6 +87,7 @@ abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
             exchangeRates = exchangeRates,
             cryptoCurrency = buyOrder.crypto.currency,
             totalCrypto = buyOrder.crypto,
+            fundedFiat = buyOrder.fiat,
             txId = buyOrder.id,
             timeStampMs = buyOrder.updated.time,
             status = buyOrder.state

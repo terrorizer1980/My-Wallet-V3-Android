@@ -31,7 +31,7 @@ class ManualPairingActivity : MvpActivity<ManualPairingView, ManualPairingPresen
     override val guid: String
         get() = wallet_id.text.toString()
     override val password: String
-        get() = wallet_pass.text. toString()
+        get() = wallet_pass.text.toString()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
