@@ -89,7 +89,7 @@ class ActivitiesFragment
     }
 
     private fun switchView(newState: ActivitiesState) {
-        if(newState.activityList.isEmpty()) {
+        if (newState.activityList.isEmpty()) {
             content_layout.gone()
             empty_view.visible()
         } else {

@@ -1868,5 +1868,6 @@
     <string name="currency_not_supported">Currently we don’t support buying crypto with %1s</string>
     <string name="activity_no_activity_title">You Have No Activity</string>
     <string name="activity_no_activity_text">All your transactions will show up here.</string>
+    <string name="activity_custodial_pending_value">Bank Transfer</string>
 
 </resources>

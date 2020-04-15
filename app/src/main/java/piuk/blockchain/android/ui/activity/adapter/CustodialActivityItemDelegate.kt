@@ -7,27 +7,17 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.OrderState
 import info.blockchain.balance.CryptoCurrency
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.dialog_activities_tx_item.view.*
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
 import piuk.blockchain.android.util.extensions.toFormattedDate
-import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
-import piuk.blockchain.androidcoreui.utils.extensions.visible
-import timber.log.Timber
 import java.util.Date
 
 class CustodialActivityItemDelegate<in T>(
-    private val disposables: CompositeDisposable,
-    private val currencyPrefs: CurrencyPrefs,
     private val onItemClicked: (CryptoCurrency, String, Boolean) -> Unit // crypto, txID, isCustodial
 ) : AdapterDelegate<T> {
 
@@ -43,8 +33,6 @@ class CustodialActivityItemDelegate<in T>(
         holder: RecyclerView.ViewHolder
     ) = (holder as CustodialActivityItemViewHolder).bind(
         items[position] as CustodialActivitySummaryItem,
-        disposables,
-        currencyPrefs.selectedFiatCurrency,
         onItemClicked
     )
 }
@@ -55,8 +43,6 @@ private class CustodialActivityItemViewHolder(
 
     internal fun bind(
         tx: CustodialActivitySummaryItem,
-        disposables: CompositeDisposable,
-        fiatCurrency: String,
         onAccountClicked: (CryptoCurrency, String, Boolean) -> Unit
     ) {
         with(itemView) {
@@ -66,20 +52,12 @@ private class CustodialActivityItemViewHolder(
             status_date.setTxStatus(tx)
             setTextColours(tx.status)
 
-            asset_balance_fiat.gone()
-            asset_balance_crypto.text = tx.totalCrypto.toStringWithSymbol()
-            disposables += tx.totalFiatWhenExecuted(fiatCurrency)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                    onSuccess = {
-                        asset_balance_fiat.text = it.toStringWithSymbol()
-                        asset_balance_fiat.visible()
-                    },
-                    onError = {
-                        Timber.e("Cannot convert to fiat")
-                    }
-                )
-
+            asset_balance_fiat.text = tx.fundedFiat.toStringWithSymbol()
+            if (tx.status == OrderState.FINISHED) {
+                asset_balance_crypto.text = tx.totalCrypto.toStringWithSymbol()
+            } else {
+                asset_balance_crypto.text = context.getString(R.string.activity_custodial_pending_value)
+            }
             setOnClickListener { onAccountClicked(tx.cryptoCurrency, tx.txId, true) }
         }
     }

@@ -18,7 +18,7 @@ class ActivitiesDelegateAdapter(
         // Add all necessary AdapterDelegate objects here
         with(delegatesManager) {
             addAdapterDelegate(NonCustodialActivityItemDelegate(disposables, prefs, onItemClicked))
-            addAdapterDelegate(CustodialActivityItemDelegate(disposables, prefs, onItemClicked))
+            addAdapterDelegate(CustodialActivityItemDelegate(onItemClicked))
         }
     }
 }
