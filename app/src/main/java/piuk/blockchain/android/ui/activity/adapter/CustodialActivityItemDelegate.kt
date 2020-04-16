@@ -89,6 +89,7 @@ private fun ImageView.setIcon(status: OrderState) =
                 OrderState.PENDING_EXECUTION -> R.drawable.ic_tx_confirming
                 OrderState.UNINITIALISED, // should not see these next ones ATM
                 OrderState.INITIALISED,
+                OrderState.UNKNOWN,
                 OrderState.CANCELED,
                 OrderState.FAILED -> R.drawable.ic_tx_buy
             }
@@ -106,6 +107,7 @@ private fun TextView.setTxStatus(tx: CustodialActivitySummaryItem) {
         OrderState.INITIALISED -> context.getString(R.string.activity_state_initialised)
         OrderState.AWAITING_FUNDS -> context.getString(R.string.activity_state_awaiting_funds)
         OrderState.PENDING_EXECUTION -> context.getString(R.string.activity_state_pending)
+        OrderState.UNKNOWN -> context.getString(R.string.activity_state_unknown)
         OrderState.CANCELED -> context.getString(R.string.activity_state_canceled)
         OrderState.FAILED -> context.getString(R.string.activity_state_failed)
     }
