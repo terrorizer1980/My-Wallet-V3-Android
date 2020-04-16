@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockchain.notifications.analytics.CurrencySelected
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.ui.trackLoading
 import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
@@ -46,7 +48,7 @@ class SimpleBuySelectCurrencyFragment : MviFragment<SimpleBuyModel, SimpleBuyInt
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity.setupToolbar(R.string.simple_buy_select_currency)
-
+        analytics.logEvent(SimpleBuyAnalytics.SELECT_YOUR_CURRENCY_SHOWN)
         recycler.layoutManager = LinearLayoutManager(activity)
         recycler.adapter = adapter
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.ENTER_AMOUNT))
@@ -68,6 +70,7 @@ class SimpleBuySelectCurrencyFragment : MviFragment<SimpleBuyModel, SimpleBuyInt
                 } else {
                     showCurrencyNotAvailableBottomSheet(item)
                 }
+                analytics.logEvent(CurrencySelected(item.symbol))
             }, onError = {})
     }
 
@@ -103,11 +106,13 @@ class SimpleBuySelectCurrencyFragment : MviFragment<SimpleBuyModel, SimpleBuyInt
     override fun onBackPressed(): Boolean = true
 
     override fun needsToChange() {
+        analytics.logEvent(SimpleBuyAnalytics.CURRENCY_NOT_SUPPORTED_CHANGE)
         filter = { it.isAvailable || it.isChecked }
         adapter.items = adapter.items.filter(filter)
     }
 
     override fun skip() {
+        analytics.logEvent(SimpleBuyAnalytics.CURRENCY_NOT_SUPPORTED_SKIP)
         navigator().exitSimpleBuyFlow()
     }
 }

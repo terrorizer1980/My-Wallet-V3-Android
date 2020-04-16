@@ -197,7 +197,8 @@ class SimpleBuySyncFactory(
                     OrderState.AWAITING_FUNDS -> Maybe.just(state)
                     OrderState.FINISHED,
                     OrderState.CANCELED,
-                    OrderState.FAILED -> Maybe.empty()
+                    OrderState.FAILED,
+                    OrderState.UNKNOWN -> Maybe.empty()
                 }
             }
 

@@ -43,7 +43,7 @@ class Prerequisites(
             .then { feesCompletable() }
             .then { simpleBuySync.performSync() }
             .then { coincore.init() }
-            .then { generateAndUpdateReceiveAddresses() }
+            .then { generateAndUpdateReceiveAddresses().onErrorComplete() }
             .doOnComplete {
                 rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
             }.subscribeOn(Schedulers.io())

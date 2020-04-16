@@ -1861,6 +1861,7 @@
     <string name="activity_state_awaiting_funds">Waiting On Funds</string>
     <string name="activity_state_pending">Pending</string>
     <string name="activity_state_canceled">Canceled</string>
+    <string name="activity_state_unknown">Unknown</string>
     <string name="activity_state_failed">Failed</string>
     <string name="activity_wallet_total_balance">Total Balance</string>
 

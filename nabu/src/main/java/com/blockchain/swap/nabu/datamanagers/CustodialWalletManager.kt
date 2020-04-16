@@ -10,6 +10,7 @@ import io.reactivex.Single
 import java.util.Date
 
 enum class OrderState {
+    UNKNOWN,
     UNINITIALISED,
     INITIALISED,
     AWAITING_FUNDS, // Waiting for a bank transfer etc
