@@ -43,7 +43,7 @@ internal class XlmCryptoAccountNonCustodial(
                 XlmActivitySummaryItem(
                     it,
                     exchangeRates
-                )  as ActivitySummaryItem
+                ) as ActivitySummaryItem
             }
             .doOnSuccess { txCache.addToCache(it) }
 

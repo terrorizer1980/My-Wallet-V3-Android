@@ -66,7 +66,7 @@ internal class PaxCryptoAccountNonCustodial(
                         ethDataManager = ethDataManager,
                         exchangeRates = exchangeRates,
                         lastBlockNumber = latestBlockNumber.number
-                    )  as ActivitySummaryItem
+                    ) as ActivitySummaryItem
                 }
             }
             .doOnSuccess { txCache.addToCache(it) }
