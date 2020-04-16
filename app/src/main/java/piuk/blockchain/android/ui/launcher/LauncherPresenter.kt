@@ -10,6 +10,7 @@ import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import info.blockchain.wallet.api.Environment
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.exceptions.HDWalletException
 import info.blockchain.wallet.exceptions.InvalidCredentialsException
@@ -47,6 +48,7 @@ class LauncherPresenter(
 ) : BasePresenter<LauncherView>() {
 
     override fun onViewReady() {
+        analytics.logEventOnce(AnalyticsEvents.WalletSignupOpen)
         val intent = view.getPageIntent()
         val action = intent.action
         val scheme = intent.scheme

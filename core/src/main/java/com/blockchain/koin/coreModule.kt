@@ -216,7 +216,7 @@ val coreModule = applicationContext {
 
     bean {
         PrefsUtil(
-            store = PreferenceManager.getDefaultSharedPreferences(/* context = */ get()),
+            store = get(),
             idGenerator = get(),
             uuidGenerator = get()
         )
@@ -230,6 +230,12 @@ val coreModule = applicationContext {
         .bind(WalletStatus::class)
 
     factory { PaymentService(get(), get(), get()) }
+
+    factory {
+        PreferenceManager.getDefaultSharedPreferences(
+            /* context = */ get()
+        )
+    }
 
     bean {
         if (BuildConfig.DEBUG)

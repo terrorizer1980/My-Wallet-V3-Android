@@ -115,7 +115,8 @@ class MainPresenterTest {
             nabuDataManager = nabuDatamanager,
             crashLogger = crashLogger,
             simpleBuyAvailability = mock(),
-            cacheCredentialsWiper = mock()
+            cacheCredentialsWiper = mock(),
+            analytics = mock()
         )
 
         subject.attachView(view)
