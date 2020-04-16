@@ -78,7 +78,7 @@ internal class BtcCryptoAccountNonCustodial(
         exchangeRates: ExchangeRateDataManager,
         txCache: TxCache
     ) : this(
-        legacyAccount.label,
+        legacyAccount.label ?: legacyAccount.address,
         legacyAccount.address,
         payloadManager,
         payloadDataManager,

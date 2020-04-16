@@ -64,6 +64,7 @@ internal abstract class AssetTokensBase(
                     .doOnSuccess { accounts.addAll(it) }
                     .ignoreElement()
             }
+            .doOnError { Timber.e("Error loading accounts for ${asset.networkTicker}: $it") }
 
     abstract fun initToken(): Completable
 
