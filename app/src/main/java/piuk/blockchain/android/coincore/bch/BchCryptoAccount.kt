@@ -5,6 +5,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.coin.GenericMetadataAccount
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
@@ -44,9 +45,8 @@ internal class BchCryptoAccountNonCustodial(
                 BchActivitySummaryItem(
                     it,
                     exchangeRates
-                )
+                ) as ActivitySummaryItem
             }.doOnSuccess { txCache.addToCache(it) }
-            .map { txCache.asActivityList() }
 
     constructor(
         jsonAccount: GenericMetadataAccount,

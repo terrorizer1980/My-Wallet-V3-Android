@@ -7,6 +7,7 @@ import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
@@ -48,11 +49,11 @@ internal class BtcCryptoAccountNonCustodial(
                             it,
                             payloadDataManager,
                             exchangeRates
-                        )
+                        ) as ActivitySummaryItem
                 }
         }
         .doOnSuccess { txCache.addToCache(it) }
-        .map { txCache.asActivityList() }
+//        .map { txCache.asActivityList() }
 
     constructor(
         jsonAccount: Account,

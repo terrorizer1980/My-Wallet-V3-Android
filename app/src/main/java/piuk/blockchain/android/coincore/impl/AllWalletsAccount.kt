@@ -55,6 +55,8 @@ class AllWalletsAccount(
 
     private fun allActivities(): Single<ActivitySummaryList> =
         allAccounts().flattenAsObservable { it }
+            .doOnNext { Timber.d("act>> ${it.label}")}
+            .doOnComplete { Timber.d("act>> -------- <act")}
             .flatMapSingle { it.activity.onErrorReturn { emptyList() } }
             .reduce { a, l -> a + l }
             .doOnError { e -> Timber.e(e) }
