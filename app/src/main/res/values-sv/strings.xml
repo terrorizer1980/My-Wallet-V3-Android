@@ -79,9 +79,9 @@
   <string name="account_locked_message">Ditt konto är tillfälligt låst som en försiktighetsåtgärd. Vänligen kolla din email för mer information och försök igen senare.</string>
   <string name="check_connectivity_exit">Blockchain Wallet kan inte hämta en Internetanslutning. Kontrollera anslutningen på din enhet och försök igen.</string>
   <string name="double_encryption_password_error">Dubbelkryptera lösenordsfel. Var god försök igen.</string>
-    <string name="create_a_wallet">Skapa en plånbok</string>
+  <string name="create_a_wallet">Skapa en plånbok</string>
   <string name="log_in">Logga in</string>
-    <string name="manual_pairing">Manuell ihopkoppling</string>
+  <string name="manual_pairing">Manuell ihopkoppling</string>
   <string name="pair_wallet_step_1">Logga in på din Blockchain Plånbok via din dator eller Mac på %1$s .</string>
   <string name="pair_wallet_step_2">Gå till Inställningar / Allmänt.</string>
   <string name="pair_wallet_step_3">Klicka på Visa ihopkoppling kod för att avslöja en QR-kod, en fyrkantig svart &amp; vit streckkod. Scanna koden med kameran.</string>
@@ -96,15 +96,11 @@
   <string name="restoring_wallet">Återställer plånboken.</string>
   <string name="password">Lösenord</string>
   <string name="email">E-post</string>
-  <string name="agree_terms_of_service">Genom att skapa en ny plånbok godkänner du</string>
-  <string name="blockchain_tos">Blockchain användarvillkor</string>
-  <string name="create_wallet">Skapa plånbok</string>
-  <string name="new_wallet">Ny plånbok</string>
-  <string name="strength_weak">Svag</string>
+    <string name="strength_weak">Svag</string>
   <string name="strength_medium">Normal</string>
   <string name="strength_strong">Strong</string>
   <string name="strength_normal">Normal</string>
-    <string name="SEND">SKICKA</string>
+  <string name="SEND">SKICKA</string>
   <string name="total">Summa</string>
   <string name="max_available">Använd total förbrukningsbar balans:</string>
   <string name="invalid_bitcoin_address">Ogiltig Bitcoin-adress</string>
@@ -114,7 +110,7 @@
   <string name="rate_us">Gradera oss</string>
   <string name="licenses">licenser</string>
     <string name="about">Blockchain Wallet %1$s
- © %2$s Blockchain Luxembourg SA
+ © %2$s Blockchain Luxembourg SA 
  Alla rättigheter förbehållna.</string>
   <string name="merchant_download">Gratis Merchant app</string>
   <string name="password_or_wipe">Ange med ditt lösenord eller glöm det här plånboken</string>
@@ -192,14 +188,13 @@
   <string name="password_changed_explanation">Ditt lösenord har ändrats, var vänlig koppla om din plånbok</string>
   <string name="verify_email2">Din verifierade e-postadress används för att skicka inloggningskoder när misstänkt eller ovanlig aktivitet upptäcks, för att påminna dig om ditt loggningsnummer för plånboken och för att skicka meddelanden om bitkoinbetalning när du får pengar.</string>
   <string name="disable_root_warning">Inaktivera varning för rotad enhet</string>
-  <string name="show_balance">Visa balans</string>
     <string name="auth_failed">Auktorisering misslyckades. Var god försök igen.</string>
   <string name="send_failed">Sändningen misslyckades. Var god försök igen.</string>
   <string name="wallet_updated">Pocketuppdatering mottagen</string>
   <string name="device_rooted">Din enhet verkar vara rotad. Observera att lagring av pengar på en rotad enhet är osäker och kan dessutom orsaka stabilitetsproblem. Om du fortsätter att använda vår Bitcoin plånbok på den här enheten rekommenderar vi att du använder dubbelkryptering på ditt Blockchain-konto.</string>
   <string name="address_already_in_wallet">Din plånbok innehåller redan den här adressen.</string>
     <string name="saving_address">Spara adress ...</string>
-    <string name="edit">Redigera</string>
+  <string name="edit">Redigera</string>
   <string name="label_cant_be_empty">Etiketten kan inte vara tom.</string>
   <string name="label_name_match">Namn som redan används</string>
   <string name="warning">Varning</string>
@@ -207,13 +202,13 @@
   <string name="retry">Försök igen</string>
   <string name="archived_description">Det här objektet har arkiverats och är otillgängligt i mobilappupplevelsen. Även om du inte kan skicka pengar från det här objektet, fortsätter alla medel att vara säkra. Helt enkelt arkivera det här objektet för att börja använda det igen.</string>
   <string name="not_archived_description">Denna artikel är inte arkiverad. Arkivera det här objektet om du inte vill använda det längre. Dina medel kommer att förbli säkra, och du kan avinstallera den när som helst.</string>
-  <string name="default_account_description">Denna artikel är inställd som standard och kan inte arkiveras.</string>
+    <string name="default_account_description">Denna artikel är inställd som standard och kan inte arkiveras.</string>
   <string name="extended_public_key">Extended offentliga nyckel</string>
   <string name="address">Adress</string>
   <string name="copy_xpub">Kopiera xpub</string>
   <string name="scan_this_code">Din xPub är en avancerad funktion som innehåller alla dina offentliga adresser.</string>
   <string name="xpub_sharing_warning">Dela din xPub tillåter andra att spåra din transaktionshistorik. Som personer kan kunna störa dig åtkomst till din plånbok, bara dela din xPub med människor du litar på.</string>
-    <string name="copy_address">Kopiera adress</string>
+  <string name="copy_address">Kopiera adress</string>
   <string name="archive">Arkivera</string>
   <string name="unarchive">Hämta från Arkiv</string>
   <string name="archive_are_you_sure">Är du säker på att du vill arkivera det här objektet?</string>
@@ -222,27 +217,27 @@
   <string name="privx_required">Privat nyckel behövs</string>
   <string name="watch_only_spend_instructions">Den här åtgärden kräver den privata nyckeln för Bitcoin-adressen %1$s . Snälla skanna QR-koden.</string>
   <string name="invalid_private_key">Ogiltig privat nyckel</string>
-  <string name="watch_only_import_warning">Du håller på att importera en adress som inte kan användas, en adress (eller public key script)
- lagras i plånboken utan motsvarande privata nyckel. Detta
- innebär att pengarna kan användas ENDAST om du har den privata nyckeln lagrad någon annanstans. Om du gör
- inte ha den privata nyckeln lagrad, instruera INTE någon att skicka dig bitcoin till den icke-spendable
- adress.
+  <string name="watch_only_import_warning">Du håller på att importera en adress som inte kan användas, en adress (eller public key script) 
+ lagras i plånboken utan motsvarande privata nyckel. Detta 
+ innebär att pengarna kan användas ENDAST om du har den privata nyckeln lagrad någon annanstans. Om du gör 
+ inte ha den privata nyckeln lagrad, instruera INTE någon att skicka dig bitcoin till den icke-spendable 
+ adress. 
 
- Dessa alternativ rekommenderas endast för avancerade användare. Fortsätta?
+ Dessa alternativ rekommenderas endast för avancerade användare. Fortsätta? 
 </string>
   <string name="scan_private_key">Skanna privat nyckel</string>
   <string name="private_key_successfully_imported">Privat nyckel framgångsrikt importerad.</string>
   <string name="private_key_not_matching_address">OBS! Den skannade privata nyckeln motsvarar inte din adress som inte kan användas. Om du vill spendera dina pengar från den här adressen ska du skanna den korrekta privata nyckeln.</string>
   <string name="watch_only">Titta bara</string>
-  <string name="extended_public_key_description">Om du är en handlare, visa din xPub och använd
- Blockchain Merchant app för att ta emot pengar på ett säkert och privat sätt.
+  <string name="extended_public_key_description">Om du är en handlare, visa din xPub och använd 
+ Blockchain Merchant app för att ta emot pengar på ett säkert och privat sätt. 
 
- Håll din xPub privat.
- Någon som har tillgång till din xPub kommer att kunna se alla dina pengar och transaktioner.
+ Håll din xPub privat. 
+ Någon som har tillgång till din xPub kommer att kunna se alla dina pengar och transaktioner. 
 </string>
   <string name="extended_public_key_description_bch_only">Håll din xPub privat. Någon som har tillgång till din xPub kommer att kunna se alla dina pengar och transaktioner.</string>
-  <string name="watch_only_description">Detta är en adress som inte kan användas. Att spendera dina pengar från
- denna plånbok, skanna din privata nyckel.
+  <string name="watch_only_description">Detta är en adress som inte kan användas. Att spendera dina pengar från 
+ denna plånbok, skanna din privata nyckel. 
 </string>
   <string name="success">Framgång</string>
   <string name="default_label">Standard</string>
@@ -317,7 +312,7 @@
   <string name="sms_verified">Mobilt nummer verifierat</string>
   <string name="preferences">Egenskaper</string>
   <string name="two_fa_summary">Skydda din plånbok från obehörig åtkomst genom att aktivera 2-stegs verifiering.</string>
-  <string name="two_fa_description">Skydda din plånbok från obehörig åtkomst genom att aktivera 2-stegs verifiering. Du kan välja att använda ditt mobilnummer för att säkra din plånbok. Denna kod kommer att begäras när du försöker komma åt din plånbok via webbläsaren.
+  <string name="two_fa_description">Skydda din plånbok från obehörig åtkomst genom att aktivera 2-stegs verifiering. Du kan välja att använda ditt mobilnummer för att säkra din plånbok. Denna kod kommer att begäras när du försöker komma åt din plånbok via webbläsaren. 
 
  För att kunna använda andra autentiseringsmetoder istället, logga in på vår webbplånbok på %1$s</string>
   <string name="rate_title">Betygsätt Blockchain Wallet</string>
@@ -334,7 +329,7 @@
   <string name="pairing_code_show_qr">Visa QR-kod</string>
   <string name="pairing_code_hide_qr">Dölj QR-kod</string>
   <string name="pairing_code_warning_1">Håll den här koden dold tills du är redo.</string>
-  <string name="pairing_code_warning_2">Håll denna kod säker!
+  <string name="pairing_code_warning_2">Håll denna kod säker! 
  Dela inte med andra.</string>
   <string name="email_request_subject_eth">Ether betalningsförfrågan</string>
   <string name="email_request_subject_bch">Bitcoin Kontantbetalningsförfrågan</string>
@@ -347,17 +342,18 @@
   <string name="common_pin_dialog_title">Varning</string>
   <string name="common_pin_dialog_message">PIN-koden du har valt är mycket vanligt och lätt kan gissas av någon med tillgång till telefonen inom 3 försök. Vill du använda detta stift ändå?</string>
   <string name="common_pin_dialog_try_again">Försök igen</string>
-  <string name="common_pin_dialog_continue">Fortsätt</string>
+  <string name="common_pin_dialog_continue">Fortsätta</string>
   <string name="logged_out_enter_password">Du har loggat ut eller det fanns ett fel att dekryptera din plånbok. Ange ditt lösenord nedan för att logga in.</string>
   <string name="logged_out_forget_wallet">Om du skulle vilja glömma denna plånbok och börja om, tryck på \"Glöm plånbok\".</string>
   <string name="forget_wallet">Glöm plånboken</string>
   <string name="forget_wallet_warning">Detta raderar all plånboksdata på den här enheten. Vänligen bekräfta att din plånboksinformation sparats någon annanstans annars kommer bitcoin i denna plånbok vara otillgänglig !!</string>
   <string name="api_fail">Det gick inte att ansluta till servern. Vänligen försök igen senare.</string>
-  <string name="large_tx_warning">Detta är en överdimensionell bitcoin-transaktion. Din plånbok behöver
- konsolidera många mindre betalningar du har fått tidigare. Detta kräver en relativt
- hög avgift för att bekräftas snabbt.
+  <string name="large_tx_warning">Detta är en överdimensionell bitcoin-transaktion. Din plånbok behöver 
+ konsolidera många mindre betalningar du har fått tidigare. Detta kräver en relativt 
+ hög avgift för att bekräftas snabbt. 
 </string>
-    <string name="accept_higher_fee">Acceptera högre avgift</string>
+  <string name="cancel_order_go_back">Gå tillbaka</string>
+  <string name="accept_higher_fee">Acceptera högre avgift</string>
     <string name="password_reveal_warning">Var försiktig! Genom att avslöja denna text kan ditt lösenord kopieras till urklippet, vilket sedan kan läsas av alla program på enheten. Också vara medveten om att människor står bakom dig!</string>
   <string name="push_notifications">Pushnotifikationer</string>
   <string name="push_notifications_summary">Aktivera meddelanden för att få en popup-meddelande när du får bitcoin.</string>
@@ -396,7 +392,7 @@
   <string name="backup_word_mismatch">Word Mismatch</string>
   <string name="backup_done">GJORT</string>
   <string name="backup_lost_mnemonic">Förlorade din 12-ords backupfras?</string>
-  <string name="fingerprint_prompt">Använd ditt fingeravtryck för snabbare och lättare tillgång till din plånbok.
+  <string name="fingerprint_prompt">Använd ditt fingeravtryck för snabbare och lättare tillgång till din plånbok. 
 
  Bekräfta fingeravtryck för att fortsätta</string>
   <string name="fingerprint_description">Bekräfta fingeravtryck för att fortsätta</string>
@@ -424,11 +420,10 @@
   <string name="swipe_receive_preference_summary">Visa en mottagaradress när du sveper till vänster på PIN-skärmen, vilket gör mottagningsfonderna ännu snabbare.</string>
   <string name="swipe_receive_address_info">Fem adresser laddas i följd, varefter inloggning krävs för att visa nya adresser.</string>
   <string name="swipe_receive_no_addresses">Inga fler adresser kan laddas nu. Logga in på appen för att ladda mer.</string>
-  <string name="swipe_receive_request">Begär %1$s</string>
-  <string name="onboarding_fingerprint_title">Fingeravtryck Login</string>
+    <string name="onboarding_fingerprint_title">Fingeravtryck Login</string>
   <string name="onboarding_fingerprint_summary">Använd fingeravtrycksloggen istället för din PIN-kod för att verifiera och komma åt din plånbok.</string>
   <string name="onboarding_fingerprint_enable">Aktivera fingeravtryck</string>
-    <string name="onboarding_check_inbox_title">Kolla din inkorg</string>
+  <string name="onboarding_check_inbox_title">Kolla din inkorg</string>
   <string name="onboarding_check_inbox_summary">Leta efter ett mail från Blockchain och klicka på verifieringslänken för att slutföra din plånboksinställning.</string>
   <string name="onboarding_verify_email">Verifiera Email</string>
     <string name="onboarding_qr_codes">QR-koder</string>
@@ -459,8 +454,7 @@
   <string name="fee_options_sat_byte_hint">sat / b</string>
   <string name="fee_options_sat_byte_inline_hint">Regelbunden: %1$s , Prioritet: %2$s</string>
     <string name="dismiss">Avfärda</string>
-  <string name="eth_now_supporting">Nu stöder Ether</string>
-  <string name="eth_second_password_prompt">För att kunna använda den här tjänsten kräver vi att du anger ditt andra lösenord. Du behöver bara ange den här gången för att ställa in din Ether plånbok.</string>
+    <string name="eth_second_password_prompt">För att kunna använda den här tjänsten kräver vi att du anger ditt andra lösenord. Du behöver bara ange den här gången för att ställa in din Ether plånbok.</string>
   <string name="ether">Ether</string>
   <string name="bitcoin">Bitcoin</string>
   <string name="eth_to_field_helper">Ange ETH-adress eller välj</string>
@@ -469,7 +463,7 @@
   <string name="eth_support_contract_not_allowed">Kontraktadresser stöds inte.</string>
   <string name="eth_support_only_eth">För närvarande stöder vi endast ETH - du kan inte få tokens till denna adress</string>
   <string name="eth_unconfirmed_wait">Vänta tills din tidigare transaktion bekräftar</string>
-  <string name="eth_transaction_complete">Transaktionen slutförd! Dina transaktioner och balans kommer att uppdateras snart, det kan ta några minuter.
+  <string name="eth_transaction_complete">Transaktionen slutförd! Dina transaktioner och balans kommer att uppdateras snart, det kan ta några minuter. 
 </string>
   <string name="dashboard_title">Instrumentpanel</string>
     <string name="dashboard_time_span_all_time">Hela tiden</string>
@@ -580,9 +574,10 @@
     <string name="sunriver_status_message">Din information granskas. Granskningen ska slutföras om 5 minuter. När du väl har verifierats skickar vi din Stellar inom en vecka.</string>
   <string name="cannot_launch_app">Blockchain Wallet kan inte köras på den här enheten.</string>
   <string name="exit">Utgång</string>
-    <string name="dialog_continue">Fortsätt</string>
+    <string name="dialog_continue">Fortsätta</string>
     <string name="not_enough_funds_with_currency">Inte tillräckligt med %1$s</string>
-    <string name="transaction_failed_min_send">Det minsta du kan skicka är %1$s</string>
+  <string name="invalid_address">Ogiltig adress</string>
+  <string name="transaction_failed_min_send">Det minsta du kan skicka är %1$s</string>
   <string name="xlm_transaction_failed_min_balance_new_account">Minst %1$s behövs för nya konton</string>
   <string name="lockbox_title">Lockbox</string>
     <string name="coinify_account_created_success">Framgång!
@@ -594,11 +589,11 @@
   <string name="buy_sell_overview_pending_kyc_not_found">Väntar på att KYC inte hittades, försök igen senare.</string>
   <string name="buy_sell_overview_could_not_start_kyc">Kunde inte starta om KYC, försök igen senare.</string>
   <string name="buy_sell_overview_empty_list">Din orderhistorik visas här</string>
-  <string name="buy_sell_overview_in_review_title">Identitetsverifiering
+  <string name="buy_sell_overview_in_review_title">Identitetsverifiering 
  under granskning</string>
-  <string name="buy_sell_overview_denied_title">Identitetsverifiering
+  <string name="buy_sell_overview_denied_title">Identitetsverifiering 
  nekas</string>
-  <string name="buy_sell_overview_pending_title">Fullständig identitet
+  <string name="buy_sell_overview_pending_title">Fullständig identitet 
  verifiering</string>
   <string name="buy_sell_overview_in_review_button">Köp nu med kort</string>
   <string name="buy_sell_overview_denied_button">Försök igen</string>
@@ -631,7 +626,7 @@
   <string name="buy_sell_detail_bank_disclaimer">Att ta emot pengar till ditt bankkonto tar vanligtvis mellan 2 till 3 arbetsdagar.</string>
   <string name="buy_sell_detail_refund_message">Coinify har avbrutit denna säljorder och skickat dig ett mail med instruktioner om hur du får dina medel återbetalade.</string>
   <string name="buy_sell_details_whats_next">Vad kommer härnäst?</string>
-  <string name="buy_sell_awaiting_funds_description">Skicka %1$s till Coinify inom de närmaste 48 timmarna.
+  <string name="buy_sell_awaiting_funds_description">Skicka %1$s till Coinify inom de närmaste 48 timmarna. 
 
  Bankkonton som skickar medel måste vara i samma namn som ditt utgivna ID. Annars kommer det att avslås.</string>
   <string name="buy_sell_awaiting_funds_already_sent">Jag har redan skickat medlen till Coinify</string>
@@ -661,7 +656,8 @@
   <string name="buy_sell_review_finish_verification">Avsluta verifiering</string>
   <string name="buy_sell_review_finish_verification_title">Komplett identitetsverifiering</string>
   <string name="buy_sell_review_status">Status: %1$s</string>
-    <string name="buy_sell_review_status_in_pending">Ofullständig</string>
+  <string name="buy_sell_review_status_in_review">Under granskning</string>
+  <string name="buy_sell_review_status_in_pending">Ofullständig</string>
   <string name="buy_sell_review_status_in_rejected">Avvisad</string>
   <string name="buy_sell_review_status_in_failed">Misslyckades</string>
   <string name="buy_sell_review_status_in_expired">Löpte ut</string>
@@ -706,7 +702,7 @@
   <string name="buy_sell_confirmation_you_will_receive">Summa kreditfordringar</string>
   <string name="buy_sell_confirmation_btc_to_receive_description">%1$s BTC skickas direkt från din Blockchain-plånbok till Sammanfoga när du trycker på Skicka.</string>
   <string name="buy_sell_confirmation_sell_rate_disclaimer">Jag accepterar att Coinify kommer att behandla min order efter avslutningen av bitcoin-transaktionen, och det bitcoinet kommer att handlas till den tillgängliga växelkursen vid den tidpunkten, vilket kan skilja sig från den visade kursen.</string>
-  <string name="buy_sell_card_payment_success_title">Framgång!
+  <string name="buy_sell_card_payment_success_title">Framgång! 
  Order skapad</string>
   <string name="buy_sell_card_payment_success_message">Fonder ska nå ditt konto inom 3 dagar.</string>
   <string name="buy_sell_card_order_created_title">Order skapad</string>
@@ -783,8 +779,10 @@
   <string name="xlm_memo_hash">Memo Hash</string>
   <string name="xlm_memo_return">Memo Return Hash</string>
   <string name="xlm_memo_toolbar_title">Lägg till not</string>
-    <string name="xlm_memo_text_hint">PM</string>
-    <string name="xlm_memo_hash_hint">32 Byte Hexadecimal Hash</string>
+  <string name="xlm_memo_explain">Noteringar används för att kommunicera frivillig information till mottagaren.</string>
+  <string name="xlm_memo_text_hint">PM</string>
+  <string name="xlm_memo_id_hint">Numeriskt ID</string>
+  <string name="xlm_memo_hash_hint">32 Byte Hexadecimal Hash</string>
   <string name="wallet">Plånbok</string>
   <string name="sunriver_invalid_url_message">Din XLM har redan hävts.</string>
   <string name="sunriver_invalid_url_title">Å nej!</string>
@@ -819,20 +817,14 @@
     <string name="kyc_splash_terms_and_conditions_submit">Genom att trycka på Skicka, godkänner du Blockchains</string>
   <string name="kyc_country_selection_message_state">Varje stat har olika regler om handel med kryptokurvor.</string>
   <string name="kyc_profile_submit">Lämna</string>
-  <string name="kyc_email_didnt_see_email">Såg inte e-post? %1$s</string>
-  <string name="kyc_email_send_again_hyperlink">Skicka igen</string>
   <string name="kyc_email_email_was_resent">E-posten var återigen</string>
-  <string name="kyc_phone_didnt_see_sms">%1$s</string>
-  <string name="kyc_phone_send_again_hyperlink">Återsänd koden</string>
   <string name="kyc_phone_number_code_was_resent">Koden var återigen</string>
   <string name="kyc_phone_number_error_resending">Ett fel på att skicka kod, var vänlig försök igen</string>
   <string name="kyc_settings_swap_limit">Byt gränsen</string>
   <string name="kyc_settings_tier_status_locked">låst</string>
   <string name="kyc_settings_tier_status_failed">\@ Sträng / kyc_settings_status_rejected</string>
   <string name="import_try_again">Försök igen</string>
-  <string name="pax_to_field_helper">Ange PAX / ETH-adress eller välj</string>
-  <string name="pax_to_field_helper_no_dropdown">Ange PAX / ETH-adress</string>
-  <string name="transaction_detail_verify_bch">Verifiera på Blockchain.com</string>
+    <string name="transaction_detail_verify_bch">Verifiera på Blockchain.com</string>
   <string name="sunriver_invalid_campaign_user">Vi är ledsna, airdrop-programmet är för närvarande inte tillgängligt var du är.</string>
   <string name="sunriver_user_already_registered">Det ser ut som om du redan har fått din airdrop!</string>
   <string name="sunriver_campaign_expired">Vi är ledsna, XLM airdrop är över. Slutför din profil för att vara berättigad till framtida airdrops och åtkomsthandel.</string>
@@ -914,21 +906,11 @@
   <string name="swipe_receive_right_arrow">Dra för att ta emot högerpil</string>
   <string name="btn_ok">ok</string>
     <string name="email_request_subject_btc">Bitcoin betalningsförfrågan</string>
-  <string name="email_request_subject_pax">PAX betalningsförfrågan</string>
-  <string name="email_request_body_btc">Vänligen skicka %1$s BTC till Bitcoin-adressen %2$s .</string>
-  <string name="email_request_body_pax">Vänligen skicka PAX till USD PAX-adressen %1$s .</string>
-  <string name="pax_invalid_address">Ogiltig USD PAX-adress</string>
+    <string name="email_request_body_btc">Vänligen skicka %1$s BTC till Bitcoin-adressen %2$s .</string>
     <string name="stablecoin_announcement_introducing_title">Vår första Stablecoin</string>
   <string name="stablecoin_announcement_introducing_description">Introduktion till USD PAX, en säker och stabil digital dollar i din plånbok</string>
   <string name="stablecoin_announcement_introducing_link">Byt till PAX nu</string>
-  <string name="pax_title">USD PAX</string>
-  <string name="pax_no_transactions_message">Dina USD PAX transaktioner kommer att dyka upp här när du gör din första transaktion.</string>
-  <string name="pax_learn_more_link">Läs mer om USD PAX</string>
-  <string name="pax_wallet_name">Min USD PAX Plånbok</string>
-  <string name="pax_default_account_label">Min USD PAX Plånbok</string>
-  <string name="pax_swap_now">Få USD PAX nu</string>
-  <string name="pax_fee">PAX FEE</string>
-  <string name="morph_exchange">Byta</string>
+    <string name="morph_exchange">Byta</string>
     <string name="morph_order_history">Beställningshistorik</string>
     <string name="morph_deposit_from">Insättning från ShapeShift</string>
   <string name="morph_deposit_to">Deponeras till ShapeShift</string>
@@ -953,12 +935,10 @@
   <string name="morph_refunded_title">Utgånget</string>
   <string name="morph_step_number">Steg %1$s av 3</string>
   <string name="morph_confirm">Bekräfta</string>
-  <string name="morph_success_dlg_text">Framgång! Din utbyte har
+  <string name="morph_success_dlg_text">Framgång! Din utbyte har 
  har börjat!</string>
   <string name="morph_success_for_first_gold_pax_trade_title">Din Exchange har startats!</string>
-  <string name="morph_success_for_first_gold_pax_trade_description">Ännu bättre, eftersom du behöver ETH för att göra USD PAX-affärer, flyttade vi bara tillräckligt med ETH till din plånbok för att täcka dina första 3 transaktioner
- 🙌</string>
-  <string name="morph_success_dlg_button">Visa beställningsinformation</string>
+    <string name="morph_success_dlg_button">Visa beställningsinformation</string>
   <string name="morph_order_id_title">Order ID</string>
   <string name="morph_trade_not_found">Handel hittades inte</string>
   <string name="morph_in_progress_summary">Byt i framsteg</string>
@@ -973,7 +953,6 @@
     <string name="order_detail">Orderdetaljer</string>
   <string name="order_history">Beställningshistorik</string>
   <string name="no_orders_found">Inga beställningar hittades</string>
-  <string name="confirm_exchange">Bekräfta byte</string>
     <string name="status_inprogress_detail">Tack för att du placerar din handel! Fonder kommer vanligtvis att nå din plånbok inom 2 timmar och vi skickar dig ett meddelande när det händer. Håll reda på din handels framsteg i Orderhistorik.</string>
     <string name="status_request_refund">Kontakta supporten</string>
   <string name="morph_status_in_progress">Pågående</string>
@@ -990,8 +969,7 @@
   <string name="under_limit">Under gränsen</string>
     <string name="toolbar_cmd_home">Hem</string>
   <string name="toolbar_cmd_send">Skicka</string>
-  <string name="toolbar_cmd_receive">Begäran</string>
-  <string name="toolbar_cmd_activity">Aktivitet</string>
+    <string name="toolbar_cmd_activity">Aktivitet</string>
   <string name="toolbar_cmd_swap">Byta</string>
   <string name="request">Begäran</string>
   <string name="swap_info_contact_support">Kontakta supporten</string>
@@ -1003,10 +981,7 @@
   <string name="status_failed_expired_detail">De flesta utbyten på byte utförs sömlöst på två timmar. Vänligen kontakta oss. Tillsammans kan vi räkna ut det här.</string>
   <string name="failed_expired_status_title">Hmm, det är inte rätt. 👀</string>
     <string name="kyc_veriff_splash_country_supported_header">Stöds mitt land?</string>
-  <string name="gold_level_under_review_sunriver_large_backlog">Guldbekräftelse är under granskning, en gång verifierad kan du använda Byt och handla upp till vår Guldnivågräns.
-
- Var vänlig medveten om att det finns en stor väntelista för Stellar airdrops och tyvärr inte alla ansökningar om gratis XLM kommer att bli framgångsrika.</string>
-  <string name="kyc_veriff_splash_error_silver">SILVER VERIFIED</string>
+    <string name="kyc_veriff_splash_error_silver">SILVER VERIFIED</string>
   <string name="kyc_gold_unavailable_text_support">Om du vill lära dig mer om vår verifieringsprocess besök vår <annotation link="gold_error"> Support Center </annotation> .</string>
   <string name="kyc_gold_unavailable_text_line_2">Om du är Silver verifierad kan du handla din krypto i swap.</string>
   <string name="kyc_gold_unavailable_text_line_1">Vi beklagar att vi inte kan verifiera dig för Gold. Det här kan vara av flera anledningar, till exempel kan ditt land inte stödjas just nu.</string>
@@ -1017,35 +992,86 @@
     <string name="buy_sell_error_country_not_supported">Ditt land stöds inte för köp / försäljning just nu. Vi arbetar för att lägga till stöd till fler områden snart.</string>
   <string name="no_sell_available_message">Tyvärr är inte köp och sälj tillgängligt i ditt land. Vi arbetar hårt för att få tillbaka det så snart som möjligt.</string>
   <string name="send">Skicka</string>
-  <string name="item_the_pit">Gropen</string>
-  <string name="btn_close">Stänga</string>
-    <string name="pit_slogan_kyc_promo">Den enda Exchange som ansluts till din plånbok.</string>
-  <string name="pit_thunder_kyc_promo">Lightning Fast Trades</string>
-    <string name="pit_built_kyc_promo">Byggt av Blockchain</string>
-    <string name="pit_permission_app_can">Denna applikation kommer att kunna:</string>
-  <string name="pit_permission_app_cant">Den här applikationen kan inte:</string>
-  <string name="pit_permission_subtitle">Kommer inte kunna:</string>
-    <string name="pit_permission_2">Dela din guld- eller silvernivåstatus</string>
-  <string name="pit_permission_3">Lägg till dina kopplade banker</string>
-    <string name="pit_connect_now">Anslut nu</string>
-    <string name="pit_setting_connect">Ansluta</string>
-  <string name="pit_setting_connected">Ansluten</string>
-  <string name="launch_the_pit">Starta The Pit</string>
-  <string name="pit_contact_support">Kontakta supporten</string>
-  <string name="pit_loading_dialog_title">Tar dig till PIT</string>
-  <string name="pit_loading_dialog_description">Ett nytt fönster bör öppnas inom 10 sekunder.</string>
-  <string name="pit_verify_email_title">Verifiera din epost</string>
-  <string name="pit_verify_email_description">Vi har precis skickat ett verifieringsmeddelande. Din e-postadress måste verifieras innan du kan ansluta till The PIT.</string>
-  <string name="pit_open_email_app">Öppna e-post-appen</string>
-  <string name="pit_did_not_get_email">Fick du inte e-postmeddelandet?</string>
-  <string name="pit_send_again">Skicka igen</string>
-  <string name="mail_resent_succeed">Email skickat. Kontrollera din inkorg för att fortsätta.</string>
+    <string name="btn_close">Stänga</string>
+    <string name="mail_resent_succeed">Email skickat. Kontrollera din inkorg för att fortsätta.</string>
   <string name="mail_resent_failed">Något gick fel. Klicka på Skicka igen.</string>
-  <string name="pit_email_verified_description">Du är redo att ansluta din Blockchain-plånbok till PIT.</string>
-  <string name="pit_email_verified_title">E-post bekräftad.</string>
-  <string name="pit_connection_error_title">Anslutningsfel</string>
-  <string name="pit_connection_error_description">Vi kunde inte ansluta din plånbok till The PIT. Gå tillbaka till The PIT och försök igen.</string>
-  <string name="pit_connection_success_title">Framgång!</string>
-  <string name="pit_connection_success_description">Du har anslutit din Blockchain-plånbok till PIT.</string>
-  <string name="pit_default_account_label">Min PIT %1$s adress</string>
+    <string name="kyc_veriff_splash_country_supported_subheader">Inte alla länder stöds just nu. Kontrollera vår uppdaterade <annotation link="country_list"> lista över länder </annotation> innan du fortsätter.</string>
+  <string name="swap_intro_title">Byta</string>
+  <string name="swap_intro_title_page_one">Välkommen till Swap!</string>
+  <string name="swap_intro_title_page_two">Valutakurser i realtid</string>
+  <string name="swap_intro_title_page_three">100% kedja</string>
+  <string name="swap_intro_title_page_four">Du styr din nyckel</string>
+  <string name="swap_intro_title_page_five">Hantera risken bättre</string>
+  <string name="swap_intro_description_page_one">Det enklaste sättet att byta en krypto mot en annan utan att lämna din plånbok.</string>
+  <string name="swap_intro_description_page_two">Få tillgång till konkurrenskraftiga kryptopriser direkt till hands.</string>
+  <string name="swap_intro_description_page_three">Alla bytehandlar bekräftas och avvecklas direkt på kedjan.</string>
+  <string name="swap_intro_description_page_four">Med Swap är din krypto säker, säker och dina nycklar är alltid intakta.</string>
+  <string name="swap_intro_description_page_five">Introduktion av digitala dollar (USDp) för att riskera din kryptoinvestering eller inlåningsvinster.</string>
+  <string name="swap_intro_get_started">Komma igång</string>
+  <string name="bitpay_remaining_time">Återstående tid</string>
+  <string name="bitpay_invoice_expired">BitPay-faktura har gått ut</string>
+  <string name="bitpay_invoice_expired_message">En faktura är endast giltig i 15 minuter. Återgå till säljaren om du vill skicka in en betalning igen.</string>
+  <string name="transaction_failed">Transaktionen misslyckades</string>
+    <string name="bitpay_announcement_body">Med BitPay kan du nu använda din Blockchain-plånbok för inköp med stödjande återförsäljare.</string>
+  <string name="kyc_more_info_title">Mer information behövs</string>
+  <string name="kyc_more_info_body">För att fortsätta använda Buy &amp; Sell måste du uppdatera din profil. När du är klar låser du också upp högre handelsgränser i Swap.</string>
+  <string name="kyc_more_info_cta">Uppdatera nu</string>
+    <string name="tour_card_title">Välkommen till Blockchain!</string>
+  <string name="tour_card_body">Här är några tips för att få din plånbok igång. Vi hjälper dig också att se till att allt är säkert.</string>
+  <string name="tour_card_cta">Ta en rundtur</string>
+  <string name="tour_card_dismiss">Kanske senare</string>
+  <string name="verify_email_card_title">Verifiera din e-postadress</string>
+  <string name="verify_email_card_body">För att börja använda din Blockchain-plånbok måste du bekräfta din e-postadress.</string>
+  <string name="verify_email_card_cta">Verifiera e-postadressen</string>
+  <string name="two_fa_card_title">Aktivera tvåstegsverifiering</string>
+  <string name="two_fa_card_body">Skydda din plånbok mot obehörig åtkomst genom att aktivera tvåstegsverifiering.</string>
+  <string name="two_fa_card_cta">Aktivera tvåstegsverifiering</string>
+  <string name="buy_btc_card_title">Köp Bitcoin</string>
+  <string name="buy_btc_card_body">Köp Bitcoin med ditt kreditkort eller bankkonto för att starta din kryptoportfolio.</string>
+  <string name="buy_btc_card_cta">Köp Bitcoin</string>
+  <string name="transfer_btc_card_title">Överför i krypto</string>
+  <string name="transfer_btc_card_body">Sätt krypto i din plånbok för att komma igång. Det är det bästa sättet att lagra din krypto samtidigt som du håller kontrollen över dina nycklar.</string>
+  <string name="transfer_btc_card_cta">Komma igång</string>
+  <string name="recovery_card_title">Fråga om återställning av plånbok</string>
+  <string name="recovery_card_body">Din återställningsfras kan användas för att återställa alla dina pengar i fall av ett förlorat lösenord eller förlust av service hos Blockchain.</string>
+  <string name="recovery_card_cta">Säkerhetskopieringsfras</string>
+  <string name="register_fingerprint_card_title">Fingeravtryck Logga in</string>
+  <string name="register_fingerprint_card_body">Aktivera fingeravtryck för att snabbt logga in i din plånbok istället för att använda din PIN-kod.</string>
+  <string name="register_fingerprint_card_cta">Aktivera nu</string>
+  <string name="kyc_airdrop_card_title">Vill du ha gratis krypto?</string>
+  <string name="kyc_airdrop_card_body">Verifiera din identitet för att delta i vårt Airdrop-program och få gratis krypto från framtida Airdrops.</string>
+  <string name="kyc_airdrop_card_cta">Börja verifiering</string>
+  <string name="kyc_drop_off_card_title">Slutför verifiera ditt konto</string>
+  <string name="tour_step_one_title">Visa din portfölj</string>
+  <string name="tour_step_one_body">Håll koll på dina kryptobalanser från din plånboks instrumentpanel. Din plånbok stöder för närvarande Bitcoin, Ether, Bitcoin Cash, Stellar XLM och USD PAX.</string>
+  <string name="tour_step_one_btn">Nästa</string>
+  <string name="tour_step_two_title">Skicka</string>
+  <string name="tour_step_two_body">Skicka krypto var som helst, när som helst. Allt du behöver är mottagarens krypto-adress.</string>
+  <string name="tour_step_two_btn">Nästa</string>
+  <string name="tour_step_three_title">Begäran</string>
+  <string name="tour_step_three_body">För att få krypto är allt avsändarens behov din kryptos adress. Du hittar dessa adresser här.</string>
+  <string name="tour_step_three_btn">Nästa</string>
+  <string name="tour_step_four_title">Byta</string>
+  <string name="tour_step_four_body">Handla krypto med låga avgifter utan att lämna din plånbok.</string>
+  <string name="tour_step_four_btn">Gjort</string>
+  <string name="tour_step_five_title">Köpa sälja</string>
+  <string name="tour_step_five_body">Köp Bitcoin med ditt kreditkort eller bankkonto för att starta din kryptoportfolio.</string>
+  <string name="tour_step_five_btn">Gjort</string>
+    <string name="btn_scan_pairing_code">Skanna kopplingskod</string>
+  <string name="btn_manual_pairing">Manuell parning</string>
+  <string name="login_auto_pair_title">Automatisk parning</string>
+  <string name="landing_title">Välkommen till Blockchain</string>
+  <string name="landing_body">Det enkla sättet att <b> skicka </b> , <b> ta emot </b> , <b> butik </b> och <b> handel </b> digitala valutor.</string>
+  <string name="btn_continue">Fortsätta</string>
+  <string name="btn_forgot_password">Glömt ditt lösenord?\"</string>
+  <string name="edit_transaction_hint">Redigera transaktionsbeskrivning</string>
+  <string name="pie_chart_content">tårtdiagram</string>
+  <string name="crypto_exchange">Crypto Exchange</string>
+  <string name="crypto_trading">Kryptohandel</string>
+  <string name="content_desc_edit_account_label">Redigera kontoetikett</string>
+  <string name="edit_wallet_name">Redigera namn</string>
+  <string name="edit_wallet_name_helper_text">Ge den nya plånboken ett namn.</string>
+  <string name="create_a_new_wallet">Skapa en ny plånbok</string>
+  <string name="create_a_new_wallet_helper_text">Ge den nya plånboken ett namn.</string>
+  <string name="create_now">Skapa nu</string>
 </resources>

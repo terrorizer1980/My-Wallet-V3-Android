@@ -38,7 +38,7 @@ class ExchangeWebSocket(underlyingSocket: WebSocket<String, String>, moshi: Mosh
                         val split = rate.pair.split("-")
                         val lhs = split.firstOrNull()
                         val rhs = split.lastOrNull()
-                        val fromCrypto = CryptoCurrency.fromSymbol(lhs)
+                        val fromCrypto = CryptoCurrency.fromNetworkTicker(lhs)
                         if (fromCrypto != null && rhs != null) {
                             ExchangeRate.CryptoToFiat(fromCrypto, rhs, rate.price)
                         } else {
@@ -68,7 +68,7 @@ private data class ExchangeRateSocketParametersKey(
     val fromCrypto: CryptoCurrency,
     val toFiat: String
 ) {
-    val pair = "${fromCrypto.symbol}-$toFiat"
+    val pair = "${fromCrypto.networkTicker}-$toFiat"
 }
 
 internal class ExchangeRateSocketParameters(

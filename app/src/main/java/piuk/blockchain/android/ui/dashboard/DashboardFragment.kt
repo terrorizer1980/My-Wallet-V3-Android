@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.extensions.exhaustive
 import com.blockchain.notifications.analytics.AnalyticsEvents
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import info.blockchain.balance.CryptoCurrency
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.fragment_dashboard.*
@@ -19,9 +21,10 @@ import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.campaign.CampaignType
-import piuk.blockchain.android.ui.campaign.CampaignBlockstackCompleteSheet
-import piuk.blockchain.android.ui.campaign.CampaignBlockstackIntroSheet
-import piuk.blockchain.android.ui.campaign.PromoBottomSheet
+import piuk.blockchain.android.campaign.blockstackCampaignName
+import piuk.blockchain.android.coincore.AssetFilter
+import piuk.blockchain.android.simplebuy.SimpleBuyCancelOrderBottomSheet
+import piuk.blockchain.android.ui.airdrops.AirdropStatusSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -30,11 +33,14 @@ import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementCard
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementList
 import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailSheet
+import piuk.blockchain.android.ui.dashboard.transfer.BasicTransferToWallet
+import piuk.blockchain.android.ui.dashboard.sheets.CustodyWalletIntroSheet
+import piuk.blockchain.android.ui.dashboard.sheets.BankDetailsBottomSheet
+import piuk.blockchain.android.ui.dashboard.sheets.ForceBackupForSendSheet
 import piuk.blockchain.android.ui.home.MainActivity
-import piuk.blockchain.android.ui.home.models.MetadataEvent
-import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import java.lang.IllegalStateException
 
 class EmptyDashboardItem : DashboardItem
 
@@ -42,11 +48,15 @@ private typealias RefreshFn = () -> Unit
 
 class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent, DashboardState>(),
     AssetDetailSheet.Host,
-    PromoBottomSheet.Host {
+    ForceBackupForSendSheet.Host,
+    BasicTransferToWallet.Host,
+    BankDetailsBottomSheet.Host,
+    SimpleBuyCancelOrderBottomSheet.Host {
 
     override val model: DashboardModel by inject()
 
     private val announcements: AnnouncementList by inject()
+    private val analyticsReporter: BalanceAnalyticsReporter by inject()
 
     private val theAdapter: DashboardDelegateAdapter by lazy {
         DashboardDelegateAdapter(
@@ -67,10 +77,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         rxBus.register(ActionEvent::class.java)
     }
 
-    private val metadataEvent by unsafeLazy {
-        rxBus.register(MetadataEvent::class.java)
-    }
-
     private var state: DashboardState? = null // Hold the 'current' display state, to enable optimising of state updates
 
     @UiThread
@@ -88,8 +94,8 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         if (this.state?.showAssetSheetFor != newState.showAssetSheetFor) {
             showAssetSheet(newState.showAssetSheetFor)
         } else {
-            if (this.state?.showPromoSheet != newState.showPromoSheet) {
-                showPromoSheet(newState.showPromoSheet)
+            if (this.state?.showDashboardSheet != newState.showDashboardSheet) {
+                showPromoSheet(newState)
             }
         }
 
@@ -97,6 +103,8 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         if (this.state?.announcement != newState.announcement) {
             showAnnouncement(newState.announcement)
         }
+
+        updateAnalytics(this.state, newState)
 
         this.state = newState
     }
@@ -153,17 +161,38 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         }
     }
 
-    private fun showPromoSheet(promoSheet: PromoSheet?) {
-        when (promoSheet) {
-            PromoSheet.PROMO_STX_CAMPAIGN_INTO -> showBottomSheet(CampaignBlockstackIntroSheet())
-            PromoSheet.PROMO_STX_CAMPAIGN_COMPLETE -> showBottomSheet(CampaignBlockstackCompleteSheet())
-            null -> { /* no-op */ }
-        }.exhaustive
+    private fun showPromoSheet(state: DashboardState) {
+        showBottomSheet(
+            when (state.showDashboardSheet) {
+                DashboardSheet.STX_AIRDROP_COMPLETE -> AirdropStatusSheet.newInstance(blockstackCampaignName)
+                DashboardSheet.CUSTODY_INTRO -> CustodyWalletIntroSheet.newInstance()
+                DashboardSheet.SIMPLE_BUY_PAYMENT -> BankDetailsBottomSheet.newInstance()
+                DashboardSheet.BACKUP_BEFORE_SEND -> ForceBackupForSendSheet.newInstance()
+                DashboardSheet.BASIC_WALLET_TRANSFER -> BasicTransferToWallet.newInstance(state.transferFundsCurrency!!)
+                DashboardSheet.SIMPLE_BUY_CANCEL_ORDER -> {
+                    analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_PROMPT)
+                    SimpleBuyCancelOrderBottomSheet.newInstance(true)
+                }
+                null -> null
+            }
+        )
     }
 
     private fun showAnnouncement(card: AnnouncementCard?) {
         displayList[IDX_CARD_ANNOUNCE] = card ?: EmptyDashboardItem()
         theAdapter.notifyItemChanged(IDX_CARD_ANNOUNCE)
+    }
+
+    private fun updateAnalytics(oldState: DashboardState?, newState: DashboardState) {
+        analyticsReporter.updateFiatTotal(newState.fiatBalance)
+
+        newState.assets.forEach { (cc, s) ->
+            val newBalance = s.cryptoBalance
+            if (newBalance != null && newBalance != oldState?.assets?.get(cc)?.cryptoBalance) {
+                analyticsReporter.gotAssetBalance(cc, newBalance) // IF we have the full set, this will fire
+            }
+        }
+        analyticsReporter
     }
 
     override fun onBackPressed(): Boolean = false
@@ -215,13 +244,16 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     override fun onResume() {
         super.onResume()
         setupToolbar()
-
-        compositeDisposable += metadataEvent.subscribe {
+        compositeDisposable += actionEvent.subscribe {
             model.process(RefreshAllIntent)
         }
 
-        compositeDisposable += actionEvent.subscribe {
-            model.process(RefreshAllIntent)
+        (activity as? MainActivity)?.let {
+            compositeDisposable += it.refreshAnnouncements.observeOn(AndroidSchedulers.mainThread()).subscribe {
+                if (announcements.enable()) {
+                    announcements.checkLatest(announcementHost, compositeDisposable)
+                }
+            }
         }
 
         announcements.checkLatest(announcementHost, compositeDisposable)
@@ -232,8 +264,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     override fun onPause() {
         compositeDisposable.clear()
         rxBus.unregister(ActionEvent::class.java, actionEvent)
-        rxBus.unregister(MetadataEvent::class.java, actionEvent)
-
         super.onPause()
     }
 
@@ -243,8 +273,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         when (requestCode) {
             MainActivity.SETTINGS_EDIT,
             MainActivity.ACCOUNT_EDIT -> model.process(RefreshAllIntent)
-            KYC_FOR_STX -> if (resultCode == KycNavHostActivity.RESULT_KYC_STX_COMPLETE)
-                model.process(ShowPromoSheet(PromoSheet.PROMO_STX_CAMPAIGN_COMPLETE))
+            BACKUP_FUNDS_REQUEST_CODE -> startTransferFunds()
         }
     }
 
@@ -253,6 +282,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
     }
 
     private val announcementHost = object : AnnouncementHost {
+
         override val disposables: CompositeDisposable
             get() = compositeDisposable
 
@@ -284,24 +314,87 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
         override fun startTransferCrypto() = navigator().launchTransfer()
 
-        override fun startBlockstackIntro() = model.process(ShowPromoSheet(PromoSheet.PROMO_STX_CAMPAIGN_INTO))
+        override fun startStxReceivedDetail() =
+            model.process(ShowDashboardSheet(DashboardSheet.STX_AIRDROP_COMPLETE))
+
+        override fun startSimpleBuyPaymentDetail() =
+            model.process(ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_PAYMENT))
+
+        override fun finishSimpleBuySignup() {
+            navigator().resumeSimpleBuyKyc()
+        }
+
+        override fun startSimpleBuy() {
+            navigator().startSimpleBuy()
+        }
+    }
+
+    override fun startWarnCancelSimpleBuyOrder() {
+        analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_PRESS_CANCEL)
+        model.process(ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_CANCEL_ORDER))
+    }
+
+    override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
+        if (cancelOrder && orderId != null) {
+            analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_CONFIRMED)
+            model.process(CancelSimpleBuyOrder(orderId))
+        } else {
+            analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_GO_BACK)
+            model.process(ShowDashboardSheet(DashboardSheet.SIMPLE_BUY_PAYMENT))
+        }
     }
 
     // AssetDetailSheet.Host
-    override fun gotoSendFor(cryptoCurrency: CryptoCurrency) = navigator().gotoSendFor(cryptoCurrency)
+    override fun onSheetClosed() {
+        model.process(ClearBottomSheet)
+    }
 
-    override fun goToReceiveFor(cryptoCurrency: CryptoCurrency) = navigator().gotoReceiveFor(cryptoCurrency)
+    override fun gotoSendFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter) {
+        when (filter) {
+            AssetFilter.Total -> throw IllegalStateException("The Send.Total action is invalid")
+            AssetFilter.Wallet -> navigator().gotoSendFor(cryptoCurrency)
+            AssetFilter.Custodial -> model.process(StartCustodialTransfer(cryptoCurrency))
+        }.exhaustive
+    }
 
-    override fun onSheetClosed() = model.process(ClearBottomSheet)
+    override fun goToReceiveFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter) =
+        when (filter) {
+            AssetFilter.Total -> throw IllegalStateException("The Receive.Total action is invalid")
+            AssetFilter.Wallet -> navigator().gotoReceiveFor(cryptoCurrency)
+            AssetFilter.Custodial -> throw IllegalStateException("The Receive.Custodial action is invalid")
+        }.exhaustive
 
-    override fun goToBuy() = navigator().launchBuySell()
+    override fun gotoActivityFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter) {
+        when (filter) {
+            AssetFilter.Total -> { /* TODO: Hook up the everything activity view, when we have designs */
+            }
+            AssetFilter.Wallet -> navigator().gotoTransactionsFor(cryptoCurrency)
+            AssetFilter.Custodial -> { /* TODO: Hook up the custodial activity, when we have designs */
+            }
+        }.exhaustive
+    }
 
-    override fun gotoSwapWithCurrencies(fromCryptoCurrency: CryptoCurrency, toCryptoCurrency: CryptoCurrency) =
-        navigator().launchSwapOrKyc(fromCryptoCurrency = fromCryptoCurrency, targetCurrency = toCryptoCurrency)
+    override fun gotoSwap(fromCryptoCurrency: CryptoCurrency, filter: AssetFilter) =
+        when (filter) {
+            AssetFilter.Total -> throw IllegalStateException("The Swap.Total action is invalid")
+            AssetFilter.Wallet -> navigator().launchSwapOrKyc(
+                fromCryptoCurrency = fromCryptoCurrency,
+                targetCurrency = fromCryptoCurrency.defaultSwapTo
+            )
+            AssetFilter.Custodial -> throw IllegalStateException("The Swap.Custodial action is invalid")
+        }.exhaustive
 
-    // PromoSheet.Host
-    override fun onStartKycForStx() =
-        KycNavHostActivity.startForResult(this@DashboardFragment, CampaignType.Blockstack, KYC_FOR_STX)
+    override fun startBackupForTransfer() {
+        navigator().launchBackupFunds(this, BACKUP_FUNDS_REQUEST_CODE)
+    }
+
+    override fun startTransferFunds() {
+        model.process(TransferFunds)
+    }
+
+    override fun abortTransferFunds() {
+        model.process(AbortFundsTransfer)
+    }
 
     companion object {
         fun newInstance() = DashboardFragment()
@@ -314,7 +407,7 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
         private const val IDX_CARD_XLM = 5
         private const val IDX_CARD_PAX = 6
 
-        internal const val KYC_FOR_STX = 9267
+        private const val BACKUP_FUNDS_REQUEST_CODE = 8265
     }
 }
 

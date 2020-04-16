@@ -11,18 +11,27 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import piuk.blockchain.android.BlockchainTestApplication;
-import piuk.blockchain.android.BuildConfig;
 import piuk.blockchain.android.R;
 import piuk.blockchain.androidcore.data.access.AccessState;
+
+import com.blockchain.logging.CrashLogger;
 import com.blockchain.notifications.NotificationTokenManager;
+import com.blockchain.notifications.analytics.Analytics;
+import com.blockchain.preferences.CurrencyPrefs;
+import com.blockchain.remoteconfig.FeatureFlag;
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager;
 
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig;
+import piuk.blockchain.androidcore.data.metadata.MetadataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.SettingsDataManager;
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom;
@@ -45,18 +54,44 @@ public class LauncherPresenterTest {
 
     private LauncherPresenter subject;
 
-    @Mock private LauncherView launcherActivity;
-    @Mock private PersistentPrefs prefsUtil;
-    @Mock private AppUtil appUtil;
-    @Mock private PayloadDataManager payloadDataManager;
-    @Mock private DeepLinkPersistence deepLinkPersistence;
-    @Mock private SettingsDataManager settingsDataManager;
-    @Mock private AccessState accessState;
-    @Mock private Intent intent;
-    @Mock private Bundle extras;
-    @Mock private Wallet wallet;
-    @Mock private NotificationTokenManager notificationTokenManager;
-    @Mock private EnvironmentConfig environmentConfig;
+    @Mock
+    private LauncherView launcherActivity;
+    @Mock
+    private PersistentPrefs prefsUtil;
+    @Mock
+    private AppUtil appUtil;
+    @Mock
+    private PayloadDataManager payloadDataManager;
+    @Mock
+    private DeepLinkPersistence deepLinkPersistence;
+    @Mock
+    private SettingsDataManager settingsDataManager;
+    @Mock
+    private AccessState accessState;
+    @Mock
+    private Intent intent;
+    @Mock
+    private Bundle extras;
+    @Mock
+    private Wallet wallet;
+    @Mock
+    private NotificationTokenManager notificationTokenManager;
+    @Mock
+    private EnvironmentConfig environmentConfig;
+    @Mock
+    private FeatureFlag featureFlag;
+    @Mock
+    private CustodialWalletManager custodialWalletManager;
+    @Mock
+    private CurrencyPrefs currencyPrefs;
+    @Mock
+    private MetadataManager metadataManager;
+    @Mock
+    private Analytics analytics;
+    @Mock
+    private CrashLogger crashLogger;
+    @Mock
+    private Prerequisites prerequisites;
 
     @Before
     public void setUp() {
@@ -70,9 +105,21 @@ public class LauncherPresenterTest {
                 accessState,
                 settingsDataManager,
                 notificationTokenManager,
-                environmentConfig
+                environmentConfig,
+                featureFlag,
+                currencyPrefs,
+                custodialWalletManager,
+                analytics,
+                prerequisites,
+                crashLogger
         );
         subject.initView(launcherActivity);
+        Mockito.when(featureFlag.getEnabled()).thenReturn(Single.just(false));
+        Mockito.when(custodialWalletManager.isCurrencySupportedForSimpleBuy(any()))
+                .thenReturn(Single.just(true));
+        Mockito.when(currencyPrefs.getSelectedFiatCurrency()).thenReturn("USD");
+        Mockito.when(currencyPrefs.getDefaultFiatCurrency()).thenReturn("USD");
+        Mockito.when(settingsDataManager.updateFiatUnit(any())).thenReturn(Observable.just(mock(Settings.class)));
     }
 
     /**
@@ -83,21 +130,23 @@ public class LauncherPresenterTest {
         // Arrange
         when(launcherActivity.getPageIntent()).thenReturn(intent);
         when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
-        when(extras.getBoolean(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
+        when(extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(true);
+        when(extras.getBoolean(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(true);
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
         when(prefsUtil.isLoggedOut()).thenReturn(false);
         when(appUtil.isSane()).thenReturn(true);
         when(payloadDataManager.getWallet()).thenReturn(wallet);
+        when(prerequisites.initMetadataAndRelatedPrerequisites()).thenReturn(Completable.complete());
+        Settings mockSettings = mock(Settings.class);
+        when(prerequisites.initSettings(any(), any())).thenReturn(Observable.just(mockSettings));
         when(wallet.isUpgraded()).thenReturn(true);
         when(accessState.isLoggedIn()).thenReturn(true);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
         when(wallet.getGuid()).thenReturn(guid);
         when(wallet.getSharedKey()).thenReturn(sharedKey);
-        Settings mockSettings = mock(Settings.class);
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
         when(mockSettings.isEmailVerified()).thenReturn(true);
+        when(mockSettings.getCurrency()).thenReturn("USD");
         // Act
         subject.onViewReady();
         // Assert
@@ -113,8 +162,8 @@ public class LauncherPresenterTest {
         // Arrange
         when(launcherActivity.getPageIntent()).thenReturn(intent);
         when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
-        when(extras.getBoolean(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
+        when(extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(true);
+        when(extras.getBoolean(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(true);
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
         when(prefsUtil.isLoggedOut()).thenReturn(false);
         when(appUtil.isSane()).thenReturn(true);
@@ -123,9 +172,12 @@ public class LauncherPresenterTest {
         when(accessState.isLoggedIn()).thenReturn(true);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
+        when(prerequisites.initMetadataAndRelatedPrerequisites()).thenReturn(Completable.complete());
+        Settings mockSettings = mock(Settings.class);
+        when(prerequisites.initSettings(any(), any())).thenReturn(Observable.error(new Throwable()));
         when(wallet.getGuid()).thenReturn(guid);
         when(wallet.getSharedKey()).thenReturn(sharedKey);
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.error(new Throwable()));
+
         // Act
         subject.onViewReady();
         // Assert
@@ -145,8 +197,8 @@ public class LauncherPresenterTest {
         when(intent.getScheme()).thenReturn("bitcoin");
         when(intent.getData()).thenReturn(Uri.parse("bitcoin uri"));
         when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
-        when(extras.getBoolean(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
+        when(extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(true);
+        when(extras.getBoolean(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(true);
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
         when(prefsUtil.isLoggedOut()).thenReturn(false);
         when(appUtil.isSane()).thenReturn(true);
@@ -155,11 +207,13 @@ public class LauncherPresenterTest {
         when(accessState.isLoggedIn()).thenReturn(true);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
+        when(prerequisites.initMetadataAndRelatedPrerequisites()).thenReturn(Completable.complete());
+        Settings mockSettings = mock(Settings.class);
+        when(prerequisites.initSettings(any(), any())).thenReturn(Observable.just(mockSettings));
         when(wallet.getGuid()).thenReturn(guid);
         when(wallet.getSharedKey()).thenReturn(sharedKey);
-        Settings mockSettings = mock(Settings.class);
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
         when(mockSettings.isEmailVerified()).thenReturn(true);
+        when(mockSettings.getCurrency()).thenReturn("USD");
         // Act
         subject.onViewReady();
         // Assert
@@ -176,7 +230,7 @@ public class LauncherPresenterTest {
         // Arrange
         when(launcherActivity.getPageIntent()).thenReturn(intent);
         when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(false);
+        when(extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(false);
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
         when(prefsUtil.isLoggedOut()).thenReturn(false);
         when(appUtil.isSane()).thenReturn(true);
@@ -198,7 +252,7 @@ public class LauncherPresenterTest {
         // Arrange
         when(launcherActivity.getPageIntent()).thenReturn(intent);
         when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(false);
+        when(extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(false);
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
         when(prefsUtil.isLoggedOut()).thenReturn(false);
         when(appUtil.isSane()).thenReturn(true);
@@ -207,10 +261,11 @@ public class LauncherPresenterTest {
         when(accessState.isLoggedIn()).thenReturn(true);
         String guid = "GUID";
         String sharedKey = "SHARED_KEY";
+        when(prerequisites.initMetadataAndRelatedPrerequisites()).thenReturn(Completable.complete());
+        Settings mockSettings = mock(Settings.class);
+        when(prerequisites.initSettings(any(), any())).thenReturn(Observable.just(mockSettings));
         when(wallet.getGuid()).thenReturn(guid);
         when(wallet.getSharedKey()).thenReturn(sharedKey);
-        Settings mockSettings = mock(Settings.class);
-        when(settingsDataManager.initSettings(guid, sharedKey)).thenReturn(Observable.just(mockSettings));
         when(mockSettings.isEmailVerified()).thenReturn(true);
         when(mockSettings.getCurrency()).thenReturn("USD");
         // Act
@@ -228,7 +283,7 @@ public class LauncherPresenterTest {
         // Arrange
         when(launcherActivity.getPageIntent()).thenReturn(intent);
         when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(false);
+        when(extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(false);
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("");
         // Act
         subject.onViewReady();
@@ -244,7 +299,7 @@ public class LauncherPresenterTest {
         // Arrange
         when(launcherActivity.getPageIntent()).thenReturn(intent);
         when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(false);
+        when(extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(false);
         when(prefsUtil.getValue(eq(PersistentPrefs.KEY_WALLET_GUID), anyString())).thenReturn("1234567890");
         when(prefsUtil.getValue(eq(PersistentPrefs.KEY_PIN_IDENTIFIER), anyString())).thenReturn("");
         // Act
@@ -261,7 +316,7 @@ public class LauncherPresenterTest {
         // Arrange
         when(launcherActivity.getPageIntent()).thenReturn(intent);
         when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(false);
+        when(extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(false);
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
         when(appUtil.isSane()).thenReturn(false);
         // Act
@@ -279,8 +334,8 @@ public class LauncherPresenterTest {
         // Arrange
         when(launcherActivity.getPageIntent()).thenReturn(intent);
         when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
-        when(extras.getBoolean(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(true);
+        when(extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(true);
+        when(extras.getBoolean(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(true);
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
         when(prefsUtil.isLoggedOut()).thenReturn(false);
         when(appUtil.isSane()).thenReturn(true);
@@ -301,7 +356,7 @@ public class LauncherPresenterTest {
         // Arrange
         when(launcherActivity.getPageIntent()).thenReturn(intent);
         when(intent.getExtras()).thenReturn(extras);
-        when(extras.containsKey(LauncherPresenter.INTENT_EXTRA_VERIFIED)).thenReturn(false);
+        when(extras.containsKey(AppUtil.INTENT_EXTRA_VERIFIED)).thenReturn(false);
         when(prefsUtil.getValue(anyString(), anyString())).thenReturn("1234567890");
         when(prefsUtil.isLoggedOut()).thenReturn(true);
         // Act

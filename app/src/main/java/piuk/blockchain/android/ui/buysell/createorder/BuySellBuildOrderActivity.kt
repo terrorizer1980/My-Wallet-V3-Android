@@ -47,13 +47,13 @@ import piuk.blockchain.android.ui.buysell.payment.bank.accountoverview.BankAccou
 import piuk.blockchain.android.ui.buysell.payment.bank.addaccount.AddBankAccountActivity
 import piuk.blockchain.android.util.extensions.MemorySafeSubscription
 import piuk.blockchain.android.util.extensions.addToCompositeDisposable
-import piuk.blockchain.androidcore.data.currency.toSafeDouble
 import piuk.blockchain.androidcore.utils.extensions.toKotlinObject
 import piuk.blockchain.androidcore.utils.helperfunctions.InvalidatableLazy
 import piuk.blockchain.androidcore.utils.helperfunctions.consume
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpActivity
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import piuk.blockchain.androidcore.utils.extensions.toSafeDouble
 import piuk.blockchain.androidcoreui.ui.customviews.NumericKeyboardCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.disableSoftKeyboard
@@ -67,7 +67,6 @@ import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.helperfunctions.onItemSelectedListener
 import timber.log.Timber
 import java.text.DecimalFormatSymbols
-import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.activity_buy_sell_build_order.button_review_order as buttonReviewOrder
 import kotlinx.android.synthetic.main.activity_buy_sell_build_order.buysell_constraint_layout as constraintLayout
@@ -94,7 +93,7 @@ class BuySellBuildOrderActivity :
     }
 
     private val presenter: BuySellBuildOrderPresenter by inject()
-    override val locale: Locale = Locale.getDefault()
+
     override val compositeDisposable = CompositeDisposable()
     private val orderTypeInitializer =
         InvalidatableLazy { intent.getSerializableExtra(EXTRA_ORDER_TYPE) as OrderType }
@@ -329,7 +328,7 @@ class BuySellBuildOrderActivity :
         textViewLimits.setText(spannable, TextView.BufferType.SPANNABLE)
 
         textViewLimits.setOnClickListener {
-            val parsed = limit.toSafeDouble(locale)
+            val parsed = limit.toSafeDouble()
             if (view.orderType == OrderType.Sell) {
                 editTextReceive.requestFocus()
                 editTextReceive.setText("$parsed")

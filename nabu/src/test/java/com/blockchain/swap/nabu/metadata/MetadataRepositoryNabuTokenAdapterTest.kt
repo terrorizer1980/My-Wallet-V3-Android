@@ -26,7 +26,8 @@ class MetadataRepositoryNabuTokenAdapterTest {
     fun `before subscription, does not access the repository`() {
         val metadataRepository: MetadataRepository = mock()
         val createNabuToken: CreateNabuToken = mock()
-        MetadataRepositoryNabuTokenAdapter(metadataRepository, createNabuToken).fetchNabuToken()
+
+        MetadataRepositoryNabuTokenAdapter(metadataRepository, createNabuToken, mock()).fetchNabuToken()
         verifyZeroInteractions(metadataRepository)
         verifyZeroInteractions(createNabuToken)
     }
@@ -42,6 +43,7 @@ class MetadataRepositoryNabuTokenAdapterTest {
                     )
                 )
             ),
+            mock(),
             mock()
         ).fetchNabuToken()
             .test()
@@ -60,6 +62,7 @@ class MetadataRepositoryNabuTokenAdapterTest {
             givenMetadata(
                 Maybe.just(offlineToken)
             ),
+            mock(),
             mock()
         )
         // Act
@@ -86,7 +89,8 @@ class MetadataRepositoryNabuTokenAdapterTest {
             metadataRepository,
             mock {
                 on { createNabuOfflineToken() } `it returns` Single.just(offlineToken)
-            }
+            },
+            mock()
         )
         // Act
         val testObserver = nabuToken.fetchNabuToken().test()
@@ -118,7 +122,8 @@ class MetadataRepositoryNabuTokenAdapterTest {
             metadataRepository,
             mock {
                 on { createNabuOfflineToken() } `it returns` Single.just(offlineToken)
-            }
+            },
+            mock()
         )
         // Act
         val testObserver = nabuToken.fetchNabuToken().test()
@@ -146,7 +151,8 @@ class MetadataRepositoryNabuTokenAdapterTest {
             ).expectSave(offlineToken),
             mock {
                 on { createNabuOfflineToken() } `it returns` Single.just(metadata)
-            }
+            },
+            mock()
         )
         // Act
         val testObserver = nabuToken.fetchNabuToken().test()
@@ -162,7 +168,8 @@ class MetadataRepositoryNabuTokenAdapterTest {
         )
         val nabuToken = MetadataRepositoryNabuTokenAdapter(
             metadataRepository,
-            givenCantCreate()
+            givenCantCreate(),
+            mock()
         )
         nabuToken.fetchNabuToken().test()
             .assertNotComplete()
@@ -190,6 +197,7 @@ class MetadataRepositoryNabuTokenAdapterTest {
         )
         val nabuToken = MetadataRepositoryNabuTokenAdapter(
             metadataRepository,
+            mock(),
             mock()
         )
         nabuToken.fetchNabuToken().test()

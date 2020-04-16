@@ -70,6 +70,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             CampaignType.BuySell -> R.string.buy_sell_splash_title
             CampaignType.Swap -> R.string.kyc_splash_title
             CampaignType.Sunriver,
+            CampaignType.SimpleBuy,
             CampaignType.Blockstack,
             CampaignType.Resubmission -> R.string.sunriver_splash_title
         }
@@ -88,11 +89,11 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
 
     private val disposable = CompositeDisposable()
 
-    override fun renderTiersList(tiers: TiersJson, hasLargeSunriverBacklog: Boolean) {
+    override fun renderTiersList(tiers: TiersJson) {
         // Logic is now limited to 2 tiers, future refactor to traverse tiersList
-        renderTier1(tiers.tiers[1], hasLargeSunriverBacklog)
+        renderTier1(tiers.tiers[1])
 
-        renderTier2(tiers.tiers[2], hasLargeSunriverBacklog)
+        renderTier2(tiers.tiers[2])
 
         reportState(tiers.tiers[1].state, tiers.tiers[2].state)
     }
@@ -109,7 +110,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         }
     }
 
-    private fun renderTier(tier: TierJson, layoutElements: TierLayoutElements, hasLargeSunriverBacklog: Boolean) {
+    private fun renderTier(tier: TierJson, layoutElements: TierLayoutElements) {
         when (tier.state) {
             KycTierState.Rejected -> {
                 layoutElements.icon.setImageDrawable(R.drawable.vector_tier_locked)
@@ -133,9 +134,6 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
                 text_header_tiers_line2.text = getString(R.string.tier_x_in_review, getLevelForTier(tier))
                 button_learn_more.gone()
                 text_contact_support.gone()
-                if (hasLargeSunriverBacklog) {
-                    textViewEligible.text = getString(R.string.gold_level_under_review_sunriver_large_backlog)
-                }
             }
             KycTierState.Verified -> {
                 layoutElements.icon.setImageDrawable(R.drawable.vector_tier_verified)
@@ -158,7 +156,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         layoutElements.textPeriodicLimit.text = getString(getLimitString(tier))
     }
 
-    private fun renderTier1(tier: TierJson, hasLargeSunriverBacklog: Boolean) {
+    private fun renderTier1(tier: TierJson) {
         val layoutElements = TierLayoutElements(
             cardTier = card_tier_1,
             icon = icon_tier1_state,
@@ -169,10 +167,10 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             textTierRequires = text_tier1_requires
         )
 
-        renderTier(tier, layoutElements, hasLargeSunriverBacklog)
+        renderTier(tier, layoutElements)
     }
 
-    private fun renderTier2(tier: TierJson, hasLargeSunriverBacklog: Boolean) {
+    private fun renderTier2(tier: TierJson) {
         val layoutElements = TierLayoutElements(
             cardTier = card_tier_2,
             icon = icon_tier2_state,
@@ -183,7 +181,7 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
             textTierRequires = text_tier2_requires
         )
 
-        renderTier(tier, layoutElements, hasLargeSunriverBacklog)
+        renderTier(tier, layoutElements)
     }
 
     private fun getLevelForTier(tier: TierJson): String =
@@ -202,8 +200,10 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
     private fun getLimitString(tier: TierJson): Int {
         val limits = tier.limits
         return when {
-            limits.annual != null -> R.string.annual_swap_limit
-            limits.daily != null -> R.string.daily_swap_limit
+            limits.annual != null -> if (tier.index == SILVER_TIER_INDEX)
+                R.string.annual_swap_limit else R.string.annual_swap_and_buy_limit
+            limits.daily != null -> if (tier.index == SILVER_TIER_INDEX)
+                R.string.daily_swap_limit else R.string.daily_swap_and_buy_limit
             else -> 0
         }
     }
@@ -281,4 +281,8 @@ class KycTierSplashFragment : BaseFragment<KycTierSplashView, KycTierSplashPrese
         val textTierState: TextView,
         val textTierRequires: TextView
     )
+
+    companion object {
+        private const val SILVER_TIER_INDEX = 1
+    }
 }

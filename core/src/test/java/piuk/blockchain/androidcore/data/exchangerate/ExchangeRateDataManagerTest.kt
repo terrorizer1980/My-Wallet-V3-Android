@@ -3,6 +3,7 @@ package piuk.blockchain.androidcore.data.exchangerate
 import com.blockchain.testutils.bitcoin
 import com.blockchain.testutils.bitcoinCash
 import com.blockchain.testutils.ether
+import com.blockchain.testutils.gbp
 import com.blockchain.testutils.lumens
 import com.blockchain.testutils.rxInit
 import com.blockchain.testutils.usd
@@ -19,7 +20,6 @@ import piuk.blockchain.androidcore.data.rxjava.RxBus
 import java.math.BigDecimal
 import java.util.Locale
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class ExchangeRateDataManagerTest {
 
@@ -37,60 +37,6 @@ class ExchangeRateDataManagerTest {
         subject = ExchangeRateDataManager(
             exchangeRateDataStore,
             rxBus
-        )
-    }
-
-    @Test
-    fun getFiatFromBtc() {
-
-        // Arrange
-        val exchangeRate = 5000.0
-        val satoshis = 10L
-        whenever(exchangeRateDataStore.getLastPrice(CryptoCurrency.BTC, "USD")).thenReturn(exchangeRate)
-
-        // Act
-        val result = subject.getFiatFromBtc(BigDecimal.valueOf(satoshis), "USD")
-
-        // Assert
-        assertEquals(
-            BigDecimal.valueOf(exchangeRate).multiply(BigDecimal.valueOf(satoshis)),
-            result
-        )
-    }
-
-    @Test
-    fun getFiatFromEth() {
-
-        // Arrange
-        val exchangeRate = 5000.0
-        val satoshis = 10L
-        whenever(exchangeRateDataStore.getLastPrice(CryptoCurrency.ETHER, "USD")).thenReturn(exchangeRate)
-
-        // Act
-        val result = subject.getFiatFromEth(BigDecimal.valueOf(satoshis), "USD")
-
-        // Assert
-        assertEquals(
-            BigDecimal.valueOf(exchangeRate).multiply(BigDecimal.valueOf(satoshis)),
-            result
-        )
-    }
-
-    @Test
-    fun getFiatFromBch() {
-
-        // Arrange
-        val exchangeRate = 5000.0
-        val satoshis = 10L
-        whenever(exchangeRateDataStore.getLastPrice(CryptoCurrency.BCH, "USD")).thenReturn(exchangeRate)
-
-        // Act
-        val result = subject.getFiatFromBch(BigDecimal.valueOf(satoshis), "USD")
-
-        // Assert
-        assertEquals(
-            BigDecimal.valueOf(exchangeRate).multiply(BigDecimal.valueOf(satoshis)),
-            result
         )
     }
 
@@ -170,7 +116,7 @@ class ExchangeRateDataManagerTest {
     fun `toCrypto yields full precision of the currency - ETH`() {
         givenExchangeRate(CryptoCurrency.ETHER, "USD", 5610.83)
         1000.82.usd().toCrypto(subject, CryptoCurrency.ETHER) `should equal`
-            "0.178372896701557524".parseBigDecimal(Locale.US).ether()
+                "0.178372896701557524".parseBigDecimal(Locale.US).ether()
     }
 
     @Test
@@ -185,12 +131,27 @@ class ExchangeRateDataManagerTest {
         5.usd().toCrypto(subject, CryptoCurrency.BTC) `should equal` 0.55555556.bitcoin()
     }
 
+    @Test
+    fun `usd to gbp`() {
+        givenExchangeRateForFiat(sourceCurrency = "USD", targetCurrency = "GBP", exchangeRate = 1.333)
+        5.usd().toFiatWithCurrency(subject, "GBP") `should equal` 6.66.gbp()
+    }
+
     private fun givenExchangeRate(
         cryptoCurrency: CryptoCurrency,
         currencyName: String,
         exchangeRate: Double
     ) {
         whenever(exchangeRateDataStore.getLastPrice(cryptoCurrency, currencyName)).thenReturn(exchangeRate)
+    }
+
+    private fun givenExchangeRateForFiat(
+        sourceCurrency: String,
+        targetCurrency: String,
+        exchangeRate: Double
+    ) {
+        whenever(exchangeRateDataStore.getFiatLastPrice(targetFiat = targetCurrency,
+            sourceFiat = sourceCurrency)).thenReturn(exchangeRate)
     }
 
     private fun givenHistoricExchangeRate(

@@ -7,10 +7,9 @@ import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BackupPhraseAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BitpayAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.BuyBitcoinAnnouncement
-import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForBlockstackMiniAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.IntroTourAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForAirdropsAnnouncement
-import piuk.blockchain.android.ui.dashboard.announcements.rule.KycForBlockstackAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.StxCompleteAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycIncompleteAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycMoreInfoAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.KycResubmissionAnnouncement
@@ -18,6 +17,8 @@ import piuk.blockchain.android.ui.dashboard.announcements.rule.PaxAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.PitAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.RegisterFingerprintsAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.RegisteredForAirdropMiniAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.SimpleBuyPendingBuyAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.SimpleBuyFinishSignupAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.SwapAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.TransferBitcoinAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.TwoFAAnnouncement
@@ -49,7 +50,8 @@ val dashboardAnnouncementsModule = applicationContext {
                 nabuToken = get(),
                 settings = get(),
                 nabu = get(),
-                tierService = get()
+                tierService = get(),
+                sbStateFactory = get()
             )
         }
 
@@ -83,8 +85,7 @@ val dashboardAnnouncementsModule = applicationContext {
                 pitLink = get(),
                 dismissRecorder = get(),
                 featureFlag = get("ff_pit_announcement"),
-                analytics = get(),
-                abTestExperiment = get()
+                analytics = get()
             )
         }.bind(AnnouncementRule::class)
 
@@ -145,7 +146,8 @@ val dashboardAnnouncementsModule = applicationContext {
             BuyBitcoinAnnouncement(
                 dismissRecorder = get(),
                 walletStatus = get(),
-                buyDataManager = get()
+                buyDataManager = get(),
+                simpleBuyAvailability = get()
             )
         }.bind(AnnouncementRule::class)
 
@@ -171,23 +173,31 @@ val dashboardAnnouncementsModule = applicationContext {
         }.bind(AnnouncementRule::class)
 
         factory {
-            KycForBlockstackMiniAnnouncement(
-                dismissRecorder = get(),
-                queries = get(),
-                kycForBlockstackAnnouncement = get("kyc_blockstack_announcement")
-            )
-        }.bind(AnnouncementRule::class)
-
-        factory {
             RegisteredForAirdropMiniAnnouncement(
                 dismissRecorder = get(),
                 queries = get()
             )
         }.bind(AnnouncementRule::class)
 
-        factory("kyc_blockstack_announcement") {
-            KycForBlockstackAnnouncement(
+        factory {
+            StxCompleteAnnouncement(
                 dismissRecorder = get(),
+                queries = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            SimpleBuyFinishSignupAnnouncement(
+                dismissRecorder = get(),
+                analytics = get(),
+                queries = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            SimpleBuyPendingBuyAnnouncement(
+                dismissRecorder = get(),
+                analytics = get(),
                 queries = get()
             )
         }.bind(AnnouncementRule::class)

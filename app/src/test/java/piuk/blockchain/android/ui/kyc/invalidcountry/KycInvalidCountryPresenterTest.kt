@@ -3,7 +3,6 @@ package piuk.blockchain.android.ui.kyc.invalidcountry
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
-import com.blockchain.swap.nabu.models.tokenresponse.mapToMetadata
 import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
@@ -88,7 +87,7 @@ class KycInvalidCountryPresenterTest {
         val offlineToken = NabuOfflineTokenResponse("", "")
         whenever(nabuDataManager.getAuthToken(jwt))
             .thenReturn(Single.just(offlineToken))
-        whenever(metadataManager.saveToMetadata(offlineToken.mapToMetadata()))
+        whenever(metadataManager.saveToMetadata(any(), any()))
             .thenReturn(Completable.complete())
     }
 

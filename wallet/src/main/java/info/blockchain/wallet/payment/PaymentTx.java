@@ -307,7 +307,7 @@ class PaymentTx {
                                                            Transaction transaction,
                                                            String lockSecret,
                                                            String apiCode) {
-        String currencyCode = cryptoCurrency.getSymbol().toLowerCase();
+        String currencyCode = cryptoCurrency.getNetworkTicker().toLowerCase();
 
         return new PushTx(
                 BlockchainFramework.getRetrofitExplorerInstance(),

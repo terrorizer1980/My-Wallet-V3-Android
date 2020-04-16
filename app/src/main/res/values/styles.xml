@@ -1,5 +1,38 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Common styles across all res qualifiers resides here, anything specific can inherit from this -->
+        <item name="colorPrimary">@color/primary_navy_medium</item>
+        <item name="colorPrimaryDark">@color/primary_navy_dark</item>
+        <item name="colorAccent">@color/primary_blue_accent</item>
+
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+
+        <item name="android:windowBackground">@color/white</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">@color/primary_navy_medium</item>
+
+        <item name="colorControlActivated">@color/primary_blue_accent</item>
+        <item name="colorControlHighlight">@color/primary_blue_accent</item>
+    </style>
+
+    <style name="AppTheme" parent="BaseTheme">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="toolbarStyle">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialog</item>
+    </style>
+
+    <style name="AppTheme.MainActivity">
+        <!-- This style allows the navigation drawer to be visible under the status bar -->
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
     <style name="NoDisplay" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/primary_navy_medium</item>
         <item name="colorPrimaryDark">@color/primary_navy_medium</item>
@@ -10,6 +43,8 @@
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowNoDisplay">true</item>
+
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialog</item>
     </style>
 
     <style name="StackedAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
@@ -30,13 +65,17 @@
 
     <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="bottomSheetStyle">@style/BottomSheetModalStyle</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:colorBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:backgroundDimAmount">0.5</item>
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>
+    </style>
+
+    <style name="BottomSheetModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bkgd_dialog_rounder_corners</item>
     </style>
 
     <style name="PasswordChangeDialogEditText">
@@ -288,7 +327,7 @@
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_marginTop">16dp</item>
-        <item name="background">@color/primary_grey_light</item>
+        <item name="android:background">@color/primary_grey_light</item>
     </style>
 
     <style name="BuySellAwaitingTransferTitle">
@@ -377,6 +416,14 @@
         <item name="fontFamily">Montserrat</item>
         <item name="android:textColor">#FF3B3A3E</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Separator">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginStart">@dimen/standard_margin</item>
+        <item name="android:layout_marginEnd">@dimen/standard_margin</item>
+        <item name="android:background">@color/grey_000</item>
     </style>
 
 </resources>

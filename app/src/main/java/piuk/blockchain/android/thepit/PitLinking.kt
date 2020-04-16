@@ -47,7 +47,9 @@ class PitLinkingImpl(
 
     private val disposables = CompositeDisposable()
 
-    private fun publish(state: PitLinkingState) { internalState.onNext(state) }
+    private fun publish(state: PitLinkingState) {
+        internalState.onNext(state)
+    }
 
     private val internalState = BehaviorSubject.create<PitLinkingState>()
     private val refreshEvents = PublishSubject.create<Unit>()
@@ -91,21 +93,21 @@ class PitLinkingImpl(
             nabuToken.fetchNabuToken(),
             fetchAddressMap()
         )
-        .subscribeOn(Schedulers.computation())
-        .flatMapCompletable { nabu.shareWalletAddressesWithThePit(it.first, it.second) }
-        .subscribeBy(onError = { Timber.e("Unable to send local addresses to the pit: $it") })
+            .subscribeOn(Schedulers.computation())
+            .flatMapCompletable { nabu.shareWalletAddressesWithThePit(it.first, it.second) }
+            .subscribeBy(onError = { Timber.e("Unable to send local addresses to the pit: $it") })
     }
 
     private fun fetchAddressMap(): Single<HashMap<String, String>> =
         Single.merge(
-                listOf(
-                    getBtcReceiveAddress(),
-                    getBchReceiveAddress(),
-                    getEthReceiveAddress(),
-                    getXlmReceiveAddress(),
-                    getPaxReceiveAddress()
-                )
+            listOf(
+                getBtcReceiveAddress(),
+                getBchReceiveAddress(),
+                getEthReceiveAddress(),
+                getXlmReceiveAddress(),
+                getPaxReceiveAddress()
             )
+        )
             .filter { it.isNotEmpty() }
             .collect({ HashMap<String, String>() }, { m, i -> m[i.first] = i.second })
 
@@ -118,30 +120,30 @@ class PitLinkingImpl(
                 1
             )
         }
-        .map { Pair(CryptoCurrency.BTC.symbol, it) }
-        .onErrorReturn { Pair("", "") }
+            .map { Pair(CryptoCurrency.BTC.networkTicker, it) }
+            .onErrorReturn { Pair("", "") }
     }
 
     private fun getBchReceiveAddress(): Single<Pair<String, String>> {
         val pos = bchDataManager.getDefaultAccountPosition()
-        return bchDataManager.getNextReceiveAddress(pos)
-            .map { Pair(CryptoCurrency.BCH.symbol, it) }
+        return bchDataManager.getNextCashReceiveAddress(pos)
+            .map { Pair(CryptoCurrency.BCH.networkTicker, it) }
             .singleOrError()
             .onErrorReturn { Pair("", "") }
     }
 
     private fun getEthReceiveAddress(): Single<Pair<String, String>> =
         ethDataManager.getDefaultEthAddress()
-            .map { Pair(CryptoCurrency.ETHER.symbol, it) }
+            .map { Pair(CryptoCurrency.ETHER.networkTicker, it) }
             .onErrorReturn { Pair("", "") }
 
     private fun getXlmReceiveAddress(): Single<Pair<String, String>> =
         xlmDataManager.defaultAccount()
-            .map { Pair(CryptoCurrency.XLM.symbol, it.accountId) }
+            .map { Pair(CryptoCurrency.XLM.networkTicker, it.accountId) }
             .onErrorReturn { Pair("", "") }
 
     private fun getPaxReceiveAddress(): Single<Pair<String, String>> =
         ethDataManager.getDefaultEthAddress()
-            .map { Pair(CryptoCurrency.PAX.symbol, it) }
+            .map { Pair(CryptoCurrency.PAX.networkTicker, it) }
             .onErrorReturn { Pair("", "") }
 }

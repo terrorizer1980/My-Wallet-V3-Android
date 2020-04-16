@@ -42,7 +42,7 @@ internal class KycStarterBuySell : StartKycForBuySell {
 
 internal class KycStarter : StartKyc {
     override fun startKycActivity(context: Any) {
-        KycNavHostActivity.start(context as Context, CampaignType.Swap)
+        KycNavHostActivity.start(context as Context, CampaignType.Swap, true)
     }
 }
 
@@ -69,6 +69,7 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
             CampaignType.BuySell -> R.string.buy_sell_splash_title
             CampaignType.Swap -> R.string.kyc_splash_title
             CampaignType.Sunriver,
+            CampaignType.SimpleBuy,
             CampaignType.Blockstack,
             CampaignType.Resubmission -> R.string.sunriver_splash_title
         }
@@ -200,7 +201,7 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
 
     companion object {
 
-        const val RESULT_KYC_STX_COMPLETE = 5
+//        const val RESULT_KYC_STX_COMPLETE = 5
 
         private const val EXTRA_CAMPAIGN_TYPE = "piuk.blockchain.android.EXTRA_CAMPAIGN_TYPE"
         const val EXTRA_SHOW_TIERS_LIMITS_SPLASH = "piuk.blockchain.android.EXTRA_SHOW_TIERS_LIMITS_SPLASH"
@@ -212,8 +213,8 @@ class KycNavHostActivity : BaseMvpActivity<KycNavHostView, KycNavHostPresenter>(
         }
 
         @JvmStatic
-        fun start(context: Context, campaignType: CampaignType, isFromSettingsLimits: Boolean) {
-            intentArgs(context, campaignType, isFromSettingsLimits)
+        fun start(context: Context, campaignType: CampaignType, showLimits: Boolean) {
+            intentArgs(context, campaignType, showLimits)
                 .run { context.startActivity(this) }
         }
 

@@ -26,7 +26,6 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.tasks.Task
-import java.util.Locale
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -58,10 +57,12 @@ import piuk.blockchain.android.ui.home.MobileNoticeDialogFragment
 import piuk.blockchain.android.ui.start.PasswordRequiredActivity
 import piuk.blockchain.android.util.AppUtil
 
-internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(), PinEntryView {
+internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(),
+    PinEntryView {
 
     private val pinEntryPresenter: PinEntryPresenter by inject()
     private val environmentConfig: EnvironmentConfig by inject()
+    private val appUtil: AppUtil by inject()
 
     private val _pinBoxList = mutableListOf<ImageView>()
     override val pinBoxList: List<ImageView>
@@ -80,6 +81,10 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
         get() = presenter.isForValidatingPinForResult
 
     private val compositeDisposable = CompositeDisposable()
+
+    private val isAfterWalletCreation: Boolean by lazy {
+        arguments?.getBoolean(KEY_IS_AFTER_WALLET_CREATION, false) ?: false
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -260,7 +265,7 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
         }
     }
 
-    fun restartApp() {
+    private fun restartApp() {
         val appUtil: AppUtil = get()
         appUtil.restartApp(LauncherActivity::class.java)
     }
@@ -358,21 +363,31 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
         }
     }
 
+    private fun isNotFinishing(): Boolean {
+        val a = activity
+        return (a != null && !a.isFinishing)
+    }
+
     override fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
-        ToastCustom.makeText(context, getString(message), ToastCustom.LENGTH_LONG, toastType)
+        if (isNotFinishing()) {
+            ToastCustom.makeText(context, getString(message), ToastCustom.LENGTH_LONG, toastType)
+        }
     }
 
     override fun showProgressDialog(@StringRes messageId: Int, suffix: String?) {
         dismissProgressDialog()
-        materialProgressDialog = MaterialProgressDialog(requireContext())
-        materialProgressDialog!!.setCancelable(false)
-        if (suffix != null) {
-            materialProgressDialog!!.setMessage(getString(messageId) + suffix)
-        } else {
-            materialProgressDialog!!.setMessage(getString(messageId))
-        }
+        materialProgressDialog = MaterialProgressDialog(requireContext()).apply {
+            setCancelable(false)
+            if (suffix != null) {
+                setMessage(getString(messageId) + suffix)
+            } else {
+                setMessage(getString(messageId))
+            }
 
-        if (activity != null && !activity!!.isFinishing) materialProgressDialog!!.show()
+            if (isNotFinishing()) {
+                show()
+            }
+        }
     }
 
     override fun dismissProgressDialog() {
@@ -560,8 +575,9 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
         }
     }
 
-    override val locale: Locale
-        get() = Locale.getDefault()
+    override fun restartAppWithVerifiedPin() {
+        appUtil.restartAppWithVerifiedPin(LauncherActivity::class.java, isAfterWalletCreation)
+    }
 
     override fun createPresenter(): PinEntryPresenter? {
         return pinEntryPresenter
@@ -577,11 +593,13 @@ internal class PinEntryFragment : BaseFragment<PinEntryView, PinEntryPresenter>(
 
     companion object {
         private const val KEY_SHOW_SWIPE_HINT = "show_swipe_hint"
+        private const val KEY_IS_AFTER_WALLET_CREATION = "is_after_wallet_creation"
         private val HANDLER = Handler()
 
-        fun newInstance(showSwipeHint: Boolean): PinEntryFragment {
+        fun newInstance(showSwipeHint: Boolean, isAfterCreateWallet: Boolean): PinEntryFragment {
             val args = Bundle()
             args.putBoolean(KEY_SHOW_SWIPE_HINT, showSwipeHint)
+            args.putBoolean(KEY_IS_AFTER_WALLET_CREATION, isAfterCreateWallet)
             val fragment = PinEntryFragment()
             fragment.arguments = args
             return fragment

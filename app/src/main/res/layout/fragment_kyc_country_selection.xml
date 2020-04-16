@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/text_view_country_selection_title"
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/kyc_country_selection_header"
@@ -15,17 +15,17 @@
         style="@style/KycFlowTitle" />
 
     <TextView
-        android:id="@+id/text_view_country_selection_message"
+        android:id="@+id/message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/kyc_country_selection_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_country_selection_title"
+        app:layout_constraintTop_toBottomOf="@+id/title"
         style="@style/KycFlowMessage" />
 
     <androidx.appcompat.widget.SearchView
-        android:id="@+id/search_view_kyc"
+        android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -33,17 +33,17 @@
         app:iconifiedByDefault="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_country_selection_message"
+        app:layout_constraintTop_toBottomOf="@+id/message"
         app:queryHint="@string/kyc_country_selection_search_hint" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_country_selection"
+        android:id="@+id/country_selection"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_view_kyc" />
+        app:layout_constraintTop_toBottomOf="@+id/search_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

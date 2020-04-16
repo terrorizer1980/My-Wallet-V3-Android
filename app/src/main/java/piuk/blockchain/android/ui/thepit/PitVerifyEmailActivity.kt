@@ -18,7 +18,7 @@ class PitVerifyEmailActivity : BaseMvpActivity<PitVerifyEmailView, PitVerifyEmai
         setContentView(R.layout.activity_pit_verify_email_layout)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar_general)
-        setupToolbar(toolbar, R.string.pit_verify_email_title)
+        setupToolbar(toolbar, R.string.the_exchange_verify_email_title)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
         val email = intent.getStringExtra(ARGUMENT_EMAIL) ?: ""

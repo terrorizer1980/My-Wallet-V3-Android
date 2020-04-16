@@ -97,7 +97,7 @@ internal class XlmMetaDataInitializer(
                 accounts = listOf(
                     XlmAccount(
                         publicKey = derived.accountId,
-                        label = defaultLabels[CryptoCurrency.XLM],
+                        label = defaultLabels.getDefaultNonCustodialWalletLabel(CryptoCurrency.XLM),
                         archived = false
                     )
                 ),

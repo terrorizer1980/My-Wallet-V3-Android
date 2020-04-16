@@ -34,7 +34,7 @@ class ChartsDataManagerTest : RxTest() {
         val fiat = "USD"
         whenever(
             historicPriceApi.getHistoricPriceSeries(
-                btc.symbol,
+                btc.networkTicker,
                 fiat,
                 ChartsDataManager.FIRST_BTC_ENTRY_TIME,
                 TimeInterval.FIVE_DAYS.intervalSeconds
@@ -48,7 +48,7 @@ class ChartsDataManagerTest : RxTest() {
         testObserver.assertComplete()
         testObserver.assertNoErrors()
         verify(historicPriceApi).getHistoricPriceSeries(
-            btc.symbol,
+            btc.networkTicker,
             fiat,
             ChartsDataManager.FIRST_BTC_ENTRY_TIME,
             TimeInterval.FIVE_DAYS.intervalSeconds
@@ -63,7 +63,7 @@ class ChartsDataManagerTest : RxTest() {
         val fiat = "USD"
         whenever(
             historicPriceApi.getHistoricPriceSeries(
-                eth.symbol,
+                eth.networkTicker,
                 fiat,
                 ChartsDataManager.FIRST_ETH_ENTRY_TIME,
                 TimeInterval.FIVE_DAYS.intervalSeconds
@@ -77,7 +77,7 @@ class ChartsDataManagerTest : RxTest() {
         testObserver.assertComplete()
         testObserver.assertNoErrors()
         verify(historicPriceApi).getHistoricPriceSeries(
-            eth.symbol,
+            eth.networkTicker,
             fiat,
             ChartsDataManager.FIRST_ETH_ENTRY_TIME,
             TimeInterval.FIVE_DAYS.intervalSeconds
@@ -92,7 +92,7 @@ class ChartsDataManagerTest : RxTest() {
         val fiat = "USD"
         whenever(
             historicPriceApi.getHistoricPriceSeries(
-                eq(btc.symbol),
+                eq(btc.networkTicker),
                 eq(fiat),
                 any(),
                 eq(TimeInterval.ONE_DAY.intervalSeconds)
@@ -106,7 +106,7 @@ class ChartsDataManagerTest : RxTest() {
         testObserver.assertComplete()
         testObserver.assertNoErrors()
         verify(historicPriceApi).getHistoricPriceSeries(
-            eq(btc.symbol),
+            eq(btc.networkTicker),
             eq(fiat),
             any(),
             eq(TimeInterval.ONE_DAY.intervalSeconds)
@@ -121,7 +121,7 @@ class ChartsDataManagerTest : RxTest() {
         val fiat = "USD"
         whenever(
             historicPriceApi.getHistoricPriceSeries(
-                eq(btc.symbol),
+                eq(btc.networkTicker),
                 eq(fiat),
                 any(),
                 eq(TimeInterval.TWO_HOURS.intervalSeconds)
@@ -135,7 +135,7 @@ class ChartsDataManagerTest : RxTest() {
         testObserver.assertComplete()
         testObserver.assertNoErrors()
         verify(historicPriceApi).getHistoricPriceSeries(
-            eq(btc.symbol),
+            eq(btc.networkTicker),
             eq(fiat),
             any(),
             eq(TimeInterval.TWO_HOURS.intervalSeconds)
@@ -150,7 +150,7 @@ class ChartsDataManagerTest : RxTest() {
         val fiat = "USD"
         whenever(
             historicPriceApi.getHistoricPriceSeries(
-                eq(btc.symbol),
+                eq(btc.networkTicker),
                 eq(fiat),
                 any(),
                 eq(TimeInterval.ONE_HOUR.intervalSeconds)
@@ -164,7 +164,7 @@ class ChartsDataManagerTest : RxTest() {
         testObserver.assertComplete()
         testObserver.assertNoErrors()
         verify(historicPriceApi).getHistoricPriceSeries(
-            eq(btc.symbol),
+            eq(btc.networkTicker),
             eq(fiat),
             any(),
             eq(TimeInterval.ONE_HOUR.intervalSeconds)
@@ -179,7 +179,7 @@ class ChartsDataManagerTest : RxTest() {
         val fiat = "USD"
         whenever(
             historicPriceApi.getHistoricPriceSeries(
-                eq(btc.symbol),
+                eq(btc.networkTicker),
                 eq(fiat),
                 any(),
                 eq(TimeInterval.FIFTEEN_MINUTES.intervalSeconds)
@@ -193,7 +193,7 @@ class ChartsDataManagerTest : RxTest() {
         testObserver.assertComplete()
         testObserver.assertNoErrors()
         verify(historicPriceApi).getHistoricPriceSeries(
-            eq(btc.symbol),
+            eq(btc.networkTicker),
             eq(fiat),
             any(),
             eq(TimeInterval.FIFTEEN_MINUTES.intervalSeconds)

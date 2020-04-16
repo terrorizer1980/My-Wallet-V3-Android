@@ -21,6 +21,7 @@ import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.fragment_swipe_to_receive.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.util.assetName
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -102,9 +103,9 @@ class SwipeToReceiveFragment : BaseFragment<SwipeToReceiveView, SwipeToReceivePr
         textview_account.text = accountName
     }
 
-    override fun displayCoinType(coinName: String) {
-        val requestString = context?.resources?.getString(R.string.swipe_to_receive_request, coinName) ?: ""
-
+    override fun displayCoinType(cryptoCurrency: CryptoCurrency) {
+        val assetName = resources.getString(cryptoCurrency.assetName())
+        val requestString = resources.getString(R.string.swipe_to_receive_request, assetName)
         textview_request_currency.text = requestString
         textview_request_currency.contentDescription = requestString
     }

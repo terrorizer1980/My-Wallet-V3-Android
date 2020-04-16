@@ -14,6 +14,14 @@ import org.bitcoinj.crypto.HDKeyDerivation
 
 object MetadataUtil {
 
+    @Throws(UnsupportedEncodingException::class, NoSuchAlgorithmException::class)
+    fun deriveMetadataNode(node: DeterministicKey): DeterministicKey {
+        return HDKeyDerivation.deriveChildKey(
+            node,
+            getPurpose("metadata") or ChildNumber.HARDENED_BIT
+        )
+    }
+
     @Throws(IOException::class)
     fun message(payload: ByteArray, prevMagicHash: ByteArray?): ByteArray {
         return if (prevMagicHash == null)
@@ -40,17 +48,8 @@ object MetadataUtil {
         return Sha256Hash.hashTwice(messageBytes)
     }
 
-    @Throws(UnsupportedEncodingException::class, NoSuchAlgorithmException::class)
-    fun deriveMetadataNode(node: DeterministicKey): DeterministicKey {
-        return HDKeyDerivation.deriveChildKey(
-            node,
-            getPurpose("metadata") or ChildNumber.HARDENED_BIT
-        )
-    }
-
-    @Throws(UnsupportedEncodingException::class, NoSuchAlgorithmException::class)
-    fun deriveSharedMetadataNode(node: DeterministicKey): DeterministicKey {
-        return HDKeyDerivation.deriveChildKey(node, getPurpose("mdid") or ChildNumber.HARDENED_BIT)
+    fun deriveHardened(node: DeterministicKey, type: Int): DeterministicKey {
+        return HDKeyDerivation.deriveChildKey(node, type or ChildNumber.HARDENED_BIT)
     }
 
     /**
@@ -67,9 +66,5 @@ object MetadataUtil {
         val slice = Arrays.copyOfRange(hash, 0, 4)
 
         return (Utils.readUint32BE(slice, 0) and 0x7FFFFFFF).toInt() // 510742
-    }
-
-    fun deriveHardened(node: DeterministicKey, type: Int): DeterministicKey {
-        return HDKeyDerivation.deriveChildKey(node, type or ChildNumber.HARDENED_BIT)
     }
 }

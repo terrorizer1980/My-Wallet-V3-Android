@@ -3,15 +3,13 @@ package piuk.blockchain.android.ui.transactions
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
+import piuk.blockchain.android.ui.transactions.mapping.TransactionDetailModel
 import piuk.blockchain.androidcoreui.ui.base.View
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 
 interface TransactionDetailView : View {
-
-    fun txHashDetailLookup(): String?
-
-    fun positionDetailLookup(): Int
 
     fun pageFinish()
 
@@ -19,7 +17,7 @@ interface TransactionDetailView : View {
 
     fun updateFeeFieldVisibility(isVisible: Boolean)
 
-    fun setTransactionValue(value: String?)
+    fun setTransactionValue(value: CryptoValue)
 
     fun setTransactionValueFiat(fiat: String?)
 
@@ -27,11 +25,11 @@ interface TransactionDetailView : View {
 
     fun setFromAddress(addresses: List<TransactionDetailModel>)
 
-    fun setStatus(cryptoCurrency: CryptoCurrency, status: String?, hash: String?)
+    fun setStatus(cryptoCurrency: CryptoCurrency, status: String?, hash: String)
 
     fun setFee(fee: String?)
 
-    fun setDate(date: String?)
+    fun setDate(datetimeMillis: Long)
 
     fun setDescription(description: String?)
 
@@ -46,6 +44,4 @@ interface TransactionDetailView : View {
     fun onDataLoaded()
 
     fun showTransactionAsPaid()
-
-    fun hideDescriptionField()
 }

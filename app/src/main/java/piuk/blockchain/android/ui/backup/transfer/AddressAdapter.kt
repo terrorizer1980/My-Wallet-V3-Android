@@ -10,21 +10,25 @@ import kotlinx.android.synthetic.main.spinner_item.view.*
 
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.account.ItemAccount
+import piuk.blockchain.android.ui.account.formatDisplayBalance
+import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 
 class AddressAdapter(
     context: Context,
     textViewResourceId: Int,
     accountList: List<ItemAccount>,
-    private val showText: Boolean
+    private val showText: Boolean,
+    private val currencyState: CurrencyState,
+    private val exchangeRates: ExchangeRateDataManager
 ) : ArrayAdapter<ItemAccount>(context, textViewResourceId, accountList) {
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = LayoutInflater.from(context).inflate(R.layout.spinner_item, parent)
 
         if (showText) {
-            val item = getItem(position)
-            view.text.text = item?.label ?: ""
+            view.text.text = getItem(position)?.label ?: ""
         }
         return view
     }
@@ -32,15 +36,15 @@ class AddressAdapter(
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_address, parent, false)
 
-        val item = getItem(position)
-
-        if (item?.tag.isNullOrEmpty()) {
-            view.tvTag.gone()
-        } else {
-            view.tvTag.text = item?.tag ?: ""
+        getItem(position)?.let {
+            if (it.tag.isEmpty()) {
+                view.tvTag.gone()
+            } else {
+                view.tvTag.text = it.tag
+            }
+            view.tvLabel.text = it.label
+            view.tvBalance.text = it.formatDisplayBalance(currencyState, exchangeRates)
         }
-        view.tvLabel.text = item?.label ?: ""
-        view.tvBalance.text = item?.displayBalance ?: ""
 
         return view
     }

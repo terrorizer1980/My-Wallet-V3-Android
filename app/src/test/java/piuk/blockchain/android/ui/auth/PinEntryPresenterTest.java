@@ -108,7 +108,6 @@ public class PinEntryPresenterTest {
         when(activity.getPinBoxList())
                 .thenReturn(Arrays.asList(mockImageView, mockImageView, mockImageView, mockImageView));
         when(stringUtils.getString(anyInt())).thenReturn("string resource");
-        when(activity.getLocale()).thenReturn(Locale.US);
 
         subject = new PinEntryPresenter(authDataManager,
                 appUtil,
@@ -828,7 +827,7 @@ public class PinEntryPresenterTest {
         verify(activity).showProgressDialog(anyInt(), isNull());
         verify(payloadManager).initializeAndDecrypt(anyString(), anyString(), anyString());
         verify(appUtil).setSharedKey(anyString());
-        verify(appUtil).restartAppWithVerifiedPin(LauncherActivity.class);
+        verify(activity).restartAppWithVerifiedPin();
         verify(activity).dismissProgressDialog();
         assertTrue(subject.getCanShowFingerprintDialog());
     }

@@ -20,6 +20,8 @@ interface AccessState {
 
     var isNewlyCreated: Boolean
 
+    var isRestored: Boolean
+
     fun startLogoutTimer()
 
     fun setLogoutActivity(logoutActivity: Class<*>)
@@ -90,6 +92,10 @@ internal class AccessStateImpl(
         get() = prefs.getValue(PersistentPrefs.KEY_NEWLY_CREATED_WALLET, false)
         set(newlyCreated) = prefs.setValue(PersistentPrefs.KEY_NEWLY_CREATED_WALLET, newlyCreated)
 
+    override var isRestored: Boolean
+        get() = prefs.getValue(PersistentPrefs.KEY_RESTORED_WALLET, false)
+        set(isRestored) = prefs.setValue(PersistentPrefs.KEY_RESTORED_WALLET, isRestored)
+
     /**
      * Called from BaseAuthActivity#onPause()
      */
@@ -148,6 +154,6 @@ internal class AccessStateImpl(
     override fun forgetWallet() = rxBus.emitEvent(AuthEvent::class.java, AuthEvent.FORGET)
 
     companion object {
-        private const val LOGOUT_TIMEOUT_MILLIS = 1000L * 30L
+        private const val LOGOUT_TIMEOUT_MILLIS = 1000L * 60L * 5L // 5 minutes
     }
 }

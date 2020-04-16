@@ -64,7 +64,7 @@ class CoinsWebSocketStrategyTest {
     private val stringUtils: StringUtils = mock {
         on { getString(R.string.app_name) } `it returns` "Blockchain"
         on { getString(R.string.received_ethereum) } `it returns` "Received Ether"
-        on { getString(R.string.received_usd_pax) } `it returns` "Received USD PAX"
+        on { getString(R.string.received_usd_pax_1) } `it returns` "Received USD Digital"
         on { getString(R.string.from) } `it returns` "From"
     }
     private val erc20Account: Erc20Account = mock {
@@ -107,7 +107,6 @@ class CoinsWebSocketStrategyTest {
         stringUtils = stringUtils,
         gson = Gson(),
         erc20Account = erc20Account,
-        currencyFormatManager = mock(),
         bchDataManager = bchDataManager,
         payloadDataManager = payloadDataManager,
         accessState = mock(),
@@ -158,8 +157,8 @@ class CoinsWebSocketStrategyTest {
         verify(ethDataManager, never()).fetchEthAddress()
         verify(erc20Account).fetchAddressCompletable()
         verify(messagesSocketHandler).triggerNotification("Blockchain",
-            "Received USD PAX 1.21 PAX",
-            "Received USD PAX 1.21 PAX from 0x4058a004dd718babab47e14dd0d744742e5b9903")
+            "Received USD Digital 1.21 USD-D",
+            "Received USD Digital 1.21 USD-D from 0x4058a004dd718babab47e14dd0d744742e5b9903")
         verify(messagesSocketHandler).sendBroadcast(any())
     }
 

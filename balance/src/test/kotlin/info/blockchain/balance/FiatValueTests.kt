@@ -45,80 +45,93 @@ class FiatValueTests {
 
     @Test
     fun `can format GBP in UK`() {
+        Locale.setDefault(Locale.UK)
         FiatValue.fromMajor("GBP", 99.99.toBigDecimal())
-            .toStringWithSymbol(Locale.UK) `should equal` "£99.99"
+            .toStringWithSymbol() `should equal` "£99.99"
     }
 
     @Test
     fun `can format GBP in UK - trailing digits`() {
+        Locale.setDefault(Locale.UK)
         FiatValue.fromMajor("GBP", 99.toBigDecimal())
-            .toStringWithSymbol(Locale.UK) `should equal` "£99.00"
+            .toStringWithSymbol() `should equal` "£99.00"
     }
 
     @Test
     fun `can format GBP in UK - maximum 2 digits`() {
+        Locale.setDefault(Locale.UK)
         FiatValue.fromMajor("GBP", 99.123.toBigDecimal())
-            .toStringWithSymbol(Locale.UK) `should equal` "£99.12"
+            .toStringWithSymbol() `should equal` "£99.12"
     }
 
     @Test
     fun `can format USD in US`() {
+        Locale.setDefault(Locale.US)
         FiatValue.fromMajor("USD", 1.23.toBigDecimal())
-            .toStringWithSymbol(Locale.US) `should equal` "$1.23"
+            .toStringWithSymbol() `should equal` "$1.23"
     }
 
     @Test
     fun `can format USD in Canada`() {
+        Locale.setDefault(Locale.CANADA)
         FiatValue.fromMajor("USD", 3.45.toBigDecimal())
-            .toStringWithSymbol(Locale.CANADA) `should equal` "US$3.45"
+            .toStringWithSymbol() `should equal` "US$3.45"
     }
 
     @Test
     fun `can format CAD in US`() {
+        Locale.setDefault(Locale.US)
         FiatValue.fromMajor("CAD", 4.56.toBigDecimal())
-            .toStringWithSymbol(Locale.US) `should equal` "CAD4.56"
+            .toStringWithSymbol() `should equal` "CAD4.56"
     }
 
     @Test
     fun `can format CAD in Canada`() {
+        Locale.setDefault(Locale.CANADA)
         FiatValue.fromMajor("CAD", 6.78.toBigDecimal())
-            .toStringWithSymbol(Locale.CANADA) `should equal` "$6.78"
+            .toStringWithSymbol() `should equal` "$6.78"
     }
 
     @Test
     fun `can format YEN in US`() {
+        Locale.setDefault(Locale.US)
         FiatValue.fromMajor("JPY", 456.toBigDecimal())
-            .toStringWithSymbol(Locale.US) `should equal` "JPY456"
+            .toStringWithSymbol() `should equal` "JPY456"
     }
 
     @Test
     fun `can format YEN in Japan`() {
+        Locale.setDefault(Locale.JAPAN)
         FiatValue.fromMajor("JPY", 678.toBigDecimal())
-            .toStringWithSymbol(Locale.JAPAN) `should equal` "￥678"
+            .toStringWithSymbol() `should equal` "￥678"
     }
 
     @Test
     fun `can format YEN in Japan - maximum 0 digits`() {
+        Locale.setDefault(Locale.JAPAN)
         FiatValue.fromMajor("JPY", 99.123.toBigDecimal())
-            .toStringWithSymbol(Locale.JAPAN) `should equal` "￥99"
+            .toStringWithSymbol() `should equal` "￥99"
     }
 
     @Test
     fun `can format GBP without symbol`() {
+        Locale.setDefault(Locale.UK)
         FiatValue.fromMajor("GBP", 1.1.toBigDecimal())
-            .toStringWithoutSymbol(Locale.UK) `should equal` "1.10"
+            .toStringWithoutSymbol() `should equal` "1.10"
     }
 
     @Test
     fun `can format YEN without symbol`() {
+        Locale.setDefault(Locale.JAPAN)
         FiatValue.fromMajor("JPY", 678.toBigDecimal())
-            .toStringWithoutSymbol(Locale.JAPAN) `should equal` "678"
+            .toStringWithoutSymbol() `should equal` "678"
     }
 
     @Test
     fun `can format USD without symbol in ES`() {
+        Locale.setDefault(Locale("es_ES"))
         FiatValue.fromMajor("USD", 0.07.toBigDecimal())
-            .toStringWithoutSymbol(Locale("es_ES")) `should equal` "0.07"
+            .toStringWithoutSymbol() `should equal` "0.07"
     }
 
     @Test

@@ -5,7 +5,6 @@ import com.blockchain.network.websocket.WebSocket
 import com.google.gson.Gson
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
-import info.blockchain.balance.formatWithUnit
 import info.blockchain.wallet.ethereum.Erc20TokenData
 import info.blockchain.wallet.exceptions.DecryptionException
 import info.blockchain.wallet.multiaddress.TransactionSummary
@@ -34,8 +33,6 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
-import piuk.blockchain.androidcore.data.currency.BTCDenomination
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.ethereum.models.CombinedEthModel
@@ -63,7 +60,6 @@ class CoinsWebSocketStrategy(
     private val prefs: PersistentPrefs,
     private val accessState: AccessState,
     private val appUtil: AppUtil,
-    private val currencyFormatManager: CurrencyFormatManager,
     private val erc20Account: Erc20Account,
     private val payloadDataManager: PayloadDataManager,
     private val bchDataManager: BchDataManager
@@ -207,10 +203,8 @@ class CoinsWebSocketStrategy(
         val title = stringUtils.getString(R.string.app_name)
 
         if (totalValue > BigDecimal.ZERO) {
-
-            val marquee = stringUtils.getString(R.string.received_bitcoin_cash) +
-                    " ${currencyFormatManager.getFormattedBchValueWithUnit(totalValue,
-                        BTCDenomination.SATOSHI)}"
+            val amount = CryptoValue.fromMinor(CryptoCurrency.BCH, totalValue)
+            val marquee = stringUtils.getString(R.string.received_bitcoin_cash) + amount.toStringWithSymbol()
 
             var text = marquee
             text += " ${stringUtils.getString(R.string.from).toLowerCase(Locale.US)} $inAddr"
@@ -262,8 +256,8 @@ class CoinsWebSocketStrategy(
             val tokenTransaction = ethResponse.tokenTransfer
 
             val title = stringUtils.getString(R.string.app_name)
-            val marquee = stringUtils.getString(R.string.received_usd_pax) + " " +
-                    CryptoValue.usdPaxFromMinor(tokenTransaction.value).formatWithUnit()
+            val marquee = stringUtils.getString(R.string.received_usd_pax_1) + " " +
+                    CryptoValue.usdPaxFromMinor(tokenTransaction.value).toStringWithSymbol()
             val text =
                 marquee + " " + stringUtils.getString(R.string.from).toLowerCase(Locale.US) +
                         " " + tokenTransaction.from

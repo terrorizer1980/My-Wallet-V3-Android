@@ -11,12 +11,8 @@ import info.blockchain.wallet.payload.PayloadManager
 import info.blockchain.wallet.payload.data.Account
 import info.blockchain.wallet.payload.data.LegacyAddress
 import info.blockchain.wallet.payload.data.Wallet
-import io.reactivex.Observable
-import okhttp3.ResponseBody
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.amshove.kluent.mock
 import org.bitcoinj.core.ECKey
-import org.bitcoinj.crypto.DeterministicKey
 import org.bitcoinj.params.BitcoinMainNetParams
 import org.junit.Before
 import org.junit.Rule
@@ -356,65 +352,6 @@ class PayloadServiceTest {
         val testObserver = subject.updateLegacyAddress(mockLegacyAddress).test()
         // Assert
         verify(mockPayloadManager).updateLegacyAddress(mockLegacyAddress)
-        verifyNoMoreInteractions(mockPayloadManager)
-        testObserver.assertComplete()
-    }
-
-    @Test
-    fun loadNodes() {
-        // Arrange
-        whenever(mockPayloadManager.loadNodes()).thenReturn(true)
-        // Act
-        val testObserver = subject.loadNodes().test()
-        // Assert
-        verify(mockPayloadManager).loadNodes()
-        verifyNoMoreInteractions(mockPayloadManager)
-        testObserver.assertComplete()
-        testObserver.assertValue(true)
-    }
-
-    @Test
-    fun generateNodes() {
-        // Arrange
-
-        // Act
-        val testObserver = subject.generateNodes().test()
-        // Assert
-        verify(mockPayloadManager).generateNodes()
-        verifyNoMoreInteractions(mockPayloadManager)
-        testObserver.assertComplete()
-    }
-
-    @Test
-    fun registerMdid() {
-        // Arrange
-        val mockKey: DeterministicKey = mock()
-        val response = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
-        whenever(mockPayloadManager.metadataNodeFactory.sharedMetadataNode)
-            .thenReturn(mockKey)
-        whenever(mockPayloadManager.registerMdid(mockKey)).thenReturn(Observable.just(response))
-        // Act
-        val testObserver = subject.registerMdid().test()
-        // Assert
-        verify(mockPayloadManager, atLeastOnce()).metadataNodeFactory
-        verify(mockPayloadManager).registerMdid(mockKey)
-        verifyNoMoreInteractions(mockPayloadManager)
-        testObserver.assertComplete()
-    }
-
-    @Test
-    fun unregisterMdid() {
-        // Arrange
-        val mockKey: DeterministicKey = mock()
-        val response = ResponseBody.create(("application/json").toMediaTypeOrNull(), "{}")
-        whenever(mockPayloadManager.metadataNodeFactory.sharedMetadataNode)
-            .thenReturn(mockKey)
-        whenever(mockPayloadManager.unregisterMdid(mockKey)).thenReturn(Observable.just(response))
-        // Act
-        val testObserver = subject.unregisterMdid().test()
-        // Assert
-        verify(mockPayloadManager, atLeastOnce()).metadataNodeFactory
-        verify(mockPayloadManager).unregisterMdid(mockKey)
         verifyNoMoreInteractions(mockPayloadManager)
         testObserver.assertComplete()
     }

@@ -9,7 +9,6 @@ import com.blockchain.sunriver.isValidXlmQr
 import com.blockchain.sunriver.toUri
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
-import info.blockchain.balance.format
 import info.blockchain.balance.withMajorValueOrZero
 import info.blockchain.wallet.api.Environment
 import info.blockchain.wallet.coin.GenericMetadataAccount
@@ -28,14 +27,14 @@ import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
-import piuk.blockchain.androidcore.data.currency.CurrencyState
-import piuk.blockchain.androidcore.data.currency.toSafeLong
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.ethereum.datastores.EthDataStore
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.exchangerate.toCrypto
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
+import piuk.blockchain.androidcore.utils.extensions.toSafeLong
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import timber.log.Timber
 import java.math.BigInteger
@@ -68,7 +67,7 @@ class ReceivePresenter(
     private val xlmDataManager: XlmDataManager,
     private val environmentSettings: EnvironmentConfig,
     private val currencyState: CurrencyState,
-    private val fiatExchangeRates: FiatExchangeRates
+    private val exchangeRates: ExchangeRateDataManager
 ) : MvpPresenter<ReceiveView>() {
 
     override val alwaysDisableScreenshots = false
@@ -84,7 +83,8 @@ class ReceivePresenter(
     fun getMaxCryptoDecimalLength() = currencyState.cryptoCurrency.dp
 
     val cryptoUnit
-        get() = currencyState.cryptoCurrency.symbol
+        get() = currencyState.cryptoCurrency.displayTicker
+
     val fiatUnit
         get() = prefs.selectedFiatCurrency
 
@@ -96,8 +96,8 @@ class ReceivePresenter(
         }
     }
 
-    override fun onViewAttached() { }
-    override fun onViewDetached() { }
+    override fun onViewAttached() {}
+    override fun onViewDetached() {}
 
     internal fun onResume(defaultAccountPosition: Int) {
         when (currencyState.cryptoCurrency) {
@@ -330,8 +330,8 @@ class ReceivePresenter(
                 FormatsUtil.isValidBitcoinAddress(it) ->
                     v.showShareBottomSheet(getBitcoinUri(it, v.getBtcAmount()))
                 FormatsUtil.isValidEthereumAddress(it) ||
-                FormatsUtil.isValidBitcoinCashAddress(environmentSettings.bitcoinCashNetworkParameters, it) ||
-                it.isValidXlmQr() -> v.showShareBottomSheet(it)
+                        FormatsUtil.isValidBitcoinCashAddress(environmentSettings.bitcoinCashNetworkParameters, it) ||
+                        it.isValidXlmQr() -> v.showShareBottomSheet(it)
                 else -> throw IllegalStateException("Unknown address format $selectedAddress")
             }
         }
@@ -340,7 +340,7 @@ class ReceivePresenter(
     internal fun updateFiatTextField(bitcoin: String) {
         view?.updateFiatTextField(
             currencyState.cryptoCurrency.withMajorValueOrZero(bitcoin)
-                .toFiat(fiatExchangeRates)
+                .toFiat(exchangeRates, currencyState.fiatUnit)
                 .toStringWithoutSymbol()
         )
     }
@@ -348,8 +348,8 @@ class ReceivePresenter(
     internal fun updateBtcTextField(fiat: String) {
         view?.updateBtcTextField(
             FiatValue.fromMajorOrZero(fiatUnit, fiat)
-                .toCrypto(fiatExchangeRates, currencyState.cryptoCurrency)
-                .format()
+                .toCrypto(exchangeRates, currencyState.cryptoCurrency)
+                .toStringWithoutSymbol()
         )
     }
 

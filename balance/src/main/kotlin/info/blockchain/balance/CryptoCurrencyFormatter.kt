@@ -19,14 +19,14 @@ enum class FormatPrecision {
     Full
 }
 
-fun CryptoValue.format(
-    locale: Locale = Locale.getDefault(),
+internal fun CryptoValue.format(
+    locale: Locale,
     precision: FormatPrecision = FormatPrecision.Short
 ): String =
     getFormatter(locale).format(this, precision)
 
-fun CryptoValue.formatWithUnit(
-    locale: Locale = Locale.getDefault(),
+internal fun CryptoValue.formatWithUnit(
+    locale: Locale,
     precision: FormatPrecision = FormatPrecision.Short
 ) =
     getFormatter(locale).formatWithUnit(this, precision)
@@ -36,7 +36,7 @@ private val formatterMap: MutableMap<Locale, CryptoCurrencyFormatter> = Concurre
 private fun getFormatter(locale: Locale) =
     formatterMap.getOrPut(locale) { CryptoCurrencyFormatter(locale) }
 
-class CryptoCurrencyFormatter(locale: Locale) {
+internal class CryptoCurrencyFormatter(locale: Locale) {
     private val btcFormat = createCryptoDecimalFormat(locale, CryptoCurrency.BTC.dp)
     private val bchFormat = createCryptoDecimalFormat(locale, CryptoCurrency.BCH.dp)
     private val ethFormat = createCryptoDecimalFormat(locale, CryptoCurrency.ETHER.dp)
@@ -44,6 +44,7 @@ class CryptoCurrencyFormatter(locale: Locale) {
     private val xlmFormat = createCryptoDecimalFormat(locale, CryptoCurrency.XLM.dp)
     private val paxShortFormat = createCryptoDecimalFormat(locale, CryptoCurrency.PAX.userDp)
     private val paxFormat = createCryptoDecimalFormat(locale, CryptoCurrency.PAX.dp)
+    private val stxFormat = createCryptoDecimalFormat(locale, CryptoCurrency.STX.dp)
 
     fun format(
         cryptoValue: CryptoValue,
@@ -57,7 +58,7 @@ class CryptoCurrencyFormatter(locale: Locale) {
     ) =
         cryptoValue.currency.decimalFormat(precision).formatWithUnit(
             cryptoValue.toBigDecimal(),
-            cryptoValue.currency.symbol
+            cryptoValue.currency.displayTicker
         )
 
     private fun CryptoCurrency.decimalFormat(displayMode: FormatPrecision) = when (this) {
@@ -72,7 +73,7 @@ class CryptoCurrencyFormatter(locale: Locale) {
             FormatPrecision.Short -> paxShortFormat
             FormatPrecision.Full -> paxFormat
         }
-        CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        CryptoCurrency.STX -> stxFormat
     }
 
     private fun DecimalFormat.formatWithUnit(value: BigDecimal, symbol: String) =

@@ -1,72 +1,99 @@
 package piuk.blockchain.android.coincore
 
 import org.koin.dsl.module.applicationContext
+import piuk.blockchain.android.coincore.bch.BchTokens
+import piuk.blockchain.android.coincore.pax.PaxTokens
+import piuk.blockchain.android.coincore.btc.BtcTokens
+import piuk.blockchain.android.coincore.eth.EthTokens
+import piuk.blockchain.android.coincore.stx.StxTokens
+import piuk.blockchain.android.coincore.xlm.XlmTokens
 
 val coincoreModule = applicationContext {
 
     context("Payload") {
 
         bean {
-            STXTokens(
+            StxTokens(
+                rxBus = get(),
                 payloadManager = get(),
-                currencyPrefs = get()
+                currencyPrefs = get(),
+                custodialWalletManager = get(),
+                crashLogger = get(),
+                labels = get()
             )
         }
 
         bean {
-            BTCTokens(
+            BtcTokens(
                 payloadManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 payloadDataManager = get(),
-                rxBus = get()
+                rxBus = get(),
+                custodialWalletManager = get(),
+                crashLogger = get(),
+                labels = get()
             )
         }
 
         bean {
-            BCHTokens(
+            BchTokens(
                 bchDataManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 rxBus = get(),
                 crashLogger = get(),
-                stringUtils = get()
+                stringUtils = get(),
+                custodialWalletManager = get(),
+                environmentSettings = get(),
+                labels = get()
             )
         }
 
         bean {
-            XLMTokens(
+            XlmTokens(
+                rxBus = get(),
                 xlmDataManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
-                currencyPrefs = get()
+                currencyPrefs = get(),
+                custodialWalletManager = get(),
+                crashLogger = get(),
+                labels = get()
             )
         }
 
         bean {
-            ETHTokens(
+            EthTokens(
                 ethDataManager = get(),
                 exchangeRates = get(),
                 historicRates = get(),
                 currencyPrefs = get(),
                 rxBus = get(),
                 crashLogger = get(),
-                stringUtils = get()
+                stringUtils = get(),
+                custodialWalletManager = get(),
+                labels = get()
             )
         }
 
         bean {
-            PAXTokens(
-                erc20Account = get(),
+            PaxTokens(
+                rxBus = get(),
+                paxAccount = get(),
                 exchangeRates = get(),
-                currencyPrefs = get()
+                currencyPrefs = get(),
+                custodialWalletManager = get(),
+                stringUtils = get(),
+                crashLogger = get(),
+                labels = get()
             )
         }
 
         bean {
-            AssetTokenLookup(
+            Coincore(
                 btcTokens = get(),
                 bchTokens = get(),
                 ethTokens = get(),

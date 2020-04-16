@@ -1,6 +1,7 @@
 package piuk.blockchain.android.util
 
 import android.content.Context
+import android.content.res.Resources
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -8,6 +9,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import com.blockchain.wallet.DefaultLabels
 import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.R
 
@@ -33,7 +35,7 @@ fun CryptoCurrency.drawableResFilled(): Int =
         CryptoCurrency.BCH -> R.drawable.vector_bitcoin_cash_colored
         CryptoCurrency.XLM -> R.drawable.vector_xlm_colored
         CryptoCurrency.PAX -> R.drawable.vector_pax_colored
-        CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+        CryptoCurrency.STX -> R.drawable.ic_logo_stx
     }
 
 @DrawableRes
@@ -67,12 +69,37 @@ fun CryptoCurrency.errorIcon(): Int =
     }
 
 @StringRes
-fun CryptoCurrency.currencyName() =
+fun CryptoCurrency.assetName() =
     when (this) {
         CryptoCurrency.BTC -> R.string.bitcoin
         CryptoCurrency.ETHER -> R.string.ethereum
         CryptoCurrency.BCH -> R.string.bitcoin_cash
         CryptoCurrency.XLM -> R.string.lumens
-        CryptoCurrency.PAX -> R.string.usd_pax
-        CryptoCurrency.STX -> R.string.stacks
+        CryptoCurrency.PAX -> R.string.usd_pax_1
+        CryptoCurrency.STX -> R.string.stacks_1
     }
+
+internal class ResourceDefaultLabels(
+    private val resources: Resources
+) : DefaultLabels {
+
+    override fun getDefaultNonCustodialWalletLabel(cryptoCurrency: CryptoCurrency): String =
+        resources.getString(
+            when (cryptoCurrency) {
+                CryptoCurrency.BTC -> R.string.btc_default_wallet_name
+                CryptoCurrency.ETHER -> R.string.eth_default_account_label
+                CryptoCurrency.BCH -> R.string.bch_default_account_label
+                CryptoCurrency.XLM -> R.string.xlm_default_account_label
+                CryptoCurrency.PAX -> R.string.pax_default_account_label_1
+                CryptoCurrency.STX -> TODO("STUB: STX NOT IMPLEMENTED")
+            }
+        )
+
+    override fun getDefaultCustodialWalletLabel(cryptoCurrency: CryptoCurrency): String {
+        val asset = resources.getString(cryptoCurrency.assetName())
+        return resources.getString(R.string.custodial_wallet_default_label, asset)
+    }
+
+    override fun getAssetMasterWalletLabel(cryptoCurrency: CryptoCurrency): String =
+        resources.getString(cryptoCurrency.assetName())
+}

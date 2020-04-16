@@ -22,7 +22,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="26dp"
         android:gravity="center_horizontal"
-        android:text="@string/pax_title"
+        android:text="@string/pax_title_1"
         android:textColor="@color/soon_title_blue"
         android:textSize="18sp" />
 
@@ -34,7 +34,7 @@
         android:layout_marginTop="13dp"
         android:layout_marginRight="24dp"
         android:gravity="center_horizontal"
-        android:text="@string/pax_no_transactions_message"
+        android:text="@string/pax_no_transactions_message_1"
         android:textColor="@color/soon_text_grey"
         android:textSize="14sp" />
 
@@ -45,7 +45,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="13dp"
         android:gravity="center_horizontal"
-        android:text="@string/pax_learn_more_link"
+        android:text="@string/pax_learn_more_link_1"
         android:textColor="@color/primary_blue_accent"
         android:textSize="18sp" />
 
@@ -55,6 +55,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="26dp"
-        android:text="@string/pax_swap_now"/>
+        android:text="@string/pax_swap_now_1"/>
 
 </LinearLayout>

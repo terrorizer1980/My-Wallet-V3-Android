@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.backup.transfer
 
 import android.annotation.SuppressLint
+import com.blockchain.testutils.satoshi
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.wallet.payload.data.LegacyAddress
@@ -8,7 +9,6 @@ import info.blockchain.wallet.payload.data.Wallet
 import io.reactivex.Completable
 import io.reactivex.Observable
 import org.amshove.kluent.any
-import org.apache.commons.lang3.tuple.Triple
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -17,58 +17,50 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyList
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mock
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.MockitoAnnotations
 import piuk.blockchain.android.R
 import piuk.blockchain.android.data.datamanagers.TransferFundsDataManager
+import piuk.blockchain.android.data.datamanagers.TransferableFundTransactionList
 import piuk.blockchain.android.ui.account.ItemAccount
 import piuk.blockchain.android.ui.receive.WalletAccountHelper
 import piuk.blockchain.android.ui.send.PendingTransaction
 import piuk.blockchain.android.util.StringUtils
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.events.PayloadSyncedEvent
 import piuk.blockchain.androidcore.data.events.PaymentFailedEvent
 import piuk.blockchain.androidcore.data.events.PaymentSentEvent
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
-import java.math.BigDecimal
-import java.util.Arrays
 import java.util.Locale
 
 class ConfirmFundsTransferPresenterTest {
 
-    private lateinit var subject: ConfirmFundsTransferPresenter
-    @Mock
     private val view: ConfirmFundsTransferView = mock()
-    @Mock
     private val walletAccountHelper: WalletAccountHelper = mock()
-    @Mock
     private val transferFundsDataManager: TransferFundsDataManager = mock()
-    @Mock
     private val payloadDataManager: PayloadDataManager = mock()
-    @Mock
     private val stringUtils: StringUtils = mock()
-    private val currencyFormatManager: CurrencyFormatManager = mock()
+    private val currencyState: CurrencyState = mock()
+    private val exchangeRates: ExchangeRateDataManager = mock()
 
-    @Before
-    fun setUp() {
-        MockitoAnnotations.initMocks(this)
-
-        subject = ConfirmFundsTransferPresenter(
+    private val subject = ConfirmFundsTransferPresenter(
             walletAccountHelper,
             transferFundsDataManager,
             payloadDataManager,
             stringUtils,
-            currencyFormatManager
+            currencyState,
+            exchangeRates
         )
-        subject.initView(view)
 
-        whenever(view.locale).thenReturn(Locale.US)
+    @Before
+    fun setUp() {
+        subject.initView(view)
+        Locale.setDefault(Locale.US)
     }
 
     @Test
@@ -77,13 +69,22 @@ class ConfirmFundsTransferPresenterTest {
         val mockPayload = mock(Wallet::class.java, RETURNS_DEEP_STUBS)
         whenever(payloadDataManager.wallet).thenReturn(mockPayload)
         whenever(mockPayload.hdWallets[0].defaultAccountIdx).thenReturn(0)
+
         val transaction = PendingTransaction()
-        val transactions = Arrays.asList(transaction, transaction)
-        val triple = Triple.of(transactions, 100000000L, 10000L)
+        val transactions = listOf(transaction, transaction)
+
+        val result = TransferableFundTransactionList(
+            pendingTransactions = transactions,
+            totalToSend = 100000000.toBigInteger(),
+            totalFee = 10000.toBigInteger()
+        )
+
         whenever(transferFundsDataManager.getTransferableFundTransactionList(0))
-            .thenReturn(Observable.just(triple))
+            .thenReturn(Observable.just(result))
+
         // Act
         subject.onViewReady()
+
         // Assert
         verify(view).setPaymentButtonEnabled(false)
         assertEquals(2, subject.pendingTransactions.size)
@@ -94,7 +95,8 @@ class ConfirmFundsTransferPresenterTest {
         // Arrange
         whenever(payloadDataManager.getPositionOfAccountFromActiveList(0)).thenReturn(1)
         whenever(transferFundsDataManager.getTransferableFundTransactionList(1))
-            .thenReturn(Observable.error<Triple<List<PendingTransaction>, Long, Long>>(Throwable()))
+            .thenReturn(Observable.error(Throwable()))
+
         // Act
         subject.accountSelected(0)
         // Assert
@@ -107,33 +109,16 @@ class ConfirmFundsTransferPresenterTest {
     @Test
     fun updateUi() {
         // Arrange
-        val total = 100000000L
-        val fee = 10000L
+        val total = 100000000.satoshi()
+        val fee = 10000.satoshi()
 
         whenever(stringUtils.getQuantityString(anyInt(), anyInt())).thenReturn("test string")
-        whenever(
-            currencyFormatManager.getFormattedSelectedCoinValueWithUnit(total.toBigInteger())
-        )
-            .thenReturn("1.0 BTC")
-        whenever(
-            currencyFormatManager.getFormattedSelectedCoinValueWithUnit(fee.toBigInteger())
-        )
-            .thenReturn("0.0001 BTC")
-        whenever(
-            currencyFormatManager.getFormattedFiatValueFromSelectedCoinValueWithSymbol(
-                BigDecimal.valueOf(total)
-            )
-        )
-            .thenReturn("\$100.00")
-        whenever(
-            currencyFormatManager.getFormattedFiatValueFromSelectedCoinValueWithSymbol(
-                BigDecimal.valueOf(fee)
-            )
-        )
-            .thenReturn("\$0.01")
-        subject.pendingTransactions = mutableListOf()
+        whenever(currencyState.fiatUnit).thenReturn("USD")
+        whenever(exchangeRates.getLastPrice(any(), any())).thenReturn(100.0)
+
         // Act
         subject.updateUi(total, fee)
+
         // Assert
         verify(view).updateFromLabel("test string")
         verify(view).updateTransferAmountBtc("1.0 BTC")
@@ -151,11 +136,14 @@ class ConfirmFundsTransferPresenterTest {
         whenever(transferFundsDataManager.sendPayment(anyList<PendingTransaction>(), anyString()))
             .thenReturn(Observable.just("hash"))
         whenever(view.getIfArchiveChecked()).thenReturn(true)
+
         val transaction = PendingTransaction()
         transaction.sendingObject = ItemAccount()
         transaction.sendingObject!!.accountObject = LegacyAddress()
-        subject.pendingTransactions = mutableListOf(transaction)
+        subject.pendingTransactions.addAll(mutableListOf(transaction))
+
         whenever(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.complete())
+
         // Act
         subject.sendPayment("password")
         // Assert
@@ -173,7 +161,6 @@ class ConfirmFundsTransferPresenterTest {
     @Test
     fun `sendPayment no archive`() {
         // Arrange
-        subject.pendingTransactions = mutableListOf()
         whenever(transferFundsDataManager.sendPayment(anyList<PendingTransaction>(), anyString()))
             .thenReturn(Observable.just("hash"))
         whenever(view.getIfArchiveChecked()).thenReturn(false)
@@ -193,7 +180,6 @@ class ConfirmFundsTransferPresenterTest {
     @Test
     fun `sendPayment error`() {
         // Arrange
-        subject.pendingTransactions = mutableListOf()
         whenever(transferFundsDataManager.sendPayment(anyList<PendingTransaction>(), anyString()))
             .thenReturn(Observable.error<String>(Throwable()))
         whenever(view.getIfArchiveChecked()).thenReturn(false)
@@ -238,7 +224,8 @@ class ConfirmFundsTransferPresenterTest {
         val transaction = PendingTransaction()
         transaction.sendingObject = ItemAccount()
         transaction.sendingObject!!.accountObject = LegacyAddress()
-        subject.pendingTransactions = mutableListOf(transaction)
+        subject.pendingTransactions.addAll(listOf(transaction))
+
         whenever(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.complete())
         // Act
         subject.archiveAll()
@@ -257,7 +244,8 @@ class ConfirmFundsTransferPresenterTest {
         val transaction = PendingTransaction()
         transaction.sendingObject = ItemAccount()
         transaction.sendingObject!!.accountObject = LegacyAddress()
-        subject.pendingTransactions = mutableListOf(transaction)
+        subject.pendingTransactions.addAll(listOf(transaction))
+
         whenever(payloadDataManager.syncPayloadWithServer()).thenReturn(Completable.error(Throwable()))
         // Act
         subject.archiveAll()

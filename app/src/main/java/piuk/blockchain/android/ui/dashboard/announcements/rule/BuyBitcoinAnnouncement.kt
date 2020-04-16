@@ -3,7 +3,9 @@ package piuk.blockchain.android.ui.dashboard.announcements.rule
 import androidx.annotation.VisibleForTesting
 import com.blockchain.preferences.WalletStatus
 import io.reactivex.Single
+import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.R
+import piuk.blockchain.android.simplebuy.SimpleBuyAvailability
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementHost
 import piuk.blockchain.android.ui.dashboard.announcements.AnnouncementRule
 import piuk.blockchain.android.ui.dashboard.announcements.DismissRecorder
@@ -14,9 +16,11 @@ import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 class BuyBitcoinAnnouncement(
     dismissRecorder: DismissRecorder,
     private val walletStatus: WalletStatus,
-    private val buyDataManager: BuyDataManager
+    private val buyDataManager: BuyDataManager,
+    private val simpleBuyAvailability: SimpleBuyAvailability
 ) : AnnouncementRule(dismissRecorder) {
 
+    private var cta: (AnnouncementHost) -> Unit = {}
     override val dismissKey = DISMISS_KEY
 
     override fun shouldShow(): Single<Boolean> {
@@ -24,9 +28,21 @@ class BuyBitcoinAnnouncement(
             return Single.just(false)
         }
 
-        return buyDataManager.canBuy
-            .map { it && !walletStatus.isWalletFunded }
-            .singleOrError()
+        return buyDataManager.canBuy.zipWith(simpleBuyAvailability.isAvailable())
+            .doOnSuccess { (isCoinifyAvailable, simpleBuyAvailable) ->
+                if (simpleBuyAvailable) {
+                    cta = {
+                        it.startSimpleBuy()
+                    }
+                } else if (isCoinifyAvailable) {
+                    cta = {
+                        it.startBuySell()
+                    }
+                }
+            }
+            .map { (canBuy, simpleBuyAvailable) ->
+                (canBuy && !walletStatus.isWalletFunded) || simpleBuyAvailable
+            }
     }
 
     override fun show(host: AnnouncementHost) {
@@ -35,9 +51,9 @@ class BuyBitcoinAnnouncement(
                 name = name,
                 dismissRule = DismissRule.CardPeriodic,
                 dismissEntry = dismissEntry,
-                titleText = R.string.buy_btc_card_title,
-                bodyText = R.string.buy_btc_card_body,
-                ctaText = R.string.buy_btc_card_cta,
+                titleText = R.string.buy_crypto_card_title,
+                bodyText = R.string.buy_crypto_card_body,
+                ctaText = R.string.buy_crypto_card_cta,
                 iconImage = R.drawable.ic_announce_buy_btc,
                 dismissFunction = {
                     host.dismissAnnouncementCard()

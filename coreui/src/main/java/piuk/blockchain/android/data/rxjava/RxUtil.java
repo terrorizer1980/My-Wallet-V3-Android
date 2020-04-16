@@ -20,6 +20,8 @@ import timber.log.Timber;
  * @deprecated These functions have all been moved out to other, more locally scoped extension
  * classes. The only reason to use these is if you're not using Kotlin, which should be rectified
  * pretty quickly.
+ *
+ * Well, you say that, Adam, but here we are almost 4 years later...
  */
 
 @Deprecated
@@ -64,21 +66,6 @@ public final class RxUtil {
     }
 
     /**
-     * Adds the subscription to the upstream {@link Observable} to the {@link CompositeDisposable}
-     * supplied by a class extending {@link BasePresenter}. This allows the subscription to be
-     * cancelled automatically by the Presenter on Android lifecycle events.
-     *
-     * @param presenter A class extending {@link BasePresenter}
-     * @param <T>       The type of the upstream {@link Observable}
-     * @deprecated Use {@link RxCompositeExtensions} instead if referenced from Kotlin.
-     */
-    @Deprecated
-    public static <T> ObservableTransformer<T, T> addObservableToCompositeDisposable(BasePresenter presenter) {
-        return upstream -> upstream.doOnSubscribe(disposable ->
-                presenter.getCompositeDisposable().add(disposable));
-    }
-
-    /**
      * Adds the subscription to the upstream {@link io.reactivex.Completable} to the {@link
      * CompositeDisposable} supplied by a class extending {@link BasePresenter}. This allows the
      * subscription to be cancelled automatically by the Presenter on Android lifecycle events.
@@ -91,20 +78,4 @@ public final class RxUtil {
         return upstream -> upstream.doOnSubscribe(disposable ->
                 presenter.getCompositeDisposable().add(disposable));
     }
-
-    /**
-     * Adds the subscription to the upstream {@link Single} to the {@link CompositeDisposable}
-     * supplied by a class extending {@link BasePresenter}. This allows the subscription to be
-     * cancelled automatically by the Presenter on Android lifecycle events.
-     *
-     * @param presenter A class extending {@link BasePresenter}
-     * @param <T>       The type of the upstream {@link Single}
-     * @deprecated Use {@link RxCompositeExtensions} instead if referenced from Kotlin.
-     */
-    @Deprecated
-    public static <T> SingleTransformer<T, T> addSingleToCompositeDisposable(BasePresenter presenter) {
-        return upstream -> upstream.doOnSubscribe(disposable ->
-                presenter.getCompositeDisposable().add(disposable));
-    }
-
 }

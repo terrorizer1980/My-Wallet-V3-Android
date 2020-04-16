@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import piuk.blockchain.android.util.getColor
-import piuk.blockchain.android.util.currencyName
+import piuk.blockchain.android.util.assetName
 import piuk.blockchain.android.util.setCoinIcon
 import com.blockchain.preferences.CurrencyPrefs
 import kotlinx.android.synthetic.main.item_dashboard_asset_card.view.*
@@ -20,6 +20,7 @@ import piuk.blockchain.android.ui.dashboard.asDeltaPercent
 import piuk.blockchain.android.ui.dashboard.format
 import piuk.blockchain.android.ui.dashboard.showLoading
 import piuk.blockchain.androidcoreui.utils.extensions.gone
+import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 
 // Uses sparkline lib from here: https://github.com/robinhood/spark
@@ -54,7 +55,7 @@ private class AssetCardViewHolder(
     internal fun bind(state: AssetState, fiatSymbol: String, onCardClicked: (CryptoCurrency) -> Unit) {
         with(itemView) {
             icon.setCoinIcon(state.currency)
-            currency.setText(state.currency.currencyName())
+            currency.setText(state.currency.assetName())
         }
 
         when {
@@ -83,7 +84,7 @@ private class AssetCardViewHolder(
     private fun renderLoaded(state: AssetState, fiatSymbol: String, onCardClicked: (CryptoCurrency) -> Unit) {
         with(itemView) {
             cardLayout.isEnabled = true
-            setOnClickListener { onCardClicked(state.currency) }
+            setOnClickListenerDebounced { onCardClicked(state.currency) }
 
             showContent()
 
@@ -112,7 +113,7 @@ private class AssetCardViewHolder(
             cardLayout.isEnabled = false
             setOnClickListener { }
 
-            val text = resources.getString(R.string.dashboard_asset_error, state.currency.symbol)
+            val text = resources.getString(R.string.dashboard_asset_error, state.currency.displayTicker)
             error_msg.text = text
         }
     }

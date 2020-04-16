@@ -29,7 +29,6 @@ import piuk.blockchain.android.util.EditTextFormatUtil
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.exchangerate.FiatExchangeRates
 import piuk.blockchain.androidcore.data.exchangerate.toCrypto
 import piuk.blockchain.androidcore.data.exchangerate.toFiat
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -47,7 +46,7 @@ class SendPresenter<View : SendView>(
     private val etherStrategy: SendStrategy<View>,
     private val xlmStrategy: SendStrategy<View>,
     private val paxStrategy: SendStrategy<View>,
-    private val exchangeRates: FiatExchangeRates,
+    private val exchangeRates: ExchangeRateDataManager,
     private val envSettings: EnvironmentConfig,
     private val stringUtils: StringUtils,
     private val exchangeRateFactory: ExchangeRateDataManager,
@@ -191,7 +190,7 @@ class SendPresenter<View : SendView>(
                         // Convert to correct units
                         try {
                             val cryptoValue = CryptoValue(selectedCrypto, amount.toBigInteger())
-                            val fiatValue = cryptoValue.toFiat(exchangeRates)
+                            val fiatValue = cryptoValue.toFiat(exchangeRates, prefs.selectedFiatCurrency)
                             view?.updateCryptoAmount(cryptoValue)
                             view?.updateFiatAmount(fiatValue)
                         } catch (e: Exception) {
@@ -304,7 +303,7 @@ class SendPresenter<View : SendView>(
         ).toString()
 
         val cryptoValue = selectedCrypto.withMajorValueOrZero(crypto)
-        val fiatValue = cryptoValue.toFiat(exchangeRates)
+        val fiatValue = cryptoValue.toFiat(exchangeRates, prefs.selectedFiatCurrency)
 
         view?.updateFiatAmount(fiatValue, true)
     }

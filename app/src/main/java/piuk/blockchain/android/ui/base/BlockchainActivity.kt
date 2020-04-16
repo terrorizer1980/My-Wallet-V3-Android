@@ -12,14 +12,19 @@ import android.view.WindowManager
 import com.blockchain.koin.injectActivity
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.preferences.SecurityPrefs
+import com.blockchain.ui.ActivityIndicator
 import com.blockchain.ui.dialog.MaterialProgressDialog
 import com.blockchain.ui.password.SecondPasswordHandler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcore.data.access.LogoutTimer
 import piuk.blockchain.androidcoreui.ApplicationLifeCycle
 import piuk.blockchain.androidcoreui.R
 import piuk.blockchain.androidcoreui.ui.base.ToolBarActivity
-import java.util.Locale
 
 /**
  * A base Activity for all activities which need auth timeouts & screenshot prevention
@@ -31,11 +36,14 @@ abstract class BlockchainActivity : ToolBarActivity() {
     private val securityPrefs: SecurityPrefs by inject()
 
     val analytics: Analytics by inject()
-    val locale: Locale by inject()
+    val appUtil: AppUtil by inject()
 
     protected val secondPasswordHandler: SecondPasswordHandler by injectActivity()
 
     protected abstract val alwaysDisableScreenshots: Boolean
+
+    private val activityIndicator = ActivityIndicator()
+    private val compositeDisposable = CompositeDisposable()
 
     private val enableScreenshots: Boolean
         get() = securityPrefs.isUnderTest || (securityPrefs.areScreenshotsEnabled && !alwaysDisableScreenshots)
@@ -79,13 +87,26 @@ abstract class BlockchainActivity : ToolBarActivity() {
         } else {
             disallowScreenshots()
         }
+        appUtil.activityIndicator = activityIndicator
+
+        compositeDisposable += activityIndicator.loading.observeOn(AndroidSchedulers.mainThread()).subscribeBy {
+            if (it == true) {
+                showLoading()
+            } else {
+                hideLoading()
+            }
+        }
     }
+
+    protected open fun showLoading() {}
+    protected open fun hideLoading() {}
 
     @CallSuper
     override fun onPause() {
         super.onPause()
         startLogoutTimer()
         ApplicationLifeCycle.getInstance().onActivityPaused()
+        compositeDisposable.clear()
     }
 
     private fun startLogoutTimer() {

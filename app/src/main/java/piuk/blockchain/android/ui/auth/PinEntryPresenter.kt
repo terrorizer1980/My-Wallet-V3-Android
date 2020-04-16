@@ -20,7 +20,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import org.spongycastle.crypto.InvalidCipherTextException
 import piuk.blockchain.android.R
-import piuk.blockchain.android.data.rxjava.RxUtil
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.DialogButtonCallback
@@ -195,7 +194,7 @@ class PinEntryPresenter(
             userEnteredPin = ""
             view.setTitleString(R.string.confirm_pin)
             clearPinBoxes()
-        } else if (userEnteredConfirmationPin == userEnteredPin) {
+    } else if (userEnteredConfirmationPin == userEnteredPin) {
             // End of Confirm - Pin is confirmed
             createNewPin(userEnteredPin)
         } else {
@@ -251,7 +250,7 @@ class PinEntryPresenter(
         if (!wallet.isUpgraded) {
             view.goToUpgradeWalletActivity()
         } else {
-            appUtil.restartAppWithVerifiedPin(LauncherActivity::class.java)
+            view.restartAppWithVerifiedPin()
         }
     }
 
@@ -436,7 +435,8 @@ class PinEntryPresenter(
             (payloadDataManager.getAccount(0).label == null ||
                     payloadDataManager.getAccount(0).label.isEmpty())
         ) {
-            payloadDataManager.getAccount(0).label = stringUtils.getString(R.string.default_wallet_name)
+            payloadDataManager.getAccount(0).label =
+                stringUtils.getString(R.string.btc_default_wallet_name)
         }
     }
 
@@ -476,15 +476,15 @@ class PinEntryPresenter(
             )
     }
 
-    @SuppressLint("CheckResult")
     fun checkForceUpgradeStatus(versionName: String) {
-        walletOptionsDataManager.checkForceUpgrade(versionName)
-            .compose(RxUtil.addObservableToCompositeDisposable(this))
-            .subscribe(
-                { updateType ->
+        compositeDisposable += walletOptionsDataManager.checkForceUpgrade(versionName)
+            .subscribeBy(
+                onNext = { updateType ->
                     if (updateType !== UpdateType.NONE)
                         view.appNeedsUpgrade(updateType === UpdateType.FORCE)
-                }) { Timber.e(it) }
+                },
+                onError = { Timber.e(it) }
+            )
     }
 
     companion object {

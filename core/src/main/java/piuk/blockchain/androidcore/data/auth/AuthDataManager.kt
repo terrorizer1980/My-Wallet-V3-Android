@@ -101,7 +101,7 @@ class AuthDataManager(
             // If auth not required, emit payload
             .filter { s ->
                 s.errorBody() == null ||
-                    !s.errorBody()!!.string().contains(AUTHORIZATION_REQUIRED)
+                        !s.errorBody()!!.string().contains(AUTHORIZATION_REQUIRED)
             }
             // Return message in response
             .map { responseBodyResponse -> responseBodyResponse.body()!!.string() }
@@ -169,10 +169,11 @@ class AuthDataManager(
             .map { response ->
                 /*
                 Note: Server side issue - If the incorrect PIN is supplied the server will respond
-                with a 500 { code: 1, error: "Incorrect PIN you have x attempts left" }
+                with a 403 { code: 1, error: "Incorrect PIN you have x attempts left" }
                  */
                 if (response.isSuccessful) {
                     accessState.isNewlyCreated = false
+                    accessState.isRestored = false
                     val decryptionKey = response.body()!!.success
 
                     return@map aesUtilWrapper.decrypt(
@@ -181,7 +182,7 @@ class AuthDataManager(
                         AESUtil.PIN_PBKDF2_ITERATIONS
                     )
                 } else {
-                    if (response.code() == 500) {
+                    if (response.code() == 403) {
                         // Invalid PIN
                         throw InvalidCredentialsException("Validate access failed")
                     } else {

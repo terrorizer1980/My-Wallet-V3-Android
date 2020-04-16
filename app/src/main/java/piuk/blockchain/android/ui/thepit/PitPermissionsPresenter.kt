@@ -6,14 +6,12 @@ import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.preferences.ThePitLinkingPrefs
-import com.blockchain.remoteconfig.ABTestExperiment
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.rxkotlin.zipWith
 import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.thepit.PitLinking
 import piuk.blockchain.androidcoreui.ui.base.BasePresenter
@@ -26,8 +24,7 @@ class PitPermissionsPresenter(
     private val nabuToken: NabuToken,
     private val pitLinking: PitLinking,
     private val prefs: ThePitLinkingPrefs,
-    private val analytics: Analytics,
-    private val abTestExperiment: ABTestExperiment
+    private val analytics: Analytics
 ) : BasePresenter<PitPermissionsView>() {
 
     private fun linkWallet() = nabuToken.fetchNabuToken().flatMap { nabu.linkWalletWithMercury(it) }
@@ -48,7 +45,7 @@ class PitPermissionsPresenter(
 
     fun tryToConnectWalletToPit() {
 
-        val linkWallet = fetchUser()
+        compositeDisposable += fetchUser()
             .flatMap { isEmailVerified(it) }
             .doOnError { if (it is EmailNotVerifiedException) view?.promptForEmailVerification(it.email) }
             .flatMap {
@@ -56,18 +53,8 @@ class PitPermissionsPresenter(
                     linkWallet(),
                     Single.just(it),
                     Single.timer(2, TimeUnit.SECONDS)
-                ) { linkId, email, _ -> Pair(linkId, email) }
+                ) { linkId, email, _ -> WalletToPitLinkingUrlParams(linkId = linkId, email = email) }
             }
-
-        compositeDisposable += Singles.zip(linkWallet,
-            abTestExperiment.getABVariant(ABTestExperiment.AB_THE_PIT_SIDE_NAV_VARIANT),
-            abTestExperiment.getABVariant(ABTestExperiment.AB_THE_PIT_ANNOUNCEMENT_VARIANT)) {
-                (linkId, email), sideVariant, announcementVariant ->
-            WalletToPitLinkingUrlParams(linkId = linkId,
-                email = email,
-                sideNavCampaign = sideCampaignRawString(sideVariant),
-                announcementCampaign = announcementCampaignRawString(announcementVariant))
-        }
             .doOnSuccess { pitLinking.sendWalletAddressToThePit() }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { view?.showLoading() }
@@ -78,24 +65,6 @@ class PitPermissionsPresenter(
             )
     }
 
-    fun learnMoreUrl(): Single<Pair<String, String>> =
-        abTestExperiment.getABVariant(ABTestExperiment.AB_THE_PIT_SIDE_NAV_VARIANT)
-            .zipWith(abTestExperiment.getABVariant(ABTestExperiment.AB_THE_PIT_ANNOUNCEMENT_VARIANT))
-            .map { (side, announcement) ->
-                sideCampaignRawString(side) to announcementCampaignRawString(announcement)
-            }
-
-    private fun sideCampaignRawString(variant: String?): String = when (variant) {
-        "B" -> "side_nav_trading"
-        "C" -> "side_nav_pit_exchange"
-        else -> "side_nav_pit"
-    }
-
-    private fun announcementCampaignRawString(variant: String?): String = when (variant) {
-        "Β" -> "variant_b"
-        else -> "variant_a"
-    }
-
     private fun doOnWalletToPitSuccess(params: WalletToPitLinkingUrlParams) {
 
         val encodedEmail = URLEncoder.encode(params.email, "utf-8")
@@ -103,9 +72,7 @@ class PitPermissionsPresenter(
             BuildConfig.PIT_LINKING_URL +
                     "${params.linkId}?email=$encodedEmail" +
                     "&utm_source=android_wallet" +
-                    "&utm_medium=wallet_linking" +
-                    "&utm_campaign=${params.sideNavCampaign}" +
-                    "&utm_campaign_2=${params.announcementCampaign}"
+                    "&utm_medium=wallet_linking"
 
         view?.onLinkSuccess(link)
     }
@@ -150,7 +117,5 @@ class PitPermissionsPresenter(
 
 data class WalletToPitLinkingUrlParams(
     val linkId: String,
-    val email: String,
-    val sideNavCampaign: String,
-    val announcementCampaign: String
+    val email: String
 )

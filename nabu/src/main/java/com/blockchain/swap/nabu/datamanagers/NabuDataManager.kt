@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.datamanagers
 
 import androidx.annotation.VisibleForTesting
+import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.NabuApiException
 import com.blockchain.swap.nabu.models.nabu.NabuCountryResponse
 import com.blockchain.swap.nabu.models.nabu.NabuErrorStatusCodes
@@ -18,8 +19,11 @@ import com.blockchain.swap.nabu.service.RetailWalletTokenService
 import com.blockchain.swap.nabu.stores.NabuSessionTokenStore
 import com.blockchain.utils.Optional
 import com.blockchain.veriff.VeriffApplicantAndToken
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.exceptions.ApiException
 import io.reactivex.Completable
+import io.reactivex.Maybe
+import io.reactivex.MaybeSource
 import io.reactivex.Single
 import io.reactivex.SingleSource
 import io.reactivex.schedulers.Schedulers
@@ -41,6 +45,10 @@ interface NabuDataManager {
     fun getUser(
         offlineTokenResponse: NabuOfflineTokenResponse
     ): Single<NabuUser>
+
+    fun getAirdropCampaignStatus(
+        offlineTokenResponse: NabuOfflineTokenResponse
+    ): Single<AirdropStatusList>
 
     fun getCountriesList(scope: Scope): Single<List<NabuCountryResponse>>
 
@@ -90,12 +98,17 @@ interface NabuDataManager {
 
     fun getCampaignList(offlineTokenResponse: NabuOfflineTokenResponse): Single<List<String>>
 
-    fun getAuthToken(jwt: String): Single<NabuOfflineTokenResponse>
+    fun getAuthToken(jwt: String, currency: String? = null, action: String? = null): Single<NabuOfflineTokenResponse>
 
     fun <T> authenticate(
         offlineToken: NabuOfflineTokenResponse,
         singleFunction: (NabuSessionTokenResponse) -> Single<T>
     ): Single<T>
+
+    fun <T> authenticateMaybe(
+        offlineToken: NabuOfflineTokenResponse,
+        maybeFunction: (NabuSessionTokenResponse) -> Maybe<T>
+    ): Maybe<T>
 
     fun clearAccessToken()
 
@@ -117,7 +130,7 @@ interface NabuDataManager {
 
     fun fetchCryptoAddressFromThePit(
         offlineTokenResponse: NabuOfflineTokenResponse,
-        cryptoSymbol: String
+        cryptoCurrency: CryptoCurrency
     ): Single<SendToMercuryAddressResponse>
 }
 
@@ -139,6 +152,7 @@ internal class NabuDataManagerImpl(
         get() = payloadDataManager.sharedKey
     private val emailSingle
         get() = settingsDataManager.getSettings()
+            .doOnNext { walletReporter.reportUserSettings(it) }
             .map { it.email }
             .singleOrError()
 
@@ -154,8 +168,10 @@ internal class NabuDataManagerImpl(
             }
         }
 
-    override fun getAuthToken(jwt: String): Single<NabuOfflineTokenResponse> =
-        nabuService.getAuthToken(jwt)
+    override fun getAuthToken(jwt: String, currency: String?, action: String?): Single<NabuOfflineTokenResponse> =
+        nabuService.getAuthToken(jwt, currency, action).doOnSuccess {
+            userReporter.reportUserId(it.userId)
+        }
 
     @VisibleForTesting
     internal fun getSessionToken(
@@ -196,6 +212,13 @@ internal class NabuDataManagerImpl(
             userReporter.reportUserId(offlineTokenResponse.userId)
             userReporter.reportUser(it)
             walletReporter.reportWalletGuid(guid)
+        }
+
+    override fun getAirdropCampaignStatus(
+        offlineTokenResponse: NabuOfflineTokenResponse
+    ): Single<AirdropStatusList> =
+        authenticate(offlineTokenResponse) {
+            nabuService.getAirdropCampaignStatus(it)
         }
 
     override fun updateUserWalletInfo(
@@ -306,6 +329,16 @@ internal class NabuDataManagerImpl(
                     .onErrorResumeNext { refreshOrReturnError(it, offlineToken, singleFunction) }
             }
 
+    override fun <T> authenticateMaybe(
+        offlineToken: NabuOfflineTokenResponse,
+        maybeFunction: (NabuSessionTokenResponse) -> Maybe<T>
+    ): Maybe<T> =
+        currentToken(offlineToken)
+            .flatMapMaybe { tokenResponse ->
+                maybeFunction(tokenResponse)
+                    .onErrorResumeNext { e: Throwable -> refreshOrReturnError(e, offlineToken, maybeFunction) }
+            }
+
     override fun invalidateToken() {
         nabuTokenStore.invalidate()
     }
@@ -344,10 +377,10 @@ internal class NabuDataManagerImpl(
 
     override fun fetchCryptoAddressFromThePit(
         offlineTokenResponse: NabuOfflineTokenResponse,
-        cryptoSymbol: String
+        cryptoCurrency: CryptoCurrency
     ): Single<SendToMercuryAddressResponse> =
         authenticate(offlineTokenResponse) {
-            nabuService.fetchPitSendToAddressForCrypto(it, cryptoSymbol)
+            nabuService.fetchPitSendToAddressForCrypto(it, cryptoCurrency.networkTicker)
         }
 
     private fun <T> refreshOrReturnError(
@@ -361,6 +394,19 @@ internal class NabuDataManagerImpl(
                 .flatMap { singleFunction(it) }
         } else {
             Single.error(throwable)
+        }
+
+    private fun <T> refreshOrReturnError(
+        throwable: Throwable,
+        offlineToken: NabuOfflineTokenResponse,
+        maybeFunction: (NabuSessionTokenResponse) -> Maybe<T>
+    ): MaybeSource<T> =
+        if (unauthenticated(throwable)) {
+            refreshToken(offlineToken)
+                .doOnSubscribe { clearAccessToken() }
+                .flatMapMaybe { maybeFunction(it) }
+        } else {
+            Maybe.error(throwable)
         }
 
     private fun recoverOrReturnError(

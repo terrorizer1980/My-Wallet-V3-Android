@@ -11,7 +11,6 @@ import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.ui.base.BlockchainActivity
 import timber.log.Timber
 import java.lang.IllegalStateException
-import java.util.Locale
 
 abstract class MviFragment<M : MviModel<S, I>, I : MviIntent<S>, S : MviState> : Fragment() {
 
@@ -49,9 +48,6 @@ abstract class MviFragment<M : MviModel<S, I>, I : MviIntent<S>, S : MviState> :
     protected val analytics: Analytics
         get() = activity.analytics
 
-    protected val locale: Locale
-        get() = activity.locale
-
     @UiThread
     protected fun showAlert(dlg: AlertDialog) = activity.showAlert(dlg)
 
@@ -69,6 +65,6 @@ abstract class MviFragment<M : MviModel<S, I>, I : MviIntent<S>, S : MviState> :
     fun updateProgressDialog(msg: String) = activity.updateProgressDialog(msg)
 
     @UiThread
-    fun showBottomSheet(bottomSheet: BottomSheetDialogFragment) =
-        bottomSheet.show(childFragmentManager, "BOTTOM_SHEET")
+    fun showBottomSheet(bottomSheet: BottomSheetDialogFragment?) =
+        bottomSheet?.show(childFragmentManager, "BOTTOM_SHEET")
 }

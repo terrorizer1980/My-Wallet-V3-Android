@@ -66,7 +66,7 @@
             <TextView
                 android:id="@+id/textview_pax"
                 style="@style/CryptoCurrencySelectorTextView"
-                android:text="@string/usd_pax"
+                android:text="@string/usd_pax_1"
                 tools:drawableLeft="@drawable/vector_pax" />
 
         </LinearLayout>

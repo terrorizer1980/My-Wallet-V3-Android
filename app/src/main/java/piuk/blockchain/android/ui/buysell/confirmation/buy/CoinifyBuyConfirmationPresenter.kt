@@ -20,7 +20,6 @@ import piuk.blockchain.androidbuysell.models.coinify.exceptions.CoinifyApiExcept
 import piuk.blockchain.androidbuysell.services.ExchangeService
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import info.blockchain.balance.FiatValue
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatUtil
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
@@ -35,8 +34,7 @@ class CoinifyBuyConfirmationPresenter(
     private val coinifyDataManager: CoinifyDataManager,
     private val exchangeService: ExchangeService,
     private val stringUtils: StringUtils,
-    private val metadataManager: MetadataManager,
-    private val currencyFormatUtil: CurrencyFormatUtil
+    private val metadataManager: MetadataManager
 ) : BasePresenter<CoinifyBuyConfirmationView>() {
 
     private val tokenSingle: Single<String>
@@ -220,12 +218,10 @@ class CoinifyBuyConfirmationPresenter(
 
     private fun getAwaitingFundsModel(it: CoinifyTrade): AwaitingFundsModel {
         val (referenceText, account, bank, holder, _, _) = (it.transferIn.details as BankDetails)
-        val formattedAmount = currencyFormatUtil.formatFiatWithSymbol(
-            FiatValue.fromMajor(
+        val formattedAmount = FiatValue.fromMajor(
                 it.transferIn.currency,
                 it.transferIn.sendAmount.toBigDecimal()
-            ), view.locale
-        )
+            ).toStringWithSymbol()
 
         return AwaitingFundsModel(
             it.id,

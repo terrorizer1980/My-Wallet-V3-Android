@@ -60,6 +60,7 @@ public class TransferFundsDataManagerTest extends RxTest {
         LegacyAddress legacyAddress1 = new LegacyAddress();
         legacyAddress1.setAddress("address");
         legacyAddress1.setPrivateKey("");
+
         List<LegacyAddress> legacyAddresses = Arrays.asList(legacyAddress1, legacyAddress1, legacyAddress1);
         when(dynamicFeeCache.getBtcFeeOptions().getRegularFee()).thenReturn(1L);
         when(payloadDataManager.getWallet().getLegacyAddressList()).thenReturn(legacyAddresses);
@@ -75,7 +76,7 @@ public class TransferFundsDataManagerTest extends RxTest {
         when(sendDataManager.getMaximumAvailable(CryptoCurrency.BTC, unspentOutputs, BigInteger.valueOf(1_000L), useNewCoinSelection))
                 .thenReturn(Pair.of(BigInteger.valueOf(1_000_000L), BigInteger.TEN));
         // Act
-        TestObserver<Triple<List<PendingTransaction>, Long, Long>> testObserver =
+        TestObserver<TransferableFundTransactionList> testObserver =
                 subject.getTransferableFundTransactionListForDefaultAccount().test();
         // Assert
         testObserver.assertComplete();
@@ -94,7 +95,7 @@ public class TransferFundsDataManagerTest extends RxTest {
                 any(BigInteger.class))).thenReturn(Observable.just("hash"));
 
         PendingTransaction transaction1 = new PendingTransaction();
-        transaction1.setSendingObject(new ItemAccount("", "", null, null, null));
+        transaction1.setSendingObject(new ItemAccount());
         LegacyAddress legacyAddress = new LegacyAddress();
         legacyAddress.setAddress("");
         transaction1.getSendingObject().setAccountObject(legacyAddress);
@@ -130,7 +131,7 @@ public class TransferFundsDataManagerTest extends RxTest {
                 any(BigInteger.class))).thenReturn(Observable.error(new Throwable()));
 
         PendingTransaction transaction1 = new PendingTransaction();
-        transaction1.setSendingObject(new ItemAccount("", "", null, null, null));
+        transaction1.setSendingObject(new ItemAccount());
         LegacyAddress legacyAddress = new LegacyAddress();
         legacyAddress.setAddress("");
         transaction1.getSendingObject().setAccountObject(legacyAddress);

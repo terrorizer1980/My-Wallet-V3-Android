@@ -21,7 +21,7 @@ import info.blockchain.wallet.payload.data.Account
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import junit.framework.Assert
+import junit.framework.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -155,15 +155,15 @@ class PitLinkingImplTest {
 
         verify(nabu).shareWalletAddressesWithThePit(tokenCapture.capture(), mapCapture.capture())
 
-        Assert.assertEquals(tokenCapture.firstValue, validOfflineToken)
+        assertEquals(tokenCapture.firstValue, validOfflineToken)
 
         val map = mapCapture.firstValue
-        Assert.assertEquals(map.size, 5)
-        Assert.assertEquals(map["BTC"], BTC_ACCOUNT_ADDRESS)
-        Assert.assertEquals(map["BCH"], BCH_ACCOUNT_ADDRESS)
-        Assert.assertEquals(map["ETH"], ETH_ACCOUNT_ADDRESS)
-        Assert.assertEquals(map["XLM"], XLM_ACCOUNT_ADDRESS)
-        Assert.assertEquals(map["PAX"], ETH_ACCOUNT_ADDRESS)
+        assertEquals(map.size, 5)
+        assertEquals(map["BTC"], BTC_ACCOUNT_ADDRESS)
+        assertEquals(map["BCH"], BCH_ACCOUNT_ADDRESS)
+        assertEquals(map["ETH"], ETH_ACCOUNT_ADDRESS)
+        assertEquals(map["XLM"], XLM_ACCOUNT_ADDRESS)
+        assertEquals(map["PAX"], ETH_ACCOUNT_ADDRESS)
 
         verifyNoMoreInteractions(nabu)
     }
@@ -188,15 +188,15 @@ class PitLinkingImplTest {
 
         verify(nabu).shareWalletAddressesWithThePit(tokenCapture.capture(), mapCapture.capture())
 
-        Assert.assertEquals(tokenCapture.firstValue, validOfflineToken)
+        assertEquals(tokenCapture.firstValue, validOfflineToken)
 
         val map = mapCapture.firstValue
-        Assert.assertEquals(map.size, 4)
-        Assert.assertEquals(map["BTC"], BTC_ACCOUNT_ADDRESS)
-        Assert.assertEquals(map["BCH"], null)
-        Assert.assertEquals(map["ETH"], ETH_ACCOUNT_ADDRESS)
-        Assert.assertEquals(map["XLM"], XLM_ACCOUNT_ADDRESS)
-        Assert.assertEquals(map["PAX"], ETH_ACCOUNT_ADDRESS)
+        assertEquals(map.size, 4)
+        assertEquals(map["BTC"], BTC_ACCOUNT_ADDRESS)
+        assertEquals(map["BCH"], null)
+        assertEquals(map["ETH"], ETH_ACCOUNT_ADDRESS)
+        assertEquals(map["XLM"], XLM_ACCOUNT_ADDRESS)
+        assertEquals(map["PAX"], ETH_ACCOUNT_ADDRESS)
 
         verifyNoMoreInteractions(nabu)
     }
@@ -221,10 +221,10 @@ class PitLinkingImplTest {
 
         verify(nabu).shareWalletAddressesWithThePit(tokenCapture.capture(), mapCapture.capture())
 
-        Assert.assertEquals(tokenCapture.firstValue, validOfflineToken)
+        assertEquals(tokenCapture.firstValue, validOfflineToken)
 
         val map = mapCapture.firstValue
-        Assert.assertEquals(map.size, 0)
+        assertEquals(map.size, 0)
 
         verifyNoMoreInteractions(nabu)
     }
@@ -249,10 +249,10 @@ class PitLinkingImplTest {
 
         verify(nabu).shareWalletAddressesWithThePit(tokenCapture.capture(), mapCapture.capture())
 
-        Assert.assertEquals(tokenCapture.firstValue, validOfflineToken)
+        assertEquals(tokenCapture.firstValue, validOfflineToken)
 
         val map = mapCapture.firstValue
-        Assert.assertEquals(map.size, 0)
+        assertEquals(map.size, 0)
 
         verifyNoMoreInteractions(nabu)
     }
@@ -266,7 +266,8 @@ class PitLinkingImplTest {
 
     private fun bchManagerReturnsGoodAddress() {
         whenever(bchDataManager.getDefaultAccountPosition()).thenReturn(0)
-        whenever(bchDataManager.getNextReceiveAddress(0)).thenReturn(Observable.just(BCH_ACCOUNT_ADDRESS))
+        whenever(bchDataManager.getNextCashReceiveAddress(0))
+            .thenReturn(Observable.just(BCH_ACCOUNT_ADDRESS))
     }
 
     private fun ethManagerReturnsGoodAddress() {
@@ -289,7 +290,7 @@ class PitLinkingImplTest {
 
     private fun bchManagerFailsWhenReturningAddress() {
         whenever(bchDataManager.getDefaultAccountPosition()).thenReturn(0)
-        whenever(bchDataManager.getNextReceiveAddress(0)).thenReturn(Observable.error(Throwable("Uh-huh")))
+        whenever(bchDataManager.getNextCashReceiveAddress(0)).thenReturn(Observable.error(Throwable("Uh-huh")))
     }
 
     private fun ethManagerFailsWhenReturningAddress() {
@@ -311,7 +312,7 @@ class PitLinkingImplTest {
 
     private fun bchManagerReturnsEmptyAddress() {
         whenever(bchDataManager.getDefaultAccountPosition()).thenReturn(0)
-        whenever(bchDataManager.getNextReceiveAddress(0)).thenReturn(Observable.just(""))
+        whenever(bchDataManager.getNextCashReceiveAddress(0)).thenReturn(Observable.just(""))
     }
 
     private fun ethManagerReturnsEmptyAddress() {

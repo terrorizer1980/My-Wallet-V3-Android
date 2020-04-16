@@ -1,5 +1,6 @@
 package com.blockchain.swap.nabu.service
 
+import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.api.nabu.Nabu
 import com.blockchain.swap.nabu.models.nabu.NabuUser
 import com.blockchain.swap.nabu.models.nabu.UpdateCoinifyTraderIdRequest
@@ -12,7 +13,6 @@ import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.models.CoinifyData
 import piuk.blockchain.androidbuysell.services.BuyConditions
 import piuk.blockchain.androidbuysell.services.ExchangeService
-import piuk.blockchain.androidcore.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.data.walletoptions.WalletOptionsDataManager
@@ -24,7 +24,7 @@ internal class NabuCoinifyAccountService(
     private val coinifyDataManager: CoinifyDataManager,
     private val payloadDataManager: PayloadDataManager,
     private val walletOptionsDataManager: WalletOptionsDataManager,
-    private val currencyState: CurrencyState,
+    private val currencyPrefs: CurrencyPrefs,
     private val exchangeService: ExchangeService,
     private val metadataManager: MetadataManager,
     private val buyConditions: BuyConditions
@@ -83,7 +83,7 @@ internal class NabuCoinifyAccountService(
                 payloadDataManager.guid,
                 payloadDataManager.sharedKey,
                 user.email,
-                currencyState.fiatUnit,
+                currencyPrefs.selectedFiatCurrency,
                 countryCode,
                 partnerId
             )

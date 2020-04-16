@@ -139,6 +139,7 @@ public class LegacyAddress implements JsonSerializableAccount {
 
         LegacyAddress legacyAddress = new LegacyAddress();
         legacyAddress.setPrivateKeyFromBytes(ecKey.getPrivKeyBytes());
+        legacyAddress.setLabel("");
 
         legacyAddress.setAddress(ecKey.toAddress(PersistentUrls.getInstance().getBitcoinParams()).toBase58());
         legacyAddress.setCreatedDeviceName(BlockchainFramework.getDevice());

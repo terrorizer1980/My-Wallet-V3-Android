@@ -10,6 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import org.bitcoinj.core.Address
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.send.strategy.removeBchUri
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.androidcore.data.bitcoincash.BchDataManager
@@ -17,6 +18,7 @@ import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
+import piuk.blockchain.androidcore.utils.extensions.then
 import timber.log.Timber
 import java.math.BigInteger
 
@@ -28,16 +30,21 @@ class SwipeToReceiveHelper(
     private val stringUtils: StringUtils,
     private val environmentSettings: EnvironmentConfig,
     private val xlmDataManager: XlmDataManager
-) {
+) : AddressGenerator {
 
-    fun storeAll(): Completable = Completable.merge(
-        listOf(
-            updateAndStoreBitcoinAddresses(),
-            updateAndStoreBitcoinCashAddresses(),
-            storeEthAddress(),
-            storeXlmAddress()
+    override fun generateAddresses(): Completable = payloadDataManager.updateAllTransactions().then {
+        bchDataManager.getWalletTransactions()
+            .onErrorReturn { emptyList() }.ignoreElements()
+    }.then {
+        Completable.merge(
+            listOf(
+                updateAndStoreBitcoinAddresses(),
+                updateAndStoreBitcoinCashAddresses(),
+                storeEthAddress(),
+                storeXlmAddress()
+            )
         )
-    )
+    }
 
     private fun storeBitcoinAddresses() {
         if (getIfSwipeEnabled()) {
@@ -88,8 +95,10 @@ class SwipeToReceiveHelper(
                     bchDataManager.getReceiveAddressAtPosition(defaultAccountPosition, i)
                     // Likely not initialized yet
                         ?: break
-
-                stringBuilder.append(receiveAddress).append(",")
+                val address =
+                    Address.fromBase58(environmentSettings.bitcoinCashNetworkParameters, receiveAddress)
+                val bech32 = address.toCashAddress()
+                stringBuilder.append(bech32.removeBchUri()).append(",")
             }
 
             store(KEY_SWIPE_RECEIVE_BCH_ADDRESSES, stringBuilder.toString())
@@ -174,7 +183,7 @@ class SwipeToReceiveHelper(
      * Returns a List of the next 5 available unused (at the time of storage) receive addresses. Can
      * return an empty list.
      */
-    fun getBitcoinReceiveAddresses(): List<String> {
+    override fun getBitcoinReceiveAddresses(): List<String> {
         val addressString = prefs.getValue(KEY_SWIPE_RECEIVE_BTC_ADDRESSES, "")
         return when {
             addressString.isEmpty() -> emptyList()
@@ -186,7 +195,7 @@ class SwipeToReceiveHelper(
      * Returns a List of the next 5 available unused (at the time of storage) receive addresses for
      * Bitcoin Cash. Can return an empty list.
      */
-    fun getBitcoinCashReceiveAddresses(): List<String> {
+    override fun getBitcoinCashReceiveAddresses(): List<String> {
         val addressString = prefs.getValue(KEY_SWIPE_RECEIVE_BCH_ADDRESSES, "")
         return when {
             addressString.isEmpty() -> emptyList()
@@ -202,7 +211,7 @@ class SwipeToReceiveHelper(
     /**
      * Returns the previously stored Ethereum address or null if not stored
      */
-    fun getEthReceiveAddress(): String = prefs.getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS) ?: ""
+    override fun getEthReceiveAddress(): String = prefs.getValue(KEY_SWIPE_RECEIVE_ETH_ADDRESS) ?: ""
 
     fun getXlmReceiveAddressSingle(): Single<String> = Single.just(getXlmReceiveAddress())
 
@@ -230,7 +239,7 @@ class SwipeToReceiveHelper(
 
     fun getXlmAccountName(): String = stringUtils.getString(R.string.xlm_default_account_label)
 
-    fun getPaxAccountName(): String = stringUtils.getString(R.string.pax_default_account_label)
+    fun getPaxAccountName(): String = stringUtils.getString(R.string.pax_default_account_label_1)
 
     private fun getIfSwipeEnabled(): Boolean =
         prefs.getValue(PersistentPrefs.KEY_SWIPE_TO_RECEIVE_ENABLED, true)
@@ -264,4 +273,11 @@ class SwipeToReceiveHelper(
         const val KEY_SWIPE_RECEIVE_BTC_ACCOUNT_NAME = "swipe_receive_account_name"
         const val KEY_SWIPE_RECEIVE_BCH_ACCOUNT_NAME = "swipe_receive_bch_account_name"
     }
+}
+
+interface AddressGenerator {
+    fun generateAddresses(): Completable
+    fun getEthReceiveAddress(): String
+    fun getBitcoinCashReceiveAddresses(): List<String>
+    fun getBitcoinReceiveAddresses(): List<String>
 }

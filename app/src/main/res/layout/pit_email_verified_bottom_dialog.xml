@@ -45,7 +45,7 @@
         android:fontFamily="@font/inter_medium"
         android:gravity="center_horizontal|top"
         android:paddingBottom="16dp"
-        android:text="@string/pit_email_verified_description"
+        android:text="@string/the_exchange_email_verified_description"
         android:textColor="@color/swap_error_dialog_message_text_color"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"

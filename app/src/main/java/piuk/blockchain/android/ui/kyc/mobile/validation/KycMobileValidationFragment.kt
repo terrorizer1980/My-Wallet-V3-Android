@@ -1,6 +1,8 @@
 package piuk.blockchain.android.ui.kyc.mobile.validation
 
+import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import androidx.appcompat.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +13,6 @@ import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.KYCAnalyticsEvents
 import piuk.blockchain.android.ui.kyc.extensions.skipFirstUnless
-import piuk.blockchain.android.ui.kyc.hyperlinks.insertSingleLink
 import piuk.blockchain.android.ui.kyc.mobile.entry.models.PhoneVerificationModel
 import piuk.blockchain.android.ui.kyc.mobile.validation.models.VerificationCode
 import piuk.blockchain.android.ui.kyc.navhost.KycProgressListener
@@ -31,6 +32,8 @@ import piuk.blockchain.androidcore.data.settings.PhoneNumber
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.ui.base.BaseMvpFragment
 import com.blockchain.ui.dialog.MaterialProgressDialog
+import kotlinx.android.synthetic.main.fragment_kyc_mobile_validation.*
+import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidcoreui.utils.ParentActivityDelegate
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -38,7 +41,6 @@ import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.fragment_kyc_mobile_validation.button_kyc_mobile_validation_next as buttonNext
 import kotlinx.android.synthetic.main.fragment_kyc_mobile_validation.edit_text_kyc_mobile_validation_code as editTextVerificationCode
 import kotlinx.android.synthetic.main.fragment_kyc_mobile_validation.text_view_mobile_validation_message as textViewPhoneNumber
-import kotlinx.android.synthetic.main.fragment_kyc_mobile_validation.text_view_resend_prompt as textViewResend
 
 class KycMobileValidationFragment :
     BaseMvpFragment<KycMobileValidationView, KycMobileValidationPresenter>(),
@@ -46,6 +48,7 @@ class KycMobileValidationFragment :
 
     private val presenter: KycMobileValidationPresenter by inject()
     private val analytics: Analytics by inject()
+    private val stringUtils: StringUtils by inject()
     private val progressListener: KycProgressListener by ParentActivityDelegate(this)
     private val compositeDisposable = CompositeDisposable()
     private var progressDialog: MaterialProgressDialog? = null
@@ -98,12 +101,18 @@ class KycMobileValidationFragment :
         progressListener.incrementProgress(KycStep.MobileVerifiedPage)
         textViewPhoneNumber.text = displayModel.formattedString
 
-        textViewResend.insertSingleLink(
-            R.string.kyc_phone_didnt_see_sms,
-            R.string.kyc_phone_send_again_hyperlink
-        ) {
-            resend.onNext(Unit)
-        }
+        val linksMap = mapOf<String, Uri?>(
+            "resend_code" to null
+        )
+
+        text_view_resend_prompt.text =
+            stringUtils.getStringWithMappedLinks(
+                R.string.kyc_phone_send_again,
+                linksMap,
+                requireActivity()
+            ) { resend.onNext(Unit) }
+
+        text_view_resend_prompt.movementMethod = LinkMovementMethod.getInstance()
 
         onViewReady()
     }

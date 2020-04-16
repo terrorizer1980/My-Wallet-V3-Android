@@ -8,41 +8,50 @@ class MoneyFormattingTests {
 
     @Test
     fun `FiatValue formatted as Money`() {
+        Locale.setDefault(Locale.CANADA)
+
         val money: Money = 1.cad()
-        money.symbol(Locale.CANADA) `should equal` "$"
-        money.toStringWithSymbol(Locale.CANADA) `should equal` "$1.00"
-        money.toStringWithoutSymbol(Locale.CANADA) `should equal` "1.00"
+        money.symbol `should equal` "$"
+        money.toStringWithSymbol() `should equal` "$1.00"
+        money.toStringWithoutSymbol() `should equal` "1.00"
     }
 
     @Test
     fun `FiatValue formatted as Money with rounding`() {
+        Locale.setDefault(Locale.CANADA)
         val money: Money = 1.695.cad()
 
-        money.toStringWithSymbol(Locale.CANADA) `should equal` "$1.69"
-        money.toStringWithoutSymbol(Locale.CANADA) `should equal` "1.69"
+        money.toStringWithSymbol() `should equal` "$1.69"
+        money.toStringWithoutSymbol() `should equal` "1.69"
     }
 
     @Test
     fun `FiatValue JPY formatted as Money`() {
+        Locale.setDefault(Locale.US)
+
         val money: Money = 123.jpy()
-        money.symbol(Locale.US) `should equal` "JPY"
-        money.toStringWithSymbol(Locale.US) `should equal` "JPY123"
-        money.toStringWithoutSymbol(Locale.US) `should equal` "123"
+        money.symbol `should equal` "JPY"
+        money.toStringWithSymbol() `should equal` "JPY123"
+        money.toStringWithoutSymbol() `should equal` "123"
     }
 
     @Test
     fun `CryptoValue formatted as Money`() {
+        Locale.setDefault(Locale.US)
+
         val money: Money = 1.23.bitcoin()
-        money.symbol(Locale.US) `should equal` "BTC"
-        money.toStringWithSymbol(Locale.US) `should equal` "1.23 BTC"
-        money.toStringWithoutSymbol(Locale.US) `should equal` "1.23"
+        money.symbol `should equal` "BTC"
+        money.toStringWithSymbol() `should equal` "1.23 BTC"
+        money.toStringWithoutSymbol() `should equal` "1.23"
     }
 
     @Test
     fun `CryptoValue Ether formatted as Money`() {
+        Locale.setDefault(Locale.FRANCE)
+
         val money: Money = 1.23.ether()
-        money.symbol(Locale.FRANCE) `should equal` "ETH"
-        money.toStringWithSymbol(Locale.FRANCE) `should equal` "1,23 ETH"
-        money.toStringWithoutSymbol(Locale.FRANCE) `should equal` "1,23"
+        money.symbol `should equal` "ETH"
+        money.toStringWithSymbol() `should equal` "1,23 ETH"
+        money.toStringWithoutSymbol() `should equal` "1,23"
     }
 }

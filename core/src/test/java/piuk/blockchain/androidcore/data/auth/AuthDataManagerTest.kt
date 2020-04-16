@@ -131,6 +131,7 @@ class AuthDataManagerTest : RxTest() {
         // Assert
         verify(accessState).setPin(pin)
         verify(accessState).isNewlyCreated = false
+        verify(accessState).isRestored = false
         verifyNoMoreInteractions(accessState)
         verify(prefsUtil).getValue(PersistentPrefs.KEY_PIN_IDENTIFIER, "")
         verify(prefsUtil).getValue(PersistentPrefs.KEY_ENCRYPTED_PASSWORD, "")
@@ -165,7 +166,7 @@ class AuthDataManagerTest : RxTest() {
             .thenReturn(
                 Observable.just(
                     Response.error(
-                        500,
+                        403,
                         ResponseBody.create(
                             ("application/json").toMediaTypeOrNull(),
                             "{}"

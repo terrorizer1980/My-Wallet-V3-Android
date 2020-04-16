@@ -35,15 +35,14 @@ class ExchangeRateDataStore(
 
     fun getCurrencyLabels(): Array<String> = btcTickerData!!.keys.toTypedArray()
 
-    fun getLastPrice(cryptoCurrency: CryptoCurrency, currencyName: String): Double {
-        var currency = currencyName
-        if (currency.isEmpty()) {
-            currency = "USD"
+    fun getLastPrice(cryptoCurrency: CryptoCurrency, fiatCurrency: String): Double {
+        if (fiatCurrency.isEmpty()) {
+            throw IllegalArgumentException("No currency supplied")
         }
 
         val tickerData = cryptoCurrency.tickerData()
 
-        val prefsKey = "LAST_KNOWN_${cryptoCurrency.symbol}_VALUE_FOR_CURRENCY_$currency"
+        val prefsKey = "LAST_KNOWN_${cryptoCurrency.networkTicker}_VALUE_FOR_CURRENCY_$fiatCurrency"
 
         val lastKnown = try {
             prefs.getValue(prefsKey, "0.0").toDouble()
@@ -53,13 +52,19 @@ class ExchangeRateDataStore(
             0.0
         }
 
-        val lastPrice: Double? = tickerData?.get(currency)?.price
+        val lastPrice: Double? = tickerData?.get(fiatCurrency)?.price
 
         if (lastPrice != null) {
-            prefs.setValue("$prefsKey$currency", lastPrice.toString())
+            prefs.setValue("$prefsKey$fiatCurrency", lastPrice.toString())
         }
 
         return lastPrice ?: lastKnown
+    }
+
+    fun getFiatLastPrice(targetFiat: String, sourceFiat: String): Double {
+        val targetCurrencyPrice = CryptoCurrency.BTC.tickerData()?.get(targetFiat)?.price ?: return 0.0
+        val sourceCurrencyPrice = CryptoCurrency.BTC.tickerData()?.get(sourceFiat)?.price ?: return 0.0
+        return targetCurrencyPrice.div(sourceCurrencyPrice)
     }
 
     private fun CryptoCurrency.tickerData() =

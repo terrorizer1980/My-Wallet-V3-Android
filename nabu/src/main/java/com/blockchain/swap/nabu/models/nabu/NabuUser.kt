@@ -67,7 +67,6 @@ data class NabuUser(
     fun requireCountryCode(): String {
         return address?.countryCode ?: throw IllegalStateException("User has no country code set")
     }
-
     val isMarkedForResubmission: Boolean
         get() = resubmission != null
 

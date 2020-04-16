@@ -2,8 +2,11 @@ package piuk.blockchain.androidbuysell.datamanagers
 
 import android.annotation.SuppressLint
 import androidx.annotation.VisibleForTesting
+import com.blockchain.remoteconfig.FeatureFlag
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.rxkotlin.Observables
+import io.reactivex.rxkotlin.Singles
 import org.bitcoinj.core.Sha256Hash
 import org.spongycastle.util.encoders.Hex
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
@@ -18,12 +21,15 @@ class BuyDataManager(
     private val authDataManager: AuthDataManager,
     private val payloadDataManager: PayloadDataManager,
     private val buyConditions: BuyConditions,
+    private val coinifyFeatureFlag: FeatureFlag,
     private val exchangeService: ExchangeService
 ) {
-    val canBuy: Observable<Boolean>
+
+    val canBuy: Single<Boolean>
         @Synchronized get() {
             initReplaySubjects()
-            return Observables.zip(isBuyRolledOut,
+            return Singles.zip(
+                isBuyRolledOut,
                 isCoinifyAllowed
             ) { isBuyRolledOut, allowCoinify ->
                 isBuyRolledOut && allowCoinify
@@ -36,21 +42,39 @@ class BuyDataManager(
      * @return An [Observable] wrapping a boolean value
      */
     @VisibleForTesting
-    internal val isBuyRolledOut: Observable<Boolean> = buyConditions.walletOptionsSource
+    internal val isBuyRolledOut: Single<Boolean> = buyConditions.walletOptionsSource
         .flatMap { walletOptions ->
             buyConditions.walletSettingsSource
                 .map { isRolloutAllowed(walletOptions.rolloutPercentage) }
-        }
+        }.singleOrError()
 
     /**
      * Checks if user has whitelisted coinify account or in valid coinify country
      *
      * @return An [Observable] wrapping a boolean value
      */
-    val isCoinifyAllowed: Observable<Boolean>
-        get() = Observables.zip(isInCoinifyCountry, buyConditions.exchangeDataSource
-        ) { coinifyCountry, exchangeData ->
-            coinifyCountry || (exchangeData.coinify?.user != 0)
+    val isCoinifyAllowed: Single<Boolean>
+        @Synchronized get() {
+            initReplaySubjects()
+            return Observables.zip(isInCoinifyCountry,
+                buyConditions.exchangeDataSource,
+                coinifyFeatureFlag.enabled.toObservable()
+            ) { coinifyCountry, exchangeData, coinifyEnabled ->
+                coinifyEnabled && (coinifyCountry || (exchangeData.coinify?.user != 0))
+            }.singleOrError()
+        }
+
+    val hasCoinifyAccount: Single<Boolean>
+        @Synchronized get() {
+            initReplaySubjects()
+            return Observables.zip(
+                buyConditions.exchangeDataSource,
+                coinifyFeatureFlag.enabled.toObservable()
+            ) { exchangeData, coinifyEnabled ->
+                coinifyEnabled && exchangeData.coinify?.let {
+                    it.user != 0
+                } ?: false
+            }.singleOrError()
         }
 
     /**

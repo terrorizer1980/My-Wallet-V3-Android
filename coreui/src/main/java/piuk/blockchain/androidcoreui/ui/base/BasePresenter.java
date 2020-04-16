@@ -56,6 +56,5 @@ public abstract class BasePresenter<VIEW extends View> implements Presenter<VIEW
         view = null;
     }
 
-    public abstract void onViewReady();
-
+    public void onViewReady() { }
 }

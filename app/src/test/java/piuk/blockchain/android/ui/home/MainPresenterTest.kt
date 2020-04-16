@@ -8,7 +8,6 @@ import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper
 import piuk.blockchain.android.campaign.SunriverCampaignRegistration
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
-import com.blockchain.remoteconfig.ABTestExperiment
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import com.blockchain.remoteconfig.FeatureFlag
@@ -26,36 +25,32 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.deeplink.DeepLinkProcessor
+import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.thepit.PitLinking
-import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
-import piuk.blockchain.androidcore.data.currency.CurrencyState
+import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.android.util.AppUtil
 
 class MainPresenterTest {
 
     private lateinit var subject: MainPresenter
 
     private val view: MainView = mock()
-
     private val prefs: PersistentPrefs = mock()
-    private val appUtil: AppUtil = mock()
     private val accessState: AccessState = mock()
     private val payloadDataManager: PayloadDataManager = mock()
-    private val metadataLoader: MetadataLoader = mock()
+    private val credentialsWiper: CredentialsWiper = mock()
     private val buyDataManager: BuyDataManager = mock()
     private val exchangeRateFactory: ExchangeRateDataManager = mock()
     private val currencyState: CurrencyState = mock()
     private val metadataManager: MetadataManager = mock()
-    private val stringUtils: StringUtils = mock()
     private val environmentSettings: EnvironmentConfig = mock()
     private val coinifyDataManager: CoinifyDataManager = mock()
     private val exchangeService: ExchangeService = mock()
@@ -66,9 +61,9 @@ class MainPresenterTest {
     private val xlmDataManager: XlmDataManager = mock()
     private val pitLinking: PitLinking = mock()
     private val featureFlag: FeatureFlag = mock()
+    private val simpleBuySync: SimpleBuySyncFactory = mock()
     private val crashLogger: CrashLogger = mock()
     private val nabuDatamanager: NabuDataManager = mock()
-    private val abTesting: ABTestExperiment = mock()
 
     private val nabuToken: NabuToken = mock {
         on { fetchNabuToken() } `it returns` Single.just(NabuOfflineTokenResponse(
@@ -98,9 +93,8 @@ class MainPresenterTest {
     fun setUp() {
         subject = MainPresenter(
             prefs = prefs,
-            appUtil = appUtil,
             accessState = accessState,
-            metadataLoader = metadataLoader,
+            credentialsWiper = credentialsWiper,
             payloadDataManager = payloadDataManager,
             buyDataManager = buyDataManager,
             exchangeRateFactory = exchangeRateFactory,
@@ -115,12 +109,13 @@ class MainPresenterTest {
             sunriverCampaignRegistration = sunriverCampaignRegistration,
             xlmDataManager = xlmDataManager,
             pitFeatureFlag = featureFlag,
-            pitABTestingExperiment = abTesting,
+            simpleBuySync = simpleBuySync,
             pitLinking = pitLinking,
             nabuToken = nabuToken,
             nabuDataManager = nabuDatamanager,
             crashLogger = crashLogger,
-            stringUtils = stringUtils
+            simpleBuyAvailability = mock(),
+            cacheCredentialsWiper = mock()
         )
 
         subject.attachView(view)
@@ -140,7 +135,7 @@ class MainPresenterTest {
         // Assert
         verify(view, never()).launchSwap(any(), any(), any())
         verify(view, never()).launchSwapIntro()
-        verify(view).launchKyc(CampaignType.Swap)
+        verify(view).launchPendingVerificationScreen(CampaignType.Swap)
     }
 
     @Test

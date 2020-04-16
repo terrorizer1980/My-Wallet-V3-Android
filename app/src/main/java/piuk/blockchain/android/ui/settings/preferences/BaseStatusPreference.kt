@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import piuk.blockchain.android.R
-import piuk.blockchain.androidcoreui.utils.extensions.applyFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.CustomFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
 

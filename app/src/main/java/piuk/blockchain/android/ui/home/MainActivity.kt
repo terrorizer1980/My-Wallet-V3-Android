@@ -5,14 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutManager
 import android.os.Bundle
-import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.FIND_VIEWS_WITH_TEXT
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
@@ -21,7 +19,6 @@ import androidx.fragment.app.Fragment
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.blockchain.annotations.ButWhy
-import com.blockchain.annotations.CommonCode
 import piuk.blockchain.android.ui.kyc.navhost.KycNavHostActivity
 import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.lockbox.ui.LockboxLandingActivity
@@ -29,6 +26,7 @@ import com.blockchain.notifications.analytics.AnalyticsEvent
 import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.notifications.analytics.RequestAnalyticsEvents
 import com.blockchain.notifications.analytics.SendAnalytics
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_SUPPORT_PORTAL
@@ -58,16 +56,19 @@ import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
-import com.blockchain.ui.dialog.MaterialProgressDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.simplebuy.SimpleBuyActivity
+import piuk.blockchain.android.ui.airdrops.AirdropCentreActivity
 import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.android.ui.home.analytics.SideNavEvent
+import piuk.blockchain.android.ui.kyc.status.KycStatusActivity
 import piuk.blockchain.android.ui.onboarding.OnboardingActivity
-import piuk.blockchain.android.ui.tour.BuySellTourFragment
 import piuk.blockchain.android.ui.tour.IntroTourAnalyticsEvent
 import piuk.blockchain.android.ui.tour.IntroTourHost
 import piuk.blockchain.android.ui.tour.IntroTourStep
@@ -75,7 +76,6 @@ import piuk.blockchain.android.ui.tour.SwapTourFragment
 import piuk.blockchain.android.ui.transactions.TransactionsFragment
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
-import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 import timber.log.Timber
@@ -95,10 +95,12 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     private var handlingResult = false
 
-    private val appUtil: AppUtil by inject()
+    private val _refreshAnnouncements = PublishSubject.create<Unit>()
+    val refreshAnnouncements: Observable<Unit>
+        get() = _refreshAnnouncements
+
     private var activityResultAction: () -> Unit = {}
 
-    private var progressDlg: MaterialProgressDialog? = null
     private var backPressed: Long = 0
 
     private var webViewLoginDetails: WebViewLoginDetails? = null
@@ -350,11 +352,11 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             .setMessage(R.string.confirm_currency_message)
             .setCancelable(true)
             .setPositiveButton(R.string.bitcoin_cash) { _, _ ->
-                presenter.setCryptoCurrency(CryptoCurrency.BCH)
+                presenter.cryptoCurrency = CryptoCurrency.BCH
                 startSendFragment(uri)
             }
             .setNegativeButton(R.string.bitcoin) { _, _ ->
-                presenter.setCryptoCurrency(CryptoCurrency.BTC)
+                presenter.cryptoCurrency = CryptoCurrency.BTC
                 startSendFragment(uri)
             }
             .create()
@@ -367,11 +369,11 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             .setMessage(R.string.confirm_currency_message)
             .setCancelable(true)
             .setPositiveButton(R.string.ether) { _, _ ->
-                presenter.setCryptoCurrency(CryptoCurrency.ETHER)
+                presenter.cryptoCurrency = CryptoCurrency.ETHER
                 startSendFragment(uri)
             }
-            .setNegativeButton(R.string.usd_pax) { _, _ ->
-                presenter.setCryptoCurrency(CryptoCurrency.PAX)
+            .setNegativeButton(R.string.usd_pax_1) { _, _ ->
+                presenter.cryptoCurrency = CryptoCurrency.PAX
                 startSendFragment(uri)
             }
             .create()
@@ -387,8 +389,10 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         when (menuItem.itemId) {
             R.id.nav_lockbox -> LockboxLandingActivity.start(this)
             R.id.nav_backup -> launchBackupFunds()
-            R.id.nav_exchange_homebrew_debug -> HomebrewNavHostActivity.start(this, presenter.defaultCurrency)
-            R.id.nav_the_pit -> presenter.onThePitMenuClicked()
+            R.id.nav_debug_swap -> HomebrewNavHostActivity.start(this, presenter.defaultCurrency)
+            R.id.nav_the_exchange -> presenter.onThePitMenuClicked()
+            R.id.nav_simple_buy -> launchSimpleBuy()
+            R.id.nav_airdrops -> AirdropCentreActivity.start(this)
             R.id.nav_addresses -> startActivityForResult(Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
             R.id.nav_buy -> presenter.routeToBuySell()
             R.id.login_web_wallet -> PairingCodeActivity.start(this)
@@ -399,6 +403,16 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         drawer_layout.closeDrawers()
     }
 
+    private fun launchSimpleBuy() {
+        analytics.logEvent(SimpleBuyAnalytics.SIMPLE_BUY_SIDE_NAV)
+        startActivity(
+            SimpleBuyActivity.newInstance(
+                context = this,
+                launchFromDashboard = true
+            )
+        )
+    }
+
     override fun launchThePitLinking(linkId: String) {
         PitPermissionsActivity.start(this, linkId)
     }
@@ -407,16 +421,19 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         PitLaunchBottomDialog.launch(this)
     }
 
-    override fun setPitItemTitle(title: String) {
-        menu.findItem(R.id.nav_the_pit).title = title
-    }
-
     override fun setPitEnabled(enabled: Boolean) {
         setPitVisible(enabled)
     }
 
-    override fun launchBackupFunds() {
-        BackupWalletActivity.start(this)
+    override fun setSimpleBuyEnabled(enabled: Boolean) {
+        val menu = menu
+        menu.findItem(R.id.nav_simple_buy).isVisible = enabled
+    }
+
+    override fun launchBackupFunds(fragment: Fragment?, requestCode: Int) {
+        fragment?.let {
+            BackupWalletActivity.startForResult(it, requestCode)
+        } ?: BackupWalletActivity.start(this)
     }
 
     override fun launchSetup2Fa() {
@@ -507,21 +524,16 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         startActivity(intent)
     }
 
-    override fun showMetadataNodeFailure() {
-        if (!isFinishing) {
-            AlertDialog.Builder(this, R.style.AlertDialogStyle)
-                .setTitle(R.string.app_name)
-                .setMessage(R.string.metadata_load_failure)
-                .setPositiveButton(R.string.retry) { _, _ -> presenter.initMetadataElements() }
-                .setNegativeButton(R.string.exit) { _, _ -> presenter.clearLoginState() }
-                .setCancelable(false)
-                .create()
-                .show()
-        }
-    }
-
     override fun kickToLauncherPage() {
         startSingleActivity(LauncherActivity::class.java)
+    }
+
+    override fun showProgressDialog(message: Int) {
+        super.showProgressDialog(message, null)
+    }
+
+    override fun hideProgressDialog() {
+        super.dismissProgressDialog()
     }
 
     override fun launchKyc(campaignType: CampaignType) {
@@ -543,30 +555,25 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         presenter.startSwapOrKyc(toCurrency = targetCurrency, fromCurrency = fromCryptoCurrency)
     }
 
-    @ButWhy("What does this really do? Who calls it?")
-    override fun refreshDashboard() {
-//        replaceContentFragment(DashboardFragment.newInstance())
-    }
-
-    @CommonCode("Move to base")
-    override fun showProgressDialog(@StringRes message: Int) {
-        hideProgressDialog()
-        if (!isFinishing) {
-            progressDlg = MaterialProgressDialog(this).apply {
-                setCancelable(false)
-                setMessage(message)
-                show()
-            }
-        }
-    }
-
-    @CommonCode("Move to base")
-    override fun hideProgressDialog() {
-        if (!isFinishing && progressDlg != null) {
-            progressDlg!!.dismiss()
-            progressDlg = null
-        }
-    }
+//    @CommonCode("Move to base")
+//    override fun showProgressDialog(@StringRes message: Int) {
+//        hideProgressDialog()
+//        if (!isFinishing) {
+//            progressDlg = MaterialProgressDialog(this).apply {
+//                setCancelable(false)
+//                setMessage(message)
+//                show()
+//            }
+//        }
+//    }
+//
+//    @CommonCode("Move to base")
+//    override fun hideProgressDialog() {
+//        if (!isFinishing && progressDlg != null) {
+//            progressDlg!!.dismiss()
+//            progressDlg = null
+//        }
+//    }
 
     override fun onHandleInput(strUri: String) {
         handlePredefinedInput(strUri, true)
@@ -588,10 +595,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             .setPositiveButton(R.string.ok_cap, null)
             .setNegativeButton(R.string.view_details) { _, _ ->
                 startBalanceFragment()
-                // Show transaction detail
-                val bundle = Bundle()
-                bundle.putString(TransactionsFragment.KEY_TRANSACTION_HASH, txHash)
-                TransactionDetailActivity.start(this, bundle)
+                TransactionDetailActivity.start(this, presenter.cryptoCurrency, txHash)
             }.show()
     }
 
@@ -602,7 +606,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     private fun setPitVisible(visible: Boolean) {
         val menu = menu
-        menu.findItem(R.id.nav_the_pit).isVisible = visible
+        menu.findItem(R.id.nav_the_exchange).isVisible = visible
     }
 
     override fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails) {
@@ -649,29 +653,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         }
     }
 
-    override fun showSecondPasswordDialog() {
-        val editText = AppCompatEditText(this)
-        editText.setHint(R.string.password)
-        editText.inputType =
-            InputType.TYPE_CLASS_TEXT or
-                    InputType.TYPE_TEXT_VARIATION_PASSWORD or
-                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-
-        val frameLayout = ViewUtils.getAlertDialogPaddedView(this, editText)
-
-        AlertDialog.Builder(this, R.style.AlertDialogStyle)
-            .setTitle(R.string.eth_now_supporting)
-            .setMessage(R.string.eth_second_password_prompt)
-            .setView(frameLayout)
-            .setCancelable(false)
-            .setPositiveButton(android.R.string.ok) { dialog, which ->
-                ViewUtils.hideKeyboard(this)
-                presenter.decryptAndSetupMetadata(editText.text.toString())
-            }
-            .create()
-            .show()
-    }
-
     override fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
         ToastCustom.makeText(this, getString(message), ToastCustom.LENGTH_SHORT, toastType)
     }
@@ -689,7 +670,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     override fun showHomebrewDebugMenu() {
-        menu.findItem(R.id.nav_exchange_homebrew_debug).isVisible = true
+        menu.findItem(R.id.nav_debug_swap).isVisible = true
     }
 
     fun setOnTouchOutsideViewListener(
@@ -710,7 +691,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     override fun gotoSendFor(cryptoCurrency: CryptoCurrency) {
-        presenter.setCryptoCurrency(cryptoCurrency)
+        presenter.cryptoCurrency = cryptoCurrency
         startSendFragment(null)
     }
 
@@ -724,7 +705,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     override fun gotoReceiveFor(cryptoCurrency: CryptoCurrency) {
-        presenter.setCryptoCurrency(cryptoCurrency)
+        presenter.cryptoCurrency = cryptoCurrency
         setCurrentTabItem(ITEM_RECEIVE)
         ViewUtils.setElevation(appbar_layout, 0f)
         startReceiveFragment()
@@ -748,14 +729,36 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     override fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency) {
-        presenter.setCryptoCurrency(cryptoCurrency)
+        presenter.cryptoCurrency = cryptoCurrency
         bottom_navigation.currentItem = ITEM_ACTIVITY
+    }
+
+    override fun resumeSimpleBuyKyc() {
+        startActivity(
+            SimpleBuyActivity.newInstance(
+                context = this,
+                launchKycResume = true
+            )
+        )
+    }
+
+    override fun startSimpleBuy() {
+        startActivity(
+            SimpleBuyActivity.newInstance(
+                context = this,
+                launchFromDashboard = true
+            )
+        )
     }
 
     override fun startBalanceFragment() {
         val fragment = TransactionsFragment.newInstance(true)
         replaceContentFragment(fragment)
         toolbar_general.title = ""
+    }
+
+    override fun refreshAnnouncements() {
+        _refreshAnnouncements.onNext(Unit)
     }
 
     override fun launchKycIntro() {
@@ -770,6 +773,10 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
         val swapIntroFragment = SwapIntroFragment.newInstance()
         replaceContentFragment(swapIntroFragment)
+    }
+
+    override fun launchPendingVerificationScreen(campaignType: CampaignType) {
+        KycStatusActivity.start(this, campaignType)
     }
 
     override fun shouldIgnoreDeepLinking() =
@@ -854,7 +861,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                 analyticsEvent = IntroTourAnalyticsEvent.IntroPortfolioViewedAnalytics,
                 msgIcon = R.drawable.ic_vector_toolbar_home,
                 msgTitle = R.string.tour_step_one_title,
-                msgBody = R.string.tour_step_one_body,
+                msgBody = R.string.tour_step_one_body_1,
                 msgButton = R.string.tour_step_one_btn
             ),
             IntroTourStep(
@@ -886,23 +893,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                 msgTitle = R.string.tour_step_four_title,
                 msgBody = R.string.tour_step_four_body,
                 msgButton = R.string.tour_step_four_btn
-            ),
-            IntroTourStep(
-                name = "Step_Five",
-                lookupTriggerView = {
-                    bottom_navigation.getViewAtPosition(ITEM_HOME).performClick()
-                    drawer_layout.openDrawer(GravityCompat.START)
-                    null
-                },
-                triggerClick = {
-                    drawer_layout.closeDrawers()
-                    replaceContentFragment(BuySellTourFragment.newInstance())
-                },
-                analyticsEvent = IntroTourAnalyticsEvent.IntroBuySellViewedAnalytics,
-                msgIcon = R.drawable.ic_nav_buy_sell,
-                msgTitle = R.string.tour_step_five_title,
-                msgBody = R.string.tour_step_five_body,
-                msgButton = R.string.tour_step_five_btn
             )
         )
 

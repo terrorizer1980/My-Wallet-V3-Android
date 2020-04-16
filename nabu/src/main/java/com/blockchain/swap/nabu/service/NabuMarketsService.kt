@@ -1,5 +1,6 @@
 package com.blockchain.swap.nabu.service
 
+import com.blockchain.annotations.CommonCode
 import com.blockchain.morph.CoinPair
 import com.blockchain.swap.nabu.Authenticator
 import com.blockchain.swap.nabu.api.trade.FailureReasonJson
@@ -13,9 +14,9 @@ import com.blockchain.swap.nabu.api.Value
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
-import info.blockchain.balance.withMajorValue
 import io.reactivex.Completable
 import io.reactivex.Single
+import java.util.UnknownFormatConversionException
 
 class NabuMarketsService internal constructor(
     private val nabuMarkets: NabuMarkets,
@@ -27,11 +28,11 @@ class NabuMarketsService internal constructor(
             nabuMarkets.getTradingConfig(
                 tradingPair.pairCodeUpper,
                 it.authHeader
-            ).map {
+            ).map { config ->
                 TradingConfig(
                     minOrderSize = CryptoValue.fromMajor(
                         tradingPair.from,
-                        it.minOrderSize
+                        config.minOrderSize
                     )
                 )
             }
@@ -121,8 +122,14 @@ private fun TradeJson.mapTrade(): NabuTransaction? {
     )
 }
 
-private fun Value.toCryptoValue(): CryptoValue =
-    CryptoCurrency.fromSymbolOrThrow(symbol).withMajorValue(value)
+@CommonCode("Also exists in QuoteJson. Make method on Value")
+private fun Value.toCryptoValue(): CryptoValue {
+    val currency = CryptoCurrency.fromNetworkTicker(symbol)
+        ?: throw UnknownFormatConversionException("Unknown Crypto currency: $symbol")
 
+    return CryptoValue.fromMajor(currency, value)
+}
+
+@CommonCode("Also exists in QuoteJson. Make method on Value")
 private fun Value.toFiatValue(): FiatValue =
     FiatValue.fromMajor(this.symbol, this.value)

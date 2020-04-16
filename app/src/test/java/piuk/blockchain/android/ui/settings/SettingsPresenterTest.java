@@ -29,7 +29,6 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper;
 import piuk.blockchain.android.util.StringUtils;
 import piuk.blockchain.androidcore.data.access.AccessState;
 import piuk.blockchain.androidcore.data.auth.AuthDataManager;
-import piuk.blockchain.androidcore.data.currency.CurrencyFormatManager;
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager;
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager;
 import piuk.blockchain.androidcore.data.settings.Email;
@@ -83,8 +82,6 @@ public class SettingsPresenterTest extends RxTest {
     @Mock
     private ExchangeRateDataManager exchangeRateDataManager;
     @Mock
-    private CurrencyFormatManager currencyFormatManager;
-    @Mock
     private KycStatusHelper kycStatusHelper;
     @Mock
     private EmailSyncUpdater emailSyncUpdater;
@@ -113,7 +110,6 @@ public class SettingsPresenterTest extends RxTest {
                 swipeToReceiveHelper,
                 notificationTokenManager,
                 exchangeRateDataManager,
-                currencyFormatManager,
                 kycStatusHelper,
                 pitLinking,
                 analytics,
@@ -188,12 +184,12 @@ public class SettingsPresenterTest extends RxTest {
 
     @Test
     public void onKycStatusClicked_should_launch_kyc_status_tier1_review() {
-        assertClickLaunchesKyc(Kyc2TierState.Tier1InReview);
+        assertClickLaunchesKyc(Kyc2TierState.Tier1Pending);
     }
 
     @Test
     public void onKycStatusClicked_should_launch_kyc_status_tier2_review() {
-        assertClickLaunchesKyc(Kyc2TierState.Tier2InReview);
+        assertClickLaunchesKyc(Kyc2TierState.Tier2InPending);
     }
 
     @Test
@@ -770,12 +766,12 @@ public class SettingsPresenterTest extends RxTest {
     @Test
     public void storeSwipeToReceiveAddressesSuccessful() {
         // Arrange
-        when(swipeToReceiveHelper.storeAll()).thenReturn(Completable.complete());
+        when(swipeToReceiveHelper.generateAddresses()).thenReturn(Completable.complete());
         // Act
         subject.storeSwipeToReceiveAddresses();
         getTestScheduler().triggerActions();
         // Assert
-        verify(swipeToReceiveHelper).storeAll();
+        verify(swipeToReceiveHelper).generateAddresses();
         verifyNoMoreInteractions(swipeToReceiveHelper);
         verify(activity).showProgressDialog(R.string.please_wait);
         verify(activity).hideProgressDialog();
@@ -785,12 +781,12 @@ public class SettingsPresenterTest extends RxTest {
     @Test
     public void storeSwipeToReceiveAddressesFailed() {
         // Arrange
-        when(swipeToReceiveHelper.storeAll()).thenReturn(Completable.error(new Throwable()));
+        when(swipeToReceiveHelper.generateAddresses()).thenReturn(Completable.error(new Throwable()));
         // Act
         subject.storeSwipeToReceiveAddresses();
         getTestScheduler().triggerActions();
         // Assert
-        verify(swipeToReceiveHelper).storeAll();
+        verify(swipeToReceiveHelper).generateAddresses();
         verifyNoMoreInteractions(swipeToReceiveHelper);
         verify(activity).showProgressDialog(anyInt());
         verify(activity).hideProgressDialog();
