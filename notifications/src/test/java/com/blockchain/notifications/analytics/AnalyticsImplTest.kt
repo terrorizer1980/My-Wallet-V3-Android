@@ -1,17 +1,20 @@
 package com.blockchain.notifications.analytics
 
+import android.content.SharedPreferences
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.whenever
 import org.junit.Test
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class AnalyticsImplTest {
 
-    private val mockFirebase = mock<FirebaseAnalytics>()
+    private val mockFirebase: FirebaseAnalytics = mock()
+    private val mockEditor: SharedPreferences.Editor = mock()
+
     private val event = object : AnalyticsEvent {
         override val event: String
             get() = "name"
@@ -20,7 +23,7 @@ class AnalyticsImplTest {
 
     @Test
     fun `should log custom event`() {
-        val mockStore = mock<PersistentPrefs>()
+        val mockStore = mock<SharedPreferences>()
 
         AnalyticsImpl(mockFirebase, mockStore).logEvent(event)
 
@@ -29,9 +32,12 @@ class AnalyticsImplTest {
 
     @Test
     fun `should log once event once`() {
-        val mockStore = mock<PersistentPrefs> {
-            on { hasSentMetric(any()) } doReturn false
+        val mockStore = mock<SharedPreferences> {
+            on { contains(any()) } doReturn false
+            on { edit() } doReturn mockEditor
         }
+
+        whenever(mockEditor.putBoolean(any(), any())).thenReturn(mockEditor)
 
         AnalyticsImpl(mockFirebase, mockStore).logEventOnce(event)
         verify(mockFirebase).logEvent(event.event, null)
@@ -39,8 +45,9 @@ class AnalyticsImplTest {
 
     @Test
     fun `should not log once event again`() {
-        val mockStore = mock<PersistentPrefs> {
-            on { hasSentMetric(any()) } doReturn true
+        val mockStore = mock<SharedPreferences> {
+            on { contains(any()) } doReturn true
+            on { edit() } doReturn mockEditor
         }
 
         AnalyticsImpl(mockFirebase, mockStore).logEventOnce(event)
