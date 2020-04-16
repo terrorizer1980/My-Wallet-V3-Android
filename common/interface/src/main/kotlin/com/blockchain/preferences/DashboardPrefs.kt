@@ -11,7 +11,4 @@ interface DashboardPrefs {
     fun setTourComplete()
     fun setTourStage(stageName: String)
     fun resetTour()
-
-    fun hasSentMetric(metricName: String): Boolean
-    fun setMetricAsSent(metricName: String)
 }

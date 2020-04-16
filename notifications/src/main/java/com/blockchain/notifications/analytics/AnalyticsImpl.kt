@@ -1,12 +1,12 @@
 package com.blockchain.notifications.analytics
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
-import piuk.blockchain.androidcore.utils.PersistentPrefs
 
 class AnalyticsImpl internal constructor(
     private val firebaseAnalytics: FirebaseAnalytics,
-    private val prefs: PersistentPrefs
+    private val store: SharedPreferences
 ) : Analytics {
 
     override fun logEvent(analyticsEvent: AnalyticsEvent) {
@@ -14,8 +14,8 @@ class AnalyticsImpl internal constructor(
     }
 
     override fun logEventOnce(analyticsEvent: AnalyticsEvent) {
-        if (!prefs.hasSentMetric(analyticsEvent.event)) {
-            prefs.setMetricAsSent(analyticsEvent.event)
+        if (!hasSentMetric(analyticsEvent.event)) {
+            setMetricAsSent(analyticsEvent.event)
             logEvent(analyticsEvent)
         }
     }
@@ -27,4 +27,10 @@ class AnalyticsImpl internal constructor(
             params.forEach { (k, v) -> putString(k, v) }
         }
     }
+
+    private fun hasSentMetric(metricName: String) =
+        store.contains("HAS_SENT_METRIC_$metricName")
+
+    private fun setMetricAsSent(metricName: String) =
+        store.edit().putBoolean("HAS_SENT_METRIC_$metricName", true).apply()
 }
