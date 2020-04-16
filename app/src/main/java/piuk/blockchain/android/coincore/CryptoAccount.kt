@@ -2,14 +2,21 @@ package piuk.blockchain.android.coincore
 
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
-import io.reactivex.Maybe
+import info.blockchain.balance.FiatValue
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
+
+interface TxCache {
+    fun addToCache(txList: ActivitySummaryList)
+    fun asActivityList(): List<ActivitySummaryItem>
+    val hasTransactions: Boolean
+}
 
 interface CryptoAccount {
     val label: String
 
-    // Not totally happy with this being nullable, but the top level group won't have an associated crypto, so?
-    val cryptoCurrency: CryptoCurrency?
+    val cryptoCurrencies: Set<CryptoCurrency>
 
     val balance: Single<CryptoValue>
 
@@ -17,16 +24,16 @@ interface CryptoAccount {
 
     val actions: AvailableActions
 
-    val hasTransactions: Boolean
     val isFunded: Boolean
 
-    fun findActivityItem(txHash: String): Maybe<ActivitySummaryItem>
-}
+    val hasTransactions: Boolean
 
-typealias CryptoAccountsList = List<CryptoAccount>
+    fun fiatBalance(fiat: String, exchangeRates: ExchangeRateDataManager): Single<FiatValue>
+}
 
 interface CryptoSingleAccount : CryptoAccount {
     val receiveAddress: Single<String>
+    val isDefault: Boolean
 
 //  Later, when we do send:
 //    interface PendingTransaction {
@@ -36,4 +43,12 @@ interface CryptoSingleAccount : CryptoAccount {
 //    }
 }
 
-interface CryptoAccountGroup : CryptoAccount
+interface CryptoAccountGroup : CryptoAccount {
+    val accounts: List<CryptoAccount>
+}
+
+typealias CryptoAccountsList = List<CryptoAccount>
+typealias CryptoSingleAccountList = List<CryptoSingleAccount>
+
+internal fun CryptoAccount.isCustodial(): Boolean =
+    this is CryptoSingleAccountCustodialBase

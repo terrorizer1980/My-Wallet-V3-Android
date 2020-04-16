@@ -48,10 +48,10 @@ class BasicTransferToWallet : SlidingModalBottomDialog() {
             ?: throw IllegalArgumentException("No cryptoCurrency specified")
     }
 
-    private val assetSelect: Coincore by inject()
+    private val coincore: Coincore by inject()
 
     private val token: AssetTokens by lazy {
-        assetSelect[cryptoCurrency]
+        coincore[cryptoCurrency]
     }
 
     private val custodialWallet: CustodialWalletManager by inject()

@@ -41,12 +41,15 @@
 
     <string name="done">Done</string>
     <string name="btn_close">Close</string>
-    <string name="SENT">Sent</string>
     <string name="pax_fee_1">USD-D FEE</string>
     <string name="sending">Sending</string>
-    <string name="RECEIVED">Received</string>
     <string name="receiving">Receiving</string>
-    <string name="MOVED">Transferred</string>
+    <string name="tx_sent">Sent</string>
+    <string name="tx_received">Received</string>
+    <string name="tx_moved">Transferred</string>
+    <string name="tx_swapped">Swapped</string>
+    <string name="tx_bought">Bought</string>
+    <string name="tx_sold">Sold</string>
     <string name="edit_transaction_hint">Edit transaction description</string>
     <string name="pie_chart_content">pie chart</string>
 
@@ -614,9 +617,17 @@
     <string name="push_notifications_summary">Enable notifications to receive a popup notification
         whenever you receive bitcoin.
     </string>
-    <string name="transaction_detail_title">Transaction</string>
+
+    <!-- TRANSACTIONS -->
+    <string name="tx_title_send">Send %1s</string>
+    <string name="tx_title_receive">Receive %1s</string>
+    <string name="tx_title_sell">Sell %1s</string>
+    <string name="tx_title_buy">Buy %1s</string>
+    <string name="tx_title_swap">Swap %1s</string>
+    <string name="tx_title_transfer">Transfer %1s</string>
 
     <!-- TRANSACTION DETAILS -->
+    <string name="transaction_detail_title">Transaction</string>
     <string name="transaction_detail_description_hint">What\'s this for?</string>
     <string name="transaction_detail_date">Date</string>
     <string name="transaction_detail_status">Status</string>
@@ -624,8 +635,10 @@
     <string name="transaction_detail_pending">Pending (%1$s/%2$s Confirmations)</string>
     <string name="transaction_detail_fee">"Transaction fee: %1$s"</string>
     <string name="transaction_detail_value_at_time_received">Value when received:\u0020</string>
-    <string name="transaction_detail_value_at_time_transferred">Value when transferred:\u0020
-    </string>
+    <string name="transaction_detail_value_at_time_transferred">Value when transferred:\u0020</string>
+    <string name="transaction_detail_value_at_time_swapped">Value when swapped:\u0020</string>
+    <string name="transaction_detail_value_at_time_bought">Value when bought:\u0020</string>
+    <string name="transaction_detail_value_at_time_sold">Value when sold:\u0020</string>
     <string name="transaction_detail_value_at_time_sent">Value when sent:\u0020</string>
     <string name="transaction_detail_value">Value:\u0020</string>
     <string name="transaction_detail_coinbase">No Inputs (Newly Generated Coins)</string>
@@ -834,6 +847,9 @@
     <string name="force_upgrade_message">The version of the app you are using is no longer
         supported. Please update the app and try again.
     </string>
+
+    <!-- Activities -->
+    <string name="activities_title">Activity</string>
 
     <!-- FORCE UPGRADE -->
     <string name="tx_decode_error">Unable to decode address</string>
@@ -1834,12 +1850,25 @@
     <string name="eth_default_account_label">My Ether Wallet</string>
     <string name="xlm_default_account_label">My Stellar Wallet</string>
     <string name="pax_default_account_label_1">My USD Digital Wallet</string>
+    <string name="default_label_all_wallets">All Wallets</string>
     <string name="exchange_default_account_label">My Exchange %1$s Address</string>
     <string name="approximately_symbol">~ %1$s</string>
 
     <string name="custodial_wallet_default_label">%1s Trade Wallet</string>
+    <string name="select_account_sheet_title">Select a Wallet</string>
+    <string name="activity_state_initialised">Initialised</string>
+    <string name="activity_state_uninitialised">Uninitialised</string>
+    <string name="activity_state_awaiting_funds">Waiting On Funds</string>
+    <string name="activity_state_pending">Pending</string>
+    <string name="activity_state_canceled">Canceled</string>
+    <string name="activity_state_unknown">Unknown</string>
+    <string name="activity_state_failed">Failed</string>
+    <string name="activity_wallet_total_balance">Total Balance</string>
 
     <string name="currency_not_supported_title">Your Currency is Not Supported</string>
     <string name="currency_not_supported">Currently we don’t support buying crypto with %1s</string>
+    <string name="activity_no_activity_title">You Have No Activity</string>
+    <string name="activity_no_activity_text">All your transactions will show up here.</string>
+    <string name="activity_custodial_pending_value">Bank Transfer</string>
 
 </resources>

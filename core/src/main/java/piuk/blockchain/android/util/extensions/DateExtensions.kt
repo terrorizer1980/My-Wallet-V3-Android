@@ -19,3 +19,14 @@ fun Date.toFormattedString(locale: Locale = Locale.getDefault()): String {
 
     return "$dateText @ $timeText"
 }
+
+/**
+ * Takes a [Date] object and converts it to our standard date format, ie March 09, 2018 @11:47.
+ *
+ * @param locale The current [Locale].
+ * @return A formatted [String] object.
+ */
+fun Date.toFormattedDate(): String {
+    val dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM)
+    return dateFormat.format(this)
+}

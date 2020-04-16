@@ -53,7 +53,7 @@ class SimpleBuySyncFactoryTest {
         whenSimpleBuyIsEnabled()
 
         whenever(localState.fetch()).thenReturn(null)
-        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(Single.just(emptyList()))
+        whenever(remoteState.getAllOutstandingBuyOrders()).thenReturn(Single.just(emptyList()))
 
         subject.performSync()
             .test()
@@ -78,7 +78,7 @@ class SimpleBuySyncFactoryTest {
         )
 
         whenever(localState.fetch()).thenReturn(localInput)
-        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(Single.just(emptyList()))
+        whenever(remoteState.getAllOutstandingBuyOrders()).thenReturn(Single.just(emptyList()))
 
         val expectedResult = localInput
 
@@ -140,7 +140,7 @@ class SimpleBuySyncFactoryTest {
         )
 
         whenever(localState.fetch()).thenReturn(null)
-        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(
+        whenever(remoteState.getAllOutstandingBuyOrders()).thenReturn(
             Single.just(
                 listOf(remoteInput)
             )
@@ -170,7 +170,7 @@ class SimpleBuySyncFactoryTest {
         )
 
         whenever(localState.fetch()).thenReturn(null)
-        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(
+        whenever(remoteState.getAllOutstandingBuyOrders()).thenReturn(
             Single.just(
                 listOf(remoteInput)
             )
@@ -220,7 +220,7 @@ class SimpleBuySyncFactoryTest {
         )
 
         whenever(localState.fetch()).thenReturn(null)
-        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(
+        whenever(remoteState.getAllOutstandingBuyOrders()).thenReturn(
             Single.just(
                 listOf(
                     remoteInput1,
@@ -283,7 +283,7 @@ class SimpleBuySyncFactoryTest {
         )
 
         whenever(localState.fetch()).thenReturn(null)
-        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(
+        whenever(remoteState.getAllOutstandingBuyOrders()).thenReturn(
             Single.just(
                 listOf(
                     remoteInput1,
@@ -337,7 +337,7 @@ class SimpleBuySyncFactoryTest {
         )
 
         whenever(localState.fetch()).thenReturn(null)
-        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(
+        whenever(remoteState.getAllOutstandingBuyOrders()).thenReturn(
             Single.just(
                 listOf(
                     remoteInput1,
@@ -386,7 +386,7 @@ class SimpleBuySyncFactoryTest {
 
         whenever(localState.fetch()).thenReturn(localInput)
         whenever(remoteState.getBuyOrder(EXPECTED_ORDER_ID)).thenReturn(Single.just(remoteInput))
-        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(
+        whenever(remoteState.getAllOutstandingBuyOrders()).thenReturn(
             Single.just(
                 listOf(
                     remoteInput
@@ -432,7 +432,7 @@ class SimpleBuySyncFactoryTest {
 
         whenever(localState.fetch()).thenReturn(localInput)
         whenever(remoteState.getBuyOrder(EXPECTED_ORDER_ID)).thenReturn(Single.just(remoteInput))
-        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(
+        whenever(remoteState.getAllOutstandingBuyOrders()).thenReturn(
             Single.just(
                 listOf(
                     remoteInput
@@ -477,7 +477,7 @@ class SimpleBuySyncFactoryTest {
         )
 
         whenever(localState.fetch()).thenReturn(localInput)
-        whenever(remoteState.getOutstandingBuyOrders()).thenReturn(
+        whenever(remoteState.getAllOutstandingBuyOrders()).thenReturn(
             Single.just(
                 listOf(
                     remoteInput

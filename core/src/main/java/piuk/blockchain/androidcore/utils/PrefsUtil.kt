@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.data.Settings.UNIT_FIAT
-import java.lang.IllegalStateException
 import java.util.Currency
 import java.util.Locale
 
@@ -94,7 +93,7 @@ class PrefsUtil(
         get() = try {
             val localeFiat = Currency.getInstance(Locale.getDefault()).currencyCode
             if (UNIT_FIAT.contains(localeFiat)) localeFiat else DEFAULT_FIAT_CURRENCY
-        } catch (e: IllegalStateException) {
+        } catch (e: Exception) {
             DEFAULT_FIAT_CURRENCY
         }
 

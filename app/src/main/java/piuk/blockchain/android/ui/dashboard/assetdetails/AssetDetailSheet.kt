@@ -23,12 +23,15 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.dialog_dashboared_asset_details.view.*
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.AssetFilter
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.AssetTokens
+import piuk.blockchain.android.coincore.CryptoAccount
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.ui.dashboard.setDeltaColour
 import piuk.blockchain.androidcore.data.charts.PriceSeries
@@ -57,7 +60,7 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
     interface Host : SlidingModalBottomDialog.Host {
         fun gotoSendFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter)
         fun goToReceiveFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter)
-        fun gotoActivityFor(cryptoCurrency: CryptoCurrency, filter: AssetFilter)
+        fun gotoActivityFor(account: CryptoAccount)
         fun gotoSwap(fromCryptoCurrency: CryptoCurrency, filter: AssetFilter)
     }
 
@@ -161,11 +164,30 @@ class AssetDetailSheet : SlidingModalBottomDialog() {
     private fun onAssetActionSelected(action: AssetAction, assetFilter: AssetFilter) {
         dismiss()
         when (action) {
-            AssetAction.ViewActivity -> host.gotoActivityFor(cryptoCurrency, assetFilter)
+            AssetAction.ViewActivity -> startActivityWithDefaultAccountForAsset(assetFilter)
             AssetAction.Send -> host.gotoSendFor(cryptoCurrency, assetFilter)
             AssetAction.Receive -> host.goToReceiveFor(cryptoCurrency, assetFilter)
             AssetAction.Swap -> host.gotoSwap(cryptoCurrency, assetFilter)
         }.exhaustive
+    }
+
+    // Temp patch fn until coincore and accounts are used throughout: TODO - remove this nonsense
+    private fun startActivityWithDefaultAccountForAsset(assetFilter: AssetFilter) {
+        val coincore: Coincore = get()
+        val asset = coincore[cryptoCurrency]
+
+        compositeDisposable += asset.accounts(assetFilter)
+            .subscribeBy(
+                onSuccess = { group ->
+                    val account = group.accounts
+                        .filterIsInstance<CryptoSingleAccount>()
+                        .firstOrNull { a -> a.isDefault } ?: group.accounts.firstOrNull()
+
+                    account?.let {
+                        host.gotoActivityFor(it)
+                    }
+                }
+            )
     }
 
     private fun updateChart(chart: LineChart, data: List<PriceDatum>) {

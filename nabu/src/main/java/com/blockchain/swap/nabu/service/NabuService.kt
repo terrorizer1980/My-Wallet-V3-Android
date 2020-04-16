@@ -274,9 +274,11 @@ class NabuService(retrofit: Retrofit) {
     }.wrapErrorMessage()
 
     internal fun getOutstandingBuyOrders(
-        sessionToken: NabuSessionTokenResponse
-    ) = service.getOutstandingBuyOrders(
-        sessionToken.authHeader
+        sessionToken: NabuSessionTokenResponse,
+        pendingOnly: Boolean
+    ) = service.getBuyOrders(
+        sessionToken.authHeader,
+        pendingOnly
     ).wrapErrorMessage()
 
     internal fun deleteBuyOrder(

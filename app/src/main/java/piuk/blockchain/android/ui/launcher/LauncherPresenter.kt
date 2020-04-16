@@ -171,7 +171,6 @@ class LauncherPresenter(
                                 // Wallet double encrypted and needs to be decrypted to set up ether wallet, contacts etc
                                 view?.showSecondPasswordDialog()
                             } else {
-                                logException(throwable)
                                 view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
                                 view.onRequestPin()
                             }
@@ -179,6 +178,7 @@ class LauncherPresenter(
                             view.showToast(R.string.unexpected_error, ToastCustom.TYPE_ERROR)
                             view.onRequestPin()
                         }
+                        logException(throwable)
                     }
                 )
     }

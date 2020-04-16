@@ -39,9 +39,9 @@ class AssetDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) 
         analytics: Analytics
     ) {
         with(itemView) {
-            asset_icon.setCoinIcon(item.tokens.asset)
+            icon.setCoinIcon(item.tokens.asset)
             asset_name.text = resources.getString(item.tokens.asset.assetName())
-            asset_filter_label.setText(
+            status_date.setText(
                 when (item.assetFilter) {
                     AssetFilter.Total -> R.string.dashboard_asset_balance_total
                     AssetFilter.Wallet -> R.string.dashboard_asset_balance_wallet

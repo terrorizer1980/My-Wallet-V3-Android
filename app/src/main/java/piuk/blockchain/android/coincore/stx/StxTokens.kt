@@ -16,15 +16,17 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.AssetAction
 import piuk.blockchain.android.coincore.impl.AssetTokensBase
-import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.CryptoSingleAccount
-import piuk.blockchain.android.ui.account.ItemAccount
+import piuk.blockchain.android.coincore.CryptoSingleAccountList
 import piuk.blockchain.androidcore.data.charts.PriceSeries
 import piuk.blockchain.androidcore.data.charts.TimeSpan
+import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import timber.log.Timber
 
 internal class StxTokens(
     private val payloadManager: PayloadManager,
+    private val exchangeRates: ExchangeRateDataManager,
     private val currencyPrefs: CurrencyPrefs,
     private val custodialWalletManager: CustodialWalletManager,
     labels: DefaultLabels,
@@ -38,25 +40,27 @@ internal class StxTokens(
     override fun initToken(): Completable =
         Completable.complete()
 
-    override fun loadNonCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
-        emptyList()
+    override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
+        Single.fromCallable {
+            listOf(getStxAccount())
+        }
+        .doOnError { Timber.e(it) }
+        .onErrorReturn { emptyList() }
 
-    override fun loadCustodialAccounts(labels: DefaultLabels): List<CryptoSingleAccount> =
-        listOf(
-            StxCryptoAccountCustodial(
-                labels.getDefaultCustodialWalletLabel(asset),
-                custodialWalletManager
+    override fun loadCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
+        Single.just(
+            listOf(
+                StxCryptoAccountCustodial(
+                    labels.getDefaultCustodialWalletLabel(asset),
+                    custodialWalletManager,
+                    exchangeRates,
+                    txActivityCache
+                )
             )
         )
 
-    override fun initActivities(): Completable =
-        Completable.complete()
-
     override fun defaultAccountRef(): Single<AccountReference> =
         Single.just(getDefaultStxAccountRef())
-
-    override fun defaultAccount(): Single<CryptoSingleAccount> =
-        Single.just(getStxAccount())
 
     override fun receiveAddress(): Single<String> {
         TODO("not implemented")
@@ -66,16 +70,24 @@ internal class StxTokens(
         val hdWallets = payloadManager.payload?.hdWallets
             ?: throw IllegalStateException("Wallet not available")
 
-        return hdWallets[0].stxAccount.toAccountReference()
+        val stxAccount = hdWallets[0].stxAccount
+            ?: throw IllegalStateException("Wallet not available")
+
+        return stxAccount.toAccountReference()
     }
 
     private fun getStxAccount(): CryptoSingleAccount {
         val hdWallets = payloadManager.payload?.hdWallets
             ?: throw IllegalStateException("Wallet not available")
 
+        val stxAccount = hdWallets[0].stxAccount
+            ?: throw IllegalStateException("Wallet not available")
+
         return StxCryptoAccountNonCustodial(
             label = "STX Account",
-            address = hdWallets[0].stxAccount.bitcoinSerializedBase58Address
+            address = stxAccount.bitcoinSerializedBase58Address,
+            exchangeRates = exchangeRates,
+            txCache = txActivityCache
         )
     }
 
@@ -106,16 +118,10 @@ internal class StxTokens(
     // No supported actions at this time
     override val noncustodialActions = emptySet<AssetAction>()
     override val custodialActions = emptySet<AssetAction>()
-
-    // Activity/transactions moved over from TransactionDataListManager.
-    // TODO Requires some reworking, but that can happen later. After the code & tests are moved and working.
-    override fun doFetchActivity(itemAccount: ItemAccount): Single<ActivitySummaryList> {
-        TODO("not implemented")
-    }
 }
 
 private fun STXAccount.toAccountReference(): AccountReference.Stx =
     AccountReference.Stx(
         _label = "STX Account",
         address = bitcoinSerializedBase58Address
-    )
+)

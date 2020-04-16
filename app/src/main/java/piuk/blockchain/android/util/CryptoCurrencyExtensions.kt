@@ -102,4 +102,7 @@ internal class ResourceDefaultLabels(
 
     override fun getAssetMasterWalletLabel(cryptoCurrency: CryptoCurrency): String =
         resources.getString(cryptoCurrency.assetName())
+
+    override fun getAllWalletLabel(): String =
+        resources.getString(R.string.default_label_all_wallets)
 }

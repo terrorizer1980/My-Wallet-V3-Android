@@ -149,7 +149,7 @@ class SimpleBuySyncFactory(
     }
 
     private fun getRemotePendingBuy(): Maybe<SimpleBuyState> {
-        return custodialWallet.getOutstandingBuyOrders()
+        return custodialWallet.getAllOutstandingBuyOrders()
             .flatMapMaybe { list ->
                 list.sortedByDescending { it.expires }
                     .firstOrNull {
@@ -162,7 +162,7 @@ class SimpleBuySyncFactory(
 
     private fun checkForRemoteOverride(localState: SimpleBuyState): Maybe<SimpleBuyState> {
         return if (localState.orderState < OrderState.AWAITING_FUNDS) {
-            custodialWallet.getOutstandingBuyOrders()
+            custodialWallet.getAllOutstandingBuyOrders()
                 .flatMapMaybe { list ->
                     list.sortedByDescending { it.expires }
                         .firstOrNull {
@@ -197,7 +197,8 @@ class SimpleBuySyncFactory(
                     OrderState.AWAITING_FUNDS -> Maybe.just(state)
                     OrderState.FINISHED,
                     OrderState.CANCELED,
-                    OrderState.FAILED -> Maybe.empty()
+                    OrderState.FAILED,
+                    OrderState.UNKNOWN -> Maybe.empty()
                 }
             }
 

@@ -35,16 +35,6 @@ data class BankAgentResponse(
     val routingNumber: String?
 )
 
-enum class OrderStateResponse {
-    PENDING_DEPOSIT,
-    PENDING_EXECUTION,
-    DEPOSIT_MATCHED,
-    FINISHED,
-    CANCELED,
-    FAILED,
-    EXPIRED
-}
-
 data class SimpleBuyBalanceResponse(
     val available: String
 )
@@ -63,9 +53,20 @@ data class BuyOrderResponse(
     val inputQuantity: String,
     val outputCurrency: String,
     val outputQuantity: String,
-    val state: OrderStateResponse,
-    val expiresAt: Date
-)
+    val state: String,
+    val expiresAt: Date,
+    val updatedAt: Date
+) {
+    companion object {
+        const val PENDING_DEPOSIT = "PENDING_DEPOSIT"
+        const val PENDING_EXECUTION = "PENDING_EXECUTION"
+        const val DEPOSIT_MATCHED = "DEPOSIT_MATCHED"
+        const val FINISHED = "FINISHED"
+        const val CANCELED = "CANCELED"
+        const val FAILED = "FAILED"
+        const val EXPIRED = "EXPIRED"
+    }
+}
 
 data class TransferRequest(
     val address: String,

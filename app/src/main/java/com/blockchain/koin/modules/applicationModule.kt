@@ -27,7 +27,6 @@ import piuk.blockchain.android.accounts.AsyncAllAccountListImplementation
 import piuk.blockchain.android.accounts.BchAccountListAdapter
 import piuk.blockchain.android.accounts.EthAccountListAdapter
 import piuk.blockchain.android.accounts.PaxAccountListAdapter
-import piuk.blockchain.android.coincore.impl.TransactionNoteUpdater
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
 import piuk.blockchain.android.data.cache.DynamicFeeCache
@@ -82,6 +81,7 @@ import piuk.blockchain.android.ui.createwallet.CreateWalletPresenter
 import piuk.blockchain.android.ui.dashboard.DashboardInteractor
 import piuk.blockchain.android.ui.dashboard.DashboardModel
 import piuk.blockchain.android.ui.dashboard.DashboardState
+import piuk.blockchain.android.ui.dashboard.BalanceAnalyticsReporter
 import piuk.blockchain.android.ui.dashboard.assetdetails.AssetDetailsCalculator
 import piuk.blockchain.android.ui.fingerprint.FingerprintHelper
 import piuk.blockchain.android.ui.fingerprint.FingerprintPresenter
@@ -115,11 +115,8 @@ import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceiveHelper
 import piuk.blockchain.android.ui.swipetoreceive.SwipeToReceivePresenter
 import piuk.blockchain.android.ui.thepit.PitPermissionsPresenter
 import piuk.blockchain.android.ui.thepit.PitVerifyEmailPresenter
-import piuk.blockchain.android.ui.transactions.TransactionDetailPresenter
-import piuk.blockchain.android.ui.transactions.mapping.TransactionHelper
+import piuk.blockchain.android.ui.activity.detail.TransactionDetailPresenter
 import piuk.blockchain.android.ui.upgrade.UpgradeWalletPresenter
-import piuk.blockchain.android.ui.transactions.TransactionsPresenter
-import piuk.blockchain.android.ui.transactions.mapping.TransactionInOutMapper
 import piuk.blockchain.android.util.BackupWalletUtil
 import piuk.blockchain.android.util.OSUtil
 import piuk.blockchain.android.util.PrngHelper
@@ -136,7 +133,6 @@ import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
 import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.android.data.currency.CurrencyState
-import piuk.blockchain.android.ui.dashboard.BalanceAnalyticsReporter
 import piuk.blockchain.android.ui.swipetoreceive.AddressGenerator
 import piuk.blockchain.android.util.ResourceDefaultLabels
 import piuk.blockchain.androidcoreui.utils.DateUtil
@@ -565,7 +561,7 @@ val applicationModule = applicationContext {
 
         factory {
             TransactionDetailPresenter(
-                assetLookup = get(),
+                coincore = get(),
                 inputOutputMapper = get(),
                 prefs = get(),
                 stringUtils = get(),
@@ -837,32 +833,6 @@ val applicationModule = applicationContext {
             )
         }
 
-        bean {
-            TransactionNoteUpdater(
-                exchangeService = get(),
-                shapeShiftDataManager = get(),
-                coinifyDataManager = get(),
-                stringUtils = get()
-            )
-        }
-
-        factory {
-            TransactionsPresenter(
-                exchangeRateDataManager = get(),
-                assetSelect = get(),
-                transactionNotes = get(),
-                ethDataManager = get(),
-                paxAccount = get("pax"),
-                payloadDataManager = get(),
-                buyDataManager = get(),
-                rxBus = get(),
-                currencyState = get(),
-                bchDataManager = get(),
-                walletAccountHelper = get(),
-                environmentSettings = get()
-            )
-        }
-
         factory {
             QrCodeDataManager()
         }
@@ -879,25 +849,6 @@ val applicationModule = applicationContext {
                 environmentSettings = get(),
                 currencyState = get(),
                 exchangeRates = get()
-            )
-        }
-
-        factory {
-            TransactionInOutMapper(
-                transactionHelper = get(),
-                payloadDataManager = get(),
-                stringUtils = get(),
-                ethDataManager = get(),
-                bchDataManager = get(),
-                xlmDataManager = get(),
-                environmentSettings = get()
-            )
-        }
-
-        factory {
-            TransactionHelper(
-                payloadDataManager = get(),
-                bchDataManager = get()
             )
         }
 

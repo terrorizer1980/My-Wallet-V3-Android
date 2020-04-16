@@ -61,7 +61,6 @@ interface MainView : MvpView, HomeNavigator {
     fun getStartIntent(): Intent
 
     fun onHandleInput(strUri: String)
-    fun startBalanceFragment()
     fun refreshAnnouncements()
     fun kickToLauncherPage()
     fun showProgressDialog(@StringRes message: Int)

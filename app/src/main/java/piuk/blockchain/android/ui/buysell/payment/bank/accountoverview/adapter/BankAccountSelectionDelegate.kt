@@ -24,8 +24,7 @@ internal class BankAccountSelectionDelegate(
     override fun onBindViewHolder(
         items: List<BankAccountDisplayable>,
         position: Int,
-        holder: RecyclerView.ViewHolder,
-        payloads: List<*>
+        holder: RecyclerView.ViewHolder
     ) {
         holder as AddAccountViewHolder
         holder.bind(items[position] as BankAccountListObject, listener)
