@@ -113,7 +113,7 @@ val dashboardAnnouncementsModule = applicationContext {
 
         factory {
             SwapAnnouncement(
-                dataManager = get("merge"),
+                dataManager = get(),
                 queries = get(),
                 dismissRecorder = get()
             )

@@ -116,6 +116,8 @@ import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.SSLVerifyUtil
 import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.android.data.currency.CurrencyState
+import piuk.blockchain.android.ui.home.CacheCredentialsWiper
+import piuk.blockchain.android.ui.home.CredentialsWiper
 import piuk.blockchain.android.ui.swipetoreceive.AddressGenerator
 import piuk.blockchain.android.util.ResourceDefaultLabels
 import piuk.blockchain.androidcoreui.utils.DateUtil
@@ -147,7 +149,16 @@ val applicationModule = applicationContext {
     context("Payload") {
 
         factory {
-            EthDataManager(get(), get(), get(), get(), get(), get(), get(), get())
+            EthDataManager(
+                payloadManager = get(),
+                ethAccountApi = get(),
+                ethDataStore = get(),
+                walletOptionsDataManager = get(),
+                metadataManager = get(),
+                environmentSettings = get(),
+                lastTxUpdater = get(),
+                rxBus = get()
+            )
         }
 
         factory("pax") {
@@ -159,7 +170,15 @@ val applicationModule = applicationContext {
         }
 
         factory {
-            BchDataManager(get(), get(), get(), get(), get(), get(), get())
+            BchDataManager(
+                payloadDataManager = get(),
+                bchDataStore = get(),
+                environmentSettings = get(),
+                blockExplorer = get(),
+                defaultLabels = get(),
+                metadataManager = get(),
+                rxBus = get()
+            )
         }
 
         factory {
@@ -217,6 +236,25 @@ val applicationModule = applicationContext {
                 applicationContext = get(),
                 prefs = get(),
                 fingerprintAuth = get()
+            )
+        }
+
+        bean {
+            CredentialsWiper(
+                payloadManagerWiper = get(),
+                paxAccount = get(),
+                accessState = get(),
+                appUtil = get()
+            )
+        }
+
+        factory {
+            CacheCredentialsWiper(
+                ethDataManager = get(),
+                bchDataManager = get(),
+                metadataManager = get(),
+                walletOptionsState = get(),
+                nabuDataManager = get()
             )
         }
 

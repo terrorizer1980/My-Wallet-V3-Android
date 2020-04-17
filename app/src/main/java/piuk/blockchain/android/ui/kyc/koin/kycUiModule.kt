@@ -37,7 +37,13 @@ val kycUiModule = applicationContext {
 
     context("Payload") {
 
-        factory { ReentryDecisionKycNavigator(get(), get(), get()) as KycNavigator }
+        factory {
+            ReentryDecisionKycNavigator(
+                token = get(),
+                dataManager = get(),
+                reentryDecision = get()
+            ) as KycNavigator
+        }
 
         factory {
             KycTierSplashPresenter(
@@ -47,10 +53,12 @@ val kycUiModule = applicationContext {
             )
         }
 
-        factory { KycSplashPresenter(
-            nabuToken = get(),
-            kycNavigator = get()
-        ) }
+        factory {
+            KycSplashPresenter(
+                nabuToken = get(),
+                kycNavigator = get()
+            )
+        }
 
         factory { KycCountrySelectionPresenter(nabuDataManager = get()) }
 

@@ -130,7 +130,11 @@ val nabuModule = applicationContext {
 
     bean { NabuService(get("nabu")) }
 
-    bean { RetailWalletTokenService(get(), getProperty("api-code"), get("kotlin")) }
+    bean { RetailWalletTokenService(
+        environmentConfig = get(),
+        apiCode = getProperty("api-code"),
+        retrofit = get("kotlin")
+    ) }
 
     context("Payload") {
 
@@ -156,7 +160,7 @@ val nabuModule = applicationContext {
 val authenticationModule = applicationContext {
     context("Payload") {
         factory {
-            NabuAuthenticator(get(), get()) as Authenticator
+            NabuAuthenticator(nabuToken = get(), nabuDataManager = get()) as Authenticator
         }
     }
 }
