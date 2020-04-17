@@ -39,7 +39,6 @@ interface HomeNavigator {
     fun launchSetup2Fa()
     fun launchVerifyEmail()
     fun launchSetupFingerprintLogin()
-    fun launchBuySell()
     fun launchTransfer()
     fun launchIntroTour()
 

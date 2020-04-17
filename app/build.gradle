@@ -236,7 +236,6 @@ dependencies {
     implementation project(':sunriver')
     implementation project(':lockbox')
 
-    api project(':buysell')
     api project(':coreui')
     api project(':notifications')
     implementation project(':veriff')

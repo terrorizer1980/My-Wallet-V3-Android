@@ -65,7 +65,7 @@ dependencies {
     implementation project(':common:interface')
     implementation project(':balance')
     implementation project(':wallet')
-    api project(':buysell')
+
     api project(':notifications')
     implementation project(':veriff')
 

@@ -6,7 +6,6 @@ import piuk.blockchain.android.ui.kyc.address.models.AddressModel
 import piuk.blockchain.android.campaign.CampaignType
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
-import com.blockchain.swap.nabu.service.NabuCoinifyAccountCreator
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -36,8 +35,7 @@ class KycHomeAddressPresenter(
     nabuToken: NabuToken,
     private val nabuDataManager: NabuDataManager,
     private val tier2Decision: Tier2Decision,
-    private val phoneVerificationQuery: PhoneVerificationQuery,
-    private val nabuCoinifyAccountCreator: NabuCoinifyAccountCreator
+    private val phoneVerificationQuery: PhoneVerificationQuery
 ) : BaseKycPresenter<KycHomeAddressView>(nabuToken) {
 
     val countryCodeSingle: Single<SortedMap<String, String>> by unsafeLazy {
@@ -125,11 +123,11 @@ class KycHomeAddressPresenter(
                     .map { verified -> verified to address.country }
             }
             .flatMap { (verified, countryCode) ->
-                (if (verified) {
-                    createCoinifyAccountIfNeeded(campaignType)
-                } else {
-                    updateNabuData().andThen(createCoinifyAccountIfNeeded(campaignType))
-                }).andThen(Single.just(verified to countryCode))
+                (if (!verified)
+                    updateNabuData()
+                 else
+                    Completable.complete()
+                ).andThen(Single.just(verified to countryCode))
             }
             .map { (verified, countryCode) ->
                 State(
@@ -161,14 +159,6 @@ class KycHomeAddressPresenter(
                 onError = { view.showErrorToast(R.string.kyc_address_error_saving) }
             )
     }
-
-    private fun createCoinifyAccountIfNeeded(campaignType: CampaignType?): Completable =
-        if (campaignType != CampaignType.BuySell) {
-            Completable.complete()
-        } else {
-            nabuCoinifyAccountCreator.createCoinifyAccountIfNeeded()
-                .doOnError(Timber::e)
-        }
 
     private fun addAddress(address: AddressModel): Completable = fetchOfflineToken
         .flatMapCompletable {

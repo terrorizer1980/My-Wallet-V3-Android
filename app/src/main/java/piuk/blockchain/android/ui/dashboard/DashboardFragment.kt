@@ -299,8 +299,6 @@ class DashboardFragment : HomeScreenMviFragment<DashboardModel, DashboardIntent,
 
         override fun startSwap(swapTarget: CryptoCurrency) = navigator().launchSwapOrKyc(targetCurrency = swapTarget)
 
-        override fun startBuySell() = navigator().launchBuySell()
-
         override fun startPitLinking() = navigator().launchThePitLinking()
 
         override fun startFundsBackup() = navigator().launchBackupFunds()

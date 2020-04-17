@@ -39,7 +39,6 @@ import piuk.blockchain.android.BuildConfig
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.account.AccountActivity
 import piuk.blockchain.android.ui.backup.BackupWalletActivity
-import piuk.blockchain.android.ui.buysell.launcher.BuySellLauncherActivity
 import piuk.blockchain.android.ui.confirm.ConfirmPaymentDialog
 import piuk.blockchain.android.ui.customviews.callbacks.OnTouchOutsideViewListener
 import piuk.blockchain.android.ui.dashboard.DashboardFragment
@@ -54,7 +53,6 @@ import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.thepit.PitPermissionsActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
-import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
@@ -102,8 +100,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     private var activityResultAction: () -> Unit = {}
 
     private var backPressed: Long = 0
-
-    private var webViewLoginDetails: WebViewLoginDetails? = null
 
     // Fragment callbacks for currency header
     private val touchOutsideViews = HashMap<View, OnTouchOutsideViewListener>()
@@ -305,7 +301,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     private fun setTourMenuView() {
-        val item = menu.findItem(R.id.nav_buy)
+        val item = menu.findItem(R.id.nav_simple_buy)
 
         val out = ArrayList<View>()
         drawer_layout.findViewsWithText(out, item.title, FIND_VIEWS_WITH_TEXT)
@@ -394,7 +390,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
             R.id.nav_simple_buy -> launchSimpleBuy()
             R.id.nav_airdrops -> AirdropCentreActivity.start(this)
             R.id.nav_addresses -> startActivityForResult(Intent(this, AccountActivity::class.java), ACCOUNT_EDIT)
-            R.id.nav_buy -> presenter.routeToBuySell()
             R.id.login_web_wallet -> PairingCodeActivity.start(this)
             R.id.nav_settings -> startActivityForResult(Intent(this, SettingsActivity::class.java), SETTINGS_EDIT)
             R.id.nav_support -> onSupportClicked()
@@ -451,9 +446,9 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         OnboardingActivity.launchForFingerprints(this)
     }
 
-    override fun launchBuySell() {
-        BuySellLauncherActivity.start(this)
-    }
+//    override fun launchBuySell() {
+//        BuySellLauncherActivity.start(this)
+//    }
 
     override fun launchTransfer() {
         bottom_navigation.getViewAtPosition(ITEM_RECEIVE).performClick()
@@ -563,27 +558,9 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         return intent
     }
 
-    override fun setBuySellEnabled(enabled: Boolean, useWebView: Boolean) {
-        setBuyBitcoinVisible(enabled)
-    }
-
-    override fun showTradeCompleteMsg(txHash: String) {
-        // Do nothing. Coinify is disabled and the code due to be removed. TODO: Remove this AND-2945
-    }
-
-    private fun setBuyBitcoinVisible(visible: Boolean) {
-        val menu = menu
-        menu.findItem(R.id.nav_buy).isVisible = visible
-    }
-
     private fun setPitVisible(visible: Boolean) {
         val menu = menu
         menu.findItem(R.id.nav_the_exchange).isVisible = visible
-    }
-
-    override fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails) {
-        Timber.d("setWebViewLoginDetails: called")
-        webViewLoginDetails = loginDetails
     }
 
     override fun clearAllDynamicShortcuts() {

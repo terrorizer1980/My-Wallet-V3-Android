@@ -1,7 +1,6 @@
 package piuk.blockchain.android.ui.launcher
 
 import com.blockchain.logging.CrashLogger
-import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import com.google.gson.Gson
 import info.blockchain.wallet.api.WalletApi
 import info.blockchain.wallet.api.data.Settings
@@ -25,7 +24,6 @@ import timber.log.Timber
 class Prerequisites(
     private val metadataManager: MetadataManager,
     private val settingsDataManager: SettingsDataManager,
-    private val shapeShiftDataManager: ShapeShiftDataManager,
     private val coincore: Coincore,
     private val crashLogger: CrashLogger,
     private val dynamicFeeCache: DynamicFeeCache,
@@ -39,7 +37,6 @@ class Prerequisites(
 
     fun initMetadataAndRelatedPrerequisites(): Completable =
         metadataManager.attemptMetadataSetup()
-            .then { shapeShiftCompletable() }
             .then { feesCompletable() }
             .then { simpleBuySync.performSync() }
             .then { coincore.init() }
@@ -69,14 +66,6 @@ class Prerequisites(
             guid,
             sharedKey
         )
-
-    private fun shapeShiftCompletable(): Completable {
-        return shapeShiftDataManager.initShapeshiftTradeData()
-            .doOnError { throwable ->
-                crashLogger.logException(throwable, "Failed to load shape shift trades")
-            }
-            .onErrorComplete()
-    }
 
     private fun feesCompletable(): Completable =
         feeDataManager.btcFeeOptions

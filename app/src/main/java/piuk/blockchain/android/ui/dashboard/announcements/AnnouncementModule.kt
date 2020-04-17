@@ -74,7 +74,6 @@ val dashboardAnnouncementsModule = applicationContext {
         factory {
             KycMoreInfoAnnouncement(
                 tierService = get(),
-                coinifyWalletService = get(),
                 showPopupFeatureFlag = get("ff_notify_coinify_users_to_kyc"),
                 dismissRecorder = get()
             )
@@ -145,8 +144,6 @@ val dashboardAnnouncementsModule = applicationContext {
         factory {
             BuyBitcoinAnnouncement(
                 dismissRecorder = get(),
-                walletStatus = get(),
-                buyDataManager = get(),
                 simpleBuyAvailability = get()
             )
         }.bind(AnnouncementRule::class)
