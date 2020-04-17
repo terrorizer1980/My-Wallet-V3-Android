@@ -56,7 +56,7 @@ internal interface Nabu {
 
     @POST(NABU_SESSION_TOKEN)
     fun getSessionToken(
-        @Query("userId") userId: String,
+        @Query("userId333") userId: String,
         @Header("authorization") authorization: String,
         @Header("X-WALLET-GUID") guid: String,
         @Header("X-WALLET-EMAIL") email: String,

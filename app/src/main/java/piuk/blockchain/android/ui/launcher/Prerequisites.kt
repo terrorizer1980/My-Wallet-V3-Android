@@ -1,7 +1,6 @@
 package piuk.blockchain.android.ui.launcher
 
 import com.blockchain.logging.CrashLogger
-import com.blockchain.swap.shapeshift.ShapeShiftDataManager
 import com.google.gson.Gson
 import info.blockchain.wallet.api.WalletApi
 import info.blockchain.wallet.api.data.Settings
@@ -25,7 +24,6 @@ import timber.log.Timber
 class Prerequisites(
     private val metadataManager: MetadataManager,
     private val settingsDataManager: SettingsDataManager,
-    private val shapeShiftDataManager: ShapeShiftDataManager,
     private val coincore: Coincore,
     private val crashLogger: CrashLogger,
     private val dynamicFeeCache: DynamicFeeCache,
@@ -38,12 +36,39 @@ class Prerequisites(
 ) {
 
     fun initMetadataAndRelatedPrerequisites(): Completable =
-        metadataManager.attemptMetadataSetup()
-            .then { shapeShiftCompletable() }
-            .then { feesCompletable() }
-            .then { simpleBuySync.performSync() }
-            .then { coincore.init() }
-            .then { generateAndUpdateReceiveAddresses().onErrorComplete() }
+        metadataManager.attemptMetadataSetup().doOnError {
+            crashLogger.logException(CustomLogMessagedException(
+                METADATA_ERROR_MESSAGE, it
+            ))
+        }
+            .then {
+                feesCompletable().doOnError {
+                    crashLogger.logException(CustomLogMessagedException(
+                        FEES_ERROR, it
+                    ))
+                }
+            }
+            .then {
+                simpleBuySync.performSync().doOnError {
+                    crashLogger.logException(CustomLogMessagedException(
+                        SIMPLE_BUY_SYNC, it
+                    ))
+                }
+            }
+            .then {
+                coincore.init().doOnError {
+                    crashLogger.logException(CustomLogMessagedException(
+                        COINCORE_INIT, it
+                    ))
+                }
+            }
+            .then {
+                generateAndUpdateReceiveAddresses().doOnError {
+                    crashLogger.logException(CustomLogMessagedException(
+                        RECEIVE_ADDRESSES, it
+                    ))
+                }.onErrorComplete()
+            }
             .doOnComplete {
                 rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
             }.subscribeOn(Schedulers.io())
@@ -70,14 +95,6 @@ class Prerequisites(
             sharedKey
         )
 
-    private fun shapeShiftCompletable(): Completable {
-        return shapeShiftDataManager.initShapeshiftTradeData()
-            .doOnError { throwable ->
-                crashLogger.logException(throwable, "Failed to load shape shift trades")
-            }
-            .onErrorComplete()
-    }
-
     private fun feesCompletable(): Completable =
         feeDataManager.btcFeeOptions
             .doOnNext { dynamicFeeCache.btcFeeOptions = it }
@@ -97,4 +114,12 @@ class Prerequisites(
     fun decryptAndSetupMetadata(secondPassword: String) = metadataManager.decryptAndSetupMetadata(
         secondPassword
     )
+
+    companion object {
+        private const val METADATA_ERROR_MESSAGE = "metadata_init"
+        private const val FEES_ERROR = "fees_init"
+        private const val SIMPLE_BUY_SYNC = "simple_buy_sync"
+        private const val COINCORE_INIT = "coincore_init"
+        private const val RECEIVE_ADDRESSES = "receive_addresses"
+    }
 }
