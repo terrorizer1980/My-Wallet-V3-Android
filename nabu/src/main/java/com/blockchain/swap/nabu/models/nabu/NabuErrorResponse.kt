@@ -49,9 +49,8 @@ class NabuApiException private constructor(message: String) : Throwable(message)
             val error = errorResponse.type
             val errorDescription = errorResponse.description
             val errorCode = errorResponse.code
-            val path = response.raw().request.url.pathSegments.joinToString(" , ")
 
-            return NabuApiException("$httpErrorCode: $error - $errorDescription - $errorCode - $path")
+            return NabuApiException("$httpErrorCode: $error - $errorDescription - $errorCode")
                 .apply {
                     _httpErrorCode = httpErrorCode
                     _error = error
