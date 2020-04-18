@@ -53,7 +53,7 @@ class Prerequisites(
                     crashLogger.logException(CustomLogMessagedException(
                         SIMPLE_BUY_SYNC, it
                     ))
-                }
+                }.onErrorComplete()
             }
             .then {
                 coincore.init().doOnError {
