@@ -147,8 +147,6 @@ class ActivitiesFragment
             displayList.clear()
             if (isEmpty()) {
                 Timber.d("Render new tx list - empty")
-                // TODO: Show no-transactions, or loading view. There should _always_ be transactions, since the account
-                // selector filters out accounts with no transactions
             } else {
                 displayList.addAll(this)
             }
