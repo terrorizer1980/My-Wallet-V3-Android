@@ -13,6 +13,8 @@ import piuk.blockchain.android.campaign.SunriverCampaignRegistration
 import piuk.blockchain.android.campaign.SunriverCardType
 import com.blockchain.lockbox.data.LockboxDataManager
 import com.blockchain.logging.CrashLogger
+import com.blockchain.notifications.analytics.Analytics
+import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.blockchain.swap.nabu.NabuToken
 import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.sunriver.XlmDataManager
@@ -59,7 +61,6 @@ interface MainView : MvpView, HomeNavigator {
     fun getStartIntent(): Intent
 
     fun onHandleInput(strUri: String)
-    fun startBalanceFragment()
     fun refreshAnnouncements()
     fun kickToLauncherPage()
     fun showProgressDialog(@StringRes message: Int)
@@ -103,6 +104,7 @@ class MainPresenter internal constructor(
     private val nabuDataManager: NabuDataManager,
     private val simpleBuySync: SimpleBuySyncFactory,
     private val crashLogger: CrashLogger,
+    private val analytics: Analytics,
     private val simpleBuyAvailability: SimpleBuyAvailability,
     private val cacheCredentialsWiper: CacheCredentialsWiper,
     nabuToken: NabuToken
@@ -358,6 +360,7 @@ class MainPresenter internal constructor(
     }
 
     private fun logEvents() {
+        analytics.logEventOnce(AnalyticsEvents.WalletSignupFirstLogIn)
         Logging.logCustom(SecondPasswordEvent(payloadDataManager.isDoubleEncrypted))
     }
 

@@ -23,8 +23,7 @@ internal class AddAccountDelegate(
     override fun onBindViewHolder(
         items: List<BankAccountDisplayable>,
         position: Int,
-        holder: RecyclerView.ViewHolder,
-        payloads: List<*>
+        holder: RecyclerView.ViewHolder
     ) {
         holder as AddAccountViewHolder
         holder.bind(listener)

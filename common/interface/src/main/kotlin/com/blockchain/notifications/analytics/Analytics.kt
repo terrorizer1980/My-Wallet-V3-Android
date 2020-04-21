@@ -2,6 +2,7 @@ package com.blockchain.notifications.analytics
 
 interface Analytics {
     fun logEvent(analyticsEvent: AnalyticsEvent)
+    fun logEventOnce(analyticsEvent: AnalyticsEvent)
 }
 
 interface UserAnalytics {

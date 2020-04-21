@@ -16,6 +16,7 @@ val coincoreModule = applicationContext {
             StxTokens(
                 rxBus = get(),
                 payloadManager = get(),
+                exchangeRates = get(),
                 currencyPrefs = get(),
                 custodialWalletManager = get(),
                 crashLogger = get(),
@@ -99,7 +100,8 @@ val coincoreModule = applicationContext {
                 ethTokens = get(),
                 xlmTokens = get(),
                 paxTokens = get(),
-                stxTokens = get()
+                stxTokens = get(),
+                defaultLabels = get()
             )
         }
     }

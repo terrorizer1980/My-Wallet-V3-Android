@@ -156,14 +156,39 @@ class StubCustodialWalletManager : CustodialWalletManager {
             CryptoCurrency.STX -> Maybe.empty()
         }
 
-    override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
+    override fun getOutstandingBuyOrders(crypto: CryptoCurrency): Single<BuyOrderList> =
         Single.just(
             listOf(
+                BuyOrder(
+                    id = "006bd84e-de74-4697-8989-92eab7720000",
+                    pair = "BTC-USD",
+                    fiat = FiatValue.fromMinor("GBP", 50000),
+                    crypto = CryptoValue.zero(crypto),
+                    state = OrderState.AWAITING_FUNDS,
+                    expires = Date()
+                )
+            )
+        )
+
+    override fun getAllOutstandingBuyOrders(): Single<BuyOrderList> =
+        getAllBuyOrdersFor(CryptoCurrency.BTC)
+
+    override fun getAllBuyOrdersFor(crypto: CryptoCurrency): Single<BuyOrderList> =
+        Single.just(
+            listOf(
+                BuyOrder(
+                    id = "006bd84e-de74-4697-8989-92eab7720000",
+                    pair = "BTC-USD",
+                    fiat = FiatValue.fromMinor("GBP", 50000),
+                    crypto = CryptoValue.zero(crypto),
+                    state = OrderState.AWAITING_FUNDS,
+                    expires = Date()
+                ),
                 BuyOrder(
                     id = "006bd84e-de7b-4697-8989-92eab7720000",
                     pair = "BTC-USD",
                     fiat = FiatValue.fromMinor("GBP", 50000),
-                    crypto = CryptoValue.ZeroBtc,
+                    crypto = CryptoValue.zero(crypto),
                     state = OrderState.FINISHED,
                     expires = Date()
                 ),
@@ -171,7 +196,7 @@ class StubCustodialWalletManager : CustodialWalletManager {
                     id = "006bd84e-de7b-4697-8989-92eab7721111",
                     pair = "BTC-USD",
                     fiat = FiatValue.fromMinor("GBP", 70000),
-                    crypto = CryptoValue.bitcoinFromSatoshis(1980000),
+                    crypto = CryptoValue.fromMinor(crypto, 1980000.toBigInteger()),
                     state = OrderState.CANCELED,
                     expires = Date()
                 )
@@ -201,8 +226,4 @@ class StubCustodialWalletManager : CustodialWalletManager {
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         Completable.timer(5, TimeUnit.SECONDS)
-
-    override fun cancelAllPendingBuys(): Completable {
-        return Completable.complete()
-    }
 }

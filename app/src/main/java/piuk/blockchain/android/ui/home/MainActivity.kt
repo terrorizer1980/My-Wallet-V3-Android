@@ -52,7 +52,6 @@ import piuk.blockchain.android.ui.swap.homebrew.exchange.host.HomebrewNavHostAct
 import piuk.blockchain.android.ui.swapintro.SwapIntroFragment
 import piuk.blockchain.android.ui.thepit.PitLaunchBottomDialog
 import piuk.blockchain.android.ui.thepit.PitPermissionsActivity
-import piuk.blockchain.android.ui.transactions.TransactionDetailActivity
 import piuk.blockchain.android.ui.zxing.CaptureActivity
 import piuk.blockchain.android.util.calloutToExternalSupportLinkDlg
 import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
@@ -63,7 +62,9 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar_general.*
 import org.koin.android.ext.android.inject
+import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.simplebuy.SimpleBuyActivity
+import piuk.blockchain.android.ui.activity.ActivitiesFragment
 import piuk.blockchain.android.ui.airdrops.AirdropCentreActivity
 import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.android.ui.home.analytics.SideNavEvent
@@ -73,7 +74,6 @@ import piuk.blockchain.android.ui.tour.IntroTourAnalyticsEvent
 import piuk.blockchain.android.ui.tour.IntroTourHost
 import piuk.blockchain.android.ui.tour.IntroTourStep
 import piuk.blockchain.android.ui.tour.SwapTourFragment
-import piuk.blockchain.android.ui.transactions.TransactionsFragment
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.AndroidUtils
 import piuk.blockchain.androidcoreui.utils.CameraPermissionListener
@@ -127,7 +127,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                         ViewUtils.setElevation(appbar_layout, 4f)
                     }
                     ITEM_ACTIVITY -> {
-                        startBalanceFragment()
+                        startActivitiesFragment()
                         ViewUtils.setElevation(appbar_layout, 0f)
                         analytics.logEvent(TransactionsAnalyticsEvents.TabItemClick)
                     }
@@ -281,7 +281,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
                 drawer_layout.closeDrawers()
                 true
             }
-            f is TransactionsFragment -> f.onBackPressed()
+            f is ActivitiesFragment -> f.onBackPressed()
             f is SendFragment -> f.onBackPressed()
             f is ReceiveFragment -> f.onBackPressed()
             f is DashboardFragment -> f.onBackPressed()
@@ -483,7 +483,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         with(bottom_navigation) {
             when (currentFragment) {
                 is DashboardFragment -> currentItem = ITEM_HOME
-                is TransactionsFragment -> currentItem = ITEM_ACTIVITY
+                is ActivitiesFragment -> currentItem = ITEM_ACTIVITY
                 is SendFragment -> currentItem = ITEM_SEND
                 is ReceiveFragment -> currentItem = ITEM_RECEIVE
             }
@@ -555,26 +555,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         presenter.startSwapOrKyc(toCurrency = targetCurrency, fromCurrency = fromCryptoCurrency)
     }
 
-//    @CommonCode("Move to base")
-//    override fun showProgressDialog(@StringRes message: Int) {
-//        hideProgressDialog()
-//        if (!isFinishing) {
-//            progressDlg = MaterialProgressDialog(this).apply {
-//                setCancelable(false)
-//                setMessage(message)
-//                show()
-//            }
-//        }
-//    }
-//
-//    @CommonCode("Move to base")
-//    override fun hideProgressDialog() {
-//        if (!isFinishing && progressDlg != null) {
-//            progressDlg!!.dismiss()
-//            progressDlg = null
-//        }
-//    }
-
     override fun onHandleInput(strUri: String) {
         handlePredefinedInput(strUri, true)
     }
@@ -588,15 +568,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
     }
 
     override fun showTradeCompleteMsg(txHash: String) {
-        AlertDialog.Builder(this, R.style.AlertDialogStyle)
-            .setTitle(getString(R.string.trade_complete))
-            .setMessage(R.string.trade_complete_details)
-            .setCancelable(false)
-            .setPositiveButton(R.string.ok_cap, null)
-            .setNegativeButton(R.string.view_details) { _, _ ->
-                startBalanceFragment()
-                TransactionDetailActivity.start(this, presenter.cryptoCurrency, txHash)
-            }.show()
+        // Do nothing. Coinify is disabled and the code due to be removed. TODO: Remove this AND-2945
     }
 
     private fun setBuyBitcoinVisible(visible: Boolean) {
@@ -728,9 +700,9 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         replaceContentFragment(fragment)
     }
 
-    override fun gotoTransactionsFor(cryptoCurrency: CryptoCurrency) {
-        presenter.cryptoCurrency = cryptoCurrency
-        bottom_navigation.currentItem = ITEM_ACTIVITY
+    override fun gotoActivityFor(account: CryptoAccount) {
+        presenter.cryptoCurrency = account.cryptoCurrencies.first()
+        startActivitiesFragment(account)
     }
 
     override fun resumeSimpleBuyKyc() {
@@ -751,8 +723,9 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         )
     }
 
-    override fun startBalanceFragment() {
-        val fragment = TransactionsFragment.newInstance(true)
+    private fun startActivitiesFragment(account: CryptoAccount? = null) {
+        setCurrentTabItem(ITEM_ACTIVITY)
+        val fragment = ActivitiesFragment.newInstance(account)
         replaceContentFragment(fragment)
         toolbar_general.title = ""
     }
@@ -802,7 +775,7 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
 
     companion object {
 
-        val TAG = MainActivity::class.java.simpleName!!
+        val TAG: String = MainActivity::class.java.simpleName
 
         const val SCAN_URI = 2007
         const val ACCOUNT_EDIT = 2008

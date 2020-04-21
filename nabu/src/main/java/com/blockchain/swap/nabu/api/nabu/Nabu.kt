@@ -224,8 +224,9 @@ internal interface Nabu {
     ): Single<BuyOrderResponse>
 
     @GET(NABU_SIMPLE_BUY_ORDERS)
-    fun getOutstandingBuyOrders(
-        @Header("authorization") authorization: String
+    fun getBuyOrders(
+        @Header("authorization") authorization: String,
+        @Query("pendingOnly") pendingOnly: Boolean
     ): Single<BuyOrderListResponse>
 
     @DELETE("$NABU_SIMPLE_BUY_ORDERS/{orderId}")

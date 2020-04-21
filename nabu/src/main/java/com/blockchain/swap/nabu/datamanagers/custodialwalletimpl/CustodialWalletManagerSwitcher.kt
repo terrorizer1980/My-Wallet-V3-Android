@@ -66,8 +66,14 @@ class CustodialWalletManagerSwitcher(
     override fun isCurrencySupportedForSimpleBuy(fiatCurrency: String): Single<Boolean> =
         proxy.isCurrencySupportedForSimpleBuy(fiatCurrency)
 
-    override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
-        proxy.getOutstandingBuyOrders()
+    override fun getOutstandingBuyOrders(crypto: CryptoCurrency): Single<BuyOrderList> =
+        proxy.getOutstandingBuyOrders(crypto)
+
+    override fun getAllOutstandingBuyOrders(): Single<BuyOrderList> =
+        proxy.getAllOutstandingBuyOrders()
+
+    override fun getAllBuyOrdersFor(crypto: CryptoCurrency): Single<BuyOrderList> =
+        proxy.getAllBuyOrdersFor(crypto)
 
     override fun getBuyOrder(orderId: String): Single<BuyOrder> =
         proxy.getBuyOrder(orderId)
@@ -77,7 +83,4 @@ class CustodialWalletManagerSwitcher(
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         proxy.transferFundsToWallet(amount, walletAddress)
-
-    override fun cancelAllPendingBuys(): Completable =
-        proxy.cancelAllPendingBuys()
 }

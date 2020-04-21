@@ -54,7 +54,8 @@ data class BuyOrderResponse(
     val outputCurrency: String,
     val outputQuantity: String,
     val state: String,
-    val expiresAt: Date
+    val expiresAt: Date,
+    val updatedAt: Date
 ) {
     companion object {
         const val PENDING_DEPOSIT = "PENDING_DEPOSIT"

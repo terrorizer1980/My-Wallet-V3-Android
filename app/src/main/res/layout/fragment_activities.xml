@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:orientation="vertical"
+        android:background="@color/blue_800">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/account_select_btn"
+            android:layout_height="64dp"
+            android:layout_width="match_parent"
+            android:layout_marginStart="@dimen/tiny_margin"
+            android:layout_marginEnd="@dimen/tiny_margin"
+            android:layout_marginBottom="@dimen/tiny_margin"
+            android:background="@drawable/bkgd_button_blue_menu_select">
+
+            <ImageView
+                android:id="@+id/account_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="@dimen/small_margin"
+                android:importantForAccessibility="no"
+                tools:srcCompat="@drawable/vector_bitcoin_colored"
+                app:srcCompat="@drawable/vector_bitcoin_colored"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/account_spend_locked"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginTop="21dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/account_icon"
+                app:layout_constraintTop_toTopOf="@id/account_icon"
+                app:srcCompat="@drawable/ic_asset_non_custodial_spend_blue"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/account_name"
+                style="@style/Text.Semibold.16"
+                android:textColor="@color/white"
+                android:gravity="center_vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                tools:text="BTC Wallet"
+                app:layout_constraintEnd_toStartOf="@id/show_accounts"
+                app:layout_constraintStart_toEndOf="@id/account_icon"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/fiat_balance"
+                style="@style/Text.Light.14"
+                android:textColor="@color/white"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                app:layout_constraintStart_toStartOf="@+id/account_name"
+                app:layout_constraintTop_toBottomOf="@+id/account_name"
+                app:layout_constraintEnd_toStartOf="@id/show_accounts"
+                tools:text="$10,0198.99"/>
+
+            <ImageView
+                android:id="@+id/show_accounts"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="22dp"
+                android:importantForAccessibility="no"
+                app:srcCompat="@drawable/vector_expand_more"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                tools:listitem="@layout/dialog_activities_tx_item"/>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/standard_margin"
+            android:gravity="center_vertical"
+            android:visibility="visible"
+            android:orientation="vertical">
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Text.Standard.Centered.20"
+                android:text="@string/activity_no_activity_title"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/small_margin"
+                style="@style/Text.Standard.Centered.14"
+                android:text="@string/activity_no_activity_text"/>
+
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:src="@drawable/ic_wallet_intro_image"/>
+
+    </LinearLayout>
+
+</FrameLayout>

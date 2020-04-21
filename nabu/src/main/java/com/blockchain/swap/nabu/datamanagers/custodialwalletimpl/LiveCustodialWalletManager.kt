@@ -15,6 +15,7 @@ import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
+import com.blockchain.swap.nabu.models.simplebuy.BuyOrderListResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.TransferRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -25,7 +26,6 @@ import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import io.reactivex.rxkotlin.flatMapIterable
 import okhttp3.internal.toLongOrDefault
 import java.math.BigDecimal
 import java.util.UnknownFormatConversionException
@@ -134,12 +134,39 @@ class LiveCustodialWalletManager(
             it.pairs.firstOrNull { it.pair.split("-")[1] == fiatCurrency } != null
         }.onErrorReturn { false }
 
-    override fun getOutstandingBuyOrders(): Single<BuyOrderList> =
+    override fun getOutstandingBuyOrders(crypto: CryptoCurrency): Single<BuyOrderList> =
         authenticator.authenticate {
-            nabuService.getOutstandingBuyOrders(it)
+            nabuService.getOutstandingBuyOrders(
+                sessionToken = it,
+                pendingOnly = true
+            )
+        }.map {
+            it.filterAndMapToOrder(crypto)
+        }
+
+    override fun getAllOutstandingBuyOrders(): Single<BuyOrderList> =
+        authenticator.authenticate {
+            nabuService.getOutstandingBuyOrders(
+                sessionToken = it,
+                pendingOnly = true
+            )
         }.map {
             it.map { order -> order.toBuyOrder() }.filter { order -> order.state != OrderState.UNKNOWN }
         }
+
+    override fun getAllBuyOrdersFor(crypto: CryptoCurrency): Single<BuyOrderList> =
+        authenticator.authenticate {
+            nabuService.getOutstandingBuyOrders(
+                sessionToken = it,
+                pendingOnly = false
+            )
+        }.map {
+            it.filterAndMapToOrder(crypto)
+        }
+
+    private fun BuyOrderListResponse.filterAndMapToOrder(crypto: CryptoCurrency): List<BuyOrder> =
+        this.filter { order -> order.outputCurrency == crypto.networkTicker }
+            .map { order -> order.toBuyOrder() }
 
     override fun getBuyOrder(orderId: String): Single<BuyOrder> =
         authenticator.authenticate {
@@ -170,12 +197,6 @@ class LiveCustodialWalletManager(
                 )
             )
         }
-
-    override fun cancelAllPendingBuys(): Completable {
-        return getOutstandingBuyOrders().toObservable()
-            .flatMapIterable()
-            .flatMapCompletable { deleteBuyOrder(it.id) }
-    }
 }
 
 private fun String.toLocalState(): OrderState =
@@ -201,7 +222,8 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
             outputQuantity.toBigDecimalOrNull() ?: BigDecimal.ZERO
         ),
         state = state.toLocalState(),
-        expires = expiresAt
+        expires = expiresAt,
+        updated = updatedAt
     )
 
 interface PaymentAccountMapper {

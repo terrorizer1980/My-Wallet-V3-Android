@@ -117,7 +117,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.ReceiveQrWindow" />
         <activity
-            android:name=".ui.transactions.TransactionDetailActivity"
+            android:name=".ui.activity.detail.TransactionDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="stateHidden" />
         <activity

@@ -28,7 +28,6 @@ private fun buildCustodialGroup(
     accountList: List<CryptoSingleAccount>
 ): CryptoAccountGroup =
     CryptoAccountCustodialGroup(
-        asset,
         labels.getDefaultCustodialWalletLabel(asset),
         accountList.filterIsInstance<CryptoSingleAccountCustodialBase>()
     )

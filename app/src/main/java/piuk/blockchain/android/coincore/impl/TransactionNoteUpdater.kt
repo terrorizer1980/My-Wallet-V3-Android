@@ -5,8 +5,8 @@ import com.blockchain.swap.shapeshift.data.Trade
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import piuk.blockchain.android.R
-import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
+import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.util.StringUtils
 import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidbuysell.models.coinify.BlockchainDetails
@@ -51,9 +51,10 @@ class TransactionNoteUpdater(
         txList: ActivitySummaryList,
         txNotesMap: Map<String, String>
     ): ActivitySummaryList =
-        txList.map { tx -> updateTransactionNote(tx, txNotesMap[tx.hash]) }
+        txList.filterIsInstance<NonCustodialActivitySummaryItem>()
+            .map { tx -> updateTransactionNote(tx, txNotesMap[tx.txId]) }
 
-    private fun updateTransactionNote(tx: ActivitySummaryItem, note: String?) =
+    private fun updateTransactionNote(tx: NonCustodialActivitySummaryItem, note: String?) =
         note?.let { tx.note = note; tx } ?: tx
 
     private fun getShapeShiftTxNotes() =
