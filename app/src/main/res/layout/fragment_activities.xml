@@ -11,7 +11,7 @@
         android:id="@+id/content_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:orientation="vertical"
         android:background="@color/blue_800">
 
@@ -56,6 +56,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="12dp"
                 tools:text="BTC Wallet"
+                android:ellipsize="middle"
+                android:singleLine="true"
                 app:layout_constraintEnd_toStartOf="@id/show_accounts"
                 app:layout_constraintStart_toEndOf="@id/account_icon"
                 app:layout_constraintTop_toTopOf="parent"/>
@@ -107,7 +109,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/standard_margin"
             android:gravity="center_vertical"
-            android:visibility="visible"
+            android:visibility="invisible"
             android:orientation="vertical">
 
         <TextView
