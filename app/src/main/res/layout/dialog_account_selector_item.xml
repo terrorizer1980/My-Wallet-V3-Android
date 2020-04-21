@@ -20,13 +20,16 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/wallet_name"
         style="@style/Text.Semibold.16"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         tools:text="BTC Wallet"
+        android:ellipsize="middle"
+        android:singleLine="true"
         app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintEnd_toStartOf="@id/wallet_balance_crypto"
         app:layout_constraintTop_toTopOf="@id/icon" />
-
+    
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/asset_name"
         style="@style/Text.Light.12"
