@@ -6,7 +6,6 @@ import android.text.Layout
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.AlignmentSpan
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,7 +43,6 @@ import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
-
 
 class ActivitiesFragment
     : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
@@ -179,9 +177,9 @@ class ActivitiesFragment
     override fun onBackPressed(): Boolean = false
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ) = container?.inflate(R.layout.fragment_activities)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -18,7 +18,7 @@ data class ActivitiesState(
     val activityList: ActivitySummaryList = emptyList(),
     val isLoading: Boolean = false,
     val bottomSheet: ActivitiesSheet? = null,
-    val isError : Boolean = false
+    val isError: Boolean = false
 ) : MviState
 
 class ActivitiesModel(
