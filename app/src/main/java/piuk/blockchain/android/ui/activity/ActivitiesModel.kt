@@ -17,7 +17,8 @@ data class ActivitiesState(
     val account: CryptoAccount? = null, // CoinCore.getMasterAccountGroup(),
     val activityList: ActivitySummaryList = emptyList(),
     val isLoading: Boolean = false,
-    val bottomSheet: ActivitiesSheet? = null
+    val bottomSheet: ActivitiesSheet? = null,
+    val isError: Boolean = false
 ) : MviState
 
 class ActivitiesModel(
@@ -36,17 +37,18 @@ class ActivitiesModel(
                 interactor.getActivityForAccount(intent.account)
                     .subscribeBy(
                         onSuccess = { process(ActivityListUpdatedIntent(it)) },
-                        onError = { }
+                        onError = { process(ActivityListUpdatedErrorIntent()) }
                     )
             is SelectDefaultAccountIntent ->
                 interactor.getDefaultAccount()
                     .subscribeBy(
                         onSuccess = { process(AccountSelectedIntent(it)) },
-                        onError = { }
+                        onError = { process(ActivityListUpdatedErrorIntent()) }
                     )
             is ShowActivityDetailsIntent,
             is ClearBottomSheetIntent,
             is ActivityListUpdatedIntent,
+            is ActivityListUpdatedErrorIntent,
             is ShowAccountSelectionIntent -> null
         }
     }
