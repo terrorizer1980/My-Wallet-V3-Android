@@ -25,7 +25,6 @@ class ActivityDetailsBottomSheet : SlidingModalBottomDialog() {
         nonCustodialActivitySummaryItem?.let {
             view.title.text = "${mapToAction(it.direction)}"
         }
-
     }
 
     private fun mapToAction(direction: TransactionSummary.Direction): String =
@@ -37,8 +36,6 @@ class ActivityDetailsBottomSheet : SlidingModalBottomDialog() {
             TransactionSummary.Direction.SELL -> "Sell"
             TransactionSummary.Direction.SWAP -> "Swap"
         }
-
-
 
     companion object {
         private const val ARG_CRYPTO_CURRENCY = "crypto_currency"

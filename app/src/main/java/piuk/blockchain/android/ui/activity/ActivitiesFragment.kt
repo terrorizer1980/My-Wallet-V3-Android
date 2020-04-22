@@ -96,7 +96,7 @@ class ActivitiesFragment
                 ActivitiesSheet.ACTIVITY_DETAILS -> {
                     newState.cryptoCurrency?.let {
                         showBottomSheet(ActivityDetailsBottomSheet.newInstance(it, newState.txHash))
-                    } ?: Timber.e("newstate cryptocurrency null")//this should not happen
+                    } ?: Timber.e("newstate cryptocurrency null") // this should not happen
                 }
             }
         }
@@ -255,7 +255,7 @@ class ActivitiesFragment
                     Toast.LENGTH_LONG
             ).show()
         } else {
-            //model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash))
+            // model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash))
             TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)
         }
     }

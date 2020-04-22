@@ -8,7 +8,7 @@ import piuk.blockchain.android.ui.base.mvi.MviIntent
 sealed class ActivitiesIntent : MviIntent<ActivitiesState>
 
 class AccountSelectedIntent(
-        val account: CryptoAccount
+    val account: CryptoAccount
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         val activitiesList = if (oldState.account == account) {
@@ -35,7 +35,7 @@ object SelectDefaultAccountIntent : ActivitiesIntent() {
 }
 
 class ActivityListUpdatedIntent(
-        val activityList: ActivitySummaryList
+    val activityList: ActivitySummaryList
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
@@ -63,8 +63,8 @@ object ShowAccountSelectionIntent : ActivitiesIntent() {
 }
 
 class ShowActivityDetailsIntent(
-        val cryptoCurrency: CryptoCurrency,
-        val txHash: String
+    val cryptoCurrency: CryptoCurrency,
+    val txHash: String
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
