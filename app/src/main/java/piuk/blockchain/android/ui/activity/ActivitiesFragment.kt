@@ -2,10 +2,6 @@ package piuk.blockchain.android.ui.activity
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Layout
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.AlignmentSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +34,7 @@ import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
@@ -84,12 +81,12 @@ class ActivitiesFragment
         renderTransactionList(newState)
 
         if (newState.isError) {
-            val errorText = getString(R.string.activity_loading_error)
-            val centeredText: Spannable = SpannableString(errorText)
-            centeredText.setSpan(AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
-                    0, errorText.length - 1,
-                    Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-            Toast.makeText(requireContext(), centeredText, Toast.LENGTH_SHORT).show()
+            ToastCustom.makeText(
+                    requireContext(),
+                    getString(R.string.activity_loading_error),
+                    ToastCustom.LENGTH_SHORT,
+                    ToastCustom.TYPE_ERROR
+            )
         }
 
         if (this.state?.bottomSheet != newState.bottomSheet) {
@@ -107,7 +104,7 @@ class ActivitiesFragment
                 content_layout.gone()
                 empty_view.gone()
             }
-            newState.activityList.isEmpty() && !newState.isLoading -> {
+            newState.activityList.isEmpty() -> {
                 content_layout.gone()
                 empty_view.visible()
             }
