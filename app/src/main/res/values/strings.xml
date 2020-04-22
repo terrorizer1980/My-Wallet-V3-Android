@@ -1870,5 +1870,6 @@
     <string name="activity_no_activity_title">You Have No Activity</string>
     <string name="activity_no_activity_text">All your transactions will show up here.</string>
     <string name="activity_custodial_pending_value">Bank Transfer</string>
+    <string name="activity_loading_error">Failed to load activity, please try again later</string>
 
 </resources>
