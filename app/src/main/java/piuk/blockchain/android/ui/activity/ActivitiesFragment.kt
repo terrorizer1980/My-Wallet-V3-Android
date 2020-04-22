@@ -255,8 +255,8 @@ class ActivitiesFragment
                     Toast.LENGTH_LONG
             ).show()
         } else {
-            model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash))
-            //TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)
+            //model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash))
+            TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)
         }
     }
 
