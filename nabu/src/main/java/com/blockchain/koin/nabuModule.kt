@@ -187,7 +187,7 @@ val coinifyModule = applicationContext {
 val authenticationModule = applicationContext {
     context("Payload") {
         factory {
-            NabuAuthenticator(get(), get()) as Authenticator
+            NabuAuthenticator(get(), get(), get()) as Authenticator
         }
     }
 }
