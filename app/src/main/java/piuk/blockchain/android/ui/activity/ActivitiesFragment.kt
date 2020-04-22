@@ -2,12 +2,17 @@ package piuk.blockchain.android.ui.activity
 
 import android.content.Context
 import android.os.Bundle
-import androidx.annotation.UiThread
+import android.text.Layout
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.AlignmentSpan
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.UiThread
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,15 +35,16 @@ import piuk.blockchain.android.ui.activity.adapter.ActivitiesDelegateAdapter
 import piuk.blockchain.android.ui.activity.detail.TransactionDetailActivity
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.android.util.setCoinIcon
-import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
+import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
+
 
 class ActivitiesFragment
     : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
@@ -80,7 +86,12 @@ class ActivitiesFragment
         renderTransactionList(newState)
 
         if (newState.isError) {
-            Toast.makeText(requireContext(), "Failed to load activity, please try again later", Toast.LENGTH_SHORT).show()
+            val errorText = getString(R.string.activity_loading_error)
+            val centeredText: Spannable = SpannableString(errorText)
+            centeredText.setSpan(AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                    0, errorText.length - 1,
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            Toast.makeText(requireContext(), centeredText, Toast.LENGTH_SHORT).show()
         }
 
         if (this.state?.bottomSheet != newState.bottomSheet) {
@@ -93,12 +104,19 @@ class ActivitiesFragment
     }
 
     private fun switchView(newState: ActivitiesState) {
-        if (newState.activityList.isEmpty()) {
-            content_layout.gone()
-            empty_view.visible()
-        } else {
-            content_layout.visible()
-            empty_view.gone()
+        when {
+            newState.isLoading -> {
+                content_layout.gone()
+                empty_view.gone()
+            }
+            newState.activityList.isEmpty() && !newState.isLoading -> {
+                content_layout.gone()
+                empty_view.visible()
+            }
+            else -> {
+                content_layout.visible()
+                empty_view.gone()
+            }
         }
     }
 
