@@ -27,6 +27,7 @@ import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.coincore.isCustodial
 import piuk.blockchain.android.ui.accounts.AccountSelectSheet
 import piuk.blockchain.android.ui.activity.adapter.ActivitiesDelegateAdapter
+import piuk.blockchain.android.ui.activity.detail.ActivityDetailsBottomSheet
 import piuk.blockchain.android.ui.activity.detail.TransactionDetailActivity
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.android.util.setCoinIcon
@@ -92,6 +93,11 @@ class ActivitiesFragment
         if (this.state?.bottomSheet != newState.bottomSheet) {
             when (newState.bottomSheet) {
                 ActivitiesSheet.ACCOUNT_SELECTOR -> showBottomSheet(AccountSelectSheet.newInstance())
+                ActivitiesSheet.ACTIVITY_DETAILS -> {
+                    newState.cryptoCurrency?.let {
+                        showBottomSheet(ActivityDetailsBottomSheet.newInstance(it, newState.txHash))
+                    } ?: Timber.e("newstate cryptocurrency null")//this should not happen
+                }
             }
         }
 
@@ -249,7 +255,8 @@ class ActivitiesFragment
                     Toast.LENGTH_LONG
             ).show()
         } else {
-            TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)
+            model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash))
+            //TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)
         }
     }
 

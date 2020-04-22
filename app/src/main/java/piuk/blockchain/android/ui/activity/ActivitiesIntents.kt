@@ -8,40 +8,40 @@ import piuk.blockchain.android.ui.base.mvi.MviIntent
 sealed class ActivitiesIntent : MviIntent<ActivitiesState>
 
 class AccountSelectedIntent(
-    val account: CryptoAccount
+        val account: CryptoAccount
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         val activitiesList = if (oldState.account == account) {
-                oldState.activityList // Is a refresh, keep the list
-            } else {
-                emptyList()
-            }
-            return oldState.copy(
+            oldState.activityList // Is a refresh, keep the list
+        } else {
+            emptyList()
+        }
+        return oldState.copy(
                 account = account,
                 isLoading = true,
                 activityList = activitiesList
-            )
+        )
     }
 }
 
 object SelectDefaultAccountIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
-            account = null,
-            isLoading = true,
-            activityList = emptyList()
+                account = null,
+                isLoading = true,
+                activityList = emptyList()
         )
     }
 }
 
 class ActivityListUpdatedIntent(
-    val activityList: ActivitySummaryList
+        val activityList: ActivitySummaryList
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
-            isError = activityList.isEmpty(),
-            isLoading = false,
-            activityList = activityList
+                isError = activityList.isEmpty(),
+                isLoading = false,
+                activityList = activityList
         )
     }
 }
@@ -63,15 +63,19 @@ object ShowAccountSelectionIntent : ActivitiesIntent() {
 }
 
 class ShowActivityDetailsIntent(
-    cryptoCurrency: CryptoCurrency,
-    txHash: String
+        val cryptoCurrency: CryptoCurrency,
+        val txHash: String
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
-        return oldState
+        return oldState.copy(
+                bottomSheet = ActivitiesSheet.ACTIVITY_DETAILS,
+                cryptoCurrency = cryptoCurrency,
+                txHash = txHash
+        )
     }
 }
 
 object ClearBottomSheetIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState =
-        oldState.copy(bottomSheet = null)
+            oldState.copy(bottomSheet = null)
 }
