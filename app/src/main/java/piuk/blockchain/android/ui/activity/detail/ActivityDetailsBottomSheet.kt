@@ -21,7 +21,8 @@ class ActivityDetailsBottomSheet : SlidingModalBottomDialog() {
 
         val crypto = arguments?.getSerializable(ARG_CRYPTO_CURRENCY) as CryptoCurrency
         val txHash = arguments?.getString(ARG_TRANSACTION_HASH) ?: ""
-        val nonCustodialActivitySummaryItem = coincore[crypto].findCachedActivityItem(txHash) as? NonCustodialActivitySummaryItem
+        val nonCustodialActivitySummaryItem =
+                coincore[crypto].findCachedActivityItem(txHash) as? NonCustodialActivitySummaryItem
         nonCustodialActivitySummaryItem?.let {
             view.title.text = "${mapToAction(it.direction)}"
         }
