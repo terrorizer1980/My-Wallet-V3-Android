@@ -11,7 +11,7 @@
         android:id="@+id/content_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:orientation="vertical"
         android:background="@color/blue_800">
 
@@ -109,7 +109,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/standard_margin"
             android:gravity="center_vertical"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:orientation="vertical">
 
         <TextView
