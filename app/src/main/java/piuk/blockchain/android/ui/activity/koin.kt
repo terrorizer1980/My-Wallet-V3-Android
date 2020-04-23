@@ -3,8 +3,7 @@ package piuk.blockchain.android.ui.activity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.koin.dsl.module.applicationContext
 import piuk.blockchain.android.coincore.impl.TransactionNoteUpdater
-import piuk.blockchain.android.ui.activity.detail.TransactionHelper
-import piuk.blockchain.android.ui.activity.detail.TransactionInOutMapper
+import piuk.blockchain.android.ui.activity.detail.*
 
 val activitiesModule = applicationContext {
 
@@ -20,6 +19,20 @@ val activitiesModule = applicationContext {
 
         factory {
             ActivitiesInteractor(
+                coincore = get()
+            )
+        }
+
+        factory {
+            ActivityDetailsModel(
+                initialState = ActivityDetailState(),
+                mainScheduler = AndroidSchedulers.mainThread(),
+                interactor = get()
+            )
+        }
+
+        factory {
+            ActivityDetailsInteractor(
                 coincore = get()
             )
         }
