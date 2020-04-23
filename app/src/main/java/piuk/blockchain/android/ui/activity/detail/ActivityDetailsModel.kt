@@ -6,7 +6,10 @@ import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.base.mvi.MviModel
 import piuk.blockchain.android.ui.base.mvi.MviState
 
-data class ActivityDetailState(val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem? = null) : MviState
+data class ActivityDetailState(
+    val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem? = null,
+    val listOfItems: List<Pair<Int, String>> = emptyList()
+) : MviState
 
 class ActivityDetailsModel(
     initialState: ActivityDetailState,
@@ -18,11 +21,11 @@ class ActivityDetailsModel(
         return when (intent) {
             is LoadActivityDetailsIntent ->
                 interactor.loadActivityDetailsData(cryptoCurrency = intent.cryptoCurrency, txHash = intent.txHash)
-                        .subscribe({
-                            process(ShowActivityDetailsIntent(it))
-                        }, {
-                            // TODO error case loading from cache
-                        })
+                    .subscribe({
+                        process(ShowActivityDetailsIntent(it))
+                    }, {
+                        // TODO error case loading from cache
+                    })
             is ShowActivityDetailsIntent -> null
         }
     }
