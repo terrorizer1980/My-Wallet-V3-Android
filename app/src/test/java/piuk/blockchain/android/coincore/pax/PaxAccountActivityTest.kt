@@ -78,6 +78,8 @@ class PaxAccountActivityTest {
             )
         )
 
+        whenever(paxAccount.fetchErc20Address()).thenReturn(Observable.just(mock()))
+
         whenever(paxAccount.getAccountHash())
             .thenReturn(Single.just("0x4058a004dd718babab47e14dd0d744742e5b9903"))
 
