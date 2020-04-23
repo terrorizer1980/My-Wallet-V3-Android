@@ -22,7 +22,7 @@
     </style>
 
     <style name="Text.Standard.20">
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="Text.Standard.24">
@@ -63,6 +63,10 @@
 
     <style name="Text.Blue.Semibold">
         <item name="fontFamily">@font/inter_medium</item>
+    </style>
+
+    <style name="Text.Blue.Semibold.12">
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="Text.White.Semibold">
@@ -115,6 +119,10 @@
 
     <style name="Text.Semibold">
         <item name="fontFamily">@font/inter_medium</item>
+    </style>
+
+    <style name="Text.Semibold.32">
+        <item name="android:textSize">32sp</item>
     </style>
 
     <style name="Text.Semibold.20">

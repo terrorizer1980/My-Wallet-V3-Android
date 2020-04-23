@@ -6,13 +6,12 @@ import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.base.mvi.MviModel
 import piuk.blockchain.android.ui.base.mvi.MviState
 
-
 data class ActivityDetailState(val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem? = null) : MviState
 
 class ActivityDetailsModel(
-        initialState: ActivityDetailState,
-        mainScheduler: Scheduler,
-        private val interactor: ActivityDetailsInteractor
+    initialState: ActivityDetailState,
+    mainScheduler: Scheduler,
+    private val interactor: ActivityDetailsInteractor
 ) : MviModel<ActivityDetailState, ActivityDetailsIntents>(initialState, mainScheduler) {
 
     override fun performAction(previousState: ActivityDetailState, intent: ActivityDetailsIntents): Disposable? {

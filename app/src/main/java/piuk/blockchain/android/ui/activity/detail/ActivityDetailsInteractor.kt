@@ -5,9 +5,10 @@ import io.reactivex.Single
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 
-class ActivityDetailsInteractor (
+class ActivityDetailsInteractor(
     private val coincore: Coincore
 ) {
-    fun loadActivityDetailsData(cryptoCurrency: CryptoCurrency, txHash: String) : Single<NonCustodialActivitySummaryItem?> =
-        Single.just(coincore[cryptoCurrency].findCachedActivityItem(txHash) as? NonCustodialActivitySummaryItem)
+    fun loadActivityDetailsData(cryptoCurrency: CryptoCurrency, txHash: String):
+            Single<NonCustodialActivitySummaryItem?> =
+                Single.just(coincore[cryptoCurrency].findCachedActivityItem(txHash) as? NonCustodialActivitySummaryItem)
 }

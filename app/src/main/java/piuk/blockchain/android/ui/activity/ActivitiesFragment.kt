@@ -28,7 +28,6 @@ import piuk.blockchain.android.coincore.isCustodial
 import piuk.blockchain.android.ui.accounts.AccountSelectSheet
 import piuk.blockchain.android.ui.activity.adapter.ActivitiesDelegateAdapter
 import piuk.blockchain.android.ui.activity.detail.ActivityDetailsBottomSheet
-import piuk.blockchain.android.ui.activity.detail.TransactionDetailActivity
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.android.util.setCoinIcon
 import piuk.blockchain.androidcore.data.events.ActionEvent

@@ -4,7 +4,7 @@ import info.blockchain.balance.CryptoCurrency
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.base.mvi.MviIntent
 
-sealed class ActivityDetailsIntents: MviIntent<ActivityDetailState>
+sealed class ActivityDetailsIntents : MviIntent<ActivityDetailState>
 
 class LoadActivityDetailsIntent(
     val cryptoCurrency: CryptoCurrency,
@@ -16,7 +16,7 @@ class LoadActivityDetailsIntent(
 }
 
 class ShowActivityDetailsIntent(
-        private val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem?
+    private val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem?
 ) : ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         return oldState.copy(
