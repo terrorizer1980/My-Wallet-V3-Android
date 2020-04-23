@@ -18,6 +18,7 @@ import org.junit.Test
 import piuk.blockchain.android.coincore.impl.TxCacheImpl
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.erc20.Erc20Account
+import piuk.blockchain.androidcore.data.erc20.Erc20DataModel
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.ethereum.EthDataManager
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
@@ -77,6 +78,8 @@ class PaxAccountActivityTest {
                 }
             )
         )
+
+        whenever(paxAccount.fetchErc20Address()).thenReturn(Observable.just(mock()))
 
         whenever(paxAccount.getAccountHash())
             .thenReturn(Single.just("0x4058a004dd718babab47e14dd0d744742e5b9903"))
