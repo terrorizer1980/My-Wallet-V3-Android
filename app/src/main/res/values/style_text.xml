@@ -49,6 +49,18 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="Text.VeryLight">
+        <item name="android:textColor">@color/grey_400</item>
+    </style>
+
+    <style name="Text.VeryLight.Semibold">
+        <item name="fontFamily">@font/inter_medium</item>
+    </style>
+
+    <style name="Text.VeryLight.Semibold.16">
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="Text.Light">
         <item name="android:textColor">@color/grey_600</item>
     </style>

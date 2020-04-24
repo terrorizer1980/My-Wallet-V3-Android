@@ -1875,5 +1875,8 @@
     <string name="activity_details_completed">Completed</string>
     <string name="activity_details_fee">Fee</string>
     <string name="activity_details_amount">Amount</string>
+    <string name="activity_details_action">View on Blockchain Explorer</string>
+    <string name="activity_detail_description_action">Add a description</string>
+    <string name="activity_detail_description_label">Description</string>
 
 </resources>
