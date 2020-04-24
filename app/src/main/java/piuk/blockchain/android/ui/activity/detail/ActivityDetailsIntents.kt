@@ -1,8 +1,6 @@
 package piuk.blockchain.android.ui.activity.detail
 
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.FiatValue
-import info.blockchain.balance.toFiat
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
@@ -21,13 +19,13 @@ class LoadActivityDetailsIntent(
 }
 
 class ShowActivityDetailsIntent(
-    private val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem?
+    private val activityDetailsComposite: ActivityDetailsComposite?
 ) : ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         val list =
             oldState.listOfItems.toMutableList()
-        nonCustodialActivitySummaryItem?.run {
-            when (direction) {
+        activityDetailsComposite?.run {
+            when (nonCustodialActivitySummaryItem?.direction) {
                 TransactionSummary.Direction.TRANSFERRED -> TODO()
                 TransactionSummary.Direction.RECEIVED -> TODO()
                 TransactionSummary.Direction.SENT -> addSentItems(this, list)
@@ -37,55 +35,46 @@ class ShowActivityDetailsIntent(
             }
         }
         return oldState.copy(
-            nonCustodialActivitySummaryItem = nonCustodialActivitySummaryItem,
+            nonCustodialActivitySummaryItem = activityDetailsComposite?.nonCustodialActivitySummaryItem,
             listOfItems = list
         )
     }
 
     private fun addSentItems(
-        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem,
+        activityDetailsComposite: ActivityDetailsComposite,
         itemList: MutableList<Pair<Int, String>>
     ) {
         itemList.clear()
-        itemList.add(Pair(R.string.activity_details_created,
-            nonCustodialActivitySummaryItem.timeStampMs.toString()))
-        if (nonCustodialActivitySummaryItem.isConfirmed) {
-            itemList.add(Pair(R.string.activity_details_completed, "TODO"))
-            itemList.add(Pair(R.string.activity_details_amount,
-                nonCustodialActivitySummaryItem.totalCrypto.toStringWithSymbol()))
-            // fixme composite disposable here?
-            nonCustodialActivitySummaryItem.fee.subscribe(
-                {
-                    itemList.add(Pair(R.string.activity_details_fee,
-                        it.toStringWithSymbol()))
-                },
-                { Timber.e("Adding fee to details error") }
-            )
-            itemList.add(Pair(R.string.activity_details_amount,
-                nonCustodialActivitySummaryItem.totalCrypto.toFiat(
-                    FiatValue.fromMajor(nonCustodialActivitySummaryItem.totalCrypto.currencyCode,
-                        nonCustodialActivitySummaryItem.totalCrypto.toBigDecimal(),
-                        true))
-                    .toString()))
-            itemList.forEach {
-                Timber.e("---- value: ${it.second}")
+        activityDetailsComposite.nonCustodialActivitySummaryItem?.run {
+            itemList.add(Pair(R.string.activity_details_created,
+                timeStampMs.toString()))
+            if (isConfirmed) {
+                itemList.add(Pair(R.string.activity_details_completed, "TODO"))
+                itemList.add(Pair(R.string.activity_details_amount,
+                    totalCrypto.toStringWithSymbol()))
+                itemList.add(Pair(R.string.activity_details_fee, activityDetailsComposite.fee))
+                itemList.add(Pair(R.string.activity_details_amount,
+                    activityDetailsComposite.fiatAtExecution))
+                itemList.forEach {
+                    Timber.e("---- value: ${it.second}")
+                }
+                itemList.add(Pair(DESCRIPTION_ITEM, "Add a description"))
+                itemList.add(Pair(ACTION_ITEM, ""))
+            } else {
             }
-            itemList.add(Pair(DESCRIPTION_ITEM, "Add a description"))
-            itemList.add(Pair(ACTION_ITEM, ""))
-        } else {
+            // created
+            // if confirmed
+            // completed date
+            // amount
+            // fee
+            // value
+            // from
+            // to
+            // else
+            // from
+            // to
+            // fee
         }
-        // created
-        // if confirmed
-        // completed date
-        // amount
-        // fee
-        // value
-        // from
-        // to
-        // else
-        // from
-        // to
-        // fee
     }
 
     private fun addReceivedItems(

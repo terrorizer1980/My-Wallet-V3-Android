@@ -11,21 +11,32 @@ data class ActivityDetailState(
     val listOfItems: List<Pair<Int, String>> = emptyList()
 ) : MviState
 
+data class ActivityDetailsComposite(
+    val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem? = null,
+    val fee: String = "",
+    val fiatAtExecution: String = ""
+)
+
 class ActivityDetailsModel(
     initialState: ActivityDetailState,
     mainScheduler: Scheduler,
     private val interactor: ActivityDetailsInteractor
 ) : MviModel<ActivityDetailState, ActivityDetailsIntents>(initialState, mainScheduler) {
 
-    override fun performAction(previousState: ActivityDetailState, intent: ActivityDetailsIntents): Disposable? {
+    override fun performAction(previousState: ActivityDetailState,
+                               intent: ActivityDetailsIntents): Disposable? {
         return when (intent) {
             is LoadActivityDetailsIntent ->
-                interactor.loadActivityDetailsData(cryptoCurrency = intent.cryptoCurrency, txHash = intent.txHash)
+                interactor.getCompositeActivityDetails(cryptoCurrency = intent.cryptoCurrency,
+                    txHash = intent.txHash)
                     .subscribe({
                         process(ShowActivityDetailsIntent(it))
-                    }, {
+                    },
+                    {
                         // TODO error case loading from cache
                     })
+
+
             is ShowActivityDetailsIntent -> null
         }
     }
