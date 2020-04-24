@@ -92,11 +92,15 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/details_list"
-        app:layout_constraintTop_toBottomOf="@id/header_separator"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="0dp"
-        android:layout_height="0dp" />
+        android:layout_height="wrap_content"
+        android:fadingEdgeLength="@dimen/very_small_margin"
+        android:fadingEdge="vertical"
+        android:requiresFadingEdge="vertical"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_separator" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

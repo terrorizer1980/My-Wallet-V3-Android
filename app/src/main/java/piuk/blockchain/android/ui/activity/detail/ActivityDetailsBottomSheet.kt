@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.ui.urllinks.makeBlockExplorerUrl
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary
-import kotlinx.android.synthetic.main.dialog_activity_details_sheet.*
 import kotlinx.android.synthetic.main.dialog_activity_details_sheet.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
@@ -24,7 +23,7 @@ class ActivityDetailsBottomSheet :
     private lateinit var parent: View
     private val listAdapter: ActivityDetailsAdapter by lazy { ActivityDetailsAdapter() }
     private val listLayoutManager: RecyclerView.LayoutManager by lazy {
-        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
     }
 
     override fun render(newState: ActivityDetailState) {
@@ -33,6 +32,8 @@ class ActivityDetailsBottomSheet :
             parent.amount.text = totalCrypto.toStringWithSymbol()
             parent.status.text = if (isPending) "Pending" else "Complete"
         }
+
+        listAdapter.itemList = newState.listOfItems
     }
 
     override fun initControls(view: View) {
@@ -49,9 +50,9 @@ class ActivityDetailsBottomSheet :
             }
         }
 
-        details_list.apply {
-            adapter = listAdapter
+        view.details_list.apply {
             layoutManager = listLayoutManager
+            adapter = listAdapter
         }
     }
 

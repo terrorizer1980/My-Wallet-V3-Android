@@ -37,7 +37,8 @@ class ShowActivityDetailsIntent(
             }
         }
         return oldState.copy(
-            nonCustodialActivitySummaryItem = nonCustodialActivitySummaryItem
+            nonCustodialActivitySummaryItem = nonCustodialActivitySummaryItem,
+            listOfItems = list
         )
     }
 
@@ -49,8 +50,7 @@ class ShowActivityDetailsIntent(
         itemList.add(Pair(R.string.activity_details_created,
             nonCustodialActivitySummaryItem.timeStampMs.toString()))
         if (nonCustodialActivitySummaryItem.isConfirmed) {
-            itemList.add(Pair(R.string.activity_details_completed,
-                "TODO"))
+            itemList.add(Pair(R.string.activity_details_completed, "TODO"))
             itemList.add(Pair(R.string.activity_details_amount,
                 nonCustodialActivitySummaryItem.totalCrypto.toStringWithSymbol()))
             // fixme composite disposable here?
@@ -70,6 +70,8 @@ class ShowActivityDetailsIntent(
             itemList.forEach {
                 Timber.e("---- value: ${it.second}")
             }
+            itemList.add(Pair(DESCRIPTION_ITEM, "Add a description"))
+            itemList.add(Pair(ACTION_ITEM, ""))
         } else {
         }
         // created
