@@ -94,45 +94,6 @@ class KycCountrySelectionPresenterTest {
     }
 
     @Test
-    fun `onRegionSelected in restricted countries`() {
-        // Arrange
-        whenever(view.regionType).thenReturn(RegionType.Country)
-        val countryList =
-            listOf(NabuCountryResponse("UK", "United Kingdom", listOf("KYC"), emptyList()))
-        whenever(nabuDataManager.getCountriesList(Scope.None))
-            .thenReturn(Single.just(countryList))
-
-        val countryDisplayModel = CountryDisplayModel(
-            name = "United Kingdom",
-            countryCode = "UK"
-        )
-        // Act
-        subject.onRegionSelected(countryDisplayModel)
-        // Assert
-        verify(view).invalidCountry(countryDisplayModel)
-    }
-
-    @Test
-    fun `onRegionSelected not in restricted countries`() {
-        // Arrange
-        whenever(view.regionType).thenReturn(RegionType.Country)
-        val countryCode = "UK"
-        val countryList =
-            listOf(NabuCountryResponse("UK", "United Kingdom", listOf("KYC"), emptyList()))
-        whenever(nabuDataManager.getCountriesList(Scope.None))
-            .thenReturn(Single.just(countryList))
-
-        val countryDisplayModel = CountryDisplayModel(
-            name = "United Kingdom",
-            countryCode = "UK"
-        )
-        // Act
-        subject.onRegionSelected(countryDisplayModel)
-        // Assert
-        verify(view).continueFlow(countryCode)
-    }
-
-    @Test
     fun `onRegionSelected state not found, not in kyc region`() {
         // Arrange
         whenever(view.regionType).thenReturn(RegionType.State)

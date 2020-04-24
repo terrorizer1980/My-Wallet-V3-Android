@@ -41,18 +41,6 @@ class BuyBitcoinAnnouncementTest {
     }
 
     @Test
-    fun `should show, when not already shown, wallet is unfunded and buy is allowed`() {
-        whenever(dismissEntry.isDismissed).thenReturn(false)
-        whenever(simpleBuyAvailability.isAvailable()).thenReturn(Single.just(false))
-
-        subject.shouldShow()
-            .test()
-            .assertValue { it }
-            .assertValueCount(1)
-            .assertComplete()
-    }
-
-    @Test
     fun `should not show, when not already shown, wallet is funded and buy is allowed`() {
         whenever(dismissEntry.isDismissed).thenReturn(false)
         whenever(simpleBuyAvailability.isAvailable()).thenReturn(Single.just(false))

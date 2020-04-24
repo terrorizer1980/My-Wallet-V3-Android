@@ -31,7 +31,6 @@ import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
 
@@ -46,7 +45,6 @@ class MainPresenterTest {
     private val credentialsWiper: CredentialsWiper = mock()
     private val exchangeRateFactory: ExchangeRateDataManager = mock()
     private val currencyState: CurrencyState = mock()
-    private val metadataManager: MetadataManager = mock()
     private val environmentSettings: EnvironmentConfig = mock()
     private val kycStatusHelper: KycStatusHelper = mock()
     private val lockboxDataManager: LockboxDataManager = mock()
@@ -92,7 +90,6 @@ class MainPresenterTest {
             payloadDataManager = payloadDataManager,
             exchangeRateFactory = exchangeRateFactory,
             currencyState = currencyState,
-            metadataManager = metadataManager,
             environmentSettings = environmentSettings,
             kycStatusHelper = kycStatusHelper,
             lockboxDataManager = lockboxDataManager,
