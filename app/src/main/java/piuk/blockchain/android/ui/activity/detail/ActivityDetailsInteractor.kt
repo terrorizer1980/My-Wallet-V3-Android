@@ -11,8 +11,10 @@ class ActivityDetailsInteractor(
     private val currencyPrefs: CurrencyPrefs
 ) {
 
-    fun getCompositeActivityDetails(cryptoCurrency: CryptoCurrency,
-                                    txHash: String): Single<ActivityDetailsComposite> {
+    fun getCompositeActivityDetails(
+        cryptoCurrency: CryptoCurrency,
+        txHash: String
+    ): Single<ActivityDetailsComposite> {
         val item = coincore[cryptoCurrency].findCachedActivityItem(
             txHash) as NonCustodialActivitySummaryItem
         return item.fee.singleOrError().flatMap { cryptoValue ->
@@ -22,5 +24,4 @@ class ActivityDetailsInteractor(
             }
         }
     }
-
 }

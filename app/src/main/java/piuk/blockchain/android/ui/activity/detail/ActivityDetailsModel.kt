@@ -23,8 +23,10 @@ class ActivityDetailsModel(
     private val interactor: ActivityDetailsInteractor
 ) : MviModel<ActivityDetailState, ActivityDetailsIntents>(initialState, mainScheduler) {
 
-    override fun performAction(previousState: ActivityDetailState,
-                               intent: ActivityDetailsIntents): Disposable? {
+    override fun performAction(
+        previousState: ActivityDetailState,
+        intent: ActivityDetailsIntents
+    ): Disposable? {
         return when (intent) {
             is LoadActivityDetailsIntent ->
                 interactor.getCompositeActivityDetails(cryptoCurrency = intent.cryptoCurrency,
@@ -35,7 +37,6 @@ class ActivityDetailsModel(
                     {
                         // TODO error case loading from cache
                     })
-
 
             is ShowActivityDetailsIntent -> null
         }

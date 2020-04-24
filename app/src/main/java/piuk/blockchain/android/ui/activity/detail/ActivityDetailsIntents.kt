@@ -5,7 +5,9 @@ import info.blockchain.wallet.multiaddress.TransactionSummary
 import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.base.mvi.MviIntent
+import piuk.blockchain.android.util.extensions.toFormattedDate
 import timber.log.Timber
+import java.util.Date
 
 sealed class ActivityDetailsIntents : MviIntent<ActivityDetailState>
 
@@ -47,13 +49,13 @@ class ShowActivityDetailsIntent(
         itemList.clear()
         activityDetailsComposite.nonCustodialActivitySummaryItem?.run {
             itemList.add(Pair(R.string.activity_details_created,
-                timeStampMs.toString()))
+                Date(timeStampMs).toFormattedDate()))
             if (isConfirmed) {
                 itemList.add(Pair(R.string.activity_details_completed, "TODO"))
                 itemList.add(Pair(R.string.activity_details_amount,
                     totalCrypto.toStringWithSymbol()))
                 itemList.add(Pair(R.string.activity_details_fee, activityDetailsComposite.fee))
-                itemList.add(Pair(R.string.activity_details_amount,
+                itemList.add(Pair(R.string.activity_details_value,
                     activityDetailsComposite.fiatAtExecution))
                 itemList.forEach {
                     Timber.e("---- value: ${it.second}")
