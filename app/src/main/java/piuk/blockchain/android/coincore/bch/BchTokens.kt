@@ -51,6 +51,7 @@ internal class BchTokens(
     override fun initToken(): Completable =
         bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
             .then { updater() }
+            .onErrorComplete()
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.fromCallable {
