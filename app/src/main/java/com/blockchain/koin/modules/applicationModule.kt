@@ -265,7 +265,6 @@ val applicationModule = applicationContext {
                 credentialsWiper = get(),
                 payloadDataManager = get(),
                 exchangeRateFactory = get(),
-                metadataManager = get(),
                 currencyState = get(),
                 environmentSettings = get(),
                 kycStatusHelper = get(),
@@ -316,7 +315,6 @@ val applicationModule = applicationContext {
 
         factory {
             SimpleBuyAvailability(
-                simpleBuyPrefs = get(),
                 simpleBuyFlag = get("ff_simple_buy")
             )
         }
