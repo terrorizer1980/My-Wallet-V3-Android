@@ -2,18 +2,15 @@ package com.blockchain.koin
 
 import android.app.Application
 import com.blockchain.koin.modules.apiInterceptorsModule
-import com.blockchain.koin.modules.appBuySellModule
 import com.blockchain.koin.modules.appProperties
 import com.blockchain.koin.modules.applicationModule
 import com.blockchain.koin.modules.environmentModule
 import com.blockchain.koin.modules.featureFlagsModule
 import com.blockchain.koin.modules.keys
-import com.blockchain.koin.modules.localShapeShift
 import com.blockchain.koin.modules.morphUiModule
 import com.blockchain.koin.modules.moshiModule
 import com.blockchain.koin.modules.nabuUrlModule
 import com.blockchain.koin.modules.serviceModule
-import com.blockchain.swap.koin.shapeShiftModule
 import com.blockchain.koin.modules.urls
 import com.blockchain.koin.modules.xlmModule
 import com.blockchain.lockbox.koin.lockboxModule
@@ -47,9 +44,7 @@ object KoinStarter {
                 activitiesModule,
                 apiInterceptorsModule,
                 apiModule,
-                appBuySellModule,
                 applicationModule,
-                buySellModule,
                 campaignModule,
                 coincoreModule,
                 coreModule,
@@ -57,11 +52,9 @@ object KoinStarter {
                 dashboardAnnouncementsModule,
                 environmentModule,
                 featureFlagsModule,
-                coinifyModule,
                 authenticationModule,
                 kycUiModule,
                 kycUiNabuModule,
-                localShapeShift,
                 lockboxModule,
                 morphUiModule,
                 moshiModule,
@@ -69,7 +62,6 @@ object KoinStarter {
                 nabuUrlModule,
                 notificationModule,
                 serviceModule,
-                shapeShiftModule,
                 startupUiModule,
                 sunriverModule,
                 swapModule,

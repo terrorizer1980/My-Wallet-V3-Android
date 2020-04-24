@@ -69,7 +69,6 @@ class SimpleBuyIntroFragment : Fragment(), SimpleBuyScreen {
                 }
                 .subscribeBy(
                     onSuccess = {
-                        simpleBuyPrefs.setFlowStartedAtLeastOnce()
                         simpleBuyPrefs.clearState()
                         navigator().goToCurrencySelection()
                     },
