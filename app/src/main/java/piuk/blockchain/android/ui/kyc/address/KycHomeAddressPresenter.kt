@@ -125,7 +125,7 @@ class KycHomeAddressPresenter(
             .flatMap { (verified, countryCode) ->
                 (if (!verified)
                     updateNabuData()
-                 else
+                else
                     Completable.complete()
                 ).andThen(Single.just(verified to countryCode))
             }

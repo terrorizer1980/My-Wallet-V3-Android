@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.dashboard.announcements.rule
 
-import com.blockchain.preferences.WalletStatus
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import io.reactivex.Single

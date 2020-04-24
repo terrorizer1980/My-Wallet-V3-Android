@@ -25,7 +25,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import piuk.blockchain.android.ui.kyc.address.models.AddressModel
-import piuk.blockchain.android.campaign.CampaignType
 import piuk.blockchain.androidcore.data.settings.PhoneVerificationQuery
 
 class KycHomeAddressPresenterTest {

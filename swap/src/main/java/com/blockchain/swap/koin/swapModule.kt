@@ -31,7 +31,6 @@ val swapModule = applicationContext {
                 nabuMarketsService = get(),
                 currencyPreference = get()
             )
-        }.bind(MorphTradeDataManager::class)
-         .bind(MorphTradeDataHistoryList::class)
+        }.bind(MorphTradeDataManager::class).bind(MorphTradeDataHistoryList::class)
     }
 }

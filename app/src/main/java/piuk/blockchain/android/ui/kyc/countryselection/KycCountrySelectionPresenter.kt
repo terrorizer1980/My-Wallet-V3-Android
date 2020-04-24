@@ -1,11 +1,11 @@
 package piuk.blockchain.android.ui.kyc.countryselection
+
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import com.blockchain.swap.nabu.models.nabu.NabuRegion
 import com.blockchain.swap.nabu.models.nabu.Scope
 import piuk.blockchain.android.ui.kyc.countryselection.models.CountrySelectionState
 import piuk.blockchain.android.ui.kyc.countryselection.util.CountryDisplayModel
 import piuk.blockchain.android.ui.kyc.countryselection.util.toDisplayList
-import piuk.blockchain.android.campaign.CampaignType
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign

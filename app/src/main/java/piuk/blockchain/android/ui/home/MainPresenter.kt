@@ -39,7 +39,6 @@ import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
@@ -62,7 +61,6 @@ interface MainView : MvpView, HomeNavigator {
     fun clearAllDynamicShortcuts()
     fun setPitEnabled(enabled: Boolean)
     fun setSimpleBuyEnabled(enabled: Boolean)
-//    fun showTradeCompleteMsg(txHash: String)
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
     fun showHomebrewDebugMenu()
     fun enableSwapButton(isEnabled: Boolean)
@@ -81,7 +79,6 @@ class MainPresenter internal constructor(
     private val payloadDataManager: PayloadDataManager,
     private val exchangeRateFactory: ExchangeRateDataManager,
     private val currencyState: CurrencyState,
-    private val metadataManager: MetadataManager,
     private val environmentSettings: EnvironmentConfig,
     private val kycStatusHelper: KycStatusHelper,
     private val lockboxDataManager: LockboxDataManager,
@@ -141,7 +138,7 @@ class MainPresenter internal constructor(
                 .subscribeBy(
                     onSuccess = {
                         view?.setSimpleBuyEnabled(it)
-                   }
+                    }
                 )
     }
 
