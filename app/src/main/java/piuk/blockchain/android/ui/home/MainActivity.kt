@@ -446,10 +446,6 @@ class MainActivity : MvpActivity<MainView, MainPresenter>(),
         OnboardingActivity.launchForFingerprints(this)
     }
 
-//    override fun launchBuySell() {
-//        BuySellLauncherActivity.start(this)
-//    }
-
     override fun launchTransfer() {
         bottom_navigation.getViewAtPosition(ITEM_RECEIVE).performClick()
     }

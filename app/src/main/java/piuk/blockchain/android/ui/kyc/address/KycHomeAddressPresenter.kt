@@ -123,11 +123,8 @@ class KycHomeAddressPresenter(
                     .map { verified -> verified to address.country }
             }
             .flatMap { (verified, countryCode) ->
-                (if (!verified)
-                    updateNabuData()
-                else
-                    Completable.complete()
-                ).andThen(Single.just(verified to countryCode))
+                updateNabuData(verified)
+                    .andThen(Single.just(verified to countryCode))
             }
             .map { (verified, countryCode) ->
                 State(
@@ -173,15 +170,20 @@ class KycHomeAddressPresenter(
             ).subscribeOn(Schedulers.io())
         }
 
-    private fun updateNabuData(): Completable = nabuDataManager.requestJwt()
-        .subscribeOn(Schedulers.io())
-        .flatMap { jwt ->
-            fetchOfflineToken.flatMap {
-                nabuDataManager.updateUserWalletInfo(it, jwt)
-                    .subscribeOn(Schedulers.io())
-            }
+    private fun updateNabuData(isVerified: Boolean): Completable =
+        if (!isVerified) {
+            nabuDataManager.requestJwt()
+                .subscribeOn(Schedulers.io())
+                .flatMap { jwt ->
+                    fetchOfflineToken.flatMap {
+                        nabuDataManager.updateUserWalletInfo(it, jwt)
+                            .subscribeOn(Schedulers.io())
+                    }
+                }
+                .ignoreElement()
+        } else {
+            Completable.complete()
         }
-        .ignoreElement()
 
     private fun getCountryName(countryCode: String): Maybe<String> = countryCodeSingle
         .map { it.entries.first { (_, value) -> value == countryCode }.key }

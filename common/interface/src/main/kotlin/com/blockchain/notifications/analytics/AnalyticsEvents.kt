@@ -7,7 +7,6 @@ enum class AnalyticsEvents(
 
     AccountsAndAddresses("accounts_and_addresses"),
     Backup("backup"),
-//    BuyBitcoin("buy_bitcoin"),
     Dashboard("dashboard"),
     Exchange("exchange"),
     ExchangeCreate("exchange_create"),
