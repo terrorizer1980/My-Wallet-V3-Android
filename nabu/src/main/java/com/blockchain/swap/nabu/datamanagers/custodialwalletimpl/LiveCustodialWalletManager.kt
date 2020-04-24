@@ -12,6 +12,7 @@ import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
+import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
@@ -28,6 +29,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import okhttp3.internal.toLongOrDefault
 import java.math.BigDecimal
+import java.util.Date
 import java.util.UnknownFormatConversionException
 
 class LiveCustodialWalletManager(
@@ -222,8 +224,8 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
             outputQuantity.toBigDecimalOrNull() ?: BigDecimal.ZERO
         ),
         state = state.toLocalState(),
-        expires = expiresAt,
-        updated = updatedAt
+        expires = expiresAt.fromIso8601ToUtc() ?: Date(0),
+        updated = updatedAt.fromIso8601ToUtc() ?: Date(0)
     )
 
 interface PaymentAccountMapper {

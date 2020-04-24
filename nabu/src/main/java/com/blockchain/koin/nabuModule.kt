@@ -160,7 +160,11 @@ val nabuModule = applicationContext {
 val authenticationModule = applicationContext {
     context("Payload") {
         factory {
-            NabuAuthenticator(nabuToken = get(), nabuDataManager = get()) as Authenticator
+            NabuAuthenticator(
+                nabuToken = get(),
+                nabuDataManager = get(),
+                crashLogger = get()
+            ) as Authenticator
         }
     }
 }

@@ -66,7 +66,6 @@ abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
             .mapList { buyOrderToSummary(it) }
             .filterActivityStates()
             .doOnSuccess { txCache.addToCache(it) }
-            .map { txCache.asActivityList() }
             .onErrorReturn { emptyList() }
 
     override val isFunded: Boolean

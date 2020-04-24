@@ -5,6 +5,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
@@ -43,7 +44,8 @@ internal class PaxCryptoAccountNonCustodial(
             val ethDataManager = paxAccount.ethDataManager
 
             val feedTransactions =
-                paxAccount.getTransactions()
+                paxAccount.fetchErc20Address()
+                    .flatMap { paxAccount.getTransactions() }
                     .mapList {
                         val feeObservable = ethDataManager
                             .getTransaction(it.transactionHash)
@@ -65,10 +67,9 @@ internal class PaxCryptoAccountNonCustodial(
                         ethDataManager = ethDataManager,
                         exchangeRates = exchangeRates,
                         lastBlockNumber = latestBlockNumber.number
-                    )
+                    ) as ActivitySummaryItem
                 }
             }
             .doOnSuccess { txCache.addToCache(it) }
-            .map { txCache.asActivityList() }
         }
 }

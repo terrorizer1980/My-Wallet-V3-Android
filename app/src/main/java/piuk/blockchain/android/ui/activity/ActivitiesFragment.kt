@@ -2,12 +2,12 @@ package piuk.blockchain.android.ui.activity
 
 import android.content.Context
 import android.os.Bundle
-import androidx.annotation.UiThread
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.UiThread
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,27 +30,28 @@ import piuk.blockchain.android.ui.activity.adapter.ActivitiesDelegateAdapter
 import piuk.blockchain.android.ui.activity.detail.TransactionDetailActivity
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.android.util.setCoinIcon
-import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
-import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcore.data.events.ActionEvent
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import piuk.blockchain.androidcore.data.rxjava.RxBus
+import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.goneIf
+import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 
 class ActivitiesFragment
     : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
-    AccountSelectSheet.Host {
+        AccountSelectSheet.Host {
     override val model: ActivitiesModel by inject()
 
     private val theAdapter: ActivitiesDelegateAdapter by lazy {
         ActivitiesDelegateAdapter(
-            disposables = disposables,
-            prefs = get(),
-            onItemClicked = { cc, tx, isCustodial -> onActivityClicked(cc, tx, isCustodial) },
-            analytics = get()
+                disposables = disposables,
+                prefs = get(),
+                onItemClicked = { cc, tx, isCustodial -> onActivityClicked(cc, tx, isCustodial) },
+                analytics = get()
         )
     }
 
@@ -79,6 +80,15 @@ class ActivitiesFragment
         renderAccountDetails(newState)
         renderTransactionList(newState)
 
+        if (newState.isError) {
+            ToastCustom.makeText(
+                    requireContext(),
+                    getString(R.string.activity_loading_error),
+                    ToastCustom.LENGTH_SHORT,
+                    ToastCustom.TYPE_ERROR
+            )
+        }
+
         if (this.state?.bottomSheet != newState.bottomSheet) {
             when (newState.bottomSheet) {
                 ActivitiesSheet.ACCOUNT_SELECTOR -> showBottomSheet(AccountSelectSheet.newInstance())
@@ -89,12 +99,19 @@ class ActivitiesFragment
     }
 
     private fun switchView(newState: ActivitiesState) {
-        if (newState.activityList.isEmpty()) {
-            content_layout.gone()
-            empty_view.visible()
-        } else {
-            content_layout.visible()
-            empty_view.gone()
+        when {
+            newState.isLoading -> {
+                content_layout.gone()
+                empty_view.gone()
+            }
+            newState.activityList.isEmpty() -> {
+                content_layout.gone()
+                empty_view.visible()
+            }
+            else -> {
+                content_layout.visible()
+                empty_view.gone()
+            }
         }
     }
 
@@ -119,15 +136,15 @@ class ActivitiesFragment
         fiat_balance.text = ""
 
         disposables += account.fiatBalance(currencyPrefs.selectedFiatCurrency, exchangeRates)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onSuccess = {
-                    fiat_balance.text = it.toStringWithSymbol()
-                },
-                onError = {
-                    Timber.e("Unable to get balance for ${account.label}")
-                }
-            )
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onSuccess = {
+                            fiat_balance.text = it.toStringWithSymbol()
+                        },
+                        onError = {
+                            Timber.e("Unable to get balance for ${account.label}")
+                        }
+                )
     }
 
     private fun ImageView.setAccountIcon(account: CryptoAccount) {
@@ -147,8 +164,6 @@ class ActivitiesFragment
             displayList.clear()
             if (isEmpty()) {
                 Timber.d("Render new tx list - empty")
-                // TODO: Show no-transactions, or loading view. There should _always_ be transactions, since the account
-                // selector filters out accounts with no transactions
             } else {
                 displayList.addAll(this)
             }
@@ -203,10 +218,10 @@ class ActivitiesFragment
 
         // Configure the refreshing colors
         swipe.setColorSchemeResources(
-            R.color.blue_800,
-            R.color.blue_600,
-            R.color.blue_400,
-            R.color.blue_200
+                R.color.blue_800,
+                R.color.blue_600,
+                R.color.blue_400,
+                R.color.blue_200
         )
     }
 
@@ -229,9 +244,9 @@ class ActivitiesFragment
         // Show a toast in this case, for now - this may change come design review...
         if (isCustodial) {
             Toast.makeText(
-                requireContext(),
-                "Custodial activity details are not supported in this release",
-                Toast.LENGTH_LONG
+                    requireContext(),
+                    "Custodial activity details are not supported in this release",
+                    Toast.LENGTH_LONG
             ).show()
         } else {
             TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)

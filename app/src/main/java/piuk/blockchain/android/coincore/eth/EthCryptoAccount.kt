@@ -5,6 +5,7 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.ethereum.EthereumAccount
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
@@ -67,11 +68,10 @@ internal class EthCryptoAccountNonCustodial(
                             ethFeeForPaxTransaction,
                             latestBlock.blockHeight,
                             exchangeRates
-                        )
+                        ) as ActivitySummaryItem
                     }.toList()
             }
             .doOnSuccess { txCache.addToCache(it) }
-            .map { txCache.asActivityList() }
 
     override val isDefault: Boolean = true // Only one ETH account, so always default
 }

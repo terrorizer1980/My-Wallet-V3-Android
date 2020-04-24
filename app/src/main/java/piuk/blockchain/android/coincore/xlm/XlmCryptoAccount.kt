@@ -6,6 +6,7 @@ import info.blockchain.balance.AccountReference
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import io.reactivex.Single
+import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.TxCache
 import piuk.blockchain.android.coincore.impl.CryptoSingleAccountCustodialBase
@@ -42,10 +43,9 @@ internal class XlmCryptoAccountNonCustodial(
                 XlmActivitySummaryItem(
                     it,
                     exchangeRates
-                )
+                ) as ActivitySummaryItem
             }
             .doOnSuccess { txCache.addToCache(it) }
-            .map { txCache.asActivityList() }
 
     constructor(
         account: AccountReference.Xlm,

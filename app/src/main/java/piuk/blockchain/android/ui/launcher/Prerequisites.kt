@@ -36,14 +36,24 @@ class Prerequisites(
 ) {
 
     fun initMetadataAndRelatedPrerequisites(): Completable =
-        metadataManager.attemptMetadataSetup()
-            .then { feesCompletable() }
-            .then { simpleBuySync.performSync() }
-            .then { coincore.init() }
-            .then { generateAndUpdateReceiveAddresses().onErrorComplete() }
+        metadataManager.attemptMetadataSetup().logOnError(METADATA_ERROR_MESSAGE)
+            .then { feesCompletable().logOnError(FEES_ERROR) }
+            .then { simpleBuySync.performSync().logAndCompleteOnError(SIMPLE_BUY_SYNC) }
+            .then { coincore.init().logOnError(COINCORE_INIT) }
+            .then { generateAndUpdateReceiveAddresses().logAndCompleteOnError(RECEIVE_ADDRESSES) }
             .doOnComplete {
                 rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
             }.subscribeOn(Schedulers.io())
+
+    private fun Completable.logOnError(tag: String): Completable =
+        this.doOnError {
+            crashLogger.logException(
+                CustomLogMessagedException(tag, it)
+            )
+        }
+
+    private fun Completable.logAndCompleteOnError(tag: String): Completable =
+        this.logOnError(tag).onErrorComplete()
 
     private fun generateAndUpdateReceiveAddresses(): Completable =
         addressGenerator.generateAddresses().then {
@@ -86,4 +96,12 @@ class Prerequisites(
     fun decryptAndSetupMetadata(secondPassword: String) = metadataManager.decryptAndSetupMetadata(
         secondPassword
     )
+
+    companion object {
+        private const val METADATA_ERROR_MESSAGE = "metadata_init"
+        private const val FEES_ERROR = "fees_init"
+        private const val SIMPLE_BUY_SYNC = "simple_buy_sync"
+        private const val COINCORE_INIT = "coincore_init"
+        private const val RECEIVE_ADDRESSES = "receive_addresses"
+    }
 }
