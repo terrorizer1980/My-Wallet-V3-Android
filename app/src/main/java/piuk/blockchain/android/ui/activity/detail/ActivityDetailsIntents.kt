@@ -53,9 +53,9 @@ class ShowActivityDetailsIntent(
                 itemList.add(Pair(ActivityDetailsInfoType.COMPLETED, "TODO"))
                 itemList.add(Pair(ActivityDetailsInfoType.AMOUNT,
                     totalCrypto.toStringWithSymbol()))
-                itemList.add(Pair(ActivityDetailsInfoType.FEE, activityDetailsComposite.fee))
+                itemList.add(Pair(ActivityDetailsInfoType.FEE, activityDetailsComposite.fee?.toStringWithSymbol() ?: ""))
                 itemList.add(Pair(ActivityDetailsInfoType.VALUE,
-                    activityDetailsComposite.fiatAtExecution))
+                    activityDetailsComposite.fiatAtExecution?.toStringWithSymbol() ?: ""))
                 itemList.forEach {
                     Timber.e("---- value: ${it.second}")
                 }

@@ -1,5 +1,7 @@
 package piuk.blockchain.android.ui.activity.detail
 
+import info.blockchain.balance.CryptoValue
+import info.blockchain.balance.FiatValue
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
@@ -23,8 +25,8 @@ data class ActivityDetailState(
 
 data class ActivityDetailsComposite(
     val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem? = null,
-    val fee: String = "",
-    val fiatAtExecution: String = ""
+    val fee: CryptoValue? = null,
+    val fiatAtExecution: FiatValue? = null
 )
 
 class ActivityDetailsModel(

@@ -19,8 +19,7 @@ class ActivityDetailsInteractor(
             txHash) as NonCustodialActivitySummaryItem
         return item.fee.singleOrError().flatMap { cryptoValue ->
             item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).map { fiatValue ->
-                ActivityDetailsComposite(item, cryptoValue.toStringWithSymbol(),
-                    fiatValue.toStringWithSymbol())
+                ActivityDetailsComposite(item, cryptoValue, fiatValue)
             }
         }
     }
