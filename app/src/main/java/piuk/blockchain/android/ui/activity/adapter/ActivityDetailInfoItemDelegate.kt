@@ -12,6 +12,8 @@ import piuk.blockchain.android.ui.activity.detail.Amount
 import piuk.blockchain.android.ui.activity.detail.Created
 import piuk.blockchain.android.ui.activity.detail.Description
 import piuk.blockchain.android.ui.activity.detail.Fee
+import piuk.blockchain.android.ui.activity.detail.From
+import piuk.blockchain.android.ui.activity.detail.To
 import piuk.blockchain.android.ui.activity.detail.Value
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
 import piuk.blockchain.android.util.extensions.toFormattedDate
@@ -51,6 +53,8 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
                 is Amount -> R.string.activity_details_amount
                 is Fee -> R.string.activity_details_fee
                 is Value -> R.string.activity_details_value
+                is To -> R.string.activity_details_to
+                is From -> R.string.activity_details_from
                 else -> R.string.activity_details_empty
             }
         )
@@ -61,6 +65,8 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
             is Amount -> infoType.cryptoValue.toStringWithSymbol()
             is Fee -> infoType.feeValue.toStringWithSymbol()
             is Value -> infoType.fiatAtExecution.toStringWithSymbol()
+            is To -> infoType.toAddress
+            is From -> infoType.fromAddress
             else -> ""
         }
 }

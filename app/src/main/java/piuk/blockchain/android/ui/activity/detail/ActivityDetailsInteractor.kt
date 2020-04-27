@@ -9,7 +9,8 @@ import java.util.Date
 
 class ActivityDetailsInteractor(
     private val coincore: Coincore,
-    private val currencyPrefs: CurrencyPrefs
+    private val currencyPrefs: CurrencyPrefs,
+    private val transactionInputOutputMapper: TransactionInOutMapper
 ) {
 
     fun getActivityDetails(
@@ -22,8 +23,7 @@ class ActivityDetailsInteractor(
 
     fun loadCreationDate(
         nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
-    ): Single<Date> =
-        Single.just(Date(nonCustodialActivitySummaryItem.timeStampMs))
+    ): Single<Date> = Single.just(Date(nonCustodialActivitySummaryItem.timeStampMs))
 
     fun loadConfirmedItems(
         item: NonCustodialActivitySummaryItem
@@ -32,12 +32,35 @@ class ActivityDetailsInteractor(
         list.add(Amount(item.totalCrypto))
         return item.fee.singleOrError().flatMap { cryptoValue ->
             list.add(Fee(cryptoValue))
-            item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).map { fiatValue ->
+            item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
                 list.add(Value(fiatValue))
-                list.add(Description())
-                list.add(Action())
-                list
+                transactionInputOutputMapper.transformInputAndOutputs(item).map {
+                    addSingleOrMultipleAddresses(it, list)
+                    list.add(Description())
+                    list.add(Action())
+                    list
+                }
             }
+        }
+    }
+
+    private fun addSingleOrMultipleAddresses(
+        it: TransactionInOutDetails,
+        list: MutableList<ActivityDetailsType>
+    ) {
+        if (it.outputs.size == 1) {
+            list.add(To(it.outputs[0].address))
+        } else {
+            var addresses = ""
+            it.outputs.forEach { address -> addresses += "$address\n" }
+            list.add(To(addresses))
+        }
+        if (it.inputs.size == 1) {
+            list.add(From(it.inputs[0].address))
+        } else {
+            var addresses = ""
+            it.inputs.forEach { address -> addresses += "$address\n" }
+            list.add(From(addresses))
         }
     }
 }
