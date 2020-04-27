@@ -14,7 +14,8 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 class ActivityDetailInfoItemDelegate <in T> : AdapterDelegate<T> {
     override fun isForViewType(items: List<T>, position: Int): Boolean {
         val item = items[position] as ActivityDetailsListItem
-        return item.activityDetailsType != ActivityDetailsInfoType.ACTION && item.activityDetailsType != ActivityDetailsInfoType.DESCRIPTION
+        return item.activityDetailsType != ActivityDetailsInfoType.ACTION &&
+            item.activityDetailsType != ActivityDetailsInfoType.DESCRIPTION
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
