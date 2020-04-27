@@ -20,29 +20,31 @@ class ActivityDetailsBottomSheet :
         get() = R.layout.dialog_activity_details_sheet
 
     override val model: ActivityDetailsModel by inject()
-    private lateinit var parent: View
     private val listAdapter: ActivityDetailsAdapter by lazy { ActivityDetailsAdapter() }
     private val listLayoutManager: RecyclerView.LayoutManager by lazy {
         LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
     }
 
+    private val Bundle?.txId
+        get() = this?.getString(ARG_TRANSACTION_HASH) ?: throw IllegalArgumentException(
+            "Transaction id should not be null")
+
+    private val Bundle?.cryptoCurrency
+        get() = this?.getSerializable(ARG_CRYPTO_CURRENCY) as? CryptoCurrency
+            ?: throw IllegalArgumentException("Cryptocurrency should not be null")
+
     override fun render(newState: ActivityDetailState) {
         newState.nonCustodialActivitySummaryItem?.run {
-            parent.title.text = mapToAction(direction)
-            parent.amount.text = totalCrypto.toStringWithSymbol()
-            parent.status.text = if (isPending) "Pending" else "Complete"
+            dialogView.title.text = mapToAction(direction)
+            dialogView.amount.text = totalCrypto.toStringWithSymbol()
+            dialogView.status.text = if (isPending) "Pending" else "Complete"
         }
 
         listAdapter.itemList = newState.listOfItems
     }
 
     override fun initControls(view: View) {
-        val crypto = arguments?.getSerializable(ARG_CRYPTO_CURRENCY) as CryptoCurrency
-        val txHash = arguments?.getString(ARG_TRANSACTION_HASH) ?: ""
-
-        parent = view
-
-        val explorerUri = makeBlockExplorerUrl(crypto, txHash)
+        val explorerUri = makeBlockExplorerUrl(arguments.cryptoCurrency, arguments.txId)
         listAdapter.actionItemClicked = { _ ->
             Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(explorerUri)
@@ -90,4 +92,5 @@ class ActivityDetailsBottomSheet :
             }
         }
     }
+
 }

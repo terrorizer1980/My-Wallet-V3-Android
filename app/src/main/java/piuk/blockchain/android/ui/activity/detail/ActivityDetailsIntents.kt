@@ -2,12 +2,11 @@ package piuk.blockchain.android.ui.activity.detail
 
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.multiaddress.TransactionSummary
-import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.base.mvi.MviIntent
 import piuk.blockchain.android.util.extensions.toFormattedDate
 import timber.log.Timber
-import java.util.Date
+import java.util.*
 
 sealed class ActivityDetailsIntents : MviIntent<ActivityDetailState>
 
@@ -44,24 +43,24 @@ class ShowActivityDetailsIntent(
 
     private fun addSentItems(
         activityDetailsComposite: ActivityDetailsComposite,
-        itemList: MutableList<Pair<Int, String>>
+        itemList: MutableList<Pair<ActivityDetailsInfoType, String>>
     ) {
         itemList.clear()
         activityDetailsComposite.nonCustodialActivitySummaryItem?.run {
-            itemList.add(Pair(R.string.activity_details_created,
+            itemList.add(Pair(ActivityDetailsInfoType.CREATED,
                 Date(timeStampMs).toFormattedDate()))
             if (isConfirmed) {
-                itemList.add(Pair(R.string.activity_details_completed, "TODO"))
-                itemList.add(Pair(R.string.activity_details_amount,
+                itemList.add(Pair(ActivityDetailsInfoType.COMPLETED, "TODO"))
+                itemList.add(Pair(ActivityDetailsInfoType.AMOUNT,
                     totalCrypto.toStringWithSymbol()))
-                itemList.add(Pair(R.string.activity_details_fee, activityDetailsComposite.fee))
-                itemList.add(Pair(R.string.activity_details_value,
+                itemList.add(Pair(ActivityDetailsInfoType.FEE, activityDetailsComposite.fee))
+                itemList.add(Pair(ActivityDetailsInfoType.VALUE,
                     activityDetailsComposite.fiatAtExecution))
                 itemList.forEach {
                     Timber.e("---- value: ${it.second}")
                 }
-                itemList.add(Pair(DESCRIPTION_ITEM, "Add a description"))
-                itemList.add(Pair(ACTION_ITEM, ""))
+                itemList.add(Pair(ActivityDetailsInfoType.DESCRIPTION, "Add a description"))
+                itemList.add(Pair(ActivityDetailsInfoType.ACTION, ""))
             } else {
             }
             // created

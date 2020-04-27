@@ -17,9 +17,9 @@ class AccountSelectedIntent(
             emptyList()
         }
         return oldState.copy(
-                account = account,
-                isLoading = true,
-                activityList = activitiesList
+            account = account,
+            isLoading = true,
+            activityList = activitiesList
         )
     }
 }
@@ -27,9 +27,9 @@ class AccountSelectedIntent(
 object SelectDefaultAccountIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
-                account = null,
-                isLoading = true,
-                activityList = emptyList()
+            account = null,
+            isLoading = true,
+            activityList = emptyList()
         )
     }
 }
@@ -39,9 +39,9 @@ class ActivityListUpdatedIntent(
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
-                isError = activityList.isEmpty(),
-                isLoading = false,
-                activityList = activityList
+            isError = activityList.isEmpty(),
+            isLoading = false,
+            activityList = activityList
         )
     }
 }
@@ -49,9 +49,9 @@ class ActivityListUpdatedIntent(
 class ActivityListUpdatedErrorIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
-                isLoading = false,
-                activityList = emptyList(),
-                isError = true
+            isLoading = false,
+            activityList = emptyList(),
+            isError = true
         )
     }
 }
@@ -68,14 +68,17 @@ class ShowActivityDetailsIntent(
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
-                bottomSheet = ActivitiesSheet.ACTIVITY_DETAILS,
-                cryptoCurrency = cryptoCurrency,
-                txHash = txHash
+            bottomSheet = ActivitiesSheet.ACTIVITY_DETAILS,
+            selectedCryptoCurrency = cryptoCurrency,
+            selectedTxId = txHash
         )
     }
 }
 
 object ClearBottomSheetIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState =
-            oldState.copy(bottomSheet = null)
+        oldState.copy(bottomSheet = null,
+            selectedCryptoCurrency = null,
+            selectedTxId = ""
+        )
 }

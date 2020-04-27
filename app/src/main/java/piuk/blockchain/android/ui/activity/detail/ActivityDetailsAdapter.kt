@@ -17,7 +17,7 @@ private const val DESCRIPTION_TYPE = 2
 private const val ACTION_TYPE = 3
 
 class ActivityDetailsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var itemList: List<Pair<Int, String>> = emptyList()
+    var itemList: List<Pair<ActivityDetailsInfoType, String>> = emptyList()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -28,11 +28,11 @@ class ActivityDetailsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             INFO_TYPE -> InfoItemViewHolder(LayoutInflater.from(parent.context)
-                    .inflate(
-                        R.layout.item_activity_detail_info,
-                        parent,
-                        false
-                    ))
+                .inflate(
+                    R.layout.item_activity_detail_info,
+                    parent,
+                    false
+                ))
             DESCRIPTION_TYPE -> DescriptionItemViewHolder(LayoutInflater.from(parent.context)
                 .inflate(
                     R.layout.item_activity_detail_description,
@@ -66,8 +66,8 @@ class ActivityDetailsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int =
         when (itemList[position].first) {
-            DESCRIPTION_ITEM -> DESCRIPTION_TYPE
-            ACTION_ITEM -> ACTION_TYPE
+            ActivityDetailsInfoType.DESCRIPTION -> DESCRIPTION_TYPE
+            ActivityDetailsInfoType.ACTION -> ACTION_TYPE
             else -> INFO_TYPE
         }
 
@@ -75,13 +75,26 @@ class ActivityDetailsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         override val containerView: View?
             get() = itemView
 
-        fun bind(item: Pair<Int, String>) {
-            itemView.item_activity_detail_title.text = parent.context.getString(item.first)
+        fun bind(item: Pair<ActivityDetailsInfoType, String>) {
+            itemView.item_activity_detail_title.text = getStringForInfoType(item.first)
             itemView.item_activity_detail_description.text = item.second
         }
+
+        private fun getStringForInfoType(infoType: ActivityDetailsInfoType): String =
+            parent.context.getString(
+                when (infoType) {
+                    ActivityDetailsInfoType.CREATED -> R.string.activity_details_created
+                    ActivityDetailsInfoType.COMPLETED -> R.string.activity_details_completed
+                    ActivityDetailsInfoType.AMOUNT -> R.string.activity_details_amount
+                    ActivityDetailsInfoType.FEE -> R.string.activity_details_fee
+                    ActivityDetailsInfoType.VALUE -> R.string.activity_details_value
+                    else -> R.string.activity_details_empty
+                }
+            )
     }
 
-    class DescriptionItemViewHolder(var parent: View) : RecyclerView.ViewHolder(parent), LayoutContainer {
+    class DescriptionItemViewHolder(var parent: View) : RecyclerView.ViewHolder(parent),
+        LayoutContainer {
         override val containerView: View?
             get() = itemView
 
@@ -89,7 +102,8 @@ class ActivityDetailsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    class ActionItemViewHolder(var parent: View) : RecyclerView.ViewHolder(parent), LayoutContainer {
+    class ActionItemViewHolder(var parent: View) : RecyclerView.ViewHolder(parent),
+        LayoutContainer {
         override val containerView: View?
             get() = itemView
 

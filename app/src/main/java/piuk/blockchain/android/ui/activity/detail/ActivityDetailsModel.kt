@@ -6,9 +6,19 @@ import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.base.mvi.MviModel
 import piuk.blockchain.android.ui.base.mvi.MviState
 
+enum class ActivityDetailsInfoType {
+    CREATED,
+    COMPLETED,
+    AMOUNT,
+    FEE,
+    VALUE,
+    DESCRIPTION,
+    ACTION
+}
+
 data class ActivityDetailState(
     val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem? = null,
-    val listOfItems: List<Pair<Int, String>> = emptyList()
+    val listOfItems: List<Pair<ActivityDetailsInfoType, String>> = emptyList()
 ) : MviState
 
 data class ActivityDetailsComposite(

@@ -93,8 +93,8 @@ class ActivitiesFragment
             when (newState.bottomSheet) {
                 ActivitiesSheet.ACCOUNT_SELECTOR -> showBottomSheet(AccountSelectSheet.newInstance())
                 ActivitiesSheet.ACTIVITY_DETAILS -> {
-                    newState.cryptoCurrency?.let {
-                        showBottomSheet(ActivityDetailsBottomSheet.newInstance(it, newState.txHash))
+                    newState.selectedCryptoCurrency?.let {
+                        showBottomSheet(ActivityDetailsBottomSheet.newInstance(it, newState.selectedTxId))
                     } ?: Timber.e("newstate cryptocurrency null") // this should not happen
                 }
             }
