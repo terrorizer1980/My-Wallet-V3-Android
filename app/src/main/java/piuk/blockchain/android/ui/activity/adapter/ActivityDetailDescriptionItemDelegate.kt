@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.extensions.LayoutContainer
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.activity.detail.ActivityDetailsInfoType
+import piuk.blockchain.android.ui.activity.detail.ActivityDetailsListItem
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 
@@ -14,8 +15,8 @@ class ActivityDetailDescriptionItemDelegate<in T>(
 ) : AdapterDelegate<T> {
 
     override fun isForViewType(items: List<T>, position: Int): Boolean {
-        val item = items[position] as Pair<ActivityDetailsInfoType, String>
-        return item.first == ActivityDetailsInfoType.DESCRIPTION
+        val item = items[position] as ActivityDetailsListItem
+        return item.activityDetailsType == ActivityDetailsInfoType.DESCRIPTION
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
@@ -26,7 +27,7 @@ class ActivityDetailDescriptionItemDelegate<in T>(
         position: Int,
         holder: RecyclerView.ViewHolder
     ) = (holder as DescriptionItemViewHolder).bind(
-        items[position] as Pair<ActivityDetailsInfoType, String>,
+        items[position] as ActivityDetailsListItem,
         onDescriptionItemClicked
     )
 }
@@ -36,7 +37,7 @@ private class DescriptionItemViewHolder(var parent: View) : RecyclerView.ViewHol
     override val containerView: View?
         get() = itemView
 
-    fun bind(item: Pair<ActivityDetailsInfoType, String>, onDescriptionClicked: () -> Unit) {
+    fun bind(item: ActivityDetailsListItem, onDescriptionClicked: () -> Unit) {
         // TODO click for description
     }
 }
