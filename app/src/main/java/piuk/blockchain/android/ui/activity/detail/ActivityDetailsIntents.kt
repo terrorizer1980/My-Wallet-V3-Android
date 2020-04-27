@@ -53,14 +53,15 @@ class ShowActivityDetailsIntent(
                 itemList.add(Pair(ActivityDetailsInfoType.COMPLETED, "TODO"))
                 itemList.add(Pair(ActivityDetailsInfoType.AMOUNT,
                     totalCrypto.toStringWithSymbol()))
-                itemList.add(Pair(ActivityDetailsInfoType.FEE, activityDetailsComposite.fee?.toStringWithSymbol() ?: ""))
+                itemList.add(Pair(ActivityDetailsInfoType.FEE,
+                    activityDetailsComposite.fee?.toStringWithSymbol() ?: ""))
                 itemList.add(Pair(ActivityDetailsInfoType.VALUE,
                     activityDetailsComposite.fiatAtExecution?.toStringWithSymbol() ?: ""))
-                itemList.forEach {
-                    Timber.e("---- value: ${it.second}")
-                }
                 itemList.add(Pair(ActivityDetailsInfoType.DESCRIPTION, "Add a description"))
                 itemList.add(Pair(ActivityDetailsInfoType.ACTION, ""))
+                itemList.forEach {
+                    Timber.e("---- value: ${it.first} - ${it.second}")
+                }
             } else {
             }
             // created

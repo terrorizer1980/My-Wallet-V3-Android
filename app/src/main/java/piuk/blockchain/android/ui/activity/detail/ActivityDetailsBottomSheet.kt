@@ -12,6 +12,7 @@ import info.blockchain.wallet.multiaddress.TransactionSummary
 import kotlinx.android.synthetic.main.dialog_activity_details_sheet.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.activity.adapter.ActivityDetailsDelegateAdapter
 import piuk.blockchain.android.ui.base.mvi.MviBottomSheet
 
 class ActivityDetailsBottomSheet :
@@ -20,7 +21,14 @@ class ActivityDetailsBottomSheet :
         get() = R.layout.dialog_activity_details_sheet
 
     override val model: ActivityDetailsModel by inject()
-    private val listAdapter: ActivityDetailsAdapter by lazy { ActivityDetailsAdapter() }
+
+    private val listAdapter: ActivityDetailsDelegateAdapter by lazy {
+        ActivityDetailsDelegateAdapter(
+            onActionItemClicked = { view -> onActionItemClicked(view) },
+            onDescriptionItemClicked = { onDescriptionItemClicked() }
+        )
+    }
+
     private val listLayoutManager: RecyclerView.LayoutManager by lazy {
         LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
     }
@@ -40,21 +48,27 @@ class ActivityDetailsBottomSheet :
             dialogView.status.text = if (isPending) "Pending" else "Complete"
         }
 
-        listAdapter.itemList = newState.listOfItems
+        listAdapter.items = newState.listOfItems
+        listAdapter.notifyDataSetChanged()
     }
 
     override fun initControls(view: View) {
-        val explorerUri = makeBlockExplorerUrl(arguments.cryptoCurrency, arguments.txId)
-        listAdapter.actionItemClicked = { _ ->
-            Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(explorerUri)
-                startActivity(this)
-            }
-        }
-
         view.details_list.apply {
             layoutManager = listLayoutManager
             adapter = listAdapter
+        }
+    }
+
+    private fun onDescriptionItemClicked() {
+        // TODO
+    }
+
+    private fun onActionItemClicked(view: View) {
+        val explorerUri = makeBlockExplorerUrl(arguments.cryptoCurrency, arguments.txId)
+
+        Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(explorerUri)
+            startActivity(this)
         }
     }
 
