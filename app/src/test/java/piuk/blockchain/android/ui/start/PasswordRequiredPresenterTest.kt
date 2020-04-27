@@ -20,8 +20,6 @@ import org.amshove.kluent.mock
 import piuk.blockchain.android.testutils.RxTest
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.util.DialogButtonCallback
-import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
-import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -43,8 +41,6 @@ class PasswordRequiredPresenterTest : RxTest() {
     private val appUtil: AppUtil = mock()
     private val prefs: PersistentPrefs = mock()
     private val authDataManager: AuthDataManager = mock()
-    private val buyDataManager: BuyDataManager = mock()
-    private val coinifyDataManager: CoinifyDataManager = mock()
     private val payloadDataManager: PayloadDataManager = mock()
     private val wallet: Wallet = mock()
 
@@ -61,9 +57,7 @@ class PasswordRequiredPresenterTest : RxTest() {
             appUtil,
             prefs,
             authDataManager,
-            payloadDataManager,
-            buyDataManager,
-            coinifyDataManager
+            payloadDataManager
         )
 
         subject.attachView(view)

@@ -22,7 +22,6 @@ import com.blockchain.swap.nabu.datamanagers.NabuDataManager
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.wallet.api.Environment
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -36,20 +35,14 @@ import piuk.blockchain.android.simplebuy.SimpleBuyAvailability
 import piuk.blockchain.android.simplebuy.SimpleBuySyncFactory
 import piuk.blockchain.android.sunriver.CampaignLinkState
 import piuk.blockchain.android.thepit.PitLinking
-import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
-import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
-import piuk.blockchain.androidbuysell.services.ExchangeService
 import piuk.blockchain.androidcore.data.access.AccessState
 import piuk.blockchain.androidcore.data.api.EnvironmentConfig
 import piuk.blockchain.android.data.currency.CurrencyState
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
-import piuk.blockchain.androidcore.data.metadata.MetadataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.android.ui.base.MvpPresenter
 import piuk.blockchain.android.ui.base.MvpView
-import piuk.blockchain.androidbuysell.models.WebViewLoginDetails
 import piuk.blockchain.androidcore.utils.PersistentPrefs
-import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.logging.Logging
 import piuk.blockchain.androidcoreui.utils.logging.SecondPasswordEvent
@@ -66,11 +59,8 @@ interface MainView : MvpView, HomeNavigator {
     fun showProgressDialog(@StringRes message: Int)
     fun hideProgressDialog()
     fun clearAllDynamicShortcuts()
-    fun setBuySellEnabled(enabled: Boolean, useWebView: Boolean)
     fun setPitEnabled(enabled: Boolean)
     fun setSimpleBuyEnabled(enabled: Boolean)
-    fun showTradeCompleteMsg(txHash: String)
-    fun setWebViewLoginDetails(loginDetails: WebViewLoginDetails)
     fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String)
     fun showHomebrewDebugMenu()
     fun enableSwapButton(isEnabled: Boolean)
@@ -87,13 +77,9 @@ class MainPresenter internal constructor(
     private val accessState: AccessState,
     private val credentialsWiper: CredentialsWiper,
     private val payloadDataManager: PayloadDataManager,
-    private val buyDataManager: BuyDataManager,
     private val exchangeRateFactory: ExchangeRateDataManager,
     private val currencyState: CurrencyState,
-    private val metadataManager: MetadataManager,
     private val environmentSettings: EnvironmentConfig,
-    private val coinifyDataManager: CoinifyDataManager,
-    private val exchangeService: ExchangeService,
     private val kycStatusHelper: KycStatusHelper,
     private val lockboxDataManager: LockboxDataManager,
     private val deepLinkProcessor: DeepLinkProcessor,
@@ -152,9 +138,6 @@ class MainPresenter internal constructor(
                 .subscribeBy(
                     onSuccess = {
                         view?.setSimpleBuyEnabled(it)
-                        if (it) {
-                            view?.setBuySellEnabled(enabled = false, useWebView = false)
-                        }
                     }
                 )
     }
@@ -225,7 +208,6 @@ class MainPresenter internal constructor(
                 onComplete = {
                     checkKycStatus()
                     setDebugExchangeVisibility()
-                    initBuyService()
                     initSimpleBuyState()
                     checkForPendingLinks()
                 },
@@ -362,50 +344,6 @@ class MainPresenter internal constructor(
     private fun logEvents() {
         analytics.logEventOnce(AnalyticsEvents.WalletSignupFirstLogIn)
         Logging.logCustom(SecondPasswordEvent(payloadDataManager.isDoubleEncrypted))
-    }
-
-    private fun initBuyService() {
-        compositeDisposable +=
-            Singles.zip(buyDataManager.canBuy,
-                simpleBuyAvailability.isAvailable(),
-                buyDataManager.isCoinifyAllowed).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                { (isEnabled, available, isCoinifyAllowed) ->
-                    view?.setBuySellEnabled(isEnabled && !available, isCoinifyAllowed)
-                    if (isEnabled && !isCoinifyAllowed) {
-                        compositeDisposable += buyDataManager.watchPendingTrades()
-                            .applySchedulers()
-                            .subscribe({ view?.showTradeCompleteMsg(it) }, { it.printStackTrace() })
-
-                        compositeDisposable += buyDataManager.webViewLoginDetails
-                            .subscribe({ view?.setWebViewLoginDetails(it) }, { it.printStackTrace() })
-                    } else if (isEnabled && isCoinifyAllowed && !available) {
-                        notifyCompletedCoinifyTrades()
-                    }
-                }, { throwable ->
-                    Timber.e(throwable)
-                    view?.setBuySellEnabled(enabled = false, useWebView = false)
-                })
-    }
-
-    private fun notifyCompletedCoinifyTrades() {
-        compositeDisposable +=
-            CoinifyTradeCompleteListener(exchangeService, coinifyDataManager, metadataManager)
-                .getCompletedCoinifyTradesAndUpdateMetaData()
-                .firstElement()
-                .applySchedulers()
-                .subscribeBy({
-                    Timber.e(it)
-                }) { view?.showTradeCompleteMsg(it) }
-    }
-
-    internal fun routeToBuySell() {
-        compositeDisposable += buyDataManager.isCoinifyAllowed
-            .subscribeBy(
-                onError = { it.printStackTrace() },
-                onSuccess = { coinifyAllowed ->
-                    if (coinifyAllowed)
-                        view?.launchBuySell()
-                })
     }
 
     internal fun clearLoginState() {

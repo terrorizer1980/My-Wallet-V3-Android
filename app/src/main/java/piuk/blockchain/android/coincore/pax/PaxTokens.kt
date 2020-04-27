@@ -38,7 +38,7 @@ internal class PaxTokens(
     override val asset = CryptoCurrency.PAX
 
     override fun initToken(): Completable =
-        Completable.complete()
+        paxAccount.fetchErc20Address().ignoreElements()
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.just(listOf(getNonCustodialPaxAccount()))

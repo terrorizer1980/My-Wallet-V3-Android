@@ -118,13 +118,6 @@ class PrefsUtil(
         removeValue(KEY_SIMPLE_BUY_STATE)
     }
 
-    override fun setFlowStartedAtLeastOnce() {
-        setValue(KEY_SIMPLE_BUY_FLOW_STARTED, true)
-    }
-
-    override fun flowStartedAtLeastOnce(): Boolean =
-        getValue(KEY_SIMPLE_BUY_FLOW_STARTED, false)
-
     // From Onboarding
     override var swapIntroCompleted: Boolean
         get() = getValue(KEY_SWAP_INTRO_COMPLETED, false)
@@ -268,7 +261,6 @@ class PrefsUtil(
 
         private const val KEY_PIT_LINKING_LINK_ID = "pit_wallet_link_id"
         private const val KEY_SIMPLE_BUY_STATE = "key_simple_buy_state"
-        private const val KEY_SIMPLE_BUY_FLOW_STARTED = "key_simple_buy_flow"
         private const val KEY_SWAP_INTRO_COMPLETED = "key_swap_intro_completed"
         private const val KEY_INTRO_TOUR_COMPLETED = "key_intro_tour_complete"
         private const val KEY_INTRO_TOUR_CURRENT_STAGE = "key_intro_tour_current_stage"

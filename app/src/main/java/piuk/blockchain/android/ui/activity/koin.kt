@@ -2,7 +2,6 @@ package piuk.blockchain.android.ui.activity
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.koin.dsl.module.applicationContext
-import piuk.blockchain.android.coincore.impl.TransactionNoteUpdater
 import piuk.blockchain.android.ui.activity.detail.ActivityDetailState
 import piuk.blockchain.android.ui.activity.detail.ActivityDetailsInteractor
 import piuk.blockchain.android.ui.activity.detail.ActivityDetailsModel
@@ -59,15 +58,6 @@ val activitiesModule = applicationContext {
             TransactionHelper(
                 payloadDataManager = get(),
                 bchDataManager = get()
-            )
-        }
-
-        bean {
-            TransactionNoteUpdater(
-                exchangeService = get(),
-                shapeShiftDataManager = get(),
-                coinifyDataManager = get(),
-                stringUtils = get()
             )
         }
     }

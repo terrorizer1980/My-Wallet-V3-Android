@@ -44,7 +44,8 @@ internal class PaxCryptoAccountNonCustodial(
             val ethDataManager = paxAccount.ethDataManager
 
             val feedTransactions =
-                paxAccount.getTransactions()
+                paxAccount.fetchErc20Address()
+                    .flatMap { paxAccount.getTransactions() }
                     .mapList {
                         val feeObservable = ethDataManager
                             .getTransaction(it.transactionHash)

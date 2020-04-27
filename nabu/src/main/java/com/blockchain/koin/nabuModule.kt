@@ -32,8 +32,6 @@ import com.blockchain.swap.nabu.models.nabu.KycStateAdapter
 import com.blockchain.swap.nabu.models.nabu.KycTierStateAdapter
 import com.blockchain.swap.nabu.models.nabu.UserCampaignStateMoshiAdapter
 import com.blockchain.swap.nabu.models.nabu.UserStateAdapter
-import com.blockchain.swap.nabu.service.NabuCoinifyAccountCreator
-import com.blockchain.swap.nabu.service.NabuCoinifyAccountService
 import com.blockchain.swap.nabu.service.NabuMarketsService
 import com.blockchain.swap.nabu.service.NabuService
 import com.blockchain.swap.nabu.service.NabuTierService
@@ -44,9 +42,6 @@ import com.blockchain.swap.nabu.service.TradeLimitService
 import com.blockchain.swap.nabu.status.KycTiersQueries
 import com.blockchain.swap.nabu.stores.NabuSessionTokenStore
 import org.koin.dsl.module.applicationContext
-import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
-import piuk.blockchain.androidbuysell.repositories.AccessTokenStore
-import piuk.blockchain.androidbuysell.services.CoinifyService
 import retrofit2.Retrofit
 
 val nabuModule = applicationContext {
@@ -115,20 +110,6 @@ val nabuModule = applicationContext {
         }.bind(WalletReporter::class)
 
         factory {
-            NabuCoinifyAccountService(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get()
-            ) as NabuCoinifyAccountCreator
-        }
-
-        factory {
             get<Retrofit>("nabu").create(Nabu::class.java)
         }
 
@@ -149,7 +130,11 @@ val nabuModule = applicationContext {
 
     bean { NabuService(get("nabu")) }
 
-    bean { RetailWalletTokenService(get(), getProperty("api-code"), get("kotlin")) }
+    bean { RetailWalletTokenService(
+        environmentConfig = get(),
+        apiCode = getProperty("api-code"),
+        retrofit = get("kotlin")
+    ) }
 
     context("Payload") {
 
@@ -172,22 +157,14 @@ val nabuModule = applicationContext {
     }
 }
 
-val coinifyModule = applicationContext {
-
-    context("Payload") {
-
-        bean { AccessTokenStore() }
-
-        factory { CoinifyDataManager(get(), get(), get()) }
-
-        factory { CoinifyService(get(), get("kotlin"), get()) }
-    }
-}
-
 val authenticationModule = applicationContext {
     context("Payload") {
         factory {
-            NabuAuthenticator(get(), get(), get()) as Authenticator
+            NabuAuthenticator(
+                nabuToken = get(),
+                nabuDataManager = get(),
+                crashLogger = get()
+            ) as Authenticator
         }
     }
 }
