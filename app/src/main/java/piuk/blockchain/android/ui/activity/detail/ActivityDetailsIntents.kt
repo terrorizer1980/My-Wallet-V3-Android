@@ -6,7 +6,7 @@ import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.base.mvi.MviIntent
 import piuk.blockchain.android.util.extensions.toFormattedDate
 import timber.log.Timber
-import java.util.*
+import java.util.Date
 
 sealed class ActivityDetailsIntents : MviIntent<ActivityDetailState>
 
