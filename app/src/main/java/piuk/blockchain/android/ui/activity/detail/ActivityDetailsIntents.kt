@@ -23,18 +23,17 @@ class ShowActivityDetailsIntent(
     private val activityDetailsComposite: ActivityDetailsComposite?
 ) : ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
-        val list =
-            oldState.listOfItems.toMutableList()
-        activityDetailsComposite?.run {
+        val list = activityDetailsComposite?.run {
             when (nonCustodialActivitySummaryItem?.direction) {
                 TransactionSummary.Direction.TRANSFERRED -> TODO()
                 TransactionSummary.Direction.RECEIVED -> TODO()
-                TransactionSummary.Direction.SENT -> addSentItems(this, list)
+                TransactionSummary.Direction.SENT -> addSentItems(this)
                 TransactionSummary.Direction.BUY -> TODO()
                 TransactionSummary.Direction.SELL -> TODO()
                 TransactionSummary.Direction.SWAP -> TODO()
+                else -> TODO()
             }
-        }
+        } ?: emptyList()
         return oldState.copy(
             nonCustodialActivitySummaryItem = activityDetailsComposite?.nonCustodialActivitySummaryItem,
             listOfItems = list
@@ -42,25 +41,24 @@ class ShowActivityDetailsIntent(
     }
 
     private fun addSentItems(
-        activityDetailsComposite: ActivityDetailsComposite,
-        itemList: MutableList<Pair<ActivityDetailsInfoType, String>>
-    ) {
-        itemList.clear()
+        activityDetailsComposite: ActivityDetailsComposite
+    ): List<ActivityDetailsListItem> {
+        val itemList = mutableListOf<ActivityDetailsListItem>()
         activityDetailsComposite.nonCustodialActivitySummaryItem?.run {
-            itemList.add(Pair(ActivityDetailsInfoType.CREATED,
+            itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.CREATED,
                 Date(timeStampMs).toFormattedDate()))
             if (isConfirmed) {
-                itemList.add(Pair(ActivityDetailsInfoType.COMPLETED, "TODO"))
-                itemList.add(Pair(ActivityDetailsInfoType.AMOUNT,
+                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.COMPLETED, "TODO"))
+                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.AMOUNT,
                     totalCrypto.toStringWithSymbol()))
-                itemList.add(Pair(ActivityDetailsInfoType.FEE,
+                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.FEE,
                     activityDetailsComposite.fee?.toStringWithSymbol() ?: ""))
-                itemList.add(Pair(ActivityDetailsInfoType.VALUE,
+                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.VALUE,
                     activityDetailsComposite.fiatAtExecution?.toStringWithSymbol() ?: ""))
-                itemList.add(Pair(ActivityDetailsInfoType.DESCRIPTION, "Add a description"))
-                itemList.add(Pair(ActivityDetailsInfoType.ACTION, ""))
+                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.DESCRIPTION, ""))
+                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.ACTION, ""))
                 itemList.forEach {
-                    Timber.e("---- value: ${it.first} - ${it.second}")
+                    Timber.e("---- value: ${it.activityDetailsType} - ${it.itemValue}")
                 }
             } else {
             }
@@ -77,6 +75,7 @@ class ShowActivityDetailsIntent(
             // to
             // fee
         }
+        return itemList
     }
 
     private fun addReceivedItems(

@@ -18,9 +18,11 @@ enum class ActivityDetailsInfoType {
     ACTION
 }
 
+data class ActivityDetailsListItem(val activityDetailsType: ActivityDetailsInfoType, val itemValue: String)
+
 data class ActivityDetailState(
     val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem? = null,
-    val listOfItems: List<Pair<ActivityDetailsInfoType, String>> = emptyList()
+    val listOfItems: List<ActivityDetailsListItem> = emptyList()
 ) : MviState
 
 data class ActivityDetailsComposite(

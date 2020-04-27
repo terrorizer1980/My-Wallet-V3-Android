@@ -45,11 +45,15 @@ class ActivityDetailsBottomSheet :
         newState.nonCustodialActivitySummaryItem?.run {
             dialogView.title.text = mapToAction(direction)
             dialogView.amount.text = totalCrypto.toStringWithSymbol()
-            dialogView.status.text = if (isPending) "Pending" else "Complete"
+            dialogView.status.text =
+                if (isPending) getString(R.string.activity_details_label_pending) else getString(
+                    R.string.activity_details_label_complete)
         }
 
-        listAdapter.items = newState.listOfItems
-        listAdapter.notifyDataSetChanged()
+        if (listAdapter.items != newState.listOfItems) {
+            listAdapter.items = newState.listOfItems
+            listAdapter.notifyDataSetChanged()
+        }
     }
 
     override fun initControls(view: View) {
@@ -78,12 +82,14 @@ class ActivityDetailsBottomSheet :
 
     private fun mapToAction(direction: TransactionSummary.Direction): String =
         when (direction) {
-            TransactionSummary.Direction.TRANSFERRED -> "Transfer"
-            TransactionSummary.Direction.RECEIVED -> "Receive"
-            TransactionSummary.Direction.SENT -> "Send"
-            TransactionSummary.Direction.BUY -> "Buy"
-            TransactionSummary.Direction.SELL -> "Sell"
-            TransactionSummary.Direction.SWAP -> "Swap"
+            TransactionSummary.Direction.TRANSFERRED -> getString(
+                R.string.activity_details_title_transferred)
+            TransactionSummary.Direction.RECEIVED -> getString(
+                R.string.activity_details_title_received)
+            TransactionSummary.Direction.SENT -> getString(R.string.activity_details_title_sent)
+            TransactionSummary.Direction.BUY -> getString(R.string.activity_details_title_buy)
+            TransactionSummary.Direction.SELL -> getString(R.string.activity_details_title_sell)
+            TransactionSummary.Direction.SWAP -> getString(R.string.activity_details_title_swap)
         }
 
     companion object {
