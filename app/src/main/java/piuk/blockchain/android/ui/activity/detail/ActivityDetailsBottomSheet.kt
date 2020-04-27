@@ -24,13 +24,9 @@ class ActivityDetailsBottomSheet :
 
     private val listAdapter: ActivityDetailsDelegateAdapter by lazy {
         ActivityDetailsDelegateAdapter(
-            onActionItemClicked = { view -> onActionItemClicked(view) },
+            onActionItemClicked = { onActionItemClicked() },
             onDescriptionItemClicked = { onDescriptionItemClicked() }
         )
-    }
-
-    private val listLayoutManager: RecyclerView.LayoutManager by lazy {
-        LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
     }
 
     private val Bundle?.txId
@@ -42,23 +38,21 @@ class ActivityDetailsBottomSheet :
             ?: throw IllegalArgumentException("Cryptocurrency should not be null")
 
     override fun render(newState: ActivityDetailState) {
-        newState.nonCustodialActivitySummaryItem?.run {
-            dialogView.title.text = mapToAction(direction)
-            dialogView.amount.text = totalCrypto.toStringWithSymbol()
+            dialogView.title.text = mapToAction(newState.direction)
+            dialogView.amount.text = newState.amount?.toStringWithSymbol()
             dialogView.status.text =
-                if (isPending) getString(R.string.activity_details_label_pending) else getString(
+                if (newState.isPending) getString(R.string.activity_details_label_pending) else getString(
                     R.string.activity_details_label_complete)
-        }
 
         if (listAdapter.items != newState.listOfItems) {
-            listAdapter.items = newState.listOfItems
+            listAdapter.items = newState.listOfItems.toList()
             listAdapter.notifyDataSetChanged()
         }
     }
 
     override fun initControls(view: View) {
         view.details_list.apply {
-            layoutManager = listLayoutManager
+            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             adapter = listAdapter
         }
     }
@@ -67,7 +61,7 @@ class ActivityDetailsBottomSheet :
         // TODO
     }
 
-    private fun onActionItemClicked(view: View) {
+    private fun onActionItemClicked() {
         val explorerUri = makeBlockExplorerUrl(arguments.cryptoCurrency, arguments.txId)
 
         Intent(Intent.ACTION_VIEW).apply {
@@ -80,7 +74,7 @@ class ActivityDetailsBottomSheet :
         model.process(LoadActivityDetailsIntent(cryptoCurrency, txHash))
     }
 
-    private fun mapToAction(direction: TransactionSummary.Direction): String =
+    private fun mapToAction(direction: TransactionSummary.Direction?): String =
         when (direction) {
             TransactionSummary.Direction.TRANSFERRED -> getString(
                 R.string.activity_details_title_transferred)
@@ -90,6 +84,7 @@ class ActivityDetailsBottomSheet :
             TransactionSummary.Direction.BUY -> getString(R.string.activity_details_title_buy)
             TransactionSummary.Direction.SELL -> getString(R.string.activity_details_title_sell)
             TransactionSummary.Direction.SWAP -> getString(R.string.activity_details_title_swap)
+            else -> ""
         }
 
     companion object {

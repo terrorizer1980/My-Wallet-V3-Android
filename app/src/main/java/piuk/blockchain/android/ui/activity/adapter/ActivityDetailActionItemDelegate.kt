@@ -6,18 +6,18 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_activity_detail_action.view.*
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.activity.detail.ActivityDetailsInfoType
-import piuk.blockchain.android.ui.activity.detail.ActivityDetailsListItem
+import piuk.blockchain.android.ui.activity.detail.Action
+import piuk.blockchain.android.ui.activity.detail.ActivityDetailsType
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 
-class ActivityDetailActionItemDelegate <in T>(
-    private val onActionItemClicked: (View) -> Unit
+class ActivityDetailActionItemDelegate<in T>(
+    private val onActionItemClicked: () -> Unit
 ) : AdapterDelegate<T> {
 
     override fun isForViewType(items: List<T>, position: Int): Boolean {
-        val item = items[position] as ActivityDetailsListItem
-        return item.activityDetailsType == ActivityDetailsInfoType.ACTION
+        val item = items[position] as ActivityDetailsType
+        return item is Action
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
@@ -28,7 +28,6 @@ class ActivityDetailActionItemDelegate <in T>(
         position: Int,
         holder: RecyclerView.ViewHolder
     ) = (holder as ActionItemViewHolder).bind(
-        items[position] as ActivityDetailsListItem,
         onActionItemClicked
     )
 }
@@ -38,7 +37,7 @@ private class ActionItemViewHolder(var parent: View) : RecyclerView.ViewHolder(p
     override val containerView: View?
         get() = itemView
 
-    fun bind(item: ActivityDetailsListItem, actionItemClicked: (View) -> Unit) {
-        itemView.activity_details_action.setOnClickListener(actionItemClicked)
+    fun bind(actionItemClicked: () -> Unit) {
+        itemView.activity_details_action.setOnClickListener { actionItemClicked() }
     }
 }

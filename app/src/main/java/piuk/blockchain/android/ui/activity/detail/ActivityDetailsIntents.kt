@@ -1,11 +1,8 @@
 package piuk.blockchain.android.ui.activity.detail
 
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.wallet.multiaddress.TransactionSummary
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.base.mvi.MviIntent
-import piuk.blockchain.android.util.extensions.toFormattedDate
-import timber.log.Timber
 import java.util.Date
 
 sealed class ActivityDetailsIntents : MviIntent<ActivityDetailState>
@@ -19,68 +16,59 @@ class LoadActivityDetailsIntent(
     }
 }
 
-class ShowActivityDetailsIntent(
-    private val activityDetailsComposite: ActivityDetailsComposite?
-) : ActivityDetailsIntents() {
+class LoadCreationDateIntent(val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem) :
+    ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
-        val list = activityDetailsComposite?.run {
-            when (nonCustodialActivitySummaryItem?.direction) {
-                TransactionSummary.Direction.TRANSFERRED -> TODO()
-                TransactionSummary.Direction.RECEIVED -> TODO()
-                TransactionSummary.Direction.SENT -> addSentItems(this)
-                TransactionSummary.Direction.BUY -> TODO()
-                TransactionSummary.Direction.SELL -> TODO()
-                TransactionSummary.Direction.SWAP -> TODO()
-                else -> TODO()
-            }
-        } ?: emptyList()
+        return oldState
+    }
+}
+
+class ActivityDetailsLoadFailedIntent : ActivityDetailsIntents() {
+    override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         return oldState.copy(
-            nonCustodialActivitySummaryItem = activityDetailsComposite?.nonCustodialActivitySummaryItem,
-            listOfItems = list
+            isError = true
         )
     }
+}
 
-    private fun addSentItems(
-        activityDetailsComposite: ActivityDetailsComposite
-    ): List<ActivityDetailsListItem> {
-        val itemList = mutableListOf<ActivityDetailsListItem>()
-        activityDetailsComposite.nonCustodialActivitySummaryItem?.run {
-            itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.CREATED,
-                Date(timeStampMs).toFormattedDate()))
-            if (isConfirmed) {
-                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.COMPLETED, "TODO"))
-                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.AMOUNT,
-                    totalCrypto.toStringWithSymbol()))
-                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.FEE,
-                    activityDetailsComposite.fee?.toStringWithSymbol() ?: ""))
-                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.VALUE,
-                    activityDetailsComposite.fiatAtExecution?.toStringWithSymbol() ?: ""))
-                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.DESCRIPTION, ""))
-                itemList.add(ActivityDetailsListItem(ActivityDetailsInfoType.ACTION, ""))
-                itemList.forEach {
-                    Timber.e("---- value: ${it.activityDetailsType} - ${it.itemValue}")
-                }
-            } else {
-            }
-            // created
-            // if confirmed
-            // completed date
-            // amount
-            // fee
-            // value
-            // from
-            // to
-            // else
-            // from
-            // to
-            // fee
-        }
-        return itemList
+class LoadHeaderDataIntent(
+    private val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
+) :
+    ActivityDetailsIntents() {
+    override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
+        return oldState.copy(
+            direction = nonCustodialActivitySummaryItem.direction,
+            amount = nonCustodialActivitySummaryItem.totalCrypto,
+            isPending = nonCustodialActivitySummaryItem.isPending,
+            confirmations = nonCustodialActivitySummaryItem.confirmations,
+            totalConfirmations = nonCustodialActivitySummaryItem.cryptoCurrency.requiredConfirmations
+        )
     }
+}
 
-    private fun addReceivedItems(
-        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem,
-        itemList: MutableList<Pair<String, String>>
-    ) {
+class ListItemsLoadedIntent(private val list: List<ActivityDetailsType>) :
+    ActivityDetailsIntents() {
+    override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
+        val currentList = oldState.listOfItems.toMutableSet()
+        currentList.addAll(list.toSet())
+        return oldState.copy(
+            listOfItems = currentList
+        )
+    }
+}
+
+object CreationDateLoadFailedIntent : ActivityDetailsIntents() {
+    override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
+        return oldState
+    }
+}
+
+class CreationDateLoadedIntent(private val createdDate: Date) : ActivityDetailsIntents() {
+    override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
+        val list = oldState.listOfItems.toMutableSet()
+        list.add(Created(createdDate))
+        return oldState.copy(
+            listOfItems = list
+        )
     }
 }

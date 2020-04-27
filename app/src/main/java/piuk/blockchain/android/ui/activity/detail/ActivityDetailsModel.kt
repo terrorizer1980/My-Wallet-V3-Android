@@ -2,34 +2,33 @@ package piuk.blockchain.android.ui.activity.detail
 
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
+import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
-import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
+import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.ui.base.mvi.MviModel
 import piuk.blockchain.android.ui.base.mvi.MviState
+import java.util.Date
 
-enum class ActivityDetailsInfoType {
-    CREATED,
-    COMPLETED,
-    AMOUNT,
-    FEE,
-    VALUE,
-    DESCRIPTION,
-    ACTION
-}
-
-data class ActivityDetailsListItem(val activityDetailsType: ActivityDetailsInfoType, val itemValue: String)
+sealed class ActivityDetailsType
+data class Created(val date: Date) : ActivityDetailsType()
+data class Amount(val cryptoValue: CryptoValue) : ActivityDetailsType()
+data class Fee(val feeValue: CryptoValue) : ActivityDetailsType()
+data class Value(val fiatAtExecution: FiatValue) : ActivityDetailsType()
+data class From(val fromAddress: String) : ActivityDetailsType()
+data class To(val toAddress: String) : ActivityDetailsType()
+data class Description(val description: String = "") : ActivityDetailsType()
+data class Action(val action: String = "") : ActivityDetailsType()
 
 data class ActivityDetailState(
-    val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem? = null,
-    val listOfItems: List<ActivityDetailsListItem> = emptyList()
+    val direction: TransactionSummary.Direction? = null,
+    val amount: CryptoValue? = null,
+    val isPending: Boolean = false,
+    val confirmations: Int = 0,
+    val totalConfirmations: Int = 0,
+    val listOfItems: Set<ActivityDetailsType> = emptySet(),
+    val isError: Boolean = false
 ) : MviState
-
-data class ActivityDetailsComposite(
-    val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem? = null,
-    val fee: CryptoValue? = null,
-    val fiatAtExecution: FiatValue? = null
-)
 
 class ActivityDetailsModel(
     initialState: ActivityDetailState,
@@ -43,16 +42,47 @@ class ActivityDetailsModel(
     ): Disposable? {
         return when (intent) {
             is LoadActivityDetailsIntent ->
-                interactor.getCompositeActivityDetails(cryptoCurrency = intent.cryptoCurrency,
-                    txHash = intent.txHash)
-                    .subscribe({
-                        process(ShowActivityDetailsIntent(it))
+                interactor.getActivityDetails(cryptoCurrency = intent.cryptoCurrency,
+                    txHash = intent.txHash).subscribeBy(
+                    onSuccess = {
+                        process(LoadCreationDateIntent(it))
+                        process(LoadHeaderDataIntent(it))
                     },
-                    {
-                        // TODO error case loading from cache
+                    onError = { process(ActivityDetailsLoadFailedIntent()) }
+                )
+            is LoadCreationDateIntent ->
+                interactor.loadCreationDate(intent.nonCustodialActivitySummaryItem).subscribeBy(
+                    onSuccess = {
+                        process(CreationDateLoadedIntent(it))
+                        when (intent.nonCustodialActivitySummaryItem.direction) {
+                            TransactionSummary.Direction.TRANSFERRED -> TODO()
+                            TransactionSummary.Direction.RECEIVED -> TODO()
+                            TransactionSummary.Direction.SENT -> {
+                                if (intent.nonCustodialActivitySummaryItem.isConfirmed) {
+                                    interactor.loadConfirmedItems(
+                                        intent.nonCustodialActivitySummaryItem
+                                    ).subscribeBy(
+                                        onSuccess = { activityItemsList ->
+                                            process(ListItemsLoadedIntent(activityItemsList))
+                                        },
+                                        onError = {}
+                                    )
+                                } else {
+                                }
+                            }
+                            TransactionSummary.Direction.BUY -> TODO()
+                            TransactionSummary.Direction.SELL -> TODO()
+                            TransactionSummary.Direction.SWAP -> TODO()
+                        }
+                    },
+                    onError = {
+                        process(CreationDateLoadFailedIntent)
                     })
-
-            is ShowActivityDetailsIntent -> null
+            is ListItemsLoadedIntent,
+            is CreationDateLoadedIntent,
+            is CreationDateLoadFailedIntent,
+            is ActivityDetailsLoadFailedIntent,
+            is LoadHeaderDataIntent -> null
         }
     }
 }
