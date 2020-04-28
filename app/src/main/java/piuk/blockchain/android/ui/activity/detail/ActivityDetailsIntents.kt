@@ -40,6 +40,7 @@ class LoadHeaderDataIntent(
             direction = nonCustodialActivitySummaryItem.direction,
             amount = nonCustodialActivitySummaryItem.totalCrypto,
             isPending = nonCustodialActivitySummaryItem.isPending,
+            isFeeTransaction = nonCustodialActivitySummaryItem.isFeeTransaction,
             confirmations = nonCustodialActivitySummaryItem.confirmations,
             totalConfirmations = nonCustodialActivitySummaryItem.cryptoCurrency.requiredConfirmations
         )
@@ -53,6 +54,14 @@ class ListItemsLoadedIntent(private val list: List<ActivityDetailsType>) :
         currentList.addAll(list.toSet())
         return oldState.copy(
             listOfItems = currentList
+        )
+    }
+}
+
+object ListItemsFailedToLoadIntent : ActivityDetailsIntents() {
+    override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
+        return oldState.copy(
+            isError = true
         )
     }
 }

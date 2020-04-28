@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.ui.urllinks.makeBlockExplorerUrl
@@ -14,6 +15,7 @@ import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.activity.adapter.ActivityDetailsDelegateAdapter
 import piuk.blockchain.android.ui.base.mvi.MviBottomSheet
+import piuk.blockchain.androidcoreui.utils.extensions.visible
 
 class ActivityDetailsBottomSheet :
     MviBottomSheet<ActivityDetailsModel, ActivityDetailsIntents, ActivityDetailState>() {
@@ -38,15 +40,50 @@ class ActivityDetailsBottomSheet :
             ?: throw IllegalArgumentException("Cryptocurrency should not be null")
 
     override fun render(newState: ActivityDetailState) {
-            dialogView.title.text = mapToAction(newState.direction)
-            dialogView.amount.text = newState.amount?.toStringWithSymbol()
-            dialogView.status.text =
-                if (newState.isPending) getString(R.string.activity_details_label_pending) else getString(
-                    R.string.activity_details_label_complete)
+        dialogView.title.text = mapToAction(newState.direction)
+        dialogView.amount.text = newState.amount?.toStringWithSymbol()
+
+        renderCompletedOrPending(newState.isPending, newState.confirmations,
+            newState.totalConfirmations, newState.direction)
 
         if (listAdapter.items != newState.listOfItems) {
             listAdapter.items = newState.listOfItems.toList()
             listAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun renderCompletedOrPending(
+        pending: Boolean,
+        confirmations: Int,
+        totalConfirmations: Int,
+        direction: TransactionSummary.Direction?
+    ) {
+        if (pending) {
+            if (confirmations != totalConfirmations) {
+                dialogView.confirmation_label.text =
+                    getString(R.string.activity_details_label_confirmations, confirmations,
+                        totalConfirmations)
+                dialogView.confirmation_progress.progress = confirmations / totalConfirmations
+                dialogView.confirmation_label.visible()
+                dialogView.confirmation_progress.visible()
+            }
+
+            dialogView.status.text = getString(when (direction) {
+                TransactionSummary.Direction.SENT -> R.string.activity_details_label_confirming
+                TransactionSummary.Direction.SWAP -> R.string.activity_details_label_pending
+                TransactionSummary.Direction.BUY -> R.string.activity_details_label_waiting_on_funds
+                else -> R.string.activity_details_empty
+            })
+            dialogView.status.background =
+                ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_unconfirmed)
+            dialogView.status.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.grey_800))
+        } else {
+            dialogView.status.text = getString(R.string.activity_details_label_complete)
+            dialogView.status.background =
+                ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_received)
+            dialogView.status.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.green_600))
         }
     }
 

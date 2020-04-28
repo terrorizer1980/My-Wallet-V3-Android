@@ -24,6 +24,7 @@ data class ActivityDetailState(
     val direction: TransactionSummary.Direction? = null,
     val amount: CryptoValue? = null,
     val isPending: Boolean = false,
+    val isFeeTransaction: Boolean = false,
     val confirmations: Int = 0,
     val totalConfirmations: Int = 0,
     val listOfItems: Set<ActivityDetailsType> = emptySet(),
@@ -65,9 +66,19 @@ class ActivityDetailsModel(
                                         onSuccess = { activityItemsList ->
                                             process(ListItemsLoadedIntent(activityItemsList))
                                         },
-                                        onError = {}
+                                        onError = {
+                                            process(ListItemsFailedToLoadIntent)
+                                        }
                                     )
                                 } else {
+                                    interactor.loadUnconfirmedItems(
+                                        intent.nonCustodialActivitySummaryItem
+                                    ).subscribeBy(onSuccess = { activityItemsList ->
+                                        process(ListItemsLoadedIntent(activityItemsList))
+                                    },
+                                    onError = {
+                                        process(ListItemsFailedToLoadIntent)
+                                    })
                                 }
                             }
                             TransactionSummary.Direction.BUY -> TODO()
@@ -78,6 +89,7 @@ class ActivityDetailsModel(
                     onError = {
                         process(CreationDateLoadFailedIntent)
                     })
+            is ListItemsFailedToLoadIntent,
             is ListItemsLoadedIntent,
             is CreationDateLoadedIntent,
             is CreationDateLoadFailedIntent,

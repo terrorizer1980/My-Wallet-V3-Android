@@ -65,20 +65,27 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:indeterminate="false"
+        android:max="100"
+        android:progressDrawable="@drawable/progress_blue_on_light_blue"
+        android:secondaryProgress="100"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/status"
         app:layout_constraintStart_toEndOf="@id/status"
         app:layout_constraintTop_toTopOf="@id/status"
-        tools:progress="50" />
+        tools:progress="50"
+        tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/confirmation_label"
         style="@style/Text.Blue.Semibold.12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/confirmation_progress"
         app:layout_constraintStart_toEndOf="@id/confirmation_progress"
         app:layout_constraintTop_toTopOf="@id/confirmation_progress"
-        tools:text="1 of 3\nConfirmations" />
+        tools:text="1 of 3\nConfirmations"
+        tools:visibility="visible" />
 
     <View
         android:id="@+id/header_separator"
@@ -94,8 +101,8 @@
         android:id="@+id/details_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:fadingEdgeLength="@dimen/very_small_margin"
         android:fadingEdge="vertical"
+        android:fadingEdgeLength="@dimen/very_small_margin"
         android:requiresFadingEdge="vertical"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toBottomOf="parent"

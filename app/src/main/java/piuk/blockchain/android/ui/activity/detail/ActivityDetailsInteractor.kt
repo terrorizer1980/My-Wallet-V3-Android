@@ -44,6 +44,22 @@ class ActivityDetailsInteractor(
         }
     }
 
+    fun loadUnconfirmedItems(
+        item: NonCustodialActivitySummaryItem
+    ): Single<List<ActivityDetailsType>> {
+        val list = mutableListOf<ActivityDetailsType>()
+        list.add(Amount(item.totalCrypto))
+        return item.fee.singleOrError().flatMap { cryptoValue ->
+            list.add(Fee(cryptoValue))
+            transactionInputOutputMapper.transformInputAndOutputs(item).map {
+                addSingleOrMultipleAddresses(it, list)
+                list.add(Description())
+                list.add(Action())
+                list
+            }
+        }
+    }
+
     private fun addSingleOrMultipleAddresses(
         it: TransactionInOutDetails,
         list: MutableList<ActivityDetailsType>

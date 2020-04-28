@@ -1656,5 +1656,8 @@
     <string name="activity_details_title_buy">Buy</string>
     <string name="activity_details_title_sell">Sell</string>
     <string name="activity_details_title_swap">Swap</string>
+    <string name="activity_details_label_confirming">Confirming</string>
+    <string name="activity_details_label_waiting_on_funds">Waiting on Funds</string>
+    <string name="activity_details_label_confirmations">%1$d of %2$d\nConfirmations</string>
 
 </resources>
