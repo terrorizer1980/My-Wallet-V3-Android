@@ -25,7 +25,7 @@ class ActivityDetailsInteractor(
         nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
     ): Single<Date> = Single.just(Date(nonCustodialActivitySummaryItem.timeStampMs))
 
-    fun loadConfirmedItems(
+    fun loadConfirmedSentItems(
         item: NonCustodialActivitySummaryItem
     ): Single<List<ActivityDetailsType>> {
         val list = mutableListOf<ActivityDetailsType>()
@@ -44,7 +44,7 @@ class ActivityDetailsInteractor(
         }
     }
 
-    fun loadUnconfirmedItems(
+    fun loadUnconfirmedSentItems(
         item: NonCustodialActivitySummaryItem
     ): Single<List<ActivityDetailsType>> {
         val list = mutableListOf<ActivityDetailsType>()

@@ -60,7 +60,7 @@ class ActivityDetailsModel(
                             TransactionSummary.Direction.RECEIVED -> TODO()
                             TransactionSummary.Direction.SENT -> {
                                 if (intent.nonCustodialActivitySummaryItem.isConfirmed) {
-                                    interactor.loadConfirmedItems(
+                                    interactor.loadConfirmedSentItems(
                                         intent.nonCustodialActivitySummaryItem
                                     ).subscribeBy(
                                         onSuccess = { activityItemsList ->
@@ -71,7 +71,7 @@ class ActivityDetailsModel(
                                         }
                                     )
                                 } else {
-                                    interactor.loadUnconfirmedItems(
+                                    interactor.loadUnconfirmedSentItems(
                                         intent.nonCustodialActivitySummaryItem
                                     ).subscribeBy(onSuccess = { activityItemsList ->
                                         process(ListItemsLoadedIntent(activityItemsList))
