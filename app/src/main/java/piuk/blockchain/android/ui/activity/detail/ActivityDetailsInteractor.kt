@@ -30,6 +30,22 @@ class ActivityDetailsInteractor(
         nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
     ): Single<Date> = Single.just(Date(nonCustodialActivitySummaryItem.timeStampMs))
 
+    fun loadReceivedItems(
+        item: NonCustodialActivitySummaryItem
+    ): Single<List<ActivityDetailsType>> {
+        val list = mutableListOf<ActivityDetailsType>()
+        list.add(Amount(item.totalCrypto))
+        return item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
+            list.add(Value(fiatValue))
+            transactionInputOutputMapper.transformInputAndOutputs(item).map {
+                addSingleOrMultipleAddresses(it, list)
+                list.add(Description())
+                list.add(Action())
+                list
+            }
+        }
+    }
+
     fun loadConfirmedSentItems(
         item: NonCustodialActivitySummaryItem
     ): Single<List<ActivityDetailsType>> {

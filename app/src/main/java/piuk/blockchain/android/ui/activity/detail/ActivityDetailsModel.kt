@@ -57,29 +57,10 @@ class ActivityDetailsModel(
                         process(CreationDateLoadedIntent(it))
                         when (intent.nonCustodialActivitySummaryItem.direction) {
                             TransactionSummary.Direction.TRANSFERRED -> TODO()
-                            TransactionSummary.Direction.RECEIVED -> TODO()
+                            TransactionSummary.Direction.RECEIVED ->
+                                loadReceivedItems(intent)
                             TransactionSummary.Direction.SENT -> {
-                                if (intent.nonCustodialActivitySummaryItem.isConfirmed) {
-                                    interactor.loadConfirmedSentItems(
-                                        intent.nonCustodialActivitySummaryItem
-                                    ).subscribeBy(
-                                        onSuccess = { activityItemsList ->
-                                            process(ListItemsLoadedIntent(activityItemsList))
-                                        },
-                                        onError = {
-                                            process(ListItemsFailedToLoadIntent)
-                                        }
-                                    )
-                                } else {
-                                    interactor.loadUnconfirmedSentItems(
-                                        intent.nonCustodialActivitySummaryItem
-                                    ).subscribeBy(onSuccess = { activityItemsList ->
-                                        process(ListItemsLoadedIntent(activityItemsList))
-                                    },
-                                    onError = {
-                                        process(ListItemsFailedToLoadIntent)
-                                    })
-                                }
+                                loadSentItems(intent)
                             }
                             TransactionSummary.Direction.BUY -> TODO()
                             TransactionSummary.Direction.SELL -> TODO()
@@ -97,4 +78,39 @@ class ActivityDetailsModel(
             is LoadHeaderDataIntent -> null
         }
     }
+
+    private fun loadReceivedItems(intent: LoadCreationDateIntent) =
+        interactor.loadReceivedItems(intent.nonCustodialActivitySummaryItem)
+            .subscribeBy(
+                onSuccess = { activityItemList ->
+                    process(ListItemsLoadedIntent(activityItemList))
+                },
+                onError = {
+                    process(ListItemsFailedToLoadIntent)
+                }
+            )
+
+    private fun loadSentItems(intent: LoadCreationDateIntent) =
+        if (intent.nonCustodialActivitySummaryItem.isConfirmed) {
+            interactor.loadConfirmedSentItems(
+                intent.nonCustodialActivitySummaryItem
+            ).subscribeBy(
+                onSuccess = { activityItemsList ->
+                    process(ListItemsLoadedIntent(activityItemsList))
+                },
+                onError = {
+                    process(ListItemsFailedToLoadIntent)
+                }
+            )
+        } else {
+            interactor.loadUnconfirmedSentItems(
+                intent.nonCustodialActivitySummaryItem
+            ).subscribeBy(
+                onSuccess = { activityItemsList ->
+                    process(ListItemsLoadedIntent(activityItemsList))
+                },
+                onError = {
+                    process(ListItemsFailedToLoadIntent)
+                })
+        }
 }
