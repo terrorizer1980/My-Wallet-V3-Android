@@ -6,6 +6,7 @@ import io.reactivex.Single
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import java.util.Date
+import java.util.MissingResourceException
 
 class ActivityDetailsInteractor(
     private val coincore: Coincore,
@@ -17,8 +18,12 @@ class ActivityDetailsInteractor(
         cryptoCurrency: CryptoCurrency,
         txHash: String
     ): Single<NonCustodialActivitySummaryItem> {
-        return Single.just(coincore[cryptoCurrency].findCachedActivityItem(
-            txHash) as? NonCustodialActivitySummaryItem)
+        val item = coincore[cryptoCurrency].findCachedActivityItem(
+            txHash) as? NonCustodialActivitySummaryItem
+        return item?.run {
+            Single.just(this)
+        } ?: Single.error(MissingResourceException("Could not find the activity item",
+            NonCustodialActivitySummaryItem::class.simpleName, ""))
     }
 
     fun loadCreationDate(
