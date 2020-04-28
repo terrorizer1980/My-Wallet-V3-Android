@@ -12,11 +12,12 @@ import piuk.blockchain.android.ui.activity.detail.Amount
 import piuk.blockchain.android.ui.activity.detail.Created
 import piuk.blockchain.android.ui.activity.detail.Description
 import piuk.blockchain.android.ui.activity.detail.Fee
+import piuk.blockchain.android.ui.activity.detail.FeeForTransaction
 import piuk.blockchain.android.ui.activity.detail.From
 import piuk.blockchain.android.ui.activity.detail.To
 import piuk.blockchain.android.ui.activity.detail.Value
 import piuk.blockchain.android.ui.adapters.AdapterDelegate
-import piuk.blockchain.android.util.extensions.toFormattedDate
+import piuk.blockchain.android.util.extensions.toFormattedString
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 
 class ActivityDetailInfoItemDelegate <in T> : AdapterDelegate<T> {
@@ -55,18 +56,20 @@ private class InfoItemViewHolder(var parent: View) : RecyclerView.ViewHolder(par
                 is Value -> R.string.activity_details_value
                 is To -> R.string.activity_details_to
                 is From -> R.string.activity_details_from
+                is FeeForTransaction -> R.string.activity_details_transaction_fee
                 else -> R.string.activity_details_empty
             }
         )
 
     private fun getValueForType(infoType: ActivityDetailsType): String =
         when (infoType) {
-            is Created -> infoType.date.toFormattedDate()
+            is Created -> infoType.date.toFormattedString()
             is Amount -> infoType.cryptoValue.toStringWithSymbol()
             is Fee -> infoType.feeValue.toStringWithSymbol()
             is Value -> infoType.fiatAtExecution.toStringWithSymbol()
             is To -> infoType.toAddress
             is From -> infoType.fromAddress
+            is FeeForTransaction -> infoType.transactionFee
             else -> ""
         }
 }

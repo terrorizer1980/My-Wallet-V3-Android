@@ -16,6 +16,8 @@ data class Amount(val cryptoValue: CryptoValue) : ActivityDetailsType()
 data class Fee(val feeValue: CryptoValue) : ActivityDetailsType()
 data class Value(val fiatAtExecution: FiatValue) : ActivityDetailsType()
 data class From(val fromAddress: String) : ActivityDetailsType()
+// TODO this will be updated to have info on what transaction the fee is for
+data class FeeForTransaction(val transactionFee: String) : ActivityDetailsType()
 data class To(val toAddress: String) : ActivityDetailsType()
 data class Description(val description: String = "") : ActivityDetailsType()
 data class Action(val action: String = "") : ActivityDetailsType()
@@ -55,16 +57,19 @@ class ActivityDetailsModel(
                 interactor.loadCreationDate(intent.nonCustodialActivitySummaryItem).subscribeBy(
                     onSuccess = {
                         process(CreationDateLoadedIntent(it))
-                        when (intent.nonCustodialActivitySummaryItem.direction) {
-                            TransactionSummary.Direction.TRANSFERRED -> TODO()
-                            TransactionSummary.Direction.RECEIVED ->
+                        val direction = intent.nonCustodialActivitySummaryItem.direction
+                        when {
+                            intent.nonCustodialActivitySummaryItem.isFeeTransaction ->
+                                loadFeeTransactionItems(intent)
+                            direction == TransactionSummary.Direction.TRANSFERRED -> TODO()
+                            direction == TransactionSummary.Direction.RECEIVED ->
                                 loadReceivedItems(intent)
-                            TransactionSummary.Direction.SENT -> {
+                            direction == TransactionSummary.Direction.SENT -> {
                                 loadSentItems(intent)
                             }
-                            TransactionSummary.Direction.BUY -> TODO()
-                            TransactionSummary.Direction.SELL -> TODO()
-                            TransactionSummary.Direction.SWAP -> TODO()
+                            direction == TransactionSummary.Direction.BUY -> TODO()
+                            direction == TransactionSummary.Direction.SELL -> TODO()
+                            direction == TransactionSummary.Direction.SWAP -> TODO()
                         }
                     },
                     onError = {
@@ -78,6 +83,17 @@ class ActivityDetailsModel(
             is LoadHeaderDataIntent -> null
         }
     }
+
+    private fun loadFeeTransactionItems(intent: LoadCreationDateIntent) =
+        interactor.loadFeeItems(intent.nonCustodialActivitySummaryItem)
+            .subscribeBy(
+                onSuccess = { activityItemList ->
+                    process(ListItemsLoadedIntent(activityItemList))
+                },
+                onError = {
+                    process(ListItemsFailedToLoadIntent)
+                }
+            )
 
     private fun loadReceivedItems(intent: LoadCreationDateIntent) =
         interactor.loadReceivedItems(intent.nonCustodialActivitySummaryItem)

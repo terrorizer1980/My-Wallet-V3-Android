@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.ui.urllinks.makeBlockExplorerUrl
@@ -39,12 +40,24 @@ class ActivityDetailsBottomSheet :
         get() = this?.getSerializable(ARG_CRYPTO_CURRENCY) as? CryptoCurrency
             ?: throw IllegalArgumentException("Cryptocurrency should not be null")
 
+    override fun initControls(view: View) {
+        view.details_list.apply {
+            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            adapter = listAdapter
+        }
+    }
+
     override fun render(newState: ActivityDetailState) {
-        dialogView.title.text = mapToAction(newState.direction)
+        dialogView.title.text = if (newState.isFeeTransaction) {
+            getString(R.string.activity_details_title_fee)
+        } else {
+            mapToAction(newState.direction)
+        }
         dialogView.amount.text = newState.amount?.toStringWithSymbol()
 
         renderCompletedOrPending(newState.isPending, newState.confirmations,
-            newState.totalConfirmations, newState.direction)
+            newState.totalConfirmations, newState.direction, newState.isFeeTransaction)
 
         if (listAdapter.items != newState.listOfItems) {
             listAdapter.items = newState.listOfItems.toList()
@@ -56,7 +69,8 @@ class ActivityDetailsBottomSheet :
         pending: Boolean,
         confirmations: Int,
         totalConfirmations: Int,
-        direction: TransactionSummary.Direction?
+        direction: TransactionSummary.Direction?,
+        isFeeTransaction: Boolean
     ) {
         if (pending) {
             if (confirmations != totalConfirmations) {
@@ -69,10 +83,13 @@ class ActivityDetailsBottomSheet :
                 dialogView.confirmation_progress.visible()
             }
 
-            dialogView.status.text = getString(when (direction) {
-                TransactionSummary.Direction.SENT -> R.string.activity_details_label_confirming
-                TransactionSummary.Direction.SWAP -> R.string.activity_details_label_pending
-                TransactionSummary.Direction.BUY -> R.string.activity_details_label_waiting_on_funds
+            dialogView.status.text = getString(when {
+                direction == TransactionSummary.Direction.SENT ->
+                    R.string.activity_details_label_confirming
+                isFeeTransaction || direction == TransactionSummary.Direction.SWAP ->
+                    R.string.activity_details_label_pending
+                direction == TransactionSummary.Direction.BUY ->
+                    R.string.activity_details_label_waiting_on_funds
                 else -> R.string.activity_details_empty
             })
             dialogView.status.background =
@@ -85,13 +102,6 @@ class ActivityDetailsBottomSheet :
                 ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_received)
             dialogView.status.setTextColor(
                 ContextCompat.getColor(requireContext(), R.color.green_600))
-        }
-    }
-
-    override fun initControls(view: View) {
-        view.details_list.apply {
-            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
-            adapter = listAdapter
         }
     }
 

@@ -624,6 +624,7 @@
     <string name="tx_title_buy">Buy %1s</string>
     <string name="tx_title_swap">Swap %1s</string>
     <string name="tx_title_transfer">Transfer %1s</string>
+    <string name="tx_title_fee">Fee %1s</string>
 
     <!-- TRANSACTION DETAILS -->
     <string name="transaction_detail_title">Transaction</string>
@@ -1637,7 +1638,7 @@
     <string name="activity_no_activity_text">All your transactions will show up here.</string>
     <string name="activity_custodial_pending_value">Bank Transfer</string>
     <string name="activity_loading_error">Failed to load activity, please try again later</string>
-    <string name="activity_details_created">Created</string>
+    <string name="activity_details_created">Date</string>
     <string name="activity_details_completed">Completed</string>
     <string name="activity_details_fee">Fee</string>
     <string name="activity_details_amount">Amount</string>
@@ -1659,5 +1660,7 @@
     <string name="activity_details_label_confirming">Confirming</string>
     <string name="activity_details_label_waiting_on_funds">Waiting on Funds</string>
     <string name="activity_details_label_confirmations">%1$d of %2$d\nConfirmations</string>
+    <string name="activity_details_title_fee">Gas Fee</string>
+    <string name="activity_details_transaction_fee">Gas for</string>
 
 </resources>
