@@ -100,7 +100,14 @@ val coreModule = applicationContext {
             .bind(SeedAccessWithoutPrompt::class)
             .bind(SeedAccess::class)
 
-        bean { MetadataManager(get(), get(), MetadataDerivation(BitcoinMainNetParams.get())) }
+        bean {
+            MetadataManager(
+                payloadDataManager = get(),
+                metadataInteractor = get(),
+                metadataDerivation = MetadataDerivation(BitcoinMainNetParams.get()),
+                crashLogger = get()
+            )
+        }
 
         bean { MoshiMetadataRepositoryAdapter(get(), get()) as MetadataRepository }
 
