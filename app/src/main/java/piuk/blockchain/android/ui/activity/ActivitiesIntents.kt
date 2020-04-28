@@ -12,15 +12,15 @@ class AccountSelectedIntent(
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         val activitiesList = if (oldState.account == account) {
-                oldState.activityList // Is a refresh, keep the list
-            } else {
-                emptyList()
-            }
-            return oldState.copy(
-                account = account,
-                isLoading = true,
-                activityList = activitiesList
-            )
+            oldState.activityList // Is a refresh, keep the list
+        } else {
+            emptyList()
+        }
+        return oldState.copy(
+            account = account,
+            isLoading = true,
+            activityList = activitiesList
+        )
     }
 }
 
@@ -49,9 +49,9 @@ class ActivityListUpdatedIntent(
 class ActivityListUpdatedErrorIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
-                isLoading = false,
-                activityList = emptyList(),
-                isError = true
+            isLoading = false,
+            activityList = emptyList(),
+            isError = true
         )
     }
 }
@@ -63,15 +63,22 @@ object ShowAccountSelectionIntent : ActivitiesIntent() {
 }
 
 class ShowActivityDetailsIntent(
-    cryptoCurrency: CryptoCurrency,
-    txHash: String
+    val cryptoCurrency: CryptoCurrency,
+    val txHash: String
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
-        return oldState
+        return oldState.copy(
+            bottomSheet = ActivitiesSheet.ACTIVITY_DETAILS,
+            selectedCryptoCurrency = cryptoCurrency,
+            selectedTxId = txHash
+        )
     }
 }
 
 object ClearBottomSheetIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState =
-        oldState.copy(bottomSheet = null)
+        oldState.copy(bottomSheet = null,
+            selectedCryptoCurrency = null,
+            selectedTxId = ""
+        )
 }

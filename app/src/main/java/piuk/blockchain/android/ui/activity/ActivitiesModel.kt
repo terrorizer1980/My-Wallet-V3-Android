@@ -1,5 +1,6 @@
 package piuk.blockchain.android.ui.activity
 
+import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -10,7 +11,8 @@ import piuk.blockchain.android.ui.base.mvi.MviState
 import timber.log.Timber
 
 enum class ActivitiesSheet {
-    ACCOUNT_SELECTOR
+    ACCOUNT_SELECTOR,
+    ACTIVITY_DETAILS
 }
 
 data class ActivitiesState(
@@ -18,7 +20,9 @@ data class ActivitiesState(
     val activityList: ActivitySummaryList = emptyList(),
     val isLoading: Boolean = false,
     val bottomSheet: ActivitiesSheet? = null,
-    val isError: Boolean = false
+    val isError: Boolean = false,
+    val selectedTxId: String = "",
+    val selectedCryptoCurrency: CryptoCurrency? = null
 ) : MviState
 
 class ActivitiesModel(

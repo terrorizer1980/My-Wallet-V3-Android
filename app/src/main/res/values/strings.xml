@@ -1637,5 +1637,24 @@
     <string name="activity_no_activity_text">All your transactions will show up here.</string>
     <string name="activity_custodial_pending_value">Bank Transfer</string>
     <string name="activity_loading_error">Failed to load activity, please try again later</string>
+    <string name="activity_details_created">Created</string>
+    <string name="activity_details_completed">Completed</string>
+    <string name="activity_details_fee">Fee</string>
+    <string name="activity_details_amount">Amount</string>
+    <string name="activity_details_value">Value</string>
+    <string name="activity_details_to">To</string>
+    <string name="activity_details_from">From</string>
+    <string name="activity_details_empty"/>
+    <string name="activity_details_action">View on Blockchain Explorer</string>
+    <string name="activity_detail_description_action">Add a description</string>
+    <string name="activity_detail_description_label">Description</string>
+    <string name="activity_details_label_pending">Pending</string>
+    <string name="activity_details_label_complete">Complete</string>
+    <string name="activity_details_title_transferred">Transfer</string>
+    <string name="activity_details_title_received">Receive</string>
+    <string name="activity_details_title_sent">Send</string>
+    <string name="activity_details_title_buy">Buy</string>
+    <string name="activity_details_title_sell">Sell</string>
+    <string name="activity_details_title_swap">Swap</string>
 
 </resources>

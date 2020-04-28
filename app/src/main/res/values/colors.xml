@@ -39,4 +39,6 @@
     <color name="dashboard_chart_unknown">@color/grey_400</color>
     <color name="dashboard_chart_indicator_color">@color/blue_600</color>
     <color name="simple_buy_snackbar">@color/grey_900</color>
+
+    <color name="activity_detail_status_bg_complete">#E6FAEC</color>
 </resources>
