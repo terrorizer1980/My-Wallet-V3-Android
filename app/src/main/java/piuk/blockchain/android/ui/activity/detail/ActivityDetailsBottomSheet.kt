@@ -63,7 +63,8 @@ class ActivityDetailsBottomSheet :
                 dialogView.confirmation_label.text =
                     getString(R.string.activity_details_label_confirmations, confirmations,
                         totalConfirmations)
-                dialogView.confirmation_progress.progress = confirmations / totalConfirmations
+                dialogView.confirmation_progress.setProgress(
+                    (confirmations / totalConfirmations.toFloat()) * 100)
                 dialogView.confirmation_label.visible()
                 dialogView.confirmation_progress.visible()
             }
