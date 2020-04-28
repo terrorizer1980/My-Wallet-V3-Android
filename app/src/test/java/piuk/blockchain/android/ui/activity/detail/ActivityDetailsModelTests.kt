@@ -104,7 +104,6 @@ class ActivityDetailsModelTests {
         val testObserver = model.state.test()
         model.process(LoadActivityDetailsIntent(crypto, txId))
 
-        testObserver.assertValueCount(2)
         testObserver.assertValueAt(0, state)
         testObserver.assertValueAt(1, state.copy(isError = true))
     }
