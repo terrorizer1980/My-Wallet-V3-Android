@@ -37,16 +37,18 @@ class ActivityDetailsModelTests {
         model = spy(ActivityDetailsModel(state, scheduler, interactor))
     }
 
-    data class DummyTestClass(override val exchangeRates: ExchangeRateDataManager = mock(),
-                              override val cryptoCurrency: CryptoCurrency = mock(),
-                              override val txId: String = "123",
-                              override val timeStampMs: Long = 1L,
-                              override val totalCrypto: CryptoValue = mock(),
-                              override val direction: TransactionSummary.Direction = TransactionSummary.Direction.SENT,
-                              override val fee: Observable<CryptoValue> = mock(),
-                              override val inputsMap: Map<String, CryptoValue> = mock(),
-                              override val outputsMap: Map<String, CryptoValue> = mock(),
-                              override val description: String? = "desc") :
+    data class DummyTestClass(
+        override val exchangeRates: ExchangeRateDataManager = mock(),
+        override val cryptoCurrency: CryptoCurrency = mock(),
+        override val txId: String = "123",
+        override val timeStampMs: Long = 1L,
+        override val totalCrypto: CryptoValue = mock(),
+        override val direction: TransactionSummary.Direction = TransactionSummary.Direction.SENT,
+        override val fee: Observable<CryptoValue> = mock(),
+        override val inputsMap: Map<String, CryptoValue> = mock(),
+        override val outputsMap: Map<String, CryptoValue> = mock(),
+        override val description: String? = "desc"
+    ) :
         NonCustodialActivitySummaryItem()
 
     @Test
