@@ -22,7 +22,8 @@ data class ActivitiesState(
     val bottomSheet: ActivitiesSheet? = null,
     val isError: Boolean = false,
     val selectedTxId: String = "",
-    val selectedCryptoCurrency: CryptoCurrency? = null
+    val selectedCryptoCurrency: CryptoCurrency? = null,
+    val isCustodial: Boolean = false
 ) : MviState
 
 class ActivitiesModel(

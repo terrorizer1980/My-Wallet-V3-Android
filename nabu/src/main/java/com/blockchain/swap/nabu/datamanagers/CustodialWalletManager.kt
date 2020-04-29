@@ -80,7 +80,10 @@ data class BuyOrder(
     val crypto: CryptoValue,
     val state: OrderState = OrderState.UNINITIALISED,
     val expires: Date = Date(),
-    val updated: Date = Date()
+    val updated: Date = Date(),
+    val created: Date = Date(),
+    val fee: FiatValue,
+    val paymentMethodId: String
 )
 
 typealias BuyOrderList = List<BuyOrder>

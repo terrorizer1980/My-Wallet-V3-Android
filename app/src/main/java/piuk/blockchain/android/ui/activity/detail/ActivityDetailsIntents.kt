@@ -1,6 +1,9 @@
 package piuk.blockchain.android.ui.activity.detail
 
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import info.blockchain.balance.CryptoCurrency
+import info.blockchain.wallet.multiaddress.TransactionSummary
+import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.base.mvi.MviIntent
 import java.util.Date
@@ -9,21 +12,23 @@ sealed class ActivityDetailsIntents : MviIntent<ActivityDetailState>
 
 class LoadActivityDetailsIntent(
     val cryptoCurrency: CryptoCurrency,
-    val txHash: String
+    val txHash: String,
+    val isCustodial: Boolean
 ) : ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         return oldState
     }
 }
 
-class LoadCreationDateIntent(val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem) :
-    ActivityDetailsIntents() {
+class LoadNonCustodialCreationDateIntent(
+    val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
+) : ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         return oldState
     }
 }
 
-class ActivityDetailsLoadFailedIntent : ActivityDetailsIntents() {
+object ActivityDetailsLoadFailedIntent : ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         return oldState.copy(
             isError = true
@@ -31,10 +36,9 @@ class ActivityDetailsLoadFailedIntent : ActivityDetailsIntents() {
     }
 }
 
-class LoadHeaderDataIntent(
+class LoadNonCustodialHeaderDataIntent(
     private val nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
-) :
-    ActivityDetailsIntents() {
+) : ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         return oldState.copy(
             direction = nonCustodialActivitySummaryItem.direction,
@@ -47,8 +51,25 @@ class LoadHeaderDataIntent(
     }
 }
 
-class ListItemsLoadedIntent(private val list: List<ActivityDetailsType>) :
-    ActivityDetailsIntents() {
+class LoadCustodialHeaderDataIntent(
+    private val custodialActivitySummaryItem: CustodialActivitySummaryItem
+) : ActivityDetailsIntents() {
+    override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
+        return oldState.copy(
+            direction = TransactionSummary.Direction.BUY,
+            amount = custodialActivitySummaryItem.totalCrypto,
+            isPending = custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS,
+            isPendingExecution = custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION,
+            isFeeTransaction = false,
+            confirmations = 0,
+            totalConfirmations = 0
+        )
+    }
+}
+
+class ListItemsLoadedIntent(
+    private val list: List<ActivityDetailsType>
+) : ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         val currentList = oldState.listOfItems.toMutableSet()
         currentList.addAll(list.toSet())
@@ -68,7 +89,9 @@ object ListItemsFailedToLoadIntent : ActivityDetailsIntents() {
 
 object CreationDateLoadFailedIntent : ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
-        return oldState
+        return oldState.copy(
+            isError = true
+        )
     }
 }
 

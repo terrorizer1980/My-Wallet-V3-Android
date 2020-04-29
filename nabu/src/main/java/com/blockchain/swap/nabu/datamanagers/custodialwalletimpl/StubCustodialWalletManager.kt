@@ -116,7 +116,8 @@ class StubCustodialWalletManager : CustodialWalletManager {
             )
         )
 
-    override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
+    override fun getQuote(action: String, crypto: CryptoCurrency,
+                          amount: FiatValue): Single<Quote> =
         Single.just(Quote(date = Date(),
             fee = FiatValue.zero(amount.currencyCode),
             estimatedAmount = CryptoValue.ZeroBtc))
@@ -165,7 +166,11 @@ class StubCustodialWalletManager : CustodialWalletManager {
                     fiat = FiatValue.fromMinor("GBP", 50000),
                     crypto = CryptoValue.zero(crypto),
                     state = OrderState.AWAITING_FUNDS,
-                    expires = Date()
+                    expires = Date(),
+                    fee = FiatValue.zero("GBP"),
+                    updated = Date(),
+                    created = Date(),
+                    paymentMethodId = ""
                 )
             )
         )
@@ -182,7 +187,11 @@ class StubCustodialWalletManager : CustodialWalletManager {
                     fiat = FiatValue.fromMinor("GBP", 50000),
                     crypto = CryptoValue.zero(crypto),
                     state = OrderState.AWAITING_FUNDS,
-                    expires = Date()
+                    expires = Date(),
+                    fee = FiatValue.zero("GBP"),
+                    updated = Date(),
+                    created = Date(),
+                    paymentMethodId = ""
                 ),
                 BuyOrder(
                     id = "006bd84e-de7b-4697-8989-92eab7720000",
@@ -190,7 +199,11 @@ class StubCustodialWalletManager : CustodialWalletManager {
                     fiat = FiatValue.fromMinor("GBP", 50000),
                     crypto = CryptoValue.zero(crypto),
                     state = OrderState.FINISHED,
-                    expires = Date()
+                    expires = Date(),
+                    fee = FiatValue.zero("GBP"),
+                    updated = Date(),
+                    created = Date(),
+                    paymentMethodId = ""
                 ),
                 BuyOrder(
                     id = "006bd84e-de7b-4697-8989-92eab7721111",
@@ -198,7 +211,11 @@ class StubCustodialWalletManager : CustodialWalletManager {
                     fiat = FiatValue.fromMinor("GBP", 70000),
                     crypto = CryptoValue.fromMinor(crypto, 1980000.toBigInteger()),
                     state = OrderState.CANCELED,
-                    expires = Date()
+                    expires = Date(),
+                    fee = FiatValue.zero("GBP"),
+                    updated = Date(),
+                    created = Date(),
+                    paymentMethodId = ""
                 )
             )
         )
@@ -211,11 +228,16 @@ class StubCustodialWalletManager : CustodialWalletManager {
                 fiat = FiatValue.fromMinor("GBP", 70000),
                 crypto = CryptoValue.bitcoinFromSatoshis(1980000),
                 state = OrderState.AWAITING_FUNDS,
-                expires = Date()
+                expires = Date(),
+                fee = FiatValue.zero("GBP"),
+                updated = Date(),
+                created = Date(),
+                paymentMethodId = ""
             )
         )
 
-    override fun getSupportedFiatCurrencies(nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
+    override fun getSupportedFiatCurrencies(
+        nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
         Single.just(listOf(
             "GBP", "EUR"
         ))

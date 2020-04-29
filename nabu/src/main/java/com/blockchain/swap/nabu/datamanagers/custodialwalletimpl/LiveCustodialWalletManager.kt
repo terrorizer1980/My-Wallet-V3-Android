@@ -14,9 +14,9 @@ import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.extensions.fromIso8601ToUtc
 import com.blockchain.swap.nabu.extensions.toLocalTime
-import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderListResponse
+import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.TransferRequest
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
@@ -38,7 +38,8 @@ class LiveCustodialWalletManager(
     private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>
 ) : CustodialWalletManager {
 
-    override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
+    override fun getQuote(action: String, crypto: CryptoCurrency,
+                          amount: FiatValue): Single<Quote> =
         authenticator.authenticate {
             nabuService.getSimpleBuyQuote(
                 sessionToken = it,
@@ -51,7 +52,8 @@ class LiveCustodialWalletManager(
                 (amount.valueMinor.toFloat().div(quoteResponse.rate)).toBigDecimal())
             Quote(
                 date = quoteResponse.time.toLocalTime(),
-                fee = FiatValue.fromMinor(amount.currencyCode, quoteResponse.fee.times(amountCrypto.amount.toLong())),
+                fee = FiatValue.fromMinor(amount.currencyCode,
+                    quoteResponse.fee.times(amountCrypto.amount.toLong())),
                 estimatedAmount = amountCrypto
             )
         }
@@ -95,7 +97,8 @@ class LiveCustodialWalletManager(
             })
         }
 
-    override fun getSupportedFiatCurrencies(nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
+    override fun getSupportedFiatCurrencies(
+        nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
         authenticator.authenticate {
             nabuService.getSupportedCurrencies()
         }.map {
@@ -153,7 +156,8 @@ class LiveCustodialWalletManager(
                 pendingOnly = true
             )
         }.map {
-            it.map { order -> order.toBuyOrder() }.filter { order -> order.state != OrderState.UNKNOWN }
+            it.map { order -> order.toBuyOrder() }
+                .filter { order -> order.state != OrderState.UNKNOWN }
         }
 
     override fun getAllBuyOrdersFor(crypto: CryptoCurrency): Single<BuyOrderList> =
@@ -220,12 +224,16 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
         fiat = FiatValue.fromMinor(inputCurrency, inputQuantity.toLongOrDefault(0)),
         crypto = CryptoValue.fromMinor(
             CryptoCurrency.fromNetworkTicker(outputCurrency)
-                ?: throw UnknownFormatConversionException("Unknown Crypto currency: $outputCurrency"),
+                ?: throw UnknownFormatConversionException(
+                    "Unknown Crypto currency: $outputCurrency"),
             outputQuantity.toBigDecimalOrNull() ?: BigDecimal.ZERO
         ),
         state = state.toLocalState(),
         expires = expiresAt.fromIso8601ToUtc() ?: Date(0),
-        updated = updatedAt.fromIso8601ToUtc() ?: Date(0)
+        updated = updatedAt.fromIso8601ToUtc() ?: Date(0),
+        created = insertedAt.fromIso8601ToUtc() ?: Date(0),
+        fee = FiatValue.fromMinor(inputCurrency, fee.toLong()),
+        paymentMethodId = paymentMethodId
     )
 
 interface PaymentAccountMapper {

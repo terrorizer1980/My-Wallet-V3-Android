@@ -43,7 +43,8 @@ class ActivityDetailsBottomSheet :
     override fun initControls(view: View) {
         view.details_list.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
-            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
             adapter = listAdapter
         }
     }
@@ -56,7 +57,8 @@ class ActivityDetailsBottomSheet :
         }
         dialogView.amount.text = newState.amount?.toStringWithSymbol()
 
-        renderCompletedOrPending(newState.isPending, newState.confirmations,
+        renderCompletedOrPending(newState.isPending, newState.isPendingExecution,
+            newState.confirmations,
             newState.totalConfirmations, newState.direction, newState.isFeeTransaction)
 
         if (listAdapter.items != newState.listOfItems) {
@@ -67,12 +69,13 @@ class ActivityDetailsBottomSheet :
 
     private fun renderCompletedOrPending(
         pending: Boolean,
+        pendingExecution: Boolean,
         confirmations: Int,
         totalConfirmations: Int,
         direction: TransactionSummary.Direction?,
         isFeeTransaction: Boolean
     ) {
-        if (pending) {
+        if (pending || pendingExecution) {
             if (confirmations != totalConfirmations) {
                 dialogView.confirmation_label.text =
                     getString(R.string.activity_details_label_confirmations, confirmations,
@@ -89,7 +92,11 @@ class ActivityDetailsBottomSheet :
                 isFeeTransaction || direction == TransactionSummary.Direction.SWAP ->
                     R.string.activity_details_label_pending
                 direction == TransactionSummary.Direction.BUY ->
-                    R.string.activity_details_label_waiting_on_funds
+                    if (pending && !pendingExecution) {
+                        R.string.activity_details_label_waiting_on_funds
+                    } else {
+                        R.string.activity_details_label_pending_execution
+                    }
                 else -> R.string.activity_details_empty
             })
             dialogView.status.background =
@@ -118,8 +125,9 @@ class ActivityDetailsBottomSheet :
         }
     }
 
-    private fun loadActivityDetails(cryptoCurrency: CryptoCurrency, txHash: String) {
-        model.process(LoadActivityDetailsIntent(cryptoCurrency, txHash))
+    private fun loadActivityDetails(cryptoCurrency: CryptoCurrency, txHash: String,
+                                    isCustodial: Boolean) {
+        model.process(LoadActivityDetailsIntent(cryptoCurrency, txHash, isCustodial))
     }
 
     private fun mapToAction(direction: TransactionSummary.Direction?): String =
@@ -136,22 +144,23 @@ class ActivityDetailsBottomSheet :
         }
 
     companion object {
-        private const val ARG_CRYPTO_CURRENCY =
-            "crypto_currency"
-        private const val ARG_TRANSACTION_HASH =
-            "tx_hash"
+        private const val ARG_CRYPTO_CURRENCY = "crypto_currency"
+        private const val ARG_TRANSACTION_HASH = "tx_hash"
+        private const val ARG_CUSTODIAL_TRANSACTION = "custodial_tx"
 
         fun newInstance(
             cryptoCurrency: CryptoCurrency,
-            txHash: String
+            txHash: String,
+            isCustodial: Boolean
         ): ActivityDetailsBottomSheet {
             return ActivityDetailsBottomSheet().apply {
                 arguments = Bundle().apply {
                     putSerializable(ARG_CRYPTO_CURRENCY, cryptoCurrency)
                     putString(ARG_TRANSACTION_HASH, txHash)
+                    putBoolean(ARG_CUSTODIAL_TRANSACTION, isCustodial)
                 }
 
-                loadActivityDetails(cryptoCurrency, txHash)
+                loadActivityDetails(cryptoCurrency, txHash, isCustodial)
             }
         }
     }

@@ -64,13 +64,15 @@ object ShowAccountSelectionIntent : ActivitiesIntent() {
 
 class ShowActivityDetailsIntent(
     val cryptoCurrency: CryptoCurrency,
-    val txHash: String
+    val txHash: String,
+    val isCustodial: Boolean
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
             bottomSheet = ActivitiesSheet.ACTIVITY_DETAILS,
             selectedCryptoCurrency = cryptoCurrency,
-            selectedTxId = txHash
+            selectedTxId = txHash,
+            isCustodial = isCustodial
         )
     }
 }

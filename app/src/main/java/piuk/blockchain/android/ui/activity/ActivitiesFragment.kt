@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.annotation.UiThread
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,15 +42,15 @@ import timber.log.Timber
 
 class ActivitiesFragment
     : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
-        AccountSelectSheet.Host {
+    AccountSelectSheet.Host {
     override val model: ActivitiesModel by inject()
 
     private val theAdapter: ActivitiesDelegateAdapter by lazy {
         ActivitiesDelegateAdapter(
-                disposables = disposables,
-                prefs = get(),
-                onItemClicked = { cc, tx, isCustodial -> onActivityClicked(cc, tx, isCustodial) },
-                analytics = get()
+            disposables = disposables,
+            prefs = get(),
+            onItemClicked = { cc, tx, isCustodial -> onActivityClicked(cc, tx, isCustodial) },
+            analytics = get()
         )
     }
 
@@ -82,20 +81,23 @@ class ActivitiesFragment
 
         if (newState.isError) {
             ToastCustom.makeText(
-                    requireContext(),
-                    getString(R.string.activity_loading_error),
-                    ToastCustom.LENGTH_SHORT,
-                    ToastCustom.TYPE_ERROR
+                requireContext(),
+                getString(R.string.activity_loading_error),
+                ToastCustom.LENGTH_SHORT,
+                ToastCustom.TYPE_ERROR
             )
         }
 
         if (this.state?.bottomSheet != newState.bottomSheet) {
             when (newState.bottomSheet) {
-                ActivitiesSheet.ACCOUNT_SELECTOR -> showBottomSheet(AccountSelectSheet.newInstance())
+                ActivitiesSheet.ACCOUNT_SELECTOR -> showBottomSheet(
+                    AccountSelectSheet.newInstance())
                 ActivitiesSheet.ACTIVITY_DETAILS -> {
                     newState.selectedCryptoCurrency?.let {
-                        showBottomSheet(ActivityDetailsBottomSheet.newInstance(it, newState.selectedTxId))
-                    } ?: Timber.e("newstate cryptocurrency null") // this should not happen
+                        showBottomSheet(
+                            ActivityDetailsBottomSheet.newInstance(it, newState.selectedTxId,
+                                newState.isCustodial))
+                    }
                 }
             }
         }
@@ -141,22 +143,23 @@ class ActivitiesFragment
         fiat_balance.text = ""
 
         disposables += account.fiatBalance(currencyPrefs.selectedFiatCurrency, exchangeRates)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = {
-                            fiat_balance.text = it.toStringWithSymbol()
-                        },
-                        onError = {
-                            Timber.e("Unable to get balance for ${account.label}")
-                        }
-                )
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = {
+                    fiat_balance.text = it.toStringWithSymbol()
+                },
+                onError = {
+                    Timber.e("Unable to get balance for ${account.label}")
+                }
+            )
     }
 
     private fun ImageView.setAccountIcon(account: CryptoAccount) {
         when (account.cryptoCurrencies.size) {
             0 -> throw IllegalStateException("Account is invalid; no crypto")
             1 -> setCoinIcon(account.cryptoCurrencies.first())
-            else -> setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_all_wallets_white))
+            else -> setImageDrawable(
+                AppCompatResources.getDrawable(context, R.drawable.ic_all_wallets_white))
         }
     }
 
@@ -223,10 +226,10 @@ class ActivitiesFragment
 
         // Configure the refreshing colors
         swipe.setColorSchemeResources(
-                R.color.blue_800,
-                R.color.blue_600,
-                R.color.blue_400,
-                R.color.blue_200
+            R.color.blue_800,
+            R.color.blue_600,
+            R.color.blue_400,
+            R.color.blue_200
         )
     }
 
@@ -241,22 +244,23 @@ class ActivitiesFragment
         super.onPause()
     }
 
-    private fun onActivityClicked(cryptoCurrency: CryptoCurrency, txHash: String, isCustodial: Boolean) {
+    private fun onActivityClicked(cryptoCurrency: CryptoCurrency, txHash: String,
+                                  isCustodial: Boolean) {
         // TODO: Use an intent, when we upgrade the de3tail sheet as per then designs.
         // For expediency, currently using to old details sheet
         // model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash))
         // Also, custodial detains are not supported, until the new designs are built.
         // Show a toast in this case, for now - this may change come design review...
-        if (isCustodial) {
-            Toast.makeText(
-                    requireContext(),
-                    "Custodial activity details are not supported in this release",
-                    Toast.LENGTH_LONG
-            ).show()
-        } else {
-            model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash))
-            // TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)
-        }
+//        if (isCustodial) {
+//            Toast.makeText(
+//                    requireContext(),
+//                    "Custodial activity details are not supported in this release",
+//                    Toast.LENGTH_LONG
+//            ).show()
+//        } else {
+        model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash, isCustodial))
+        // TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)
+        //}
     }
 
     private fun onShowAllActivity() {

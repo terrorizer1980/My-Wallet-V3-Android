@@ -62,11 +62,11 @@ class ActivityDetailsModelTest {
         val item = DummyTestClass()
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
-        whenever(interactor.getActivityDetails(crypto, txId)).thenReturn(Single.just(item))
+        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(Single.just(item))
 
         model.process(LoadActivityDetailsIntent(crypto, txId))
 
-        verify(interactor, times(1)).getActivityDetails(crypto, txId)
+        verify(interactor, times(1)).getNonCustodialActivityDetails(crypto, txId)
     }
 
     @Test
@@ -74,7 +74,7 @@ class ActivityDetailsModelTest {
         val item = DummyTestClass()
 
         val testObserver = model.state.test()
-        model.process(LoadHeaderDataIntent(item))
+        model.process(LoadNonCustodialHeaderDataIntent(item))
 
         testObserver.assertValueAt(0, state)
         testObserver.assertValueAt(1, state.copy(
@@ -111,7 +111,7 @@ class ActivityDetailsModelTest {
         val txId = "123455"
         val issue = MissingResourceException("Could not find the activity item",
             NonCustodialActivitySummaryItem::class.simpleName, "")
-        whenever(interactor.getActivityDetails(crypto, txId)).thenReturn(Single.error(issue))
+        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(Single.error(issue))
 
         val testObserver = model.state.test()
         model.process(LoadActivityDetailsIntent(crypto, txId))

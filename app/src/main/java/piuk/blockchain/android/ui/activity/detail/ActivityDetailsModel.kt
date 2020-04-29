@@ -1,11 +1,13 @@
 package piuk.blockchain.android.ui.activity.detail
 
+import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
+import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.ui.base.mvi.MviModel
 import piuk.blockchain.android.ui.base.mvi.MviState
 import java.util.Date
@@ -21,11 +23,17 @@ data class FeeForTransaction(val transactionFee: String) : ActivityDetailsType()
 data class To(val toAddress: String) : ActivityDetailsType()
 data class Description(val description: String = "") : ActivityDetailsType()
 data class Action(val action: String = "") : ActivityDetailsType()
+data class BuyFee(val feeValue: FiatValue) : ActivityDetailsType()
+data class BuyPurchaseAmount(val fundedFiat: FiatValue) : ActivityDetailsType()
+data class BuyTransactionId(val txId: String) : ActivityDetailsType()
+data class BuyCryptoWallet(val crypto: CryptoCurrency) : ActivityDetailsType()
+data class BuyPaymentMethod(val paymentMethod: String) : ActivityDetailsType()
 
 data class ActivityDetailState(
     val direction: TransactionSummary.Direction? = null,
     val amount: CryptoValue? = null,
     val isPending: Boolean = false,
+    val isPendingExecution: Boolean = false,
     val isFeeTransaction: Boolean = false,
     val confirmations: Int = 0,
     val totalConfirmations: Int = 0,
@@ -45,30 +53,56 @@ class ActivityDetailsModel(
     ): Disposable? {
         return when (intent) {
             is LoadActivityDetailsIntent ->
-                interactor.getActivityDetails(cryptoCurrency = intent.cryptoCurrency,
-                    txHash = intent.txHash).subscribeBy(
-                    onSuccess = {
-                        process(LoadCreationDateIntent(it))
-                        process(LoadHeaderDataIntent(it))
-                    },
-                    onError = { process(ActivityDetailsLoadFailedIntent()) }
-                )
-            is LoadCreationDateIntent ->
+                if (intent.isCustodial) {
+                    interactor.getCustodialActivityDetails(cryptoCurrency = intent.cryptoCurrency,
+                        txHash = intent.txHash).subscribeBy(
+                        onSuccess = {
+                            process(LoadCustodialHeaderDataIntent(it))
+                            interactor.loadCustodialItems(it)
+                                .subscribeBy(
+                                onSuccess = {activityList ->
+                                    process(ListItemsLoadedIntent(activityList))
+                                },
+                                onError = {
+                                    process(ListItemsFailedToLoadIntent)
+                                }
+                            )
+                        },
+                        onError = { process(ActivityDetailsLoadFailedIntent) }
+                    )
+                } else {
+                    interactor.getNonCustodialActivityDetails(
+                        cryptoCurrency = intent.cryptoCurrency,
+                        txHash = intent.txHash).subscribeBy(
+                        onSuccess = {
+                            process(LoadNonCustodialCreationDateIntent(it))
+                            process(LoadNonCustodialHeaderDataIntent(it))
+                        },
+                        onError = { process(ActivityDetailsLoadFailedIntent) }
+                    )
+                }
+            is LoadNonCustodialCreationDateIntent ->
                 interactor.loadCreationDate(intent.nonCustodialActivitySummaryItem).subscribeBy(
                     onSuccess = {
                         process(CreationDateLoadedIntent(it))
-                        val direction = intent.nonCustodialActivitySummaryItem.direction
+                        val nonCustodialActivitySummaryItem =
+                            intent.nonCustodialActivitySummaryItem
+                        val direction = nonCustodialActivitySummaryItem.direction
                         when {
-                            intent.nonCustodialActivitySummaryItem.isFeeTransaction ->
-                                loadFeeTransactionItems(intent)
+                            nonCustodialActivitySummaryItem.isFeeTransaction ->
+                                loadFeeTransactionItems(nonCustodialActivitySummaryItem)
                             direction == TransactionSummary.Direction.TRANSFERRED -> TODO()
                             direction == TransactionSummary.Direction.RECEIVED ->
-                                loadReceivedItems(intent)
+                                loadReceivedItems(nonCustodialActivitySummaryItem)
                             direction == TransactionSummary.Direction.SENT -> {
-                                loadSentItems(intent)
+                                loadSentItems(nonCustodialActivitySummaryItem)
                             }
-                            direction == TransactionSummary.Direction.BUY -> TODO()
-                            direction == TransactionSummary.Direction.SELL -> TODO()
+                            direction == TransactionSummary.Direction.BUY -> {
+                                // do nothing BUY is a custodial transaction
+                            }
+                            direction == TransactionSummary.Direction.SELL -> {
+                                // do nothing SELL is a custodial transaction
+                            }
                             direction == TransactionSummary.Direction.SWAP -> TODO()
                         }
                     },
@@ -80,12 +114,14 @@ class ActivityDetailsModel(
             is CreationDateLoadedIntent,
             is CreationDateLoadFailedIntent,
             is ActivityDetailsLoadFailedIntent,
-            is LoadHeaderDataIntent -> null
+            is LoadCustodialHeaderDataIntent,
+            is LoadNonCustodialHeaderDataIntent -> null
         }
     }
 
-    private fun loadFeeTransactionItems(intent: LoadCreationDateIntent) =
-        interactor.loadFeeItems(intent.nonCustodialActivitySummaryItem)
+    private fun loadFeeTransactionItems(
+        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem) =
+        interactor.loadFeeItems(nonCustodialActivitySummaryItem)
             .subscribeBy(
                 onSuccess = { activityItemList ->
                     process(ListItemsLoadedIntent(activityItemList))
@@ -95,8 +131,9 @@ class ActivityDetailsModel(
                 }
             )
 
-    private fun loadReceivedItems(intent: LoadCreationDateIntent) =
-        interactor.loadReceivedItems(intent.nonCustodialActivitySummaryItem)
+    private fun loadReceivedItems(
+        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem) =
+        interactor.loadReceivedItems(nonCustodialActivitySummaryItem)
             .subscribeBy(
                 onSuccess = { activityItemList ->
                     process(ListItemsLoadedIntent(activityItemList))
@@ -106,10 +143,10 @@ class ActivityDetailsModel(
                 }
             )
 
-    private fun loadSentItems(intent: LoadCreationDateIntent) =
-        if (intent.nonCustodialActivitySummaryItem.isConfirmed) {
+    private fun loadSentItems(nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem) =
+        if (nonCustodialActivitySummaryItem.isConfirmed) {
             interactor.loadConfirmedSentItems(
-                intent.nonCustodialActivitySummaryItem
+                nonCustodialActivitySummaryItem
             ).subscribeBy(
                 onSuccess = { activityItemsList ->
                     process(ListItemsLoadedIntent(activityItemsList))
@@ -120,7 +157,7 @@ class ActivityDetailsModel(
             )
         } else {
             interactor.loadUnconfirmedSentItems(
-                intent.nonCustodialActivitySummaryItem
+                nonCustodialActivitySummaryItem
             ).subscribeBy(
                 onSuccess = { activityItemsList ->
                     process(ListItemsLoadedIntent(activityItemsList))

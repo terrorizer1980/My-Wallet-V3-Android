@@ -1662,5 +1662,11 @@
     <string name="activity_details_label_confirmations">%1$d of %2$d\nConfirmations</string>
     <string name="activity_details_title_fee">Gas Fee</string>
     <string name="activity_details_transaction_fee">Gas for</string>
+    <string name="activity_details_label_pending_execution">Pending Execution</string>
+    <string name="activity_details_buy_tx_id">Transaction ID</string>
+    <string name="activity_details_buy_sending_to">Sending to</string>
+    <string name="activity_details_buy_purchase_amount">Purchasing</string>
+    <string name="activity_details_buy_fees">Fees</string>
+    <string name="activity_details_buy_payment_method">Payment Method</string>
 
 </resources>
