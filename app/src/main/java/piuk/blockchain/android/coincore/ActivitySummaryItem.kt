@@ -118,4 +118,20 @@ abstract class NonCustodialActivitySummaryItem : ActivitySummaryItem() {
     }
 }
 
+data class SwapActivitySummaryItem(
+    override val exchangeRates: ExchangeRateDataManager,
+    override val cryptoCurrency: CryptoCurrency,
+    override val txId: String,
+    override val timeStampMs: Long,
+    override val totalCrypto: CryptoValue,
+    val targetValue: CryptoValue,
+    val sourceAccount: CryptoAccount,
+    val targetAccount: CryptoAccount,
+    val fee: FiatValue,
+    val confirmations: Int = 0
+) : ActivitySummaryItem() {
+    val isPending: Boolean
+        get() = confirmations < cryptoCurrency.requiredConfirmations
+}
+
 typealias ActivitySummaryList = List<ActivitySummaryItem>
