@@ -22,6 +22,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/blue_800"
                 android:orientation="vertical"
+                android:paddingBottom="@dimen/standard_margin"
                 android:visibility="invisible"
                 tools:visibility="visible">
 
@@ -52,26 +53,26 @@
                         android:layout_marginStart="23dp"
                         android:layout_marginTop="21dp"
                         android:visibility="gone"
-                        tools:visibility="visible"
                         app:layout_constraintStart_toStartOf="@id/account_icon"
                         app:layout_constraintTop_toTopOf="@id/account_icon"
-                        app:srcCompat="@drawable/ic_asset_non_custodial_spend_blue" />
+                        app:srcCompat="@drawable/ic_asset_non_custodial_spend_blue"
+                        tools:visibility="visible" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/account_name"
                         style="@style/Text.Semibold.16"
-                        android:textColor="@color/white"
-                        android:gravity="center_vertical"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="12dp"
-                        tools:text="BTC Wallet"
                         android:ellipsize="middle"
+                        android:gravity="center_vertical"
                         android:singleLine="true"
+                        android:textColor="@color/white"
                         app:layout_constraintEnd_toStartOf="@id/show_accounts"
                         app:layout_constraintStart_toEndOf="@id/account_icon"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="BTC Wallet" />
 
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -111,9 +112,10 @@
                 android:id="@+id/empty_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="@dimen/standard_margin"
+                android:layout_marginBottom="@dimen/standard_margin"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
+                android:padding="@dimen/standard_margin"
                 android:visibility="visible">
 
                 <TextView
