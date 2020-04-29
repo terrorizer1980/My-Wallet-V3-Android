@@ -116,8 +116,11 @@ class StubCustodialWalletManager : CustodialWalletManager {
             )
         )
 
-    override fun getQuote(action: String, crypto: CryptoCurrency,
-                          amount: FiatValue): Single<Quote> =
+    override fun getQuote(
+        action: String,
+        crypto: CryptoCurrency,
+        amount: FiatValue
+    ): Single<Quote> =
         Single.just(Quote(date = Date(),
             fee = FiatValue.zero(amount.currencyCode),
             estimatedAmount = CryptoValue.ZeroBtc))
@@ -237,7 +240,8 @@ class StubCustodialWalletManager : CustodialWalletManager {
         )
 
     override fun getSupportedFiatCurrencies(
-        nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
+        nabuOfflineTokenResponse: NabuOfflineTokenResponse
+    ): Single<List<String>> =
         Single.just(listOf(
             "GBP", "EUR"
         ))

@@ -38,8 +38,11 @@ class LiveCustodialWalletManager(
     private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>
 ) : CustodialWalletManager {
 
-    override fun getQuote(action: String, crypto: CryptoCurrency,
-                          amount: FiatValue): Single<Quote> =
+    override fun getQuote(
+        action: String,
+        crypto: CryptoCurrency,
+        amount: FiatValue
+    ): Single<Quote> =
         authenticator.authenticate {
             nabuService.getSimpleBuyQuote(
                 sessionToken = it,
@@ -98,7 +101,8 @@ class LiveCustodialWalletManager(
         }
 
     override fun getSupportedFiatCurrencies(
-        nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
+        nabuOfflineTokenResponse: NabuOfflineTokenResponse
+    ): Single<List<String>> =
         authenticator.authenticate {
             nabuService.getSupportedCurrencies()
         }.map {

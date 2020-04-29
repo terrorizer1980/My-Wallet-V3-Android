@@ -244,8 +244,11 @@ class ActivitiesFragment
         super.onPause()
     }
 
-    private fun onActivityClicked(cryptoCurrency: CryptoCurrency, txHash: String,
-                                  isCustodial: Boolean) {
+    private fun onActivityClicked(
+        cryptoCurrency: CryptoCurrency,
+        txHash: String,
+        isCustodial: Boolean
+    ) {
         // TODO: Use an intent, when we upgrade the de3tail sheet as per then designs.
         // For expediency, currently using to old details sheet
         // model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash))
@@ -260,7 +263,7 @@ class ActivitiesFragment
 //        } else {
         model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash, isCustodial))
         // TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)
-        //}
+        // }
     }
 
     private fun onShowAllActivity() {

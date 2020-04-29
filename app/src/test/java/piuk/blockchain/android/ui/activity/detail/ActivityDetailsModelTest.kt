@@ -81,7 +81,6 @@ class ActivityDetailsModelTest {
         verify(interactor, times(1)).getCustodialActivityDetails(crypto, txId)
     }
 
-
     @Test
     fun load_header_data_success() {
         val item = DummyTestClass()

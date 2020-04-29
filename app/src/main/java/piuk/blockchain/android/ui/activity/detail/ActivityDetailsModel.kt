@@ -60,7 +60,7 @@ class ActivityDetailsModel(
                             process(LoadCustodialHeaderDataIntent(it))
                             interactor.loadCustodialItems(it)
                                 .subscribeBy(
-                                onSuccess = {activityList ->
+                                onSuccess = { activityList ->
                                     process(ListItemsLoadedIntent(activityList))
                                 },
                                 onError = {
@@ -120,7 +120,8 @@ class ActivityDetailsModel(
     }
 
     private fun loadFeeTransactionItems(
-        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem) =
+        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
+    ) =
         interactor.loadFeeItems(nonCustodialActivitySummaryItem)
             .subscribeBy(
                 onSuccess = { activityItemList ->
@@ -132,7 +133,8 @@ class ActivityDetailsModel(
             )
 
     private fun loadReceivedItems(
-        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem) =
+        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
+    ) =
         interactor.loadReceivedItems(nonCustodialActivitySummaryItem)
             .subscribeBy(
                 onSuccess = { activityItemList ->

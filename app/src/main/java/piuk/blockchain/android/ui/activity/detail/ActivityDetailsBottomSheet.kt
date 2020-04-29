@@ -125,8 +125,11 @@ class ActivityDetailsBottomSheet :
         }
     }
 
-    private fun loadActivityDetails(cryptoCurrency: CryptoCurrency, txHash: String,
-                                    isCustodial: Boolean) {
+    private fun loadActivityDetails(
+        cryptoCurrency: CryptoCurrency,
+        txHash: String,
+        isCustodial: Boolean
+    ) {
         model.process(LoadActivityDetailsIntent(cryptoCurrency, txHash, isCustodial))
     }
 
