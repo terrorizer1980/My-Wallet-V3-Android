@@ -58,16 +58,29 @@ class ActivityDetailsModelTest {
         NonCustodialActivitySummaryItem()
 
     @Test
-    fun initial_state_loads_details() {
+    fun initial_state_loads_non_custodial_details() {
         val item = DummyTestClass()
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
         whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(Single.just(item))
 
-        model.process(LoadActivityDetailsIntent(crypto, txId))
+        model.process(LoadActivityDetailsIntent(crypto, txId, false))
 
         verify(interactor, times(1)).getNonCustodialActivityDetails(crypto, txId)
     }
+
+    @Test
+    fun initial_state_loads_custodial_details() {
+        val item = DummyTestClass()
+        val crypto = CryptoCurrency.BCH
+        val txId = "123455"
+        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(Single.just(item))
+
+        model.process(LoadActivityDetailsIntent(crypto, txId, true))
+
+        verify(interactor, times(1)).getCustodialActivityDetails(crypto, txId)
+    }
+
 
     @Test
     fun load_header_data_success() {
@@ -95,7 +108,7 @@ class ActivityDetailsModelTest {
         whenever(interactor.loadConfirmedSentItems(item)).thenReturn(Single.just(listOf()))
 
         val testObserver = model.state.test()
-        model.process(LoadCreationDateIntent(item))
+        model.process(LoadNonCustodialCreationDateIntent(item))
 
         verify(interactor, times(1)).loadCreationDate(item)
 
@@ -114,7 +127,7 @@ class ActivityDetailsModelTest {
         whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(Single.error(issue))
 
         val testObserver = model.state.test()
-        model.process(LoadActivityDetailsIntent(crypto, txId))
+        model.process(LoadActivityDetailsIntent(crypto, txId, false))
 
         // need to wait for next intent to fire
         Thread.sleep(200)
