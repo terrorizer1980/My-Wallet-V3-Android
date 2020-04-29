@@ -77,13 +77,28 @@
         style="@style/Text.Blue.Semibold.12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_marginStart="@dimen/tiny_margin"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/status"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/confirmation_progress"
         app:layout_constraintTop_toTopOf="@id/status"
         tools:text="1 of 3\nConfirmations"
+        tools:visibility="visible" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/custodial_tx_button"
+        style="@style/CtaButton.Blue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_margin"
+        android:layout_marginEnd="@dimen/standard_margin"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/status"
+        tools:text="Call to Arms"
         tools:visibility="visible" />
 
     <View
@@ -94,7 +109,7 @@
         android:background="@color/grey_000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/status" />
+        app:layout_constraintTop_toBottomOf="@id/custodial_tx_button" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/details_list"

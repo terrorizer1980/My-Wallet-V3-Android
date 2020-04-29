@@ -5,7 +5,8 @@ import piuk.blockchain.android.ui.adapters.DelegationAdapter
 
 class ActivityDetailsDelegateAdapter(
     onActionItemClicked: () -> Unit,
-    onDescriptionItemClicked: () -> Unit
+    onDescriptionItemClicked: () -> Unit,
+    onCancelActionItemClicked: () -> Unit
 ) : DelegationAdapter<Any>(AdapterDelegatesManager(), emptyList()) {
 
     init {
@@ -14,6 +15,7 @@ class ActivityDetailsDelegateAdapter(
             addAdapterDelegate(ActivityDetailInfoItemDelegate())
             addAdapterDelegate(ActivityDetailDescriptionItemDelegate(onDescriptionItemClicked))
             addAdapterDelegate(ActivityDetailActionItemDelegate(onActionItemClicked))
+            addAdapterDelegate(ActivityDetailCancelActionItemDelegate(onCancelActionItemClicked))
         }
     }
 }

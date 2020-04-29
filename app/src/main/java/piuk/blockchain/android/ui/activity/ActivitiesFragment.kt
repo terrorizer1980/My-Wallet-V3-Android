@@ -249,21 +249,7 @@ class ActivitiesFragment
         txHash: String,
         isCustodial: Boolean
     ) {
-        // TODO: Use an intent, when we upgrade the de3tail sheet as per then designs.
-        // For expediency, currently using to old details sheet
-        // model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash))
-        // Also, custodial detains are not supported, until the new designs are built.
-        // Show a toast in this case, for now - this may change come design review...
-//        if (isCustodial) {
-//            Toast.makeText(
-//                    requireContext(),
-//                    "Custodial activity details are not supported in this release",
-//                    Toast.LENGTH_LONG
-//            ).show()
-//        } else {
         model.process(ShowActivityDetailsIntent(cryptoCurrency, txHash, isCustodial))
-        // TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)
-        // }
     }
 
     private fun onShowAllActivity() {

@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.activity.detail
 
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
@@ -26,8 +27,12 @@ class ActivityDetailsInteractor(
         list.add(BuyCryptoWallet(custodialActivitySummaryItem.cryptoCurrency))
         list.add(BuyFee(custodialActivitySummaryItem.fee))
 
-        // TODO this will change when we add cards, but for not it's the only supported type
+        // TODO this will change when we add cards, but for now it's the only supported type
         list.add(BuyPaymentMethod("Bank Wire Transfer"))
+        if (custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS ||
+            custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION) {
+            list.add(CancelAction())
+        }
         return Single.just(list)
     }
 

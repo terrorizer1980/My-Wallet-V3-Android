@@ -28,7 +28,8 @@ class ActivityDetailsBottomSheet :
     private val listAdapter: ActivityDetailsDelegateAdapter by lazy {
         ActivityDetailsDelegateAdapter(
             onActionItemClicked = { onActionItemClicked() },
-            onDescriptionItemClicked = { onDescriptionItemClicked() }
+            onDescriptionItemClicked = { onDescriptionItemClicked() },
+            onCancelActionItemClicked = { onCancelActionItemClicked() }
         )
     }
 
@@ -58,8 +59,23 @@ class ActivityDetailsBottomSheet :
         dialogView.amount.text = newState.amount?.toStringWithSymbol()
 
         renderCompletedOrPending(newState.isPending, newState.isPendingExecution,
-            newState.confirmations,
-            newState.totalConfirmations, newState.direction, newState.isFeeTransaction)
+            newState.confirmations, newState.totalConfirmations, newState.direction,
+            newState.isFeeTransaction)
+
+        if (newState.direction == TransactionSummary.Direction.BUY) {
+            if (newState.isPending || newState.isPendingExecution) {
+                dialogView.custodial_tx_button.text = getString(R.string.activity_details_view_bank_transfer_details)
+                dialogView.setOnClickListener {
+                    // TODO open new sheet with bank details
+                }
+            } else {
+                dialogView.custodial_tx_button.text = getString(R.string.activity_details_buy_again)
+                dialogView.setOnClickListener {
+                    // TODO buy again
+                }
+            }
+            dialogView.custodial_tx_button.visible()
+        }
 
         if (listAdapter.items != newState.listOfItems) {
             listAdapter.items = newState.listOfItems.toList()
@@ -113,6 +129,10 @@ class ActivityDetailsBottomSheet :
     }
 
     private fun onDescriptionItemClicked() {
+        // TODO
+    }
+
+    private fun onCancelActionItemClicked() {
         // TODO
     }
 

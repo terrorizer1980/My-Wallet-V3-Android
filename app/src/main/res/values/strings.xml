@@ -1647,6 +1647,7 @@
     <string name="activity_details_from">From</string>
     <string name="activity_details_empty"/>
     <string name="activity_details_action">View on Blockchain Explorer</string>
+    <string name="activity_details_cancel_action">Cancel Buy</string>
     <string name="activity_detail_description_action">Add a description</string>
     <string name="activity_detail_description_label">Description</string>
     <string name="activity_details_label_pending">Pending</string>
@@ -1668,5 +1669,7 @@
     <string name="activity_details_buy_purchase_amount">Purchasing</string>
     <string name="activity_details_buy_fees">Fees</string>
     <string name="activity_details_buy_payment_method">Payment Method</string>
+    <string name="activity_details_view_bank_transfer_details">View Bank Transfer Details</string>
+    <string name="activity_details_buy_again">Buy Again</string>
 
 </resources>
