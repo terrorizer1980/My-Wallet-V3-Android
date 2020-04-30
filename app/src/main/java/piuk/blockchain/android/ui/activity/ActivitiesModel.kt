@@ -52,6 +52,7 @@ class ActivitiesModel(
                         onSuccess = { process(AccountSelectedIntent(it)) },
                         onError = { process(ActivityListUpdatedErrorIntent()) }
                     )
+            is CancelSimpleBuyOrderIntent -> interactor.cancelSimpleBuyOrder(intent.orderId)
             is ShowActivityDetailsIntent,
             is ShowBankTransferDetailsIntent,
             is ShowCancelOrderIntent,

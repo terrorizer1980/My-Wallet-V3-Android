@@ -11,6 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.annotations.CommonCode
+import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -278,13 +279,17 @@ class ActivitiesFragment
     }
 
     override fun startWarnCancelSimpleBuyOrder() {
-        // TODO
-        Timber.e("----- warn cancel simple buy order")
+        model.process(ShowCancelOrderIntent)
     }
 
     override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
-        // TODO
-        Timber.e("------ cancel order confirmation")
+        if (cancelOrder && orderId != null) {
+            analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_CONFIRMED)
+            model.process(CancelSimpleBuyOrderIntent(orderId))
+        } else {
+            analytics.logEvent(SimpleBuyAnalytics.BANK_DETAILS_CANCEL_GO_BACK)
+            model.process(ShowCancelOrderIntent)
+        }
     }
 
     // SlidingModalBottomDialog.Host

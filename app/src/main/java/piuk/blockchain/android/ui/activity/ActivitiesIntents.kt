@@ -68,6 +68,12 @@ object ShowBankTransferDetailsIntent : ActivitiesIntent() {
     }
 }
 
+class CancelSimpleBuyOrderIntent(
+    val orderId: String?
+) : ActivitiesIntent() {
+    override fun reduce(oldState: ActivitiesState): ActivitiesState = oldState
+}
+
 object ShowCancelOrderIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(bottomSheet = ActivitiesSheet.BANK_ORDER_CANCEL)

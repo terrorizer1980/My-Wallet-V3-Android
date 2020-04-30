@@ -14,6 +14,7 @@ import info.blockchain.wallet.multiaddress.TransactionSummary
 import kotlinx.android.synthetic.main.dialog_activity_details_sheet.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.simplebuy.SimpleBuyActivity
 import piuk.blockchain.android.ui.activity.adapter.ActivityDetailsDelegateAdapter
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviBottomSheet
@@ -85,13 +86,11 @@ class ActivityDetailsBottomSheet :
             } else {
                 dialogView.custodial_tx_button.text = getString(R.string.activity_details_buy_again)
                 dialogView.custodial_tx_button.setOnClickListener {
-                    // TODO buy again, where does this navigate to?
+                    startActivity(SimpleBuyActivity.newInstance(requireContext()))
+                    dismiss()
                 }
             }
-            dialogView.custodial_tx_button.setOnClickListener {
-                host.onShowBankDetailsSelected()
-                dismiss()
-            }
+
             dialogView.custodial_tx_button.visible()
         }
 
@@ -122,7 +121,7 @@ class ActivityDetailsBottomSheet :
 
             dialogView.status.text = getString(when {
                 direction == TransactionSummary.Direction.SENT ||
-                direction == TransactionSummary.Direction.TRANSFERRED ->
+                    direction == TransactionSummary.Direction.TRANSFERRED ->
                     R.string.activity_details_label_confirming
                 isFeeTransaction || direction == TransactionSummary.Direction.SWAP ->
                     R.string.activity_details_label_pending
