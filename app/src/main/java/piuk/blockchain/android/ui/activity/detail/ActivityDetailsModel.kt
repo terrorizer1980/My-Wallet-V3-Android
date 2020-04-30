@@ -81,7 +81,8 @@ class ActivityDetailsModel(
     }
 
     private fun loadListDetailsForDirection(
-        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem) {
+        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
+    ) {
         val direction = nonCustodialActivitySummaryItem.direction
         when {
             nonCustodialActivitySummaryItem.isFeeTransaction ->

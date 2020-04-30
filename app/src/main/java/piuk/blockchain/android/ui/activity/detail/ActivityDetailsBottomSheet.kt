@@ -80,14 +80,18 @@ class ActivityDetailsBottomSheet :
                     getString(R.string.activity_details_view_bank_transfer_details)
                 dialogView.custodial_tx_button.setOnClickListener {
                     host.onShowBankDetailsSelected()
-                    dismiss()                }
+                    dismiss()
+                }
             } else {
                 dialogView.custodial_tx_button.text = getString(R.string.activity_details_buy_again)
                 dialogView.custodial_tx_button.setOnClickListener {
                     // TODO buy again, where does this navigate to?
                 }
             }
-
+            dialogView.custodial_tx_button.setOnClickListener {
+                host.onShowBankDetailsSelected()
+                dismiss()
+            }
             dialogView.custodial_tx_button.visible()
         }
 

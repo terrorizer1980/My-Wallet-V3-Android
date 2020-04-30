@@ -301,7 +301,6 @@ class ActivitiesFragment
     }
 }
 
-
 /**
  * supportsPredictiveItemAnimations = false to avoid crashes when computing changes.
  */
