@@ -62,6 +62,18 @@ object ShowAccountSelectionIntent : ActivitiesIntent() {
     }
 }
 
+object ShowBankTransferDetailsIntent : ActivitiesIntent() {
+    override fun reduce(oldState: ActivitiesState): ActivitiesState {
+        return oldState.copy(bottomSheet = ActivitiesSheet.BANK_TRANSFER_DETAILS)
+    }
+}
+
+object ShowCancelOrderIntent : ActivitiesIntent() {
+    override fun reduce(oldState: ActivitiesState): ActivitiesState {
+        return oldState.copy(bottomSheet = ActivitiesSheet.BANK_ORDER_CANCEL)
+    }
+}
+
 class ShowActivityDetailsIntent(
     val cryptoCurrency: CryptoCurrency,
     val txHash: String,
@@ -81,6 +93,7 @@ object ClearBottomSheetIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState =
         oldState.copy(bottomSheet = null,
             selectedCryptoCurrency = null,
-            selectedTxId = ""
+            selectedTxId = "",
+            isCustodial = false
         )
 }

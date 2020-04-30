@@ -24,9 +24,11 @@ import piuk.blockchain.android.R
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.coincore.isCustodial
+import piuk.blockchain.android.simplebuy.SimpleBuyCancelOrderBottomSheet
 import piuk.blockchain.android.ui.accounts.AccountSelectSheet
 import piuk.blockchain.android.ui.activity.adapter.ActivitiesDelegateAdapter
 import piuk.blockchain.android.ui.activity.detail.ActivityDetailsBottomSheet
+import piuk.blockchain.android.ui.dashboard.sheets.BankDetailsBottomSheet
 import piuk.blockchain.android.ui.home.HomeScreenMviFragment
 import piuk.blockchain.android.util.setCoinIcon
 import piuk.blockchain.androidcore.data.events.ActionEvent
@@ -42,7 +44,8 @@ import timber.log.Timber
 
 class ActivitiesFragment
     : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
-    AccountSelectSheet.Host {
+    AccountSelectSheet.Host, ActivityDetailsBottomSheet.Host, BankDetailsBottomSheet.Host,
+    SimpleBuyCancelOrderBottomSheet.Host {
     override val model: ActivitiesModel by inject()
 
     private val theAdapter: ActivitiesDelegateAdapter by lazy {
@@ -98,6 +101,12 @@ class ActivitiesFragment
                             ActivityDetailsBottomSheet.newInstance(it, newState.selectedTxId,
                                 newState.isCustodial))
                     }
+                }
+                ActivitiesSheet.BANK_TRANSFER_DETAILS -> {
+                    showBottomSheet(BankDetailsBottomSheet.newInstance())
+                }
+                ActivitiesSheet.BANK_ORDER_CANCEL -> {
+                    showBottomSheet(SimpleBuyCancelOrderBottomSheet.newInstance(false))
                 }
             }
         }
@@ -260,6 +269,24 @@ class ActivitiesFragment
         model.process(AccountSelectedIntent(account))
     }
 
+    override fun onShowBankDetailsSelected() {
+        model.process(ShowBankTransferDetailsIntent)
+    }
+
+    override fun onShowBankCancelOrder() {
+        model.process(ShowCancelOrderIntent)
+    }
+
+    override fun startWarnCancelSimpleBuyOrder() {
+        // TODO
+        Timber.e("----- warn cancel simple buy order")
+    }
+
+    override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
+        // TODO
+        Timber.e("------ cancel order confirmation")
+    }
+
     // SlidingModalBottomDialog.Host
     override fun onSheetClosed() {
         model.process(ClearBottomSheetIntent)
@@ -273,6 +300,7 @@ class ActivitiesFragment
         }
     }
 }
+
 
 /**
  * supportsPredictiveItemAnimations = false to avoid crashes when computing changes.

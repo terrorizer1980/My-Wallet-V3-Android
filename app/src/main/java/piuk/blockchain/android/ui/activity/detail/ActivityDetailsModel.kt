@@ -18,6 +18,7 @@ data class Amount(val cryptoValue: CryptoValue) : ActivityDetailsType()
 data class Fee(val feeValue: CryptoValue) : ActivityDetailsType()
 data class Value(val fiatAtExecution: FiatValue) : ActivityDetailsType()
 data class From(val fromAddress: String) : ActivityDetailsType()
+
 // TODO this will be updated to have info on what transaction the fee is for
 data class FeeForTransaction(val transactionFee: String) : ActivityDetailsType()
 data class To(val toAddress: String) : ActivityDetailsType()
@@ -55,57 +56,16 @@ class ActivityDetailsModel(
         return when (intent) {
             is LoadActivityDetailsIntent ->
                 if (intent.isCustodial) {
-                    interactor.getCustodialActivityDetails(cryptoCurrency = intent.cryptoCurrency,
-                        txHash = intent.txHash).subscribeBy(
-                        onSuccess = {
-                            process(LoadCustodialHeaderDataIntent(it))
-                            interactor.loadCustodialItems(it)
-                                .subscribeBy(
-                                onSuccess = { activityList ->
-                                    process(ListItemsLoadedIntent(activityList))
-                                },
-                                onError = {
-                                    process(ListItemsFailedToLoadIntent)
-                                }
-                            )
-                        },
-                        onError = { process(ActivityDetailsLoadFailedIntent) }
-                    )
+                    loadCustodialActivityDetails(intent)
                 } else {
-                    interactor.getNonCustodialActivityDetails(
-                        cryptoCurrency = intent.cryptoCurrency,
-                        txHash = intent.txHash).subscribeBy(
-                        onSuccess = {
-                            process(LoadNonCustodialCreationDateIntent(it))
-                            process(LoadNonCustodialHeaderDataIntent(it))
-                        },
-                        onError = { process(ActivityDetailsLoadFailedIntent) }
-                    )
+                    loadNonCustodialActivityDetails(intent)
                 }
             is LoadNonCustodialCreationDateIntent ->
                 interactor.loadCreationDate(intent.nonCustodialActivitySummaryItem).subscribeBy(
                     onSuccess = {
                         process(CreationDateLoadedIntent(it))
-                        val nonCustodialActivitySummaryItem =
-                            intent.nonCustodialActivitySummaryItem
-                        val direction = nonCustodialActivitySummaryItem.direction
-                        when {
-                            nonCustodialActivitySummaryItem.isFeeTransaction ->
-                                loadFeeTransactionItems(nonCustodialActivitySummaryItem)
-                            direction == TransactionSummary.Direction.TRANSFERRED -> TODO()
-                            direction == TransactionSummary.Direction.RECEIVED ->
-                                loadReceivedItems(nonCustodialActivitySummaryItem)
-                            direction == TransactionSummary.Direction.SENT -> {
-                                loadSentItems(nonCustodialActivitySummaryItem)
-                            }
-                            direction == TransactionSummary.Direction.BUY -> {
-                                // do nothing BUY is a custodial transaction
-                            }
-                            direction == TransactionSummary.Direction.SELL -> {
-                                // do nothing SELL is a custodial transaction
-                            }
-                            direction == TransactionSummary.Direction.SWAP -> TODO()
-                        }
+                        val nonCustodialActivitySummaryItem = intent.nonCustodialActivitySummaryItem
+                        loadListDetailsForDirection(nonCustodialActivitySummaryItem)
                     },
                     onError = {
                         process(CreationDateLoadFailedIntent)
@@ -119,6 +79,57 @@ class ActivityDetailsModel(
             is LoadNonCustodialHeaderDataIntent -> null
         }
     }
+
+    private fun loadListDetailsForDirection(
+        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem) {
+        val direction = nonCustodialActivitySummaryItem.direction
+        when {
+            nonCustodialActivitySummaryItem.isFeeTransaction ->
+                loadFeeTransactionItems(nonCustodialActivitySummaryItem)
+            direction == TransactionSummary.Direction.TRANSFERRED -> TODO()
+            direction == TransactionSummary.Direction.RECEIVED ->
+                loadReceivedItems(nonCustodialActivitySummaryItem)
+            direction == TransactionSummary.Direction.SENT -> {
+                loadSentItems(nonCustodialActivitySummaryItem)
+            }
+            direction == TransactionSummary.Direction.BUY -> {
+                // do nothing BUY is a custodial transaction
+            }
+            direction == TransactionSummary.Direction.SELL -> {
+                // do nothing SELL is a custodial transaction
+            }
+            direction == TransactionSummary.Direction.SWAP -> TODO()
+        }
+    }
+
+    private fun loadNonCustodialActivityDetails(intent: LoadActivityDetailsIntent) =
+        interactor.getNonCustodialActivityDetails(
+            cryptoCurrency = intent.cryptoCurrency,
+            txHash = intent.txHash).subscribeBy(
+            onSuccess = {
+                process(LoadNonCustodialCreationDateIntent(it))
+                process(LoadNonCustodialHeaderDataIntent(it))
+            },
+            onError = { process(ActivityDetailsLoadFailedIntent) }
+        )
+
+    private fun loadCustodialActivityDetails(intent: LoadActivityDetailsIntent) =
+        interactor.getCustodialActivityDetails(cryptoCurrency = intent.cryptoCurrency,
+            txHash = intent.txHash).subscribeBy(
+            onSuccess = {
+                process(LoadCustodialHeaderDataIntent(it))
+                interactor.loadCustodialItems(it)
+                    .subscribeBy(
+                        onSuccess = { activityList ->
+                            process(ListItemsLoadedIntent(activityList))
+                        },
+                        onError = {
+                            process(ListItemsFailedToLoadIntent)
+                        }
+                    )
+            },
+            onError = { process(ActivityDetailsLoadFailedIntent) }
+        )
 
     private fun loadFeeTransactionItems(
         nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem

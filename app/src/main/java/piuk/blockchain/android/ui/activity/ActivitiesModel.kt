@@ -12,7 +12,9 @@ import timber.log.Timber
 
 enum class ActivitiesSheet {
     ACCOUNT_SELECTOR,
-    ACTIVITY_DETAILS
+    ACTIVITY_DETAILS,
+    BANK_TRANSFER_DETAILS,
+    BANK_ORDER_CANCEL
 }
 
 data class ActivitiesState(
@@ -51,6 +53,8 @@ class ActivitiesModel(
                         onError = { process(ActivityListUpdatedErrorIntent()) }
                     )
             is ShowActivityDetailsIntent,
+            is ShowBankTransferDetailsIntent,
+            is ShowCancelOrderIntent,
             is ClearBottomSheetIntent,
             is ActivityListUpdatedIntent,
             is ActivityListUpdatedErrorIntent,

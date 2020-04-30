@@ -1,6 +1,7 @@
 package piuk.blockchain.android.ui.activity.detail
 
 import com.blockchain.android.testutils.rxInit
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
@@ -15,6 +16,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.times
+import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import java.util.Date
@@ -26,6 +28,30 @@ class ActivityDetailsModelTest {
     private var state = ActivityDetailState()
     private val scheduler = Schedulers.io()
     private val interactor: ActivityDetailsInteractor = mock()
+
+    private data class NonCustodialTestClass(
+        override val exchangeRates: ExchangeRateDataManager = mock(),
+        override val cryptoCurrency: CryptoCurrency = mock(),
+        override val txId: String = "123",
+        override val timeStampMs: Long = 1L,
+        override val totalCrypto: CryptoValue = mock(),
+        override val direction: TransactionSummary.Direction = TransactionSummary.Direction.SENT,
+        override val fee: Observable<CryptoValue> = mock(),
+        override val inputsMap: Map<String, CryptoValue> = mock(),
+        override val outputsMap: Map<String, CryptoValue> = mock(),
+        override val description: String? = "desc"
+    ) : NonCustodialActivitySummaryItem()
+
+    private val custodialItem = CustodialActivitySummaryItem(
+        exchangeRates = mock(),
+        cryptoCurrency = mock(),
+        txId = "123",
+        timeStampMs = 1L,
+        totalCrypto = mock(),
+        fundedFiat = mock(),
+        status = OrderState.FINISHED,
+        fee = mock()
+    )
 
     @get:Rule
     val rx = rxInit {
@@ -43,26 +69,13 @@ class ActivityDetailsModelTest {
         state = ActivityDetailState()
     }
 
-    data class DummyTestClass(
-        override val exchangeRates: ExchangeRateDataManager = mock(),
-        override val cryptoCurrency: CryptoCurrency = mock(),
-        override val txId: String = "123",
-        override val timeStampMs: Long = 1L,
-        override val totalCrypto: CryptoValue = mock(),
-        override val direction: TransactionSummary.Direction = TransactionSummary.Direction.SENT,
-        override val fee: Observable<CryptoValue> = mock(),
-        override val inputsMap: Map<String, CryptoValue> = mock(),
-        override val outputsMap: Map<String, CryptoValue> = mock(),
-        override val description: String? = "desc"
-    ) :
-        NonCustodialActivitySummaryItem()
-
     @Test
     fun initial_state_loads_non_custodial_details() {
-        val item = DummyTestClass()
+        val item = NonCustodialTestClass()
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
-        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(Single.just(item))
+        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(
+            Single.just(item))
 
         model.process(LoadActivityDetailsIntent(crypto, txId, false))
 
@@ -71,10 +84,13 @@ class ActivityDetailsModelTest {
 
     @Test
     fun initial_state_loads_custodial_details() {
-        val item = DummyTestClass()
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
-        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(Single.just(item))
+        whenever(interactor.getCustodialActivityDetails(crypto, txId)).thenReturn(
+            Single.just(custodialItem))
+        whenever(interactor.loadCustodialItems(custodialItem)).thenReturn(
+            Single.just(listOf())
+        )
 
         model.process(LoadActivityDetailsIntent(crypto, txId, true))
 
@@ -82,8 +98,8 @@ class ActivityDetailsModelTest {
     }
 
     @Test
-    fun load_header_data_success() {
-        val item = DummyTestClass()
+    fun load_non_custodial_header_data_success() {
+        val item = NonCustodialTestClass()
 
         val testObserver = model.state.test()
         model.process(LoadNonCustodialHeaderDataIntent(item))
@@ -100,8 +116,26 @@ class ActivityDetailsModelTest {
     }
 
     @Test
+    fun load_custodial_header_data_success() {
+        val testObserver = model.state.test()
+        model.process(LoadCustodialHeaderDataIntent(custodialItem))
+
+        Thread.sleep(200)
+
+        testObserver.assertValueAt(0, state)
+        testObserver.assertValueAt(1, state.copy(
+            direction = TransactionSummary.Direction.BUY,
+            amount = custodialItem.totalCrypto,
+            isPending = false,
+            isFeeTransaction = false,
+            confirmations = 0,
+            totalConfirmations = 0
+        ))
+    }
+
+    @Test
     fun load_creation_date_success() {
-        val item = DummyTestClass()
+        val item = NonCustodialTestClass()
         val returnDate = Date()
         whenever(interactor.loadCreationDate(item)).thenReturn(Single.just(returnDate))
         whenever(interactor.loadConfirmedSentItems(item)).thenReturn(Single.just(listOf()))
@@ -118,12 +152,13 @@ class ActivityDetailsModelTest {
     }
 
     @Test
-    fun activity_details_load_fail() {
+    fun non_custodial_activity_details_load_fail() {
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
         val issue = MissingResourceException("Could not find the activity item",
             NonCustodialActivitySummaryItem::class.simpleName, "")
-        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(Single.error(issue))
+        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(
+            Single.error(issue))
 
         val testObserver = model.state.test()
         model.process(LoadActivityDetailsIntent(crypto, txId, false))
@@ -133,5 +168,43 @@ class ActivityDetailsModelTest {
 
         testObserver.assertValueAt(0, state)
         testObserver.assertValueAt(1, state.copy(isError = true))
+    }
+
+    @Test
+    fun custodial_activity_details_load_fail() {
+        val crypto = CryptoCurrency.BCH
+        val txId = "123455"
+        val issue = MissingResourceException("Could not find the activity item",
+            CustodialActivitySummaryItem::class.simpleName, "")
+        whenever(interactor.getCustodialActivityDetails(crypto, txId)).thenReturn(
+            Single.error(issue))
+
+        val testObserver = model.state.test()
+        model.process(LoadActivityDetailsIntent(crypto, txId, true))
+
+        // need to wait for next intent to fire
+        Thread.sleep(200)
+
+        testObserver.assertValueAt(0, state)
+        testObserver.assertValueAt(1, state.copy(isError = true))
+    }
+
+    @Test
+    fun load_activity_items_success() {
+        val list = listOf(Fee(mock()), Amount(mock()), To(""), From(""))
+
+        val currentList = state.listOfItems.toMutableSet()
+        currentList.addAll(list.toSet())
+
+        val testObserver = model.state.test()
+        model.process(ListItemsLoadedIntent(list))
+
+        // need to wait for next intent to fire
+        Thread.sleep(200)
+
+        testObserver.assertValueAt(0, state)
+        testObserver.assertValueAt(1, state.copy(
+            listOfItems = currentList
+        ))
     }
 }

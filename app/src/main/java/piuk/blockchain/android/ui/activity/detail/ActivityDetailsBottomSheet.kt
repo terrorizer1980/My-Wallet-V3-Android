@@ -15,11 +15,23 @@ import kotlinx.android.synthetic.main.dialog_activity_details_sheet.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.activity.adapter.ActivityDetailsDelegateAdapter
+import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviBottomSheet
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 
 class ActivityDetailsBottomSheet :
     MviBottomSheet<ActivityDetailsModel, ActivityDetailsIntents, ActivityDetailState>() {
+
+    interface Host : SlidingModalBottomDialog.Host {
+        fun onShowBankDetailsSelected()
+        fun onShowBankCancelOrder()
+    }
+
+    override val host: Host by lazy {
+        super.host as? Host
+            ?: throw IllegalStateException("Host fragment is not a ActivityDetailsBottomSheet.Host")
+    }
+
     override val layoutResource: Int
         get() = R.layout.dialog_activity_details_sheet
 
@@ -64,16 +76,18 @@ class ActivityDetailsBottomSheet :
 
         if (newState.direction == TransactionSummary.Direction.BUY) {
             if (newState.isPending || newState.isPendingExecution) {
-                dialogView.custodial_tx_button.text = getString(R.string.activity_details_view_bank_transfer_details)
-                dialogView.setOnClickListener {
-                    // TODO open new sheet with bank details
-                }
+                dialogView.custodial_tx_button.text =
+                    getString(R.string.activity_details_view_bank_transfer_details)
+                dialogView.custodial_tx_button.setOnClickListener {
+                    host.onShowBankDetailsSelected()
+                    dismiss()                }
             } else {
                 dialogView.custodial_tx_button.text = getString(R.string.activity_details_buy_again)
-                dialogView.setOnClickListener {
-                    // TODO buy again
+                dialogView.custodial_tx_button.setOnClickListener {
+                    // TODO buy again, where does this navigate to?
                 }
             }
+
             dialogView.custodial_tx_button.visible()
         }
 
@@ -133,7 +147,8 @@ class ActivityDetailsBottomSheet :
     }
 
     private fun onCancelActionItemClicked() {
-        // TODO
+        host.onShowBankCancelOrder()
+        dismiss()
     }
 
     private fun onActionItemClicked() {
