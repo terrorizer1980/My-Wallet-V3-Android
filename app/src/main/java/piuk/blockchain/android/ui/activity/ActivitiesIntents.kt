@@ -69,7 +69,7 @@ object ShowBankTransferDetailsIntent : ActivitiesIntent() {
 }
 
 class CancelSimpleBuyOrderIntent(
-    val orderId: String?
+    val orderId: String
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState = oldState
 }

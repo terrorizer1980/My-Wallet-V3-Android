@@ -64,35 +64,38 @@ class ActivityDetailsBottomSheet :
     }
 
     override fun render(newState: ActivityDetailState) {
-        dialogView.title.text = if (newState.isFeeTransaction) {
-            getString(R.string.activity_details_title_fee)
-        } else {
-            mapToAction(newState.direction)
+        dialogView.apply {
+            title.text = if (newState.isFeeTransaction) {
+                getString(R.string.activity_details_title_fee)
+            } else {
+                mapToAction(newState.direction)
+            }
+            amount.text = newState.amount?.toStringWithSymbol()
+
+            if (newState.direction == TransactionSummary.Direction.BUY) {
+                if (newState.isPending || newState.isPendingExecution) {
+                    custodial_tx_button.text =
+                        getString(R.string.activity_details_view_bank_transfer_details)
+                    custodial_tx_button.setOnClickListener {
+                        host.onShowBankDetailsSelected()
+                        dismiss()
+                    }
+                } else {
+                    custodial_tx_button.text =
+                        getString(R.string.activity_details_buy_again)
+                    custodial_tx_button.setOnClickListener {
+                        startActivity(SimpleBuyActivity.newInstance(requireContext()))
+                        dismiss()
+                    }
+                }
+
+                custodial_tx_button.visible()
+            }
         }
-        dialogView.amount.text = newState.amount?.toStringWithSymbol()
 
         renderCompletedOrPending(newState.isPending, newState.isPendingExecution,
             newState.confirmations, newState.totalConfirmations, newState.direction,
             newState.isFeeTransaction)
-
-        if (newState.direction == TransactionSummary.Direction.BUY) {
-            if (newState.isPending || newState.isPendingExecution) {
-                dialogView.custodial_tx_button.text =
-                    getString(R.string.activity_details_view_bank_transfer_details)
-                dialogView.custodial_tx_button.setOnClickListener {
-                    host.onShowBankDetailsSelected()
-                    dismiss()
-                }
-            } else {
-                dialogView.custodial_tx_button.text = getString(R.string.activity_details_buy_again)
-                dialogView.custodial_tx_button.setOnClickListener {
-                    startActivity(SimpleBuyActivity.newInstance(requireContext()))
-                    dismiss()
-                }
-            }
-
-            dialogView.custodial_tx_button.visible()
-        }
 
         if (listAdapter.items != newState.listOfItems) {
             listAdapter.items = newState.listOfItems.toList()
@@ -108,41 +111,43 @@ class ActivityDetailsBottomSheet :
         direction: TransactionSummary.Direction?,
         isFeeTransaction: Boolean
     ) {
-        if (pending || pendingExecution) {
-            if (confirmations != totalConfirmations) {
-                dialogView.confirmation_label.text =
-                    getString(R.string.activity_details_label_confirmations, confirmations,
-                        totalConfirmations)
-                dialogView.confirmation_progress.setProgress(
-                    (confirmations / totalConfirmations.toFloat()) * 100)
-                dialogView.confirmation_label.visible()
-                dialogView.confirmation_progress.visible()
-            }
+        dialogView.apply {
+            if (pending || pendingExecution) {
+                if (confirmations != totalConfirmations) {
+                    confirmation_label.text =
+                        getString(R.string.activity_details_label_confirmations, confirmations,
+                            totalConfirmations)
+                    confirmation_progress.setProgress(
+                        (confirmations / totalConfirmations.toFloat()) * 100)
+                    confirmation_label.visible()
+                    confirmation_progress.visible()
+                }
 
-            dialogView.status.text = getString(when {
-                direction == TransactionSummary.Direction.SENT ||
-                    direction == TransactionSummary.Direction.TRANSFERRED ->
-                    R.string.activity_details_label_confirming
-                isFeeTransaction || direction == TransactionSummary.Direction.SWAP ->
-                    R.string.activity_details_label_pending
-                direction == TransactionSummary.Direction.BUY ->
-                    if (pending && !pendingExecution) {
-                        R.string.activity_details_label_waiting_on_funds
-                    } else {
-                        R.string.activity_details_label_pending_execution
-                    }
-                else -> R.string.activity_details_empty
-            })
-            dialogView.status.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_unconfirmed)
-            dialogView.status.setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.grey_800))
-        } else {
-            dialogView.status.text = getString(R.string.activity_details_label_complete)
-            dialogView.status.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_received)
-            dialogView.status.setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.green_600))
+                status.text = getString(when {
+                    direction == TransactionSummary.Direction.SENT ||
+                        direction == TransactionSummary.Direction.TRANSFERRED ->
+                        R.string.activity_details_label_confirming
+                    isFeeTransaction || direction == TransactionSummary.Direction.SWAP ->
+                        R.string.activity_details_label_pending
+                    direction == TransactionSummary.Direction.BUY ->
+                        if (pending && !pendingExecution) {
+                            R.string.activity_details_label_waiting_on_funds
+                        } else {
+                            R.string.activity_details_label_pending_execution
+                        }
+                    else -> R.string.activity_details_empty
+                })
+                status.background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_unconfirmed)
+                status.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.grey_800))
+            } else {
+                status.text = getString(R.string.activity_details_label_complete)
+                status.background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_received)
+                status.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.green_600))
+            }
         }
     }
 

@@ -20,20 +20,21 @@ class ActivityDetailsInteractor(
     fun loadCustodialItems(
         custodialActivitySummaryItem: CustodialActivitySummaryItem
     ): Single<List<ActivityDetailsType>> {
-        val list = mutableListOf<ActivityDetailsType>()
-        list.add(BuyTransactionId(custodialActivitySummaryItem.txId))
-        list.add(Created(Date(custodialActivitySummaryItem.timeStampMs)))
-        list.add(BuyPurchaseAmount(custodialActivitySummaryItem.fundedFiat))
-        list.add(BuyCryptoWallet(custodialActivitySummaryItem.cryptoCurrency))
-        list.add(BuyFee(custodialActivitySummaryItem.fee))
-
-        // TODO this will change when we add cards, but for now it's the only supported type
-        list.add(BuyPaymentMethod("Bank Wire Transfer"))
+        val list = mutableListOf(
+            BuyTransactionId(custodialActivitySummaryItem.txId),
+                Created(Date(custodialActivitySummaryItem.timeStampMs)),
+                BuyPurchaseAmount(custodialActivitySummaryItem.fundedFiat),
+                BuyCryptoWallet(custodialActivitySummaryItem.cryptoCurrency),
+                BuyFee(custodialActivitySummaryItem.fee),
+                // TODO this will change when we add cards, but for now it's the only supported type
+                BuyPaymentMethod("Bank Wire Transfer")
+        )
         if (custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS ||
             custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION) {
             list.add(CancelAction())
         }
-        return Single.just(list)
+
+        return Single.just(list.toList())
     }
 
     fun getCustodialActivityDetails(

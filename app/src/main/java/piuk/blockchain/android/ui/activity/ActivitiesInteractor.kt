@@ -4,7 +4,6 @@ import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -25,9 +24,8 @@ class ActivitiesInteractor(
     fun getDefaultAccount(): Single<CryptoAccount> =
         Single.just(coincore.allWallets)
 
-    fun cancelSimpleBuyOrder(orderId: String?): Disposable? {
-        return orderId?.let {
-            custodialWalletManager.deleteBuyOrder(it)
+    fun cancelSimpleBuyOrder(orderId: String): Disposable? {
+        return custodialWalletManager.deleteBuyOrder(orderId)
                 .subscribeBy(
                     onComplete = { simpleBuyPrefs.clearState() },
                     onError = { error ->
@@ -35,9 +33,6 @@ class ActivitiesInteractor(
                         Timber.e(error)
                     }
                 )
-        } ?: Completable.complete()
-            .subscribeBy(
-                onComplete = { simpleBuyPrefs.clearState() }
-            )
+
     }
 }
