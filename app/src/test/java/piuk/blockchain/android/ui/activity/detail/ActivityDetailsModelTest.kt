@@ -104,6 +104,9 @@ class ActivityDetailsModelTest {
         val testObserver = model.state.test()
         model.process(LoadNonCustodialHeaderDataIntent(item))
 
+        // need to wait for next intent to fire
+        Thread.sleep(200)
+
         testObserver.assertValueAt(0, state)
         testObserver.assertValueAt(1, state.copy(
             direction = item.direction,
@@ -120,6 +123,7 @@ class ActivityDetailsModelTest {
         val testObserver = model.state.test()
         model.process(LoadCustodialHeaderDataIntent(custodialItem))
 
+        // need to wait for next intent to fire
         Thread.sleep(200)
 
         testObserver.assertValueAt(0, state)
@@ -144,6 +148,9 @@ class ActivityDetailsModelTest {
         model.process(LoadNonCustodialCreationDateIntent(item))
 
         verify(interactor, times(1)).loadCreationDate(item)
+
+        // need to wait for next intent to fire
+        Thread.sleep(200)
 
         val list = state.listOfItems.toMutableSet()
         list.add(Created(returnDate))
