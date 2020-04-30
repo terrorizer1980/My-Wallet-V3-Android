@@ -43,7 +43,7 @@ class LoadNonCustodialHeaderDataIntent(
         return oldState.copy(
             direction = nonCustodialActivitySummaryItem.direction,
             amount = nonCustodialActivitySummaryItem.totalCrypto,
-            isPending = nonCustodialActivitySummaryItem.isPending,
+            isPending = !nonCustodialActivitySummaryItem.isConfirmed,
             isFeeTransaction = nonCustodialActivitySummaryItem.isFeeTransaction,
             confirmations = nonCustodialActivitySummaryItem.confirmations,
             totalConfirmations = nonCustodialActivitySummaryItem.cryptoCurrency.requiredConfirmations

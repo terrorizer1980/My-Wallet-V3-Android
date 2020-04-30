@@ -121,7 +121,8 @@ class ActivityDetailsBottomSheet :
             }
 
             dialogView.status.text = getString(when {
-                direction == TransactionSummary.Direction.SENT ->
+                direction == TransactionSummary.Direction.SENT ||
+                direction == TransactionSummary.Direction.TRANSFERRED ->
                     R.string.activity_details_label_confirming
                 isFeeTransaction || direction == TransactionSummary.Direction.SWAP ->
                     R.string.activity_details_label_pending

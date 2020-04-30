@@ -87,7 +87,8 @@ class ActivityDetailsModel(
         when {
             nonCustodialActivitySummaryItem.isFeeTransaction ->
                 loadFeeTransactionItems(nonCustodialActivitySummaryItem)
-            direction == TransactionSummary.Direction.TRANSFERRED -> TODO()
+            direction == TransactionSummary.Direction.TRANSFERRED ->
+                loadTransferItems(nonCustodialActivitySummaryItem)
             direction == TransactionSummary.Direction.RECEIVED ->
                 loadReceivedItems(nonCustodialActivitySummaryItem)
             direction == TransactionSummary.Direction.SENT -> {
@@ -149,6 +150,19 @@ class ActivityDetailsModel(
         nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
     ) =
         interactor.loadReceivedItems(nonCustodialActivitySummaryItem)
+            .subscribeBy(
+                onSuccess = { activityItemList ->
+                    process(ListItemsLoadedIntent(activityItemList))
+                },
+                onError = {
+                    process(ListItemsFailedToLoadIntent)
+                }
+            )
+
+    private fun loadTransferItems(
+        nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
+    ) =
+        interactor.loadTransferItems(nonCustodialActivitySummaryItem)
             .subscribeBy(
                 onSuccess = { activityItemList ->
                     process(ListItemsLoadedIntent(activityItemList))

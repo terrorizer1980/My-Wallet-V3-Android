@@ -105,6 +105,22 @@ class ActivityDetailsInteractor(
         }
     }
 
+    fun loadTransferItems(
+        item: NonCustodialActivitySummaryItem
+    ): Single<List<ActivityDetailsType>> {
+        val list = mutableListOf<ActivityDetailsType>()
+        list.add(Amount(item.totalCrypto))
+        return item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
+            list.add(Value(fiatValue))
+            transactionInputOutputMapper.transformInputAndOutputs(item).map {
+                addSingleOrMultipleAddresses(it, list)
+                list.add(Description())
+                list.add(Action())
+                list
+            }
+        }
+    }
+
     fun loadConfirmedSentItems(
         item: NonCustodialActivitySummaryItem
     ): Single<List<ActivityDetailsType>> {
@@ -144,15 +160,15 @@ class ActivityDetailsInteractor(
         it: TransactionInOutDetails,
         list: MutableList<ActivityDetailsType>
     ) {
-        if (it.outputs.size == 1) {
-            list.add(To(it.outputs[0].address))
-        } else {
-            list.add(To(it.outputs.joinToString("\n")))
-        }
         if (it.inputs.size == 1) {
             list.add(From(it.inputs[0].address))
         } else {
             list.add(From(it.inputs.joinToString("\n")))
+        }
+        if (it.outputs.size == 1) {
+            list.add(To(it.outputs[0].address))
+        } else {
+            list.add(To(it.outputs.joinToString("\n")))
         }
     }
 }
