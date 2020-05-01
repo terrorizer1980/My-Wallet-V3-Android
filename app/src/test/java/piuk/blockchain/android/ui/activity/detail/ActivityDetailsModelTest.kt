@@ -138,7 +138,7 @@ class ActivityDetailsModelTest {
     fun load_creation_date_success() {
         val item = NonCustodialTestClass()
         val returnDate = Date()
-        whenever(interactor.loadCreationDate(item)).thenReturn(Single.just(returnDate))
+        whenever(interactor.loadCreationDate(item)).thenReturn(returnDate)
         whenever(interactor.loadConfirmedSentItems(item)).thenReturn(Single.just(listOf()))
 
         val testObserver = model.state.test()

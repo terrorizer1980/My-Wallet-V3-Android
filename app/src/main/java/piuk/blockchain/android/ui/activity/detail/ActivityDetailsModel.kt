@@ -62,16 +62,17 @@ class ActivityDetailsModel(
                 }
                 null
             }
-            is LoadNonCustodialCreationDateIntent ->
-                interactor.loadCreationDate(intent.nonCustodialActivitySummaryItem).subscribeBy(
-                    onSuccess = {
-                        process(CreationDateLoadedIntent(it))
-                        val nonCustodialActivitySummaryItem = intent.nonCustodialActivitySummaryItem
-                        loadListDetailsForDirection(nonCustodialActivitySummaryItem)
-                    },
-                    onError = {
-                        process(CreationDateLoadFailedIntent)
-                    })
+            is LoadNonCustodialCreationDateIntent -> {
+                val activityDate =
+                    interactor.loadCreationDate(intent.nonCustodialActivitySummaryItem)
+                activityDate?.let {
+                    process(CreationDateLoadedIntent(activityDate))
+
+                    val nonCustodialActivitySummaryItem = intent.nonCustodialActivitySummaryItem
+                    loadListDetailsForDirection(nonCustodialActivitySummaryItem)
+                } ?: process(CreationDateLoadFailedIntent)
+                null
+            }
             is ListItemsFailedToLoadIntent,
             is ListItemsLoadedIntent,
             is CreationDateLoadedIntent,
@@ -110,8 +111,8 @@ class ActivityDetailsModel(
         interactor.getNonCustodialActivityDetails(
             cryptoCurrency = intent.cryptoCurrency,
             txHash = intent.txHash)?.let {
-                process(LoadNonCustodialCreationDateIntent(it))
-                process(LoadNonCustodialHeaderDataIntent(it))
+            process(LoadNonCustodialCreationDateIntent(it))
+            process(LoadNonCustodialHeaderDataIntent(it))
         } ?: process(ActivityDetailsLoadFailedIntent)
 
     private fun loadCustodialActivityDetails(intent: LoadActivityDetailsIntent) =
