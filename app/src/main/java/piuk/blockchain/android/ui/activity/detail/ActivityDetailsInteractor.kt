@@ -9,7 +9,6 @@ import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import java.util.Date
-import java.util.MissingResourceException
 
 class ActivityDetailsInteractor(
     private val coincore: Coincore,
@@ -22,12 +21,12 @@ class ActivityDetailsInteractor(
     ): Single<List<ActivityDetailsType>> {
         val list = mutableListOf(
             BuyTransactionId(custodialActivitySummaryItem.txId),
-                Created(Date(custodialActivitySummaryItem.timeStampMs)),
-                BuyPurchaseAmount(custodialActivitySummaryItem.fundedFiat),
-                BuyCryptoWallet(custodialActivitySummaryItem.cryptoCurrency),
-                BuyFee(custodialActivitySummaryItem.fee),
-                // TODO this will change when we add cards, but for now it's the only supported type
-                BuyPaymentMethod("Bank Wire Transfer")
+            Created(Date(custodialActivitySummaryItem.timeStampMs)),
+            BuyPurchaseAmount(custodialActivitySummaryItem.fundedFiat),
+            BuyCryptoWallet(custodialActivitySummaryItem.cryptoCurrency),
+            BuyFee(custodialActivitySummaryItem.fee),
+            // TODO this will change when we add cards, but for now it's the only supported type
+            BuyPaymentMethod("Bank Wire Transfer")
         )
         if (custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS ||
             custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION) {
@@ -40,30 +39,16 @@ class ActivityDetailsInteractor(
     fun getCustodialActivityDetails(
         cryptoCurrency: CryptoCurrency,
         txHash: String
-    ): Single<CustodialActivitySummaryItem> {
-        val item = coincore[cryptoCurrency].findCachedActivityItem(
-            txHash
-        ) as? CustodialActivitySummaryItem
-
-        return item?.run {
-            Single.just(this)
-        } ?: Single.error(MissingResourceException("Could not find the custodial activity item",
-            CustodialActivitySummaryItem::class.simpleName, ""))
-    }
+    ): CustodialActivitySummaryItem? = coincore[cryptoCurrency].findCachedActivityItem(
+        txHash
+    ) as? CustodialActivitySummaryItem
 
     fun getNonCustodialActivityDetails(
         cryptoCurrency: CryptoCurrency,
         txHash: String
-    ): Single<NonCustodialActivitySummaryItem> {
-        val item = coincore[cryptoCurrency].findCachedActivityItem(
-            txHash
-        ) as? NonCustodialActivitySummaryItem
-
-        return item?.run {
-            Single.just(this)
-        } ?: Single.error(MissingResourceException("Could not find the noncustodial activity item",
-            NonCustodialActivitySummaryItem::class.simpleName, ""))
-    }
+    ): NonCustodialActivitySummaryItem? = coincore[cryptoCurrency].findCachedActivityItem(
+        txHash
+    ) as? NonCustodialActivitySummaryItem
 
     fun loadCreationDate(
         activitySummaryItem: ActivitySummaryItem

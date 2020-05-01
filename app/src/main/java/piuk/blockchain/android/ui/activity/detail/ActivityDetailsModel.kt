@@ -54,12 +54,14 @@ class ActivityDetailsModel(
         intent: ActivityDetailsIntents
     ): Disposable? {
         return when (intent) {
-            is LoadActivityDetailsIntent ->
+            is LoadActivityDetailsIntent -> {
                 if (intent.isCustodial) {
                     loadCustodialActivityDetails(intent)
                 } else {
                     loadNonCustodialActivityDetails(intent)
                 }
+                null
+            }
             is LoadNonCustodialCreationDateIntent ->
                 interactor.loadCreationDate(intent.nonCustodialActivitySummaryItem).subscribeBy(
                     onSuccess = {
@@ -107,29 +109,23 @@ class ActivityDetailsModel(
     private fun loadNonCustodialActivityDetails(intent: LoadActivityDetailsIntent) =
         interactor.getNonCustodialActivityDetails(
             cryptoCurrency = intent.cryptoCurrency,
-            txHash = intent.txHash).subscribeBy(
-            onSuccess = {
+            txHash = intent.txHash)?.let {
                 process(LoadNonCustodialCreationDateIntent(it))
                 process(LoadNonCustodialHeaderDataIntent(it))
-            },
-            onError = { process(ActivityDetailsLoadFailedIntent) }
-        )
+        } ?: process(ActivityDetailsLoadFailedIntent)
 
     private fun loadCustodialActivityDetails(intent: LoadActivityDetailsIntent) =
         interactor.getCustodialActivityDetails(cryptoCurrency = intent.cryptoCurrency,
-            txHash = intent.txHash)
-            .doOnSuccess {
-                process(LoadCustodialHeaderDataIntent(it))
-            }.flatMap {
-                interactor.loadCustodialItems(it)
-            }.subscribeBy(
+            txHash = intent.txHash)?.let {
+            process(LoadCustodialHeaderDataIntent(it))
+            interactor.loadCustodialItems(it).subscribeBy(
                 onSuccess = { activityList ->
                     process(ListItemsLoadedIntent(activityList))
                 },
                 onError = {
                     process(ListItemsFailedToLoadIntent)
-                }
-            )
+                })
+        } ?: process(ActivityDetailsLoadFailedIntent)
 
     private fun loadFeeTransactionItems(
         nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem

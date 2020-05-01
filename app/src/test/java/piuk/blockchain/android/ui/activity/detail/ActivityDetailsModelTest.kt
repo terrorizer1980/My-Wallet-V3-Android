@@ -20,7 +20,6 @@ import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import java.util.Date
-import java.util.MissingResourceException
 
 class ActivityDetailsModelTest {
 
@@ -74,8 +73,7 @@ class ActivityDetailsModelTest {
         val item = NonCustodialTestClass()
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
-        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(
-            Single.just(item))
+        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(item)
 
         model.process(LoadActivityDetailsIntent(crypto, txId, false))
 
@@ -86,8 +84,7 @@ class ActivityDetailsModelTest {
     fun initial_state_loads_custodial_details() {
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
-        whenever(interactor.getCustodialActivityDetails(crypto, txId)).thenReturn(
-            Single.just(custodialItem))
+        whenever(interactor.getCustodialActivityDetails(crypto, txId)).thenReturn(custodialItem)
         whenever(interactor.loadCustodialItems(custodialItem)).thenReturn(
             Single.just(listOf())
         )
@@ -162,10 +159,7 @@ class ActivityDetailsModelTest {
     fun non_custodial_activity_details_load_fail() {
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
-        val issue = MissingResourceException("Could not find the activity item",
-            NonCustodialActivitySummaryItem::class.simpleName, "")
-        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(
-            Single.error(issue))
+        whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(null)
 
         val testObserver = model.state.test()
         model.process(LoadActivityDetailsIntent(crypto, txId, false))
@@ -181,10 +175,7 @@ class ActivityDetailsModelTest {
     fun custodial_activity_details_load_fail() {
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
-        val issue = MissingResourceException("Could not find the activity item",
-            CustodialActivitySummaryItem::class.simpleName, "")
-        whenever(interactor.getCustodialActivityDetails(crypto, txId)).thenReturn(
-            Single.error(issue))
+        whenever(interactor.getCustodialActivityDetails(crypto, txId)).thenReturn(null)
 
         val testObserver = model.state.test()
         model.process(LoadActivityDetailsIntent(crypto, txId, true))
