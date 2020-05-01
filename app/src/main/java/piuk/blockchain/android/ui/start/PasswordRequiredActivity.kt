@@ -24,9 +24,6 @@ import piuk.blockchain.androidcoreui.utils.ViewUtils
 class PasswordRequiredActivity : MvpActivity<PasswordRequiredView, PasswordRequiredPresenter>(),
     PasswordRequiredView {
 
-    override val password: String
-        get() = field_password.text.toString()
-
     override val presenter: PasswordRequiredPresenter by inject()
     override val view: PasswordRequiredView = this
 
@@ -39,13 +36,13 @@ class PasswordRequiredActivity : MvpActivity<PasswordRequiredView, PasswordRequi
         setupToolbar(toolbar, R.string.confirm_password)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
-        button_continue.setOnClickListener { presenter.onContinueClicked() }
+        button_continue.setOnClickListener { presenter.onContinueClicked(field_password.text.toString()) }
         button_forget.setOnClickListener { presenter.onForgetWalletClicked() }
         button_recover.setOnClickListener { launchRecoveryFlow() }
     }
 
-    override fun showToast(@StringRes message: Int, @ToastCustom.ToastType toastType: String) {
-        ToastCustom.makeText(this, getString(message), ToastCustom.LENGTH_SHORT, toastType)
+    override fun showToast(@StringRes messageId: Int, @ToastCustom.ToastType toastType: String) {
+        ToastCustom.makeText(this, getString(messageId), ToastCustom.LENGTH_SHORT, toastType)
     }
 
     override fun restartPage() {
@@ -65,13 +62,13 @@ class PasswordRequiredActivity : MvpActivity<PasswordRequiredView, PasswordRequi
     override fun updateWaitingForAuthDialog(secondsRemaining: Int) =
         updateProgressDialog(getString(R.string.check_email_to_auth_login) + " " + secondsRemaining)
 
-    override fun showForgetWalletWarning(callback: DialogButtonCallback) {
+    override fun showForgetWalletWarning(onForgetConfirmed: () -> Unit) {
         showAlert(
             AlertDialog.Builder(this, R.style.AlertDialogStyle)
             .setTitle(R.string.warning)
             .setMessage(R.string.forget_wallet_warning)
-            .setPositiveButton(R.string.forget_wallet) { _, _ -> callback.onPositiveClicked() }
-            .setNegativeButton(android.R.string.cancel) { _, _ -> callback.onNegativeClicked() }
+            .setPositiveButton(R.string.forget_wallet) { _, _ -> onForgetConfirmed() }
+            .setNegativeButton(android.R.string.cancel) { _, _ ->  }
             .create()
         )
     }
@@ -80,6 +77,7 @@ class PasswordRequiredActivity : MvpActivity<PasswordRequiredView, PasswordRequi
         responseObject: JSONObject,
         sessionId: String,
         authType: Int,
+        guid: String,
         password: String
     ) {
         ViewUtils.hideKeyboard(this)
@@ -108,6 +106,7 @@ class PasswordRequiredActivity : MvpActivity<PasswordRequiredView, PasswordRequi
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     presenter.submitTwoFactorCode(responseObject,
                         sessionId,
+                        guid,
                         password,
                         editText.text.toString())
                 }
@@ -118,6 +117,7 @@ class PasswordRequiredActivity : MvpActivity<PasswordRequiredView, PasswordRequi
 
     override fun onDestroy() {
         dismissProgressDialog()
+        presenter.cancelAuthTimer()
         super.onDestroy()
     }
 

@@ -28,10 +28,10 @@ class ManualPairingActivity : MvpActivity<ManualPairingView, ManualPairingPresen
     override val view: ManualPairingView = this
     override val presenter: ManualPairingPresenter by inject()
 
-    override val guid: String
-        get() = wallet_id.text.toString()
-    override val password: String
-        get() = wallet_pass.text.toString()
+    private val guid: String = "8441995c-d852-44fc-9a29-bc351ab26bf2"
+//        get() = wallet_id.text.toString()
+    private  val password: String = "blockchain"
+//        get() = wallet_pass.text.toString()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +40,11 @@ class ManualPairingActivity : MvpActivity<ManualPairingView, ManualPairingPresen
         val toolbar = findViewById<Toolbar>(R.id.toolbar_general)
         setupToolbar(toolbar, R.string.manual_pairing)
 
-        command_next.setOnClickListener { presenter.onContinueClicked() }
+        command_next.setOnClickListener { presenter.onContinueClicked(guid, password) }
 
         wallet_pass.setOnEditorActionListener { _, i, _ ->
             if (i == EditorInfo.IME_ACTION_GO) {
-                presenter.onContinueClicked()
+                presenter.onContinueClicked(guid, password)
             }
             true
         }
@@ -124,7 +124,7 @@ class ManualPairingActivity : MvpActivity<ManualPairingView, ManualPairingPresen
             imm.hideSoftInputFromWindow(it.windowToken, 0)
         }
         dismissProgressDialog()
-        presenter.onViewDestroyed()
+        presenter.cancelAuthTimer()
         super.onDestroy()
     }
 }

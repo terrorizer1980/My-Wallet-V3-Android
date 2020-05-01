@@ -148,7 +148,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
 
         guidPref.onClick {
             showDialogGuid()
-            analytics.logEvent(SettingsAnalyticsEvents.WappetIdCopyClicked)
+            analytics.logEvent(SettingsAnalyticsEvents.WalletIdCopyClicked)
         }
         emailPref.onClick {
             onUpdateEmailClicked()
@@ -562,7 +562,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView {
                 val clip = ClipData.newPlainText("guid", guidPref!!.summary)
                 clipboard.primaryClip = clip
                 showCustomToast(R.string.copied_to_clipboard)
-                analytics.logEvent(SettingsAnalyticsEvents.WappetIdCopyCopied)
+                analytics.logEvent(SettingsAnalyticsEvents.WalletIdCopyCopied)
             }
             .setNegativeButton(R.string.no, null)
             .show()

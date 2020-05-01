@@ -19,6 +19,7 @@ import piuk.blockchain.androidcore.utils.PersistentPrefs
 import piuk.blockchain.androidcore.utils.PrngFixer
 import piuk.blockchain.androidcore.utils.extensions.applySchedulers
 import retrofit2.Response
+import timber.log.Timber
 import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
 
@@ -126,7 +127,6 @@ class AuthDataManager(
         timer = 2 * 60
 
         return Observable.interval(0, 1, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
             .map { timer-- }
             .takeUntil { timer < 0 }
     }

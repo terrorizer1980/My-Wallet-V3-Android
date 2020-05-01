@@ -11,7 +11,6 @@ import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
 
 class SimpleBuyAvailabilityTest {
 
-    private val simpleBuyPrefs: SimpleBuyPrefs = mock()
     private val simpleBuyFlag: FeatureFlag = mock()
     private val buyDataManager: BuyDataManager = mock()
 
