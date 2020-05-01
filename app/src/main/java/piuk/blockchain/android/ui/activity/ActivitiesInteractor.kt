@@ -33,6 +33,5 @@ class ActivitiesInteractor(
                         Timber.e(error)
                     }
                 )
-
     }
 }

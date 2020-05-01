@@ -137,8 +137,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
             expires = Date(),
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -171,8 +169,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
             expires = Date(),
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -207,8 +203,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
             expires = MIDDLE_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -220,8 +214,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
             expires = LAST_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -233,8 +225,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
             expires = EARLY_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -273,8 +263,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.CANCELED,
             expires = MIDDLE_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -286,8 +274,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
             expires = LAST_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -299,8 +285,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.FINISHED,
             expires = EARLY_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -312,8 +296,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.FAILED,
             expires = EARLY_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -352,8 +334,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
             expires = MIDDLE_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -365,8 +345,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
             expires = LAST_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -378,8 +356,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
             expires = EARLY_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -430,8 +406,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.FINISHED,
             expires = LAST_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -480,8 +454,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
             expires = LAST_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -530,8 +502,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
             expires = MIDDLE_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -622,8 +592,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
             expires = LAST_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -663,8 +631,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
             expires = LAST_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -704,8 +670,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.FINISHED,
             expires = LAST_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -745,8 +709,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.CANCELED,
             expires = LAST_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )
@@ -786,8 +748,6 @@ class SimpleBuySyncFactoryTest {
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.FAILED,
             expires = LAST_ORDER_DATE,
-            updated = Date(),
-            created = Date(),
             fee = FiatValue.zero("EUR"),
             paymentMethodId = ""
         )

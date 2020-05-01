@@ -117,21 +117,19 @@ class ActivityDetailsModel(
 
     private fun loadCustodialActivityDetails(intent: LoadActivityDetailsIntent) =
         interactor.getCustodialActivityDetails(cryptoCurrency = intent.cryptoCurrency,
-            txHash = intent.txHash).subscribeBy(
-            onSuccess = {
+            txHash = intent.txHash)
+            .doOnSuccess {
                 process(LoadCustodialHeaderDataIntent(it))
+            }.flatMap {
                 interactor.loadCustodialItems(it)
-                    .subscribeBy(
-                        onSuccess = { activityList ->
-                            process(ListItemsLoadedIntent(activityList))
-                        },
-                        onError = {
-                            process(ListItemsFailedToLoadIntent)
-                        }
-                    )
-            },
-            onError = { process(ActivityDetailsLoadFailedIntent) }
-        )
+            }.subscribeBy(
+                onSuccess = { activityList ->
+                    process(ListItemsLoadedIntent(activityList))
+                },
+                onError = {
+                    process(ListItemsFailedToLoadIntent)
+                }
+            )
 
     private fun loadFeeTransactionItems(
         nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem
