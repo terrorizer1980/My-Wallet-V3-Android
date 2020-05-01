@@ -22,7 +22,7 @@ data class From(val fromAddress: String) : ActivityDetailsType()
 // TODO this will be updated to have info on what transaction the fee is for
 data class FeeForTransaction(val transactionFee: String) : ActivityDetailsType()
 data class To(val toAddress: String) : ActivityDetailsType()
-data class Description(val description: String = "") : ActivityDetailsType()
+data class Description(val description: String? = null) : ActivityDetailsType()
 data class Action(val action: String = "") : ActivityDetailsType()
 data class CancelAction(val cancelAction: String = "") : ActivityDetailsType()
 data class BuyFee(val feeValue: FiatValue) : ActivityDetailsType()
@@ -30,6 +30,12 @@ data class BuyPurchaseAmount(val fundedFiat: FiatValue) : ActivityDetailsType()
 data class BuyTransactionId(val txId: String) : ActivityDetailsType()
 data class BuyCryptoWallet(val crypto: CryptoCurrency) : ActivityDetailsType()
 data class BuyPaymentMethod(val paymentMethod: String) : ActivityDetailsType()
+
+enum class DescriptionState {
+    NOT_SET,
+    UPDATE_SUCCESS,
+    UPDATE_ERROR
+}
 
 data class ActivityDetailState(
     val direction: TransactionSummary.Direction? = null,
@@ -40,7 +46,8 @@ data class ActivityDetailState(
     val confirmations: Int = 0,
     val totalConfirmations: Int = 0,
     val listOfItems: Set<ActivityDetailsType> = emptySet(),
-    val isError: Boolean = false
+    val isError: Boolean = false,
+    val descriptionState: DescriptionState = DescriptionState.NOT_SET
 ) : MviState
 
 class ActivityDetailsModel(
@@ -72,6 +79,18 @@ class ActivityDetailsModel(
                     onError = {
                         process(CreationDateLoadFailedIntent)
                     })
+            is UpdateDescriptionIntent ->
+                interactor.updateItemDescription(intent.txId, intent.cryptoCurrency,
+                    intent.description)
+                    .subscribeBy(
+                        onComplete = {
+                            process(DescriptionUpdatedIntent)
+                        },
+                        onError = {
+                            process(DescriptionUpdateFailedIntent)
+                        })
+            is DescriptionUpdatedIntent,
+            is DescriptionUpdateFailedIntent,
             is ListItemsFailedToLoadIntent,
             is ListItemsLoadedIntent,
             is CreationDateLoadedIntent,
@@ -110,8 +129,8 @@ class ActivityDetailsModel(
         interactor.getNonCustodialActivityDetails(
             cryptoCurrency = intent.cryptoCurrency,
             txHash = intent.txHash)?.let {
-                process(LoadNonCustodialCreationDateIntent(it))
-                process(LoadNonCustodialHeaderDataIntent(it))
+            process(LoadNonCustodialCreationDateIntent(it))
+            process(LoadNonCustodialHeaderDataIntent(it))
         } ?: process(ActivityDetailsLoadFailedIntent)
 
     private fun loadCustodialActivityDetails(intent: LoadActivityDetailsIntent) =

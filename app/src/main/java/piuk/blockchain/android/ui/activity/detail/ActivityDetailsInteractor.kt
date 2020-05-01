@@ -3,11 +3,15 @@ package piuk.blockchain.android.ui.activity.detail
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.OrderState
 import info.blockchain.balance.CryptoCurrency
+import io.reactivex.Completable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
+import piuk.blockchain.android.coincore.btc.BtcActivitySummaryItem
+import piuk.blockchain.android.coincore.eth.EthActivitySummaryItem
+import piuk.blockchain.android.coincore.pax.PaxActivitySummaryItem
 import java.util.Date
 
 class ActivityDetailsInteractor(
@@ -68,7 +72,7 @@ class ActivityDetailsInteractor(
                     list.add(From(it.inputs.joinToString("\n")))
                 }
                 list.add(FeeForTransaction("TODO"))
-                list.add(Description())
+                shouldContainDescription(list, item)
                 list.add(Action())
                 list
             }
@@ -84,7 +88,7 @@ class ActivityDetailsInteractor(
             list.add(Value(fiatValue))
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 addSingleOrMultipleAddresses(it, list)
-                list.add(Description())
+                shouldContainDescription(list, item)
                 list.add(Action())
                 list
             }
@@ -100,7 +104,7 @@ class ActivityDetailsInteractor(
             list.add(Value(fiatValue))
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 addSingleOrMultipleAddresses(it, list)
-                list.add(Description())
+                shouldContainDescription(list, item)
                 list.add(Action())
                 list
             }
@@ -118,7 +122,7 @@ class ActivityDetailsInteractor(
                 list.add(Value(fiatValue))
                 transactionInputOutputMapper.transformInputAndOutputs(item).map {
                     addSingleOrMultipleAddresses(it, list)
-                    list.add(Description())
+                    shouldContainDescription(list, item)
                     list.add(Action())
                     list
                 }
@@ -135,9 +139,28 @@ class ActivityDetailsInteractor(
             list.add(Fee(cryptoValue))
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 addSingleOrMultipleAddresses(it, list)
-                list.add(Description())
+                shouldContainDescription(list, item)
                 list.add(Action())
                 list
+            }
+        }
+    }
+
+    fun updateItemDescription(
+        txId: String,
+        cryptoCurrency: CryptoCurrency,
+        description: String
+    ): Completable {
+        val activityItem = coincore[cryptoCurrency].findCachedActivityItem(
+            txId
+        )
+        return when (activityItem) {
+            is BtcActivitySummaryItem -> activityItem.updateDescription(description)
+            is EthActivitySummaryItem -> activityItem.updateDescription(description)
+            is PaxActivitySummaryItem -> activityItem.updateDescription(description)
+            else -> {
+                Completable.error(UnsupportedOperationException(
+                    "This type of currency doesn't support descriptions"))
             }
         }
     }
@@ -155,6 +178,19 @@ class ActivityDetailsInteractor(
             list.add(To(it.outputs[0].address))
         } else {
             list.add(To(it.outputs.joinToString("\n")))
+        }
+    }
+
+    private fun shouldContainDescription(
+        list: MutableList<ActivityDetailsType>,
+        item: NonCustodialActivitySummaryItem
+    ) {
+        when (item) {
+            is BtcActivitySummaryItem,
+            is EthActivitySummaryItem,
+            is PaxActivitySummaryItem -> list.add(Description(item.description))
+            else -> {
+            } // do nothing
         }
     }
 }
