@@ -90,7 +90,6 @@ class ActivityDetailsInteractor(
                     addSingleOrMultipleFromAddresses(it),
                     addSingleOrMultipleToAddresses(it),
                     checkIfShouldAddDescription(item),
-                    Description(),
                     Action()
                 )
             }
