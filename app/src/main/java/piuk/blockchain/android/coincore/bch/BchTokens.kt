@@ -51,6 +51,8 @@ internal class BchTokens(
     override fun initToken(): Completable =
         bchDataManager.initBchWallet(stringUtils.getString(R.string.bch_default_account_label))
             .then { updater() }
+            .doOnError { Timber.e("Unable to init BCH, because: $it") }
+            .onErrorComplete()
 
     override fun loadNonCustodialAccounts(labels: DefaultLabels): Single<CryptoSingleAccountList> =
         Single.fromCallable {

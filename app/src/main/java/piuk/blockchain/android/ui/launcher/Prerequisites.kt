@@ -36,42 +36,24 @@ class Prerequisites(
 ) {
 
     fun initMetadataAndRelatedPrerequisites(): Completable =
-        metadataManager.attemptMetadataSetup().doOnError {
-            crashLogger.logException(CustomLogMessagedException(
-                METADATA_ERROR_MESSAGE, it
-            ))
-        }
-            .then {
-                feesCompletable().doOnError {
-                    crashLogger.logException(CustomLogMessagedException(
-                        FEES_ERROR, it
-                    ))
-                }
-            }
-            .then {
-                simpleBuySync.performSync().doOnError {
-                    crashLogger.logException(CustomLogMessagedException(
-                        SIMPLE_BUY_SYNC, it
-                    ))
-                }.onErrorComplete()
-            }
-            .then {
-                coincore.init().doOnError {
-                    crashLogger.logException(CustomLogMessagedException(
-                        COINCORE_INIT, it
-                    ))
-                }
-            }
-            .then {
-                generateAndUpdateReceiveAddresses().doOnError {
-                    crashLogger.logException(CustomLogMessagedException(
-                        RECEIVE_ADDRESSES, it
-                    ))
-                }.onErrorComplete()
-            }
+        metadataManager.attemptMetadataSetup().logOnError(METADATA_ERROR_MESSAGE)
+            .then { feesCompletable().logOnError(FEES_ERROR) }
+            .then { simpleBuySync.performSync().logAndCompleteOnError(SIMPLE_BUY_SYNC) }
+            .then { coincore.init().logOnError(COINCORE_INIT) }
+            .then { generateAndUpdateReceiveAddresses().logAndCompleteOnError(RECEIVE_ADDRESSES) }
             .doOnComplete {
                 rxBus.emitEvent(MetadataEvent::class.java, MetadataEvent.SETUP_COMPLETE)
             }.subscribeOn(Schedulers.io())
+
+    private fun Completable.logOnError(tag: String): Completable =
+        this.doOnError {
+            crashLogger.logException(
+                CustomLogMessagedException(tag, it)
+            )
+        }
+
+    private fun Completable.logAndCompleteOnError(tag: String): Completable =
+        this.logOnError(tag).onErrorComplete()
 
     private fun generateAndUpdateReceiveAddresses(): Completable =
         addressGenerator.generateAddresses().then {

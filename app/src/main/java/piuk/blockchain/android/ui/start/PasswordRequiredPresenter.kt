@@ -1,8 +1,6 @@
 package piuk.blockchain.android.ui.start
 
 import piuk.blockchain.android.R
-import piuk.blockchain.androidbuysell.datamanagers.BuyDataManager
-import piuk.blockchain.androidbuysell.datamanagers.CoinifyDataManager
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
@@ -19,9 +17,7 @@ class PasswordRequiredPresenter(
     override val appUtil: AppUtil,
     override val prefs: PersistentPrefs,
     override val authDataManager: AuthDataManager,
-    override val payloadDataManager: PayloadDataManager,
-    private val buyDataManager: BuyDataManager,
-    private val coinifyDataManager: CoinifyDataManager
+    override val payloadDataManager: PayloadDataManager
 ) : PasswordAuthPresenter<PasswordRequiredView>() {
 
     fun onContinueClicked(password: String) {
@@ -38,17 +34,6 @@ class PasswordRequiredPresenter(
 
     fun onForgetWalletClicked() {
         view?.showForgetWalletWarning {
-            // TODO: 14/06/2018 This doesn't wipe anything
-            /**
-             * Most data will be overwritten when the user logs in again, however we should
-             * really be clearing OR broadcasting via RxBus a logout message and having
-             * Data Managers clear up after themselves. See LogoutActivity for details.
-             *
-             * Here we're clearing BuyDataManager and CoinifyDataManager as we know for sure
-             * that they aren't overwritten on re-login due to caching strategies.
-             */
-            buyDataManager.wipe()
-            coinifyDataManager.clearAccessToken()
             appUtil.clearCredentialsAndRestart(LauncherActivity::class.java)
         }
     }
