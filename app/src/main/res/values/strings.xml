@@ -1671,5 +1671,7 @@
     <string name="activity_details_buy_payment_method">Payment Method</string>
     <string name="activity_details_view_bank_transfer_details">View Bank Transfer Details</string>
     <string name="activity_details_buy_again">Buy Again</string>
+    <string name="activity_details_description_updated">Description updated</string>
+    <string name="activity_details_description_not_updated">Description failed to update</string>
 
 </resources>
