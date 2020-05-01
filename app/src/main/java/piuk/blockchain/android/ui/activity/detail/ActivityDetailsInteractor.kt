@@ -12,6 +12,7 @@ import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.btc.BtcActivitySummaryItem
 import piuk.blockchain.android.coincore.eth.EthActivitySummaryItem
 import piuk.blockchain.android.coincore.pax.PaxActivitySummaryItem
+import java.text.ParseException
 import java.util.Date
 
 class ActivityDetailsInteractor(
@@ -56,93 +57,91 @@ class ActivityDetailsInteractor(
 
     fun loadCreationDate(
         activitySummaryItem: ActivitySummaryItem
-    ): Single<Date> = Single.just(Date(activitySummaryItem.timeStampMs))
+    ): Date? = try {
+        Date(activitySummaryItem.timeStampMs)
+    } catch (e: ParseException) {
+        null
+    }
 
     fun loadFeeItems(
         item: NonCustodialActivitySummaryItem
-    ): Single<List<ActivityDetailsType>> {
-        val list = mutableListOf<ActivityDetailsType>()
-        list.add(Amount(item.totalCrypto))
-        return item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
-            list.add(Value(fiatValue))
+    ) = item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency)
+        .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                if (it.inputs.size == 1) {
-                    list.add(From(it.inputs[0].address))
-                } else {
-                    list.add(From(it.inputs.joinToString("\n")))
-                }
-                list.add(FeeForTransaction("TODO"))
-                shouldContainDescription(list, item)
-                list.add(Action())
-                list
+                listOfNotNull(
+                    Amount(item.totalCrypto),
+                    Value(fiatValue),
+                    addSingleOrMultipleFromAddresses(it),
+                    FeeForTransaction("TODO"),
+                    checkIfShouldAddDescription(item),
+                    Action()
+                )
             }
         }
-    }
 
     fun loadReceivedItems(
         item: NonCustodialActivitySummaryItem
-    ): Single<List<ActivityDetailsType>> {
-        val list = mutableListOf<ActivityDetailsType>()
-        list.add(Amount(item.totalCrypto))
-        return item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
-            list.add(Value(fiatValue))
+    ) = item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency)
+        .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                addSingleOrMultipleAddresses(it, list)
-                shouldContainDescription(list, item)
-                list.add(Action())
-                list
+                listOfNotNull(
+                    Amount(item.totalCrypto),
+                    Value(fiatValue),
+                    addSingleOrMultipleFromAddresses(it),
+                    addSingleOrMultipleToAddresses(it),
+                    checkIfShouldAddDescription(item),
+                    Description(),
+                    Action()
+                )
             }
         }
-    }
 
     fun loadTransferItems(
         item: NonCustodialActivitySummaryItem
-    ): Single<List<ActivityDetailsType>> {
-        val list = mutableListOf<ActivityDetailsType>()
-        list.add(Amount(item.totalCrypto))
-        return item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
-            list.add(Value(fiatValue))
+    ) = item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency)
+        .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                addSingleOrMultipleAddresses(it, list)
-                shouldContainDescription(list, item)
-                list.add(Action())
-                list
+                listOfNotNull(
+                    Amount(item.totalCrypto),
+                    Value(fiatValue),
+                    addSingleOrMultipleFromAddresses(it),
+                    addSingleOrMultipleToAddresses(it),
+                    checkIfShouldAddDescription(item),
+                    Action()
+                )
             }
         }
-    }
 
     fun loadConfirmedSentItems(
         item: NonCustodialActivitySummaryItem
-    ): Single<List<ActivityDetailsType>> {
-        val list = mutableListOf<ActivityDetailsType>()
-        list.add(Amount(item.totalCrypto))
-        return item.fee.singleOrError().flatMap { cryptoValue ->
-            list.add(Fee(cryptoValue))
-            item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
-                list.add(Value(fiatValue))
-                transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                    addSingleOrMultipleAddresses(it, list)
-                    shouldContainDescription(list, item)
-                    list.add(Action())
-                    list
-                }
+    ) = item.fee.singleOrError().flatMap { cryptoValue ->
+        item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
+            transactionInputOutputMapper.transformInputAndOutputs(item).map {
+                listOfNotNull(
+                    Amount(item.totalCrypto),
+                    Fee(cryptoValue),
+                    Value(fiatValue),
+                    addSingleOrMultipleFromAddresses(it),
+                    addSingleOrMultipleToAddresses(it),
+                    checkIfShouldAddDescription(item),
+                    Action()
+                )
             }
         }
     }
 
     fun loadUnconfirmedSentItems(
         item: NonCustodialActivitySummaryItem
-    ): Single<List<ActivityDetailsType>> {
-        val list = mutableListOf<ActivityDetailsType>()
-        list.add(Amount(item.totalCrypto))
-        return item.fee.singleOrError().flatMap { cryptoValue ->
-            list.add(Fee(cryptoValue))
-            transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                addSingleOrMultipleAddresses(it, list)
-                shouldContainDescription(list, item)
-                list.add(Action())
-                list
-            }
+    ) = item.fee.singleOrError().flatMap { cryptoValue ->
+        transactionInputOutputMapper.transformInputAndOutputs(item).map {
+            listOfNotNull(
+                Amount(item.totalCrypto),
+                Fee(cryptoValue),
+                addSingleOrMultipleFromAddresses(it),
+                addSingleOrMultipleToAddresses(it),
+                checkIfShouldAddDescription(item),
+                Action()
+            )
         }
     }
 
@@ -165,32 +164,28 @@ class ActivityDetailsInteractor(
         }
     }
 
-    private fun addSingleOrMultipleAddresses(
-        it: TransactionInOutDetails,
-        list: MutableList<ActivityDetailsType>
-    ) {
-        if (it.inputs.size == 1) {
-            list.add(From(it.inputs[0].address))
-        } else {
-            list.add(From(it.inputs.joinToString("\n")))
-        }
-        if (it.outputs.size == 1) {
-            list.add(To(it.outputs[0].address))
-        } else {
-            list.add(To(it.outputs.joinToString("\n")))
-        }
+    private fun addSingleOrMultipleFromAddresses(
+        it: TransactionInOutDetails
+    ) = if (it.inputs.size == 1) {
+        From(it.inputs[0].address)
+    } else {
+        From(it.inputs.joinToString("\n"))
     }
 
-    private fun shouldContainDescription(
-        list: MutableList<ActivityDetailsType>,
+    private fun addSingleOrMultipleToAddresses(
+        it: TransactionInOutDetails
+    ) = if (it.outputs.size == 1) {
+        To(it.outputs[0].address)
+    } else {
+        To(it.outputs.joinToString("\n"))
+    }
+
+    private fun checkIfShouldAddDescription(
         item: NonCustodialActivitySummaryItem
-    ) {
-        when (item) {
+    ) : Description? = when (item) {
             is BtcActivitySummaryItem,
             is EthActivitySummaryItem,
-            is PaxActivitySummaryItem -> list.add(Description(item.description))
-            else -> {
-            } // do nothing
+            is PaxActivitySummaryItem -> Description(item.description)
+            else -> null
         }
-    }
 }

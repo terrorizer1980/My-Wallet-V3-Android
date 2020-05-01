@@ -69,16 +69,6 @@ class ActivityDetailsModel(
                 }
                 null
             }
-            is LoadNonCustodialCreationDateIntent ->
-                interactor.loadCreationDate(intent.nonCustodialActivitySummaryItem).subscribeBy(
-                    onSuccess = {
-                        process(CreationDateLoadedIntent(it))
-                        val nonCustodialActivitySummaryItem = intent.nonCustodialActivitySummaryItem
-                        loadListDetailsForDirection(nonCustodialActivitySummaryItem)
-                    },
-                    onError = {
-                        process(CreationDateLoadFailedIntent)
-                    })
             is UpdateDescriptionIntent ->
                 interactor.updateItemDescription(intent.txId, intent.cryptoCurrency,
                     intent.description)
@@ -89,6 +79,17 @@ class ActivityDetailsModel(
                         onError = {
                             process(DescriptionUpdateFailedIntent)
                         })
+            is LoadNonCustodialCreationDateIntent -> {
+                val activityDate =
+                    interactor.loadCreationDate(intent.nonCustodialActivitySummaryItem)
+                activityDate?.let {
+                    process(CreationDateLoadedIntent(activityDate))
+
+                    val nonCustodialActivitySummaryItem = intent.nonCustodialActivitySummaryItem
+                    loadListDetailsForDirection(nonCustodialActivitySummaryItem)
+                } ?: process(CreationDateLoadFailedIntent)
+                null
+            }
             is DescriptionUpdatedIntent,
             is DescriptionUpdateFailedIntent,
             is ListItemsFailedToLoadIntent,
