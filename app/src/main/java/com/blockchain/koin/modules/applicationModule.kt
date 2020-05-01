@@ -27,6 +27,8 @@ import piuk.blockchain.android.accounts.AsyncAllAccountListImplementation
 import piuk.blockchain.android.accounts.BchAccountListAdapter
 import piuk.blockchain.android.accounts.EthAccountListAdapter
 import piuk.blockchain.android.accounts.PaxAccountListAdapter
+import piuk.blockchain.android.cards.CardModel
+import piuk.blockchain.android.cards.partners.EverypayCardActivator
 import piuk.blockchain.android.data.api.bitpay.BitPayDataManager
 import piuk.blockchain.android.data.api.bitpay.BitPayService
 import piuk.blockchain.android.data.cache.DynamicFeeCache
@@ -645,7 +647,8 @@ val applicationModule = applicationContext {
                 nabu = get(),
                 tierService = get(),
                 custodialWalletManager = get(),
-                appUtil = get()
+                appUtil = get(),
+                coincore = get()
             )
         }
 
@@ -655,7 +658,23 @@ val applicationModule = applicationContext {
                 scheduler = AndroidSchedulers.mainThread(),
                 initialState = SimpleBuyState(),
                 prefs = get(),
-                gson = get()
+                gson = get(),
+                cardActivators = listOf(
+                    EverypayCardActivator(get(), get())
+                )
+            )
+        }
+
+        factory {
+            CardModel(
+                interactor = get(),
+                currencyPrefs = get(),
+                scheduler = AndroidSchedulers.mainThread(),
+                cardActivators = listOf(
+                    EverypayCardActivator(get(), get())
+                ),
+                gson = get(),
+                prefs = get()
             )
         }
 

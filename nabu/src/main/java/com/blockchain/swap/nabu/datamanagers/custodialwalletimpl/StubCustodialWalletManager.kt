@@ -2,14 +2,18 @@ package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
 import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BankDetail
+import com.blockchain.swap.nabu.datamanagers.BillingAddress
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
+import com.blockchain.swap.nabu.datamanagers.CardToBeActivated
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.OrderState
+import com.blockchain.swap.nabu.datamanagers.PartnerCredentials
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
+import com.blockchain.swap.nabu.models.simplebuy.CardPartnerAttributes
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -124,9 +128,11 @@ class StubCustodialWalletManager : CustodialWalletManager {
     override fun createOrder(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
-        action: String
+        action: String,
+        paymentMethodId: String?,
+        stateAction: String?
     ): Single<BuyOrder> {
-        TODO("not implemented")
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> = Single.just(
@@ -156,64 +162,20 @@ class StubCustodialWalletManager : CustodialWalletManager {
             CryptoCurrency.STX -> Maybe.empty()
         }
 
-    override fun getOutstandingBuyOrders(crypto: CryptoCurrency): Single<BuyOrderList> =
-        Single.just(
-            listOf(
-                BuyOrder(
-                    id = "006bd84e-de74-4697-8989-92eab7720000",
-                    pair = "BTC-USD",
-                    fiat = FiatValue.fromMinor("GBP", 50000),
-                    crypto = CryptoValue.zero(crypto),
-                    state = OrderState.AWAITING_FUNDS,
-                    expires = Date()
-                )
-            )
-        )
+    override fun getOutstandingBuyOrders(crypto: CryptoCurrency): Single<BuyOrderList> {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun getAllOutstandingBuyOrders(): Single<BuyOrderList> =
         getAllBuyOrdersFor(CryptoCurrency.BTC)
 
-    override fun getAllBuyOrdersFor(crypto: CryptoCurrency): Single<BuyOrderList> =
-        Single.just(
-            listOf(
-                BuyOrder(
-                    id = "006bd84e-de74-4697-8989-92eab7720000",
-                    pair = "BTC-USD",
-                    fiat = FiatValue.fromMinor("GBP", 50000),
-                    crypto = CryptoValue.zero(crypto),
-                    state = OrderState.AWAITING_FUNDS,
-                    expires = Date()
-                ),
-                BuyOrder(
-                    id = "006bd84e-de7b-4697-8989-92eab7720000",
-                    pair = "BTC-USD",
-                    fiat = FiatValue.fromMinor("GBP", 50000),
-                    crypto = CryptoValue.zero(crypto),
-                    state = OrderState.FINISHED,
-                    expires = Date()
-                ),
-                BuyOrder(
-                    id = "006bd84e-de7b-4697-8989-92eab7721111",
-                    pair = "BTC-USD",
-                    fiat = FiatValue.fromMinor("GBP", 70000),
-                    crypto = CryptoValue.fromMinor(crypto, 1980000.toBigInteger()),
-                    state = OrderState.CANCELED,
-                    expires = Date()
-                )
-            )
-        )
+    override fun getAllBuyOrdersFor(crypto: CryptoCurrency): Single<BuyOrderList> {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
 
-    override fun getBuyOrder(orderId: String): Single<BuyOrder> =
-        Single.just(
-            BuyOrder(
-                id = orderId,
-                pair = "BTC-USD",
-                fiat = FiatValue.fromMinor("GBP", 70000),
-                crypto = CryptoValue.bitcoinFromSatoshis(1980000),
-                state = OrderState.AWAITING_FUNDS,
-                expires = Date()
-            )
-        )
+    override fun getBuyOrder(orderId: String): Single<BuyOrder> {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun getSupportedFiatCurrencies(nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
         Single.just(listOf(
@@ -226,4 +188,30 @@ class StubCustodialWalletManager : CustodialWalletManager {
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         Completable.timer(5, TimeUnit.SECONDS)
+
+    override fun cancelAllPendingBuys(): Completable {
+        return Completable.complete()
+    }
+
+    override fun fetchSuggestedPaymentMethod(fiatCurrency: String, isTier2Approved: Boolean):
+            Single<List<PaymentMethod>> =
+        Single.just(
+            emptyList()
+        )
+
+    override fun addNewCard(fiatCurrency: String, billingAddress: BillingAddress): Single<CardToBeActivated> {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun activateCard(cardId: String, attributes: CardPartnerAttributes): Single<PartnerCredentials> {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getCardDetails(cardId: String): Single<PaymentMethod.Card> {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun confirmOrder(orderId: String, attributes: CardPartnerAttributes?): Single<BuyOrder> {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
 }

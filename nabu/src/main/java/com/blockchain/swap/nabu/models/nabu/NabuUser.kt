@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.models.nabu
 
 import com.blockchain.serialization.JsonSerializable
+import com.blockchain.swap.nabu.datamanagers.BillingAddress
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonDataException
@@ -67,6 +68,7 @@ data class NabuUser(
     fun requireCountryCode(): String {
         return address?.countryCode ?: throw IllegalStateException("User has no country code set")
     }
+
     val isMarkedForResubmission: Boolean
         get() = resubmission != null
 
@@ -111,6 +113,18 @@ data class AddAddressRequest(
                 countryCode
             )
         )
+
+        fun fromBillingAddress(
+            billingAddress: BillingAddress
+        ): Address =
+            Address(
+                line1 = billingAddress.addressLine1,
+                line2 = billingAddress.addressLine2,
+                city = billingAddress.city,
+                countryCode = billingAddress.countryCode,
+                postCode = billingAddress.postCode,
+                state = billingAddress.state
+            )
     }
 }
 
