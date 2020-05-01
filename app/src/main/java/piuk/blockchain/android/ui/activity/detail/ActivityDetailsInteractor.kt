@@ -182,7 +182,7 @@ class ActivityDetailsInteractor(
 
     private fun checkIfShouldAddDescription(
         item: NonCustodialActivitySummaryItem
-    ) : Description? = when (item) {
+    ): Description? = when (item) {
             is BtcActivitySummaryItem,
             is EthActivitySummaryItem,
             is PaxActivitySummaryItem -> Description(item.description)
