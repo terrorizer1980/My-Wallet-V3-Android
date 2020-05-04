@@ -30,7 +30,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.atLeastOnce
-import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import piuk.blockchain.android.R
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -42,9 +41,12 @@ class TestAuthPresenter(
     override val prefs: PersistentPrefs
 ) : PasswordAuthPresenter<PasswordAuthView>() {
     override fun onAuthFailed() {
+        super.onAuthFailed()
         showErrorToast(1)
     }
+
     override fun onAuthComplete() {
+        super.onAuthComplete()
         showErrorToast(2)
     }
 }
@@ -98,7 +100,7 @@ class PasswordAuthPresenterTest {
             .thenReturn(Completable.complete())
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
         verify(view).goToPinPage()
@@ -124,7 +126,7 @@ class PasswordAuthPresenterTest {
             .thenReturn(Completable.error(DecryptionException()))
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
         verify(view).showToast(any(), any())
@@ -149,7 +151,7 @@ class PasswordAuthPresenterTest {
             .thenReturn(Completable.error(HDWalletException()))
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
         verify(view).showToast(any(), any())
@@ -174,7 +176,7 @@ class PasswordAuthPresenterTest {
             .thenReturn(Completable.error(RuntimeException()))
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
         verify(view).showToast(any(), any())
@@ -200,7 +202,7 @@ class PasswordAuthPresenterTest {
             .thenReturn(Completable.complete())
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
         verify(view).dismissProgressDialog()
@@ -226,7 +228,7 @@ class PasswordAuthPresenterTest {
             .thenReturn(Observable.just("1234567890"))
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
         verify(view).showToast(any(), any())
@@ -268,7 +270,7 @@ class PasswordAuthPresenterTest {
         whenever(authDataManager.getSessionId(anyString()))
             .thenReturn(Observable.error(Throwable()))
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
         // Assert
 
         verify(view).showToast(any(), any())
@@ -284,7 +286,7 @@ class PasswordAuthPresenterTest {
         whenever(authDataManager.getEncryptedPayload(anyString(), anyString()))
             .thenReturn(Observable.error(Throwable()))
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
         // Assert
 
         verify(view).showToast(any(), any())
@@ -309,7 +311,7 @@ class PasswordAuthPresenterTest {
         whenever(authDataManager.createCheckEmailTimer()).thenReturn(Observable.just(1))
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
         verify(view).showToast(any(), any())
@@ -337,7 +339,7 @@ class PasswordAuthPresenterTest {
         whenever(wallet.sharedKey).thenReturn("shared_key")
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
         verify(payloadDataManager).initializeFromPayload(any(), any())
@@ -362,7 +364,7 @@ class PasswordAuthPresenterTest {
             .thenReturn(Completable.complete())
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
         verify(view).showToast(any(), any())
@@ -388,7 +390,7 @@ class PasswordAuthPresenterTest {
             .thenReturn(Observable.error(Throwable()))
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
         verify(view).showToast(any(), any())
@@ -411,12 +413,11 @@ class PasswordAuthPresenterTest {
             .thenReturn(Observable.just("1234567890"))
 
         // Act
-        subject.verifyPassword(GUID, PASSWORD)
+        subject.verifyPassword(PASSWORD, GUID)
 
         // Assert
-        verify(view, times(2)).showToast(any(), any())
-        verify(view, times(2)).resetPasswordField()
-        verify(appUtil).clearCredentialsAndRestart(LauncherActivity::class.java)
+        verify(view).showToast(any(), any())
+        verify(view).resetPasswordField()
     }
 
     @Test

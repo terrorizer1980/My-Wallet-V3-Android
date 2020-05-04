@@ -1,6 +1,5 @@
 package piuk.blockchain.android.ui.start
 
-import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.whenever
 import info.blockchain.wallet.payload.data.Wallet
 
@@ -9,8 +8,6 @@ import org.junit.Test
 import org.amshove.kluent.any
 import org.amshove.kluent.mock
 import piuk.blockchain.android.testutils.RxTest
-import piuk.blockchain.android.ui.launcher.LauncherActivity
-import piuk.blockchain.android.util.DialogButtonCallback
 import piuk.blockchain.androidcore.data.auth.AuthDataManager
 import piuk.blockchain.androidcore.data.payload.PayloadDataManager
 import piuk.blockchain.androidcore.utils.PersistentPrefs
@@ -63,8 +60,6 @@ class PasswordRequiredPresenterTest : RxTest() {
     @Test
     fun onForgetWalletClickedShowWarningAndDismiss() {
         // Arrange
-        whenever(view.showForgetWalletWarning(any()))
-            .doAnswer { invocation -> (invocation.arguments[0] as DialogButtonCallback).onNegativeClicked() }
 
         // Act
         subject.onForgetWalletClicked()
@@ -72,20 +67,6 @@ class PasswordRequiredPresenterTest : RxTest() {
         // Assert
         verify(view).showForgetWalletWarning(any())
         verifyNoMoreInteractions(view)
-    }
-
-    @Test
-    fun onForgetWalletClickedShowWarningAndContinue() {
-        // Arrange
-        whenever(view.showForgetWalletWarning(any()))
-            .doAnswer { invocation -> (invocation.arguments[0] as DialogButtonCallback).onPositiveClicked() }
-
-        // Act
-        subject.onForgetWalletClicked()
-
-        // Assert
-        verify(view).showForgetWalletWarning(any())
-        verify(appUtil).clearCredentialsAndRestart(LauncherActivity::class.java)
     }
 
     companion object {
