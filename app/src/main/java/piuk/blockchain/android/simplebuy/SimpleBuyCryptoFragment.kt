@@ -1,5 +1,7 @@
 package piuk.blockchain.android.simplebuy
 
+import android.app.Activity
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
@@ -13,11 +15,14 @@ import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.buyConfirmClicked
 import com.blockchain.notifications.analytics.cryptoChanged
 import com.blockchain.preferences.CurrencyPrefs
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.FiatValue
 import kotlinx.android.synthetic.main.fragment_simple_buy_buy_crypto.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.cards.CardDetailsActivity
+import piuk.blockchain.android.cards.CardDetailsActivity.Companion.ADD_CARD_REQUEST_CODE
 import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
@@ -25,7 +30,6 @@ import piuk.blockchain.android.util.assetName
 import piuk.blockchain.android.util.drawableResFilled
 import piuk.blockchain.androidcoreui.utils.DecimalDigitsInputFilter
 import piuk.blockchain.androidcoreui.utils.extensions.gone
-import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
@@ -35,6 +39,8 @@ import java.util.Locale
 import java.util.Currency
 
 class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(),
+    SimpleBuyScreen,
+    PaymentMethodChangeListener,
     ChangeCurrencyHost {
 
     override val model: SimpleBuyModel by inject()
@@ -48,7 +54,6 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     private val currencyPrefs: CurrencyPrefs by inject()
 
     override fun onBackPressed(): Boolean = true
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,10 +63,11 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity.setupToolbar(R.string.simple_buy_buy_crypto_title)
-
+        model.process(SimpleBuyIntent.SyncState)
         model.process(SimpleBuyIntent.FetchBuyLimits(currencyPrefs.selectedFiatCurrency))
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.ENTER_AMOUNT))
         model.process(SimpleBuyIntent.FetchPredefinedAmounts(currencyPrefs.selectedFiatCurrency))
+        model.process(SimpleBuyIntent.FetchSuggestedPaymentMethod(currencyPrefs.selectedFiatCurrency))
         model.process(SimpleBuyIntent.FetchSupportedFiatCurrencies)
         analytics.logEvent(SimpleBuyAnalytics.BUY_FORM_SHOWN)
         input_amount.addTextChangedListener(object : AfterTextChangedWatcher() {
@@ -78,6 +84,14 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
             )
         }
 
+        payment_method_root.setOnClickListener {
+            lastState?.paymentOptions?.let {
+                showBottomSheet(PaymentMethodChooserBottomSheet.newInstance(it.availablePaymentMethods.filterNot {
+                    it is PaymentMethod.Undefined
+                },
+                    it.canAddCard))
+            }
+        }
         fiat_currency.setOnClickListener {
             showBottomSheet(
                 FiatCurrencyChooserBottomSheet
@@ -91,6 +105,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         model.process(SimpleBuyIntent.FiatCurrencyUpdated(fiatCurrency))
         model.process(SimpleBuyIntent.FetchBuyLimits(fiatCurrency))
         model.process(SimpleBuyIntent.FetchPredefinedAmounts(fiatCurrency))
+        model.process(SimpleBuyIntent.FetchSuggestedPaymentMethod(currencyPrefs.selectedFiatCurrency))
         analytics.logEvent(CurrencyChangedFromBuyForm(fiatCurrency))
         input_amount.clearFocus()
     }
@@ -116,7 +131,14 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
             crypto_text.setText(it.assetName())
             activity.setupToolbar(resources.getString(R.string.simple_buy_token, it.displayTicker))
         }
+
+        newState.exchangePrice?.let {
+            crypto_exchange_rate.text =
+                "1 ${newState.selectedCryptoCurrency?.displayTicker} = ${it.toStringWithSymbol()}"
+        }
+
         arrow.visibleIf { newState.availableCryptoCurrencies.size > 1 }
+
         if (newState.maxAmount != null && newState.minAmount != null) {
             input_amount.filters =
                 arrayOf(
@@ -124,12 +146,6 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
                         newState.maxIntegerDigitsForAmount(),
                         newState.maxDecimalDigitsForAmount()
                     )
-                )
-            up_to_amount.visible()
-            up_to_amount.text =
-                getString(
-                    R.string.simple_buy_up_to_amount,
-                    newState.maxAmount!!.formatOrSymbolForZero()
                 )
         }
 
@@ -141,16 +157,16 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
             predefined_amount_3.asPredefinedAmountText(values.getOrNull(2))
             predefined_amount_4.asPredefinedAmountText(values.getOrNull(3))
         } ?: kotlin.run {
-            predefined_amount_1.gone()
-            predefined_amount_2.gone()
-            predefined_amount_3.gone()
-            predefined_amount_4.gone()
+            hidePredefinedAmounts()
         }
 
-        btn_continue.isEnabled = newState.isAmountValid
+        newState.selectedPaymentMethodDetails?.let {
+            renderPaymentMethod(it)
+        } ?: payment_method_root.gone()
+
+        btn_continue.isEnabled = canContinue(newState)
         input_amount.isEnabled = newState.selectedCryptoCurrency != null
 
-        error_icon.goneIf(newState.error == null)
         input_amount.backgroundTintList =
             ColorStateList.valueOf(
                 resources.getColor(
@@ -164,14 +180,14 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         newState.error?.let {
             handleError(it, newState)
         } ?: kotlin.run {
-            error_action.gone()
+            clearError()
         }
 
         if (input_amount.text.toString() != newState.enteredAmount) {
             input_amount.setText(newState.enteredAmount)
         }
 
-        crypto_text.takeIf { newState.availableCryptoCurrencies.size > 1 }?.setOnClickListener {
+        coin_selector.takeIf { newState.availableCryptoCurrencies.size > 1 }?.setOnClickListener {
             showBottomSheet(
                 CryptoCurrencyChooserBottomSheet
                     .newInstance(newState.availableCryptoCurrencies)
@@ -205,6 +221,51 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         }
     }
 
+    private fun canContinue(state: SimpleBuyState) =
+        state.isAmountValid && state.selectedPaymentMethod != null
+
+    private fun renderPaymentMethod(selectedPaymentMethod: PaymentMethod) {
+
+        when (selectedPaymentMethod) {
+            is PaymentMethod.Undefined -> {
+                payment_method_icon.setImageResource(R.drawable.ic_add_payment_method)
+            }
+            is PaymentMethod.BankTransfer -> renderBankPayment(selectedPaymentMethod)
+            is PaymentMethod.Card -> renderCardPayment(selectedPaymentMethod)
+            is PaymentMethod.UndefinedCard -> renderUndefinedCardPayment(selectedPaymentMethod)
+        }
+        payment_method_root.visible()
+        undefined_payment_text.visibleIf { selectedPaymentMethod is PaymentMethod.Undefined }
+        payment_method_title.visibleIf { (selectedPaymentMethod is PaymentMethod.Undefined).not() }
+        payment_method_limit.visibleIf { (selectedPaymentMethod is PaymentMethod.Undefined).not() }
+    }
+
+    private fun renderUndefinedCardPayment(selectedPaymentMethod: PaymentMethod.UndefinedCard) {
+        payment_method_icon.setImageResource(R.drawable.ic_payment_card)
+        payment_method_title.text = getString(R.string.credit_or_debit_card)
+        payment_method_limit.text =
+            getString(R.string.payment_method_limit, selectedPaymentMethod.limits?.max?.toStringWithSymbol())
+    }
+
+    private fun renderCardPayment(selectedPaymentMethod: PaymentMethod.Card) {
+        payment_method_icon.setImageResource(selectedPaymentMethod.cardType.frontResource)
+        payment_method_title.text = selectedPaymentMethod.uiLabelWithDigits()
+        payment_method_limit.text =
+            getString(R.string.payment_method_limit, selectedPaymentMethod.limits.max.toStringWithSymbol())
+    }
+
+    private fun renderBankPayment(selectedPaymentMethod: PaymentMethod.BankTransfer) {
+        payment_method_title.text = getString(R.string.bank_wise_transfer)
+        payment_method_icon.setImageResource(R.drawable.ic_bank_transfer)
+        payment_method_limit.text =
+            getString(R.string.payment_method_limit, selectedPaymentMethod.limits.max.toStringWithSymbol())
+    }
+
+    private fun clearError() {
+        error_text.gone()
+        error_fix_action.gone()
+    }
+
     private fun showErrorState(errorState: ErrorState) {
         showBottomSheet(ErrorSlidingBottomDialog.newInstance(activity))
     }
@@ -212,39 +273,53 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     private fun handleError(error: InputError, state: SimpleBuyState) {
         when (error) {
             InputError.ABOVE_MAX -> {
-                error_action.apply {
-                    text = resources.getString(R.string.use_max)
+                error_fix_action.apply {
+                    text = resources.getString(R.string.buy_max)
                     visible()
                     setOnClickListener {
                         input_amount.setText(state.maxAmount?.asInputAmount() ?: "")
                         analytics.logEvent(SimpleBuyAnalytics.BUY_MAX_CLICKED)
                     }
                 }
-                up_to_amount.text = resources.getString(R.string.too_high)
+                error_text.apply {
+                    text = resources.getString(R.string.maximum_buy, state.maxAmount?.toStringWithSymbol())
+                    visible()
+                }
             }
             InputError.BELOW_MIN -> {
-                error_action.apply {
-                    text = resources.getString(R.string.use_min)
+                error_fix_action.apply {
+                    text = resources.getString(R.string.buy_min)
                     visible()
                     setOnClickListener {
                         analytics.logEvent(SimpleBuyAnalytics.BUY_MIN_CLICKED)
                         input_amount.setText(state.minAmount?.asInputAmount() ?: "")
                     }
                 }
-                up_to_amount.text = resources.getString(R.string.too_low)
+                error_text.apply {
+                    text = resources.getString(R.string.minimum_buy, state.minAmount?.toStringWithSymbol())
+                    visible()
+                }
             }
         }
+        hidePredefinedAmounts()
+    }
+
+    private fun hidePredefinedAmounts() {
+        predefined_amount_1.gone()
+        predefined_amount_2.gone()
+        predefined_amount_3.gone()
+        predefined_amount_4.gone()
     }
 
     private fun FiatValue.asInputAmount(): String =
         this.toStringWithoutSymbol().withoutThousandsSeparator().withoutTrailingDecimalsZeros()
 
     private fun AppCompatTextView.asPredefinedAmountText(amount: FiatValue?) {
-        amount?.let { amount ->
-            text = amount.formatOrSymbolForZero().withoutTrailingDecimalsZeros()
+        amount?.let { amnt ->
+            text = amnt.formatOrSymbolForZero().withoutTrailingDecimalsZeros()
             visible()
             setOnClickListener {
-                input_amount.setText(amount.asInputAmount())
+                input_amount.setText(amnt.asInputAmount())
             }
         } ?: this.gone()
     }
@@ -263,6 +338,31 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     override fun onSheetClosed() {
         model.process(SimpleBuyIntent.ClearError)
     }
+
+    override fun onPaymentMethodChanged(paymentMethod: PaymentMethod) {
+        model.process(SimpleBuyIntent.SelectedPaymentMethodUpdate(paymentMethod))
+    }
+
+    override fun addPaymentMethod() {
+        val intent = Intent(activity, CardDetailsActivity::class.java)
+        startActivityForResult(intent, ADD_CARD_REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == ADD_CARD_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            model.process(
+                SimpleBuyIntent.FetchSuggestedPaymentMethod(currencyPrefs.selectedFiatCurrency,
+                    (data?.extras?.getSerializable(CardDetailsActivity.CARD_KEY) as? PaymentMethod.Card)?.id
+                ))
+        }
+    }
+}
+
+interface PaymentMethodChangeListener {
+    fun onPaymentMethodChanged(paymentMethod: PaymentMethod)
+    fun addPaymentMethod()
 }
 
 interface ChangeCurrencyHost : SimpleBuyScreen {

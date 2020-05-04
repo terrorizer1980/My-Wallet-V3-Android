@@ -18,128 +18,32 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
-        android:id="@+id/date_top_separator"
+        android:id="@+id/separator"
         style="@style/Separator"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/standard_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkout_subtitle" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/date_title"
-        style="@style/Text.Semibold.16"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/standard_margin"
-        android:layout_marginTop="@dimen/small_margin"
-        android:layout_marginBottom="@dimen/small_margin"
-        android:text="@string/date"
-        android:textColor="@color/grey_600"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        tools:listitem="@layout/layout_checkout_item"
+        tools:itemCount="7"
+        app:layout_constraintBottom_toTopOf="@+id/list_guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date_top_separator" />
+        app:layout_constraintTop_toBottomOf="@+id/separator"
+        app:layout_constraintVertical_bias="0" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/date"
-        style="@style/Text.Semibold.16"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_margin"
-        android:layout_marginEnd="@dimen/standard_margin"
-        android:layout_marginBottom="@dimen/small_margin"
-        android:textColor="@color/grey_800"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date_top_separator"
-        tools:text="April 8, 2019 @ 06:14 PM" />
-
-    <View
-        android:id="@+id/amount_top_separator"
-        style="@style/Separator"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/list_guideline"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/small_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/total_cost_title"
-        style="@style/Text.Semibold.16"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/standard_margin"
-        android:layout_marginTop="@dimen/small_margin"
-        android:layout_marginBottom="@dimen/small_margin"
-        android:text="@string/total_cost"
-        android:textColor="@color/grey_600"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amount_top_separator" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/total_cost"
-        style="@style/Text.Semibold.16"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_margin"
-        android:layout_marginEnd="@dimen/standard_margin"
-        android:layout_marginBottom="@dimen/small_margin"
-        android:textColor="@color/grey_800"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amount_top_separator"
-        tools:text="$1000" />
-
-    <View
-        android:id="@+id/amount_bottom_separator"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="@dimen/standard_margin"
-        android:layout_marginTop="@dimen/small_margin"
-        android:layout_marginEnd="@dimen/standard_margin"
-        android:background="@color/grey_000"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/total_cost_title" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/est_amount_title"
-        style="@style/Text.Semibold.16"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/standard_margin"
-        android:layout_marginTop="@dimen/small_margin"
-        android:layout_marginBottom="@dimen/small_margin"
-        android:text="@string/estimated_amount"
-        android:textColor="@color/grey_600"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amount_bottom_separator" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/estimated_amount"
-        style="@style/Text.Semibold.16"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_margin"
-        android:layout_marginEnd="@dimen/standard_margin"
-        android:layout_marginBottom="@dimen/small_margin"
-        android:textColor="@color/grey_800"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amount_bottom_separator"
-        tools:text="30 BTC" />
-
-    <View
-        android:id="@+id/estimated_amount_bottom_separator"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginStart="@dimen/standard_margin"
-        android:layout_marginTop="@dimen/small_margin"
-        android:layout_marginEnd="@dimen/standard_margin"
-        android:background="@color/grey_000"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/estimated_amount" />
-
-
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.65" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/icon_information"
@@ -148,7 +52,7 @@
         android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="@dimen/standard_margin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/estimated_amount_bottom_separator"
+        app:layout_constraintTop_toBottomOf="@+id/recycler"
         app:srcCompat="@drawable/ic_information" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -159,10 +63,10 @@
         android:layout_marginStart="@dimen/small_margin"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="@dimen/standard_margin"
-        android:text="@string/purchase_note"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/icon_information"
-        app:layout_constraintTop_toBottomOf="@+id/estimated_amount_bottom_separator" />
+        app:layout_constraintTop_toBottomOf="@+id/recycler"
+        tools:text="@string/purchase_bank_note" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -197,5 +101,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/guideline"
         tools:text="Buy BTC" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_ok"
+        style="@style/CtaButton.Blue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/standard_margin"
+        android:text="@string/ok_cap"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.UiThread
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.annotations.CommonCode
@@ -41,17 +42,17 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visible
 import timber.log.Timber
 
-class ActivitiesFragment
-    : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
-        AccountSelectSheet.Host {
+class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
+    AccountSelectSheet.Host {
+
     override val model: ActivitiesModel by inject()
 
     private val theAdapter: ActivitiesDelegateAdapter by lazy {
         ActivitiesDelegateAdapter(
-                disposables = disposables,
-                prefs = get(),
-                onItemClicked = { cc, tx, isCustodial -> onActivityClicked(cc, tx, isCustodial) },
-                analytics = get()
+            disposables = disposables,
+            prefs = get(),
+            onItemClicked = { cc, tx, isCustodial -> onActivityClicked(cc, tx, isCustodial) },
+            analytics = get()
         )
     }
 
@@ -82,10 +83,10 @@ class ActivitiesFragment
 
         if (newState.isError) {
             ToastCustom.makeText(
-                    requireContext(),
-                    getString(R.string.activity_loading_error),
-                    ToastCustom.LENGTH_SHORT,
-                    ToastCustom.TYPE_ERROR
+                requireContext(),
+                getString(R.string.activity_loading_error),
+                ToastCustom.LENGTH_SHORT,
+                ToastCustom.TYPE_ERROR
             )
         }
 
@@ -101,15 +102,18 @@ class ActivitiesFragment
     private fun switchView(newState: ActivitiesState) {
         when {
             newState.isLoading -> {
-                content_layout.gone()
+                header_layout.visible()
+                content_list.gone()
                 empty_view.gone()
             }
             newState.activityList.isEmpty() -> {
-                content_layout.gone()
+                header_layout.visible()
+                content_list.gone()
                 empty_view.visible()
             }
             else -> {
-                content_layout.visible()
+                header_layout.visible()
+                content_list.visible()
                 empty_view.gone()
             }
         }
@@ -136,15 +140,15 @@ class ActivitiesFragment
         fiat_balance.text = ""
 
         disposables += account.fiatBalance(currencyPrefs.selectedFiatCurrency, exchangeRates)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = {
-                            fiat_balance.text = it.toStringWithSymbol()
-                        },
-                        onError = {
-                            Timber.e("Unable to get balance for ${account.label}")
-                        }
-                )
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = {
+                    fiat_balance.text = it.toStringWithSymbol()
+                },
+                onError = {
+                    Timber.e("Unable to get balance for ${account.label}")
+                }
+            )
     }
 
     private fun ImageView.setAccountIcon(account: CryptoAccount) {
@@ -190,9 +194,11 @@ class ActivitiesFragment
     private fun setupRecycler() {
         theLayoutManager = SafeLayoutManager(requireContext())
 
-        recycler_view.apply {
+        content_list.apply {
             layoutManager = theLayoutManager
             adapter = theAdapter
+            addItemDecoration(
+                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         }
         theAdapter.items = displayList
     }
@@ -218,10 +224,10 @@ class ActivitiesFragment
 
         // Configure the refreshing colors
         swipe.setColorSchemeResources(
-                R.color.blue_800,
-                R.color.blue_600,
-                R.color.blue_400,
-                R.color.blue_200
+            R.color.blue_800,
+            R.color.blue_600,
+            R.color.blue_400,
+            R.color.blue_200
         )
     }
 
@@ -244,9 +250,9 @@ class ActivitiesFragment
         // Show a toast in this case, for now - this may change come design review...
         if (isCustodial) {
             Toast.makeText(
-                    requireContext(),
-                    "Custodial activity details are not supported in this release",
-                    Toast.LENGTH_LONG
+                requireContext(),
+                "Custodial activity details are not supported in this release",
+                Toast.LENGTH_LONG
             ).show()
         } else {
             TransactionDetailActivity.start(requireContext(), cryptoCurrency, txHash)

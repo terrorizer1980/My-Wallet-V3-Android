@@ -35,18 +35,18 @@ object SelectDefaultAccountIntent : ActivitiesIntent() {
 }
 
 class ActivityListUpdatedIntent(
-    val activityList: ActivitySummaryList
+    private val activityList: ActivitySummaryList
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
-            isError = activityList.isEmpty(),
+            isError = false,
             isLoading = false,
             activityList = activityList
         )
     }
 }
 
-class ActivityListUpdatedErrorIntent : ActivitiesIntent() {
+object ActivityListUpdatedErrorIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
                 isLoading = false,
