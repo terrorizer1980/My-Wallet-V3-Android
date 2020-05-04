@@ -1,11 +1,13 @@
 package piuk.blockchain.android.ui.start
 
+import androidx.annotation.CallSuper
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 
 import info.blockchain.wallet.api.data.Settings
 import info.blockchain.wallet.exceptions.DecryptionException
 import info.blockchain.wallet.exceptions.HDWalletException
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -26,7 +28,7 @@ import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.android.util.AppUtil
 import retrofit2.Response
 import timber.log.Timber
-import java.util.concurrent.atomic.AtomicBoolean
+import java.lang.RuntimeException
 
 interface PasswordAuthView : MvpView {
     fun goToPinPage()
@@ -51,7 +53,12 @@ abstract class PasswordAuthPresenter<T : PasswordAuthView> : MvpPresenter<T>() {
 
     private val authDisposable = CompositeDisposable()
 
-    override fun onViewAttached() { /* no-op */ }
+    override fun onViewAttached() {
+        if (authComplete) {
+            view?.goToPinPage()
+        }
+    }
+
     override fun onViewDetached() { /* no-op */ }
 
     override val alwaysDisableScreenshots = true
@@ -59,8 +66,7 @@ abstract class PasswordAuthPresenter<T : PasswordAuthView> : MvpPresenter<T>() {
 
     private var sessionId: String? = null
 
-    @VisibleForTesting
-    internal var waitingForAuth = AtomicBoolean(false)
+    private var authComplete = false
 
     internal fun submitTwoFactorCode(
         responseObject: JSONObject,
@@ -99,9 +105,8 @@ abstract class PasswordAuthPresenter<T : PasswordAuthView> : MvpPresenter<T>() {
     private fun getSessionId(guid: String): Observable<String> =
         sessionId?.let { Observable.just(it) } ?: authDataManager.getSessionId(guid)
 
-    protected fun verifyPassword(password: String, guid: String) {
-        waitingForAuth.set(true)
-
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    fun verifyPassword(password: String, guid: String) {
         compositeDisposable += getSessionId(guid)
             .doOnSubscribe {
                 view?.showProgressDialog(R.string.validating_password)
@@ -122,29 +127,51 @@ abstract class PasswordAuthPresenter<T : PasswordAuthView> : MvpPresenter<T>() {
         val errorBody = if (response.errorBody() != null) response.errorBody()!!.string() else ""
 
         if (errorBody.contains(KEY_AUTH_REQUIRED)) {
-            showCheckEmailDialog()
-
-            authDisposable += authDataManager.startPollingAuthStatus(guid, sessionId!!)
-                .subscribeBy(
-                    onNext = { payloadResponse ->
-                        waitingForAuth.set(false)
-
-                        if (payloadResponse.contains(KEY_AUTH_REQUIRED)) {
-                            showErrorToast(R.string.auth_failed)
-                        } else {
-                            val responseBody = payloadResponse.toResponseBody("application/json".toMediaTypeOrNull())
-                            checkTwoFactor(password, guid, Response.success(responseBody))
-                        }
-                    },
-                    onError = {
-                        waitingForAuth.set(false)
-                        showErrorToast(R.string.auth_failed)
-                    })
+            waitForEmailAuth(password, guid)
         } else {
             // No 2FA
-            waitingForAuth.set(false)
             checkTwoFactor(password, guid, response)
         }
+    }
+
+    private fun waitForEmailAuth(password: String, guid: String) {
+
+        val authPoll = authDataManager.startPollingAuthStatus(guid, sessionId!!)
+            .doOnNext { payloadResponse ->
+                if (payloadResponse.contains(KEY_AUTH_REQUIRED)) {
+                    throw RuntimeException("Auth failed")
+                } else {
+                    val responseBody =
+                        payloadResponse.toResponseBody("application/json".toMediaTypeOrNull())
+                    checkTwoFactor(password, guid, Response.success(responseBody))
+                }
+            }
+            .ignoreElements()
+
+        val dlgUpdater = authDataManager.createCheckEmailTimer()
+            .doOnSubscribe {
+                view?.showProgressDialog(R.string.check_email_to_auth_login, ::onProgressCancelled)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { integer ->
+                if (integer <= 0) {
+                    // Only called if timer has run out
+                    showErrorToastAndRestartApp(R.string.pairing_failed)
+                } else {
+                    view?.updateWaitingForAuthDialog(integer!!)
+                }
+            }
+            .doOnComplete { throw RuntimeException("Timeout") }
+            .ignoreElements()
+
+        authDisposable += Completable.ambArray(
+            authPoll,
+            dlgUpdater
+        ).subscribeBy(
+            onError = {
+                showErrorToast(R.string.auth_failed)
+            }
+        )
     }
 
     private fun checkTwoFactor(password: String, guid: String, response: Response<ResponseBody>) {
@@ -177,8 +204,7 @@ abstract class PasswordAuthPresenter<T : PasswordAuthView> : MvpPresenter<T>() {
             }
             .subscribeBy(
                onComplete = {
-                    view?.goToPinPage()
-                    onAuthComplete()
+                   onAuthComplete()
                 },
                 onError = { throwable ->
                     when (throwable) {
@@ -190,33 +216,18 @@ abstract class PasswordAuthPresenter<T : PasswordAuthView> : MvpPresenter<T>() {
             )
     }
 
-    protected abstract fun onAuthFailed()
-    protected abstract fun onAuthComplete()
+    @CallSuper
+    protected open fun onAuthFailed() {
 
-    private fun showCheckEmailDialog() {
-        authDisposable += authDataManager.createCheckEmailTimer()
-            .doOnSubscribe {
-                view?.showProgressDialog(R.string.check_email_to_auth_login, ::onProgressCancelled)
-            }
-            .takeUntil { !waitingForAuth.get() }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onNext = { integer ->
-                    if (integer <= 0) {
-                        // Only called if timer has run out
-                        showErrorToastAndRestartApp(R.string.pairing_failed)
-                    } else {
-                        view?.updateWaitingForAuthDialog(integer!!)
-                    }
-                },
-                onError = {
-                    showErrorToast(R.string.auth_failed)
-                    waitingForAuth.set(false)
-                })
+    }
+
+    @CallSuper
+    protected open fun onAuthComplete() {
+        authComplete = true
+        view?.goToPinPage()
     }
 
     internal fun onProgressCancelled() {
-        waitingForAuth.set(false)
         compositeDisposable.clear()
         authDisposable.clear()
     }

@@ -23,7 +23,7 @@ class PasswordRequiredPresenter(
     fun onContinueClicked(password: String) {
         if (password.length > 1) {
             val guid = prefs.getValue(PersistentPrefs.KEY_WALLET_GUID, "")
-            verifyPassword(guid, password)
+            verifyPassword(password, guid)
         } else {
             view?.apply {
                 showToast(R.string.invalid_password, ToastCustom.TYPE_ERROR)
@@ -39,8 +39,7 @@ class PasswordRequiredPresenter(
     }
 
     override fun onAuthFailed() {
+        super.onAuthFailed()
         showErrorToastAndRestartApp(R.string.auth_failed)
     }
-
-    override fun onAuthComplete() { /* No op */ }
 }

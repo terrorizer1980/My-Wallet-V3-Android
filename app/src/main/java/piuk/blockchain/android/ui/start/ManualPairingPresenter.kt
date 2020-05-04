@@ -27,10 +27,12 @@ class ManualPairingPresenter(
     }
 
     override fun onAuthFailed() {
+        super.onAuthFailed()
         showErrorToast(R.string.auth_failed)
     }
 
     override fun onAuthComplete() {
+        super.onAuthComplete()
         analytics.logEvent(AnalyticsEvents.WalletManualLogin)
     }
 }
