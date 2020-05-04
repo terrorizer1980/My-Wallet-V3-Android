@@ -51,7 +51,8 @@ abstract class PasswordAuthPresenter<T : PasswordAuthView> : MvpPresenter<T>() {
     protected abstract val payloadDataManager: PayloadDataManager
     protected abstract val prefs: PersistentPrefs
 
-    private val authDisposable = CompositeDisposable()
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val authDisposable = CompositeDisposable()
 
     override fun onViewAttached() {
         if (authComplete) {
@@ -203,8 +204,8 @@ abstract class PasswordAuthPresenter<T : PasswordAuthView> : MvpPresenter<T>() {
                 prefs.removeValue(PersistentPrefs.KEY_PIN_IDENTIFIER)
             }
             .subscribeBy(
-               onComplete = {
-                   onAuthComplete()
+                onComplete = {
+                    onAuthComplete()
                 },
                 onError = { throwable ->
                     when (throwable) {
@@ -217,9 +218,7 @@ abstract class PasswordAuthPresenter<T : PasswordAuthView> : MvpPresenter<T>() {
     }
 
     @CallSuper
-    protected open fun onAuthFailed() {
-
-    }
+    protected open fun onAuthFailed() { }
 
     @CallSuper
     protected open fun onAuthComplete() {

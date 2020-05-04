@@ -1,8 +1,6 @@
 package piuk.blockchain.android.ui.start
 
 import com.blockchain.android.testutils.rxInit
-import com.blockchain.notifications.analytics.Analytics
-import com.blockchain.notifications.analytics.AnalyticsEvents
 import com.nhaarman.mockito_kotlin.whenever
 
 import info.blockchain.wallet.exceptions.DecryptionException
@@ -11,7 +9,6 @@ import info.blockchain.wallet.payload.data.Wallet
 
 import org.json.JSONObject
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 
 import io.reactivex.Completable
@@ -25,7 +22,6 @@ import piuk.blockchain.android.util.AppUtil
 import piuk.blockchain.androidcore.utils.PrefsUtil
 import retrofit2.Response
 
-import junit.framework.TestCase.assertFalse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.amshove.kluent.any
@@ -34,7 +30,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.atLeastOnce
-import org.mockito.Mockito.never
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import piuk.blockchain.android.R
@@ -486,8 +481,9 @@ class PasswordAuthPresenterTest {
         // Act
         subject.onProgressCancelled()
         // Assert
-        assertFalse(subject.waitingForAuth.get())
+
         assertEquals(0, subject.compositeDisposable.size().toLong())
+        assertEquals(0, subject.authDisposable.size().toLong())
     }
 
     companion object {

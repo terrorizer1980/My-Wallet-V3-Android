@@ -17,7 +17,6 @@ import piuk.blockchain.android.ui.auth.PinEntryActivity
 import piuk.blockchain.android.ui.base.MvpActivity
 import piuk.blockchain.android.ui.launcher.LauncherActivity
 import piuk.blockchain.android.ui.recover.RecoverFundsActivity
-import piuk.blockchain.android.util.DialogButtonCallback
 import piuk.blockchain.androidcoreui.ui.customviews.ToastCustom
 import piuk.blockchain.androidcoreui.utils.ViewUtils
 
@@ -68,7 +67,7 @@ class PasswordRequiredActivity : MvpActivity<PasswordRequiredView, PasswordRequi
             .setTitle(R.string.warning)
             .setMessage(R.string.forget_wallet_warning)
             .setPositiveButton(R.string.forget_wallet) { _, _ -> onForgetConfirmed() }
-            .setNegativeButton(android.R.string.cancel) { _, _ ->  }
+            .setNegativeButton(android.R.string.cancel) { _, _ -> }
             .create()
         )
     }
