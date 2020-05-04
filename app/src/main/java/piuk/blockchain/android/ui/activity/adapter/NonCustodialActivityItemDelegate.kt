@@ -61,13 +61,13 @@ private class NonCustodialActivityItemViewHolder(
     ) {
         with(itemView) {
             if (tx.isConfirmed) {
-                icon.setDirectionIcon(tx.direction)
+                icon.setDirectionIcon(tx.direction, tx.isFeeTransaction)
                 status_date.text = Date(tx.timeStampMs).toFormattedDate()
             } else {
                 icon.setIsConfirming()
             }
 
-            tx_type.setTxLabel(tx.cryptoCurrency, tx.direction)
+            tx_type.setTxLabel(tx.cryptoCurrency, tx.direction, tx.isFeeTransaction)
 
             setTextColours(tx.isConfirmed)
 
@@ -106,17 +106,24 @@ private class NonCustodialActivityItemViewHolder(
     }
 }
 
-private fun ImageView.setDirectionIcon(direction: TransactionSummary.Direction) {
+private fun ImageView.setDirectionIcon(
+    direction: TransactionSummary.Direction,
+    isFeeTransaction: Boolean
+) {
     setImageDrawable(
         AppCompatResources.getDrawable(
             context,
-            when (direction) {
-                TransactionSummary.Direction.TRANSFERRED -> R.drawable.ic_tx_transfer
-                TransactionSummary.Direction.RECEIVED -> R.drawable.ic_tx_receive
-                TransactionSummary.Direction.SENT -> R.drawable.ic_tx_sent
-                TransactionSummary.Direction.BUY -> R.drawable.ic_tx_buy
-                TransactionSummary.Direction.SELL -> R.drawable.ic_tx_sell
-                TransactionSummary.Direction.SWAP -> R.drawable.ic_tx_swap
+            if (isFeeTransaction) {
+                R.drawable.ic_tx_sent
+            } else {
+                when (direction) {
+                    TransactionSummary.Direction.TRANSFERRED -> R.drawable.ic_tx_transfer
+                    TransactionSummary.Direction.RECEIVED -> R.drawable.ic_tx_receive
+                    TransactionSummary.Direction.SENT -> R.drawable.ic_tx_sent
+                    TransactionSummary.Direction.BUY -> R.drawable.ic_tx_buy
+                    TransactionSummary.Direction.SELL -> R.drawable.ic_tx_sell
+                    TransactionSummary.Direction.SWAP -> R.drawable.ic_tx_swap
+                }
             }
         )
     )
@@ -130,14 +137,23 @@ private fun ImageView.setIsConfirming() =
         )
     )
 
-private fun TextView.setTxLabel(cryptoCurrency: CryptoCurrency, direction: TransactionSummary.Direction) {
-    val resId = when (direction) {
-        TransactionSummary.Direction.TRANSFERRED -> R.string.tx_title_transfer
-        TransactionSummary.Direction.RECEIVED -> R.string.tx_title_receive
-        TransactionSummary.Direction.SENT -> R.string.tx_title_send
-        TransactionSummary.Direction.BUY -> R.string.tx_title_buy
-        TransactionSummary.Direction.SELL -> R.string.tx_title_sell
-        TransactionSummary.Direction.SWAP -> R.string.tx_title_swap
+private fun TextView.setTxLabel(
+    cryptoCurrency: CryptoCurrency,
+    direction: TransactionSummary.Direction,
+    isFeeTransaction: Boolean
+) {
+    val resId = if (isFeeTransaction) {
+        R.string.tx_title_fee
+    } else {
+        when (direction) {
+            TransactionSummary.Direction.TRANSFERRED -> R.string.tx_title_transfer
+            TransactionSummary.Direction.RECEIVED -> R.string.tx_title_receive
+            TransactionSummary.Direction.SENT -> R.string.tx_title_send
+            TransactionSummary.Direction.BUY -> R.string.tx_title_buy
+            TransactionSummary.Direction.SELL -> R.string.tx_title_sell
+            TransactionSummary.Direction.SWAP -> R.string.tx_title_swap
+        }
     }
+
     text = context.resources.getString(resId, cryptoCurrency.displayTicker)
 }

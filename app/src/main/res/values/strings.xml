@@ -624,6 +624,7 @@
     <string name="tx_title_buy">Buy %1s</string>
     <string name="tx_title_swap">Swap %1s</string>
     <string name="tx_title_transfer">Transfer %1s</string>
+    <string name="tx_title_fee">Fee %1s</string>
 
     <!-- TRANSACTION DETAILS -->
     <string name="transaction_detail_title">Transaction</string>
