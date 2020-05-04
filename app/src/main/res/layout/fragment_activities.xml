@@ -47,8 +47,8 @@
                     android:importantForAccessibility="no"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/vector_bitcoin_colored"
-                    tools:srcCompat="@drawable/vector_bitcoin_colored" />
+                    app:srcCompat="@drawable/ic_all_wallets_white"
+                    tools:srcCompat="@drawable/ic_all_wallets_white" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/account_spend_locked"
