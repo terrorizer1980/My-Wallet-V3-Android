@@ -2,6 +2,7 @@ package piuk.blockchain.android.ui.settings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
 
 import com.blockchain.notifications.NotificationTokenManager;
@@ -9,8 +10,15 @@ import com.blockchain.notifications.analytics.Analytics;
 import com.blockchain.notifications.analytics.AnalyticsEvents;
 import com.blockchain.notifications.analytics.SettingsAnalyticsEvents;
 import com.blockchain.remoteconfig.FeatureFlag;
+import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager;
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod;
+import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.CardStatus;
 import com.blockchain.swap.nabu.models.nabu.NabuApiException;
 import com.blockchain.swap.nabu.models.nabu.NabuErrorStatusCodes;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import info.blockchain.wallet.api.data.Settings;
 import info.blockchain.wallet.payload.PayloadManager;
@@ -53,6 +61,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     private final NotificationTokenManager notificationTokenManager;
     private final ExchangeRateDataManager exchangeRateDataManager;
     private final KycStatusHelper kycStatusHelper;
+    private final CustodialWalletManager custodialWalletManager;
     @VisibleForTesting
     Settings settings;
     private final PitLinking pitLinking;
@@ -71,6 +80,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             StringUtils stringUtils,
             PersistentPrefs prefs,
             AccessState accessState,
+            CustodialWalletManager custodialWalletManager,
             SwipeToReceiveHelper swipeToReceiveHelper,
             NotificationTokenManager notificationTokenManager,
             ExchangeRateDataManager exchangeRateDataManager,
@@ -95,7 +105,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         this.pitLinking = pitLinking;
         this.analytics = analytics;
         this.featureFlag = featureFlag;
-
+        this.custodialWalletManager = custodialWalletManager;
     }
 
     @Override
@@ -116,10 +126,18 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                                     // Warn error when updating
                                     getView().showToast(R.string.settings_error_updating, ToastCustom.TYPE_ERROR);
                                 }));
-
+        updateCards();
         getCompositeDisposable().add(pitLinking.getState().subscribe(this::onPitStateUpdated));
         getCompositeDisposable().add(featureFlag.getEnabled().subscribe(this::showPitItem));
     }
+
+    public void updateCards() {
+        getCompositeDisposable().add(custodialWalletManager.fetchUnawareLimitsCards(
+                Arrays.asList(CardStatus.ACTIVE, CardStatus.EXPIRED)
+        ).observeOn(AndroidSchedulers.mainThread()).doOnSubscribe(disposable ->
+                onCardsUpdated(Collections.emptyList())).subscribe(this::onCardsUpdated));
+    }
+
 
     private void showPitItem(Boolean pitEnabled) {
         getView().isPitEnabled(pitEnabled);
@@ -128,6 +146,10 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     private void onPitStateUpdated(PitLinkingState state) {
         pitLinkState = state;
         getView().setPitLinkingState(pitLinkState.isLinked());
+    }
+
+    private void onCardsUpdated(List<PaymentMethod.Card> cards) {
+        getView().updateCards(cards);
     }
 
     private void loadKyc2TierState() {

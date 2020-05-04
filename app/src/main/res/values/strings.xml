@@ -534,9 +534,11 @@
     <string name="new_password">New Password</string>
     <string name="sms_verified">Mobile number verified</string>
     <string name="preferences">Preferences</string>
+    <string name="linked_cards">Linked Cards</string>
     <string name="two_fa_summary">Protect your wallet from unauthorized access by enabling 2-Step
         Verification.
     </string>
+
     <string name="two_fa_description">Protect your wallet from unauthorized access by enabling
         2-Step Verification. You can choose to use your mobile phone number to secure your wallet.
         This code will be requested when you try to access your wallet via the web browser.\n\nIn
@@ -1659,7 +1661,7 @@
     <string name="card_not_supported">Card Not Supported</string>
     <string name="privacy_protected_ssl">Privacy protected with 256-Bit SSL encryption.</string>
     <string name="add_card_title">Add a Card</string>
-    <string name="linking_card_title">Secrurely Linking Your Card</string>
+    <string name="linking_card_title">Securely Linking Your Card</string>
     <string name="linking_card_subtitle">This could take up to 1 minute.</string>
     <string name="linking_card_error_title">Oops! Something Went Wrong.</string>
     <string name="card_error_subtitle">Please go back and try again.</string>
@@ -1690,5 +1692,7 @@
     <string name="checkout_bank_transfer_label">Bank Transfer</string>
     <string name="activity_loading_error">Failed to load activity, please try again later</string>
     <string name="order_pending">Pending</string>
+    <string name="expired">Expired</string>
+    <string name="remove_card">Remove Card</string>
 
 </resources>

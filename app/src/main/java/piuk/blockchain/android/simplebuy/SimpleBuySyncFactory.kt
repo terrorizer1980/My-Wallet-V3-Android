@@ -162,7 +162,7 @@ class SimpleBuySyncFactory(
                             custodialWallet.getCardDetails(buyOrder.paymentMethodId).flatMapMaybe {
                                 Maybe.just(buyOrder.toSimpleBuyState().copy(
                                     selectedPaymentMethod = SelectedPaymentMethod(
-                                        it.cardId, it.partner, it.uiLabel()
+                                        it.cardId, it.partner, it.uiLabelWithDigits()
                                     )
                                 )
                                 )
@@ -188,7 +188,7 @@ class SimpleBuySyncFactory(
                                 custodialWallet.getCardDetails(buyOrder.paymentMethodId).flatMapMaybe {
                                     Maybe.just(buyOrder.toSimpleBuyState().copy(
                                         selectedPaymentMethod = SelectedPaymentMethod(
-                                            it.cardId, it.partner, it.uiLabel()
+                                            it.cardId, it.partner, it.uiLabelWithDigits()
                                         )
                                     )
                                     )

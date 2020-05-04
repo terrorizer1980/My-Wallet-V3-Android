@@ -249,16 +249,16 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
 
     private fun renderCardPayment(selectedPaymentMethod: PaymentMethod.Card) {
         payment_method_icon.setImageResource(selectedPaymentMethod.cardType.frontResource)
-        payment_method_title.text = selectedPaymentMethod.label.plus(" ${selectedPaymentMethod.endDigits}")
+        payment_method_title.text = selectedPaymentMethod.uiLabelWithDigits()
         payment_method_limit.text =
-            getString(R.string.payment_method_limit, selectedPaymentMethod.limits?.max?.toStringWithSymbol())
+            getString(R.string.payment_method_limit, selectedPaymentMethod.limits.max.toStringWithSymbol())
     }
 
     private fun renderBankPayment(selectedPaymentMethod: PaymentMethod.BankTransfer) {
         payment_method_title.text = getString(R.string.bank_wise_transfer)
         payment_method_icon.setImageResource(R.drawable.ic_bank_transfer)
         payment_method_limit.text =
-            getString(R.string.payment_method_limit, selectedPaymentMethod.limits?.max?.toStringWithSymbol())
+            getString(R.string.payment_method_limit, selectedPaymentMethod.limits.max.toStringWithSymbol())
     }
 
     private fun clearError() {
@@ -315,11 +315,11 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         this.toStringWithoutSymbol().withoutThousandsSeparator().withoutTrailingDecimalsZeros()
 
     private fun AppCompatTextView.asPredefinedAmountText(amount: FiatValue?) {
-        amount?.let { amount ->
-            text = amount.formatOrSymbolForZero().withoutTrailingDecimalsZeros()
+        amount?.let { amnt ->
+            text = amnt.formatOrSymbolForZero().withoutTrailingDecimalsZeros()
             visible()
             setOnClickListener {
-                input_amount.setText(amount.asInputAmount())
+                input_amount.setText(amnt.asInputAmount())
             }
         } ?: this.gone()
     }
@@ -354,7 +354,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         if (requestCode == ADD_CARD_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             model.process(
                 SimpleBuyIntent.FetchSuggestedPaymentMethod(currencyPrefs.selectedFiatCurrency,
-                    data?.getStringExtra(CardDetailsActivity.CARD_ID_KEY)
+                    (data?.extras?.getSerializable(CardDetailsActivity.CARD_KEY) as? PaymentMethod.Card)?.id
                 ))
         }
     }

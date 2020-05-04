@@ -203,6 +203,11 @@ class LiveCustodialWalletManager(
             nabuService.deleteBuyOrder(it, orderId)
         }
 
+    override fun deleteCard(cardId: String): Completable =
+        authenticator.authenticateCompletable {
+            nabuService.deleteCard(it, cardId)
+        }
+
     override fun getBalanceForAsset(crypto: CryptoCurrency): Maybe<CryptoValue> =
         authenticator.authenticateMaybe {
             nabuService.getBalanceForAsset(it, crypto)
@@ -304,6 +309,15 @@ class LiveCustodialWalletManager(
             it.toCardPaymentMethod(PaymentLimits(FiatValue.zero(it.currency), FiatValue.zero(it.currency)))
         }
 
+    override fun fetchUnawareLimitsCards(states: List<CardStatus>): Single<List<PaymentMethod.Card>> =
+        authenticator.authenticate {
+            nabuService.getCards(it)
+        }.map {
+            it.filter { states.contains(it.state.toCardStatus()) }.map {
+                it.toCardPaymentMethod(PaymentLimits(FiatValue.zero(it.currency), FiatValue.zero(it.currency)))
+            }
+        }
+
     override fun confirmOrder(orderId: String, attributes: CardPartnerAttributes?): Single<BuyOrder> =
         authenticator.authenticate {
             nabuService.confirmOrder(it, orderId,
@@ -334,6 +348,9 @@ class LiveCustodialWalletManager(
 
     private fun String.isActive(): Boolean =
         toCardStatus() == CardStatus.ACTIVE
+
+    private fun String.isActiveOrExpired(): Boolean =
+        isActive() || toCardStatus() == CardStatus.EXPIRED
 
     private fun String.toCardStatus(): CardStatus =
         when (this) {

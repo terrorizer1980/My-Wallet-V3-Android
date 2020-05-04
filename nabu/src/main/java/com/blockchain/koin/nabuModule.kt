@@ -10,9 +10,7 @@ import com.blockchain.swap.nabu.api.trade.TransactionStateAdapter
 import com.blockchain.swap.nabu.datamanagers.AnalyticsNabuUserReporterImpl
 import com.blockchain.swap.nabu.datamanagers.AnalyticsWalletReporter
 import com.blockchain.swap.nabu.datamanagers.CreateNabuTokenAdapter
-import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.CustodialWalletManagerSwitcher
 import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.LiveCustodialWalletManager
-import com.blockchain.swap.nabu.datamanagers.custodialwalletimpl.StubCustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
 import com.blockchain.swap.nabu.datamanagers.NabuAuthenticator
 import com.blockchain.swap.nabu.datamanagers.NabuDataManager
@@ -76,15 +74,12 @@ val nabuModule = applicationContext {
         }
 
         factory {
-            CustodialWalletManagerSwitcher(
-                mockCustodialWalletManager = StubCustodialWalletManager(),
-                liveCustodialWalletManager = LiveCustodialWalletManager(
-                    nabuService = get(),
-                    authenticator = get(),
-                    simpleBuyPrefs = get(),
-                    paymentAccountMapperMappers = mapOf(
-                        "EUR" to get("EUR"), "GBP" to get("GBP")
-                    )
+            LiveCustodialWalletManager(
+                nabuService = get(),
+                authenticator = get(),
+                simpleBuyPrefs = get(),
+                paymentAccountMapperMappers = mapOf(
+                    "EUR" to get("EUR"), "GBP" to get("GBP")
                 )
             )
         }.bind(CustodialWalletManager::class)

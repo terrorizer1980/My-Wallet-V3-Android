@@ -70,7 +70,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
                     } as? PaymentMethod.Card)?.partner,
                     (availablePaymentMethods.firstOrNull {
                         it.id == selectedPaymentMethodId
-                    } as? PaymentMethod.Card)?.uiLabel() ?: ""
+                    } as? PaymentMethod.Card)?.uiLabelWithDigits() ?: ""
                 ), // todo apply the right logic
                 paymentOptions = PaymentOptions(
                     availablePaymentMethods = availablePaymentMethods,
@@ -96,7 +96,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
                     paymentMethod.id,
                     // no partner for bank transfer or ui label. Ui label for bank transfer is coming from resources
                     (paymentMethod as? PaymentMethod.Card)?.partner,
-                    (paymentMethod as? PaymentMethod.Card)?.uiLabel() ?: ""
+                    (paymentMethod as? PaymentMethod.Card)?.uiLabelWithDigits() ?: ""
                 ))
     }
 

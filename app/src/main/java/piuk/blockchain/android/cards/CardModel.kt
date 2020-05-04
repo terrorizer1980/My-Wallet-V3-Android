@@ -62,9 +62,7 @@ class CardModel(
                     process(it)
                     if (it.cardDetails.status == CardStatus.ACTIVE)
                         process(CardIntent.UpdateRequestState(CardRequestStatus.Success(
-                            it.cardDetails.cardId,
-                            it.cardDetails.uiLabel(),
-                            it.cardDetails.partner
+                            it.cardDetails
                         )))
                     else
                         process(CardIntent.UpdateRequestState(CardRequestStatus.Error))

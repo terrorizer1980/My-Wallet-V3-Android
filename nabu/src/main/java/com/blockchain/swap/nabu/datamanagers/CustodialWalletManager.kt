@@ -11,6 +11,7 @@ import info.blockchain.balance.FiatValue
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import java.io.Serializable
 import java.util.Date
 
 enum class OrderState {
@@ -77,6 +78,8 @@ interface CustodialWalletManager {
 
     fun deleteBuyOrder(orderId: String): Completable
 
+    fun deleteCard(cardId: String): Completable
+
     fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable
 
     // For test/dev
@@ -89,6 +92,8 @@ interface CustodialWalletManager {
     fun activateCard(cardId: String, attributes: CardPartnerAttributes): Single<PartnerCredentials>
 
     fun getCardDetails(cardId: String): Single<PaymentMethod.Card>
+
+    fun fetchUnawareLimitsCards(states: List<CardStatus>): Single<List<PaymentMethod.Card>> // fetches the available
 
     fun confirmOrder(orderId: String, attributes: CardPartnerAttributes?): Single<BuyOrder>
 }
@@ -140,22 +145,39 @@ sealed class SimpleBuyError : Throwable() {
     object WithdrawlInsufficientFunds : SimpleBuyError()
 }
 
-sealed class PaymentMethod(val id: String, open val limits: PaymentLimits?) {
+sealed class PaymentMethod(val id: String, open val limits: PaymentLimits?) : Serializable {
     object Undefined : PaymentMethod(UNDEFINED_PAYMENT_ID, null)
     data class BankTransfer(override val limits: PaymentLimits) : PaymentMethod(BANK_PAYMENT_ID, limits)
     data class UndefinedCard(override val limits: PaymentLimits) : PaymentMethod(UNDEFINED_CARD_PAYMENT_ID, limits)
     data class Card(
         val cardId: String,
         override val limits: PaymentLimits,
-        val label: String,
-        val endDigits: String,
+        private val label: String,
+        private val endDigits: String,
         val partner: Partner,
         val expireDate: Date,
         val cardType: CardType,
         val status: CardStatus
-    ) : PaymentMethod(cardId, limits) {
+    ) : PaymentMethod(cardId, limits), Serializable {
+        fun uiLabelWithDigits() =
+            "${uiLabel()} ${dottedEndDigits()}"
+
         fun uiLabel() =
-            "$label •••• $endDigits"
+            label.takeIf { it.isNotEmpty() } ?: cardType.label()
+
+        fun dottedEndDigits() =
+            "•••• $endDigits"
+
+        private fun CardType.label(): String =
+            when (this) {
+                CardType.VISA -> "Visa"
+                CardType.MASTERCARD -> "Mastercard"
+                CardType.AMEX -> "American Express"
+                CardType.DINERS_CLUB -> "Diners Club"
+                CardType.MAESTRO -> "Maestro"
+                CardType.JCB -> "JCB"
+                else -> ""
+            }
     }
 
     companion object {
@@ -165,7 +187,7 @@ sealed class PaymentMethod(val id: String, open val limits: PaymentLimits?) {
     }
 }
 
-data class PaymentLimits(val min: FiatValue, val max: FiatValue) {
+data class PaymentLimits(val min: FiatValue, val max: FiatValue) : Serializable {
     constructor(min: Long, max: Long, currency: String) : this(
         FiatValue.fromMinor(currency, min),
         FiatValue.fromMinor(currency, max)

@@ -132,9 +132,9 @@ private class BottomSheetPaymentMethodsAdapter(
         with(holder) {
             addIcon.gone()
             icon.setImageResource(paymentMethod.cardType.frontResource)
-            title.text = paymentMethod.label
-            limit.text = paymentMethod.limits?.max?.toStringWithSymbol()
-            cardNumber.text = "•••• ${paymentMethod.endDigits}"
+            title.text = paymentMethod.uiLabel()
+            limit.text = paymentMethod.limits.max.toStringWithSymbol()
+            cardNumber.text = paymentMethod.dottedEndDigits()
             expiryDate.text =
                 expiryDate.context.getString(R.string.card_expiry_date, paymentMethod.expireDate.formatted())
             cardNumber.visible()

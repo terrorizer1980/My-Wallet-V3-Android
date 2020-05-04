@@ -737,6 +737,7 @@ val applicationModule = applicationContext {
                 /* stringUtils = */ get(),
                 /* prefs = */ get(),
                 /* accessState = */ get(),
+                /* custodialWalletManager = */ get(),
                 /* swipeToReceiveHelper = */ get(),
                 /* notificationTokenManager = */ get(),
                 /* exchangeRateDataManager = */ get(),
