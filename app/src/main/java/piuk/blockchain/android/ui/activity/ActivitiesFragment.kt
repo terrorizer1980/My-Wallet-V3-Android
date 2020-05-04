@@ -48,6 +48,7 @@ class ActivitiesFragment
     : HomeScreenMviFragment<ActivitiesModel, ActivitiesIntent, ActivitiesState>(),
     AccountSelectSheet.Host, ActivityDetailsBottomSheet.Host, BankDetailsBottomSheet.Host,
     SimpleBuyCancelOrderBottomSheet.Host {
+
     override val model: ActivitiesModel by inject()
 
     private val theAdapter: ActivitiesDelegateAdapter by lazy {

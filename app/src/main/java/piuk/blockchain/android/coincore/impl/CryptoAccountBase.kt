@@ -90,7 +90,7 @@ abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
             txId = buyOrder.id,
             timeStampMs = buyOrder.created.time,
             status = buyOrder.state,
-            fee = buyOrder.fee
+            fee = buyOrder.fee ?: FiatValue.zero(buyOrder.fiat.currencyCode)
         )
 
     // Stop gap filter, until we finalise which item we wish to display to the user.

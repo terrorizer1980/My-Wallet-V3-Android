@@ -154,5 +154,6 @@ private fun TextView.setTxLabel(
             TransactionSummary.Direction.SWAP -> R.string.tx_title_swap
         }
     }
+
     text = context.resources.getString(resId, cryptoCurrency.displayTicker)
 }

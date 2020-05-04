@@ -1,11 +1,16 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
 import com.blockchain.swap.nabu.datamanagers.BankAccount
+import com.blockchain.swap.nabu.datamanagers.BillingAddress
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
 import com.blockchain.swap.nabu.datamanagers.BuyOrderList
+import com.blockchain.swap.nabu.datamanagers.CardToBeActivated
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
+import com.blockchain.swap.nabu.datamanagers.PartnerCredentials
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
+import com.blockchain.swap.nabu.models.simplebuy.CardPartnerAttributes
 import com.blockchain.swap.nabu.models.tokenresponse.NabuOfflineTokenResponse
 import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
@@ -43,12 +48,16 @@ class CustodialWalletManagerSwitcher(
     override fun createOrder(
         cryptoCurrency: CryptoCurrency,
         amount: FiatValue,
-        action: String
+        action: String,
+        paymentMethodId: String?,
+        stateAction: String?
     ): Single<BuyOrder> =
         proxy.createOrder(
             cryptoCurrency,
             amount,
-            action
+            action,
+            paymentMethodId,
+            stateAction
         )
 
     override fun getPredefinedAmounts(currency: String): Single<List<FiatValue>> =
@@ -83,4 +92,23 @@ class CustodialWalletManagerSwitcher(
 
     override fun transferFundsToWallet(amount: CryptoValue, walletAddress: String): Completable =
         proxy.transferFundsToWallet(amount, walletAddress)
+
+    override fun cancelAllPendingBuys(): Completable =
+        proxy.cancelAllPendingBuys()
+
+    override fun fetchSuggestedPaymentMethod(fiatCurrency: String, isTier2Approved: Boolean):
+            Single<List<PaymentMethod>> =
+        proxy.fetchSuggestedPaymentMethod(fiatCurrency, isTier2Approved)
+
+    override fun addNewCard(fiatCurrency: String, billingAddress: BillingAddress): Single<CardToBeActivated> =
+        proxy.addNewCard(fiatCurrency, billingAddress)
+
+    override fun activateCard(cardId: String, attributes: CardPartnerAttributes): Single<PartnerCredentials> =
+        proxy.activateCard(cardId, attributes)
+
+    override fun getCardDetails(cardId: String): Single<PaymentMethod.Card> =
+        proxy.getCardDetails(cardId)
+
+    override fun confirmOrder(orderId: String, attributes: CardPartnerAttributes?): Single<BuyOrder> =
+        proxy.confirmOrder(orderId, attributes)
 }

@@ -110,6 +110,25 @@ class PrefsUtil(
         return getValue(KEY_SIMPLE_BUY_STATE, "").takeIf { it != "" }
     }
 
+    override fun cardState(): String? {
+        return getValue(KEY_CARD_STATE, "").takeIf { it != "" }
+    }
+
+    override fun updateCardState(cardState: String) {
+        setValue(KEY_CARD_STATE, cardState)
+    }
+
+    override fun clearCardState() {
+        removeValue(KEY_CARD_STATE)
+    }
+
+    override fun updateSupportedCards(cardTypes: String) {
+        setValue(KEY_SUPPORTED_CARDS_STATE, cardTypes)
+    }
+
+    override fun getSupportedCardTypes(): String? =
+        getValue(KEY_SUPPORTED_CARDS_STATE, "").takeIf { it != "" }
+
     override fun updateSimpleBuyState(simpleBuyState: String) {
         setValue(KEY_SIMPLE_BUY_STATE, simpleBuyState)
     }
@@ -261,6 +280,10 @@ class PrefsUtil(
 
         private const val KEY_PIT_LINKING_LINK_ID = "pit_wallet_link_id"
         private const val KEY_SIMPLE_BUY_STATE = "key_simple_buy_state"
+        private const val KEY_CARD_STATE = "key_card_state"
+
+        private const val KEY_SUPPORTED_CARDS_STATE = "key_supported_cards"
+
         private const val KEY_SWAP_INTRO_COMPLETED = "key_swap_intro_completed"
         private const val KEY_INTRO_TOUR_COMPLETED = "key_intro_tour_complete"
         private const val KEY_INTRO_TOUR_CURRENT_STAGE = "key_intro_tour_current_stage"

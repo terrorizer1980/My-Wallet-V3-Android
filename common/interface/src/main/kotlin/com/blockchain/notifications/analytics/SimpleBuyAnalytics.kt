@@ -49,7 +49,12 @@ enum class SimpleBuyAnalytics(override val event: String, override val params: M
     SELECT_YOUR_CURRENCY_SHOWN("sb_currency_select_screen"),
     CURRENCY_NOT_SUPPORTED_SHOWN("sb_currency_unsupported"),
     CURRENCY_NOT_SUPPORTED_CHANGE("sb_unsupported_change_currency"),
-    CURRENCY_NOT_SUPPORTED_SKIP("sb_unsupported_view_home")
+    CURRENCY_NOT_SUPPORTED_SKIP("sb_unsupported_view_home"),
+
+    ADD_CARD("sb_add_card_screen_shown"),
+    CARD_INFO_SET("sb_card_info_set"),
+    CARD_BILLING_ADDRESS_SET("sb_billing_address_set"),
+    CARD_3DS_COMPLETED("sb_three_d_secure_complete"),
 }
 
 fun buyConfirmClicked(amount: String, fiatCurrency: String): AnalyticsEvent = object : AnalyticsEvent {

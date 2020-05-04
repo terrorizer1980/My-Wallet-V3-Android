@@ -81,6 +81,7 @@ val nabuModule = applicationContext {
                 liveCustodialWalletManager = LiveCustodialWalletManager(
                     nabuService = get(),
                     authenticator = get(),
+                    simpleBuyPrefs = get(),
                     paymentAccountMapperMappers = mapOf(
                         "EUR" to get("EUR"), "GBP" to get("GBP")
                     )
@@ -130,11 +131,13 @@ val nabuModule = applicationContext {
 
     bean { NabuService(get("nabu")) }
 
-    bean { RetailWalletTokenService(
-        environmentConfig = get(),
-        apiCode = getProperty("api-code"),
-        retrofit = get("kotlin")
-    ) }
+    bean {
+        RetailWalletTokenService(
+            environmentConfig = get(),
+            apiCode = getProperty("api-code"),
+            retrofit = get("kotlin")
+        )
+    }
 
     context("Payload") {
 
