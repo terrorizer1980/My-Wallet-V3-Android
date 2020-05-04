@@ -11,11 +11,9 @@ import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.times
 import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
@@ -60,12 +58,7 @@ class ActivityDetailsModelTest {
 
     @Before
     fun setup() {
-        model = ActivityDetailsModel(state, scheduler, interactor)
-    }
-
-    @After
-    fun teardown() {
-        state = ActivityDetailState()
+        model = ActivityDetailsModel(state, Schedulers.io(), interactor)
     }
 
     @Test
@@ -77,7 +70,7 @@ class ActivityDetailsModelTest {
 
         model.process(LoadActivityDetailsIntent(crypto, txId, false))
 
-        verify(interactor, times(1)).getNonCustodialActivityDetails(crypto, txId)
+        verify(interactor).getNonCustodialActivityDetails(crypto, txId)
     }
 
     @Test
@@ -86,12 +79,12 @@ class ActivityDetailsModelTest {
         val txId = "123455"
         whenever(interactor.getCustodialActivityDetails(crypto, txId)).thenReturn(custodialItem)
         whenever(interactor.loadCustodialItems(custodialItem)).thenReturn(
-            Single.just(listOf())
+            Single.just(emptyList())
         )
 
         model.process(LoadActivityDetailsIntent(crypto, txId, true))
 
-        verify(interactor, times(1)).getCustodialActivityDetails(crypto, txId)
+        verify(interactor).getCustodialActivityDetails(crypto, txId)
     }
 
     @Test
@@ -100,9 +93,6 @@ class ActivityDetailsModelTest {
 
         val testObserver = model.state.test()
         model.process(LoadNonCustodialHeaderDataIntent(item))
-
-        // need to wait for next intent to fire
-        Thread.sleep(200)
 
         testObserver.assertValueAt(0, state)
         testObserver.assertValueAt(1, state.copy(
@@ -119,9 +109,6 @@ class ActivityDetailsModelTest {
     fun load_custodial_header_data_success() {
         val testObserver = model.state.test()
         model.process(LoadCustodialHeaderDataIntent(custodialItem))
-
-        // need to wait for next intent to fire
-        Thread.sleep(200)
 
         testObserver.assertValueAt(0, state)
         testObserver.assertValueAt(1, state.copy(
@@ -144,10 +131,7 @@ class ActivityDetailsModelTest {
         val testObserver = model.state.test()
         model.process(LoadNonCustodialCreationDateIntent(item))
 
-        verify(interactor, times(1)).loadCreationDate(item)
-
-        // need to wait for next intent to fire
-        Thread.sleep(200)
+        verify(interactor).loadCreationDate(item)
 
         val list = state.listOfItems.toMutableSet()
         list.add(Created(returnDate))
@@ -164,9 +148,6 @@ class ActivityDetailsModelTest {
         val testObserver = model.state.test()
         model.process(LoadActivityDetailsIntent(crypto, txId, false))
 
-        // need to wait for next intent to fire
-        Thread.sleep(200)
-
         testObserver.assertValueAt(0, state)
         testObserver.assertValueAt(1, state.copy(isError = true))
     }
@@ -179,9 +160,6 @@ class ActivityDetailsModelTest {
 
         val testObserver = model.state.test()
         model.process(LoadActivityDetailsIntent(crypto, txId, true))
-
-        // need to wait for next intent to fire
-        Thread.sleep(200)
 
         testObserver.assertValueAt(0, state)
         testObserver.assertValueAt(1, state.copy(isError = true))
@@ -196,9 +174,6 @@ class ActivityDetailsModelTest {
 
         val testObserver = model.state.test()
         model.process(ListItemsLoadedIntent(list))
-
-        // need to wait for next intent to fire
-        Thread.sleep(200)
 
         testObserver.assertValueAt(0, state)
         testObserver.assertValueAt(1, state.copy(

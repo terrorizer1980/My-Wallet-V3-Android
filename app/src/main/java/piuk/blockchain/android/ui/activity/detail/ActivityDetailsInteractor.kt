@@ -33,6 +33,7 @@ class ActivityDetailsInteractor(
             // TODO this will change when we add cards, but for now it's the only supported type
             BuyPaymentMethod("Bank Wire Transfer")
         )
+        // TODO if the order is a card order, then it cannot be cancelled in these states
         if (custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS ||
             custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION) {
             list.add(CancelAction())
