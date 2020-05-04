@@ -257,6 +257,7 @@ fun BuyOrder.toSimpleBuyState(): SimpleBuyState =
         selectedCryptoCurrency = crypto.currency,
         orderState = state,
         fee = fee,
+        orderValue = orderValue,
         price = price,
         selectedPaymentMethod = SelectedPaymentMethod(id = paymentMethodId),
         expirationDate = expires,

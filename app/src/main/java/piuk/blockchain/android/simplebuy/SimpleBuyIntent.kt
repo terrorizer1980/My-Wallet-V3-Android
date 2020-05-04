@@ -279,6 +279,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
                 expirationDate = buyOrder.expires,
                 id = buyOrder.id,
                 fee = buyOrder.fee,
+                orderValue = buyOrder.orderValue,
                 price = buyOrder.price,
                 isLoading = false
             )

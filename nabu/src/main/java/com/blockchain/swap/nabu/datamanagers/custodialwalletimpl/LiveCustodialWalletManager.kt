@@ -391,6 +391,12 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
                 it.toBigDecimalOrNull() ?: BigDecimal.ZERO
             )
         },
+        orderValue = outputQuantity.toBigDecimalOrNull()?.let {
+            CryptoValue.fromMinor(CryptoCurrency.fromNetworkTicker(outputCurrency)
+                ?: throw UnknownFormatConversionException("Unknown Crypto currency: $outputCurrency"),
+                it
+            )
+        },
         attributes = attributes
     )
 

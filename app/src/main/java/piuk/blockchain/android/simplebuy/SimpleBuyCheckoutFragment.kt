@@ -133,8 +133,13 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 
             CheckoutItem(getString(R.string.total_cost), calculateFeedAmount(state.fee, state.order.amount)),
 
-            CheckoutItem(getString(R.string.amount),
-                state.price?.toStringWithSymbol() ?: ""),
+            if (state.orderState == OrderState.PENDING_CONFIRMATION) {
+                CheckoutItem(getString(R.string.estimated_amount),
+                    state.quote?.estimatedAmount() ?: "")
+            } else {
+                CheckoutItem(getString(R.string.amount),
+                    state.orderValue?.toStringWithSymbol() ?: "")
+            },
 
             CheckoutItem(getString(R.string.fees),
                 state.fee?.toStringWithSymbol() ?: ""),
@@ -149,6 +154,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
             )
         )
 
+    private fun Quote.estimatedAmount(): String =
+        estimatedAmount.toStringWithSymbol().let {
+            getString(R.string.approximately_symbol, it)
+        }
+
     private fun calculateFeedAmount(fee: FiatValue?, amount: FiatValue?): String = fee?.let {
         amount?.minus(it)?.toStringWithSymbol() ?: ""
     } ?: amount?.toStringWithSymbol() ?: ""
@@ -157,7 +167,8 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         listOf(
             CheckoutItem(getString(R.string.date), state.order.quote?.formatDate() ?: ""),
 
-            CheckoutItem(getString(R.string.total_cost), calculateFeedAmount(state.fee, state.order.amount)),
+            CheckoutItem(getString(R.string.total_cost),
+                calculateFeedAmount(state.fee, state.order.amount)),
 
             CheckoutItem(getString(R.string.fees),
                 state.fee?.toStringWithSymbol() ?: FiatValue.zero(state.fiatCurrency).toStringWithSymbol()),

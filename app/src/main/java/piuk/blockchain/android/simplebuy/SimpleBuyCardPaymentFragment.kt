@@ -52,7 +52,7 @@ class SimpleBuyCardPaymentFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
             isFirstLoad = false
         }
 
-        newState.price?.let {
+        newState.orderValue?.let {
             renderTitleAndSubtitle(
                 it,
                 newState.isLoading,
@@ -113,7 +113,7 @@ class SimpleBuyCardPaymentFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent
 
         state_indicator.visibleIf { paymentSucceeded || pending }
         progress.visibleIf { loading }
-        ok_btn.visibleIf { !loading }
+        ok_btn.visibleIf { paymentSucceeded || pending || hasError }
         state_indicator.setImageResource(if (pending) R.drawable.ic_pending_clock else R.drawable.ic_check_circle)
     }
 
