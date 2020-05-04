@@ -23,7 +23,6 @@ class ActivityDetailsModelTest {
 
     private lateinit var model: ActivityDetailsModel
     private var state = ActivityDetailState()
-    private val scheduler = Schedulers.io()
     private val interactor: ActivityDetailsInteractor = mock()
 
     private data class NonCustodialTestClass(
@@ -62,7 +61,7 @@ class ActivityDetailsModelTest {
     }
 
     @Test
-    fun initial_state_loads_non_custodial_details() {
+    fun `starting the model with non custodial item loads non custodial details`() {
         val item = NonCustodialTestClass()
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
@@ -74,7 +73,7 @@ class ActivityDetailsModelTest {
     }
 
     @Test
-    fun initial_state_loads_custodial_details() {
+    fun `starting the model with custodial item loads custodial details`() {
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
         whenever(interactor.getCustodialActivityDetails(crypto, txId)).thenReturn(custodialItem)
@@ -88,7 +87,7 @@ class ActivityDetailsModelTest {
     }
 
     @Test
-    fun load_non_custodial_header_data_success() {
+    fun `processing non custodial item loads header details correctly`() {
         val item = NonCustodialTestClass()
 
         val testObserver = model.state.test()
@@ -106,7 +105,7 @@ class ActivityDetailsModelTest {
     }
 
     @Test
-    fun load_custodial_header_data_success() {
+    fun `processing custodial item loads header details correctly`() {
         val testObserver = model.state.test()
         model.process(LoadCustodialHeaderDataIntent(custodialItem))
 
@@ -122,7 +121,7 @@ class ActivityDetailsModelTest {
     }
 
     @Test
-    fun load_creation_date_success() {
+    fun `processing creation date returns correct values`() {
         val item = NonCustodialTestClass()
         val returnDate = Date()
         whenever(interactor.loadCreationDate(item)).thenReturn(returnDate)
@@ -140,7 +139,7 @@ class ActivityDetailsModelTest {
     }
 
     @Test
-    fun non_custodial_activity_details_load_fail() {
+    fun `failing to load non custodial details updates state correctly`() {
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
         whenever(interactor.getNonCustodialActivityDetails(crypto, txId)).thenReturn(null)
@@ -153,7 +152,7 @@ class ActivityDetailsModelTest {
     }
 
     @Test
-    fun custodial_activity_details_load_fail() {
+    fun `failing to load custodial details updates state correctly`() {
         val crypto = CryptoCurrency.BCH
         val txId = "123455"
         whenever(interactor.getCustodialActivityDetails(crypto, txId)).thenReturn(null)
@@ -166,7 +165,7 @@ class ActivityDetailsModelTest {
     }
 
     @Test
-    fun load_activity_items_success() {
+    fun `activity items load correctly`() {
         val list = listOf(Fee(mock()), Amount(mock()), To(""), From(""))
 
         val currentList = state.listOfItems.toMutableSet()
