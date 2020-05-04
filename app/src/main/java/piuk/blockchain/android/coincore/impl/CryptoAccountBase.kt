@@ -7,10 +7,10 @@ import info.blockchain.balance.CryptoCurrency
 import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import io.reactivex.Single
-import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.AssetAction
+import piuk.blockchain.android.coincore.AvailableActions
 import piuk.blockchain.android.coincore.CryptoAccountGroup
 import piuk.blockchain.android.coincore.CryptoAccountsList
 import piuk.blockchain.android.coincore.CryptoSingleAccount
@@ -88,8 +88,9 @@ abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
             totalCrypto = buyOrder.crypto,
             fundedFiat = buyOrder.fiat,
             txId = buyOrder.id,
-            timeStampMs = buyOrder.updated.time,
-            status = buyOrder.state
+            timeStampMs = buyOrder.created.time,
+            status = buyOrder.state,
+            fee = buyOrder.fee
         )
 
     // Stop gap filter, until we finalise which item we wish to display to the user.

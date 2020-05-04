@@ -136,7 +136,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
-            expires = Date()
+            expires = Date(),
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(null)
@@ -166,7 +168,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
-            expires = Date()
+            expires = Date(),
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(null)
@@ -198,7 +202,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
-            expires = MIDDLE_ORDER_DATE
+            expires = MIDDLE_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         val remoteInput2 = BuyOrder(
@@ -207,7 +213,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
-            expires = LAST_ORDER_DATE
+            expires = LAST_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         val remoteInput3 = BuyOrder(
@@ -216,7 +224,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
-            expires = EARLY_ORDER_DATE
+            expires = EARLY_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(null)
@@ -252,7 +262,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.CANCELED,
-            expires = MIDDLE_ORDER_DATE
+            expires = MIDDLE_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         val remoteInput2 = BuyOrder(
@@ -261,7 +273,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
-            expires = LAST_ORDER_DATE
+            expires = LAST_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         val remoteInput3 = BuyOrder(
@@ -270,7 +284,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.FINISHED,
-            expires = EARLY_ORDER_DATE
+            expires = EARLY_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         val remoteInput4 = BuyOrder(
@@ -279,7 +295,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.FAILED,
-            expires = EARLY_ORDER_DATE
+            expires = EARLY_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(null)
@@ -315,7 +333,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
-            expires = MIDDLE_ORDER_DATE
+            expires = MIDDLE_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         val remoteInput2 = BuyOrder(
@@ -324,7 +344,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
-            expires = LAST_ORDER_DATE
+            expires = LAST_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         val remoteInput3 = BuyOrder(
@@ -333,7 +355,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
-            expires = EARLY_ORDER_DATE
+            expires = EARLY_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(null)
@@ -381,7 +405,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.FINISHED,
-            expires = LAST_ORDER_DATE
+            expires = LAST_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(localInput)
@@ -427,7 +453,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
-            expires = LAST_ORDER_DATE
+            expires = LAST_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(localInput)
@@ -473,7 +501,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
-            expires = MIDDLE_ORDER_DATE
+            expires = MIDDLE_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(localInput)
@@ -561,7 +591,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.AWAITING_FUNDS,
-            expires = LAST_ORDER_DATE
+            expires = LAST_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(localInput)
@@ -598,7 +630,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.PENDING_EXECUTION,
-            expires = LAST_ORDER_DATE
+            expires = LAST_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(localInput)
@@ -635,7 +669,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.FINISHED,
-            expires = LAST_ORDER_DATE
+            expires = LAST_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(localInput)
@@ -672,7 +708,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.CANCELED,
-            expires = LAST_ORDER_DATE
+            expires = LAST_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(localInput)
@@ -709,7 +747,9 @@ class SimpleBuySyncFactoryTest {
             fiat = FiatValue.fromMinor("EUR", 10000),
             crypto = CryptoValue.ZeroBtc,
             state = OrderState.FAILED,
-            expires = LAST_ORDER_DATE
+            expires = LAST_ORDER_DATE,
+            fee = FiatValue.zero("EUR"),
+            paymentMethodId = ""
         )
 
         whenever(localState.fetch()).thenReturn(localInput)

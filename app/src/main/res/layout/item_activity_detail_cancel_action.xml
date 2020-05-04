@@ -7,13 +7,14 @@
     android:paddingBottom="@dimen/small_margin">
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/activity_details_cancel_action"
         style="@style/CtaButton.White"
-        android:id="@+id/activity_details_action"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="@string/activity_details_cancel_action"
+        android:textColor="@color/red_600"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/activity_details_action" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
