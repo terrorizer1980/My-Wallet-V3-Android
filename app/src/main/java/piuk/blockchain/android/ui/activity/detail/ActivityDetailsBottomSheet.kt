@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -41,7 +42,7 @@ class ActivityDetailsBottomSheet :
     private val listAdapter: ActivityDetailsDelegateAdapter by lazy {
         ActivityDetailsDelegateAdapter(
             onActionItemClicked = { onActionItemClicked() },
-            onDescriptionItemClicked = { onDescriptionItemClicked() },
+            onDescriptionItemUpdated = { onDescriptionItemClicked(it) },
             onCancelActionItemClicked = { onCancelActionItemClicked() }
         )
     }
@@ -64,6 +65,7 @@ class ActivityDetailsBottomSheet :
     }
 
     override fun render(newState: ActivityDetailState) {
+        showDescriptionUpdate(newState.descriptionState)
         dialogView.apply {
             title.text = if (newState.isFeeTransaction) {
                 getString(R.string.activity_details_title_fee)
@@ -100,6 +102,19 @@ class ActivityDetailsBottomSheet :
         if (listAdapter.items != newState.listOfItems) {
             listAdapter.items = newState.listOfItems.toList()
             listAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun showDescriptionUpdate(descriptionState: DescriptionState) {
+        when (descriptionState) {
+            DescriptionState.UPDATE_SUCCESS -> Toast.makeText(requireContext(),
+                getString(R.string.activity_details_description_updated), Toast.LENGTH_SHORT).show()
+            DescriptionState.UPDATE_ERROR -> Toast.makeText(requireContext(),
+                getString(R.string.activity_details_description_not_updated), Toast.LENGTH_SHORT)
+                .show()
+            DescriptionState.NOT_SET -> {
+                // do nothing
+            }
         }
     }
 
@@ -151,8 +166,9 @@ class ActivityDetailsBottomSheet :
         }
     }
 
-    private fun onDescriptionItemClicked() {
-        // TODO
+    private fun onDescriptionItemClicked(description: String) {
+        model.process(
+            UpdateDescriptionIntent(arguments.txId, arguments.cryptoCurrency, description))
     }
 
     private fun onCancelActionItemClicked() {

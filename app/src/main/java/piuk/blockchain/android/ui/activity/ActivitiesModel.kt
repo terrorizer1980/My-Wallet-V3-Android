@@ -44,13 +44,13 @@ class ActivitiesModel(
                 interactor.getActivityForAccount(intent.account)
                     .subscribeBy(
                         onSuccess = { process(ActivityListUpdatedIntent(it)) },
-                        onError = { process(ActivityListUpdatedErrorIntent()) }
+                        onError = { process(ActivityListUpdatedErrorIntent) }
                     )
             is SelectDefaultAccountIntent ->
                 interactor.getDefaultAccount()
                     .subscribeBy(
                         onSuccess = { process(AccountSelectedIntent(it)) },
-                        onError = { process(ActivityListUpdatedErrorIntent()) }
+                        onError = { process(ActivityListUpdatedErrorIntent) }
                     )
             is CancelSimpleBuyOrderIntent -> interactor.cancelSimpleBuyOrder(intent.orderId)
             is ShowActivityDetailsIntent,

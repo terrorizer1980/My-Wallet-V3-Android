@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.UiThread
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockchain.annotations.CommonCode
@@ -118,15 +119,18 @@ class ActivitiesFragment
     private fun switchView(newState: ActivitiesState) {
         when {
             newState.isLoading -> {
-                content_layout.gone()
+                header_layout.gone()
+                content_list.gone()
                 empty_view.gone()
             }
             newState.activityList.isEmpty() -> {
-                content_layout.gone()
+                header_layout.visible()
+                content_list.gone()
                 empty_view.visible()
             }
             else -> {
-                content_layout.visible()
+                header_layout.visible()
+                content_list.visible()
                 empty_view.gone()
             }
         }
@@ -208,9 +212,11 @@ class ActivitiesFragment
     private fun setupRecycler() {
         theLayoutManager = SafeLayoutManager(requireContext())
 
-        recycler_view.apply {
+        content_list.apply {
             layoutManager = theLayoutManager
             adapter = theAdapter
+            addItemDecoration(
+                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         }
         theAdapter.items = displayList
     }

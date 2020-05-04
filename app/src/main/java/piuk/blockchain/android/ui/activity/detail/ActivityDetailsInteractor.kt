@@ -3,11 +3,15 @@ package piuk.blockchain.android.ui.activity.detail
 import com.blockchain.preferences.CurrencyPrefs
 import com.blockchain.swap.nabu.datamanagers.OrderState
 import info.blockchain.balance.CryptoCurrency
+import io.reactivex.Completable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
+import piuk.blockchain.android.coincore.btc.BtcActivitySummaryItem
+import piuk.blockchain.android.coincore.eth.EthActivitySummaryItem
+import piuk.blockchain.android.coincore.pax.PaxActivitySummaryItem
 import java.text.ParseException
 import java.util.Date
 
@@ -64,12 +68,12 @@ class ActivityDetailsInteractor(
     ) = item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency)
         .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                listOf(
+                listOfNotNull(
                     Amount(item.totalCrypto),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
                     FeeForTransaction("TODO"),
-                    Description(),
+                    checkIfShouldAddDescription(item),
                     Action()
                 )
             }
@@ -80,12 +84,12 @@ class ActivityDetailsInteractor(
     ) = item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency)
         .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                listOf(
+                listOfNotNull(
                     Amount(item.totalCrypto),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
                     addSingleOrMultipleToAddresses(it),
-                    Description(),
+                    checkIfShouldAddDescription(item),
                     Action()
                 )
             }
@@ -96,12 +100,12 @@ class ActivityDetailsInteractor(
     ) = item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency)
         .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                listOf(
+                listOfNotNull(
                     Amount(item.totalCrypto),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
                     addSingleOrMultipleToAddresses(it),
-                    Description(),
+                    checkIfShouldAddDescription(item),
                     Action()
                 )
             }
@@ -112,13 +116,13 @@ class ActivityDetailsInteractor(
     ) = item.fee.singleOrError().flatMap { cryptoValue ->
         item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
-                listOf(
+                listOfNotNull(
                     Amount(item.totalCrypto),
                     Fee(cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
                     addSingleOrMultipleToAddresses(it),
-                    Description(),
+                    checkIfShouldAddDescription(item),
                     Action()
                 )
             }
@@ -129,14 +133,33 @@ class ActivityDetailsInteractor(
         item: NonCustodialActivitySummaryItem
     ) = item.fee.singleOrError().flatMap { cryptoValue ->
         transactionInputOutputMapper.transformInputAndOutputs(item).map {
-            listOf(
+            listOfNotNull(
                 Amount(item.totalCrypto),
                 Fee(cryptoValue),
                 addSingleOrMultipleFromAddresses(it),
                 addSingleOrMultipleToAddresses(it),
-                Description(),
+                checkIfShouldAddDescription(item),
                 Action()
             )
+        }
+    }
+
+    fun updateItemDescription(
+        txId: String,
+        cryptoCurrency: CryptoCurrency,
+        description: String
+    ): Completable {
+        val activityItem = coincore[cryptoCurrency].findCachedActivityItem(
+            txId
+        )
+        return when (activityItem) {
+            is BtcActivitySummaryItem -> activityItem.updateDescription(description)
+            is EthActivitySummaryItem -> activityItem.updateDescription(description)
+            is PaxActivitySummaryItem -> activityItem.updateDescription(description)
+            else -> {
+                Completable.error(UnsupportedOperationException(
+                    "This type of currency doesn't support descriptions"))
+            }
         }
     }
 
@@ -155,4 +178,13 @@ class ActivityDetailsInteractor(
     } else {
         To(it.outputs.joinToString("\n"))
     }
+
+    private fun checkIfShouldAddDescription(
+        item: NonCustodialActivitySummaryItem
+    ): Description? = when (item) {
+            is BtcActivitySummaryItem,
+            is EthActivitySummaryItem,
+            is PaxActivitySummaryItem -> Description(item.description)
+            else -> null
+        }
 }

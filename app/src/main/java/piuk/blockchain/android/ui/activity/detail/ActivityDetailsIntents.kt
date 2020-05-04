@@ -74,7 +74,8 @@ class ListItemsLoadedIntent(
         val currentList = oldState.listOfItems.toMutableSet()
         currentList.addAll(list.toSet())
         return oldState.copy(
-            listOfItems = currentList
+            listOfItems = currentList,
+            descriptionState = DescriptionState.NOT_SET
         )
     }
 }
@@ -95,6 +96,20 @@ object CreationDateLoadFailedIntent : ActivityDetailsIntents() {
     }
 }
 
+object DescriptionUpdatedIntent : ActivityDetailsIntents() {
+    override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
+        return oldState.copy(
+            descriptionState = DescriptionState.UPDATE_SUCCESS
+        )
+    }
+} object DescriptionUpdateFailedIntent : ActivityDetailsIntents() {
+    override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
+        return oldState.copy(
+            descriptionState = DescriptionState.UPDATE_ERROR
+        )
+    }
+}
+
 class CreationDateLoadedIntent(private val createdDate: Date) : ActivityDetailsIntents() {
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         val list = oldState.listOfItems.toMutableSet()
@@ -102,5 +117,16 @@ class CreationDateLoadedIntent(private val createdDate: Date) : ActivityDetailsI
         return oldState.copy(
             listOfItems = list
         )
+    }
+}
+
+class UpdateDescriptionIntent(
+    val txId: String,
+    val cryptoCurrency: CryptoCurrency,
+    val description: String
+) :
+    ActivityDetailsIntents() {
+    override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
+        return oldState
     }
 }
