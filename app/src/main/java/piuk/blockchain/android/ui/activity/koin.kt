@@ -23,6 +23,7 @@ val activitiesModule = applicationContext {
         factory {
             ActivitiesInteractor(
                 coincore = get(),
+                activityRepo = get(),
                 custodialWalletManager = get(),
                 simpleBuyPrefs = get(),
                 analytics = get()

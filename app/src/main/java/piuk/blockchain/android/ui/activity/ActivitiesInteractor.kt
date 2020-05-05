@@ -10,16 +10,18 @@ import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CryptoAccount
+import piuk.blockchain.android.coincore.impl.AssetActivityMonitor
 import timber.log.Timber
 
 class ActivitiesInteractor(
     private val coincore: Coincore,
+    private val activityRepo: AssetActivityMonitor,
     private val custodialWalletManager: CustodialWalletManager,
     private val simpleBuyPrefs: SimpleBuyPrefs,
     private val analytics: Analytics
 ) {
     fun getActivityForAccount(account: CryptoAccount): Single<ActivitySummaryList> =
-        account.activity
+        activityRepo.fetch(account)
 
     fun getDefaultAccount(): Single<CryptoAccount> =
         Single.just(coincore.allWallets)

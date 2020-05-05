@@ -622,7 +622,7 @@
     <string name="tx_title_receive">Receive %1s</string>
     <string name="tx_title_sell">Sell %1s</string>
     <string name="tx_title_buy">Buy %1s</string>
-    <string name="tx_title_swap">Swap %1s</string>
+    <string name="tx_title_swap">Swap %1s -> %2s</string>
     <string name="tx_title_transfer">Transfer %1s</string>
     <string name="tx_title_fee">Fee %1s</string>
 

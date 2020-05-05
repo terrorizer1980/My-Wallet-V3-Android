@@ -126,9 +126,9 @@ data class SwapActivitySummaryItem(
     override val timeStampMs: Long,
     override val totalCrypto: CryptoValue,
     val targetValue: CryptoValue,
-    val sourceAccount: CryptoAccount,
-    val targetAccount: CryptoAccount,
-    val fee: FiatValue,
+//    val sourceAccount: CryptoAccount,
+//    val targetAccount: CryptoAccount,
+    val fee: CryptoValue,
     val confirmations: Int = 0
 ) : ActivitySummaryItem() {
     val isPending: Boolean

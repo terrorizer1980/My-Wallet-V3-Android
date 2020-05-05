@@ -5,6 +5,7 @@ import piuk.blockchain.android.coincore.bch.BchTokens
 import piuk.blockchain.android.coincore.pax.PaxTokens
 import piuk.blockchain.android.coincore.btc.BtcTokens
 import piuk.blockchain.android.coincore.eth.EthTokens
+import piuk.blockchain.android.coincore.impl.AssetActivityMonitor
 import piuk.blockchain.android.coincore.stx.StxTokens
 import piuk.blockchain.android.coincore.xlm.XlmTokens
 
@@ -102,6 +103,14 @@ val coincoreModule = applicationContext {
                 paxTokens = get(),
                 stxTokens = get(),
                 defaultLabels = get()
+            )
+        }
+
+        bean {
+            AssetActivityMonitor(
+                coincore = get(),
+                swapHistory = get(),
+                exchangeRates = get()
             )
         }
     }
