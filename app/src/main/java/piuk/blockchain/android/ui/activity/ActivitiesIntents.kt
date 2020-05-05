@@ -35,18 +35,18 @@ object SelectDefaultAccountIntent : ActivitiesIntent() {
 }
 
 class ActivityListUpdatedIntent(
-    val activityList: ActivitySummaryList
+    private val activityList: ActivitySummaryList
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
-            isError = activityList.isEmpty(),
+            isError = false,
             isLoading = false,
             activityList = activityList
         )
     }
 }
 
-class ActivityListUpdatedErrorIntent : ActivitiesIntent() {
+object ActivityListUpdatedErrorIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
             isLoading = false,
@@ -62,15 +62,35 @@ object ShowAccountSelectionIntent : ActivitiesIntent() {
     }
 }
 
+object ShowBankTransferDetailsIntent : ActivitiesIntent() {
+    override fun reduce(oldState: ActivitiesState): ActivitiesState {
+        return oldState.copy(bottomSheet = ActivitiesSheet.BANK_TRANSFER_DETAILS)
+    }
+}
+
+class CancelSimpleBuyOrderIntent(
+    val orderId: String
+) : ActivitiesIntent() {
+    override fun reduce(oldState: ActivitiesState): ActivitiesState = oldState
+}
+
+object ShowCancelOrderIntent : ActivitiesIntent() {
+    override fun reduce(oldState: ActivitiesState): ActivitiesState {
+        return oldState.copy(bottomSheet = ActivitiesSheet.BANK_ORDER_CANCEL)
+    }
+}
+
 class ShowActivityDetailsIntent(
     val cryptoCurrency: CryptoCurrency,
-    val txHash: String
+    val txHash: String,
+    val isCustodial: Boolean
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
             bottomSheet = ActivitiesSheet.ACTIVITY_DETAILS,
             selectedCryptoCurrency = cryptoCurrency,
-            selectedTxId = txHash
+            selectedTxId = txHash,
+            isCustodial = isCustodial
         )
     }
 }
@@ -79,6 +99,7 @@ object ClearBottomSheetIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState =
         oldState.copy(bottomSheet = null,
             selectedCryptoCurrency = null,
-            selectedTxId = ""
+            selectedTxId = "",
+            isCustodial = false
         )
 }

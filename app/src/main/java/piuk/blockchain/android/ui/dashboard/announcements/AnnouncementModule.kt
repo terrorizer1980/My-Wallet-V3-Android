@@ -17,6 +17,7 @@ import piuk.blockchain.android.ui.dashboard.announcements.rule.PaxAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.PitAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.RegisterFingerprintsAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.RegisteredForAirdropMiniAnnouncement
+import piuk.blockchain.android.ui.dashboard.announcements.rule.SimpleBuyAddCardAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.SimpleBuyPendingBuyAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.SimpleBuyFinishSignupAnnouncement
 import piuk.blockchain.android.ui.dashboard.announcements.rule.SwapAnnouncement
@@ -193,6 +194,14 @@ val dashboardAnnouncementsModule = applicationContext {
 
         factory {
             SimpleBuyPendingBuyAnnouncement(
+                dismissRecorder = get(),
+                analytics = get(),
+                queries = get()
+            )
+        }.bind(AnnouncementRule::class)
+
+        factory {
+            SimpleBuyAddCardAnnouncement(
                 dismissRecorder = get(),
                 analytics = get(),
                 queries = get()

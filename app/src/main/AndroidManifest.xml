@@ -159,7 +159,14 @@
             android:name="piuk.blockchain.android.simplebuy.SimpleBuyActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
-
+        <activity
+            android:name="piuk.blockchain.android.cards.CardDetailsActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="piuk.blockchain.android.cards.CardAuthoriseWebViewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustResize" />
         <service
             android:name=".data.coinswebsocket.service.CoinsWebSocketService"
             android:stopWithTask="true" />

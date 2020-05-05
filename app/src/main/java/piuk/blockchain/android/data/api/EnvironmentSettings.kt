@@ -30,6 +30,7 @@ class EnvironmentSettings : EnvironmentConfig {
     override val explorerUrl: String = BuildConfig.EXPLORER_URL
 
     override val apiUrl: String = BuildConfig.API_URL
+    override val everypayHostUrl: String = BuildConfig.EVERYPAY_HOST_URL
 
     override val bitpayUrl: String = BITPAY_LIVE_BASE
 

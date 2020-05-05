@@ -6,7 +6,7 @@
     android:paddingTop="@dimen/small_margin"
     android:paddingBottom="@dimen/small_margin">
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         style="@style/CtaButton.White"
         android:id="@+id/activity_details_action"
         android:layout_width="0dp"

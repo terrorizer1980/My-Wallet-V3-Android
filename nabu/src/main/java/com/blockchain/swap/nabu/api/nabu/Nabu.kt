@@ -1,5 +1,7 @@
 package com.blockchain.swap.nabu.api.nabu
 
+import com.blockchain.swap.nabu.models.cards.CardResponse
+import com.blockchain.swap.nabu.models.cards.PaymentMethodsResponse
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.nabu.AirdropStatusList
 import com.blockchain.swap.nabu.models.nabu.ApplicantIdRequest
@@ -19,9 +21,14 @@ import com.blockchain.swap.nabu.models.nabu.TiersJson
 import com.blockchain.swap.nabu.models.nabu.UpdateCoinifyTraderIdRequest
 import com.blockchain.swap.nabu.models.nabu.VeriffToken
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
+import com.blockchain.swap.nabu.models.simplebuy.ActivateCardResponse
+import com.blockchain.swap.nabu.models.simplebuy.AddNewCardBodyRequest
+import com.blockchain.swap.nabu.models.simplebuy.AddNewCardResponse
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderListResponse
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
+import com.blockchain.swap.nabu.models.simplebuy.CardPartnerAttributes
+import com.blockchain.swap.nabu.models.simplebuy.ConfirmOrderRequestBody
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyBalanceResponse
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
@@ -220,6 +227,7 @@ internal interface Nabu {
     @POST(NABU_SIMPLE_BUY_ORDERS)
     fun createOrder(
         @Header("authorization") authorization: String,
+        @Query("action") action: String?,
         @Body order: CustodialWalletOrder
     ): Single<BuyOrderResponse>
 
@@ -240,6 +248,43 @@ internal interface Nabu {
         @Header("authorization") authHeader: String,
         @Path("orderId") orderId: String
     ): Single<BuyOrderResponse>
+
+    @POST("$NABU_SIMPLE_BUY_ORDERS/{orderId}")
+    fun confirmOrder(
+        @Header("authorization") authHeader: String,
+        @Path("orderId") orderId: String,
+        @Body confirmBody: ConfirmOrderRequestBody
+    ): Single<BuyOrderResponse>
+
+    @POST(NABU_CARDS)
+    fun addNewCard(
+        @Header("authorization") authHeader: String,
+        @Body addNewCardBody: AddNewCardBodyRequest
+    ): Single<AddNewCardResponse>
+
+    @POST("$NABU_CARDS/{cardId}/activate")
+    fun activateCard(
+        @Header("authorization") authHeader: String,
+        @Path("cardId") cardId: String,
+        @Body attributes: CardPartnerAttributes
+    ): Single<ActivateCardResponse>
+
+    @GET("$NABU_CARDS/{cardId}")
+    fun getCardDetails(
+        @Header("authorization") authorization: String,
+        @Path("cardId") cardId: String
+    ): Single<CardResponse>
+
+    @GET(NABU_PAYMENT_METHODS)
+    fun getPaymentMethods(
+        @Header("authorization") authorization: String,
+        @Query("currency") currency: String
+    ): Single<PaymentMethodsResponse>
+
+    @GET(NABU_CARDS)
+    fun getCards(
+        @Header("authorization") authorization: String
+    ): Single<List<CardResponse>>
 
     @GET(NABU_SIMPLE_BUY_ASSET_BALANCE)
     fun getBalanceForAsset(

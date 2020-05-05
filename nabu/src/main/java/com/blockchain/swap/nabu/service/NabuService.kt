@@ -19,7 +19,10 @@ import com.blockchain.swap.nabu.models.nabu.SendToMercuryAddressResponse
 import com.blockchain.swap.nabu.models.nabu.SendWithdrawalAddressesRequest
 import com.blockchain.swap.nabu.models.nabu.SupportedDocuments
 import com.blockchain.swap.nabu.models.nabu.WalletMercuryLink
+import com.blockchain.swap.nabu.models.simplebuy.AddNewCardBodyRequest
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
+import com.blockchain.swap.nabu.models.simplebuy.CardPartnerAttributes
+import com.blockchain.swap.nabu.models.simplebuy.ConfirmOrderRequestBody
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyCurrency
 import com.blockchain.swap.nabu.models.simplebuy.SimpleBuyEligibility
@@ -262,9 +265,10 @@ class NabuService(retrofit: Retrofit) {
 
     internal fun createOrder(
         sessionToken: NabuSessionTokenResponse,
-        order: CustodialWalletOrder
+        order: CustodialWalletOrder,
+        action: String?
     ) = service.createOrder(
-        sessionToken.authHeader, order
+        authorization = sessionToken.authHeader, action = action, order = order
     ).onErrorResumeNext {
         if (it is HttpException && it.code() == 409) {
             Single.error(SimpleBuyError.OrderLimitReached)
@@ -301,6 +305,36 @@ class NabuService(retrofit: Retrofit) {
         sessionToken.authHeader, orderId
     ).wrapErrorMessage()
 
+    fun addNewCard(
+        sessionToken: NabuSessionTokenResponse,
+        addNewCardBodyRequest: AddNewCardBodyRequest
+    ) = service.addNewCard(
+        sessionToken.authHeader, addNewCardBodyRequest
+    ).wrapErrorMessage()
+
+    fun activateCard(
+        sessionToken: NabuSessionTokenResponse,
+        cardId: String,
+        attributes: CardPartnerAttributes
+    ) = service.activateCard(
+        sessionToken.authHeader, cardId, attributes
+    ).wrapErrorMessage()
+
+    fun getCardDetails(
+        sessionToken: NabuSessionTokenResponse,
+        cardId: String
+    ) = service.getCardDetails(
+        sessionToken.authHeader, cardId
+    ).wrapErrorMessage()
+
+    fun confirmOrder(
+        sessionToken: NabuSessionTokenResponse,
+        orderId: String,
+        confirmBody: ConfirmOrderRequestBody
+    ) = service.confirmOrder(
+        sessionToken.authHeader, orderId, confirmBody
+    ).wrapErrorMessage()
+
     fun getBalanceForAsset(
         sessionToken: NabuSessionTokenResponse,
         cryptoCurrency: CryptoCurrency
@@ -331,6 +365,20 @@ class NabuService(retrofit: Retrofit) {
             Completable.error(it)
         }
     }.wrapErrorMessage()
+
+    fun getPaymentMethods(
+        sessionToken: NabuSessionTokenResponse,
+        currency: String
+    ) = service.getPaymentMethods(
+        authorization = sessionToken.authHeader,
+        currency = currency
+    ).wrapErrorMessage()
+
+    fun getCards(
+        sessionToken: NabuSessionTokenResponse
+    ) = service.getCards(
+        authorization = sessionToken.authHeader
+    ).wrapErrorMessage()
 
     companion object {
         internal const val CLIENT_TYPE = "APP"

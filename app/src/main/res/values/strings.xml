@@ -624,6 +624,7 @@
     <string name="tx_title_buy">Buy %1s</string>
     <string name="tx_title_swap">Swap %1s</string>
     <string name="tx_title_transfer">Transfer %1s</string>
+    <string name="tx_title_fee">Fee %1s</string>
 
     <!-- TRANSACTION DETAILS -->
     <string name="transaction_detail_title">Transaction</string>
@@ -872,9 +873,9 @@
     <string name="testnet_warning">Warning! This is the testnet3 blockchain.</string>
 
     <!-- TESTNET -->
-<!--    <string name="buy_sell">Buy &amp; Sell</string>-->
+    <!--    <string name="buy_sell">Buy &amp; Sell</string>-->
 
-<!--    <string name="buy_sell_create_account">Create Account</string>-->
+    <!--    <string name="buy_sell_create_account">Create Account</string>-->
 
     <!-- SUNRIVER -->
     <string name="sunriver_invalid_url_message">Your XLM has already been claimed.</string>
@@ -968,7 +969,6 @@
     </string>
     <string name="send_to">Send To</string>
     <string name="receive">Receive</string>
-    <string name="fees">Fees</string>
     <string name="value">Value</string>
     <string name="status">Status</string>
 
@@ -1113,6 +1113,11 @@
     <string name="simple_buy_pending_buy_card_title">Pending Buy</string>
     <string name="simple_buy_pending_buy_card_body">Once we receive your bank transfer, your buy order will be complete.</string>
     <string name="simple_buy_pending_buy_card_cta">View Bank Transfer Details</string>
+
+    <!-- Simple buy add card -->
+    <string name="simple_buy_add_card_card_title">You’re Approved to Buy Crypto.</string>
+    <string name="simple_buy_add_card_card_body">Complete your order by adding your credit or debit card to your Blockchain Wallet.</string>
+    <string name="simple_buy_add_card_card_cta">Add Card</string>
 
     <!-- Enrole fingerprints announcement -->
     <string name="register_fingerprint_card_title">Fingerprint Log in</string>
@@ -1553,6 +1558,8 @@
     <string name="simple_buy_currency_selection_header">Your local currency to store funds in that currency as funds in your Blockchain Wallet.</string>
     <string name="simple_buy_get_started">Get Started</string>
     <string name="simple_buy_what_you_want_to_buy">What would you like to buy?</string>
+    <string name="payment_methods">Payment Methods</string>
+    <string name="payment_method">Payment Method</string>
     <string name="simple_buy_enter_amount">Enter amount</string>
     <string name="simple_buy_buy_crypto_title">Buy Crypto</string>
     <string name="simple_buy_select_currency">Select Your Currency</string>
@@ -1561,16 +1568,29 @@
     <string name="simple_buy_error_fetching_price">Error fetching latest price.</string>
     <string name="simple_buy_up_to_amount">Up to %1$s</string>
     <string name="use_max">Use MAX</string>
+    <string name="maximum_buy">%1$s Maximum Buy</string>
+    <string name="minimum_buy">%1$s Minimum Buy</string>
+    <string name="buy_min">Buy Min</string>
+    <string name="buy_max">Buy Max</string>
+    <string name="bank_wise_transfer">Bank Wise Transfer</string>
+    <string name="credit_or_debit_card">Credit or Debit Card</string>
+    <string name="add_credit_or_debit_card">Add a Credit or Debit Card</string>
+    <string name="select_payment_method">Select a Payment Method</string>
+    <string name="payment_method_limit">%1$s Limit</string>
     <string name="too_high">Too high</string>
     <string name="use_min">Use MIN</string>
     <string name="too_low">Too low</string>
     <string name="checkout">Checkout</string>
+    <string name="order_details">Order Details</string>
     <string name="checkout_subtitle">Please review and confirm your %1$s buy.</string>
     <string name="total_cost">Total Cost</string>
+    <string name="fees">Fees</string>
     <string name="estimated_amount">Est. Amount</string>
     <string name="buying_fee">Buying Fee</string>
     <string name="date">Date</string>
-    <string name="purchase_note">Once we receive your funds, we’ll start your %1$s buy order. Note, your final amount might change to due market activity. Fees may apply.</string>
+    <string name="purchase_bank_note">Once we receive your funds, we’ll start your %1$s buy order. Note, your final amount might change to due market activity. Fees may apply.</string>
+    <string name="purchase_card_note">We will debit your payment method in 2 business days. Your final amount might change due to market activity.</string>
+    <string name="complete_payment">Complete Payment</string>
     <string name="buy_crypto">Buy %1$s</string>
     <string name="kyc_verifying_info">Verifying your information</string>
     <string name="kyc_verifying_time_info">Usually takes less than a minute.</string>
@@ -1593,6 +1613,7 @@
     <string name="cancel_order">Cancel Order</string>
     <string name="cancel_order_do_cancel">Cancel Order</string>
     <string name="cancel_order_go_back">Go Back</string>
+    <string name="card_payment">Card Payment</string>
     <string name="cancel_order_do_cancel_dashboard">Yes, Cancel</string>
     <string name="cancel_order_go_back_dashboard">No, Keep Order</string>
     <string name="cancel_token_instruction">This will remove your %1$s Buy order.</string>
@@ -1619,7 +1640,6 @@
     <string name="default_label_all_wallets">All Wallets</string>
     <string name="exchange_default_account_label">My Exchange %1$s Address</string>
     <string name="approximately_symbol">~ %1$s</string>
-
     <string name="custodial_wallet_default_label">%1s Trading Wallet</string>
     <string name="select_account_sheet_title">Select a Wallet</string>
     <string name="activity_state_initialised">Initialised</string>
@@ -1631,13 +1651,45 @@
     <string name="activity_state_failed">Failed</string>
     <string name="activity_wallet_total_balance">Total Balance</string>
 
+    <!--Cards-->
+    <string name="card_number">Card Number</string>
+    <string name="name_on_card">Name on Card</string>
+    <string name="expiry_date">Expiry Date</string>
+    <string name="card_cvv">CVV2</string>
+    <string name="card_not_supported">Card Not Supported</string>
+    <string name="privacy_protected_ssl">Privacy protected with 256-Bit SSL encryption.</string>
+    <string name="add_card_title">Add a Card</string>
+    <string name="linking_card_title">Secrurely Linking Your Card</string>
+    <string name="linking_card_subtitle">This could take up to 1 minute.</string>
+    <string name="linking_card_error_title">Oops! Something Went Wrong.</string>
+    <string name="card_error_subtitle">Please go back and try again.</string>
+    <string name="card_expiry_date">Exp: %1s</string>
+    <string name="card_buying">Buying %1s</string>
+    <string name="card_in_progress">%1s Buy In Progress</string>
+    <string name="we_will_notify_order_complete">We’ll notify you when your order is complete.</string>
+    <string name="completing_card_buy">We’re completing your purchase now.</string>
+    <string name="card_purchased">%1s Purchased</string>
+    <string name="card_purchased_available_now">Your %1s is now available in your Wallet.</string>
+
+    <string name="invalid_cvv">Invalid CVV</string>
+    <string name="invalid_date">Invalid Date</string>
+    <string name="invalid_card_number">Invalid Card Number</string>
+    <string name="full_name">Full Name</string>
+    <string name="billing_address_line_1">Address line 1</string>
+    <string name="billing_address_line_2">Address line 2</string>
+    <string name="billing_address_city">City</string>
+    <string name="billing_address_zip">ZIP</string>
+    <string name="billing_address_postcode">Postcode</string>
+    <string name="billing_address_state">State</string>
+    <string name="billing_address_country">Country</string>
     <string name="currency_not_supported_title">Your Currency is Not Supported</string>
     <string name="currency_not_supported">Currently we don’t support buying crypto with %1s</string>
     <string name="activity_no_activity_title">You Have No Activity</string>
     <string name="activity_no_activity_text">All your transactions will show up here.</string>
     <string name="activity_custodial_pending_value">Bank Transfer</string>
+    <string name="checkout_bank_transfer_label">Bank Transfer</string>
     <string name="activity_loading_error">Failed to load activity, please try again later</string>
-    <string name="activity_details_created">Created</string>
+    <string name="activity_details_created">Date</string>
     <string name="activity_details_completed">Completed</string>
     <string name="activity_details_fee">Fee</string>
     <string name="activity_details_amount">Amount</string>
@@ -1646,6 +1698,7 @@
     <string name="activity_details_from">From</string>
     <string name="activity_details_empty"/>
     <string name="activity_details_action">View on Blockchain Explorer</string>
+    <string name="activity_details_cancel_action">Cancel Buy</string>
     <string name="activity_detail_description_action">Add a description</string>
     <string name="activity_detail_description_label">Description</string>
     <string name="activity_details_label_pending">Pending</string>
@@ -1656,5 +1709,21 @@
     <string name="activity_details_title_buy">Buy</string>
     <string name="activity_details_title_sell">Sell</string>
     <string name="activity_details_title_swap">Swap</string>
+    <string name="activity_details_label_confirming">Confirming</string>
+    <string name="activity_details_label_waiting_on_funds">Waiting on Funds</string>
+    <string name="activity_details_label_confirmations">%1$d of %2$d\nConfirmations</string>
+    <string name="activity_details_title_fee">Gas Fee</string>
+    <string name="activity_details_transaction_fee">Gas for</string>
+    <string name="activity_details_label_pending_execution">Pending Execution</string>
+    <string name="activity_details_buy_tx_id">Transaction ID</string>
+    <string name="activity_details_buy_sending_to">Sending to</string>
+    <string name="activity_details_buy_purchase_amount">Purchasing</string>
+    <string name="activity_details_buy_fees">Fees</string>
+    <string name="activity_details_buy_payment_method">Payment Method</string>
+    <string name="activity_details_view_bank_transfer_details">View Bank Transfer Details</string>
+    <string name="activity_details_buy_again">Buy Again</string>
+    <string name="activity_details_description_updated">Description updated</string>
+    <string name="activity_details_description_not_updated">Description failed to update</string>
+    <string name="order_pending">Pending</string>
 
 </resources>

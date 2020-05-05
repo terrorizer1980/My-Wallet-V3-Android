@@ -133,16 +133,16 @@
         <item name="fontFamily">@font/inter_medium</item>
     </style>
 
-    <style name="Text.Semibold.32">
-        <item name="android:textSize">32sp</item>
-    </style>
-
     <style name="Text.Semibold.20">
         <item name="android:textSize">20sp</item>
     </style>
 
     <style name="Text.Semibold.16">
         <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Text.Semibold.32">
+        <item name="android:textSize">32sp</item>
     </style>
 
     <style name="Text.Semibold.14">

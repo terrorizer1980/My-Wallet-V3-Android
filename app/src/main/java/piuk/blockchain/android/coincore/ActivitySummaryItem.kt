@@ -39,7 +39,8 @@ data class CustodialActivitySummaryItem(
     override val timeStampMs: Long,
     override val totalCrypto: CryptoValue,
     val fundedFiat: FiatValue,
-    val status: OrderState
+    val status: OrderState,
+    val fee: FiatValue
 ) : ActivitySummaryItem()
 
 abstract class NonCustodialActivitySummaryItem : ActivitySummaryItem() {
