@@ -175,8 +175,13 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 
     private fun getListFields(state: SimpleBuyState) =
         listOf(
-            CheckoutItem(getString(R.string.morph_exchange_rate),
-                state.exchangePrice?.toStringWithSymbol() ?: ""),
+            if (state.selectedPaymentMethod?.isBank() == true) {
+                CheckoutItem(getString(R.string.morph_exchange_rate),
+                    state.quote?.rate?.toStringWithSymbol() ?: "")
+            } else {
+                CheckoutItem(getString(R.string.morph_exchange_rate),
+                    state.exchangePrice?.toStringWithSymbol() ?: "")
+            },
 
             CheckoutItem(getString(R.string.fees),
                 state.fee?.toStringWithSymbol() ?: FiatValue.zero(state.fiatCurrency)
