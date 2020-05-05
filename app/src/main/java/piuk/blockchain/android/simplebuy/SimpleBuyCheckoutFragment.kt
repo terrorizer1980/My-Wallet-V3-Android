@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.datamanagers.OrderState
@@ -14,10 +15,10 @@ import info.blockchain.balance.FiatValue
 import kotlinx.android.synthetic.main.fragment_simple_buy_checkout.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
-import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
+import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
 import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
@@ -53,12 +54,18 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
             analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CONFIRMED)
         }
 
-        recycler.layoutManager = LinearLayoutManager(activity)
-        recycler.adapter = adapter
+        recycler.apply {
+            layoutManager = LinearLayoutManager(activity)
+            adapter = adapter
+            addItemDecoration(
+                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+        }
 
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.CHECKOUT))
-        activity.setupToolbar(if (isForPendingPayment) R.string.order_details else R.string.checkout,
-            !isForPendingPayment)
+        activity.setupToolbar(
+            if (isForPendingPayment) { R.string.order_details } else { R.string.checkout },
+            !isForPendingPayment
+        )
         analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_SHOWN)
         model.process(SimpleBuyIntent.FetchQuote)
         model.process(SimpleBuyIntent.FetchBankAccount)
@@ -68,44 +75,40 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         isForPendingPayment
 
     override fun navigator(): SimpleBuyNavigator =
-        (activity as? SimpleBuyNavigator) ?: throw IllegalStateException("Parent must implement SimpleBuyNavigator")
+        (activity as? SimpleBuyNavigator) ?: throw IllegalStateException(
+            "Parent must implement SimpleBuyNavigator")
 
     override fun onBackPressed(): Boolean = true
 
     override fun render(newState: SimpleBuyState) {
         lastState = newState
         progress.visibleIf { newState.isLoading }
-        purchase_note.text = if (newState.selectedPaymentMethod?.isBank() == true)
-            getString(R.string.purchase_bank_note,
-                newState.selectedCryptoCurrency?.displayTicker) else getString(R.string.purchase_card_note)
+        purchase_note.text = if (newState.selectedPaymentMethod?.isBank() == true) {
+            getString(R.string.purchase_bank_note, newState.selectedCryptoCurrency?.displayTicker)
+        } else {
+            getString(R.string.purchase_card_note)
+        }
 
         if (newState.errorState != null) {
             showErrorState(newState.errorState)
             return
         }
 
-        val list = (if (newState.selectedPaymentMethod?.isBank() == true) getFieldsForBank(newState)
-        else getFieldsForCard(newState)).toMutableList()
-
-        if (isPendingOrAwaitingFunds(newState.orderState)) {
-            status.text = getString(R.string.order_pending)
-            status.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_unconfirmed)
-            status.setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.grey_800))
+        val list = (if (newState.selectedPaymentMethod?.isBank() == true) {
+            getFieldsForBank(newState)
         } else {
-            status.text = getString(R.string.order_complete)
-            status.background =
-                ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_received)
-            status.setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.green_600))
-        }
-        
+            getFieldsForCard(newState)
+        }).toMutableList()
+
+        amount.text = newState.orderValue?.toStringWithSymbol()
+        updateStatusPill(newState)
+
         adapter.items = list.toList()
 
-        btn_ok.text = if (newState.orderState == OrderState.AWAITING_FUNDS && !isForPendingPayment) {
-            getString(R.string.complete_payment)
-        } else getString(R.string.ok_cap)
+        btn_ok.text =
+            if (newState.orderState == OrderState.AWAITING_FUNDS && !isForPendingPayment) {
+                getString(R.string.complete_payment)
+            } else getString(R.string.ok_cap)
 
         configureButtons(newState.orderState == OrderState.AWAITING_FUNDS)
 
@@ -132,11 +135,32 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         }
     }
 
+    private fun updateStatusPill(newState: SimpleBuyState) {
+        when {
+            isPendingOrAwaitingFunds(newState.orderState) -> {
+                status.text = getString(R.string.order_pending)
+                status.background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_unconfirmed)
+                status.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.grey_800))
+            }
+            newState.orderState == OrderState.FINISHED -> {
+                status.text = getString(R.string.order_complete)
+                status.background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_received)
+                status.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.green_600))
+            }
+            else -> {
+                status.gone()
+            }
+        }
+    }
+
     private fun getFieldsForCard(state: SimpleBuyState): List<CheckoutItem> =
         listOf(
-            CheckoutItem(getString(R.string.date), state.order.quote?.formatDate() ?: ""),
-
-            CheckoutItem(getString(R.string.total_cost), calculateFeedAmount(state.fee, state.order.amount)),
+            CheckoutItem(getString(R.string.morph_exchange_rate),
+                state.exchangePrice?.toStringWithSymbol() ?: ""),
 
             if (state.orderState == OrderState.PENDING_CONFIRMATION) {
                 CheckoutItem(getString(R.string.estimated_amount),
@@ -164,19 +188,14 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
             getString(R.string.approximately_symbol, it)
         }
 
-    private fun calculateFeedAmount(fee: FiatValue?, amount: FiatValue?): String = fee?.let {
-        amount?.minus(it)?.toStringWithSymbol() ?: ""
-    } ?: amount?.toStringWithSymbol() ?: ""
-
     private fun getFieldsForBank(state: SimpleBuyState): List<CheckoutItem> =
         listOf(
-            CheckoutItem(getString(R.string.date), state.order.quote?.formatDate() ?: ""),
-
-            CheckoutItem(getString(R.string.total_cost),
-                calculateFeedAmount(state.fee, state.order.amount)),
+            CheckoutItem(getString(R.string.morph_exchange_rate),
+                state.exchangePrice?.toStringWithSymbol() ?: ""),
 
             CheckoutItem(getString(R.string.fees),
-                state.fee?.toStringWithSymbol() ?: FiatValue.zero(state.fiatCurrency).toStringWithSymbol()),
+                state.fee?.toStringWithSymbol() ?: FiatValue.zero(state.fiatCurrency)
+                    .toStringWithSymbol()),
 
             CheckoutItem(getString(R.string.total),
                 state.order.amount?.toStringWithSymbol() ?: ""),
@@ -211,7 +230,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         }
 
     private fun showErrorState(errorState: ErrorState) {
-        showBottomSheet(ErrorSlidingBottomDialog.newInstance(activity))
+        // showBottomSheet(ErrorSlidingBottomDialog.newInstance(activity))
     }
 
     override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
