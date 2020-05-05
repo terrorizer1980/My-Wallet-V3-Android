@@ -15,6 +15,7 @@ import info.blockchain.balance.FiatValue
 import kotlinx.android.synthetic.main.fragment_simple_buy_checkout.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
+import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
@@ -63,7 +64,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 
         model.process(SimpleBuyIntent.FlowCurrentScreen(FlowScreen.CHECKOUT))
         activity.setupToolbar(
-            if (isForPendingPayment) { R.string.order_details } else { R.string.checkout },
+            if (isForPendingPayment) {
+                R.string.order_details
+            } else {
+                R.string.checkout
+            },
             !isForPendingPayment
         )
         analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_SHOWN)
@@ -94,16 +99,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
             return
         }
 
-        val list = (if (newState.selectedPaymentMethod?.isBank() == true) {
-            getFieldsForBank(newState)
-        } else {
-            getFieldsForCard(newState)
-        }).toMutableList()
+        showAmountForMethod(newState)
 
-        amount.text = newState.orderValue?.toStringWithSymbol()
         updateStatusPill(newState)
 
-        adapter.items = list.toList()
+        adapter.items = getListFields(newState)
 
         btn_ok.text =
             if (newState.orderState == OrderState.AWAITING_FUNDS && !isForPendingPayment) {
@@ -122,8 +122,11 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         when (newState.order.orderState) {
             OrderState.AWAITING_FUNDS -> {
                 if (newState.confirmationActionRequested) {
-                    if (newState.selectedPaymentMethod?.isBank() == true) navigator().goToBankDetailsScreen()
-                    else navigator().goToCardPaymentScreen()
+                    if (newState.selectedPaymentMethod?.isBank() == true) {
+                        navigator().goToBankDetailsScreen()
+                    } else {
+                        navigator().goToCardPaymentScreen()
+                    }
                 }
             }
             OrderState.CANCELED -> {
@@ -131,7 +134,20 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
                 navigator().exitSimpleBuyFlow()
             }
             else -> {
+                // do nothing
             }
+        }
+    }
+
+    private fun showAmountForMethod(newState: SimpleBuyState) {
+        amount.text = if (newState.selectedPaymentMethod?.isBank() == true) {
+            if (newState.orderState == OrderState.PENDING_CONFIRMATION) {
+                newState.quote?.estimatedAmount()
+            } else {
+                newState.orderValue?.toStringWithSymbol()
+            }
+        } else {
+            newState.orderValue?.toStringWithSymbol()
         }
     }
 
@@ -157,38 +173,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         }
     }
 
-    private fun getFieldsForCard(state: SimpleBuyState): List<CheckoutItem> =
-        listOf(
-            CheckoutItem(getString(R.string.morph_exchange_rate),
-                state.exchangePrice?.toStringWithSymbol() ?: ""),
-
-            if (state.orderState == OrderState.PENDING_CONFIRMATION) {
-                CheckoutItem(getString(R.string.estimated_amount),
-                    state.quote?.estimatedAmount() ?: "")
-            } else {
-                CheckoutItem(getString(R.string.amount),
-                    state.orderValue?.toStringWithSymbol() ?: "")
-            },
-
-            CheckoutItem(getString(R.string.fees),
-                state.fee?.toStringWithSymbol() ?: ""),
-
-            CheckoutItem(getString(R.string.total),
-                state.order.amount?.toStringWithSymbol() ?: ""),
-
-            CheckoutItem(getString(R.string.payment_method),
-                state.selectedPaymentMethod?.let {
-                    paymentMethodLabel(it)
-                } ?: ""
-            )
-        )
-
-    private fun Quote.estimatedAmount(): String =
-        estimatedAmount.toStringWithSymbol().let {
-            getString(R.string.approximately_symbol, it)
-        }
-
-    private fun getFieldsForBank(state: SimpleBuyState): List<CheckoutItem> =
+    private fun getListFields(state: SimpleBuyState) =
         listOf(
             CheckoutItem(getString(R.string.morph_exchange_rate),
                 state.exchangePrice?.toStringWithSymbol() ?: ""),
@@ -206,6 +191,9 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
                 } ?: ""
             )
         )
+
+    private fun Quote.estimatedAmount(): String =
+        getString(R.string.approximately_symbol, estimatedAmount.toStringWithSymbol())
 
     private fun isPendingOrAwaitingFunds(orderState: OrderState) =
         isForPendingPayment || orderState == OrderState.AWAITING_FUNDS
@@ -230,7 +218,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         }
 
     private fun showErrorState(errorState: ErrorState) {
-        // showBottomSheet(ErrorSlidingBottomDialog.newInstance(activity))
+        showBottomSheet(ErrorSlidingBottomDialog.newInstance(activity))
     }
 
     override fun cancelOrderConfirmAction(cancelOrder: Boolean, orderId: String?) {
