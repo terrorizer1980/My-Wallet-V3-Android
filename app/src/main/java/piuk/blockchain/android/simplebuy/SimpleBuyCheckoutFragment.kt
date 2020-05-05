@@ -11,7 +11,6 @@ import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.Quote
 import info.blockchain.balance.FiatValue
 import kotlinx.android.synthetic.main.fragment_simple_buy_checkout.*
-import kotlinx.android.synthetic.main.fragment_simple_buy_checkout.progress
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.ErrorSlidingBottomDialog
@@ -98,11 +97,12 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 
         configureButtons(newState.orderState == OrderState.AWAITING_FUNDS)
 
-        button_buy.text = resources.getString(R.string.buy_crypto,
+        /* button_buy.text = resources.getString(R.string.buy_crypto,
             newState.selectedCryptoCurrency?.displayTicker)
+        */
 
-        checkout_subtitle.text =
-            resources.getString(R.string.checkout_subtitle, newState.selectedCryptoCurrency?.displayTicker)
+        /*checkout_subtitle.text =
+            resources.getString(R.string.checkout_subtitle, newState.selectedCryptoCurrency?.displayTicker)*/
 
         button_buy.isEnabled = !newState.isLoading
 

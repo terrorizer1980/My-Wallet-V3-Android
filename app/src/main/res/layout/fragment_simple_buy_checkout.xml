@@ -5,68 +5,78 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/checkout_subtitle"
-        style="@style/Text.Light.14"
+        android:id="@+id/title"
+        style="@style/Text.Semibold.20"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="@dimen/standard_margin"
-        android:text="@string/checkout_subtitle"
+        android:paddingStart="@dimen/standard_margin"
+        android:paddingEnd="@dimen/standard_margin"
+        android:textColor="@color/grey_800"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Buy" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/amount"
+        style="@style/Text.Semibold.32"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:paddingStart="@dimen/standard_margin"
+        android:paddingTop="@dimen/small_margin"
+        android:paddingEnd="@dimen/standard_margin"
+        android:textColor="@color/grey_800"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:text="$10000 of BTC" />
+
 
     <View
-        android:id="@+id/separator"
-        style="@style/Separator"
+        android:id="@+id/separator_top"
+        style="@style/SeparatorWithoutMargins"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/standard_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkout_subtitle" />
+        app:layout_constraintTop_toBottomOf="@+id/amount" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:listitem="@layout/layout_checkout_item"
+        tools:listitem="@layout/item_simple_buy_checkout_info"
         tools:itemCount="7"
-        app:layout_constraintBottom_toTopOf="@+id/list_guideline"
+        app:layout_constraintBottom_toTopOf="@+id/separator_bottom"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separator"
+        app:layout_constraintTop_toBottomOf="@+id/separator_top"
         app:layout_constraintVertical_bias="0" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/list_guideline"
+    <View
+        android:id="@+id/separator_bottom"
+        style="@style/SeparatorWithoutMargins"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.65" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/icon_information"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/standard_margin"
         android:layout_marginTop="@dimen/standard_margin"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recycler"
-        app:srcCompat="@drawable/ic_information" />
+        app:layout_constraintBottom_toTopOf="@+id/purchase_note" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/purchase_note"
-        style="@style/Text.Light.14"
+        style="@style/Text.Semibold.12"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/small_margin"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="@dimen/standard_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/icon_information"
-        app:layout_constraintTop_toBottomOf="@+id/recycler"
-        tools:text="@string/purchase_bank_note" />
+        android:paddingTop="@dimen/standard_margin"
+        android:paddingBottom="@dimen/standard_margin"
+        app:layout_constraintEnd_toEndOf="@id/button_cancel"
+        app:layout_constraintStart_toStartOf="@id/button_cancel"
+        app:layout_constraintBottom_toTopOf="@id/button_cancel"
+        tools:text="@string/purchase_card_note" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -85,8 +95,8 @@
         android:layout_marginBottom="@dimen/standard_margin"
         android:text="@string/cancel"
         android:textColor="@color/red_600"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/guideline"
+        app:layout_constraintBottom_toTopOf="@id/button_buy"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -99,8 +109,8 @@
         android:layout_marginBottom="@dimen/standard_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/guideline"
-        tools:text="Buy BTC" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/buy_now" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_ok"
