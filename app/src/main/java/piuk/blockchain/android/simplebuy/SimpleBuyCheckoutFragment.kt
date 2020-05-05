@@ -23,8 +23,6 @@ import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
 import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, SimpleBuyState>(),
     SimpleBuyScreen,
@@ -32,7 +30,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 
     override val model: SimpleBuyModel by inject()
     private var lastState: SimpleBuyState? = null
-    private val adapter = CheckoutAdapter()
+    private val checkoutAdapter = CheckoutAdapter()
 
     private val isForPendingPayment: Boolean by unsafeLazy {
         arguments?.getBoolean(PENDING_PAYMENT_ORDER_KEY, false) ?: false
@@ -57,7 +55,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 
         recycler.apply {
             layoutManager = LinearLayoutManager(activity)
-            adapter = adapter
+            adapter = checkoutAdapter
             addItemDecoration(
                 DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         }
@@ -103,7 +101,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
 
         updateStatusPill(newState)
 
-        adapter.items = getListFields(newState)
+        checkoutAdapter.items = getListFields(newState)
 
         btn_ok.text =
             if (newState.orderState == OrderState.AWAITING_FUNDS && !isForPendingPayment) {
@@ -248,9 +246,6 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         }
     }
 
-    private fun Quote.estAmount(): String? =
-        getString(R.string.approximately_symbol, estimatedAmount.toStringWithSymbol())
-
     companion object {
         private const val PENDING_PAYMENT_ORDER_KEY = "PENDING_PAYMENT_KEY"
 
@@ -262,9 +257,4 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
             return fragment
         }
     }
-}
-
-private fun Quote.formatDate(): String {
-    val format = SimpleDateFormat("MMMM d, yyyy @ hh:mm aa", Locale.getDefault())
-    return format.format(this.date)
 }

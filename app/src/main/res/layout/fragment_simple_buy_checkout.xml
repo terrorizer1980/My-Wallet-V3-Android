@@ -6,32 +6,19 @@
     android:layout_height="match_parent">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/title"
-        style="@style/Text.Semibold.20"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/standard_margin"
-        android:paddingStart="@dimen/standard_margin"
-        android:paddingEnd="@dimen/standard_margin"
-        android:textColor="@color/grey_800"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/checkout" />
-
-    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/amount"
         style="@style/Text.Semibold.32"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:paddingStart="@dimen/standard_margin"
-        android:paddingTop="@dimen/small_margin"
+        android:paddingTop="@dimen/standard_margin"
         android:paddingEnd="@dimen/standard_margin"
         android:textColor="@color/grey_800"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="$10000 of BTC" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -63,17 +50,19 @@
         android:layout_height="0dp"
         tools:listitem="@layout/item_simple_buy_checkout_info"
         tools:itemCount="7"
+        android:fadingEdge="vertical"
+        android:requiresFadingEdge="vertical"
+        android:fadingEdgeLength="@dimen/very_small_margin"
         app:layout_constraintBottom_toTopOf="@+id/separator_bottom"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/separator_top"
-        app:layout_constraintVertical_bias="0" />
+        app:layout_constraintTop_toBottomOf="@+id/separator_top" />
 
     <View
         android:id="@+id/separator_bottom"
         style="@style/SeparatorWithoutMargins"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/small_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/purchase_note" />
@@ -83,8 +72,8 @@
         style="@style/Text.Semibold.12"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/standard_margin"
-        android:paddingBottom="@dimen/standard_margin"
+        android:paddingTop="@dimen/small_margin"
+        android:paddingBottom="@dimen/small_margin"
         app:layout_constraintEnd_toEndOf="@id/button_cancel"
         app:layout_constraintStart_toStartOf="@id/button_cancel"
         app:layout_constraintBottom_toTopOf="@id/button_cancel"
@@ -102,7 +91,7 @@
         style="@style/CtaButton.White"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/standard_margin"
+        android:layout_marginBottom="@dimen/tiny_margin"
         android:text="@string/cancel"
         android:textColor="@color/red_600"
         app:layout_constraintBottom_toTopOf="@id/button_buy"
