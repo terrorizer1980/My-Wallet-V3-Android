@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.swap.nabu.datamanagers.OrderState
@@ -86,9 +87,20 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         val list = (if (newState.selectedPaymentMethod?.isBank() == true) getFieldsForBank(newState)
         else getFieldsForCard(newState)).toMutableList()
 
-        if (isPendingOrAwaitingFunds(newState.orderState))
-            list.add(CheckoutItem(getString(R.string.status), getString(R.string.order_pending)))
-
+        if (isPendingOrAwaitingFunds(newState.orderState)) {
+            status.text = getString(R.string.order_pending)
+            status.background =
+                ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_unconfirmed)
+            status.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.grey_800))
+        } else {
+            status.text = getString(R.string.order_complete)
+            status.background =
+                ContextCompat.getDrawable(requireContext(), R.drawable.bkgd_status_received)
+            status.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.green_600))
+        }
+        
         adapter.items = list.toList()
 
         btn_ok.text = if (newState.orderState == OrderState.AWAITING_FUNDS && !isForPendingPayment) {
@@ -96,13 +108,6 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         } else getString(R.string.ok_cap)
 
         configureButtons(newState.orderState == OrderState.AWAITING_FUNDS)
-
-        /* button_buy.text = resources.getString(R.string.buy_crypto,
-            newState.selectedCryptoCurrency?.displayTicker)
-        */
-
-        /*checkout_subtitle.text =
-            resources.getString(R.string.checkout_subtitle, newState.selectedCryptoCurrency?.displayTicker)*/
 
         button_buy.isEnabled = !newState.isLoading
 

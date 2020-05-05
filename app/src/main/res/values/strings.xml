@@ -1693,6 +1693,7 @@
     <string name="checkout_bank_transfer_label">Bank Transfer</string>
     <string name="activity_loading_error">Failed to load activity, please try again later</string>
     <string name="order_pending">Pending</string>
+    <string name="order_complete">Complete</string>
     <string name="expired">Expired</string>
     <string name="remove_card">Remove Card</string>
 

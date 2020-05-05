@@ -34,16 +34,28 @@
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:text="$10000 of BTC" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/status"
+        style="@style/Text.Semibold.14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/very_small_margin"
+        android:padding="@dimen/tiny_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/amount"
+        tools:background="@drawable/bkgd_status_received"
+        tools:text="Completed" />
 
     <View
         android:id="@+id/separator_top"
         style="@style/SeparatorWithoutMargins"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/very_small_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amount" />
+        app:layout_constraintTop_toBottomOf="@+id/status" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler"
