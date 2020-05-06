@@ -51,6 +51,8 @@ internal interface SettingsView : View {
 
     fun updateCards(cards: List<PaymentMethod.Card>)
 
+    fun cardsEnabled(enabled: Boolean)
+
     fun setScreenshotsEnabled(enabled: Boolean)
 
     fun showDialogEmailVerification()

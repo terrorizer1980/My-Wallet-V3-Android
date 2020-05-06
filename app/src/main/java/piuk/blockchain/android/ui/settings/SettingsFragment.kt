@@ -969,6 +969,10 @@ class SettingsFragment : PreferenceFragmentCompat(), SettingsView, RemoveCardBot
     }
 
     override fun onSheetClosed() {}
+
+    override fun cardsEnabled(enabled: Boolean) {
+        cardsPref?.isVisible = enabled
+    }
 }
 
 fun Preference?.onClick(onClick: () -> Unit) {

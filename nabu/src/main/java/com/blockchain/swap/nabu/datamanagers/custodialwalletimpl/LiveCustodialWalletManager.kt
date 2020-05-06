@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
 import com.blockchain.preferences.SimpleBuyPrefs
+import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.swap.nabu.Authenticator
 import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BillingAddress
@@ -54,6 +55,7 @@ class LiveCustodialWalletManager(
     private val nabuService: NabuService,
     private val authenticator: Authenticator,
     private val simpleBuyPrefs: SimpleBuyPrefs,
+    private val featureFlag: FeatureFlag,
     private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>
 ) : CustodialWalletManager {
 
@@ -247,49 +249,70 @@ class LiveCustodialWalletManager(
         fiatCurrency: String,
         isTier2Approved: Boolean
     ): Single<List<PaymentMethod>> =
-        authenticator.authenticate {
-            Singles.zip(nabuService.getCards(it).onErrorReturn { emptyList() },
-                nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
-                    val cardTypes = it.methods.filter { it.subTypes.isNullOrEmpty().not() }.map {
-                        it.subTypes
-                    }.filterNotNull().flatten().distinct()
-
-                    simpleBuyPrefs.updateSupportedCards(cardTypes.joinToString())
-                }
-            )
-        }.map { (cardsResponse, paymentMethods) ->
-            val availablePaymentMethods = mutableListOf<PaymentMethod>()
-
-            paymentMethods.methods.firstOrNull { it.type == PaymentMethodType.BANK_ACCOUNT }
-                ?.let { paymentMethodResponse ->
-                    availablePaymentMethods.add(PaymentMethod.BankTransfer(
-                        PaymentLimits(paymentMethodResponse.limits.min,
-                            paymentMethodResponse.limits.max,
-                            fiatCurrency)
-                    ))
-                }
-
-            val cardLimits =
-                paymentMethods.methods.firstOrNull { paymentMethod ->
-                    paymentMethod.type == PaymentMethodType.PAYMENT_CARD
-                }
-                    ?.let { paymentMethod ->
-                        PaymentLimits(paymentMethod.limits.min, paymentMethod.limits.max,
-                            fiatCurrency)
-                    } ?: return@map availablePaymentMethods.toList()
-
-            cardsResponse.takeIf { cards -> cards.isNotEmpty() }?.filter { it.state.isActive() }
-                ?.forEach { cardResponse: CardResponse ->
-                    availablePaymentMethods.add(cardResponse.toCardPaymentMethod(cardLimits))
-                }
-
-            availablePaymentMethods.add(PaymentMethod.UndefinedCard(cardLimits))
-
-            if (cardsResponse.isEmpty() && isTier2Approved) {
-                availablePaymentMethods.add(PaymentMethod.Undefined)
-            }
-            availablePaymentMethods.toList()
+        featureFlag.enabled.flatMap { enabled ->
+            if (enabled)
+                allPaymentsMethods(fiatCurrency, isTier2Approved)
+            else
+                onlyBank(fiatCurrency)
         }
+
+    private fun onlyBank(fiatCurrency: String) =
+        authenticator.authenticate {
+            nabuService.getPaymentMethods(it, fiatCurrency).map { response ->
+                response.methods.firstOrNull { it.type == PaymentMethodType.BANK_ACCOUNT }
+                    ?.let { paymentMethodResponse ->
+                        listOf(PaymentMethod.BankTransfer(
+                            PaymentLimits(paymentMethodResponse.limits.min,
+                                paymentMethodResponse.limits.max,
+                                fiatCurrency)
+                        ))
+                    } ?: emptyList()
+            }
+        }
+
+    private fun allPaymentsMethods(fiatCurrency: String, isTier2Approved: Boolean) = authenticator.authenticate {
+        Singles.zip(
+            nabuService.getCards(it).onErrorReturn { emptyList() },
+            nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
+                val cardTypes = it.methods.filter { it.subTypes.isNullOrEmpty().not() }.map {
+                    it.subTypes
+                }.filterNotNull().flatten().distinct()
+
+                simpleBuyPrefs.updateSupportedCards(cardTypes.joinToString())
+            }
+        )
+    }.map { (cardsResponse, paymentMethods) ->
+        val availablePaymentMethods = mutableListOf<PaymentMethod>()
+
+        paymentMethods.methods.firstOrNull { it.type == PaymentMethodType.BANK_ACCOUNT }
+            ?.let { paymentMethodResponse ->
+                availablePaymentMethods.add(PaymentMethod.BankTransfer(
+                    PaymentLimits(paymentMethodResponse.limits.min,
+                        paymentMethodResponse.limits.max,
+                        fiatCurrency)
+                ))
+            }
+
+        val cardLimits =
+            paymentMethods.methods.firstOrNull { paymentMethod ->
+                paymentMethod.type == PaymentMethodType.PAYMENT_CARD
+            }
+                ?.let { paymentMethod ->
+                    PaymentLimits(paymentMethod.limits.min, paymentMethod.limits.max, fiatCurrency)
+                } ?: return@map availablePaymentMethods.toList()
+
+        cardsResponse.takeIf { cards -> cards.isNotEmpty() }?.filter { it.state.isActive() }
+            ?.forEach { cardResponse: CardResponse ->
+                availablePaymentMethods.add(cardResponse.toCardPaymentMethod(cardLimits))
+            }
+
+        availablePaymentMethods.add(PaymentMethod.UndefinedCard(cardLimits))
+
+        if (cardsResponse.isEmpty() && isTier2Approved) {
+            availablePaymentMethods.add(PaymentMethod.Undefined)
+        }
+        availablePaymentMethods.toList()
+    }
 
     override fun addNewCard(
         fiatCurrency: String,
