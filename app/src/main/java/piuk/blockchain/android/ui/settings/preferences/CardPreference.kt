@@ -2,6 +2,8 @@ package piuk.blockchain.android.ui.settings.preferences
 
 import android.content.Context
 import android.graphics.Typeface
+import android.text.TextUtils
+import android.widget.TextView
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.blockchain.swap.nabu.datamanagers.PaymentMethod
@@ -14,8 +16,8 @@ import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
 import piuk.blockchain.androidcoreui.utils.helperfunctions.CustomFont
 import piuk.blockchain.androidcoreui.utils.helperfunctions.loadFont
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
+import java.util.Date
 
 class CardPreference(
     private val card: PaymentMethod,
@@ -47,6 +49,7 @@ class CardPreference(
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
+        val titleView = holder.findViewById(android.R.id.title) as? TextView
         val endDigits = holder.itemView.end_digits
         val expDate = holder.itemView.exp_date
         val expired = holder.itemView.expired
@@ -66,6 +69,8 @@ class CardPreference(
             expDate.gone()
             addCard.visible()
         }
+        titleView?.ellipsize = TextUtils.TruncateAt.END
+        titleView?.setSingleLine(true)
 
         holder.isDividerAllowedAbove = true
     }

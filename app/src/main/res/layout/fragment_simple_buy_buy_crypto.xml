@@ -233,10 +233,14 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/payment_method_title"
             style="@style/Text.Semibold.16"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/small_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:ellipsize="end"
+            android:singleLine="true"
             app:layout_constraintBottom_toTopOf="@+id/payment_guideline"
+            app:layout_constraintEnd_toStartOf="@+id/payment_method_arrow"
             app:layout_constraintStart_toEndOf="@+id/payment_method_icon"
             tools:text="Chase Saphire 8291" />
 

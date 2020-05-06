@@ -3,6 +3,11 @@ package piuk.blockchain.android.ui.settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import info.blockchain.wallet.payment.Payment;
+import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import piuk.blockchain.android.ui.kyc.settings.KycStatusHelper;
 
 import com.blockchain.notifications.NotificationTokenManager;
@@ -65,6 +70,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     @VisibleForTesting
     Settings settings;
     private final PitLinking pitLinking;
+    private final FeatureFlag cardsFeatureFlag;
     private final Analytics analytics;
     private final FeatureFlag featureFlag;
     private PitLinkingState pitLinkState = new PitLinkingState();
@@ -87,7 +93,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             KycStatusHelper kycStatusHelper,
             PitLinking pitLinking,
             Analytics analytics,
-            FeatureFlag featureFlag) {
+            FeatureFlag featureFlag,
+            FeatureFlag cardsFeatureFlag) {
 
         this.fingerprintHelper = fingerprintHelper;
         this.authDataManager = authDataManager;
@@ -105,6 +112,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         this.pitLinking = pitLinking;
         this.analytics = analytics;
         this.featureFlag = featureFlag;
+        this.cardsFeatureFlag = cardsFeatureFlag;
         this.custodialWalletManager = custodialWalletManager;
     }
 
@@ -131,11 +139,21 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         getCompositeDisposable().add(featureFlag.getEnabled().subscribe(this::showPitItem));
     }
 
-    public void updateCards() {
-        getCompositeDisposable().add(custodialWalletManager.fetchUnawareLimitsCards(
-                Arrays.asList(CardStatus.ACTIVE, CardStatus.EXPIRED)
-        ).observeOn(AndroidSchedulers.mainThread()).doOnSubscribe(disposable ->
-                onCardsUpdated(Collections.emptyList())).subscribe(this::onCardsUpdated));
+    private void updateCards() {
+        getCompositeDisposable().add(
+                cardsFeatureFlag.getEnabled().doOnSuccess(enabled -> {
+                    getView().cardsEnabled(enabled);
+                }).flatMap(enabled -> {
+                    if (enabled) {
+                        return custodialWalletManager.fetchUnawareLimitsCards(
+                                Arrays.asList(CardStatus.ACTIVE, CardStatus.EXPIRED));
+
+                    } else {
+                        return Single.just(Collections.<PaymentMethod.Card>emptyList());
+                    }
+                })
+                        .observeOn(AndroidSchedulers.mainThread()).doOnSubscribe(disposable ->
+                        onCardsUpdated(Collections.emptyList())).subscribe(this::onCardsUpdated));
     }
 
 
