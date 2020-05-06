@@ -209,7 +209,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
                 }
             }
         }
-        
+
         button_action.isEnabled = !state.isLoading
 
         button_cancel.setOnClickListenerDebounced {
