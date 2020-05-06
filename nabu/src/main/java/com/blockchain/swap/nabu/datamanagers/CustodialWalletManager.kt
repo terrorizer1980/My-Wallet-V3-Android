@@ -112,7 +112,7 @@ data class BuyOrder(
     val state: OrderState = OrderState.UNINITIALISED,
     val expires: Date = Date(),
     val fee: FiatValue? = null,
-    val price: CryptoValue? = null,
+    val price: FiatValue? = null,
     val orderValue: CryptoValue? = null,
     val attributes: CardPaymentAttributes? = null,
     val updated: Date = Date()

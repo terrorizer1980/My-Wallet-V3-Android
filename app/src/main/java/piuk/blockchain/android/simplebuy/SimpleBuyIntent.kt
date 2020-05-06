@@ -8,7 +8,6 @@ import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import com.blockchain.swap.nabu.datamanagers.Quote
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import info.blockchain.balance.CryptoCurrency
-import info.blockchain.balance.CryptoValue
 import info.blockchain.balance.FiatValue
 import piuk.blockchain.android.cards.EverypayAuthOptions
 import piuk.blockchain.android.ui.base.mvi.MviIntent
@@ -38,7 +37,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
             state
     }
 
-    class OrderPriceUpdated(private val price: CryptoValue?) : SimpleBuyIntent() {
+    class OrderPriceUpdated(private val price: FiatValue?) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
             oldState.copy(price = price, isLoading = false)
     }
