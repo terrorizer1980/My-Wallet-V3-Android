@@ -76,8 +76,9 @@
         android:paddingTop="@dimen/small_margin"
         android:paddingBottom="@dimen/small_margin"
         app:layout_constraintBottom_toTopOf="@id/button_cancel"
-        app:layout_constraintEnd_toEndOf="@id/button_cancel"
-        app:layout_constraintStart_toStartOf="@id/button_cancel"
+        app:layout_constraintEnd_toEndOf="@id/button_action"
+        app:layout_constraintStart_toStartOf="@id/button_action"
+        app:layout_goneMarginBottom="@dimen/standard_margin"
         tools:text="@string/purchase_card_note" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -88,31 +89,18 @@
         android:layout_marginBottom="@dimen/tiny_margin"
         android:text="@string/cancel"
         android:textColor="@color/red_600"
-        app:layout_constraintBottom_toTopOf="@id/button_buy"
+        app:layout_constraintBottom_toTopOf="@id/button_action"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_buy"
+        android:id="@+id/button_action"
         style="@style/CtaButton.Blue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/standard_margin"
         android:text="@string/buy_now"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_ok"
-        style="@style/CtaButton.Blue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:text="@string/ok_cap"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

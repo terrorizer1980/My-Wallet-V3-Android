@@ -432,11 +432,9 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
         fee = fee?.let { FiatValue.fromMinor(inputCurrency, it.toLongOrDefault(0)) },
         paymentMethodId = paymentMethodId ?: PaymentMethod.BANK_PAYMENT_ID,
         price = price?.let {
-            CryptoValue.fromMinor(
-                CryptoCurrency.fromNetworkTicker(outputCurrency)
-                    ?: throw UnknownFormatConversionException(
-                        "Unknown Crypto currency: $outputCurrency"),
-                it.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            FiatValue.fromMinor(
+                inputCurrency,
+                it.toLong()
             )
         },
         orderValue = outputQuantity.toBigDecimalOrNull()?.let {
