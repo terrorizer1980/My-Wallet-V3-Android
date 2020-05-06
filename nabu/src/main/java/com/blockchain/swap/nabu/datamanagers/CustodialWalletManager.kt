@@ -85,7 +85,10 @@ interface CustodialWalletManager {
     // For test/dev
     fun cancelAllPendingBuys(): Completable
 
-    fun fetchSuggestedPaymentMethod(fiatCurrency: String, isTier2Approved: Boolean): Single<List<PaymentMethod>>
+    fun fetchSuggestedPaymentMethod(
+        fiatCurrency: String,
+        isTier2Approved: Boolean
+    ): Single<List<PaymentMethod>>
 
     fun addNewCard(fiatCurrency: String, billingAddress: BillingAddress): Single<CardToBeActivated>
 
@@ -93,7 +96,9 @@ interface CustodialWalletManager {
 
     fun getCardDetails(cardId: String): Single<PaymentMethod.Card>
 
-    fun fetchUnawareLimitsCards(states: List<CardStatus>): Single<List<PaymentMethod.Card>> // fetches the available
+    fun fetchUnawareLimitsCards(
+        states: List<CardStatus>
+    ): Single<List<PaymentMethod.Card>> // fetches the available
 
     fun confirmOrder(orderId: String, attributes: CardPartnerAttributes?): Single<BuyOrder>
 }
@@ -132,7 +137,12 @@ data class BuyLimits(private val min: Long, private val max: Long) {
     fun maxLimit(currency: String): FiatValue = FiatValue.fromMinor(currency, max)
 }
 
-data class Quote(val date: Date, val fee: FiatValue, val estimatedAmount: CryptoValue)
+data class Quote(
+    val date: Date,
+    val fee: FiatValue,
+    val estimatedAmount: CryptoValue,
+    val rate: CryptoValue
+)
 
 data class BankAccount(val details: List<BankDetail>)
 
@@ -147,8 +157,12 @@ sealed class SimpleBuyError : Throwable() {
 
 sealed class PaymentMethod(val id: String, open val limits: PaymentLimits?) : Serializable {
     object Undefined : PaymentMethod(UNDEFINED_PAYMENT_ID, null)
-    data class BankTransfer(override val limits: PaymentLimits) : PaymentMethod(BANK_PAYMENT_ID, limits)
-    data class UndefinedCard(override val limits: PaymentLimits) : PaymentMethod(UNDEFINED_CARD_PAYMENT_ID, limits)
+    data class BankTransfer(override val limits: PaymentLimits) :
+        PaymentMethod(BANK_PAYMENT_ID, limits)
+
+    data class UndefinedCard(override val limits: PaymentLimits) :
+        PaymentMethod(UNDEFINED_CARD_PAYMENT_ID, limits)
+
     data class Card(
         val cardId: String,
         override val limits: PaymentLimits,
@@ -215,5 +229,6 @@ data class EveryPayCredentials(
 )
 
 enum class Partner {
-    EVERYPAY, UNKNOWN
+    EVERYPAY,
+    UNKNOWN
 }

@@ -1633,6 +1633,7 @@
     <string name="iban">IBAN</string>
     <string name="estonia">Estonia</string>
     <string name="lets_setup_wallet">Let’s get your wallet set up. You can quickly buy crypto now or do this later.</string>
+    <string name="buy_now">Buy Now</string>
 
     <string name="btc_default_wallet_name">My Bitcoin Wallet</string>
     <string name="bch_default_account_label">My Bitcoin Cash Wallet</string>
@@ -1692,6 +1693,7 @@
     <string name="checkout_bank_transfer_label">Bank Transfer</string>
     <string name="activity_loading_error">Failed to load activity, please try again later</string>
     <string name="order_pending">Pending</string>
+    <string name="order_complete">Complete</string>
     <string name="expired">Expired</string>
     <string name="remove_card">Remove Card</string>
 
