@@ -36,7 +36,7 @@ data class SimpleBuyState(
     val bankAccount: BankAccount? = null,
     val currentScreen: FlowScreen = FlowScreen.INTRO,
     val selectedPaymentMethod: SelectedPaymentMethod? = null,
-    val price: FiatValue? = null,
+    val orderExchangePrice: FiatValue? = null,
     val orderValue: CryptoValue? = null,
     val fee: FiatValue? = null,
     @Transient val paymentOptions: PaymentOptions = PaymentOptions(emptyList(), false),

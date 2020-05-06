@@ -20,6 +20,7 @@ import piuk.blockchain.android.ui.base.mvi.MviFragment
 import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.gone
+import piuk.blockchain.androidcoreui.utils.extensions.goneIf
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
 import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
@@ -161,7 +162,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
                     state.quote?.rate?.toStringWithSymbol() ?: "")
             } else {
                 CheckoutItem(getString(R.string.morph_exchange_rate),
-                    state.price?.toStringWithSymbol() ?: "")
+                    state.orderExchangePrice?.toStringWithSymbol() ?: "")
             },
 
             CheckoutItem(getString(R.string.fees),
@@ -201,7 +202,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
                     getString(R.string.ok_cap)
                 }
                 setOnClickListener {
-                    if (!isOrderAwaitingFunds) {
+                    if (isForPendingPayment) {
                         navigator().exitSimpleBuyFlow()
                     } else {
                         navigator().goToCardPaymentScreen()
@@ -211,7 +212,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         }
 
         button_action.isEnabled = !state.isLoading
-
+        button_cancel.goneIf { isOrderAwaitingFunds || isForPendingPayment }
         button_cancel.setOnClickListenerDebounced {
             analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_PRESS_CANCEL)
             showBottomSheet(SimpleBuyCancelOrderBottomSheet.newInstance())

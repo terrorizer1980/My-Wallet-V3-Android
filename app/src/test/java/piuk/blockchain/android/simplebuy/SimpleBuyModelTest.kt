@@ -167,12 +167,12 @@ class SimpleBuyModelTest {
 
         testObserver.assertValueAt(0, defaultState)
         testObserver.assertValueAt(1, defaultState.copy(isLoading = true))
-        testObserver.assertValueAt(2, defaultState.copy(price = price))
-        testObserver.assertValueAt(3, defaultState.copy(price = price,
+        testObserver.assertValueAt(2, defaultState.copy(orderExchangePrice = price))
+        testObserver.assertValueAt(3, defaultState.copy(orderExchangePrice = price,
             everypayAuthOptions = EverypayAuthOptions(
                 paymentLink, EverypayCardActivator.redirectUrl
             )))
-        testObserver.assertValueAt(4, defaultState.copy(price = price))
+        testObserver.assertValueAt(4, defaultState.copy(orderExchangePrice = price))
     }
 
     @Test

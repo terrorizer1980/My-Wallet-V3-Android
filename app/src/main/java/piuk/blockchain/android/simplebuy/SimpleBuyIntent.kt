@@ -39,7 +39,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
 
     class OrderPriceUpdated(private val price: FiatValue?) : SimpleBuyIntent() {
         override fun reduce(oldState: SimpleBuyState): SimpleBuyState =
-            oldState.copy(price = price, isLoading = false)
+            oldState.copy(orderExchangePrice = price, isLoading = false)
     }
 
     class Open3dsAuth(private val paymentLink: String, private val exitLink: String) : SimpleBuyIntent() {
@@ -279,7 +279,7 @@ sealed class SimpleBuyIntent : MviIntent<SimpleBuyState> {
                 id = buyOrder.id,
                 fee = buyOrder.fee,
                 orderValue = buyOrder.orderValue,
-                price = buyOrder.price,
+                orderExchangePrice = buyOrder.price,
                 isLoading = false
             )
     }
