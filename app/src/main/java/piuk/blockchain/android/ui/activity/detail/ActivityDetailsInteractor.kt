@@ -70,7 +70,7 @@ class ActivityDetailsInteractor(
         .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 listOfNotNull(
-                    Amount(item.totalCrypto),
+                    Amount(item.cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
                     FeeForTransaction("TODO"),
@@ -86,7 +86,7 @@ class ActivityDetailsInteractor(
         .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 listOfNotNull(
-                    Amount(item.totalCrypto),
+                    Amount(item.cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
                     addSingleOrMultipleToAddresses(it),
@@ -102,7 +102,7 @@ class ActivityDetailsInteractor(
         .flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 listOfNotNull(
-                    Amount(item.totalCrypto),
+                    Amount(item.cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
                     addSingleOrMultipleToAddresses(it),
@@ -118,7 +118,7 @@ class ActivityDetailsInteractor(
         item.totalFiatWhenExecuted(currencyPrefs.selectedFiatCurrency).flatMap { fiatValue ->
             transactionInputOutputMapper.transformInputAndOutputs(item).map {
                 listOfNotNull(
-                    Amount(item.totalCrypto),
+                    Amount(item.cryptoValue),
                     Fee(cryptoValue),
                     Value(fiatValue),
                     addSingleOrMultipleFromAddresses(it),
@@ -135,7 +135,7 @@ class ActivityDetailsInteractor(
     ) = item.fee.singleOrError().flatMap { cryptoValue ->
         transactionInputOutputMapper.transformInputAndOutputs(item).map {
             listOfNotNull(
-                Amount(item.totalCrypto),
+                Amount(item.cryptoValue),
                 Fee(cryptoValue),
                 addSingleOrMultipleFromAddresses(it),
                 addSingleOrMultipleToAddresses(it),

@@ -72,7 +72,7 @@ class TransactionDetailPresenter constructor(
             )
 
             view?.setTransactionColour(this.formatting().directionColour)
-            view?.setTransactionValue(totalCrypto)
+            view?.setTransactionValue(cryptoValue)
             view?.setDescription(description)
             view?.setDate(timeStampMs)
 
@@ -125,7 +125,7 @@ class TransactionDetailPresenter constructor(
 
     private fun getTransactionValueString(fiat: String, transaction: NonCustodialActivitySummaryItem): Single<String> =
         exchangeRateDataManager.getHistoricPrice(
-            transaction.totalCrypto,
+            transaction.cryptoValue,
             fiat,
             transaction.timeStampMs / 1000
         ).map { getTransactionString(transaction, it) }

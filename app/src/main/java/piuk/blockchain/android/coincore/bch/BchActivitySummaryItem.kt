@@ -16,7 +16,7 @@ internal class BchActivitySummaryItem(
     override val direction: TransactionSummary.Direction = transactionSummary.direction
     override val timeStampMs: Long = transactionSummary.time * 1000
 
-    override val totalCrypto: CryptoValue = CryptoValue.fromMinor(CryptoCurrency.BCH, transactionSummary.total)
+    override val cryptoValue: CryptoValue = CryptoValue.fromMinor(CryptoCurrency.BCH, transactionSummary.total)
 
     override val description: String? = null
 

@@ -99,7 +99,7 @@ class TransactionDetailPresenterTest {
             cryptoCurrency = CryptoCurrency.BTC,
             direction = TransactionSummary.Direction.TRANSFERRED,
             timeStampMs = 0,
-            totalCrypto = CryptoValue.bitcoinFromMajor(10),
+            cryptoValue = CryptoValue.bitcoinFromMajor(10),
             fee = Observable.just(CryptoValue.bitcoinFromSatoshis(1L)),
             txId = VALID_TX_HASH,
             inputsMap = mapOf("addr1" to CryptoValue.bitcoinFromSatoshis(1000L)),

@@ -3,16 +3,12 @@ package piuk.blockchain.android.coincore.impl
 import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.swap.common.trade.MorphTradeDataManager
 import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.Singles
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.coincore.SwapActivitySummaryItem
-import piuk.blockchain.android.ui.swap.homebrew.exchange.model.Trade
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import timber.log.Timber
 
@@ -45,7 +41,7 @@ private fun MorphTrade.map(exchangeRates: ExchangeRateDataManager): ActivitySumm
         cryptoCurrency = quote.pair.from,
         txId = this.hashOut ?: "",
         timeStampMs = timestamp * 1000,
-        totalCrypto = quote.depositAmount,
+        cryptoValue = quote.depositAmount,
         targetValue = quote.withdrawalAmount,
         fee = quote.minerFee
     )

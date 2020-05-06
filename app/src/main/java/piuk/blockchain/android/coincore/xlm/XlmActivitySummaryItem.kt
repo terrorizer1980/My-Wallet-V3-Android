@@ -28,7 +28,7 @@ class XlmActivitySummaryItem(
     override val timeStampMs: Long
         get() = xlmTransaction.timeStamp.fromIso8601ToUtc()!!.toLocalTime().time
 
-    override val totalCrypto: CryptoValue by unsafeLazy {
+    override val cryptoValue: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.XLM, xlmTransaction.accountDelta.amount.abs())
     }
 
@@ -46,7 +46,7 @@ class XlmActivitySummaryItem(
         get() = hashMapOf(xlmTransaction.from.accountId to CryptoValue.ZeroXlm)
 
     override val outputsMap: Map<String, CryptoValue>
-        get() = hashMapOf(xlmTransaction.to.accountId to CryptoValue.fromMinor(CryptoCurrency.XLM, totalCrypto.amount))
+        get() = hashMapOf(xlmTransaction.to.accountId to CryptoValue.fromMinor(CryptoCurrency.XLM, cryptoValue.amount))
 
     override val confirmations: Int
         get() = CryptoCurrency.XLM.requiredConfirmations

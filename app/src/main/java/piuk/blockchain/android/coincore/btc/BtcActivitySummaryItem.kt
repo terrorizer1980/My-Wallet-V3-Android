@@ -23,7 +23,7 @@ internal class BtcActivitySummaryItem(
 
     override val timeStampMs = transactionSummary.time * 1000
 
-    override val totalCrypto: CryptoValue by unsafeLazy {
+    override val cryptoValue: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.BTC, transactionSummary.total)
     }
 

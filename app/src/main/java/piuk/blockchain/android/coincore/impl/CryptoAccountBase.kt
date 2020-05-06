@@ -85,7 +85,7 @@ abstract class CryptoSingleAccountCustodialBase : CryptoSingleAccountBase() {
         CustodialActivitySummaryItem(
             exchangeRates = exchangeRates,
             cryptoCurrency = buyOrder.crypto.currency,
-            totalCrypto = buyOrder.crypto,
+            cryptoValue = buyOrder.crypto,
             fundedFiat = buyOrder.fiat,
             txId = buyOrder.id,
             timeStampMs = buyOrder.created.time,

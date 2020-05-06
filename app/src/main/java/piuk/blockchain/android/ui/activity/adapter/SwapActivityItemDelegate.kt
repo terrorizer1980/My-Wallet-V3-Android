@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
+import com.blockchain.preferences.CurrencyPrefs
 import info.blockchain.balance.CryptoCurrency
 import kotlinx.android.synthetic.main.dialog_activities_tx_item.view.*
 import piuk.blockchain.android.R
@@ -16,6 +17,7 @@ import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import java.util.Date
 
 class SwapActivityItemDelegate<in T>(
+    private val currencyPrefs: CurrencyPrefs,
     private val onItemClicked: (CryptoCurrency, String, Boolean) -> Unit // crypto, txID, isCustodial
 ) : AdapterDelegate<T> {
 
@@ -23,7 +25,7 @@ class SwapActivityItemDelegate<in T>(
         items[position] is SwapActivitySummaryItem
 
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
-        SwapActivityItemViewHolder(parent.inflate(R.layout.dialog_activities_tx_item))
+        SwapActivityItemViewHolder(parent.inflate(R.layout.dialog_activities_tx_item), currencyPrefs)
 
     override fun onBindViewHolder(
         items: List<T>,
@@ -36,7 +38,8 @@ class SwapActivityItemDelegate<in T>(
 }
 
 private class SwapActivityItemViewHolder(
-    itemView: View
+    itemView: View,
+    private val currencyPrefs: CurrencyPrefs
 ) : RecyclerView.ViewHolder(itemView) {
 
     internal fun bind(
@@ -50,9 +53,9 @@ private class SwapActivityItemViewHolder(
             status_date.setTxStatus(tx)
 //            setTextColours(tx.status)
 
-//            asset_balance_fiat.text = tx.fundedFiat.toStringWithSymbol()
+            asset_balance_fiat.text = tx.fiatValue(currencyPrefs.selectedFiatCurrency).toStringWithSymbol()
 
-            asset_balance_crypto.text = tx.totalCrypto.toStringWithSymbol()
+            asset_balance_crypto.text = tx.cryptoValue.toStringWithSymbol()
             setOnClickListener { onAccountClicked(tx.cryptoCurrency, tx.txId, true) }
         }
     }

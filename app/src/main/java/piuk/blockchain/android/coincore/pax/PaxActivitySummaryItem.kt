@@ -36,7 +36,7 @@ internal class PaxActivitySummaryItem(
 
     override val timeStampMs: Long = transfer.timestamp * 1000
 
-    override val totalCrypto: CryptoValue by unsafeLazy {
+    override val cryptoValue: CryptoValue by unsafeLazy {
         CryptoValue.fromMinor(CryptoCurrency.PAX, transfer.value)
     }
 

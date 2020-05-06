@@ -42,7 +42,7 @@ class LoadNonCustodialHeaderDataIntent(
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         return oldState.copy(
             direction = nonCustodialActivitySummaryItem.direction,
-            amount = nonCustodialActivitySummaryItem.totalCrypto,
+            amount = nonCustodialActivitySummaryItem.cryptoValue,
             isPending = !nonCustodialActivitySummaryItem.isConfirmed,
             isFeeTransaction = nonCustodialActivitySummaryItem.isFeeTransaction,
             confirmations = nonCustodialActivitySummaryItem.confirmations,
@@ -57,7 +57,7 @@ class LoadCustodialHeaderDataIntent(
     override fun reduce(oldState: ActivityDetailState): ActivityDetailState {
         return oldState.copy(
             direction = TransactionSummary.Direction.BUY,
-            amount = custodialActivitySummaryItem.totalCrypto,
+            amount = custodialActivitySummaryItem.cryptoValue,
             isPending = custodialActivitySummaryItem.status == OrderState.AWAITING_FUNDS,
             isPendingExecution = custodialActivitySummaryItem.status == OrderState.PENDING_EXECUTION,
             isFeeTransaction = false,

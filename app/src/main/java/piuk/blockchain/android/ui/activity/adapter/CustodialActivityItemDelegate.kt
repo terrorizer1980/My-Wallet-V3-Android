@@ -54,7 +54,7 @@ private class CustodialActivityItemViewHolder(
 
             asset_balance_fiat.text = tx.fundedFiat.toStringWithSymbol()
             if (tx.status == OrderState.FINISHED) {
-                asset_balance_crypto.text = tx.totalCrypto.toStringWithSymbol()
+                asset_balance_crypto.text = tx.cryptoValue.toStringWithSymbol()
             } else {
                 asset_balance_crypto.text = context.getString(R.string.activity_custodial_pending_value)
             }
