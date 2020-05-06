@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.dialog_activity_details_sheet.view.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.simplebuy.SimpleBuyActivity
-import piuk.blockchain.android.ui.activity.adapter.ActivityDetailsDelegateAdapter
+import piuk.blockchain.android.ui.activity.detail.adapter.ActivityDetailsDelegateAdapter
 import piuk.blockchain.android.ui.base.SlidingModalBottomDialog
 import piuk.blockchain.android.ui.base.mvi.MviBottomSheet
 import piuk.blockchain.androidcoreui.utils.extensions.visible
