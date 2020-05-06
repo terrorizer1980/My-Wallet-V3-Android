@@ -187,26 +187,29 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
     private fun configureButtons(state: SimpleBuyState) {
         val isOrderAwaitingFunds = state.orderState == OrderState.AWAITING_FUNDS
 
-        if (!isForPendingPayment && !isOrderAwaitingFunds) {
-            button_action.text = getString(R.string.buy_now)
-            button_action.setOnClickListener {
-                model.process(SimpleBuyIntent.ConfirmOrder)
-                analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CONFIRMED)
-            }
-        } else {
-            if (isOrderAwaitingFunds && !isForPendingPayment) {
-                button_action.text = getString(R.string.complete_payment)
+        button_action.apply {
+            if (!isForPendingPayment && !isOrderAwaitingFunds) {
+                text = getString(R.string.buy_now)
+                setOnClickListener {
+                    model.process(SimpleBuyIntent.ConfirmOrder)
+                    analytics.logEvent(SimpleBuyAnalytics.CHECKOUT_SUMMARY_CONFIRMED)
+                }
             } else {
-                button_action.text = getString(R.string.ok_cap)
-            }
-            button_action.setOnClickListener {
-                if (!isOrderAwaitingFunds) {
-                    navigator().exitSimpleBuyFlow()
+                text = if (isOrderAwaitingFunds && !isForPendingPayment) {
+                    getString(R.string.complete_payment)
                 } else {
-                    navigator().goToCardPaymentScreen()
+                    getString(R.string.ok_cap)
+                }
+                setOnClickListener {
+                    if (!isOrderAwaitingFunds) {
+                        navigator().exitSimpleBuyFlow()
+                    } else {
+                        navigator().goToCardPaymentScreen()
+                    }
                 }
             }
         }
+
 
         button_action.isEnabled = !state.isLoading
 

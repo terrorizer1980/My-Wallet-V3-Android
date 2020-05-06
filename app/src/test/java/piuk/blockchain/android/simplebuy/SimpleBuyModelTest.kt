@@ -2,9 +2,9 @@ package piuk.blockchain.android.simplebuy
 
 import com.blockchain.android.testutils.rxInit
 import com.blockchain.preferences.SimpleBuyPrefs
-import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.BuyLimits
 import com.blockchain.swap.nabu.datamanagers.BuyOrder
+import com.blockchain.swap.nabu.datamanagers.OrderState
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPair
 import com.blockchain.swap.nabu.datamanagers.SimpleBuyPairs
 import com.blockchain.swap.nabu.models.simplebuy.CardPaymentAttributes
@@ -137,7 +137,11 @@ class SimpleBuyModelTest {
 
     @Test
     fun `make card payment should update price and payment attributes`() {
-        val price = CryptoValue.fromMinor(CryptoCurrency.BTC, 1000.toBigDecimal())
+        val price = FiatValue.fromMinor(
+            "EUR",
+            1000.toLong()
+        )
+
         val paymentLink = "http://example.com"
         val id = "testId"
         whenever(interactor.fetchOrder(id))
