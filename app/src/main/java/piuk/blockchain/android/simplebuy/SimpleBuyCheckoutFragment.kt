@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +22,7 @@ import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.androidcore.utils.helperfunctions.unsafeLazy
 import piuk.blockchain.androidcoreui.utils.extensions.gone
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
+import piuk.blockchain.androidcoreui.utils.extensions.isVisible
 import piuk.blockchain.androidcoreui.utils.extensions.setOnClickListenerDebounced
 import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
 
@@ -205,6 +207,15 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         button_buy.visibleIf { !isForPendingPayment && !isOrderAwaitingFunds }
         button_cancel.visibleIf { !isForPendingPayment && !isOrderAwaitingFunds }
         btn_ok.visibleIf { isForPendingPayment || isOrderAwaitingFunds }
+
+        if(btn_ok.isVisible() && !button_buy.isVisible() && !button_cancel.isVisible()) {
+            val set = ConstraintSet()
+            set.clone(checkout_parent)
+            set.connect(purchase_note.id, ConstraintSet.BOTTOM, btn_ok.id, ConstraintSet.TOP)
+            set.connect(purchase_note.id, ConstraintSet.START, btn_ok.id, ConstraintSet.START)
+            set.connect(purchase_note.id, ConstraintSet.END, btn_ok.id, ConstraintSet.END)
+            set.applyTo(checkout_parent)
+        }
 
         btn_ok.setOnClickListener {
             if (!isOrderAwaitingFunds)
