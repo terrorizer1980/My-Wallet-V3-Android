@@ -208,7 +208,7 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         button_cancel.visibleIf { !isForPendingPayment && !isOrderAwaitingFunds }
         btn_ok.visibleIf { isForPendingPayment || isOrderAwaitingFunds }
 
-        if(btn_ok.isVisible() && !button_buy.isVisible() && !button_cancel.isVisible()) {
+        if (btn_ok.isVisible() && !button_buy.isVisible() && !button_cancel.isVisible()) {
             val set = ConstraintSet()
             set.clone(checkout_parent)
             set.connect(purchase_note.id, ConstraintSet.BOTTOM, btn_ok.id, ConstraintSet.TOP)
