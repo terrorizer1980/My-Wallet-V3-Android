@@ -19,7 +19,7 @@ class ActivitiesDelegateAdapter(
         with(delegatesManager) {
             addAdapterDelegate(NonCustodialActivityItemDelegate(disposables, prefs, onItemClicked))
             addAdapterDelegate(CustodialActivityItemDelegate(onItemClicked))
-            addAdapterDelegate(SwapActivityItemDelegate(prefs,onItemClicked))
+            addAdapterDelegate(SwapActivityItemDelegate(prefs, onItemClicked))
         }
     }
 }

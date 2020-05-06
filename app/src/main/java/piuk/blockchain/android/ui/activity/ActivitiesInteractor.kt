@@ -10,12 +10,12 @@ import io.reactivex.rxkotlin.subscribeBy
 import piuk.blockchain.android.coincore.ActivitySummaryList
 import piuk.blockchain.android.coincore.Coincore
 import piuk.blockchain.android.coincore.CryptoAccount
-import piuk.blockchain.android.coincore.impl.AssetActivityMonitor
+import piuk.blockchain.android.coincore.impl.AssetActivityRepo
 import timber.log.Timber
 
 class ActivitiesInteractor(
     private val coincore: Coincore,
-    private val activityRepo: AssetActivityMonitor,
+    private val activityRepo: AssetActivityRepo,
     private val custodialWalletManager: CustodialWalletManager,
     private val simpleBuyPrefs: SimpleBuyPrefs,
     private val analytics: Analytics

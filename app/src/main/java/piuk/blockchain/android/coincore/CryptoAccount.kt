@@ -11,6 +11,7 @@ interface TxCache {
     fun addToCache(txList: ActivitySummaryList)
     fun asActivityList(): List<ActivitySummaryItem>
     val hasTransactions: Boolean
+    fun clear()
 }
 
 interface CryptoAccount {

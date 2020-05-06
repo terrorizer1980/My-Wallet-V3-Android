@@ -14,7 +14,11 @@ internal class TxCacheImpl : TxCache {
         txCache[txHash]
 
     override fun asActivityList(): List<ActivitySummaryItem> =
-        txCache.values.sorted()
+        txCache.values.toList()
+
+    override fun clear() {
+        txCache.clear()
+    }
 
     override val hasTransactions: Boolean
         get() = txCache.isNotEmpty()
