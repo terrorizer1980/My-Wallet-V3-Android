@@ -159,10 +159,12 @@ class SimpleBuyCheckoutFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, S
         listOf(
             if (state.selectedPaymentMethod?.isBank() == true) {
                 CheckoutItem(getString(R.string.morph_exchange_rate),
-                    "${state.quote?.rate?.toStringWithSymbol()} / ${state.selectedCryptoCurrency?.displayTicker}")
+                    "${state.quote?.rate?.toStringWithSymbol()} / " +
+                        "${state.selectedCryptoCurrency?.displayTicker}")
             } else {
                 CheckoutItem(getString(R.string.morph_exchange_rate),
-                    "${state.orderExchangePrice?.toStringWithSymbol()} / ${state.selectedCryptoCurrency?.displayTicker}")
+                    "${state.orderExchangePrice?.toStringWithSymbol()} / " +
+                        "${state.selectedCryptoCurrency?.displayTicker}")
             },
 
             CheckoutItem(getString(R.string.fees),
