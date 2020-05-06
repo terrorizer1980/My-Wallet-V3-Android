@@ -113,7 +113,8 @@ private class BottomSheetPaymentMethodsAdapter(
             icon.setImageResource(R.drawable.ic_payment_card)
             title.text = if (canAdd) title.context.getString(R.string.add_credit_or_debit_card) else
                 title.context.getString(R.string.credit_or_debit_card)
-            limit.text = paymentMethod.limits?.max?.toStringWithSymbol()
+            limit.text =
+                limit.context.getString(R.string.payment_method_limit, paymentMethod.limits.max.toStringWithSymbol())
         }
     }
 

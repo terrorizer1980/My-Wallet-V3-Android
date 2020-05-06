@@ -244,7 +244,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         payment_method_icon.setImageResource(R.drawable.ic_payment_card)
         payment_method_title.text = getString(R.string.credit_or_debit_card)
         payment_method_limit.text =
-            getString(R.string.payment_method_limit, selectedPaymentMethod.limits?.max?.toStringWithSymbol())
+            getString(R.string.payment_method_limit, selectedPaymentMethod.limits.max.toStringWithSymbol())
     }
 
     private fun renderCardPayment(selectedPaymentMethod: PaymentMethod.Card) {

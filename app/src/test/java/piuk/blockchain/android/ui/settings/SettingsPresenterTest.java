@@ -102,6 +102,9 @@ public class SettingsPresenterTest extends RxTest {
     @Mock
     private CustodialWalletManager custodialWalletManager;
 
+    @Mock
+    private FeatureFlag cardsFeatureFlag;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -122,7 +125,9 @@ public class SettingsPresenterTest extends RxTest {
                 kycStatusHelper,
                 pitLinking,
                 analytics,
-                featureFlag);
+                featureFlag,
+                cardsFeatureFlag
+        );
         subject.initView(activity);
     }
 
@@ -146,6 +151,7 @@ public class SettingsPresenterTest extends RxTest {
                 .thenReturn(Single.just(Collections.emptyList()));
         when(pitLinking.getState()).thenReturn(Observable.just(pitLinkState));
         when(featureFlag.getEnabled()).thenReturn(Single.just(true));
+        when(cardsFeatureFlag.getEnabled()).thenReturn(Single.just(true));
 
         // Act
         subject.onViewReady();
@@ -167,6 +173,7 @@ public class SettingsPresenterTest extends RxTest {
         when(pitLinkState.isLinked()).thenReturn(false);
         when(pitLinking.getState()).thenReturn(Observable.just(pitLinkState));
         when(featureFlag.getEnabled()).thenReturn(Single.just(false));
+        when(cardsFeatureFlag.getEnabled()).thenReturn(Single.just(false));
         when(custodialWalletManager.fetchUnawareLimitsCards(anyList()))
                 .thenReturn(Single.just(Collections.emptyList()));
 

@@ -1,6 +1,7 @@
 package com.blockchain.swap.nabu.datamanagers.custodialwalletimpl
 
 import com.blockchain.preferences.SimpleBuyPrefs
+import com.blockchain.remoteconfig.FeatureFlag
 import com.blockchain.swap.nabu.Authenticator
 import com.blockchain.swap.nabu.datamanagers.BankAccount
 import com.blockchain.swap.nabu.datamanagers.BillingAddress
@@ -26,10 +27,10 @@ import com.blockchain.swap.nabu.models.cards.CardResponse
 import com.blockchain.swap.nabu.models.cards.PaymentMethodType
 import com.blockchain.swap.nabu.models.nabu.AddAddressRequest
 import com.blockchain.swap.nabu.models.simplebuy.AddNewCardBodyRequest
-import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
 import com.blockchain.swap.nabu.models.simplebuy.BankAccountResponse
-import com.blockchain.swap.nabu.models.simplebuy.CardPartnerAttributes
 import com.blockchain.swap.nabu.models.simplebuy.BuyOrderListResponse
+import com.blockchain.swap.nabu.models.simplebuy.BuyOrderResponse
+import com.blockchain.swap.nabu.models.simplebuy.CardPartnerAttributes
 import com.blockchain.swap.nabu.models.simplebuy.ConfirmOrderRequestBody
 import com.blockchain.swap.nabu.models.simplebuy.CustodialWalletOrder
 import com.blockchain.swap.nabu.models.simplebuy.TransferRequest
@@ -46,18 +47,23 @@ import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.flatMapIterable
 import okhttp3.internal.toLongOrDefault
 import java.math.BigDecimal
-import java.util.Date
 import java.util.Calendar
+import java.util.Date
 import java.util.UnknownFormatConversionException
 
 class LiveCustodialWalletManager(
     private val nabuService: NabuService,
     private val authenticator: Authenticator,
     private val simpleBuyPrefs: SimpleBuyPrefs,
+    private val featureFlag: FeatureFlag,
     private val paymentAccountMapperMappers: Map<String, PaymentAccountMapper>
 ) : CustodialWalletManager {
 
-    override fun getQuote(action: String, crypto: CryptoCurrency, amount: FiatValue): Single<Quote> =
+    override fun getQuote(
+        action: String,
+        crypto: CryptoCurrency,
+        amount: FiatValue
+    ): Single<Quote> =
         authenticator.authenticate {
             nabuService.getSimpleBuyQuote(
                 sessionToken = it,
@@ -70,8 +76,10 @@ class LiveCustodialWalletManager(
                 (amount.valueMinor.toFloat().div(quoteResponse.rate)).toBigDecimal())
             Quote(
                 date = quoteResponse.time.toLocalTime(),
-                fee = FiatValue.fromMinor(amount.currencyCode, quoteResponse.fee.times(amountCrypto.amount.toLong())),
-                estimatedAmount = amountCrypto
+                fee = FiatValue.fromMinor(amount.currencyCode,
+                    quoteResponse.fee.times(amountCrypto.amount.toLong())),
+                estimatedAmount = amountCrypto,
+                rate = CryptoValue(crypto, quoteResponse.rate.toBigInteger())
             )
         }
 
@@ -118,7 +126,9 @@ class LiveCustodialWalletManager(
             })
         }
 
-    override fun getSupportedFiatCurrencies(nabuOfflineTokenResponse: NabuOfflineTokenResponse): Single<List<String>> =
+    override fun getSupportedFiatCurrencies(
+        nabuOfflineTokenResponse: NabuOfflineTokenResponse
+    ): Single<List<String>> =
         authenticator.authenticate {
             nabuService.getSupportedCurrencies()
         }.map {
@@ -176,7 +186,8 @@ class LiveCustodialWalletManager(
                 pendingOnly = true
             )
         }.map {
-            it.map { order -> order.toBuyOrder() }.filter { order -> order.state != OrderState.UNKNOWN }
+            it.map { order -> order.toBuyOrder() }
+                .filter { order -> order.state != OrderState.UNKNOWN }
         }
 
     override fun getAllBuyOrdersFor(crypto: CryptoCurrency): Single<BuyOrderList> =
@@ -238,58 +249,87 @@ class LiveCustodialWalletManager(
         fiatCurrency: String,
         isTier2Approved: Boolean
     ): Single<List<PaymentMethod>> =
-        authenticator.authenticate {
-            Singles.zip(nabuService.getCards(it).onErrorReturn { emptyList() },
-                nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
-                    val cardTypes = it.methods.filter { it.subTypes.isNullOrEmpty().not() }.map {
-                        it.subTypes
-                    }.filterNotNull().flatten().distinct()
-
-                    simpleBuyPrefs.updateSupportedCards(cardTypes.joinToString())
-                }
-            )
-        }.map { (cardsResponse, paymentMethods) ->
-            val availablePaymentMethods = mutableListOf<PaymentMethod>()
-
-            paymentMethods.methods.firstOrNull { it.type == PaymentMethodType.BANK_ACCOUNT }
-                ?.let { paymentMethodResponse ->
-                    availablePaymentMethods.add(PaymentMethod.BankTransfer(
-                        PaymentLimits(paymentMethodResponse.limits.min,
-                            paymentMethodResponse.limits.max,
-                            fiatCurrency)
-                    ))
-                }
-
-            val cardLimits =
-                paymentMethods.methods.firstOrNull { paymentMethod ->
-                    paymentMethod.type == PaymentMethodType.PAYMENT_CARD
-                }
-                    ?.let { paymentMethod ->
-                        PaymentLimits(paymentMethod.limits.min, paymentMethod.limits.max, fiatCurrency)
-                    } ?: return@map availablePaymentMethods.toList()
-
-            cardsResponse.takeIf { cards -> cards.isNotEmpty() }?.filter { it.state.isActive() }
-                ?.forEach { cardResponse: CardResponse ->
-                    availablePaymentMethods.add(cardResponse.toCardPaymentMethod(cardLimits))
-                }
-
-            availablePaymentMethods.add(PaymentMethod.UndefinedCard(cardLimits))
-
-            if (cardsResponse.isEmpty() && isTier2Approved) {
-                availablePaymentMethods.add(PaymentMethod.Undefined)
-            }
-            availablePaymentMethods.toList()
+        featureFlag.enabled.flatMap { enabled ->
+            if (enabled)
+                allPaymentsMethods(fiatCurrency, isTier2Approved)
+            else
+                onlyBank(fiatCurrency)
         }
 
-    override fun addNewCard(fiatCurrency: String, billingAddress: BillingAddress): Single<CardToBeActivated> =
+    private fun onlyBank(fiatCurrency: String) =
         authenticator.authenticate {
-            nabuService.addNewCard(sessionToken = it, addNewCardBodyRequest = AddNewCardBodyRequest(fiatCurrency,
-                AddAddressRequest.fromBillingAddress(billingAddress)))
+            nabuService.getPaymentMethods(it, fiatCurrency).map { response ->
+                response.methods.firstOrNull { it.type == PaymentMethodType.BANK_ACCOUNT }
+                    ?.let { paymentMethodResponse ->
+                        listOf(PaymentMethod.BankTransfer(
+                            PaymentLimits(paymentMethodResponse.limits.min,
+                                paymentMethodResponse.limits.max,
+                                fiatCurrency)
+                        ))
+                    } ?: emptyList()
+            }
+        }
+
+    private fun allPaymentsMethods(fiatCurrency: String, isTier2Approved: Boolean) = authenticator.authenticate {
+        Singles.zip(
+            nabuService.getCards(it).onErrorReturn { emptyList() },
+            nabuService.getPaymentMethods(it, fiatCurrency).doOnSuccess {
+                val cardTypes = it.methods.filter { it.subTypes.isNullOrEmpty().not() }.map {
+                    it.subTypes
+                }.filterNotNull().flatten().distinct()
+
+                simpleBuyPrefs.updateSupportedCards(cardTypes.joinToString())
+            }
+        )
+    }.map { (cardsResponse, paymentMethods) ->
+        val availablePaymentMethods = mutableListOf<PaymentMethod>()
+
+        paymentMethods.methods.firstOrNull { it.type == PaymentMethodType.BANK_ACCOUNT }
+            ?.let { paymentMethodResponse ->
+                availablePaymentMethods.add(PaymentMethod.BankTransfer(
+                    PaymentLimits(paymentMethodResponse.limits.min,
+                        paymentMethodResponse.limits.max,
+                        fiatCurrency)
+                ))
+            }
+
+        val cardLimits =
+            paymentMethods.methods.firstOrNull { paymentMethod ->
+                paymentMethod.type == PaymentMethodType.PAYMENT_CARD
+            }
+                ?.let { paymentMethod ->
+                    PaymentLimits(paymentMethod.limits.min, paymentMethod.limits.max, fiatCurrency)
+                } ?: return@map availablePaymentMethods.toList()
+
+        cardsResponse.takeIf { cards -> cards.isNotEmpty() }?.filter { it.state.isActive() }
+            ?.forEach { cardResponse: CardResponse ->
+                availablePaymentMethods.add(cardResponse.toCardPaymentMethod(cardLimits))
+            }
+
+        availablePaymentMethods.add(PaymentMethod.UndefinedCard(cardLimits))
+
+        if (cardsResponse.isEmpty() && isTier2Approved) {
+            availablePaymentMethods.add(PaymentMethod.Undefined)
+        }
+        availablePaymentMethods.toList()
+    }
+
+    override fun addNewCard(
+        fiatCurrency: String,
+        billingAddress: BillingAddress
+    ): Single<CardToBeActivated> =
+        authenticator.authenticate {
+            nabuService.addNewCard(sessionToken = it,
+                addNewCardBodyRequest = AddNewCardBodyRequest(fiatCurrency,
+                    AddAddressRequest.fromBillingAddress(billingAddress)))
         }.map {
             CardToBeActivated(cardId = it.id, partner = it.partner)
         }
 
-    override fun activateCard(cardId: String, attributes: CardPartnerAttributes): Single<PartnerCredentials> =
+    override fun activateCard(
+        cardId: String,
+        attributes: CardPartnerAttributes
+    ): Single<PartnerCredentials> =
         authenticator.authenticate {
             nabuService.activateCard(it, cardId, attributes)
         }.map {
@@ -306,19 +346,26 @@ class LiveCustodialWalletManager(
         authenticator.authenticate {
             nabuService.getCardDetails(it, cardId)
         }.map {
-            it.toCardPaymentMethod(PaymentLimits(FiatValue.zero(it.currency), FiatValue.zero(it.currency)))
+            it.toCardPaymentMethod(
+                PaymentLimits(FiatValue.zero(it.currency), FiatValue.zero(it.currency)))
         }
 
-    override fun fetchUnawareLimitsCards(states: List<CardStatus>): Single<List<PaymentMethod.Card>> =
+    override fun fetchUnawareLimitsCards(
+        states: List<CardStatus>
+    ): Single<List<PaymentMethod.Card>> =
         authenticator.authenticate {
             nabuService.getCards(it)
         }.map {
             it.filter { states.contains(it.state.toCardStatus()) }.map {
-                it.toCardPaymentMethod(PaymentLimits(FiatValue.zero(it.currency), FiatValue.zero(it.currency)))
+                it.toCardPaymentMethod(
+                    PaymentLimits(FiatValue.zero(it.currency), FiatValue.zero(it.currency)))
             }
         }
 
-    override fun confirmOrder(orderId: String, attributes: CardPartnerAttributes?): Single<BuyOrder> =
+    override fun confirmOrder(
+        orderId: String,
+        attributes: CardPartnerAttributes?
+    ): Single<BuyOrder> =
         authenticator.authenticate {
             nabuService.confirmOrder(it, orderId,
                 ConfirmOrderRequestBody(
@@ -383,7 +430,12 @@ private fun String.toLocalState(): OrderState =
     }
 
 enum class CardStatus {
-    PENDING, ACTIVE, BLOCKED, CREATED, UNKNOWN, EXPIRED
+    PENDING,
+    ACTIVE,
+    BLOCKED,
+    CREATED,
+    UNKNOWN,
+    EXPIRED
 }
 
 private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
@@ -393,7 +445,8 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
         fiat = FiatValue.fromMinor(inputCurrency, inputQuantity.toLongOrDefault(0)),
         crypto = CryptoValue.fromMinor(
             CryptoCurrency.fromNetworkTicker(outputCurrency)
-                ?: throw UnknownFormatConversionException("Unknown Crypto currency: $outputCurrency"),
+                ?: throw UnknownFormatConversionException(
+                    "Unknown Crypto currency: $outputCurrency"),
             outputQuantity.toBigDecimalOrNull() ?: BigDecimal.ZERO
         ),
         state = state.toLocalState(),
@@ -402,15 +455,15 @@ private fun BuyOrderResponse.toBuyOrder(): BuyOrder =
         fee = fee?.let { FiatValue.fromMinor(inputCurrency, it.toLongOrDefault(0)) },
         paymentMethodId = paymentMethodId ?: PaymentMethod.BANK_PAYMENT_ID,
         price = price?.let {
-            CryptoValue.fromMinor(
-                CryptoCurrency.fromNetworkTicker(outputCurrency)
-                    ?: throw UnknownFormatConversionException("Unknown Crypto currency: $outputCurrency"),
-                it.toBigDecimalOrNull() ?: BigDecimal.ZERO
+            FiatValue.fromMinor(
+                inputCurrency,
+                it.toLong()
             )
         },
         orderValue = outputQuantity.toBigDecimalOrNull()?.let {
             CryptoValue.fromMinor(CryptoCurrency.fromNetworkTicker(outputCurrency)
-                ?: throw UnknownFormatConversionException("Unknown Crypto currency: $outputCurrency"),
+                ?: throw UnknownFormatConversionException(
+                    "Unknown Crypto currency: $outputCurrency"),
                 it
             )
         },
