@@ -29,7 +29,6 @@ import com.blockchain.notifications.analytics.SendAnalytics
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.notifications.analytics.SwapAnalyticsEvents
 import com.blockchain.notifications.analytics.TransactionsAnalyticsEvents
-import com.blockchain.preferences.NotificationPrefs
 import com.blockchain.ui.urllinks.URL_BLOCKCHAIN_SUPPORT_PORTAL
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
