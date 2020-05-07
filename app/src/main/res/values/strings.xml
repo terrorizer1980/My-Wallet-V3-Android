@@ -1570,8 +1570,8 @@
     <string name="simple_buy_error_fetching_price">Error fetching latest price.</string>
     <string name="simple_buy_up_to_amount">Up to %1$s</string>
     <string name="use_max">Use MAX</string>
-    <string name="maximum_buy">%1$s Maximum Buy</string>
-    <string name="minimum_buy">%1$s Minimum Buy</string>
+    <string name="maximum_buy">%1$s Maximum</string>
+    <string name="minimum_buy">%1$s Minimum</string>
     <string name="buy_min">Buy Min</string>
     <string name="buy_max">Buy Max</string>
     <string name="bank_wise_transfer">Bank Wise Transfer</string>
