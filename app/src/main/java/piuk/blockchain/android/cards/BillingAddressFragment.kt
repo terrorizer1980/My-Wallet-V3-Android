@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.fragment_billing_address.*
 import org.koin.android.ext.android.inject
 import piuk.blockchain.android.R
 import piuk.blockchain.android.ui.base.mvi.MviFragment
+import piuk.blockchain.android.ui.base.setupToolbar
 import piuk.blockchain.android.util.US
 import piuk.blockchain.androidcoreui.utils.extensions.inflate
 import piuk.blockchain.androidcoreui.utils.extensions.visibleIf
@@ -111,6 +112,7 @@ class BillingAddressFragment : MviFragment<CardModel, CardIntent, CardState>(),
             navigator.navigateToCardVerification()
             analytics.logEvent(SimpleBuyAnalytics.CARD_BILLING_ADDRESS_SET)
         }
+        activity.setupToolbar(R.string.add_card_address_title)
     }
 
     override fun onDestroyView() {
