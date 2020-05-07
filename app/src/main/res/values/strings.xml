@@ -1622,7 +1622,6 @@
     <string name="transfer_details">Transfer Details</string>
     <string name="ops">Oops!</string>
     <string name="something_went_wrong_try_again">Something went wrong. Please try again.</string>
-    <string name="simple_buy_token">Buy %1s</string>
     <string name="simple_buy_copied_to_clipboard">%1s is on your clipboard</string>
     <string name="account_number">Account Number</string>
     <string name="bank_code_swift_bic">Bank Code (SWIFT/BIC)</string>
