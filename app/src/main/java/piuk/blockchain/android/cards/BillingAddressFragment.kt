@@ -60,7 +60,7 @@ class BillingAddressFragment : MviFragment<CardModel, CardIntent, CardState>(),
         full_name.text.isNullOrBlank().not() &&
                 address_line_1.text.isNullOrBlank().not() &&
                 city.text.isNullOrBlank().not() &&
-                (if (usSelected) zip_usa.text.isNullOrBlank().not() && state.text.isNullOrBlank() else
+                (if (usSelected) zip_usa.text.isNullOrBlank().not() && state.text.isNullOrBlank().not() else
                     postcode.text.isNullOrBlank().not())
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
