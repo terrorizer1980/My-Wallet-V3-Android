@@ -1697,5 +1697,6 @@
     <string name="expired">Expired</string>
     <string name="remove_card">Remove Card</string>
     <string name="save_my_card">Save My Card</string>
+    <string name="custodial_activity_not_supported">Trading Wallet activity details are not supported in this release</string>
 
 </resources>
