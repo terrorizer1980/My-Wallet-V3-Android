@@ -255,7 +255,7 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
     }
 
     private fun renderBankPayment(selectedPaymentMethod: PaymentMethod.BankTransfer) {
-        payment_method_title.text = getString(R.string.bank_wise_transfer)
+        payment_method_title.text = getString(R.string.bank_wire_transfer)
         payment_method_icon.setImageResource(R.drawable.ic_bank_transfer)
         payment_method_limit.text =
             getString(R.string.payment_method_limit, selectedPaymentMethod.limits.max.toStringWithSymbol())
