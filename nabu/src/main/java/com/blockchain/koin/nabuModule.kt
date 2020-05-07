@@ -80,7 +80,8 @@ val nabuModule = applicationContext {
                 simpleBuyPrefs = get(),
                 paymentAccountMapperMappers = mapOf(
                     "EUR" to get("EUR"), "GBP" to get("GBP")
-                )
+                ),
+                featureFlag = get("ff_card_payments")
             )
         }.bind(CustodialWalletManager::class)
 

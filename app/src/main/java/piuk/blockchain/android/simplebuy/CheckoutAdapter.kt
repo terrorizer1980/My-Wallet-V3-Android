@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.layout_checkout_item.view.*
+import kotlinx.android.synthetic.main.item_simple_buy_checkout_info.view.*
 import piuk.blockchain.android.R
 import kotlin.properties.Delegates
 
@@ -18,13 +18,13 @@ class CheckoutAdapter : RecyclerView.Adapter<CheckoutAdapter.ViewHolder>() {
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val key: TextView = itemView.key
-        val value: TextView = itemView.value
+        val key: TextView = itemView.title
+        val value: TextView = itemView.description
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layout = LayoutInflater.from(parent.context).inflate(
-            R.layout.layout_checkout_item,
+            R.layout.item_simple_buy_checkout_info,
             parent,
             false
         )
@@ -37,8 +37,8 @@ class CheckoutAdapter : RecyclerView.Adapter<CheckoutAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         with(holder) {
             val item = items[position]
-            key.text = items[position].key
-            value.text = items[position].value
+            key.text = item.key
+            value.text = item.value
         }
     }
 }

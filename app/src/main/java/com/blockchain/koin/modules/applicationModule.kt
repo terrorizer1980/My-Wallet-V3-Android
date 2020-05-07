@@ -744,7 +744,8 @@ val applicationModule = applicationContext {
                 /* kycStatusHelper = */ get(),
                 /* pitLinking = */ get(),
                 /* analytics = */ get(),
-                /*featureFlag = */get("ff_pit_linking")
+                /*featureFlag = */get("ff_pit_linking"),
+                /*featureFlag = */get("ff_card_payments")
             )
         }
 
