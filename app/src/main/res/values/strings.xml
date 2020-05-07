@@ -1662,6 +1662,7 @@
     <string name="card_not_supported">Card Not Supported</string>
     <string name="privacy_protected_ssl">Privacy protected with 256-Bit SSL encryption.</string>
     <string name="add_card_title">Add a Card</string>
+    <string name="add_card_address_title">Billing Address</string>
     <string name="linking_card_title">Securely Linking Your Card</string>
     <string name="linking_card_subtitle">This could take up to 1 minute.</string>
     <string name="linking_card_error_title">Oops! Something Went Wrong.</string>
@@ -1678,8 +1679,8 @@
     <string name="invalid_date">Invalid Date</string>
     <string name="invalid_card_number">Invalid Card Number</string>
     <string name="full_name">Full Name</string>
-    <string name="billing_address_line_1">Address line 1</string>
-    <string name="billing_address_line_2">Address line 2</string>
+    <string name="billing_address_line_1">Address Line 1</string>
+    <string name="billing_address_line_2">Address Line 2</string>
     <string name="billing_address_city">City</string>
     <string name="billing_address_zip">ZIP</string>
     <string name="billing_address_postcode">Postcode</string>
