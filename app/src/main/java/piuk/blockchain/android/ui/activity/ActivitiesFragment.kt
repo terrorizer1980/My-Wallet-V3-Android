@@ -77,14 +77,6 @@ class ActivitiesFragment
 
     @UiThread
     override fun render(newState: ActivitiesState) {
-
-        switchView(newState)
-
-        swipe.isRefreshing = newState.isLoading
-
-        renderAccountDetails(newState)
-        renderTransactionList(newState)
-
         if (newState.isError) {
             ToastCustom.makeText(
                 requireContext(),
@@ -93,6 +85,13 @@ class ActivitiesFragment
                 ToastCustom.TYPE_ERROR
             )
         }
+
+        switchView(newState)
+
+        swipe.isRefreshing = newState.isLoading
+
+        renderAccountDetails(newState)
+        renderTransactionList(newState)
 
         if (this.state?.bottomSheet != newState.bottomSheet) {
             when (newState.bottomSheet) {
