@@ -14,6 +14,7 @@ import piuk.blockchain.android.coincore.CryptoAccount
 import piuk.blockchain.android.coincore.SwapActivitySummaryItem
 import piuk.blockchain.androidcore.data.exchangerate.ExchangeRateDataManager
 import timber.log.Timber
+import java.util.Date
 
 class AssetActivityRepo(
     private val coincore: Coincore,
@@ -43,31 +44,93 @@ class AssetActivityRepo(
 
             if (account is AllWalletsAccount) {
                 Timber.e("----- getting all accounts")
+                transactionCache.clear()
 
                 account.allAccounts().doOnSuccess { accountList ->
                     Timber.e("---- do on success , mapping all accounts")
-                    accountList.map { cryptoAccount ->
+                    val list = accountList.map { cryptoAccount ->
                         (cryptoAccount as CryptoAccountCompoundGroup).accounts.map { individualCryptoAccount ->
-                            individualCryptoAccount.activity.subscribe({ activityList ->
-                                Timber.e(
-                                    "----- adding all accounts to cache: ${individualCryptoAccount.label} - list: ${activityList.size}")
-                                transactionCache.clear()
+                            individualCryptoAccount.activity.doOnSuccess { activityList ->
+                                Timber.e("----- adding ${individualCryptoAccount.label} to cache $activityList")
                                 transactionCache[individualCryptoAccount] = activityList
-                                Timber.e("----- saved to cache  :${transactionCache.size}")
-                                emitter.onNext(activityList)
-                            }, {
-                                Timber.e("----- error parsing activity for all accounts: ${it.message}")
-                                emitter.onError(it)
-                            })
+                            }
                         }
+                    }.flatten().map {
+                        it.toObservable()
                     }
-                }.subscribe({
-                    Timber.e("---- on success getting all accounts")
+                    Observable.zip(list) { activityList ->
+                        val compoundList = mutableListOf<ActivitySummaryItem>()
+                        for(i in activityList.indices) {
+                            val singleAccountList = activityList[i] as? List<ActivitySummaryItem>
+                            singleAccountList?.map { summaryItem ->
+                                Timber.e("---- adding item to compoundList $summaryItem")
+                                compoundList.add(summaryItem)
+                            }
+                        }
+                        Timber.e("---- compound list $compoundList")
+                        compoundList.sortByDescending { Date(it.timeStampMs) }
+                        Timber.e("---- emitting sorted compound list $compoundList")
+                        emitter.onNext(compoundList)
+                    }.subscribe({
+                        Timber.e("---- on complete of zip ")
+                    }, {
+                        Timber.e("---- on error zip ${it.message}")
 
-                }, {
-                    Timber.e("----- error getting all accounts: ${it.message}")
-                    emitter.onError(it)
+                    })
+                }.subscribe({
+                    Timber.e("---- on success of all accounts")
+                },{
+                    Timber.e("---- on error all accounts ${it.message}")
                 })
+
+
+
+
+
+
+
+
+
+
+
+//                account.allAccounts().doOnSuccess { accountList ->
+//                    Timber.e("---- do on success , mapping all accounts")
+//                    accountList.map { cryptoAccount ->
+//                        if (cryptoAccount is CryptoAccountCompoundGroup) {
+//                            cryptoAccount.accounts.map { individualCryptoAccount ->
+//                                individualCryptoAccount.activity.subscribe({ activityList ->
+//                                    Timber.e(
+//                                        "----- adding compound accounts to cache: ${individualCryptoAccount.label} - list: ${activityList.size}")
+//                                    transactionCache[individualCryptoAccount] = activityList
+//                                    Timber.e("----- saved to cache  :${transactionCache.size}")
+//                                    emitter.onNext(activityList)
+//                                }, {
+//                                    Timber.e(
+//                                        "----- error parsing activity for all accounts: ${it.message}")
+//                                    emitter.onError(it)
+//                                })
+//                            }
+//                        } else {
+//                            cryptoAccount.activity.subscribe({ activityList ->
+//                                Timber.e(
+//                                    "----- adding non compound account to cache: ${cryptoAccount.label} - list: ${activityList.size}")
+//                                transactionCache[cryptoAccount] = activityList
+//                                Timber.e("----- saved to cache  :${transactionCache.size}")
+//                                emitter.onNext(activityList)
+//                            }, {
+//                                Timber.e(
+//                                    "----- error parsing activity for all accounts: ${it.message}")
+//                                emitter.onError(it)
+//                            })
+//                        }
+//                    }
+//                }.subscribe({
+//                    Timber.e("---- on success getting all accounts")
+//
+//                }, {
+//                    Timber.e("----- error getting all accounts: ${it.message}")
+//                    emitter.onError(it)
+//                })
             } else {
                 Singles.zip(
                     fetchSwapHistory(),
