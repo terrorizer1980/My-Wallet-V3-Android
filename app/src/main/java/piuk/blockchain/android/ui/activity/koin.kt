@@ -42,7 +42,8 @@ val activitiesModule = applicationContext {
             ActivityDetailsInteractor(
                 coincore = get(),
                 currencyPrefs = get(),
-                transactionInputOutputMapper = get()
+                transactionInputOutputMapper = get(),
+                assetActivityRepo = get()
             )
         }
 

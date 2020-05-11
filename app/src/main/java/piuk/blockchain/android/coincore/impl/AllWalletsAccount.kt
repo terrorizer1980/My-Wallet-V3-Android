@@ -46,7 +46,7 @@ class AllWalletsAccount(
 
     private fun allTokens() = CryptoCurrency.activeCurrencies().map { coincore[it] }
 
-    private fun allAccounts(): Single<List<CryptoAccount>> =
+    fun allAccounts(): Single<List<CryptoAccount>> =
         Single.zip(
             allTokens().map { it.accounts() }
         ) { t: Array<Any> ->

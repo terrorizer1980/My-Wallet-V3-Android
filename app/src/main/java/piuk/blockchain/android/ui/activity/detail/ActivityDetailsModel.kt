@@ -116,13 +116,12 @@ class ActivityDetailsModel(
             direction == TransactionSummary.Direction.SENT -> {
                 loadSentItems(nonCustodialActivitySummaryItem)
             }
-            direction == TransactionSummary.Direction.BUY -> {
-                // do nothing BUY is a custodial transaction
-            }
+            direction == TransactionSummary.Direction.BUY ||
             direction == TransactionSummary.Direction.SELL -> {
-                // do nothing SELL is a custodial transaction
+                // do nothing BUY & SELL are a custodial transaction
             }
-            direction == TransactionSummary.Direction.SWAP -> TODO()
+            direction == TransactionSummary.Direction.SWAP ->
+                loadSwapItems(nonCustodialActivitySummaryItem)
         }
     }
 
@@ -159,6 +158,10 @@ class ActivityDetailsModel(
                     process(ListItemsFailedToLoadIntent)
                 }
             )
+
+    private fun loadSwapItems(nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem) {
+        TODO("Not yet implemented")
+    }
 
     private fun loadReceivedItems(
         nonCustodialActivitySummaryItem: NonCustodialActivitySummaryItem

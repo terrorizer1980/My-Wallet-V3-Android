@@ -11,6 +11,7 @@ import piuk.blockchain.android.coincore.CustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.android.coincore.btc.BtcActivitySummaryItem
 import piuk.blockchain.android.coincore.eth.EthActivitySummaryItem
+import piuk.blockchain.android.coincore.impl.AssetActivityRepo
 import piuk.blockchain.android.coincore.pax.PaxActivitySummaryItem
 import java.text.ParseException
 import java.util.Date
@@ -18,7 +19,8 @@ import java.util.Date
 class ActivityDetailsInteractor(
     private val coincore: Coincore,
     private val currencyPrefs: CurrencyPrefs,
-    private val transactionInputOutputMapper: TransactionInOutMapper
+    private val transactionInputOutputMapper: TransactionInOutMapper,
+    private val assetActivityRepo: AssetActivityRepo
 ) {
 
     fun loadCustodialItems(
