@@ -47,12 +47,12 @@ class AssetActivityRepo(
                 account.allAccounts().doOnSuccess { accountList ->
                     Timber.e("---- do on success , mapping all accounts")
                     accountList.map { cryptoAccount ->
-                        (cryptoAccount as CryptoAccountCompoundGroup).accounts.map { ca ->
-                            ca.activity.subscribe({ activityList ->
+                        (cryptoAccount as CryptoAccountCompoundGroup).accounts.map { individualCryptoAccount ->
+                            individualCryptoAccount.activity.subscribe({ activityList ->
                                 Timber.e(
-                                    "----- adding all accounts to cache: ${cryptoAccount.label} - list: ${activityList.size}")
+                                    "----- adding all accounts to cache: ${individualCryptoAccount.label} - list: ${activityList.size}")
                                 transactionCache.clear()
-                                transactionCache[cryptoAccount] = activityList
+                                transactionCache[individualCryptoAccount] = activityList
                                 Timber.e("----- saved to cache  :${transactionCache.size}")
                                 emitter.onNext(activityList)
                             }, {
