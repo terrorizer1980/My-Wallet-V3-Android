@@ -124,8 +124,9 @@ private class BottomSheetPaymentMethodsAdapter(
             cardNumber.gone()
             expiryDate.gone()
             icon.setImageResource(R.drawable.ic_bank_transfer)
-            title.text = title.context.getString(R.string.bank_wise_transfer)
-            limit.text = paymentMethod.limits.max.toStringWithSymbol()
+            title.text = title.context.getString(R.string.bank_wire_transfer)
+            limit.text =
+                limit.context.getString(R.string.payment_method_limit, paymentMethod.limits.max.toStringWithSymbol())
         }
     }
 

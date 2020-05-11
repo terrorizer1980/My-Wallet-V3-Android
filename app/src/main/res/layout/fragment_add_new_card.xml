@@ -109,6 +109,8 @@
         android:layout_marginStart="@dimen/tiny_margin"
         android:text="@string/privacy_protected_ssl"
         android:textColor="@color/grey_800"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="@dimen/standard_margin"
         app:layout_constraintStart_toEndOf="@+id/locker"
         app:layout_constraintTop_toTopOf="@+id/locker" />
 

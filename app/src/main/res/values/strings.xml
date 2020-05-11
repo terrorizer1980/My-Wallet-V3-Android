@@ -1061,7 +1061,7 @@
     <string name="swap_intro_title">Swap</string>
     <string name="swap_intro_title_page_one">Welcome to Swap!</string>
     <string name="swap_intro_title_page_two">Real-time Exchange Rates</string>
-    <string name="swap_intro_title_page_three">100% On-Chain</string>
+    <string name="swap_intro_title_page_three">100%% On-Chain</string>
     <string name="swap_intro_title_page_four">You Control Your Key</string>
     <string name="swap_intro_title_page_five">Manage Risk Better</string>
     <string name="swap_intro_description_page_one">The easiest way to exchange one crypto for another without leaving your wallet.</string>
@@ -1570,11 +1570,11 @@
     <string name="simple_buy_error_fetching_price">Error fetching latest price.</string>
     <string name="simple_buy_up_to_amount">Up to %1$s</string>
     <string name="use_max">Use MAX</string>
-    <string name="maximum_buy">%1$s Maximum Buy</string>
-    <string name="minimum_buy">%1$s Minimum Buy</string>
+    <string name="maximum_buy">%1$s Maximum</string>
+    <string name="minimum_buy">%1$s Minimum</string>
     <string name="buy_min">Buy Min</string>
     <string name="buy_max">Buy Max</string>
-    <string name="bank_wise_transfer">Bank Wise Transfer</string>
+    <string name="bank_wire_transfer">Bank Wire Transfer</string>
     <string name="credit_or_debit_card">Credit or Debit Card</string>
     <string name="add_credit_or_debit_card">Add a Credit or Debit Card</string>
     <string name="select_payment_method">Select a Payment Method</string>
@@ -1622,7 +1622,6 @@
     <string name="transfer_details">Transfer Details</string>
     <string name="ops">Oops!</string>
     <string name="something_went_wrong_try_again">Something went wrong. Please try again.</string>
-    <string name="simple_buy_token">Buy %1s</string>
     <string name="simple_buy_copied_to_clipboard">%1s is on your clipboard</string>
     <string name="account_number">Account Number</string>
     <string name="bank_code_swift_bic">Bank Code (SWIFT/BIC)</string>
@@ -1662,6 +1661,7 @@
     <string name="card_not_supported">Card Not Supported</string>
     <string name="privacy_protected_ssl">Privacy protected with 256-Bit SSL encryption.</string>
     <string name="add_card_title">Add a Card</string>
+    <string name="add_card_address_title">Billing Address</string>
     <string name="linking_card_title">Securely Linking Your Card</string>
     <string name="linking_card_subtitle">This could take up to 1 minute.</string>
     <string name="linking_card_error_title">Oops! Something Went Wrong.</string>
@@ -1678,8 +1678,8 @@
     <string name="invalid_date">Invalid Date</string>
     <string name="invalid_card_number">Invalid Card Number</string>
     <string name="full_name">Full Name</string>
-    <string name="billing_address_line_1">Address line 1</string>
-    <string name="billing_address_line_2">Address line 2</string>
+    <string name="billing_address_line_1">Address Line 1</string>
+    <string name="billing_address_line_2">Address Line 2</string>
     <string name="billing_address_city">City</string>
     <string name="billing_address_zip">ZIP</string>
     <string name="billing_address_postcode">Postcode</string>
@@ -1696,5 +1696,7 @@
     <string name="order_complete">Complete</string>
     <string name="expired">Expired</string>
     <string name="remove_card">Remove Card</string>
+    <string name="save_my_card">Save My Card</string>
+    <string name="custodial_activity_not_supported">Trading Wallet activity details are not supported in this release</string>
 
 </resources>

@@ -251,7 +251,7 @@ class ActivitiesFragment : HomeScreenMviFragment<ActivitiesModel, ActivitiesInte
         if (isCustodial) {
             Toast.makeText(
                 requireContext(),
-                "Custodial activity details are not supported in this release",
+                R.string.custodial_activity_not_supported,
                 Toast.LENGTH_LONG
             ).show()
         } else {
