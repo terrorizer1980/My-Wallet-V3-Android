@@ -44,7 +44,7 @@ class ActivitiesModel(
                 interactor.getActivityForAccount(intent.account)
                     .subscribeBy(
                         onNext = { process(ActivityListUpdatedIntent(it)) },
-                        onComplete = {  },
+                        onComplete = {},
                         onError = { process(ActivityListUpdatedErrorIntent) }
                     )
             is SelectDefaultAccountIntent ->
