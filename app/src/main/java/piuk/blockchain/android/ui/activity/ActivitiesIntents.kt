@@ -40,7 +40,7 @@ class ActivityListUpdatedIntent(
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(
             isError = false,
-            isLoading = true,
+            isLoading = false,
             activityList = activityList
         )
     }

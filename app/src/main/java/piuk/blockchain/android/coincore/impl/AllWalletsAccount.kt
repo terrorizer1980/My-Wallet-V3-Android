@@ -46,14 +46,14 @@ class AllWalletsAccount(
 
     private fun allTokens() = CryptoCurrency.activeCurrencies().map { coincore[it] }
 
-    fun allAccounts(): Single<List<CryptoAccount>> =
+    private fun allAccounts(): Single<List<CryptoAccount>> =
         Single.zip(
             allTokens().map { it.accounts() }
         ) { t: Array<Any> ->
             t.map { it as CryptoAccount }
         }
 
-    private fun allActivities(): Single<ActivitySummaryList> =
+    fun allActivities(): Single<ActivitySummaryList> =
         allAccounts().flattenAsObservable { it }
             .flatMapSingle { it.activity.onErrorReturn { emptyList() } }
             .reduce { a, l -> a + l }

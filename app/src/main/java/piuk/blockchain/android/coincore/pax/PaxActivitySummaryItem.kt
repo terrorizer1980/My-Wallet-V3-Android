@@ -5,6 +5,7 @@ import info.blockchain.balance.CryptoValue
 import info.blockchain.wallet.multiaddress.TransactionSummary
 import io.reactivex.Completable
 import io.reactivex.Observable
+import piuk.blockchain.android.coincore.CryptoSingleAccount
 import piuk.blockchain.android.coincore.NonCustodialActivitySummaryItem
 import piuk.blockchain.androidcore.data.erc20.Erc20Transfer
 import piuk.blockchain.androidcore.data.erc20.FeedErc20Transfer
@@ -18,7 +19,8 @@ internal class PaxActivitySummaryItem(
     private val accountHash: String,
     private val ethDataManager: EthDataManager,
     override val exchangeRates: ExchangeRateDataManager,
-    lastBlockNumber: BigInteger
+    lastBlockNumber: BigInteger,
+    override val account: CryptoSingleAccount
 ) : NonCustodialActivitySummaryItem() {
 
     override val cryptoCurrency = CryptoCurrency.PAX

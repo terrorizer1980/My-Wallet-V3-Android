@@ -66,7 +66,8 @@ internal class PaxCryptoAccountNonCustodial(
                         accountHash = accountHash,
                         ethDataManager = ethDataManager,
                         exchangeRates = exchangeRates,
-                        lastBlockNumber = latestBlockNumber.number
+                        lastBlockNumber = latestBlockNumber.number,
+                        account = this
                     ) as ActivitySummaryItem
                 }
             }

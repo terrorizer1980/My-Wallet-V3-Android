@@ -44,7 +44,8 @@ internal class BchCryptoAccountNonCustodial(
             .mapList {
                 BchActivitySummaryItem(
                     it,
-                    exchangeRates
+                    exchangeRates,
+                    account = this
                 ) as ActivitySummaryItem
             }.doOnSuccess { txCache.addToCache(it) }
 

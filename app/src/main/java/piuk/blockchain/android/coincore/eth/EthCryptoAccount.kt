@@ -67,7 +67,8 @@ internal class EthCryptoAccountNonCustodial(
                             it,
                             ethFeeForPaxTransaction,
                             latestBlock.blockHeight,
-                            exchangeRates
+                            exchangeRates,
+                            account = this
                         ) as ActivitySummaryItem
                     }.toList()
             }

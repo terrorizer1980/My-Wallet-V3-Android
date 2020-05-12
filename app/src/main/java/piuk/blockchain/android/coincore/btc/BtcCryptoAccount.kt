@@ -48,7 +48,8 @@ internal class BtcCryptoAccountNonCustodial(
                         BtcActivitySummaryItem(
                             it,
                             payloadDataManager,
-                            exchangeRates
+                            exchangeRates,
+                            this
                         ) as ActivitySummaryItem
                 }
         }

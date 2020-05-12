@@ -43,7 +43,10 @@ class ActivitiesModel(
             is AccountSelectedIntent ->
                 interactor.getActivityForAccount(intent.account)
                     .subscribeBy(
-                        onNext = { process(ActivityListUpdatedIntent(it)) },
+                        onNext = {
+                            Timber.e("---- onNext in model")
+                            process(ActivityListUpdatedIntent(it))
+                        },
                         onComplete = {
                             Timber.e("---- onComplete in model")
                             process(ActivityListFinishedUpdatingIntent)},

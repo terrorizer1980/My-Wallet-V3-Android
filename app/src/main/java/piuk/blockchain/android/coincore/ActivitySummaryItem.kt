@@ -30,6 +30,8 @@ abstract class ActivitySummaryItem : Comparable<ActivitySummaryItem> {
         exchangeRates.getHistoricPrice(cryptoValue, selectedFiat, timeStampMs / 1000) // API uses seconds
 
     override operator fun compareTo(other: ActivitySummaryItem) = (other.timeStampMs - timeStampMs).sign
+
+    abstract val account: CryptoSingleAccount
 }
 
 data class CustodialActivitySummaryItem(
@@ -38,6 +40,7 @@ data class CustodialActivitySummaryItem(
     override val txId: String,
     override val timeStampMs: Long,
     override val cryptoValue: CryptoValue,
+    override val account: CryptoSingleAccount,
     val fundedFiat: FiatValue,
     val status: OrderState,
     val fee: FiatValue
@@ -125,6 +128,7 @@ data class SwapActivitySummaryItem(
     override val txId: String,
     override val timeStampMs: Long,
     override val cryptoValue: CryptoValue,
+    override val account: CryptoSingleAccount,
     val targetValue: CryptoValue,
     val transactionHash: String,
     val fee: CryptoValue,
