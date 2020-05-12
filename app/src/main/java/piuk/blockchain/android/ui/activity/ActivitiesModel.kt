@@ -43,10 +43,7 @@ class ActivitiesModel(
             is AccountSelectedIntent ->
                 interactor.getActivityForAccount(intent.account, intent.isRefreshRequested)
                     .subscribeBy(
-                        onSuccess = {
-                            Timber.e("---- onNext in model")
-                            process(ActivityListUpdatedIntent(it))
-                        },
+                        onSuccess = { process(ActivityListUpdatedIntent(it)) },
                         onError = { process(ActivityListUpdatedErrorIntent) }
                     )
             is SelectDefaultAccountIntent ->
