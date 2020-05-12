@@ -47,14 +47,6 @@ class ActivityListUpdatedIntent(
     }
 }
 
-object ActivityListFinishedUpdatingIntent : ActivitiesIntent() {
-    override fun reduce(oldState: ActivitiesState): ActivitiesState {
-        return oldState.copy(
-            isLoading = false
-        )
-    }
-}
-
 object ActivityListUpdatedErrorIntent : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         return oldState.copy(

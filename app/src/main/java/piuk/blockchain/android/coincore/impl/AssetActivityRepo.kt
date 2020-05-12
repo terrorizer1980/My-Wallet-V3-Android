@@ -2,7 +2,6 @@ package piuk.blockchain.android.coincore.impl
 
 import com.blockchain.swap.common.trade.MorphTrade
 import com.blockchain.swap.common.trade.MorphTradeDataManager
-import io.reactivex.Observable
 import io.reactivex.Single
 import piuk.blockchain.android.coincore.ActivitySummaryItem
 import piuk.blockchain.android.coincore.ActivitySummaryList
@@ -26,13 +25,13 @@ class AssetActivityRepo(
     fun fetch(
         account: CryptoAccount,
         isRefreshRequested: Boolean
-    ): Observable<ActivitySummaryList> {
+    ): Single<ActivitySummaryList> {
         Timber.e("---- fetch acc data isRefreshRequested $isRefreshRequested")
         return if (transactionCache.isNotEmpty() &&
             System.currentTimeMillis() - lastUpdatedTimestamp <= CACHE_LIFETIME &&
             !isRefreshRequested
         ) {
-            Observable.just(
+            Single.just(
                 when (account) {
                     is AllWalletsAccount -> {
                         Timber.e(
@@ -45,7 +44,7 @@ class AssetActivityRepo(
                             "----- returning from cache for account ${account.label} - ${transactionCache[account]}")
                         transactionCache[account]?.sortedByDescending {
                             Date(it.timeStampMs)
-                        } as ActivitySummaryList
+                        } ?: emptyList()
                     }
                 }
             )
@@ -60,7 +59,7 @@ class AssetActivityRepo(
                     }
                     lastUpdatedTimestamp = System.currentTimeMillis()
                     list.sortedByDescending { Date(it.timeStampMs) }
-                }.toObservable()
+                }
             } else {
                 // fixme temp workaround for swap
                 account.activity.map { list ->
@@ -70,7 +69,7 @@ class AssetActivityRepo(
                     Timber.e("----- saved to cache ${transactionCache[account]}")
 
                     list.sortedByDescending { Date(it.timeStampMs) }
-                }.toObservable()
+                }
             }
             /* Singles.zip(
                  fetchSwapHistory(),

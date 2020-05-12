@@ -4,7 +4,6 @@ import com.blockchain.notifications.analytics.Analytics
 import com.blockchain.notifications.analytics.SimpleBuyAnalytics
 import com.blockchain.preferences.SimpleBuyPrefs
 import com.blockchain.swap.nabu.datamanagers.CustodialWalletManager
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -21,7 +20,7 @@ class ActivitiesInteractor(
     private val simpleBuyPrefs: SimpleBuyPrefs,
     private val analytics: Analytics
 ) {
-    fun getActivityForAccount(account: CryptoAccount, isRefreshRequested: Boolean): Observable<ActivitySummaryList> =
+    fun getActivityForAccount(account: CryptoAccount, isRefreshRequested: Boolean): Single<ActivitySummaryList> =
         activityRepo.fetch(account, isRefreshRequested)
 
     fun getDefaultAccount(): Single<CryptoAccount> =
