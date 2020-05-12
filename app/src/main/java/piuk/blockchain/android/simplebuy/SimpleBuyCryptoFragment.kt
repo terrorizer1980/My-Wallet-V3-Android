@@ -129,7 +129,6 @@ class SimpleBuyCryptoFragment : MviFragment<SimpleBuyModel, SimpleBuyIntent, Sim
         newState.selectedCryptoCurrency?.let {
             crypto_icon.setImageResource(it.drawableResFilled())
             crypto_text.setText(it.assetName())
-            activity.setupToolbar(resources.getString(R.string.buy_crypto))
         }
 
         newState.exchangePrice?.let {
