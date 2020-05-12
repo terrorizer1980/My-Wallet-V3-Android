@@ -49,7 +49,24 @@ class AssetActivityRepo(
 
         val networkReturn = if (account is AllWalletsAccount) {
             Timber.e("----- getting all accounts")
-            account.allAccounts().toObservable().flatMapIterable { accountList ->
+            account.allAccounts().map { accountList ->
+                accountList.map { cryptoAccount ->
+                    cryptoAccount as CryptoAccountCompoundGroup
+                }.map { compoundAccount ->
+                    compoundAccount.accounts.map { account ->
+                        account.activity.map { summaryList ->
+                            transactionCache[account] = summaryList
+                            summaryList.sortedBy { Date(it.timeStampMs) }
+                        }.map {
+                            it as ActivitySummaryList
+                        }.map {
+                            it
+                        }
+                    }
+                }.flatten()
+            }.flattenAsObservable { it }
+
+            /*  account.allAccounts().toObservable().flatMapIterable { accountList ->
                 accountList.map { cryptoAccount ->
                     (cryptoAccount as CryptoAccountCompoundGroup).accounts.map { individualCryptoAccount ->
                         individualCryptoAccount.activity.toObservable().flatMapIterable { activityList ->
@@ -58,7 +75,7 @@ class AssetActivityRepo(
                         }
                     }
                 }
-            }
+            }*/
             /*account.allAccounts().doOnSuccess { accountList ->
                 //Timber.e("---- do on success , mapping all accounts")
                 val list = accountList.map { cryptoAccount ->
@@ -110,8 +127,8 @@ class AssetActivityRepo(
                 Timber.e("----- got details for account: ${account.label} - $accountList")
                 Timber.e("----- saved to cache ${transactionCache[account]}")
 
-                accountList
-            }
+                accountList as ActivitySummaryList
+            }.toObservable()
 
             /*.subscribe({
                     Timber.e("----- returning after getting net data :${it.size}")
@@ -123,7 +140,10 @@ class AssetActivityRepo(
                 })*/
         }
 
-        return Observable.merge(cacheMaybe.defaultIfEmpty(emptyList()).toObservable(), networkReturn)
+        return Observable.merge(
+            cacheMaybe.defaultIfEmpty(emptyList())
+                .toObservable(),
+            networkReturn)
 
         /* return Singles.zip(
              fetchSwapHistory(),
