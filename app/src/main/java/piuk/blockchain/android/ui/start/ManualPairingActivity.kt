@@ -3,15 +3,15 @@ package piuk.blockchain.android.ui.start
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
 import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.Toolbar
 import info.blockchain.wallet.api.data.Settings
 import kotlinx.android.synthetic.main.activity_manual_pairing.*
 import org.json.JSONObject
@@ -28,10 +28,10 @@ class ManualPairingActivity : MvpActivity<ManualPairingView, ManualPairingPresen
     override val view: ManualPairingView = this
     override val presenter: ManualPairingPresenter by inject()
 
-    override val guid: String = "07ea9eed-2632-47e4-a6d7-e770d24ca080"
-//        get() = wallet_id.text.toString()
-    override val password: String = "blockchain@123"
-//        get() = wallet_pass.text.toString()
+    override val guid: String
+        get() = wallet_id.text.toString()
+    override val password: String
+        get() = wallet_pass.text.toString()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

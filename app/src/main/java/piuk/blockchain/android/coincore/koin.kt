@@ -107,11 +107,7 @@ val coincoreModule = applicationContext {
         }
 
         bean {
-            AssetActivityRepo(
-                coincore = get(),
-                swapHistory = get(),
-                exchangeRates = get()
-            )
+            AssetActivityRepo()
         }
     }
 }

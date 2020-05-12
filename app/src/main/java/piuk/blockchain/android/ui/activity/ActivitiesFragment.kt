@@ -118,7 +118,7 @@ class ActivitiesFragment
 
     private fun switchView(newState: ActivitiesState) {
         when {
-            newState.isLoading -> {
+            newState.isLoading && newState.activityList.isEmpty() -> {
                 header_layout.gone()
                 content_list.gone()
                 empty_view.gone()

@@ -28,6 +28,6 @@ interface MorphTrade {
     }
 
     fun enoughInfoForDisplay(): Boolean
-    val withdrawlAddress: String
+    val withdrawalAddress: String
     val depositAddress: String
 }

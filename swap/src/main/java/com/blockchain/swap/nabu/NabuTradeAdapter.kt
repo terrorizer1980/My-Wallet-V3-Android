@@ -48,7 +48,7 @@ internal class NabuTradeAdapter(private val trade: NabuTransaction) :
                 get() = trade.fiatValue
         }
 
-    override val withdrawlAddress: String
+    override val withdrawalAddress: String
         get() = trade.withdrawalAddress
 
     override val depositAddress: String
