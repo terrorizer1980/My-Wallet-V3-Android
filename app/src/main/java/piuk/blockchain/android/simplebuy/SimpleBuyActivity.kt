@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.blockchain.swap.nabu.datamanagers.Partner
+import com.blockchain.swap.nabu.datamanagers.PaymentMethod
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -179,9 +179,11 @@ class SimpleBuyActivity : BlockchainActivity(), SimpleBuyNavigator {
             goToKycVerificationScreen()
         } else if (requestCode == CardDetailsActivity.ADD_CARD_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                val cardId = data?.getStringExtra(CardDetailsActivity.CARD_ID_KEY) ?: return
-                val cardLabel = data.getStringExtra(CardDetailsActivity.CARD_LABEL_KEY) ?: return
-                val cardPartner = data.getSerializableExtra(CardDetailsActivity.CARD_PARTNER_KEY) as? Partner ?: return
+                val card = (data?.extras?.getSerializable(CardDetailsActivity.CARD_KEY) as?
+                        PaymentMethod.Card) ?: return
+                val cardId = card.cardId
+                val cardLabel = card.uiLabel()
+                val cardPartner = card.partner
 
                 simpleBuyModel.process(SimpleBuyIntent.UpdateSelectedPaymentMethod(
                     cardId,

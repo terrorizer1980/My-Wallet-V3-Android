@@ -737,13 +737,15 @@ val applicationModule = applicationContext {
                 /* stringUtils = */ get(),
                 /* prefs = */ get(),
                 /* accessState = */ get(),
+                /* custodialWalletManager = */ get(),
                 /* swipeToReceiveHelper = */ get(),
                 /* notificationTokenManager = */ get(),
                 /* exchangeRateDataManager = */ get(),
                 /* kycStatusHelper = */ get(),
                 /* pitLinking = */ get(),
                 /* analytics = */ get(),
-                /*featureFlag = */get("ff_pit_linking")
+                /*featureFlag = */get("ff_pit_linking"),
+                /*featureFlag = */get("ff_card_payments")
             )
         }
 

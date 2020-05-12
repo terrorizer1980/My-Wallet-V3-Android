@@ -113,7 +113,8 @@ private class BottomSheetPaymentMethodsAdapter(
             icon.setImageResource(R.drawable.ic_payment_card)
             title.text = if (canAdd) title.context.getString(R.string.add_credit_or_debit_card) else
                 title.context.getString(R.string.credit_or_debit_card)
-            limit.text = paymentMethod.limits?.max?.toStringWithSymbol()
+            limit.text =
+                limit.context.getString(R.string.payment_method_limit, paymentMethod.limits.max.toStringWithSymbol())
         }
     }
 
@@ -132,9 +133,9 @@ private class BottomSheetPaymentMethodsAdapter(
         with(holder) {
             addIcon.gone()
             icon.setImageResource(paymentMethod.cardType.frontResource)
-            title.text = paymentMethod.label
-            limit.text = paymentMethod.limits?.max?.toStringWithSymbol()
-            cardNumber.text = "•••• ${paymentMethod.endDigits}"
+            title.text = paymentMethod.uiLabel()
+            limit.text = paymentMethod.limits.max.toStringWithSymbol()
+            cardNumber.text = paymentMethod.dottedEndDigits()
             expiryDate.text =
                 expiryDate.context.getString(R.string.card_expiry_date, paymentMethod.expireDate.formatted())
             cardNumber.visible()

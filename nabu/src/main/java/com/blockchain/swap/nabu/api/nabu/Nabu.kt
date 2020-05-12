@@ -262,6 +262,12 @@ internal interface Nabu {
         @Body addNewCardBody: AddNewCardBodyRequest
     ): Single<AddNewCardResponse>
 
+    @DELETE("$NABU_CARDS/{cardId}")
+    fun deleteCard(
+        @Header("authorization") authHeader: String,
+        @Path("cardId") cardId: String
+    ): Completable
+
     @POST("$NABU_CARDS/{cardId}/activate")
     fun activateCard(
         @Header("authorization") authHeader: String,

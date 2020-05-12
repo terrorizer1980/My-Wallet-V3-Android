@@ -305,6 +305,13 @@ class NabuService(retrofit: Retrofit) {
         sessionToken.authHeader, orderId
     ).wrapErrorMessage()
 
+    fun deleteCard(
+        sessionToken: NabuSessionTokenResponse,
+        cardId: String
+    ) = service.deleteCard(
+        sessionToken.authHeader, cardId
+    ).wrapErrorMessage()
+
     fun addNewCard(
         sessionToken: NabuSessionTokenResponse,
         addNewCardBodyRequest: AddNewCardBodyRequest
