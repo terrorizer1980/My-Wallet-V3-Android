@@ -8,7 +8,8 @@ import piuk.blockchain.android.ui.base.mvi.MviIntent
 sealed class ActivitiesIntent : MviIntent<ActivitiesState>
 
 class AccountSelectedIntent(
-    val account: CryptoAccount
+    val account: CryptoAccount,
+    val isRefreshRequested: Boolean
 ) : ActivitiesIntent() {
     override fun reduce(oldState: ActivitiesState): ActivitiesState {
         val activitiesList = if (oldState.account == account) {

@@ -23,8 +23,15 @@ class AssetActivityRepo(
     private val transactionCache = mutableMapOf<CryptoAccount, List<ActivitySummaryItem>>()
     private var lastUpdatedTimestamp: Long = -1L
 
-    fun fetch(account: CryptoAccount): Observable<ActivitySummaryList> {
-        val cache = if (transactionCache.isNotEmpty()) {
+    fun fetch(
+        account: CryptoAccount,
+        isRefreshRequested: Boolean
+    ): Observable<ActivitySummaryList> {
+        Timber.e("---- fetch acc data isRefreshRequested $isRefreshRequested")
+        return if (transactionCache.isNotEmpty() &&
+            System.currentTimeMillis() - lastUpdatedTimestamp <= CACHE_LIFETIME &&
+            !isRefreshRequested
+        ) {
             Observable.just(
                 when (account) {
                     is AllWalletsAccount -> {
@@ -40,13 +47,9 @@ class AssetActivityRepo(
                             Date(it.timeStampMs)
                         } as ActivitySummaryList
                     }
-                })
+                }
+            )
         } else {
-            Timber.e("---- transaction cache empty")
-            Observable.just(emptyList())
-        }
-
-        val network =
             if (account is AllWalletsAccount) {
                 Timber.e("----- getting all accounts")
 
@@ -58,43 +61,6 @@ class AssetActivityRepo(
                     lastUpdatedTimestamp = System.currentTimeMillis()
                     list.sortedByDescending { Date(it.timeStampMs) }
                 }.toObservable()
-                /*account.allAccounts().doOnSuccess { accountList ->
-                    //Timber.e("---- do on success , mapping all accounts")
-                    val list = accountList.map { cryptoAccount ->
-                        (cryptoAccount as CryptoAccountCompoundGroup).accounts.map { individualCryptoAccount ->
-                            individualCryptoAccount.activity.doOnSuccess { activityList ->
-                                //Timber.e(
-                                //    "----- adding ${individualCryptoAccount.label} to cache $activityList")
-                                transactionCache[individualCryptoAccount] = activityList
-                            }
-                        }
-                    }.flatten().map {
-                        it.toObservable()
-                    }
-                    Observable.zip(list) { activityList ->
-                        val compoundList = mutableListOf<ActivitySummaryItem>()
-                        for (i in activityList.indices) {
-                            val singleAccountList = activityList[i] as? List<ActivitySummaryItem>
-                            singleAccountList?.map { summaryItem ->
-                                //Timber.e("---- adding item to compoundList $summaryItem")
-                                compoundList.add(summaryItem)
-                            }
-                        }
-                        //Timber.e("---- compound list $compoundList")
-                        compoundList.sortByDescending { Date(it.timeStampMs) }
-                        //Timber.e("---- emitting sorted compound list $compoundList")
-                        emitter.onNext(compoundList)
-                        emitter.onComplete()
-                    }.subscribe({
-                        Timber.e("---- on complete of zip ")
-                    }, {
-                        Timber.e("---- on error zip ${it.message}")
-                    })
-                }.subscribe({
-                    Timber.e("---- on success of all accounts")
-                }, {
-                    Timber.e("---- on error all accounts ${it.message}")
-                })*/
             } else {
                 // fixme temp workaround for swap
                 account.activity.map { list ->
@@ -105,29 +71,28 @@ class AssetActivityRepo(
 
                     list.sortedByDescending { Date(it.timeStampMs) }
                 }.toObservable()
-
-
-                /* Singles.zip(
-                     fetchSwapHistory(),
-                     account.activity
-                 ) { swapList, accountList ->
-                     //val swaps =
-                     //    swapList.filter { account.cryptoCurrencies.contains(it.cryptoCurrency) }
-                     //val txSet = buildTxLookupSet(swaps as List<SwapActivitySummaryItem>)
-
-                     //val sortedList = removeSendWhereSwapped(txSet, accountList).plus(swaps).sorted()
-                     transactionCache[account] = accountList
-
-                     Timber.e("----- got details for account: ${account.label} - $accountList")
-                     Timber.e("----- saved to cache ${transactionCache[account]}")
-
-                     accountList as ActivitySummaryList
-                 }.toObservable()*/
             }
+            /* Singles.zip(
+                 fetchSwapHistory(),
+                 account.activity
+             ) { swapList, accountList ->
+                 //val swaps =
+                 //    swapList.filter { account.cryptoCurrencies.contains(it.cryptoCurrency) }
+                 //val txSet = buildTxLookupSet(swaps as List<SwapActivitySummaryItem>)
 
-        return Observable.merge(
-            cache,
-            network)
+                 //val sortedList = removeSendWhereSwapped(txSet, accountList).plus(swaps).sorted()
+                 transactionCache[account] = accountList
+
+                 Timber.e("----- got details for account: ${account.label} - $accountList")
+                 Timber.e("----- saved to cache ${transactionCache[account]}")
+
+                 accountList as ActivitySummaryList
+             }.toObservable()*/
+        }
+
+        /*  return Observable.merge(
+              cache,
+              network)*/
 
         /* return Singles.zip(
              fetchSwapHistory(),

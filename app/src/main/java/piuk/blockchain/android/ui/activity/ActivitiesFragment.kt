@@ -236,7 +236,7 @@ class ActivitiesFragment
     private fun setupSwipeRefresh() {
         swipe.setOnRefreshListener {
             state?.account?.let {
-                model.process(AccountSelectedIntent(it))
+                model.process(AccountSelectedIntent(it, true))
             }
         }
 
@@ -273,7 +273,7 @@ class ActivitiesFragment
     }
 
     override fun onAccountSelected(account: CryptoAccount) {
-        model.process(AccountSelectedIntent(account))
+        model.process(AccountSelectedIntent(account, false))
     }
 
     override fun onShowBankDetailsSelected() {

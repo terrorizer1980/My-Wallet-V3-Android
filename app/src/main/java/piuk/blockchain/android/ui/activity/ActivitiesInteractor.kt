@@ -21,8 +21,8 @@ class ActivitiesInteractor(
     private val simpleBuyPrefs: SimpleBuyPrefs,
     private val analytics: Analytics
 ) {
-    fun getActivityForAccount(account: CryptoAccount): Observable<ActivitySummaryList> =
-        activityRepo.fetch(account)
+    fun getActivityForAccount(account: CryptoAccount, isRefreshRequested: Boolean): Observable<ActivitySummaryList> =
+        activityRepo.fetch(account, isRefreshRequested)
 
     fun getDefaultAccount(): Single<CryptoAccount> =
         Single.just(coincore.allWallets)

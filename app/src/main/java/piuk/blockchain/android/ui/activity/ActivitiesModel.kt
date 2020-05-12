@@ -41,7 +41,7 @@ class ActivitiesModel(
 
         return when (intent) {
             is AccountSelectedIntent ->
-                interactor.getActivityForAccount(intent.account)
+                interactor.getActivityForAccount(intent.account, intent.isRefreshRequested)
                     .subscribeBy(
                         onNext = {
                             Timber.e("---- onNext in model")
@@ -49,13 +49,13 @@ class ActivitiesModel(
                         },
                         onComplete = {
                             Timber.e("---- onComplete in model")
-                            process(ActivityListFinishedUpdatingIntent)},
+                            process(ActivityListFinishedUpdatingIntent) },
                         onError = { process(ActivityListUpdatedErrorIntent) }
                     )
             is SelectDefaultAccountIntent ->
                 interactor.getDefaultAccount()
                     .subscribeBy(
-                        onSuccess = { process(AccountSelectedIntent(it)) },
+                        onSuccess = { process(AccountSelectedIntent(it, false)) },
                         onError = { process(ActivityListUpdatedErrorIntent) }
                     )
             is CancelSimpleBuyOrderIntent -> interactor.cancelSimpleBuyOrder(intent.orderId)
