@@ -308,7 +308,7 @@ class PaxSendStrategy(
             cryptoFee = ethFeeValue.toString(),
             fiatFee = fiatFeeValue.toStringWithoutSymbol(),
             showCryptoTotal = false,
-            fiatTotal = (fiatFeeValue + fiatValue).toStringWithoutSymbol()
+            fiatTotal = (fiatFeeValue + fiatValue).toStringWithSymbol()
         ).apply {
             cryptoFeeUnit = CryptoCurrency.ETHER.displayTicker
         }
