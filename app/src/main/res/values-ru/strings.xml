@@ -154,7 +154,7 @@
   <string name="restoring_wallet">Восстановление кошелька.</string>
   <string name="password">пароль</string>
   <string name="email">Ваш адрес электронной почты</string>
-  <string name="you_agree_terms_of_service"><![CDATA[Создавая учетную запись, вы соглашаетесь с <annotation link=\"terms\"> Terms <annotation link=\"terms\"> Условиями обслуживания </annotation> & <annotation link=\"privacy\"> Политика конфиденциальности </annotation> Blockchain.]]></string>
+  <string name="you_agree_terms_of_service">Создавая учетную запись, вы соглашаетесь с <annotation link="terms">Условиями обслуживания</annotation> &amp; <annotation link="privacy">Политика конфиденциальности</annotation>Blockchain.</string>
   <string name="new_account_cta_text">Продолжить</string>
   <string name="new_account_title">Завести аккаунт</string>
   <string name="strength_weak">слабый</string>
