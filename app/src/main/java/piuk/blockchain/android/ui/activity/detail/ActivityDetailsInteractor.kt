@@ -39,28 +39,12 @@ class ActivityDetailsInteractor(
         return if (custodialActivitySummaryItem.paymentMethodId != PaymentMethod.BANK_PAYMENT_ID) {
             custodialWalletManager.getCardDetails(custodialActivitySummaryItem.paymentMethodId)
                 .map { paymentMethod ->
-                    list.add(BuyPaymentMethod(SelectedPaymentMethod(paymentMethod.cardId,
-                        label = "${if (paymentMethod.label.isNotEmpty()) {
-                            paymentMethod.label
-                        } else {
-                            paymentMethod.cardType}
-                        } - ${paymentMethod.endDigits}")
-                    ))
-
-                    if (custodialActivitySummaryItem.status == OrderState.PENDING_CONFIRMATION) {
-                        list.add(CancelAction())
-                    }
+                    addPaymentDetailsToList(list, paymentMethod, custodialActivitySummaryItem)
 
                     list.toList()
                 }.onErrorReturn {
-                    list.add(BuyPaymentMethod(
-                        SelectedPaymentMethod(custodialActivitySummaryItem.paymentMethodId,
-                            label = "Couldn't load card details")
-                    ))
+                    addPaymentDetailsToList(list, null, custodialActivitySummaryItem)
 
-                    if (custodialActivitySummaryItem.status == OrderState.PENDING_CONFIRMATION) {
-                        list.add(CancelAction())
-                    }
                     list.toList()
                 }
         } else {
@@ -72,6 +56,30 @@ class ActivityDetailsInteractor(
                 list.add(CancelAction())
             }
             Single.just(list.toList())
+        }
+    }
+
+    private fun addPaymentDetailsToList(
+        list: MutableList<ActivityDetailsType>,
+        paymentMethod: PaymentMethod.Card?,
+        custodialActivitySummaryItem: CustodialActivitySummaryItem
+    ) {
+        paymentMethod?.let {
+            list.add(BuyPaymentMethod(SelectedPaymentMethod(paymentMethod.cardId,
+                label = "${if (paymentMethod.label.isNotEmpty()) {
+                    paymentMethod.label
+                } else {
+                    paymentMethod.cardType
+                }
+                } - ${paymentMethod.endDigits}")
+            ))
+        } ?: list.add(BuyPaymentMethod(
+                SelectedPaymentMethod(custodialActivitySummaryItem.paymentMethodId,
+                    label = "Couldn't load card details")
+            ))
+
+        if (custodialActivitySummaryItem.status == OrderState.PENDING_CONFIRMATION) {
+            list.add(CancelAction())
         }
     }
 
